@@ -1,0 +1,60 @@
+### Node ###
+# Logs
+logs
+*.log
+.pnpm-debug.log*
+
+# Dependency directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Output of 'npm pack'
+*.tgz
+
+# Local History for Visual Studio Code
+.history/
+
+**/dist
+
+### Turbo ###
+# Turborepo task cache
+.turbo
+
+.env.local
+
+## Ignore pnpm-lock.yaml files in packages, to prevent committing them
+packages/**/pnpm-lock.yaml
+
+# General
+.DS_Store
+.env.local
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# IntelliJ
+.idea
+
+# Windsurf
+.windsurf
+
+

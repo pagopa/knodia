@@ -1,0 +1,33 @@
+{
+  "name": "knodia-agreement-process",
+  "version": "1.0.0",
+  "license": "EUPL 1.2",
+  "description": "Knodia service for agreement management",
+  "main": "dist",
+  "type": "module",
+  "scripts": {
+    "start": "tsx -r 'dotenv-flow/config' --watch ./src/index.ts",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:autofix": "eslint . --ext .ts,.tsx --fix",
+    "format:check": "prettier --check src",
+    "format:write": "prettier --write src",
+    "build": "tsc && pnpm cpx './src/resources/**/*' './dist/resources'"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@types/node": "20.19.9",
+    "@typescript-eslint/eslint-plugin": "8.48.1",
+    "@typescript-eslint/parser": "8.48.1",
+    "cpx2": "8.0.0",
+    "eslint": "8.57.1",
+    "prettier": "3.7.4",
+    "tsx": "4.21.0",
+    "typescript": "5.7.2"
+  },
+  "dependencies": {
+    "@types/express": "4.17.21",
+    "@types/node": "20.19.9",
+    "dotenv-flow": "4.1.0",
+    "express": "4.20.0"
+  }
+}

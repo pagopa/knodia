@@ -1,0 +1,26 @@
+{
+  "name": "knodia",
+  "version": "0.0.1",
+  "license": "EUPL-1.2",
+  "private": true,
+  "description": "Knodia Monorepo",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start:agreement": "turbo start --filter knodia-agreement-process",
+    "build": "turbo build",
+    "lint": "turbo lint -- --cache --cache-strategy content --cache-location .eslintcache",
+    "test": "turbo test",
+    "lint:autofix": "turbo lint:autofix",
+    "lint:openapi": "turbo lint:openapi",
+    "format:check": "turbo format:check",
+    "format:write": "turbo format:write"
+  },
+  "devDependencies": {
+    "@tsconfig/node-lts": "24.0.0",
+    "@tsconfig/strictest": "2.0.8",
+    "turbo": "2.2.3"
+  }
+}
