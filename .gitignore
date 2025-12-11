@@ -1,2 +1,9 @@
 # Node.js
 node_modules/
+
+# Turbo
+.turbo/
+
+# TypeScript & build outputs
+*.tsbuildinfo
+dist/
