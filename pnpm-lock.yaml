@@ -6,6 +6,15 @@ settings:
 
 catalogs:
   default:
+    '@tsconfig/node-ts':
+      specifier: 23.6.2
+      version: 23.6.2
+    '@tsconfig/node24':
+      specifier: 24.0.3
+      version: 24.0.3
+    '@tsconfig/strictest':
+      specifier: 2.0.8
+      version: 2.0.8
     '@types/node':
       specifier: 25.0.0
       version: 25.0.0
@@ -23,15 +32,6 @@ importers:
 
   .:
     devDependencies:
-      '@tsconfig/node-ts':
-        specifier: 23.6.2
-        version: 23.6.2
-      '@tsconfig/node24':
-        specifier: 24.0.3
-        version: 24.0.3
-      '@tsconfig/strictest':
-        specifier: 2.0.8
-        version: 2.0.8
       knip:
         specifier: 'catalog:'
         version: 5.73.4(@types/node@25.0.0)(typescript@5.9.3)
@@ -41,12 +41,27 @@ importers:
 
   backend/eservice-process:
     devDependencies:
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  packages/typescript-config:
+    devDependencies:
+      '@tsconfig/node-ts':
+        specifier: 'catalog:'
+        version: 23.6.2
+      '@tsconfig/node24':
+        specifier: 'catalog:'
+        version: 24.0.3
+      '@tsconfig/strictest':
+        specifier: 'catalog:'
+        version: 2.0.8
 
 packages:
 

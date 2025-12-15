@@ -7,6 +7,7 @@
     "start": "node --watch ./src/index.ts"
   },
   "devDependencies": {
+    "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:"
   }

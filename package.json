@@ -6,9 +6,6 @@
     "knip": "knip"
   },
   "devDependencies": {
-    "@tsconfig/node-ts": "23.6.2",
-    "@tsconfig/node24": "24.0.3",
-    "@tsconfig/strictest": "2.0.8",
     "knip": "catalog:",
     "turbo": "catalog:"
   },
