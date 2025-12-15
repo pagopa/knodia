@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/turbo/schema.json",
   "tasks": {
+    "type-check": {
+      "dependsOn": ["^type-check"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
