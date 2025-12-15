@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
-    "type-check": "tsc",
+    "typecheck": "tsc",
     "build": "tsc --build ./tsconfig.build.json",
     "start": "node --watch ./src/index.ts"
   },
