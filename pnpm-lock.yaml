@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  knodia-monorepo:
+  default:
     '@types/node':
       specifier: 25.0.0
       version: 25.0.0
@@ -33,10 +33,10 @@ importers:
   backend/eservice-process:
     devDependencies:
       '@types/node':
-        specifier: catalog:knodia-monorepo
+        specifier: 'catalog:'
         version: 25.0.0
       typescript:
-        specifier: catalog:knodia-monorepo
+        specifier: 'catalog:'
         version: 5.9.3
 
 packages:
