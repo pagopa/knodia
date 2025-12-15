@@ -1,5 +1,5 @@
 {
-  "name": "knodia-eservice-process",
+  "name": "@knodia/eservice-process",
   "type": "module",
   "scripts": {
     "build": "tsc --build ./tsconfig.build.json",
