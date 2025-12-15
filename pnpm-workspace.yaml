@@ -8,6 +8,9 @@ catalog:
   "@tsconfig/node-ts": "23.6.2"
   "@tsconfig/strictest": "2.0.8"
   "@types/node": 25.0.0
+  fastify: 5.6.2
+  fastify-type-provider-zod: 6.1.0
   knip: 5.73.4
   turbo: 2.6.3
   typescript: 5.9.3
+  zod: 4.2.0

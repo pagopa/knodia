@@ -11,5 +11,10 @@
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:"
+  },
+  "dependencies": {
+    "fastify": "catalog:",
+    "fastify-type-provider-zod": "catalog:",
+    "zod": "catalog:"
   }
 }
