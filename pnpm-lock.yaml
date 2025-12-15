@@ -4,6 +4,15 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  knodia-monorepo:
+    '@types/node':
+      specifier: 25.0.0
+      version: 25.0.0
+    typescript:
+      specifier: 5.9.3
+      version: 5.9.3
+
 importers:
 
   .:
@@ -24,10 +33,10 @@ importers:
   backend/eservice-process:
     devDependencies:
       '@types/node':
-        specifier: 25.0.0
+        specifier: catalog:knodia-monorepo
         version: 25.0.0
       typescript:
-        specifier: 5.9.3
+        specifier: catalog:knodia-monorepo
         version: 5.9.3
 
 packages:

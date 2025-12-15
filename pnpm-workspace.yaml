@@ -1,2 +1,7 @@
 packages:
   - "backend/*"
+
+catalogs:
+  knodia-monorepo:
+    "@types/node": "25.0.0"
+    "typescript": "5.9.3"

@@ -6,7 +6,7 @@
     "start": "node --watch ./src/index.ts"
   },
   "devDependencies": {
-    "@types/node": "25.0.0",
-    "typescript": "5.9.3"
+    "@types/node": "catalog:knodia-monorepo",
+    "typescript": "catalog:knodia-monorepo"
   }
 }
