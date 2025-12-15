@@ -1,0 +1,739 @@
+openapi: 3.0.3
+info:
+  title: Knodia API Gateway
+  description: Exposes the API for other Knodes to interact with this Knode
+  version: "0.1.0"
+  # TODO Add `contact` and `termsOfService`
+servers:
+  - url: "{{baseUrl}}/{{version}}"
+    description: Base URL of the Knodia API gateway
+security:
+  - KnodeId: []
+tags:
+  - name: resources
+    description: Routes to access resources following RESTful conventions
+  - name: operations
+    description: Ad-hoc routes to simplify frequent use cases
+# NOTE All Knodes MUST use UUIDs as identifiers for resources (e-services, versions, agreements, purposes, organizations, etc.).
+# To identify a resource uniquely within Knodia (i.e. across different Knodes) the pair (Knode ID, resource ID within the Knode) must be used.
+# In this API, the Knode IDs are implicit since, for every endpoint and every resource ID in it, it is always unambiguous which Knode
+# the resource belongs to.
+# TODO Add 400 and other relevant errors everywhere (possibly add in `components/responses` and reference everywhere).
+paths:
+  "/searchEServices":
+    post:
+      tags:
+        - operations
+      summary: Search for E-Services
+      description: Search for E-Services according to search criteria and considering only E-Services with an active or suspended Version
+      operationId: searchEServices
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EServiceSearchParams"
+        required: true
+      parameters:
+        - in: query
+          name: keywords
+          description: Search for E-Services by keywords (searched inside names and descriptions)
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          explode: false
+      responses:
+        "200":
+          description: E-Service search results retrieved (sorted by most recently updated first)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EServiceSearchResults"
+  "/eServices":
+    get:
+      tags:
+        - resources
+      summary: List E-Services
+      description: Retrieve a list of E-Services based on filters
+      operationId: getEServices
+      parameters:
+        - in: query
+          name: eServiceIds
+          description: Filter E-Services by ID
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          explode: false
+      responses:
+        "200":
+          description: E-Services retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EServices"
+  "/eServices/{eServiceId}":
+    get:
+      tags:
+        - resources
+      summary: Get an E-Service
+      description: Retrieves an E-Service
+      operationId: getEServiceById
+      parameters:
+        - name: eServiceId
+          in: path
+          description: The ID of the E-Service
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: E-Service retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EService"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  "/eServices/{eServiceId}/versions":
+    get:
+      tags:
+        - resources
+      summary: List E-Service Versions
+      description: Retrieves the list of E-Service Versions
+      operationId: getEServiceVersions
+      parameters:
+        - name: eServiceId
+          in: path
+          description: The ID of the E-Service
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: E-Service Versions retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EServiceVersions"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  "/eServices/{eServiceId}/versions/{versionId}":
+    get:
+      tags:
+        - resources
+      summary: Get an E-Service Version
+      description: Retrieves an E-Service Version
+      operationId: getEServiceVersionById
+      parameters:
+        - name: eServiceId
+          in: path
+          description: The E-Service ID of the Version
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          description: The ID of the Version
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: E-Service Version retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EServiceVersion"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  "/eServices/{eServiceId}/versions/latest":
+    get:
+      tags:
+        - resources
+      summary: Get the latest Version of an E-Service
+      description: Retrieves the latest Version of an E-Service
+      operationId: getLatestEServiceVersion
+      parameters:
+        - name: eServiceId
+          in: path
+          description: The ID of the E-Service
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: E-Service Version retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EServiceVersion"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  "/eServices/{eServiceId}/version/{versionId}/documents":
+    get:
+      tags:
+        - resources
+      summary: List E-Service Version Documents
+      description: Retrieves a list of documents for the specified E-Service Version
+      operationId: getEServiceVersionDocuments
+      parameters:
+        - name: eServiceId
+          in: path
+          description: The E-Service ID of the Version
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          description: The ID of the Version
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: E-Service Version Documents retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Documents"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  "/eServices/{eServiceId}/version/{versionId}/interface":
+    get:
+      tags:
+        - resources
+      summary: Download an E-Service Version interface
+      description: Download the interface document of an E-Service Version
+      operationId: downloadEServiceVersionInterface
+      parameters:
+        - name: eServiceId
+          in: path
+          description: The E-Service ID of the Version
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          description: The ID of the E-Service Version for which to download the interface
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: E-Service Version interface retrieved, a multipart containing the file and its metadata
+          content:
+            multipart/form-data:
+              schema:
+                $ref: "#/components/schemas/FileDownloadMultipart"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  "/eServices/{eServiceId}/version/{versionId}/documents/{documentId}":
+    get:
+      tags:
+        - resources
+      summary: Download an E-Service Version Document
+      description: Download a specific Document for the specified E-Service Version
+      operationId: downloadEServiceVersionDocument
+      parameters:
+        - name: eServiceId
+          in: path
+          description: The E-Service ID of the Version
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: versionId
+          in: path
+          description: The ID of the E-Service Version
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: documentId
+          in: path
+          description: The ID of the Document to retrieve
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: E-Service Version Document retrieved, a multipart containing the file and its metadata
+          content:
+            multipart/form-data:
+              schema:
+                $ref: "#/components/schemas/FileDownloadMultipart"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+components:
+  schemas:
+    LocalizedText:
+      type: object
+      additionalProperties: false
+      properties:
+        en: # ISO 639-1 codes, only English for prototype
+          type: string
+      required:
+        - en
+    Pagination:
+      type: object
+      additionalProperties: false
+      properties:
+        offset:
+          type: integer
+          format: int32
+          minimum: 0
+        limit:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+        totalCount:
+          type: integer
+          format: int32
+          minimum: 0
+      required:
+        - offset
+        - limit
+        - totalCount
+    FileDownloadMultipart:
+      type: object
+      additionalProperties: false
+      properties:
+        file:
+          description: The file to download
+          type: string
+          format: binary
+        filename:
+          description: The name of the file
+          type: string
+        contentType:
+          description: The content type of the file
+          type: string
+        id:
+          description: Unique identifier of the file
+          type: string
+          format: uuid
+        prettyName:
+          description: A human-readable name for the file
+          type: string
+      required:
+        - file
+        - filename
+        - contentType
+        - id
+    EServices:
+      type: object
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/EService"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - results
+        - pagination
+    EService:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        producerId:
+          type: string
+          format: uuid
+        name:
+          $ref: "#/components/schemas/LocalizedText"
+        description:
+          $ref: "#/components/schemas/LocalizedText"
+        mode:
+          $ref: "#/components/schemas/EServiceMode"
+        isConsumerOperatorIdentificationRequired:
+          description: Indicates whether a consumer operator must log in to the producer Knode directly to confirm Agreement submission
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EServiceCategory"
+      required:
+        - id
+        - producerId
+        - name
+        - description
+        - mode
+    EServiceMode:
+      description: Indicates if the E-Service is intended to provide or receive data
+      type: string
+      enum:
+        - PROVIDE
+        - RECEIVE
+    EServiceCategory:
+      description: Identifies a category of data, standardized within Knodia, which the E-Service provides or receives
+      type: object
+      additionalProperties: false
+      properties:
+        scheme:
+          description: Identifies the RDF controlled vocabulary in which the Category is defined
+          type: string
+          minLength: 1
+        code:
+          description: Identifies the Category within the RDF controlled vocabulary
+          type: string
+          minLength: 1
+      required:
+        - scheme
+        - code
+    EServiceVersions:
+      type: object
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/EServiceVersion"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - results
+        - pagination
+    EServiceVersion:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        version:
+          type: string
+        description:
+          type: string
+        audience:
+          type: array
+          items:
+            type: string
+        voucherLifespan:
+          type: integer
+          format: int32
+        dailyCallsPerConsumer:
+          description: Maximum number of daily calls that this Version can afford per consumer
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000000000
+        dailyCallsPerKnode:
+          description: Maximum number of daily calls that this Version can afford per Knode
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000000000
+        dailyCallsTotal:
+          description: Maximum number of daily calls that this Version can afford in total
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 1000000000
+        interface:
+          $ref: "#/components/schemas/Interface"
+        state:
+          $ref: "#/components/schemas/EServiceVersionState"
+        requiredAttributes:
+          $ref: "#/components/schemas/RequiredAttributes"
+        serverUrls:
+          type: array
+          items:
+            type: string
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - version
+        - audience
+        - voucherLifespan
+        - dailyCallsPerConsumer
+        - dailyCallsPerKnode
+        - dailyCallsTotal
+        - interface
+        - state
+        - requiredAttributes
+        - serverUrls
+        - updatedAt
+    Interface:
+      type: object
+      additionalProperties: false
+      properties:
+        filename:
+          description: The name of the file
+          type: string
+        prettyName:
+          description: A human-readable name for the file
+          type: string
+        contentType:
+          description: The content type of the file
+          type: string
+        checksum:
+          type: string
+        updatedAt:
+          description: The date and time when the file was last updated
+          type: string
+          format: date-time
+      required:
+        - filename
+        - prettyName
+        - contentType
+        - checksum
+        - updatedAt
+    EServiceVersionState:
+      # `DEPRECATED` not included for the scope of the prototype
+      type: string
+      enum:
+        - ACTIVE
+        - SUSPENDED
+        - ARCHIVED
+    Documents:
+      type: object
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Document"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - results
+        - pagination
+    Document:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          description: Unique identifier of the file
+          type: string
+          format: uuid
+        filename:
+          description: The name of the file
+          type: string
+        prettyName:
+          description: A human-readable name for the file
+          type: string
+        contentType:
+          description: The content type of the file
+          type: string
+        checksum:
+          type: string
+        createdAt: # might not be needed? also, maybe rename to uploadedAt?
+          description: The date and time when the file was uploaded
+          type: string
+          format: date-time
+      required:
+        - id
+        - filename
+        - prettyName
+        - contentType
+        - checksum
+        - createdAt
+    RequiredAttributes:
+      description: Describes the Attributes which a consumer must possess to request an Agreement for the E-Service (at least one Attribute for each Attribute Group)
+      type: array
+      items:
+        $ref: "#/components/schemas/RequiredAttributeGroup"
+    RequiredAttributeGroup:
+      description: Described a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)
+      type: array
+      items:
+        $ref: "#/components/schemas/Attribute"
+    Attribute:
+      description: Identifies an Attribute standardized within Knodia
+      type: object
+      additionalProperties: false
+      properties:
+        scheme:
+          description: Identifies the RDF controlled vocabulary in which the Attribute is defined
+          type: string
+          minLength: 1
+        code:
+          description: Identifies the Attribute within the RDF controlled vocabulary
+          type: string
+          minLength: 1
+      required:
+        - scheme
+        - code
+    EServiceSearchResults:
+      type: object
+      additionalProperties: false
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/EServiceSearchResult"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - results
+        - pagination
+    EServiceSearchResult:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          format: uuid
+        producerId:
+          type: string
+          format: uuid
+        name:
+          $ref: "#/components/schemas/LocalizedText"
+        description:
+          $ref: "#/components/schemas/LocalizedText"
+        mode:
+          $ref: "#/components/schemas/EServiceMode"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EServiceCategory"
+        latestVersionState:
+          $ref: "#/components/schemas/EServiceVersionState"
+        latestVersionRequiredAttributes:
+          $ref: "#/components/schemas/RequiredAttributes"
+      required:
+        - id
+        - producerId
+        - name
+        - description
+        - mode
+        - categories
+        - latestVersionState
+        - latestVersionRequiredAttributes
+    EServiceSearchParams:
+      type: object
+      additionalProperties: false
+      properties:
+        keywords:
+          type: string
+          minLength: 1
+        category:
+          $ref: "#/components/schemas/EServiceCategory"
+      oneOf:
+        - required:
+            - keywords
+        - required:
+            - category
+    Problem:
+      properties:
+        type:
+          description: URI reference of type definition
+          type: string
+        status:
+          description: The HTTP status code generated by the origin server for this occurrence of the problem
+          example: 503
+          exclusiveMaximum: true
+          format: int32
+          maximum: 600
+          minimum: 100
+          type: integer
+        title:
+          description: A short, summary of the problem type. Written in english and readable
+          example: Service Unavailable
+          maxLength: 64
+          pattern: "^[ -~]{0,64}$"
+          type: string
+        correlationId:
+          description: Unique identifier of the request
+          example: "53af4f2d-0c87-41ef-a645-b726a821852b"
+          maxLength: 64
+          type: string
+        detail:
+          description: A human readable explanation of the problem
+          example: Request took too long to complete
+          maxLength: 4096
+          pattern: "^.{0,1024}$"
+          type: string
+        errors:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ProblemError"
+      additionalProperties: false
+      required:
+        - type
+        - status
+        - title
+        - errors
+    ProblemError:
+      properties:
+        code:
+          description: Internal code of the error
+          example: 123-4567
+          minLength: 8
+          maxLength: 8
+          pattern: "^[0-9]{3}-[0-9]{4}$"
+          type: string
+        detail:
+          description: A human readable explanation specific to this occurrence of the problem
+          example: Parameter not valid
+          maxLength: 4096
+          pattern: "^.{0,1024}$"
+          type: string
+      required:
+        - code
+        - detail
+  securitySchemes:
+    KnodeId:
+      type: apiKey
+      in: header
+      # Use `Authorization` instead? Not sure if it can be confusing, since it's not credentials
+      # to be checked but an assertion of identity.
+      # We could also use `X-Knode-Id`, despite https://datatracker.ietf.org/doc/html/rfc6648,
+      # since it's not part of the public API.
+      # Alternatively, use `Client-Cert` (RFC 9440) to provide the entire certificate and
+      # have the server extract the Knode ID (instead of the proxy doing it).
+      name: Knode-Id
+      description: The ID of the calling Knode (injected when terminating mTLS)
