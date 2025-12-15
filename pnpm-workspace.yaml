@@ -1,5 +1,6 @@
 packages:
-  - backend/*
+  - apps/services/*
+  - apps/web/*
   - packages/*
 
 catalog:

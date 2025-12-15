@@ -39,11 +39,11 @@ importers:
         specifier: 'catalog:'
         version: 2.6.3
 
-  backend/eservice-process:
+  apps/services/eservice-process:
     devDependencies:
       '@knodia/typescript-config':
         specifier: workspace:*
-        version: link:../../packages/typescript-config
+        version: link:../../../packages/typescript-config
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
