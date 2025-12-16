@@ -1,4 +1,4 @@
-export function getMockEServices(offset: number, limit: number) {
+export const getMockEServices = (offset: number, limit: number) => {
   const eservices = new Array(100).fill(null).map((_, idx) => ({
     id: idx,
   }));
@@ -11,4 +11,4 @@ export function getMockEServices(offset: number, limit: number) {
       limit,
     },
   };
-}
+};
