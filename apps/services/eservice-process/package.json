@@ -9,10 +9,10 @@
   "devDependencies": {
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
+    "concurrently": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
-    "concurrently": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "zod": "catalog:"
