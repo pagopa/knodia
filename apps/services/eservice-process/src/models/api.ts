@@ -1,17 +1,15 @@
 import { z } from "zod";
 
-const API_Offset = z.coerce.number().min(0);
-const API_Limit = z.coerce.number().min(1).max(50);
 export const API_Pagination = z.object({
   total: z.number().min(0),
-  offset: API_Offset,
-  limit: API_Limit,
+  offset: z.number().min(0),
+  limit: z.number().min(1).max(50),
 });
 export type API_Pagination = z.infer<typeof API_Pagination>;
 
 export const API_EServicesQueryParams = z.object({
-  offset: API_Offset,
-  limit: API_Limit,
+  offset: z.number().min(0),
+  limit: z.number().min(1).max(50),
 });
 export type API_EServicesQueryParams = z.infer<typeof API_EServicesQueryParams>;
 
