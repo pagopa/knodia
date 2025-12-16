@@ -43,10 +43,6 @@ importers:
         version: 2.6.3
 
   apps/services/eservice-process:
-    dependencies:
-      concurrently:
-        specifier: 'catalog:'
-        version: 9.2.1
     devDependencies:
       '@knodia/typescript-config':
         specifier: workspace:*
@@ -54,6 +50,9 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

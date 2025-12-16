@@ -9,9 +9,7 @@
   "devDependencies": {
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
+    "concurrently": "catalog:",
     "typescript": "catalog:"
-  },
-  "dependencies": {
-    "concurrently": "catalog:"
   }
 }
