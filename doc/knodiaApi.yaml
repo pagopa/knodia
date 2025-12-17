@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.4
 info:
   title: Knodia API Gateway
   description: Exposes the API for other Knodes to interact with this Knode
