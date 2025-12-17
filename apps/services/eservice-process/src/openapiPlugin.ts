@@ -6,12 +6,7 @@ import {
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
 
-const openapiVersion = "3.1.2";
 const zodToJsonConfigTarget = "draft-2020-12"; // OpenAPI 3.1
-const defaultOpenapiDocsOptions: fastifySwaggerUI.FastifySwaggerUiOptions = {
-  routePrefix: "/docs",
-};
-
 const jsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
     target: zodToJsonConfigTarget,
@@ -51,11 +46,10 @@ const jsonSchemaTransformObjectWithoutInputSchemas: typeof jsonSchemaTransformOb
     removeZodInputSchemasFromOpenapi(jsonSchemaTransformObject(openapi));
 
 type OpenapiPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
-  openapiDocs?: Partial<{
-    enabled: boolean;
-    options: fastifySwaggerUI.FastifySwaggerUiOptions;
-  }>;
+  openapiDocs: false | fastifySwaggerUI.FastifySwaggerUiOptions;
 };
+
+const openapiVersion = "3.1.2";
 const openapiPlugin = fastifyPlugin<OpenapiPluginOptions>(
   // Use fastify-plugin so the swagger decorator setup by fastify-swagger
   // is attached to the parent instance (app.swagger()), and can be used
@@ -73,14 +67,8 @@ const openapiPlugin = fastifyPlugin<OpenapiPluginOptions>(
       transformObject: jsonSchemaTransformObjectWithoutInputSchemas,
     } satisfies fastifySwagger.FastifyDynamicSwaggerOptions);
 
-    const openapiDocsEnabled =
-      openapiDocs?.enabled === undefined ? true : openapiDocs.enabled;
-
-    if (openapiDocsEnabled) {
-      fastify.register(fastifySwaggerUI, {
-        ...defaultOpenapiDocsOptions,
-        ...openapiDocs?.options,
-      });
+    if (openapiDocs !== false) {
+      fastify.register(fastifySwaggerUI, openapiDocs);
     }
   }
 );

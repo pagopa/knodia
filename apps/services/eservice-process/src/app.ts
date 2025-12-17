@@ -10,6 +10,7 @@ const app = Fastify({
   logger: true, // TODO configure logger - winston? pino?
 });
 
+// openapiPlugin must be registered before any routes to ensure proper route discovery
 app.register(openapiPlugin, {
   openapi: {
     info: {
@@ -17,6 +18,9 @@ app.register(openapiPlugin, {
       description: "API for managing Knodia E-services",
       version: "1.0.0",
     },
+  },
+  openapiDocs: {
+    routePrefix: "/docs",
   },
 });
 
