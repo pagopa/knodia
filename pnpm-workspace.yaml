@@ -4,11 +4,13 @@ packages:
   - packages/*
 
 catalog:
+  '@pagopa/eslint-config': 5.1.1
   '@tsconfig/node-ts': 23.6.2
   '@tsconfig/node24': 24.0.3
   '@tsconfig/strictest': 2.0.8
   '@types/node': 25.0.0
   concurrently: 9.2.1
+  eslint: 9.39.2
   knip: 5.73.4
   turbo: 2.6.3
   typescript: 5.9.3
