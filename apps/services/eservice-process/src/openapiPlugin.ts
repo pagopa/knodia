@@ -6,6 +6,10 @@ import {
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
 
+/*********************
+TODO move to a package to be used by all services.
+**********************/
+
 const zodToJsonConfigTarget = "draft-2020-12"; // OpenAPI 3.1
 const jsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
