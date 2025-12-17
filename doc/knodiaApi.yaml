@@ -20,18 +20,18 @@ tags:
 # the resource belongs to.
 # TODO Add 400 and other relevant errors everywhere (possibly add in `components/responses` and reference everywhere).
 paths:
-  "/searchEServices":
+  "/searchEservices":
     post:
       tags:
         - operations
       summary: Search for E-Services
       description: Search for E-Services according to search criteria and considering only E-Services with an active or suspended Version
-      operationId: searchEServices
+      operationId: searchEservices
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EServiceSearchParams"
+              $ref: "#/components/schemas/EserviceSearchParams"
         required: true
       parameters:
         - in: query
@@ -50,17 +50,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EServiceSearchResults"
-  "/eServices":
+                $ref: "#/components/schemas/EserviceSearchResults"
+  "/eservices":
     get:
       tags:
         - resources
       summary: List E-Services
       description: Retrieve a list of E-Services based on filters
-      operationId: getEServices
+      operationId: getEservices
       parameters:
         - in: query
-          name: eServiceIds
+          name: eserviceIds
           description: Filter E-Services by ID
           required: false
           schema:
@@ -75,16 +75,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EServices"
-  "/eServices/{eServiceId}":
+                $ref: "#/components/schemas/Eservices"
+  "/eservices/{eserviceId}":
     get:
       tags:
         - resources
       summary: Get an E-Service
       description: Retrieves an E-Service
-      operationId: getEServiceById
+      operationId: getEserviceById
       parameters:
-        - name: eServiceId
+        - name: eserviceId
           in: path
           description: The ID of the E-Service
           required: true
@@ -97,22 +97,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EService"
+                $ref: "#/components/schemas/Eservice"
         "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  "/eServices/{eServiceId}/versions":
+  "/eservices/{eserviceId}/versions":
     get:
       tags:
         - resources
       summary: List E-Service Versions
       description: Retrieves the list of E-Service Versions
-      operationId: getEServiceVersions
+      operationId: getEserviceVersions
       parameters:
-        - name: eServiceId
+        - name: eserviceId
           in: path
           description: The ID of the E-Service
           required: true
@@ -125,22 +125,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EServiceVersions"
+                $ref: "#/components/schemas/EserviceVersions"
         "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  "/eServices/{eServiceId}/versions/{versionId}":
+  "/eservices/{eserviceId}/versions/{versionId}":
     get:
       tags:
         - resources
       summary: Get an E-Service Version
       description: Retrieves an E-Service Version
-      operationId: getEServiceVersionById
+      operationId: getEserviceVersionById
       parameters:
-        - name: eServiceId
+        - name: eserviceId
           in: path
           description: The E-Service ID of the Version
           required: true
@@ -160,22 +160,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EServiceVersion"
+                $ref: "#/components/schemas/EserviceVersion"
         "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  "/eServices/{eServiceId}/versions/latest":
+  "/eservices/{eserviceId}/versions/latest":
     get:
       tags:
         - resources
       summary: Get the latest Version of an E-Service
       description: Retrieves the latest Version of an E-Service
-      operationId: getLatestEServiceVersion
+      operationId: getLatestEserviceVersion
       parameters:
-        - name: eServiceId
+        - name: eserviceId
           in: path
           description: The ID of the E-Service
           required: true
@@ -188,22 +188,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EServiceVersion"
+                $ref: "#/components/schemas/EserviceVersion"
         "404":
           description: Not Found
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  "/eServices/{eServiceId}/version/{versionId}/documents":
+  "/eservices/{eserviceId}/version/{versionId}/documents":
     get:
       tags:
         - resources
       summary: List E-Service Version Documents
       description: Retrieves a list of documents for the specified E-Service Version
-      operationId: getEServiceVersionDocuments
+      operationId: getEserviceVersionDocuments
       parameters:
-        - name: eServiceId
+        - name: eserviceId
           in: path
           description: The E-Service ID of the Version
           required: true
@@ -230,15 +230,15 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  "/eServices/{eServiceId}/version/{versionId}/interface":
+  "/eservices/{eserviceId}/version/{versionId}/interface":
     get:
       tags:
         - resources
       summary: Download an E-Service Version interface
       description: Download the interface document of an E-Service Version
-      operationId: downloadEServiceVersionInterface
+      operationId: downloadEserviceVersionInterface
       parameters:
-        - name: eServiceId
+        - name: eserviceId
           in: path
           description: The E-Service ID of the Version
           required: true
@@ -265,15 +265,15 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
-  "/eServices/{eServiceId}/version/{versionId}/documents/{documentId}":
+  "/eservices/{eserviceId}/version/{versionId}/documents/{documentId}":
     get:
       tags:
         - resources
       summary: Download an E-Service Version Document
       description: Download a specific Document for the specified E-Service Version
-      operationId: downloadEServiceVersionDocument
+      operationId: downloadEserviceVersionDocument
       parameters:
-        - name: eServiceId
+        - name: eserviceId
           in: path
           description: The E-Service ID of the Version
           required: true
@@ -364,20 +364,20 @@ components:
         - filename
         - contentType
         - id
-    EServices:
+    Eservices:
       type: object
       additionalProperties: false
       properties:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/EService"
+            $ref: "#/components/schemas/Eservice"
         pagination:
           $ref: "#/components/schemas/Pagination"
       required:
         - results
         - pagination
-    EService:
+    Eservice:
       type: object
       additionalProperties: false
       properties:
@@ -392,7 +392,7 @@ components:
         description:
           $ref: "#/components/schemas/LocalizedText"
         mode:
-          $ref: "#/components/schemas/EServiceMode"
+          $ref: "#/components/schemas/EserviceMode"
         isConsumerOperatorIdentificationRequired:
           description: Indicates whether a consumer operator must log in to the producer Knode directly to confirm Agreement submission
           type: boolean
@@ -401,20 +401,20 @@ components:
         categories:
           type: array
           items:
-            $ref: "#/components/schemas/EServiceCategory"
+            $ref: "#/components/schemas/EserviceCategory"
       required:
         - id
         - producerId
         - name
         - description
         - mode
-    EServiceMode:
+    EserviceMode:
       description: Indicates if the E-Service is intended to provide or receive data
       type: string
       enum:
         - PROVIDE
         - RECEIVE
-    EServiceCategory:
+    EserviceCategory:
       description: Identifies a category of data, standardized within Knodia, which the E-Service provides or receives
       type: object
       additionalProperties: false
@@ -430,20 +430,20 @@ components:
       required:
         - scheme
         - code
-    EServiceVersions:
+    EserviceVersions:
       type: object
       additionalProperties: false
       properties:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/EServiceVersion"
+            $ref: "#/components/schemas/EserviceVersion"
         pagination:
           $ref: "#/components/schemas/Pagination"
       required:
         - results
         - pagination
-    EServiceVersion:
+    EserviceVersion:
       type: object
       additionalProperties: false
       properties:
@@ -482,7 +482,7 @@ components:
         interface:
           $ref: "#/components/schemas/Interface"
         state:
-          $ref: "#/components/schemas/EServiceVersionState"
+          $ref: "#/components/schemas/EserviceVersionState"
         requiredAttributes:
           $ref: "#/components/schemas/RequiredAttributes"
         serverUrls:
@@ -530,7 +530,7 @@ components:
         - contentType
         - checksum
         - updatedAt
-    EServiceVersionState:
+    EserviceVersionState:
       # `DEPRECATED` not included for the scope of the prototype
       type: string
       enum:
@@ -606,20 +606,20 @@ components:
       required:
         - scheme
         - code
-    EServiceSearchResults:
+    EserviceSearchResults:
       type: object
       additionalProperties: false
       properties:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/EServiceSearchResult"
+            $ref: "#/components/schemas/EserviceSearchResult"
         pagination:
           $ref: "#/components/schemas/Pagination"
       required:
         - results
         - pagination
-    EServiceSearchResult:
+    EserviceSearchResult:
       type: object
       additionalProperties: false
       properties:
@@ -634,13 +634,13 @@ components:
         description:
           $ref: "#/components/schemas/LocalizedText"
         mode:
-          $ref: "#/components/schemas/EServiceMode"
+          $ref: "#/components/schemas/EserviceMode"
         categories:
           type: array
           items:
-            $ref: "#/components/schemas/EServiceCategory"
+            $ref: "#/components/schemas/EserviceCategory"
         latestVersionState:
-          $ref: "#/components/schemas/EServiceVersionState"
+          $ref: "#/components/schemas/EserviceVersionState"
         latestVersionRequiredAttributes:
           $ref: "#/components/schemas/RequiredAttributes"
       required:
@@ -652,7 +652,7 @@ components:
         - categories
         - latestVersionState
         - latestVersionRequiredAttributes
-    EServiceSearchParams:
+    EserviceSearchParams:
       type: object
       additionalProperties: false
       properties:
@@ -660,7 +660,7 @@ components:
           type: string
           minLength: 1
         category:
-          $ref: "#/components/schemas/EServiceCategory"
+          $ref: "#/components/schemas/EserviceCategory"
       oneOf:
         - required:
             - keywords
