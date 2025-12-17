@@ -26,14 +26,19 @@ const jsonSchemaTransformObject = createJsonSchemaTransformObject({
  * See: https://github.com/turkerdev/fastify-type-provider-zod/issues/214
  */
 const removeZodInputSchemasFromSwagger = (
-  openapi: ReturnType<typeof jsonSchemaTransformObject>
+  openapi: ReturnType<typeof jsonSchemaTransformObject> & {
+    components?: { schemas?: Record<string, unknown> };
+  }
 ): ReturnType<typeof jsonSchemaTransformObject> => {
-  const inputKeysToDelete = Object.keys(openapi.components.schemas).filter(
-    (key) => key.endsWith("Input")
-  );
-  inputKeysToDelete.forEach((key) => {
-    delete openapi.components.schemas[key];
-  });
+  if (openapi.components && openapi.components.schemas) {
+    const inputKeysToDelete = Object.keys(openapi.components.schemas).filter(
+      (key) => key.endsWith("Input")
+    );
+    for (const key of inputKeysToDelete) {
+      delete openapi.components.schemas[key];
+    }
+  }
+
   return openapi;
 };
 
