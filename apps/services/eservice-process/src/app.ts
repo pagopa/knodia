@@ -4,7 +4,6 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 import { eserviceRoutes } from "./routers/eserviceRouter.ts";
-import fastifySwaggerUI from "@fastify/swagger-ui";
 import openapiPlugin from "./openapiPlugin.ts";
 
 const app = Fastify({
@@ -19,10 +18,6 @@ app.register(openapiPlugin, {
       version: "1.0.0",
     },
   },
-});
-
-app.register(fastifySwaggerUI, {
-  routePrefix: "/docs",
 });
 
 app.setValidatorCompiler(validatorCompiler);
