@@ -8,7 +8,7 @@ if (app.swagger === null || app.swagger === undefined) {
 }
 
 const schema = app.swagger({ yaml: true });
-// const schema = JSON.stringify(app.swagger(), undefined, 2); for pretty print
+
 await writeFile("openapi.yaml", schema, { flag: "w+" });
 
 await app.close();
