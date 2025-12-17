@@ -8,12 +8,7 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
-    "lint": {
-      "dependsOn": ["build", "^lint"]
-    },
-    "lint:autofix": {
-      "dependsOn": ["build"],
-      "outputs": ["dist"]
-    }
+    "lint": {},
+    "lint:autofix": {}
   }
 }
