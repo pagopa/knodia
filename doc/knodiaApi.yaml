@@ -33,17 +33,6 @@ paths:
             schema:
               $ref: "#/components/schemas/EserviceSearchParams"
         required: true
-      parameters:
-        - in: query
-          name: keywords
-          description: Search for E-Services by keywords (searched inside names and descriptions)
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
-              format: uuid
-          explode: false
       responses:
         "200":
           description: E-Service search results retrieved (sorted by most recently updated first)
