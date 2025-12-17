@@ -13,8 +13,8 @@ const app = Fastify({
 app.register(openapiPlugin, {
   openapi: {
     info: {
-      title: "Knodia E-Service Process API",
-      description: "API for managing Knodia E-Services",
+      title: "Knodia E-service Process API",
+      description: "API for managing Knodia E-services",
       version: "1.0.0",
     },
   },

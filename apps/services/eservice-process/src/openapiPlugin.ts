@@ -51,10 +51,10 @@ const jsonSchemaTransformObjectWithoutInputSchemas: typeof jsonSchemaTransformOb
     removeZodInputSchemasFromOpenapi(jsonSchemaTransformObject(openapi));
 
 type OpenapiPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
-  openapiDocs?: {
+  openapiDocs?: Partial<{
     enabled: boolean;
-    options?: fastifySwaggerUI.FastifySwaggerUiOptions;
-  };
+    options: fastifySwaggerUI.FastifySwaggerUiOptions;
+  }>;
 };
 const openapiPlugin = fastifyPlugin<OpenapiPluginOptions>(
   // Use fastify-plugin so the swagger decorator setup by fastify-swagger
@@ -73,7 +73,9 @@ const openapiPlugin = fastifyPlugin<OpenapiPluginOptions>(
       transformObject: jsonSchemaTransformObjectWithoutInputSchemas,
     } satisfies fastifySwagger.FastifyDynamicSwaggerOptions);
 
-    const openapiDocsEnabled = openapiDocs?.enabled ?? true;
+    const openapiDocsEnabled =
+      openapiDocs?.enabled === undefined ? true : openapiDocs.enabled;
+
     if (openapiDocsEnabled) {
       fastify.register(fastifySwaggerUI, {
         ...defaultOpenapiDocsOptions,
