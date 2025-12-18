@@ -2,6 +2,7 @@ import {
   createJsonSchemaTransform,
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
+import type { OpenAPIV3_1 } from "openapi-types";
 
 const zodToJsonConfigTarget = "draft-2020-12"; // OpenAPI 3.1
 const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
@@ -16,10 +17,8 @@ const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
  * See: https://github.com/turkerdev/fastify-type-provider-zod/issues/214
  */
 const removeZodInputSchemasFromOpenapi = (
-  openapi: ReturnType<typeof zodToJsonSchemaTransformObject> & {
-    components?: { schemas?: Record<string, unknown> };
-  }
-): ReturnType<typeof zodToJsonSchemaTransformObject> => {
+  openapi: Partial<OpenAPIV3_1.Document>
+): Partial<OpenAPIV3_1.Document> => {
   if (openapi.components && openapi.components.schemas) {
     const inputKeysToDelete = Object.keys(openapi.components.schemas).filter(
       (key) => key.endsWith("Input")
@@ -40,4 +39,6 @@ export const zodToJsonSchemaTransform = createJsonSchemaTransform({
 
 export const zodToJsonSchemaTransformObjectWithoutInputSchemas: typeof zodToJsonSchemaTransformObject =
   (openapi) =>
-    removeZodInputSchemasFromOpenapi(zodToJsonSchemaTransformObject(openapi));
+    removeZodInputSchemasFromOpenapi(
+      zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3_1.Document>
+    );

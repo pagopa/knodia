@@ -39,6 +39,9 @@ catalogs:
     knip:
       specifier: 5.73.4
       version: 5.73.4
+    openapi-types:
+      specifier: 12.1.3
+      version: 12.1.3
     turbo:
       specifier: 2.6.3
       version: 2.6.3
@@ -109,6 +112,9 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      openapi-types:
+        specifier: 'catalog:'
+        version: 12.1.3
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
