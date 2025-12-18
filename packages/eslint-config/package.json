@@ -1,0 +1,11 @@
+{
+  "name": "@knodia/eslint-config",
+  "type": "module",
+  "exports": {
+    "./node": "./eslint.node.js"
+  },
+  "devDependencies": {
+    "@pagopa/eslint-config": "catalog:",
+    "eslint": "catalog:"
+  }
+}
