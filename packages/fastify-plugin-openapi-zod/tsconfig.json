@@ -1,0 +1,13 @@
+{
+  "extends": "@knodia/typescript-config/tsconfig.node.json",
+  "compilerOptions": {
+    "noEmit": true // default tsconfig for typechecking only
+  },
+  "include": [
+    "src",
+    "test"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

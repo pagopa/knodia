@@ -5,7 +5,7 @@
   },
   "include": [
     "src",
-    "test"
+    "test",
   ],
   "exclude": [
     "dist",

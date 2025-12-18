@@ -1,17 +1,13 @@
 import Fastify from "fastify";
-import {
-  serializerCompiler,
-  validatorCompiler,
-} from "fastify-type-provider-zod";
 import { eserviceRoutes } from "./routers/eserviceRouter.ts";
-import openapiPlugin from "./openapiPlugin.ts";
+import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
 
 const app = Fastify({
   logger: true, // TODO configure logger - winston? pino?
 });
 
 // openapiPlugin must be registered before any routes to ensure proper route discovery
-app.register(openapiPlugin, {
+app.register(openapiZodPlugin, {
   openapi: {
     info: {
       title: "Knodia E-service Process API",
@@ -23,9 +19,6 @@ app.register(openapiPlugin, {
     routePrefix: "/docs",
   },
 });
-
-app.setValidatorCompiler(validatorCompiler);
-app.setSerializerCompiler(serializerCompiler);
 
 app.register(eserviceRoutes);
 

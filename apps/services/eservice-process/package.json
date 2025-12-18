@@ -14,10 +14,8 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@fastify/swagger": "catalog:",
-    "@fastify/swagger-ui": "catalog:",
+    "@knodia/fastify-plugin-openapi-zod": "workspace:*",
     "fastify": "catalog:",
-    "fastify-plugin": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "zod": "catalog:"
   }
