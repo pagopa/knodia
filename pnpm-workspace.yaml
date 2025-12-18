@@ -33,6 +33,7 @@ catalog:
   "@stoplight/spectral-cli": 6.15.0
   turbo: 2.7.3
   typescript: 5.9.3
+  vitest: 4.0.16
   zod: 4.2.0
 
 catalogMode: strict

@@ -5,7 +5,8 @@
     "dev": "tsc --watch",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "vitest": "catalog:"
   },
   "exports": {
     "./openApiZodPlugin": "./src/utils/openapiZodPlugin.ts",
@@ -18,7 +19,8 @@
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "openapi-types": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@fastify/swagger": "catalog:",
