@@ -1,10 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import app from "./src/app.ts";
 
-/*********************
-TODO move to a package to be used by all services.
-**********************/
-
 await app.ready();
 
 if (app.swagger === null || app.swagger === undefined) {
@@ -13,6 +9,6 @@ if (app.swagger === null || app.swagger === undefined) {
 
 const schema = app.swagger({ yaml: true });
 
-await writeFile("openapi.yaml", schema, { flag: "w+" });
+await writeFile("openapi.yaml", schema, { flag: "w" });
 
 await app.close();
