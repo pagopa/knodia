@@ -1,5 +1,5 @@
-import type { API_EService } from "./api.ts";
+import type { API_Eservice } from "./api.ts";
 
-export const toAPI_EService = (eservice: { id: number }): API_EService => {
+export const toAPI_Eservice = (eservice: { id: number }): API_Eservice => {
   return { id: eservice.id.toString() };
 };

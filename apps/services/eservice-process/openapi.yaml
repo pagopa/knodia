@@ -25,9 +25,9 @@ components:
         - offset
         - limit
       additionalProperties: false
-    EService:
+    Eservice:
       $schema: https://json-schema.org/draft/2020-12/schema
-      $id: "#/components/schemas/EService"
+      $id: "#/components/schemas/Eservice"
       type: object
       properties:
         id:
@@ -35,15 +35,15 @@ components:
       required:
         - id
       additionalProperties: false
-    EServices:
+    Eservices:
       $schema: https://json-schema.org/draft/2020-12/schema
-      $id: "#/components/schemas/EServices"
+      $id: "#/components/schemas/Eservices"
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/EService"
+            $ref: "#/components/schemas/Eservice"
         pagination:
           $ref: "#/components/schemas/Pagination"
       required:
@@ -75,4 +75,4 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EServices"
+                $ref: "#/components/schemas/Eservices"

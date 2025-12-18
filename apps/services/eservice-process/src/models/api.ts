@@ -9,7 +9,7 @@ export const API_Pagination = z
   .meta({ id: "Pagination" });
 export type API_Pagination = z.infer<typeof API_Pagination>;
 
-export const API_EServicesQueryParams = z.strictObject({
+export const API_EservicesQueryParams = z.strictObject({
   offset: z.coerce.number().min(0).describe("Pagination starting position"),
   limit: z.coerce
     .number()
@@ -17,19 +17,19 @@ export const API_EServicesQueryParams = z.strictObject({
     .max(50)
     .describe("Maximum number of items returned"),
 });
-export type API_EServicesQueryParams = z.infer<typeof API_EServicesQueryParams>;
+export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
-export const API_EService = z
+export const API_Eservice = z
   .strictObject({
     id: z.string(),
   })
-  .meta({ id: "EService" });
-export type API_EService = z.infer<typeof API_EService>;
+  .meta({ id: "Eservice" });
+export type API_Eservice = z.infer<typeof API_Eservice>;
 
-export const API_EServices = z
+export const API_Eservices = z
   .strictObject({
-    items: z.array(API_EService),
+    items: z.array(API_Eservice),
     pagination: API_Pagination,
   })
-  .meta({ id: "EServices" });
-export type API_EServices = z.infer<typeof API_EServices>;
+  .meta({ id: "Eservices" });
+export type API_Eservices = z.infer<typeof API_Eservices>;
