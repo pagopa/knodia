@@ -4,10 +4,6 @@
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
-    },
     "lint": {},
     "lint:autofix": {}
   }

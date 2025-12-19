@@ -4,7 +4,6 @@
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node --watch ./src/index.ts'",
     "typecheck": "tsc",
-    "build": "tsc --build ./tsconfig.build.json",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
   },

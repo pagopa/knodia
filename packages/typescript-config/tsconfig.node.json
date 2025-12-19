@@ -3,5 +3,10 @@
     "./tsconfig.base.json",
     "@tsconfig/node24/tsconfig.json",
     "@tsconfig/node-ts/tsconfig.json",
-  ]
+  ],
+  "compilerOptions": {
+    // We only use TS for typechecking;
+    // No need to transpile into JS since we run TS directly with Node.js.
+    "noEmit": true
+  },
 }
