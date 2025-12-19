@@ -14,7 +14,7 @@ type OpenapiZodPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
   openapiDocs: false | fastifySwaggerUI.FastifySwaggerUiOptions;
 };
 
-const openapiVersion = "3.1.2";
+const OPENAPI_VERSION = "3.1.2";
 export default fastifyPlugin<OpenapiZodPluginOptions>(
   // Use fastify-plugin so the .swagger and .swaggerUI decorators setup here
   // bubble up to the fastify instance where this plugin is registered.
@@ -30,7 +30,7 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
       ...swaggerOptions,
       openapi: {
         ...swaggerOptions.openapi,
-        openapi: openapiVersion,
+        openapi: OPENAPI_VERSION,
       },
       transform: zodToJsonSchemaTransform,
       transformObject: zodToJsonSchemaTransformObjectWithoutInputSchemas,
