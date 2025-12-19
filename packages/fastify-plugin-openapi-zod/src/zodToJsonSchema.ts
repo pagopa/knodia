@@ -4,10 +4,10 @@ import {
 } from "fastify-type-provider-zod";
 import type { OpenAPIV3_1 } from "openapi-types";
 
-const zodToJsonConfigTarget = "draft-2020-12"; // OpenAPI 3.1
+const OPENAPI_3_1_ZOD_TO_JSON_SCHEMA = "draft-2020-12"; // OpenAPI 3.1
 const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
-    target: zodToJsonConfigTarget,
+    target: OPENAPI_3_1_ZOD_TO_JSON_SCHEMA,
   },
 });
 
@@ -33,7 +33,7 @@ const removeZodInputSchemasFromOpenapi = (
 
 export const zodToJsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
-    target: zodToJsonConfigTarget,
+    target: OPENAPI_3_1_ZOD_TO_JSON_SCHEMA,
   },
 });
 
