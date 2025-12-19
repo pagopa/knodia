@@ -6,7 +6,8 @@
     "typecheck": "tsc"
   },
   "exports": {
-    ".": "./src/openapiZodPlugin.ts"
+    ".": "./src/openapiZodPlugin.ts",
+    "./generateOpenapi": "./src/generateOpenapi.ts"
   },
   "devDependencies": {
     "@knodia/typescript-config": "workspace:*",

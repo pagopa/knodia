@@ -7,7 +7,7 @@
     "build": "tsc --build ./tsconfig.build.json",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "generate-openapi": "node ./generateOpenApi.ts"
+    "generate-openapi": "node ./openapi/generateOpenapi.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
