@@ -5,8 +5,6 @@
     "@tsconfig/node-ts/tsconfig.json",
   ],
   "compilerOptions": {
-    // We only use TS for typechecking;
-    // No need to transpile into JS since we run TS directly with Node.js.
-    "noEmit": true
+    "noEmit": true // typecheck only, we don't transpile into JS, we run TS directly with Node.js
   },
 }
