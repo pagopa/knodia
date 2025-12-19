@@ -15,6 +15,9 @@ const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
  * Remove all schemas ending with "Input" from the generated OpenAPI spec.
  * This is a workaround, waiting for a proper solution in fastify-type-provider-zod.
  * See: https://github.com/turkerdev/fastify-type-provider-zod/issues/214
+ *
+ * TODO: consider using spectral lint to autofix the removal of unused schemas
+ * instead of this workaround.
  */
 const removeZodInputSchemasFromOpenapi = (
   openapi: Partial<OpenAPIV3_1.Document>
