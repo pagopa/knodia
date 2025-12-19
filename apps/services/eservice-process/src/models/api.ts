@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-export const API_Pagination = z
+const API_Pagination = z
   .strictObject({
     total: z.number().min(0),
     offset: z.number().min(0),
     limit: z.number().min(1).max(50),
   })
   .meta({ id: "Pagination" });
-export type API_Pagination = z.infer<typeof API_Pagination>;
+type API_Pagination = z.infer<typeof API_Pagination>;
 
 export const API_EservicesQueryParams = z.strictObject({
   offset: z.coerce.number().min(0).describe("Pagination starting position"),

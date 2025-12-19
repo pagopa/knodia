@@ -1,6 +1,7 @@
-import Fastify from "fastify";
-import { eserviceRoutes } from "./routers/eserviceRouter.ts";
 import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
+import Fastify from "fastify";
+
+import { eserviceRoutes } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
   logger: true, // TODO configure logger - winston? pino?
