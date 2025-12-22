@@ -6,14 +6,6 @@ import { getMockEservices } from "../services/eserviceService.ts";
 
 export const eserviceRoutes: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
-    method: "GET",
-    url: "/eservices",
-    schema: {
-      querystring: API_EservicesQueryParams,
-      response: {
-        200: API_Eservices,
-      },
-    },
     handler: (req, res) => {
       const eservices = getMockEservices(req.query.offset, req.query.limit);
       res.send({
@@ -21,5 +13,13 @@ export const eserviceRoutes: FastifyPluginAsyncZod = async (fastify) => {
         pagination: eservices.pagination,
       });
     },
+    method: "GET",
+    schema: {
+      querystring: API_EservicesQueryParams,
+      response: {
+        200: API_Eservices,
+      },
+    },
+    url: "/eservices",
   });
 };

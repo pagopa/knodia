@@ -11,8 +11,8 @@ const app = Fastify({
 app.register(openapiZodPlugin, {
   openapi: {
     info: {
-      title: "Knodia E-service Process API",
       description: "API for managing Knodia E-services",
+      title: "Knodia E-service Process API",
       version: "1.0.0",
     },
   },

@@ -3,11 +3,4 @@
  */
 import pagopa from "@pagopa/eslint-config";
 
-export const config = [
-  ...pagopa,
-  {
-    rules: {
-      "perfectionist/sort-objects": "off",
-    },
-  },
-];
+export const config = [...pagopa];

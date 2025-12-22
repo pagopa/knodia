@@ -7,9 +7,9 @@ export const getMockEservices = (offset: number, limit: number) => {
   return {
     items: eservices.slice(offset, offset + limit),
     pagination: {
-      total: eservices.length,
-      offset,
       limit,
+      offset,
+      total: eservices.length,
     },
   };
 };
