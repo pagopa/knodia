@@ -8,6 +8,7 @@
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
+    "generate-openapi": {},
     "lint": {},
     "lint:autofix": {}
   }

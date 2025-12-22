@@ -1,1 +1,3 @@
-console.log("TODO eservice-process");
+import app from "./app.ts";
+
+app.listen({ port: 3000 });

@@ -1,0 +1,78 @@
+openapi: 3.1.2
+info:
+  title: Knodia E-service Process API
+  description: API for managing Knodia E-services
+  version: 1.0.0
+components:
+  schemas:
+    Pagination:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Pagination"
+      type: object
+      properties:
+        total:
+          type: number
+          minimum: 0
+        offset:
+          type: number
+          minimum: 0
+        limit:
+          type: number
+          minimum: 1
+          maximum: 50
+      required:
+        - total
+        - offset
+        - limit
+      additionalProperties: false
+    Eservice:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservice"
+      type: object
+      properties:
+        id:
+          type: string
+      required:
+        - id
+      additionalProperties: false
+    Eservices:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservices"
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Eservice"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - items
+        - pagination
+      additionalProperties: false
+paths:
+  /eservices:
+    get:
+      parameters:
+        - schema:
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+      responses:
+        "200":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Eservices"

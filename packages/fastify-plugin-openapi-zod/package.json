@@ -1,0 +1,24 @@
+{
+  "name": "@knodia/fastify-plugin-openapi-zod",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc"
+  },
+  "exports": {
+    ".": "./src/openapiZodPlugin.ts",
+    "./generateOpenapi": "./src/generateOpenapi.ts"
+  },
+  "devDependencies": {
+    "@knodia/typescript-config": "workspace:*",
+    "openapi-types": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@fastify/swagger": "catalog:",
+    "@fastify/swagger-ui": "catalog:",
+    "fastify": "catalog:",
+    "fastify-plugin": "catalog:",
+    "fastify-type-provider-zod": "catalog:"
+  }
+}

@@ -4,6 +4,7 @@
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node --watch ./src/index.ts'",
     "typecheck": "tsc",
+    "generate-openapi": "node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
   },
@@ -14,5 +15,11 @@
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@knodia/fastify-plugin-openapi-zod": "workspace:*",
+    "fastify": "catalog:",
+    "fastify-type-provider-zod": "catalog:",
+    "zod": "catalog:"
   }
 }
