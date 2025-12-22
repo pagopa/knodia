@@ -1,7 +1,8 @@
 import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
 import Fastify from "fastify";
 
-import { eserviceRoutes } from "./routers/eserviceRouter.ts";
+import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { healthRouter } from "./routers/healthRouter.ts";
 
 const app = Fastify({
   logger: true, // TODO configure logger - winston? pino?
@@ -11,6 +12,9 @@ const app = Fastify({
 app.register(openapiZodPlugin, {
   openapi: {
     info: {
+      contact: {
+        url: "https://github.com/pagopa/knodia/issues",
+      },
       description: "API for managing Knodia E-services",
       title: "Knodia E-service Process API",
       version: "1.0.0",
@@ -21,6 +25,7 @@ app.register(openapiZodPlugin, {
   },
 });
 
-app.register(eserviceRoutes);
+app.register(healthRouter);
+app.register(eserviceRouter);
 
 export default app;

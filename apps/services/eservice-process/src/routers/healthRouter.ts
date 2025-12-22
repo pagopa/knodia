@@ -1,0 +1,20 @@
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+
+import z from "zod";
+
+// TODO move to a common package, since it will be used by multiple services
+export const healthRouter: FastifyPluginAsyncZod = async (fastify) => {
+  fastify.route({
+    handler: (_req, res) => {
+      res.send();
+    },
+    method: "GET",
+    schema: {
+      produces: ["application/problem+json"],
+      response: {
+        200: z.void(),
+      },
+    },
+    url: "/status",
+  });
+};

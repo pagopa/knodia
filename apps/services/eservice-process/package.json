@@ -5,9 +5,9 @@
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "generate-openapi": "node ./openapi/generateOpenapi.ts",
+    "lint-openapi": "spectral lint ./openapi/openapi.yaml --ruleset=./spectral.yaml",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint ./openapi/openapi.yaml --ruleset=./spectral.yaml --fail-severity=warn"
+    "lint:autofix": "eslint . --fix"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
