@@ -4,10 +4,9 @@
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node --watch ./src/index.ts'",
     "typecheck": "tsc",
-    "build": "tsc --build ./tsconfig.build.json",
+    "generate-openapi": "node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "generate-openapi": "node ./openapi/generateOpenapi.ts"
+    "lint:autofix": "eslint . --fix"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
