@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/turbo/schema.json",
   "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
