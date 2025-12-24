@@ -23,6 +23,10 @@ async function main(): Promise<void> {
         // apps/services/*-process/openapi/openapi.yaml
         const serviceName = openapiFile.split(path.sep)[2];
 
+        if (!serviceName) {
+            throw new Error(`Unexpected service name: ${serviceName}`);
+        }
+
         const packageName =
             serviceName.replace(PROCESS_SUFFIX, MODELS_SUFFIX);
 
@@ -39,7 +43,8 @@ async function main(): Promise<void> {
             "pnpm exec openapi-generator-cli generate",
             "-g typescript-fetch",
             `-i ${openapiFile}`,
-            `-o ${outputDir}`
+            `-o ${outputDir}`,
+            // `--additional-properties=importFileExtension=.ts`
         ].join(" ");
 
         console.log(`\n▶ Generating ${packageName}`);
