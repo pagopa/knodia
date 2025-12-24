@@ -1,0 +1,16 @@
+{
+  "name": "@knodia/openapi-generator",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "generate:api-clients": "tsx ./src/generate-openapi-clients.ts"
+  },
+  "devDependencies": {
+    "@knodia/typescript-config": "workspace:*",
+    "@openapitools/openapi-generator-cli": "catalog:",
+    "glob": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}
