@@ -1,0 +1,10 @@
+version: v2
+clean: true
+inputs:
+  - directory: proto
+plugins:
+  - local: protoc-gen-es
+    opt:
+      - target=ts
+      - json_types=true
+    out: gen

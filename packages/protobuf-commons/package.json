@@ -1,0 +1,20 @@
+{
+  "name": "@knodia/protobuf-commons",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "scripts": {
+    "generate-protobuf": "buf generate"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "catalog:"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "catalog:",
+    "@bufbuild/protoc-gen-es": "catalog:"
+  },
+  "exports": {
+    "./models/*": "./gen/*_pb.ts",
+    "./utils": "./utils.ts"
+  }
+}
