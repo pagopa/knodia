@@ -1,0 +1,23 @@
+{
+  "name": "@knodia/kafka-commons",
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --ext .ts"
+  },
+  "dependencies": {
+    "@confluentinc/kafka-javascript": "catalog:",
+    "dotenv-flow": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "eslint": "catalog:"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./config": "./config.ts"
+  }
+}

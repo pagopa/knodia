@@ -39,6 +39,9 @@ catalogs:
     concurrently:
       specifier: 9.2.1
       version: 9.2.1
+    dotenv-flow:
+      specifier: 4.1.0
+      version: 4.1.0
     eslint:
       specifier: 9.39.2
       version: 9.39.2
@@ -160,10 +163,25 @@ importers:
       '@confluentinc/kafka-javascript':
         specifier: 'catalog:'
         version: 1.7.0
+      dotenv-flow:
+        specifier: 'catalog:'
+        version: 4.1.0
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
     devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -757,6 +775,14 @@ packages:
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  dotenv-flow@4.1.0:
+    resolution: {integrity: sha512-0cwP9jpQBQfyHwvE0cRhraZMkdV45TQedA8AAUZMsFzvmLcQyc1HPv+oX0OOYwLFjIlvgVepQ+WuQHbqDaHJZg==}
+    engines: {node: '>= 12.0.0'}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -2160,6 +2186,12 @@ snapshots:
   dequal@2.0.3: {}
 
   detect-libc@2.1.2: {}
+
+  dotenv-flow@4.1.0:
+    dependencies:
+      dotenv: 16.6.1
+
+  dotenv@16.6.1: {}
 
   eastasianwidth@0.2.0: {}
 
