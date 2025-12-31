@@ -11,7 +11,7 @@ import {
   consumerConfig as defaultKafkaConsumerConfig,
   KafkaConfig,
   KafkaConsumerConfig,
-} from "./config.ts";
+} from "./config/config.ts";
 
 export async function runAdminClient(config?: KafkaConfig) {
   const kafka = await initKafka(config);
