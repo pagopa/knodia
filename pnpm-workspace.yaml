@@ -27,3 +27,6 @@ catalog:
   zod: 4.2.0
 
 catalogMode: strict
+
+onlyBuiltDependencies:
+  - esbuild
