@@ -9,7 +9,10 @@
     "lint": "turbo run lint",
     "lint:affected": "turbo run lint --affected",
     "lint:autofix": "turbo run lint:autofix",
-    "knip": "knip"
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "knip": "knip",
+    "prune-modules": "find . -name 'node_modules' -type d -exec rm -rf {} +"
   },
   "devDependencies": {
     "knip": "catalog:",

@@ -1,0 +1,23 @@
+{
+  "name": "@knodia/db-event-store",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "db:generate": "drizzle-kit generate --name=event-store",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/pg": "catalog:",
+    "drizzle-kit": "catalog:"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  }
+}

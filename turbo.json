@@ -10,6 +10,8 @@
     },
     "generate-openapi": {},
     "lint": {},
-    "lint:autofix": {}
+    "lint:autofix": {},
+    "db:generate": {},
+    "db:migrate": {}
   }
 }
