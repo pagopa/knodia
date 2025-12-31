@@ -1,12 +1,12 @@
 import {
-  pgSchema,
-  uuid,
   bigint,
   bigserial,
-  text,
   customType,
+  pgSchema,
+  text,
   timestamp,
   unique,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 export const eserviceSchema = pgSchema("eservice");
@@ -22,23 +22,23 @@ const bytea = customType<{ data: Buffer }>({
 export const eserviceEvents = eserviceSchema.table(
   "events",
   {
+    correlationId: text("correlation_id"),
+
+    data: bytea("data").notNull(),
+    logDate: timestamp("log_date", { mode: "date", withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
     sequenceNum: bigserial("sequence_num", { mode: "bigint" }).primaryKey(),
 
     streamId: uuid("stream_id").notNull(),
-    version: bigint("version", { mode: "bigint" }).notNull(),
-
-    correlationId: text("correlation_id"),
-
     type: text("type").notNull(),
-    data: bytea("data").notNull(),
 
-    logDate: timestamp("log_date", { withTimezone: true, mode: "date" })
-      .defaultNow()
-      .notNull(),
+    version: bigint("version", { mode: "bigint" }).notNull(),
   },
   (table) => [
     unique("events_stream_id_version_unique").on(table.streamId, table.version),
-  ]
+  ],
 );
 
 export type EserviceEvent = typeof eserviceEvents.$inferSelect;

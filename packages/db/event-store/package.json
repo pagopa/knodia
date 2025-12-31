@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "db:generate": "drizzle-kit generate --name=event-store",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",
@@ -15,7 +17,9 @@
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/pg": "catalog:",
-    "drizzle-kit": "catalog:"
+    "drizzle-kit": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
   },
   "exports": {
     "./*": "./src/*.ts"
