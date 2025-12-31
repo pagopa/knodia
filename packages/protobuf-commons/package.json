@@ -4,14 +4,20 @@
   "type": "module",
   "description": "",
   "scripts": {
-    "generate-protobuf": "buf generate"
+    "generate-protobuf": "buf generate",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
     "@bufbuild/protobuf": "catalog:"
   },
   "devDependencies": {
     "@bufbuild/buf": "catalog:",
-    "@bufbuild/protoc-gen-es": "catalog:"
+    "@bufbuild/protoc-gen-es": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
   },
   "exports": {
     "./models/*": "./gen/*_pb.ts",

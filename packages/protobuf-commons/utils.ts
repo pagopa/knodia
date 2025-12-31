@@ -16,10 +16,8 @@ import {
  */
 export const createMessage = <T extends DescMessage>(
   schema: T,
-  init?: MessageInitShape<T>
-): MessageShape<T> => {
-  return create<T>(schema, init);
-};
+  init?: MessageInitShape<T>,
+): MessageShape<T> => create<T>(schema, init);
 
 /**
  * Serialize a protobuf message instance to binary data
@@ -29,10 +27,8 @@ export const createMessage = <T extends DescMessage>(
  */
 export const serializeProtobufMessage = <T extends DescMessage>(
   schema: T,
-  message: MessageShape<T>
-): Uint8Array<ArrayBuffer> => {
-  return toBinary<T>(schema, message);
-};
+  message: MessageShape<T>,
+): Uint8Array<ArrayBuffer> => toBinary<T>(schema, message);
 
 /**
  * Serialize a JSON value to binary data based on the schema provided
@@ -42,7 +38,7 @@ export const serializeProtobufMessage = <T extends DescMessage>(
  */
 export const serializeJsonValue = <T extends DescMessage>(
   schema: T,
-  value: MessageInitShape<T>
+  value: MessageInitShape<T>,
 ): Uint8Array<ArrayBuffer> => {
   const message = createMessage(schema, value);
   return toBinary<T>(schema, message);
@@ -56,10 +52,8 @@ export const serializeJsonValue = <T extends DescMessage>(
  */
 export const parseMessage = <T extends DescMessage>(
   schema: T,
-  serialized: Uint8Array<ArrayBuffer>
-): MessageShape<T> => {
-  return fromBinary<T>(schema, serialized);
-};
+  serialized: Uint8Array<ArrayBuffer>,
+): MessageShape<T> => fromBinary<T>(schema, serialized);
 
 /**
  * Serialize a protobuf message to JSON value
@@ -69,7 +63,5 @@ export const parseMessage = <T extends DescMessage>(
  */
 export const messageToJson = <T extends DescMessage>(
   schema: T,
-  message: MessageShape<T>
-) => {
-  return toJson(schema, message);
-};
+  message: MessageShape<T>,
+) => toJson(schema, message);
