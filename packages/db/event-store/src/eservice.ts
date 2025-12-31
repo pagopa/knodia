@@ -40,3 +40,6 @@ export const eserviceEvents = eserviceSchema.table(
     unique("events_stream_id_version_unique").on(table.streamId, table.version),
   ]
 );
+
+export type EserviceEvent = typeof eserviceEvents.$inferSelect;
+export type NewEserviceEvent = typeof eserviceEvents.$inferInsert;
