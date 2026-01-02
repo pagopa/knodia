@@ -1,7 +1,8 @@
-import { createClient } from "./generated/client/index.ts";
+import { client } from "./generated/index.ts";
 
-export const catalogClient = createClient({
-    baseUrl: 'http://localhost:3000',
+client.setConfig({
+  baseUrl: "http://localhost:3000",
 });
+export { client as catalogClient };
 
 export * from "./generated/index.ts";

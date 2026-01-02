@@ -45,7 +45,13 @@ async function main(): Promise<void> {
         path: ROOT + outputDir,
         tsConfigPath: `./tsconfig.json`,
       },
-      plugins: ["@hey-api/client-fetch", "@hey-api/sdk"],
+      plugins: [
+        {
+          exportFromIndex: true,
+          name: "@hey-api/client-fetch",
+        },
+        "@hey-api/sdk",
+      ],
     });
   }
 }
