@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "tsc --watch",
     "typecheck": "tsc",
-    "generate-api-clients": "tsx ./src/generateApiClients.ts"
+    "generate-api-clients": "node ./src/generateApiClients.ts"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "catalog:",
