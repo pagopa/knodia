@@ -4,13 +4,12 @@
   "scripts": {
     "dev": "tsc --watch",
     "typecheck": "tsc",
-    "generate:api-clients": "tsx ./src/generate-openapi-clients.ts"
+    "generate-api-clients": "tsx ./src/generateApiClients.ts"
   },
   "devDependencies": {
+    "@hey-api/openapi-ts": "catalog:",
     "@knodia/typescript-config": "workspace:*",
-    "@openapitools/openapi-generator-cli": "catalog:",
     "glob": "catalog:",
-    "tsx": "catalog:",
     "typescript": "catalog:"
   }
 }

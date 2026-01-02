@@ -1,9 +1,9 @@
-import { execSync } from "node:child_process";
+import { createClient } from '@hey-api/openapi-ts';
 import { glob } from "glob";
 import path from "node:path";
 import { mkdirSync } from "node:fs";
 
-const ROOT = "../.."
+const ROOT = "../../"
 
 const PROCESS_SUFFIX = "-process";
 const MODELS_SUFFIX = "-models";
@@ -20,7 +20,7 @@ async function main(): Promise<void> {
     }
 
     for (const openapiFile of openapiFiles) {
-        // apps/services/*-process/openapi/openapi.yaml
+        // Path example: apps/services/*-process/openapi/openapi.yaml
         const serviceName = openapiFile.split(path.sep)[2];
 
         if (!serviceName) {
@@ -34,24 +34,30 @@ async function main(): Promise<void> {
             "packages",
             packageName,
             "src",
-            "generated/client"
+            "generated"
         );
 
         mkdirSync(outputDir, { recursive: true });
 
-        const cmd = [
-            "pnpm exec openapi-generator-cli generate",
-            "-g typescript-fetch",
-            `-i ${openapiFile}`,
-            `-o ${outputDir}`,
-            // `--additional-properties=importFileExtension=.ts`
-        ].join(" ");
-
-        console.log(`\n▶ Generating ${packageName}`);
-        execSync(cmd, {
-            cwd: ROOT,
-            stdio: "inherit",
+        createClient({
+            input: ROOT + openapiFile,
+            output: {
+                format: "prettier",
+                lint: "eslint",
+                path: ROOT + outputDir,
+                tsConfigPath: `./tsconfig.json`,
+                importFileExtension: '.ts',
+                fileName: {
+                    suffix: "Catalog"
+                }
+            },
+            plugins: [
+                '@hey-api/client-fetch',
+                // "zod",
+                '@hey-api/sdk'
+            ],
         });
+
     }
 }
 

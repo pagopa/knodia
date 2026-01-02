@@ -6,7 +6,7 @@ packages:
 catalog:
   '@fastify/swagger': 9.6.1
   '@fastify/swagger-ui': 5.2.3
-  "@openapitools/openapi-generator-cli": 2.26.0
+  '@hey-api/openapi-ts': 0.89.2
   '@pagopa/eslint-config': 5.1.1
   '@stoplight/spectral-cli': 6.15.0
   '@tsconfig/node-ts': 23.6.2
@@ -22,7 +22,6 @@ catalog:
   knip: 5.73.4
   openapi-types: 12.1.3
   turbo: 2.6.3
-  tsx: 4.21.0
   typescript: 5.9.3
   zod: 4.2.0
 
