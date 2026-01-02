@@ -10,6 +10,7 @@ export const healthRouter: FastifyPluginAsyncZod = async (fastify) => {
     },
     method: "GET",
     schema: {
+      operationId: "getStatus",
       produces: ["application/problem+json"],
       response: {
         200: z.void(),

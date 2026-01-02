@@ -15,10 +15,12 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
     },
     method: "GET",
     schema: {
+      operationId: "getEservices",
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices,
       },
+      tags: ["eservice"],
     },
     url: "/eservices",
   });

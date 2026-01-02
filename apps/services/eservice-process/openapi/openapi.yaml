@@ -52,6 +52,7 @@ components:
 paths:
   /status:
     get:
+      operationId: getStatus
       responses:
         "200":
           description: Default Response
@@ -60,6 +61,9 @@ paths:
               schema: {}
   /eservices:
     get:
+      operationId: getEservices
+      tags:
+        - eservice
       parameters:
         - schema:
             format: int32
