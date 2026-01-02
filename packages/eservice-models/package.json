@@ -15,9 +15,5 @@
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "typescript": "catalog:"
-  },
-  "dependencies": {
-    "fastify": "catalog:",
-    "zod": "catalog:"
   }
 }
