@@ -1,5 +1,6 @@
 import { client } from "./generated/index.ts";
 
+// TODO: maybe move this to the BFF
 client.setConfig({
   baseUrl: "http://localhost:3000",
 });
