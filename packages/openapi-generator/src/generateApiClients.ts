@@ -1,7 +1,7 @@
 import { createClient } from "@hey-api/openapi-ts";
 import { glob } from "glob";
-import path from "node:path";
 import { mkdirSync } from "node:fs";
+import path from "node:path";
 
 const ROOT = "../../";
 
@@ -11,7 +11,7 @@ const MODELS_SUFFIX = "-models";
 async function main(): Promise<void> {
   const openapiFiles = await glob(
     "apps/services/*-process/openapi/openapi.yaml",
-    { cwd: ROOT }
+    { cwd: ROOT },
   );
 
   if (openapiFiles.length === 0) {
@@ -36,14 +36,14 @@ async function main(): Promise<void> {
     createClient({
       input: ROOT + openapiFile,
       output: {
-        format: "prettier",
-        lint: "eslint",
-        path: ROOT + outputDir,
-        tsConfigPath: `./tsconfig.json`,
-        importFileExtension: ".ts",
         fileName: {
           suffix: `.${serviceName.replace(PROCESS_SUFFIX, "")}.gen`,
         },
+        format: "prettier",
+        importFileExtension: ".ts",
+        lint: "eslint",
+        path: ROOT + outputDir,
+        tsConfigPath: `./tsconfig.json`,
       },
       plugins: ["@hey-api/client-fetch", "@hey-api/sdk"],
     });

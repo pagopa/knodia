@@ -4,11 +4,15 @@
   "scripts": {
     "dev": "tsc --watch",
     "typecheck": "tsc",
-    "generate-api-clients": "node ./src/generateApiClients.ts"
+    "generate-api-clients": "node ./src/generateApiClients.ts",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
+    "eslint": "catalog:",
     "glob": "catalog:",
     "typescript": "catalog:"
   }

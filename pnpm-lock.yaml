@@ -182,9 +182,15 @@ importers:
       '@hey-api/openapi-ts':
         specifier: 'catalog:'
         version: 0.89.2(typescript@5.9.3)
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
       glob:
         specifier: 'catalog:'
         version: 13.0.0
