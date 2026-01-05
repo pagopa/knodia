@@ -29,8 +29,6 @@ app.register(openapiZodPlugin, {
 });
 
 app.register(healthRouter);
-app.register(eserviceRouter, {
-  client: clients.eserviceProcessClient,
-});
+app.register(eserviceRouter, clients.eserviceProcessClient);
 
 export default app;

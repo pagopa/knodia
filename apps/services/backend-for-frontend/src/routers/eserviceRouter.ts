@@ -5,9 +5,9 @@ import { eserviceApi } from "@knodia/eservice-models";
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
 
-export const eserviceRouter: FastifyPluginAsyncZod<{
-  client: EserviceProcessClient;
-}> = async (fastify, { client: eserviceProcessClient }) => {
+export const eserviceRouter: FastifyPluginAsyncZod<
+  EserviceProcessClient
+> = async (fastify, eserviceProcessClient) => {
   fastify.route({
     handler: async (req, res) => {
       const eservices = await eserviceApi.getEservices({
