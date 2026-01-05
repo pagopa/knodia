@@ -168,6 +168,10 @@ importers:
         version: 5.9.3
 
   packages/eservice-models:
+    dependencies:
+      '@knodia/openapi-generator':
+        specifier: workspace:*
+        version: link:../openapi-generator
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*

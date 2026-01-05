@@ -3,10 +3,13 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
-    "typecheck": "tsc",
     "generate-api-clients": "node ./src/generateApiClients.ts",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "typecheck": "tsc"
+  },
+  "exports": {
+    ".": "./src/generateApiClients.ts"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "catalog:",
