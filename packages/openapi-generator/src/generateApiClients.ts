@@ -47,7 +47,6 @@ async function main(): Promise<void> {
       },
       plugins: [
         {
-          exportFromIndex: true,
           name: "@hey-api/client-fetch",
         },
         "@hey-api/sdk",

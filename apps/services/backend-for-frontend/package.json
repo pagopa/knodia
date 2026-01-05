@@ -2,7 +2,7 @@
   "name": "@knodia/backend-for-frontend",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node --watch ./src/index.ts'",
+    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node -r dotenv-flow/config --watch ./src/index.ts'",
     "typecheck": "tsc",
     "generate-openapi": "node ./openapi/generateOpenapi.ts",
     "lint-openapi": "spectral lint ./openapi/openapi.yaml --ruleset=./spectral.yaml",
@@ -22,6 +22,7 @@
   "dependencies": {
     "@knodia/eservice-models": "workspace:*",
     "@knodia/fastify-plugin-openapi-zod": "workspace:*",
+    "dotenv-flow": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "zod": "catalog:"

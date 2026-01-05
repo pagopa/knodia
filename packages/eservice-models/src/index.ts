@@ -1,9 +1,7 @@
-import { client } from "./generated/index.ts";
+import { createClient } from "./generated/client/client.eservice.gen.ts";
+import * as generatedEserviceApi from "./generated/index.ts";
 
-// TODO: maybe move this to the BFF
-client.setConfig({
-  baseUrl: "http://localhost:3000",
-});
-export { client as catalogClient };
-
-export * from "./generated/index.ts";
+export const eserviceApi = {
+  ...generatedEserviceApi,
+  createEserviceClient: createClient,
+};
