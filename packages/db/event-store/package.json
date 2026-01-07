@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "db:generate": "drizzle-kit generate --name=event-store",
-    "db:migrate": "drizzle-kit migrate",
+    "db:generate": "dotenvx run -- drizzle-kit generate --name=event-store",
+    "db:migrate": "dotenvx run -- drizzle-kit migrate",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
   },
@@ -16,6 +16,7 @@
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
+    "@dotenvx/dotenvx": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
