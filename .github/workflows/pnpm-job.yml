@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run pnpm command
+      - name: Run pnpm ${{ inputs.command }}
         run: pnpm ${{ inputs.command }}
 
       - name: Fail if git diff is not empty
