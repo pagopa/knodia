@@ -1,0 +1,13 @@
+# Use postgres/example user/password credentials
+
+services:
+  event-store:
+    image: postgres:18
+    ports:
+      - 6001:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: root
