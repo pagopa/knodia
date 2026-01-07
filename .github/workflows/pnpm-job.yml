@@ -21,7 +21,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # Turbo --affected needs full history; blob filter keeps history without file contents.
+          # https://turborepo.com/docs/reference/run#options
           fetch-depth: 0
+          filter: blob:none
 
       - name: Fetch base branch for PRs
         if: ${{ github.event_name == 'pull_request' }}
