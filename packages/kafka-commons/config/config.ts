@@ -9,14 +9,14 @@ export type KafkaLogLevel = typeof logLevel;
 export const KafkaConfig = z
   .object({
     KAFKA_BROKERS: z.string(),
-    KAFKA_GROUP_ID: z.string(),
+    KAFKA_CLIENT_ID: z.string(),
     KAFKA_LOG_LEVEL: z
       .enum(["NOTHING", "ERROR", "WARN", "INFO", "DEBUG"])
       .default("INFO"),
   })
   .transform((c) => ({
     kafkaBrokers: c.KAFKA_BROKERS,
-    kafkaGroupId: c.KAFKA_GROUP_ID,
+    kafkaClientId: c.KAFKA_CLIENT_ID,
     kafkaLogLevel: logLevel[c.KAFKA_LOG_LEVEL],
   }));
 export type KafkaConfig = z.infer<typeof KafkaConfig>;

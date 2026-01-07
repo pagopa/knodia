@@ -66,6 +66,7 @@ export async function runProducer(
 async function initKafka(config: KafkaConfig): Promise<KafkaJS.Kafka> {
   return new KafkaJS.Kafka({
     "bootstrap.servers": config.kafkaBrokers,
+    "client.id": config.kafkaClientId,
     log_level: config.kafkaLogLevel,
   });
 }
