@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
-    "dotenv-flow": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
