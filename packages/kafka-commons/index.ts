@@ -30,10 +30,8 @@ export async function runConsumer(
   const kafka = await initKafka(config);
 
   const consumer = kafka.consumer({
-    kafkaJS: {
-      fromBeginning: false,
-      groupId: config.kafkaGroupId,
-    },
+    "auto.offset.reset": "earliest",
+    "group.id": config.kafkaGroupId,
   });
 
   await consumer.connect();
@@ -55,9 +53,7 @@ export async function runProducer(
   const kafka = await initKafka(config);
 
   const producer = kafka.producer({
-    kafkaJS: {
-      allowAutoTopicCreation: true,
-    },
+    "allow.auto.create.topics": true,
   });
 
   await producer.connect();
@@ -76,9 +72,7 @@ async function initKafka(
   config: KafkaConfig = defaultKafkaConfig,
 ): Promise<KafkaJS.Kafka> {
   return new KafkaJS.Kafka({
-    kafkaJS: {
-      brokers: config.kafkaBrokers,
-      logLevel: config.kafkaLogLevel,
-    },
+    "bootstrap.servers": config.kafkaBrokers,
+    log_level: config.kafkaLogLevel,
   });
 }

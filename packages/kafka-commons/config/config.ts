@@ -4,9 +4,12 @@ import { z } from "zod";
 
 const { logLevel } = KafkaJS;
 
+export const KafkaLogLevel = logLevel;
+export type KafkaLogLevel = typeof logLevel;
+
 export const KafkaConfig = z
   .object({
-    KAFKA_BROKERS: z.string().transform((value) => value.split(",")),
+    KAFKA_BROKERS: z.string(),
     KAFKA_GROUP_ID: z.string(),
     KAFKA_LOG_LEVEL: z
       .enum(["NOTHING", "ERROR", "WARN", "INFO", "DEBUG"])
