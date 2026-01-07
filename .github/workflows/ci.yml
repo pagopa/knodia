@@ -24,3 +24,10 @@ jobs:
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: knip
+
+  generate-openapi:
+    name: Generate OpenAPI
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: generate-openapi
+      fail_on_git_diff: true
