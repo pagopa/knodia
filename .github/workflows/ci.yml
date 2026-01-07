@@ -11,13 +11,13 @@ jobs:
     name: Turbo typecheck
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: typecheck -- --affected
+      command: typecheck:affected
 
   lint:
     name: Turbo lint
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: lint -- --affected
+      command: lint:affected
 
   knip:
     name: Knip
@@ -30,5 +30,5 @@ jobs:
     name: Generate OpenAPI
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: generate-openapi -- --affected
+      command: generate-openapi:affected
       fail_on_git_diff: true
