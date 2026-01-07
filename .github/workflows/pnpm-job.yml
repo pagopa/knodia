@@ -20,11 +20,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          # Turbo --affected needs full history; blob filter keeps history without file contents.
-          # https://turborepo.com/docs/reference/run#options
-          fetch-depth: 0
-          filter: blob:none
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
