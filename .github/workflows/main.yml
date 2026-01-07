@@ -1,23 +1,22 @@
-name: CI
+name: Main CI
 
 on:
   push:
     branches:
       - main
-  pull_request:
 
 jobs:
   typecheck:
     name: Turbo typecheck
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: typecheck:affected
+      command: typecheck
 
   lint:
     name: Turbo lint
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: lint:affected
+      command: lint
 
   knip:
     name: Knip
@@ -30,5 +29,5 @@ jobs:
     name: Generate OpenAPI
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: generate-openapi:affected
+      command: generate-openapi
       fail_on_git_diff: true
