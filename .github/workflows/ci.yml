@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  typecheck:
+    name: Turbo typecheck
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: typecheck
+
+  lint:
+    name: Turbo lint
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: lint
+
+  knip:
+    name: Knip
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: knip
