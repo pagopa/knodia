@@ -1,5 +1,4 @@
 import { KafkaJS } from "@confluentinc/kafka-javascript";
-import { env } from "node:process";
 import { z } from "zod";
 
 const { logLevel } = KafkaJS;
@@ -32,6 +31,3 @@ export const KafkaConsumerConfig = KafkaConfig.and(
     })),
 );
 export type KafkaConsumerConfig = z.infer<typeof KafkaConsumerConfig>;
-
-export const config = KafkaConfig.parse(env);
-export const consumerConfig = KafkaConsumerConfig.parse(env);

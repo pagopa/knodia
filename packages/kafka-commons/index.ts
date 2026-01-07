@@ -6,14 +6,9 @@ import type {
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 
-import {
-  config as defaultKafkaConfig,
-  consumerConfig as defaultKafkaConsumerConfig,
-  KafkaConfig,
-  KafkaConsumerConfig,
-} from "./config/config.ts";
+import { KafkaConfig, KafkaConsumerConfig } from "./config/config.ts";
 
-export async function runAdminClient(config?: KafkaConfig) {
+export async function runAdminClient(config: KafkaConfig) {
   const kafka = await initKafka(config);
 
   const admin = kafka.admin();
@@ -25,7 +20,7 @@ export async function runAdminClient(config?: KafkaConfig) {
 export async function runConsumer(
   topics: string[],
   consumerHandler: (messagePayload: EachMessagePayload) => Promise<void>,
-  config: KafkaConsumerConfig = defaultKafkaConsumerConfig,
+  config: KafkaConsumerConfig,
 ) {
   const kafka = await initKafka(config);
 
@@ -44,7 +39,7 @@ export async function runConsumer(
 
 export async function runProducer(
   topic: string,
-  config?: KafkaConfig,
+  config: KafkaConfig,
 ): Promise<
   KafkaJS.Producer & {
     send: (record: Omit<ProducerRecord, "topic">) => Promise<RecordMetadata[]>;
@@ -68,9 +63,7 @@ export async function runProducer(
   };
 }
 
-async function initKafka(
-  config: KafkaConfig = defaultKafkaConfig,
-): Promise<KafkaJS.Kafka> {
+async function initKafka(config: KafkaConfig): Promise<KafkaJS.Kafka> {
   return new KafkaJS.Kafka({
     "bootstrap.servers": config.kafkaBrokers,
     log_level: config.kafkaLogLevel,
