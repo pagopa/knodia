@@ -26,7 +26,7 @@ jobs:
         with:
           node-version-file: package.json
 
-      - name: Enable Corepack
+      - name: Enable Corepack to setup pnpm with the version defined in package.json
         run: corepack enable
 
       - name: Install dependencies
