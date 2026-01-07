@@ -26,7 +26,7 @@ jobs:
       # not a turbo command, no need to limit to affected packages
 
   generate-openapi:
-    name: Generate OpenAPI
+    name: Generate openapi
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: generate-openapi

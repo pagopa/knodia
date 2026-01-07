@@ -1,4 +1,4 @@
-name: CI Job
+name: PNPM Job
 
 on:
   workflow_call:
@@ -36,7 +36,7 @@ jobs:
           # Avoid double install; we run pnpm install after cache setup.
           run_install: false
 
-      - name: Setup Node
+      - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version-file: package.json
