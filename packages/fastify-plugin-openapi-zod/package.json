@@ -3,14 +3,18 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
   },
   "exports": {
     ".": "./src/openapiZodPlugin.ts",
     "./generateOpenapi": "./src/generateOpenapi.ts"
   },
   "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
+    "eslint": "catalog:",
     "openapi-types": "catalog:",
     "typescript": "catalog:"
   },
