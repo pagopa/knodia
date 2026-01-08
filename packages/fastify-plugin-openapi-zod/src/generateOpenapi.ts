@@ -1,8 +1,9 @@
-import { writeFile } from "node:fs/promises";
 import type { FastifyInstance } from "fastify";
 
+import { writeFile } from "node:fs/promises";
+
 export default async function generateOpenapi(
-  app: FastifyInstance
+  app: FastifyInstance,
 ): Promise<void> {
   await app.ready();
 
