@@ -15,9 +15,6 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=pruner /repo/out/full/ ./
 
 FROM ${NODE_REGISTRY}/node:24-slim AS runner
-ENV NODE_ENV=production \
-    NODE_OPTIONS="--experimental-strip-types" \
-    TURBO_TELEMETRY_DISABLED=1
 WORKDIR /app
 COPY --from=installer /repo ./
 
