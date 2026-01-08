@@ -23,7 +23,6 @@ jobs:
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: knip
-      # not a turbo command, no need to limit to affected packages
 
   generate-openapi:
     name: Generate openapi
