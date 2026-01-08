@@ -3,6 +3,3 @@ node_modules/
 
 # Turbo
 .turbo/
-
-# Coding agents
-AGENTS.md
