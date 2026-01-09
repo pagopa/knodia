@@ -1,7 +1,8 @@
 packages:
   - apps/services/*
   - apps/web/*
-  - packages/**
+  - packages/*
+  - packages/db/*
 
 catalog:
   "@dotenvx/dotenvx": 1.51.4
