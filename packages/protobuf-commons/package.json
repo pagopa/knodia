@@ -8,19 +8,15 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
   },
-  "dependencies": {
-    "@bufbuild/protobuf": "catalog:"
-  },
   "devDependencies": {
     "@bufbuild/buf": "catalog:",
-    "@bufbuild/protoc-gen-es": "catalog:",
+    "@bufbuild/protobuf": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {
-    "./models/*": "./gen/*_pb.ts",
-    "./utils": "./utils.ts"
+    "./models/*": "./gen/*.ts"
   }
 }

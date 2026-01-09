@@ -29,5 +29,5 @@ catalog:
 
 catalogMode: strict
 
-ignoredBuiltDependencies:
+onlyBuiltDependencies:
   - "@bufbuild/buf"

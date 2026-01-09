@@ -9,6 +9,7 @@
       "dependsOn": ["^typecheck"]
     },
     "generate-openapi": {},
+    "generate-protobuf": {},
     "lint": {},
     "lint:autofix": {}
   }

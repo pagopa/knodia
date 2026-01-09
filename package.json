@@ -4,6 +4,7 @@
   "scripts": {
     "typecheck": "turbo run typecheck",
     "generate-openapi": "turbo run generate-openapi",
+    "generate-protobuf": "turbo run generate-protobuf",
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
     "knip": "knip"

@@ -3,8 +3,7 @@ clean: true
 inputs:
   - directory: proto
 plugins:
-  - local: protoc-gen-es
-    opt:
-      - target=ts
-      - json_types=true
+  - remote: buf.build/community/stephenh-ts-proto:v2.6.1
     out: gen
+    opt:
+      - enumsAsLiterals=true
