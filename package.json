@@ -6,6 +6,7 @@
     "typecheck:affected": "turbo run typecheck --affected",
     "generate-openapi": "turbo run generate-openapi",
     "generate-openapi:affected": "turbo run generate-openapi --affected",
+    "generate-protobuf": "turbo run generate-protobuf",
     "lint": "turbo run lint",
     "lint:affected": "turbo run lint --affected",
     "lint:autofix": "turbo run lint:autofix",
