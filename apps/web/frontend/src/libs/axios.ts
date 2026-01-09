@@ -1,10 +1,10 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { match } from "ts-pattern";
 
-const API_BASE_URL = import.meta.env["VITE_API_BASE_URL"] ?? "";
+import { ENV } from "@/configs/env";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: ENV.VITE_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
