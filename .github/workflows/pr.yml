@@ -3,6 +3,11 @@ name: PR Validation
 on:
   pull_request:
 
+# TODO: consider running these same jobs on pushes to main
+# without the "affected" flags, so main gets a full validation run
+# after each merge. Put that workflow a separate file rather than here
+# (e.g., main.yml / ci.yml).
+
 jobs:
   typecheck:
     name: Turbo typecheck
