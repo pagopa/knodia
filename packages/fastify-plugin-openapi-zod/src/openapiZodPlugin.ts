@@ -5,6 +5,7 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
+
 import {
   zodToJsonSchemaTransform,
   zodToJsonSchemaTransformObjectWithoutInputSchemas,
@@ -40,5 +41,5 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
     if (openapiDocs !== false) {
       fastify.register(fastifySwaggerUI, openapiDocs);
     }
-  }
+  },
 );
