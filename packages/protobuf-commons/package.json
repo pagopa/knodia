@@ -4,6 +4,8 @@
   "type": "module",
   "description": "",
   "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
     "generate-protobuf": "buf generate",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
