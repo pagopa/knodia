@@ -6,7 +6,7 @@
       "persistent": true
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["generate-protobuf", "^typecheck"]
     },
     "generate-openapi": {},
     "generate-protobuf": {},
