@@ -6,7 +6,6 @@ packages:
 catalog:
   "@bufbuild/buf": 1.61.0
   "@bufbuild/protobuf": 2.10.2
-  "@bufbuild/protoc-gen-es": 2.10.2
   "@fastify/swagger": 9.6.1
   "@fastify/swagger-ui": 5.2.3
   "@pagopa/eslint-config": 5.1.1
