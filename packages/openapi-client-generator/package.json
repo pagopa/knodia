@@ -15,7 +15,6 @@
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
-    "glob": "catalog:",
     "typescript": "catalog:"
   }
 }

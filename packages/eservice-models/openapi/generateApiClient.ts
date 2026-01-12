@@ -1,5 +1,6 @@
 import { createProcessClient } from "@knodia/openapi-client-generator";
 
-createProcessClient({
-  tsConfigPath: "../tsconfig.json",
-});
+createProcessClient(
+  "../../apps/services/eservice-process/openapi/openapi.yaml",
+  "eservice",
+);
