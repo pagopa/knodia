@@ -3,10 +3,10 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
+    "typecheck": "tsc",
     "generate-api-client": "node ./openapi/generateApiClient.ts",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "typecheck": "tsc"
+    "lint:autofix": "eslint . --fix"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -18,6 +18,6 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@knodia/openapi-generator": "workspace:*"
+    "@knodia/openapi-client-generator": "workspace:*"
   }
 }
