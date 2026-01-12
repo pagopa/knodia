@@ -4,7 +4,7 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["generate-protobuf"]
+      "dependsOn": ["generate-openapi", "generate-protobuf"]
     },
     "typecheck": {
       "dependsOn": ["generate-protobuf", "^typecheck"]
