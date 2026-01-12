@@ -1,26 +1,23 @@
-openapi: 3.0.4
+openapi: 3.1.2
 info:
-  contact:
-    url: https://github.com/pagopa/knodia/issues
   description: API for managing Knodia E-services
   title: Knodia E-service Process API
   version: 1.0.0
 components:
   schemas:
     Pagination:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Pagination"
       type: object
       properties:
         limit:
-          format: int32
           type: number
           minimum: 1
           maximum: 50
         offset:
-          format: int32
           type: number
           minimum: 0
         total:
-          format: int32
           type: number
           minimum: 0
       required:
@@ -29,6 +26,8 @@ components:
         - total
       additionalProperties: false
     Eservice:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservice"
       type: object
       properties:
         id:
@@ -37,6 +36,8 @@ components:
         - id
       additionalProperties: false
     Eservices:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservices"
       type: object
       properties:
         items:
@@ -50,23 +51,10 @@ components:
         - pagination
       additionalProperties: false
 paths:
-  /status:
-    get:
-      operationId: getStatus
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/problem+json:
-              schema: {}
   /eservices:
     get:
-      operationId: getEservices
-      tags:
-        - eservice
       parameters:
         - schema:
-            format: int32
             type: number
             minimum: 1
             maximum: 50
@@ -75,7 +63,6 @@ paths:
           required: true
           description: Maximum number of items returned
         - schema:
-            format: int32
             type: number
             minimum: 0
           in: query
