@@ -1,11 +1,14 @@
 ARG NODE_REGISTRY="docker.io"
+ARG SERVICE_NAME="eservice-process"
+ARG SERVICE_PATH="apps/services/eservice-process"
 
 FROM ${NODE_REGISTRY}/node:24-slim AS pruner
+ARG SERVICE_NAME
 ENV TURBO_TELEMETRY_DISABLED=1
 WORKDIR /repo
 RUN corepack enable
 COPY . .
-RUN pnpm dlx turbo prune --scope=@knodia/eservice-process --docker --out-dir=/repo/out
+RUN pnpm dlx turbo prune --scope=@knodia/${SERVICE_NAME} --docker --out-dir=/repo/out
 
 FROM ${NODE_REGISTRY}/node:24-slim AS installer
 WORKDIR /repo
@@ -15,6 +18,7 @@ RUN pnpm install --frozen-lockfile --prod
 COPY --from=pruner /repo/out/full/ ./
 
 FROM ${NODE_REGISTRY}/node:24-slim AS runner
+ARG SERVICE_PATH
 WORKDIR /app
 COPY --from=installer /repo ./
 
@@ -22,6 +26,6 @@ RUN groupadd -r app && useradd -rm -g app app
 RUN chown -R app:app /app && chmod -R 700 /app
 USER app
 
-WORKDIR /app/apps/services/eservice-process
+WORKDIR /app/${SERVICE_PATH}
 EXPOSE 3000
 CMD ["node", "src/index.ts"]
