@@ -11,6 +11,9 @@
     "generate-openapi": {},
     "generate-protobuf": {},
     "lint": {},
-    "lint:autofix": {}
+    "lint:autofix": {},
+    "build-knip-dependencies": {
+      "dependsOn": ["generate-protobuf"]
+    }
   }
 }

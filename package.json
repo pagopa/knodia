@@ -7,7 +7,7 @@
     "generate-protobuf": "turbo run generate-protobuf",
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
-    "knip": "knip"
+    "knip": "turbo run build-knip-dependencies && knip"
   },
   "devDependencies": {
     "knip": "catalog:",
