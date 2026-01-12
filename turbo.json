@@ -3,13 +3,18 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["generate-protobuf"]
     },
     "typecheck": {
       "dependsOn": ["generate-protobuf", "^typecheck"]
     },
-    "generate-openapi": {},
-    "generate-protobuf": {},
+    "generate-openapi": {
+      "outputs": ["openapi/openapi.yaml"]
+    },
+    "generate-protobuf": {
+      "outputs": ["gen/**"]
+    },
     "lint": {},
     "lint:autofix": {},
     "build-knip-dependencies": {
