@@ -17,9 +17,12 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@fastify/error": "catalog:",
+    "@knodia/error-commons": "workspace:*",
     "@knodia/fastify-plugin-openapi-zod": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }

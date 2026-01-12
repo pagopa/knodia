@@ -1,3 +1,4 @@
+import { registerErrorHandler } from "@knodia/error-commons";
 import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
 import Fastify from "fastify";
 
@@ -22,5 +23,6 @@ app.register(openapiZodPlugin, {
 });
 
 app.register(eserviceRoutes);
+registerErrorHandler(app, "eservice-process");
 
 export default app;
