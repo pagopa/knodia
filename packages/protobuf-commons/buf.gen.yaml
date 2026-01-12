@@ -7,3 +7,4 @@ plugins:
     out: gen
     opt:
       - enumsAsLiterals=true
+      - esModuleInterop=true
