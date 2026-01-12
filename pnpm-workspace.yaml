@@ -27,5 +27,5 @@ catalog:
 
 catalogMode: strict
 
-onlyBuiltDependencies:
-  - "@bufbuild/buf"
+allowBuilds:
+  "@bufbuild/buf": true
