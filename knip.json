@@ -8,6 +8,11 @@
     "-lintignore"
   ],
   "workspaces": {
-    ".": {}
+    ".": {},
+    "packages/*-commons": {
+      "entry": [  
+        "gen/**/*.ts"
+      ]
+    }
   }
 }
