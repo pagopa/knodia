@@ -3,12 +3,16 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["generate-api-client"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
     "generate-openapi": {},
+    "generate-api-client": {
+      "outputs": ["generated/**"]
+    },
     "lint": {},
     "lint:autofix": {}
   }
