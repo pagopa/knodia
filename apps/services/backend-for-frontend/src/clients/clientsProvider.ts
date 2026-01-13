@@ -13,7 +13,7 @@ interface KnodiaClients {
 export function getKnodiaClients(): KnodiaClients {
   return {
     eserviceProcessClient: eserviceApi.createEserviceClient({
-      baseUrl: config.eserviceProcessUrl,
+      baseURL: config.eserviceProcessUrl,
     }),
   };
 }
