@@ -80,9 +80,6 @@ importers:
 
   apps/services/eservice-process:
     dependencies:
-      '@fastify/error':
-        specifier: 'catalog:'
-        version: 4.2.0
       '@knodia/error-commons':
         specifier: workspace:*
         version: link:../../../packages/error-commons
