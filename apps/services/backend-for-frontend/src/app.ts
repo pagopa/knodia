@@ -14,7 +14,7 @@ const clients = getKnodiaClients();
 app.register(openapiZodPlugin, {
   openapi: {
     info: {
-      description: "API for managing Knodia BFF",
+      description: "Knodia backend-for-frontend API",
       title: "Knodia BFF API",
       version: "1.0.0",
     },

@@ -4,7 +4,7 @@ import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
 import { toAPI_Eservice } from "../models/apiConverter.ts";
 import { getMockEservices } from "../services/eserviceService.ts";
 
-export const eserviceRoutes: FastifyPluginAsyncZod = async (fastify) => {
+export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
     handler: (req, res) => {
       const eservices = getMockEservices(req.query.offset, req.query.limit);

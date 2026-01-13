@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-// TODO: same as eservice-process - maybe move to a shared location
-
 const API_Pagination = z
   .strictObject({
     limit: z.number().min(1).max(50),
