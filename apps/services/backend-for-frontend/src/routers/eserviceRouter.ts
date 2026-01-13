@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { eserviceApi } from "@knodia/eservice-models";
+import { eserviceApi } from "@knodia/eservice-process-client";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";

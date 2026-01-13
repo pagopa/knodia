@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/eservice-models",
+  "name": "@knodia/eservice-process-client",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",

@@ -20,7 +20,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@knodia/eservice-models": "workspace:*",
+    "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-plugin-openapi-zod": "workspace:*",
     "dotenv-flow": "catalog:",
     "fastify": "catalog:",

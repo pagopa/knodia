@@ -1,4 +1,4 @@
-import { eserviceApi } from "@knodia/eservice-models";
+import { eserviceApi } from "@knodia/eservice-process-client";
 
 import { config } from "../config/config.ts";
 
