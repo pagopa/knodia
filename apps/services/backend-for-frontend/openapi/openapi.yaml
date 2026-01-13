@@ -1,13 +1,13 @@
-openapi: 3.0.4
+openapi: 3.1.2
 info:
-  contact:
-    url: https://github.com/pagopa/knodia/issues
   description: API for managing Knodia BFF
   title: Knodia BFF API
   version: 1.0.0
 components:
   schemas:
     Pagination:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Pagination"
       type: object
       properties:
         limit:
@@ -29,6 +29,8 @@ components:
         - total
       additionalProperties: false
     Eservice:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservice"
       type: object
       properties:
         id:
@@ -37,6 +39,8 @@ components:
         - id
       additionalProperties: false
     Eservices:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservices"
       type: object
       properties:
         items:
@@ -50,15 +54,6 @@ components:
         - pagination
       additionalProperties: false
 paths:
-  /status:
-    get:
-      operationId: getStatus
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/problem+json:
-              schema: {}
   /eservices:
     get:
       operationId: getEservices

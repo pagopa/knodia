@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node -r dotenv-flow/config --watch ./src/index.ts'",
     "typecheck": "tsc",
-    "generate-openapi": "node ./openapi/generateOpenapi.ts",
+    "generate-openapi": "node -r dotenv-flow/config ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
   },

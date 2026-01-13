@@ -1,4 +1,4 @@
-openapi: 3.0.4
+openapi: 3.1.2
 info:
   description: API for managing Knodia E-services
   title: Knodia E-service Process API
@@ -6,6 +6,8 @@ info:
 components:
   schemas:
     Pagination:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Pagination"
       type: object
       properties:
         limit:
@@ -27,6 +29,8 @@ components:
         - total
       additionalProperties: false
     Eservice:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservice"
       type: object
       properties:
         id:
@@ -35,6 +39,8 @@ components:
         - id
       additionalProperties: false
     Eservices:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Eservices"
       type: object
       properties:
         items:

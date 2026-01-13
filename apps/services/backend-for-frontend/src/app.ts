@@ -14,9 +14,6 @@ export const clients = getKnodiaClients();
 app.register(openapiZodPlugin, {
   openapi: {
     info: {
-      contact: {
-        url: "https://github.com/pagopa/knodia/issues",
-      },
       description: "API for managing Knodia BFF",
       title: "Knodia BFF API",
       version: "1.0.0",
