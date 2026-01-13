@@ -18,6 +18,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@knodia/openapi-client-generator": "workspace:*"
+    "@knodia/openapi-client-generator": "workspace:*",
+    "axios": "catalog:"
   }
 }

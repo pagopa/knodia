@@ -15,7 +15,7 @@ export function createProcessClient(openapiPath: string, entity: string): void {
     },
     plugins: [
       {
-        name: "@hey-api/client-fetch",
+        name: "@hey-api/client-axios",
       },
       "@hey-api/sdk",
     ],
