@@ -2,6 +2,8 @@ name: knodia
 
 services:
   event-store:
+    security_opt:
+      - no-new-privileges:true
     image: postgres:18
     container_name: knodia-event-store
     ports:
@@ -9,6 +11,9 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: 5432
       POSTGRES_DB: root
+    volumes:
+      - event-store-data:/var/lib/postgresql
+
+volumes:
+  event-store-data:
