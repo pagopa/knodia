@@ -9,10 +9,10 @@
     "typecheck": {
       "dependsOn": ["generate-api-client", "^typecheck"]
     },
-    "generate-openapi": {},
     "generate-api-client": {
       "outputs": ["generated/**"]
     },
+    "generate-openapi": {},
     "lint": {},
     "lint:autofix": {},
     "build-knip-dependencies": {
