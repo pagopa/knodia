@@ -8,7 +8,7 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/generateApiClients.ts"
+    ".": "./src/generateApiClient.ts"
   },
   "devDependencies": {
     "@hey-api/openapi-ts": "catalog:",
