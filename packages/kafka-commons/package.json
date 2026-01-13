@@ -19,7 +19,7 @@
     "eslint": "catalog:"
   },
   "exports": {
-    ".": "./index.ts",
+    ".": "./utils.ts",
     "./config": "./config/config.ts"
   }
 }

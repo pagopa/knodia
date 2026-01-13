@@ -1,8 +1,4 @@
-import type {
-  EachMessagePayload,
-  ProducerRecord,
-  RecordMetadata,
-} from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 
@@ -35,32 +31,6 @@ export async function runConsumer(
   await consumer.run({
     eachMessage: consumerHandler,
   });
-}
-
-export async function runProducer(
-  topic: string,
-  config: KafkaConfig,
-): Promise<
-  KafkaJS.Producer & {
-    send: (record: Omit<ProducerRecord, "topic">) => Promise<RecordMetadata[]>;
-  }
-> {
-  const kafka = await initKafka(config);
-
-  const producer = kafka.producer({
-    "allow.auto.create.topics": true,
-  });
-
-  await producer.connect();
-
-  return {
-    ...producer,
-    send: async (record: Omit<ProducerRecord, "topic">) =>
-      await producer.send({
-        ...record,
-        topic,
-      }),
-  };
 }
 
 async function initKafka(config: KafkaConfig): Promise<KafkaJS.Kafka> {
