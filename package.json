@@ -11,7 +11,7 @@
     "lint": "turbo run lint",
     "lint:affected": "turbo run lint --affected",
     "lint:autofix": "turbo run lint:autofix",
-    "knip": "knip"
+    "knip": "turbo run build-knip-dependencies && knip"
   },
   "devDependencies": {
     "knip": "catalog:",

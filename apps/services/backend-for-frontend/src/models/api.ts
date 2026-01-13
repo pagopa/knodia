@@ -21,12 +21,12 @@ export const API_EservicesQueryParams = z.strictObject({
 });
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
-export const API_Eservice = z
+const API_Eservice = z
   .strictObject({
     id: z.string(),
   })
   .meta({ id: "Eservice" });
-export type API_Eservice = z.infer<typeof API_Eservice>;
+type API_Eservice = z.infer<typeof API_Eservice>;
 
 export const API_Eservices = z
   .strictObject({

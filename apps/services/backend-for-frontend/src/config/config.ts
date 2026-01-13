@@ -7,5 +7,5 @@ const BffProcessConfig = z
   .transform((c) => ({
     eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
   }));
-export type BffProcessConfig = z.infer<typeof BffProcessConfig>;
+type BffProcessConfig = z.infer<typeof BffProcessConfig>;
 export const config = BffProcessConfig.parse(process.env);
