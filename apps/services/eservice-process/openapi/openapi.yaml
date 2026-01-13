@@ -1,7 +1,5 @@
 openapi: 3.0.4
 info:
-  contact:
-    url: https://github.com/pagopa/knodia/issues
   description: API for managing Knodia E-services
   title: Knodia E-service Process API
   version: 1.0.0
@@ -50,15 +48,6 @@ components:
         - pagination
       additionalProperties: false
 paths:
-  /status:
-    get:
-      operationId: getStatus
-      responses:
-        "200":
-          description: Default Response
-          content:
-            application/problem+json:
-              schema: {}
   /eservices:
     get:
       operationId: getEservices

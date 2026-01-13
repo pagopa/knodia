@@ -1,5 +1,0 @@
-documentationUrl: https://github.com/italia/api-oas-checker-rules
-extends:
-  [
-    "https://github.com/italia/api-oas-checker-rules/releases/download/1.4/spectral.yml",
-  ]

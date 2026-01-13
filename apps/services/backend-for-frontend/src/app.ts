@@ -3,7 +3,6 @@ import Fastify from "fastify";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
-import { healthRouter } from "./routers/healthRouter.ts";
 
 const app = Fastify({
   logger: true, // TODO configure logger - winston? pino?
@@ -28,7 +27,6 @@ app.register(openapiZodPlugin, {
   },
 });
 
-app.register(healthRouter);
 app.register(eserviceRouter, clients.eserviceProcessClient);
 
 export default app;
