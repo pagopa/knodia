@@ -1,5 +1,5 @@
-import { createClient } from "./gen/client/client.eservice.gen.ts";
-import * as generatedEserviceApi from "./gen/index.ts";
+import { createClient } from "./generated/client/client.eservice.gen.ts";
+import * as generatedEserviceApi from "./generated/index.ts";
 
 export const eserviceApi = {
   ...generatedEserviceApi,

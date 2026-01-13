@@ -10,8 +10,8 @@ export function createProcessClient(openapiPath: string, entity: string): void {
       format: "prettier",
       importFileExtension: ".ts",
       lint: "eslint",
-      path: "./src/gen",
-      tsConfigPath: "../tsconfig.json",
+      path: "./src/generated",
+      tsConfigPath: "./tsconfig.json",
     },
     plugins: [
       {
