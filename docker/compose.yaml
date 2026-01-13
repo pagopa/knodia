@@ -1,3 +1,5 @@
+name: knodia
+
 services:
   event-store:
     image: postgres:18
