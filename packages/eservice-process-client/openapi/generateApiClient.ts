@@ -1,6 +1,5 @@
-import { createProcessClient } from "@knodia/openapi-client-generator";
+import { generateProcessClient } from "@knodia/openapi-client-generator";
 
-createProcessClient(
+generateProcessClient(
   "../../apps/services/eservice-process/openapi/openapi.yaml",
-  "eservice",
 );

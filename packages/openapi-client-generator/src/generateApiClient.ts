@@ -1,12 +1,9 @@
 import { createClient } from "@hey-api/openapi-ts";
 
-export function createProcessClient(openapiPath: string, entity: string): void {
+export function generateProcessClient(openapiPath: string): void {
   createClient({
     input: openapiPath,
     output: {
-      fileName: {
-        suffix: `.${entity}.gen`,
-      },
       format: "prettier",
       importFileExtension: ".ts",
       lint: "eslint",
