@@ -30,5 +30,5 @@ catalog:
 
 catalogMode: strict
 
-onlyBuiltDependencies:
-  - esbuild
+allowBuilds:
+  esbuild: true

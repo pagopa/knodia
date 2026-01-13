@@ -22,7 +22,7 @@ const bytea = customType<{ data: Buffer }>({
 export const eserviceEvents = eserviceSchema.table(
   "events",
   {
-    correlationId: text("correlation_id"),
+    correlationId: text("correlation_id").notNull(),
 
     data: bytea("data").notNull(),
     logDate: timestamp("log_date", { mode: "date", withTimezone: true })

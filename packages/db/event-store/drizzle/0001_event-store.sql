@@ -1,0 +1,1 @@
+ALTER TABLE "eservice"."events" ALTER COLUMN "correlation_id" SET NOT NULL;

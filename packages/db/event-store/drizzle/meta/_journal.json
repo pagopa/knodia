@@ -8,6 +8,13 @@
       "when": 1767194135071,
       "tag": "0000_event-store",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1768299787639,
+      "tag": "0001_event-store",
+      "breakpoints": true
     }
   ]
 }

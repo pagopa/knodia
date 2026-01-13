@@ -3,18 +3,22 @@ import { z } from "zod";
 
 export const EventStoreConfig = z
   .object({
-    POSTGRES_DB: z.string(),
-    POSTGRES_HOST: z.string(),
-    POSTGRES_PASSWORD: z.string(),
-    POSTGRES_PORT: z.string(),
-    POSTGRES_USER: z.string(),
+    EVENTSTORE_DB_POSTGRES_DB: z.string(),
+    EVENTSTORE_DB_POSTGRES_DB_USE_SSL: z
+      .enum(["true", "false"])
+      .transform((v) => v === "true"),
+    EVENTSTORE_DB_POSTGRES_HOST: z.string(),
+    EVENTSTORE_DB_POSTGRES_PASSWORD: z.string(),
+    EVENTSTORE_DB_POSTGRES_PORT: z.coerce.number().int().min(1024).max(65535),
+    EVENTSTORE_DB_POSTGRES_USER: z.string(),
   })
   .transform((c) => ({
-    postgresDb: c.POSTGRES_DB,
-    postgresHost: c.POSTGRES_HOST,
-    postgresPassword: c.POSTGRES_PASSWORD,
-    postgresPort: c.POSTGRES_PORT,
-    postgresUser: c.POSTGRES_USER,
+    db: c.EVENTSTORE_DB_POSTGRES_DB,
+    host: c.EVENTSTORE_DB_POSTGRES_HOST,
+    password: c.EVENTSTORE_DB_POSTGRES_PASSWORD,
+    port: c.EVENTSTORE_DB_POSTGRES_PORT,
+    user: c.EVENTSTORE_DB_POSTGRES_USER,
+    useSsl: c.EVENTSTORE_DB_POSTGRES_DB_USE_SSL,
   }));
 export type EventStoreConfig = z.infer<typeof EventStoreConfig>;
 
