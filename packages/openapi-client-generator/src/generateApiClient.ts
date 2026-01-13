@@ -1,6 +1,6 @@
 import { createClient } from "@hey-api/openapi-ts";
 
-export function generateProcessClient(openapiPath: string): void {
+export function generateApiClient(openapiPath: string): void {
   createClient({
     input: openapiPath,
     output: {
