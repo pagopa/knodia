@@ -9,9 +9,7 @@
     "typecheck": {
       "dependsOn": ["generate-api-client", "^typecheck"]
     },
-    "generate-openapi": {
-      "dependsOn": ["^generate-api-client"]
-    },
+    "generate-openapi": {},
     "generate-api-client": {
       "outputs": ["generated/**"]
     },
