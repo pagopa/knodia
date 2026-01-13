@@ -4,10 +4,10 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["generate-api-client"]
+      "dependsOn": ["generate-api-client", "generate-openapi"]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["generate-api-client", "^typecheck"]
     },
     "generate-openapi": {},
     "generate-api-client": {
