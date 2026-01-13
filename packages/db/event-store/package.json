@@ -1,12 +1,13 @@
 {
   "name": "@knodia/db-event-store",
-  "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "db:generate": "dotenvx run -- drizzle-kit generate --name=event-store",
-    "db:migrate": "dotenvx run -- drizzle-kit migrate",
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "db:generate": "dotenvx run -- drizzle-kit generate --name=event-store",
+    "db:migrate": "dotenvx run -- drizzle-kit migrate"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",
