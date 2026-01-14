@@ -3,13 +3,20 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["generate-api-client", "generate-openapi"]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["generate-api-client", "^typecheck"]
+    },
+    "generate-api-client": {
+      "outputs": ["generated/**"]
     },
     "generate-openapi": {},
     "lint": {},
-    "lint:autofix": {}
+    "lint:autofix": {},
+    "build-knip-dependencies": {
+      "dependsOn": ["generate-openapi"]
+    }
   }
 }

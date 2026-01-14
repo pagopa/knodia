@@ -8,7 +8,7 @@ import { makeApiProblem } from "../models/errors.ts";
 import { eserviceErrorMapper } from "../services/errorMappers.ts";
 import { getMockEservices } from "../services/eserviceService.ts";
 
-export const eserviceRoutes: FastifyPluginAsyncZod = async (fastify) => {
+export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
     errorHandler: (error, req, res) => {
       // TODO: fix context
@@ -30,11 +30,13 @@ export const eserviceRoutes: FastifyPluginAsyncZod = async (fastify) => {
     },
     method: "GET",
     schema: {
+      operationId: "getEservices",
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices,
         400: Problem,
       },
+      tags: ["eservice"],
     },
     url: "/eservices",
   });

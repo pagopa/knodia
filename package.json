@@ -3,13 +3,11 @@
   "private": true,
   "scripts": {
     "typecheck": "turbo run typecheck",
-    "typecheck:affected": "turbo run typecheck --affected",
+    "generate-api-client": "turbo run generate-api-client",
     "generate-openapi": "turbo run generate-openapi",
-    "generate-openapi:affected": "turbo run generate-openapi --affected",
     "lint": "turbo run lint",
-    "lint:affected": "turbo run lint --affected",
     "lint:autofix": "turbo run lint:autofix",
-    "knip": "knip"
+    "knip": "turbo run build-knip-dependencies && knip"
   },
   "devDependencies": {
     "knip": "catalog:",
