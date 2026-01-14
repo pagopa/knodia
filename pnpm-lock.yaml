@@ -152,7 +152,11 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/protobuf-commons:
+  packages/models/eservice-models:
+    dependencies:
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
     devDependencies:
       '@bufbuild/buf':
         specifier: 'catalog:'
@@ -162,10 +166,10 @@ importers:
         version: 2.10.2
       '@knodia/eslint-config':
         specifier: workspace:*
-        version: link:../eslint-config
+        version: link:../../eslint-config
       '@knodia/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../typescript-config
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)

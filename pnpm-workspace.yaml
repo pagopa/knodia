@@ -2,6 +2,7 @@ packages:
   - apps/services/*
   - apps/web/*
   - packages/*
+  - packages/models/*
 
 catalog:
   "@bufbuild/buf": 1.61.0

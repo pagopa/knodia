@@ -1,14 +1,15 @@
 {
-  "name": "@knodia/protobuf-commons",
-  "version": "1.0.0",
+  "name": "@knodia/eservice-models",
   "type": "module",
-  "description": "",
   "scripts": {
     "dev": "tsc --watch",
     "typecheck": "tsc",
     "generate-protobuf": "buf generate",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
+  },
+  "dependencies": {
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@bufbuild/buf": "catalog:",
@@ -19,6 +20,6 @@
     "typescript": "catalog:"
   },
   "exports": {
-    "./models/*": "./gen/*.ts"
+    "./*": "./src/*.ts"
   }
 }

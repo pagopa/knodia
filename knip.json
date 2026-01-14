@@ -9,9 +9,9 @@
   ],
   "workspaces": {
     ".": {},
-    "packages/*-commons": {
+    "packages/models/*-models": {
       "entry": [  
-        "gen/**/*.ts"
+        "src/generated/*.ts"
       ]
     }
   }
