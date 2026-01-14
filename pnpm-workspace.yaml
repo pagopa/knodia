@@ -2,7 +2,7 @@ packages:
   - apps/services/*
   - apps/web/*
   - packages/*
-  - packages/db/**
+  - packages/db/event-store/*
 
 catalog:
   "@dotenvx/dotenvx": 1.51.4

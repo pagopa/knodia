@@ -11,10 +11,7 @@ export const EventStoreConfig = z
       .min(1024)
       .max(65535)
       .default(6001),
-    EVENTSTORE_DB_USE_SSL: z
-      .enum(["true", "false"])
-      .default("false")
-      .transform((v) => v === "true"),
+    EVENTSTORE_DB_USE_SSL: z.stringbool().default(false),
     EVENTSTORE_DB_USER: z.string().default("root"),
   })
   .transform((c) => ({
