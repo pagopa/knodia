@@ -3,7 +3,8 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["generate-openapi", "generate-protobuf"]
     },
     "typecheck": {
       "dependsOn": ["generate-protobuf", "^typecheck"]
