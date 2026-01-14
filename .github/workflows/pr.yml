@@ -24,7 +24,6 @@ jobs:
 
   generate-openapi:
     name: Generate openapi
-    needs: knip
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: generate-openapi
