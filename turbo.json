@@ -11,7 +11,7 @@
     },
     "generate-openapi": {},
     "generate-protobuf": {
-      "outputs": ["src/generated"]
+      "outputs": ["src/generated/*"]
     },
     "lint": {},
     "lint:autofix": {},
