@@ -1,5 +1,5 @@
 {
-  "id": "3d671572-6765-4657-a58d-c72208085d2a",
+  "id": "93d39e6c-a43e-4d44-b360-2b9d7dc8533b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8,32 +8,8 @@
       "name": "events",
       "schema": "eservice",
       "columns": {
-        "sequence_num": {
-          "name": "sequence_num",
-          "type": "bigserial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "stream_id": {
-          "name": "stream_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "version": {
-          "name": "version",
-          "type": "bigint",
-          "primaryKey": false,
-          "notNull": true
-        },
         "correlation_id": {
           "name": "correlation_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "type": {
-          "name": "type",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -50,6 +26,30 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "sequence_num": {
+          "name": "sequence_num",
+          "type": "bigserial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "stream_id": {
+          "name": "stream_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
