@@ -2,7 +2,14 @@ import { defineConfig } from "drizzle-kit";
 
 import { eventStoreConfig } from "./config/config.ts";
 
-const { db, host, password, port, user, useSsl } = eventStoreConfig;
+const {
+  eventStoreDbHost: host,
+  eventStoreDbName: db,
+  eventStoreDbPassword: password,
+  eventStoreDbPort: port,
+  eventStoreDbUser: user,
+  eventStoreDbUseSsl: useSsl,
+} = eventStoreConfig;
 
 export default defineConfig({
   dbCredentials: {

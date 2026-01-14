@@ -19,12 +19,12 @@ const EventStoreConfig = z
     EVENTSTORE_DB_USER: z.string().default("root"),
   })
   .transform((c) => ({
-    db: c.EVENTSTORE_DB_NAME,
-    host: c.EVENTSTORE_DB_HOST,
-    password: c.EVENTSTORE_DB_PASSWORD,
-    port: c.EVENTSTORE_DB_PORT,
-    user: c.EVENTSTORE_DB_USER,
-    useSsl: c.EVENTSTORE_DB_USE_SSL,
+    eventStoreDbHost: c.EVENTSTORE_DB_HOST,
+    eventStoreDbName: c.EVENTSTORE_DB_NAME,
+    eventStoreDbPassword: c.EVENTSTORE_DB_PASSWORD,
+    eventStoreDbPort: c.EVENTSTORE_DB_PORT,
+    eventStoreDbUser: c.EVENTSTORE_DB_USER,
+    eventStoreDbUseSsl: c.EVENTSTORE_DB_USE_SSL,
   }));
 export type EventStoreConfig = z.infer<typeof EventStoreConfig>;
 
