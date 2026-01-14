@@ -19,25 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          # Turbo --affected needs full history; blob filter keeps history without file contents.
-          # https://turborepo.com/docs/reference/run#options
-          fetch-depth: 0
-          filter: blob:none
-
-      - name: Fetch base branch for PRs
-        if: ${{ github.event_name == 'pull_request' }}
-        run: git fetch origin "${{ github.base_ref }}:${{ github.base_ref }}"
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
         with:
           # Avoid double install; we run pnpm install after cache setup.
           run_install: false
 
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: package.json
           cache: "pnpm"
