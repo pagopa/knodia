@@ -22,9 +22,17 @@ jobs:
     with:
       command: knip
 
+  generate-api-client:
+    name: Generate API client
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: generate-api-client
+      fail_on_git_diff: true
+
   generate-openapi:
     name: Generate openapi
     uses: ./.github/workflows/pnpm-job.yml
+    needs: generate-api-client
     with:
       command: generate-openapi
       fail_on_git_diff: true
