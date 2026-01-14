@@ -10,7 +10,7 @@
       "dependsOn": ["generate-api-client", "^typecheck"]
     },
     "generate-api-client": {
-      "outputs": ["generated/**"]
+      "outputs": ["src/generated/**"]
     },
     "generate-openapi": {},
     "lint": {},
