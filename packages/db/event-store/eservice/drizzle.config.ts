@@ -1,5 +1,5 @@
-import { drizzleConfig } from "@knodia/db-event-store-config/drizzleConfig";
+import { drizzleKitConfig } from "@knodia/db-event-store-config/drizzleKitConfig";
 
 import { eventStoreEserviceConfig } from "./config/config.ts";
 
-export default drizzleConfig(eventStoreEserviceConfig, "./src/*.ts");
+export default drizzleKitConfig(eventStoreEserviceConfig, "./src/*.ts");

@@ -21,7 +21,7 @@
   },
   "exports": {
     "./config": "./config/config.ts",
-    "./drizzleConfig": "./utils/drizzleConfig.ts",
+    "./drizzleKitConfig": "./utils/drizzleKitConfig.ts",
     "./utils": "./utils/utils.ts"
   }
 }
