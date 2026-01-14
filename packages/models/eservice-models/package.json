@@ -20,6 +20,7 @@
     "typescript": "catalog:"
   },
   "exports": {
-    "./*": "./src/*.ts"
+    ".": "./src/eservice.ts",
+    "./proto": "./src/generated/eservice.ts"
   }
 }

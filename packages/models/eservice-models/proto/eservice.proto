@@ -2,6 +2,6 @@ syntax = "proto3";
 
 package eservice;
 
-message EService {
+message Eservice {
   string id = 1;
 }
