@@ -5,11 +5,12 @@ import {
 import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
 import Fastify from "fastify";
 
+import { createLogger } from "./logger.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
-  logger: true, // TODO configure logger - winston? pino?
+  logger: createLogger(),
 });
 
 // openapiPlugin must be registered before any routes to ensure proper route discovery
