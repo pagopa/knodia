@@ -3,9 +3,6 @@ import { z } from "zod";
 
 const { logLevel } = KafkaJS;
 
-export const KafkaLogLevel = logLevel;
-export type KafkaLogLevel = typeof logLevel;
-
 export const KafkaConfig = z
   .object({
     KAFKA_BROKERS: z.string(),
