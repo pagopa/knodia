@@ -1,6 +1,6 @@
 openapi: 3.1.2
 info:
-  description: API for managing Knodia BFF
+  description: Knodia backend-for-frontend API
   title: Knodia BFF API
   version: 1.0.0
 components:
