@@ -9,11 +9,9 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { eventStoreConfig } from "../config/config.ts";
+import { eventStoreEserviceConfig } from "../config/eservice.ts";
 
-export const eserviceSchema = pgSchema(
-  eventStoreConfig.eventStoreDbEserviceSchema,
-);
+export const eserviceSchema = pgSchema(eventStoreEserviceConfig.schema);
 
 // Helper for bytea needed in version 0.45.1, but type is supported in beta versions >= 1.0.0-beta.6
 // Should be released soon according to Drizzle ORM team: https://orm.drizzle.team/roadmap
