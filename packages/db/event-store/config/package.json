@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/db-event-store",
+  "name": "@knodia/db-event-store-config",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
