@@ -10,7 +10,9 @@
       "dependsOn": ["generate-protobuf", "^typecheck"]
     },
     "generate-openapi": {},
-    "generate-protobuf": {},
+    "generate-protobuf": {
+      "outputs": ["src/generated"]
+    },
     "lint": {},
     "lint:autofix": {},
     "build-knip-dependencies": {
