@@ -3,15 +3,20 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["generate-openapi", "db:migrate"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
     },
-    "generate-openapi": {},
+    "generate-openapi": {
+      "outputs": ["openapi/openapi.yaml"]
+    },
     "lint": {},
     "lint:autofix": {},
-    "db:generate": {},
+    "db:generate": {
+      "outputs": ["drizzle/**"]
+    },
     "db:migrate": {}
   }
 }
