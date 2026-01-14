@@ -16,7 +16,7 @@
     "lint": {},
     "lint:autofix": {},
     "build-knip-dependencies": {
-      "dependsOn": ["generate-openapi"]
+      "dependsOn": ["generate-api-client"]
     }
   }
 }
