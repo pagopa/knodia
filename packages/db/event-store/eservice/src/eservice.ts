@@ -11,7 +11,7 @@ import {
 
 import { eventStoreEserviceConfig } from "../config/config.ts";
 
-export const eserviceSchema = pgSchema(eventStoreEserviceConfig.schema);
+export const eserviceSchema = pgSchema(eventStoreEserviceConfig.eserviceSchema);
 
 export const eserviceEvents = eserviceSchema.table(
   "events",

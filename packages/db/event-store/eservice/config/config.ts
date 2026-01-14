@@ -8,7 +8,7 @@ const EventStoreEserviceConfig = EventStoreConfig.and(
       EVENTSTORE_DB_ESERVICE_SCHEMA: z.string().default("eservice"),
     })
     .transform((c) => ({
-      schema: c.EVENTSTORE_DB_ESERVICE_SCHEMA,
+      eserviceSchema: c.EVENTSTORE_DB_ESERVICE_SCHEMA,
     })),
 );
 export type EventStoreEserviceConfig = z.infer<typeof EventStoreEserviceConfig>;
