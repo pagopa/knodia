@@ -3,5 +3,5 @@ import * as generatedEserviceProcessApi from "./generated/index.ts";
 
 export const eserviceProcessApi = {
   ...generatedEserviceProcessApi,
-  createEserviceClient: createClient,
+  createClient,
 };
