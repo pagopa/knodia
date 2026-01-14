@@ -23,11 +23,6 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: Show checked out ref
-        run: |
-          echo "Checked out SHA: $(git rev-parse HEAD)"
-          echo "Ref: $GITHUB_REF"
-
       - name: Setup pnpm
         uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
         with:
