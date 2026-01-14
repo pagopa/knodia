@@ -1,7 +1,6 @@
-import { env } from "node:process";
 import { z } from "zod";
 
-const EventStoreConfig = z
+export const EventStoreConfig = z
   .object({
     EVENTSTORE_DB_HOST: z.string().default("localhost"),
     EVENTSTORE_DB_NAME: z.string().default("root"),
@@ -27,5 +26,3 @@ const EventStoreConfig = z
     eventStoreDbUseSsl: c.EVENTSTORE_DB_USE_SSL,
   }));
 export type EventStoreConfig = z.infer<typeof EventStoreConfig>;
-
-export const eventStoreConfig: EventStoreConfig = EventStoreConfig.parse(env);

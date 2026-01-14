@@ -1,7 +1,7 @@
+import { eventStoreBytea } from "@knodia/db-event-store-config/utils";
 import {
   bigint,
   bigserial,
-  customType,
   pgSchema,
   text,
   timestamp,
@@ -9,24 +9,16 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { eventStoreEserviceConfig } from "../config/eservice.ts";
+import { eventStoreEserviceConfig } from "../config/config.ts";
 
 export const eserviceSchema = pgSchema(eventStoreEserviceConfig.schema);
-
-// Helper for bytea needed in version 0.45.1, but type is supported in beta versions >= 1.0.0-beta.6
-// Should be released soon according to Drizzle ORM team: https://orm.drizzle.team/roadmap
-const bytea = customType<{ data: Buffer }>({
-  dataType() {
-    return "bytea";
-  },
-});
 
 export const eserviceEvents = eserviceSchema.table(
   "events",
   {
     correlationId: text("correlation_id").notNull(),
 
-    data: bytea("data").notNull(),
+    data: eventStoreBytea("data").notNull(),
     logDate: timestamp("log_date", { mode: "date", withTimezone: true })
       .defaultNow()
       .notNull(),

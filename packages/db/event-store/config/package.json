@@ -5,25 +5,23 @@
     "dev": "tsc --watch",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "db:generate": "dotenvx run -- drizzle-kit generate --name=event-store",
-    "db:migrate": "dotenvx run -- drizzle-kit migrate"
+    "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",
-    "pg": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
-    "@dotenvx/dotenvx": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {
-    "./*": "./src/*.ts"
+    "./config": "./config/config.ts",
+    "./drizzleConfig": "./utils/drizzleConfig.ts",
+    "./utils": "./utils/utils.ts"
   }
 }
