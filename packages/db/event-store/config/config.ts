@@ -3,6 +3,7 @@ import { z } from "zod";
 
 const EventStoreConfig = z
   .object({
+    EVENTSTORE_DB_ESERVICE_SCHEMA: z.string().default("eservice"),
     EVENTSTORE_DB_HOST: z.string().default("localhost"),
     EVENTSTORE_DB_NAME: z.string().default("root"),
     EVENTSTORE_DB_PASSWORD: z.string().default("root"),
@@ -19,6 +20,7 @@ const EventStoreConfig = z
     EVENTSTORE_DB_USER: z.string().default("root"),
   })
   .transform((c) => ({
+    eventStoreDbEserviceSchema: c.EVENTSTORE_DB_ESERVICE_SCHEMA,
     eventStoreDbHost: c.EVENTSTORE_DB_HOST,
     eventStoreDbName: c.EVENTSTORE_DB_NAME,
     eventStoreDbPassword: c.EVENTSTORE_DB_PASSWORD,
