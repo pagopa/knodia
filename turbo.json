@@ -12,15 +12,15 @@
     "generate-openapi": {
       "outputs": ["openapi/openapi.yaml"]
     },
+    "generate-protobuf": {
+      "outputs": ["src/generated/*"]
+    },
     "lint": {},
     "lint:autofix": {},
     "db:generate": {
       "outputs": ["drizzle/**"]
     },
     "db:migrate": {},
-    "generate-protobuf": {
-      "outputs": ["src/generated/*"]
-    },
     "build-knip-dependencies": {
       "dependsOn": ["generate-protobuf"]
     }
