@@ -126,9 +126,15 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
+      '@knodia/spectral-config':
+        specifier: workspace:*
+        version: link:../../../packages/spectral-config
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
+      '@stoplight/spectral-cli':
+        specifier: 'catalog:'
+        version: 6.15.0
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0

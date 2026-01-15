@@ -19,6 +19,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
+        // TODO move this defaulting logic to the service, keep routers only for routing
+        // and API models conversion, no logic
         items: eservices.data?.items || [],
         pagination: eservices.data?.pagination || {
           limit: req.query.limit,
@@ -29,6 +31,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
+      description: "Retrieve a list of E-services",
       operationId: "getEservices",
       querystring: API_EservicesQueryParams,
       response: {
