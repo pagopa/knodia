@@ -2,9 +2,11 @@
   "extends": [
     "./tsconfig.base.json",
     "@tsconfig/node24/tsconfig.json",
-    "@tsconfig/node-ts/tsconfig.json",
+    "@tsconfig/node-ts/tsconfig.json"
   ],
   "compilerOptions": {
-    "noEmit": true // typecheck only, we don't transpile into JS, we run TS directly with Node.js
-  },
+    "noEmit": true, // typecheck only, we don't transpile into JS, we run TS directly with Node.js
+    "exactOptionalPropertyTypes": false,
+    "lib": ["ES2024", "DOM", "DOM.Iterable"]
+  }
 }
