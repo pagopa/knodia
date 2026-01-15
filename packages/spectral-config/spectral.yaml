@@ -6,7 +6,7 @@ extends:
 rules:
   # Errors
   has-x-summary: off # we don't use x- custom fields, unsupported in our setup
-  servers-use-https: off # disabled as we use http in local/dev environments
+  servers-use-https: off # we use http in local/dev environments
   paths-status-return-problem: off # /status returns 200 with no content, not a problem
 
   # Warnings
