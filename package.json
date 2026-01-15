@@ -7,6 +7,7 @@
     "generate-protobuf": "turbo run generate-protobuf",
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
+    "lint-openapi": "turbo run lint-openapi",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "knip": "turbo run build-knip-dependencies && knip",

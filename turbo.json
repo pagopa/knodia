@@ -20,6 +20,9 @@
     "db:generate": {
       "outputs": ["drizzle/**"]
     },
+    "lint-openapi": {
+      "dependsOn": ["generate-openapi"]
+    },
     "db:migrate": {},
     "build-knip-dependencies": {
       "dependsOn": ["generate-protobuf"]
