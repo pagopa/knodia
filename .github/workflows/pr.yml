@@ -31,3 +31,10 @@ jobs:
     with:
       command: generate-openapi
       fail_on_git_diff: true
+
+  lint-openapi:
+    name: Lint OpenAPI specs
+    needs: generate-openapi
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: lint-openapi
