@@ -15,9 +15,6 @@ const clients = getKnodiaClients();
 app.register(openapiZodPlugin, {
   openapi: {
     info: {
-      contact: {
-        url: "https://github.com/pagopa/knodia/issues",
-      },
       description: "Knodia backend-for-frontend API",
       termsOfService: "https://github.com/pagopa/knodia",
       title: "Knodia BFF API",
