@@ -53,6 +53,9 @@ components:
 paths:
   /eservices:
     get:
+      operationId: getEservices
+      tags:
+        - eservice
       parameters:
         - schema:
             type: number
