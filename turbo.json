@@ -5,8 +5,8 @@
       "cache": false,
       "persistent": true,
       "dependsOn": [
-        "generate-api-client",
         "generate-openapi",
+        "generate-api-client",
         "generate-protobuf",
         "db:migrate"
       ]

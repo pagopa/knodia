@@ -85,3 +85,8 @@ paths:
 servers:
   - description: BFF API
     url: /
+tags:
+  - description: Health check routes
+    name: health
+  - description: E-services routes
+    name: eservice
