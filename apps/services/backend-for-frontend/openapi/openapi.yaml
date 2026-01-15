@@ -51,6 +51,19 @@ components:
         - pagination
       additionalProperties: false
 paths:
+  /status:
+    get:
+      operationId: getStatus
+      tags:
+        - health
+      description: Check the health status of the service
+      responses:
+        "200":
+          description: Service status OK
+          content:
+            application/json:
+              schema:
+                description: Service status OK
   /eservices:
     get:
       operationId: getEservices

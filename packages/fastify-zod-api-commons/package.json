@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/fastify-plugin-openapi-zod",
+  "name": "@knodia/fastify-zod-api-commons",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
@@ -9,7 +9,8 @@
   },
   "exports": {
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
-    "./generateOpenapi": "./src/utils/generateOpenapi.ts"
+    "./generateOpenapi": "./src/utils/generateOpenapi.ts",
+    "./routers": "./src/routers/index.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
@@ -23,6 +24,7 @@
     "@fastify/swagger-ui": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",
-    "fastify-type-provider-zod": "catalog:"
+    "fastify-type-provider-zod": "catalog:",
+    "zod": "catalog:"
   }
 }

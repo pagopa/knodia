@@ -1,4 +1,5 @@
 import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
+import { healthRouter } from "@knodia/fastify-zod-api-commons/routers";
 import Fastify from "fastify";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
@@ -39,6 +40,7 @@ app.register(openapiZodPlugin, {
   },
 });
 
+app.register(healthRouter);
 app.register(eserviceRouter, clients.eserviceProcessClient);
 
 export default app;
