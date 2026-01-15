@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* @see https://base-ui.com/react/overview/quick-start */
+#root {
+  isolation: isolate;
+}
