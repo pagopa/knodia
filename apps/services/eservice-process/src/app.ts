@@ -16,9 +16,11 @@ app.register(openapiZodPlugin, {
         url: "https://github.com/pagopa/knodia/issues",
       },
       description: "API for managing Knodia E-services",
+      termsOfService: "https://github.com/pagopa/knodia",
       title: "Knodia E-service Process API",
       version: "1.0.0",
     },
+    servers: [{ description: "E-service Process API", url: "/" }],
     tags: [
       {
         description: "Health check routes",

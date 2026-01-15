@@ -3,6 +3,7 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   description: API for managing Knodia E-services
+  termsOfService: https://github.com/pagopa/knodia
   title: Knodia E-service Process API
   version: 1.0.0
 components:
@@ -58,10 +59,11 @@ paths:
       description: Check the health status of the service
       responses:
         "200":
-          description: Default Response
+          description: Service status OK
           content:
-            application/problem+json:
-              schema: {}
+            application/json:
+              schema:
+                description: Service status OK
   /eservices:
     get:
       operationId: getEservices
@@ -93,6 +95,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Eservices"
+servers:
+  - description: E-service Process API
+    url: /
 tags:
   - description: Health check routes
     name: health

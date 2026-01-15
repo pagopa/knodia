@@ -2,6 +2,8 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import z from "zod";
 
+// import { API_Status } from "../models/api.ts";
+
 // TODO move to a common package, since it will be used by multiple services
 export const healthRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
@@ -12,9 +14,8 @@ export const healthRouter: FastifyPluginAsyncZod = async (fastify) => {
     schema: {
       description: "Check the health status of the service",
       operationId: "getStatus",
-      produces: ["application/problem+json"],
       response: {
-        200: z.void(),
+        200: z.void().describe("Service status OK"),
       },
       tags: ["health"],
     },

@@ -3,3 +3,7 @@ extends:
   [
     "https://github.com/italia/api-oas-checker-rules/releases/download/1.4/spectral.yml",
   ]
+rules:
+  has-x-summary: off
+  servers-use-https: off
+  paths-status-return-problem: off
