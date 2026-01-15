@@ -31,9 +31,21 @@
     "db:generate": {
       "outputs": ["drizzle/**"]
     },
-    "db:migrate": {},
+    "db:migrate": {
+      "dependsOn": ["//#infra:start", "db:generate"],
+      "cache": false
+    },
     "build-knip-dependencies": {
       "dependsOn": ["generate-api-client", "generate-protobuf"]
+    },
+    "//#infra:start": {
+      "cache": false
+    },
+    "//#infra:stop": {
+      "cache": false
+    },
+    "//#infra:destroy": {
+      "cache": false
     }
   }
 }

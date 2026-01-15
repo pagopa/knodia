@@ -12,6 +12,9 @@
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "knip": "turbo run build-knip-dependencies && knip",
+    "infra:start": "./scripts/infra-start.sh",
+    "infra:stop": "./scripts/infra-stop.sh",
+    "infra:destroy": "./scripts/infra-destroy.sh",
     "prune-modules": "find . -name 'node_modules' -type d -exec rm -rf {} +"
   },
   "devDependencies": {
