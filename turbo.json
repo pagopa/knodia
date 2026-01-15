@@ -25,11 +25,11 @@
     },
     "lint": {},
     "lint:autofix": {},
-    "db:generate": {
-      "outputs": ["drizzle/**"]
-    },
     "lint-openapi": {
       "dependsOn": ["generate-openapi"]
+    },
+    "db:generate": {
+      "outputs": ["drizzle/**"]
     },
     "db:migrate": {},
     "build-knip-dependencies": {
