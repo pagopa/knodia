@@ -1,7 +1,7 @@
 import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
 import Fastify from "fastify";
 
-import { eserviceRoutes } from "./routers/eserviceRouter.ts";
+import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
   logger: true, // TODO configure logger - winston? pino?
@@ -21,6 +21,6 @@ app.register(openapiZodPlugin, {
   },
 });
 
-app.register(eserviceRoutes);
+app.register(eserviceRouter);
 
 export default app;

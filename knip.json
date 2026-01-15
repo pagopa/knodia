@@ -4,15 +4,14 @@
     "interface": true,
     "type": true
   },
-  "tags": [
-    "-lintignore"
-  ],
+  "tags": ["-lintignore"],
   "workspaces": {
     ".": {},
-    "packages/*-commons": {
-      "entry": [  
-        "gen/**/*.ts"
-      ]
+    "packages/*-process-client": {
+      "entry": ["src/generated/**/*.ts"]
+    },
+    "packages/models/*-models": {
+      "entry": ["src/generated/*.ts"]
     }
   }
 }

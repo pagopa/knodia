@@ -3,18 +3,21 @@ name: PR Validation
 on:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   typecheck:
     name: Turbo typecheck
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: typecheck:affected
+      command: typecheck
 
   lint:
     name: Turbo lint
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: lint:affected
+      command: lint
 
   knip:
     name: Knip
@@ -26,5 +29,5 @@ jobs:
     name: Generate openapi
     uses: ./.github/workflows/pnpm-job.yml
     with:
-      command: generate-openapi:affected
+      command: generate-openapi
       fail_on_git_diff: true

@@ -1,0 +1,20 @@
+{
+  "name": "@knodia/openapi-client-generator",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "exports": {
+    ".": "./src/generateApiClient.ts"
+  },
+  "devDependencies": {
+    "@hey-api/openapi-ts": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}
