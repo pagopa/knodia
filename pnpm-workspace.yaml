@@ -2,10 +2,14 @@ packages:
   - apps/services/*
   - apps/web/*
   - packages/*
+  - packages/models/*
   - packages/db/event-store/*
 
 catalog:
   "@dotenvx/dotenvx": 1.51.4
+  "@bufbuild/buf": 1.61.0
+  "@bufbuild/protobuf": 2.10.2
+  "@confluentinc/kafka-javascript": 1.7.0
   "@fastify/swagger": 9.6.1
   "@fastify/swagger-ui": 5.2.3
   "@pagopa/eslint-config": 5.1.1
@@ -32,3 +36,5 @@ catalogMode: strict
 
 allowBuilds:
   esbuild: true
+  "@bufbuild/buf": true
+  "@confluentinc/kafka-javascript": true
