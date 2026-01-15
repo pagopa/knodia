@@ -8,6 +8,11 @@
     "-lintignore"
   ],
   "workspaces": {
-    ".": {}
+    ".": {},
+    "packages/models/*-models": {
+      "entry": [  
+        "src/generated/*.ts"
+      ]
+    }
   }
 }

@@ -3,13 +3,26 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": ["generate-openapi", "generate-protobuf", "db:migrate"]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["generate-protobuf", "^typecheck"]
     },
-    "generate-openapi": {},
+    "generate-openapi": {
+      "outputs": ["openapi/openapi.yaml"]
+    },
+    "generate-protobuf": {
+      "outputs": ["src/generated/*"]
+    },
     "lint": {},
-    "lint:autofix": {}
+    "lint:autofix": {},
+    "db:generate": {
+      "outputs": ["drizzle/**"]
+    },
+    "db:migrate": {},
+    "build-knip-dependencies": {
+      "dependsOn": ["generate-protobuf"]
+    }
   }
 }
