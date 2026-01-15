@@ -7,7 +7,10 @@
     "generate-protobuf": "turbo run generate-protobuf",
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
-    "knip": "turbo run build-knip-dependencies && knip"
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "knip": "turbo run build-knip-dependencies && knip",
+    "prune-modules": "find . -name 'node_modules' -type d -exec rm -rf {} +"
   },
   "devDependencies": {
     "knip": "catalog:",
