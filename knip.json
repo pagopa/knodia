@@ -9,6 +9,9 @@
     ".": {},
     "packages/*-process-client": {
       "entry": ["src/generated/**/*.ts"]
+    },
+    "packages/models/*-models": {
+      "entry": ["src/generated/*.ts"]
     }
   }
 }
