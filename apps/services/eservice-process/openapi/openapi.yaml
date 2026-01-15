@@ -64,6 +64,9 @@ paths:
             application/json:
               schema:
                 description: Service status OK
+                type: object
+                properties: {}
+                additionalProperties: false
   /eservices:
     get:
       operationId: getEservices
