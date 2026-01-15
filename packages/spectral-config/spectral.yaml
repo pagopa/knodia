@@ -11,8 +11,12 @@ rules:
 
   # Warnings
   paths-status-problem-schema: off # /status returns 200 with no content, not a problem
+  oas3-unused-component: off # zod type provider includes *Input schemas not always used
 
   # Hints
   has-x-api-id: off # we don't use x- custom fields, unsupported in our setup
   allowed-number-format: off # suggests decimal32 instead of int32, but OpenAPI standard uses int32
   no-method-name-in-operationId: off # we usually use service method name as operationId
+
+  # Info
+  use-recommended-names-in-schemas: off # not compatible with our naming conventions
