@@ -1,0 +1,32 @@
+{
+  "name": "@knodia/logger",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "exports": {
+    "./config": "./src/config.ts",
+    "./constants": "./src/constants.ts",
+    "./logger": "./src/logger.ts",
+    "./types": "./src/types.ts"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "pino": "catalog:"
+  },
+  "peerDependencies": {
+    "pino-pretty": "catalog:"
+  },
+  "peerDependenciesMeta": {
+    "pino-pretty": {
+      "optional": true
+    }
+  }
+}
