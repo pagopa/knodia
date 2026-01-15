@@ -238,6 +238,71 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  packages/db/readmodel/config:
+    dependencies:
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../typescript-config
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.16.0
+      drizzle-kit:
+        specifier: 'catalog:'
+        version: 0.31.8
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/db/readmodel/eservice:
+    dependencies:
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      pg:
+        specifier: 'catalog:'
+        version: 8.16.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/db-readmodel-config':
+        specifier: workspace:*
+        version: link:../config
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../typescript-config
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.16.0
+      drizzle-kit:
+        specifier: 'catalog:'
+        version: 0.31.8
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/eservice-process-client:
     dependencies:
       '@knodia/openapi-client-generator':
