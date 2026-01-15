@@ -19,6 +19,16 @@ app.register(openapiZodPlugin, {
       title: "Knodia E-service Process API",
       version: "1.0.0",
     },
+    tags: [
+      {
+        description: "Health check routes",
+        name: "health",
+      },
+      {
+        description: "E-services routes",
+        name: "eservice",
+      },
+    ],
   },
   openapiDocs: {
     routePrefix: "/docs",

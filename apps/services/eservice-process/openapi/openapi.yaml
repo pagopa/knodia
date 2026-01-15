@@ -52,6 +52,10 @@ components:
 paths:
   /status:
     get:
+      operationId: getStatus
+      tags:
+        - health
+      description: Check the health status of the service
       responses:
         "200":
           description: Default Response
@@ -60,6 +64,10 @@ paths:
               schema: {}
   /eservices:
     get:
+      operationId: getEservices
+      tags:
+        - eservice
+      description: Retrieve a list of E-services
       parameters:
         - schema:
             format: int32
@@ -85,3 +93,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Eservices"
+tags:
+  - description: Health check routes
+    name: health
+  - description: E-services routes
+    name: eservice

@@ -5,7 +5,7 @@ import {
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
 
-const OPENAPI_3_1_ZOD_TO_JSON_SCHEMA = "openapi-3.0"; // OpenAPI 3.1
+const OPENAPI_3_1_ZOD_TO_JSON_SCHEMA = "openapi-3.0"; // OpenAPI 3.0
 const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
     target: OPENAPI_3_1_ZOD_TO_JSON_SCHEMA,

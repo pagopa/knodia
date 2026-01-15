@@ -10,14 +10,17 @@ const API_Pagination = z
 type API_Pagination = z.infer<typeof API_Pagination>;
 
 export const API_EservicesQueryParams = z.strictObject({
-  limit: z.coerce.number().min(1).max(50).meta({
-    description: "Maximum number of items returned",
-    format: "int32",
-  }),
-  offset: z.coerce.number().min(0).meta({
-    description: "Pagination starting position",
-    format: "int32",
-  }),
+  limit: z.coerce
+    .number()
+    .min(1)
+    .max(50)
+    .describe("Maximum number of items returned")
+    .meta({ format: "int32" }),
+  offset: z.coerce
+    .number()
+    .min(0)
+    .describe("Pagination starting position")
+    .meta({ format: "int32" }),
 });
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
