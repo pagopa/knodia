@@ -38,3 +38,10 @@ export const API_Eservices = z
   })
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
+
+export const API_EserviceSeed = z
+  .strictObject({
+    name: z.string().min(4).describe("Name of the E-service"),
+  })
+  .meta({ id: "EserviceSeed" });
+export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
