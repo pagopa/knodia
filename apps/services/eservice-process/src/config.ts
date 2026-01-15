@@ -1,7 +1,7 @@
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
-export const EserviceProcessConfig = LoggerConfig.and(
+const EserviceProcessConfig = LoggerConfig.and(
   z
     .object({
       HOST: z.string().default("0.0.0.0"),
@@ -15,6 +15,6 @@ export const EserviceProcessConfig = LoggerConfig.and(
     })),
 );
 
-export type EserviceProcessConfig = z.infer<typeof EserviceProcessConfig>;
+type EserviceProcessConfig = z.infer<typeof EserviceProcessConfig>;
 
 export const config = EserviceProcessConfig.parse(process.env);
