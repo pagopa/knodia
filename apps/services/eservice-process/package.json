@@ -7,7 +7,7 @@
     "generate-openapi": "node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+    "lint-openapi": "spectral lint --fail-severity='warn' --display-only-failures ./openapi/openapi.yaml --ruleset=./spectral.yaml"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",

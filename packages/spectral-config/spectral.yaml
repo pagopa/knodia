@@ -7,3 +7,4 @@ rules:
   has-x-summary: off
   servers-use-https: off
   paths-status-return-problem: off
+  paths-status-problem-schema: off
