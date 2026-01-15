@@ -4,19 +4,33 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["generate-api-client", "generate-openapi"]
+      "dependsOn": [
+        "generate-api-client",
+        "generate-openapi",
+        "generate-protobuf",
+        "db:migrate"
+      ]
     },
     "typecheck": {
-      "dependsOn": ["generate-api-client", "^typecheck"]
+      "dependsOn": ["generate-api-client", "generate-protobuf", "^typecheck"]
     },
     "generate-api-client": {
       "outputs": ["src/generated/**"]
     },
-    "generate-openapi": {},
+    "generate-openapi": {
+      "outputs": ["openapi/openapi.yaml"]
+    },
+    "generate-protobuf": {
+      "outputs": ["src/generated/*"]
+    },
     "lint": {},
     "lint:autofix": {},
+    "db:generate": {
+      "outputs": ["drizzle/**"]
+    },
+    "db:migrate": {},
     "build-knip-dependencies": {
-      "dependsOn": ["generate-api-client"]
+      "dependsOn": ["generate-api-client", "generate-protobuf"]
     }
   }
 }
