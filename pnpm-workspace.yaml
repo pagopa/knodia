@@ -11,7 +11,7 @@ catalog:
   "@bufbuild/protobuf": 2.10.2
   "@confluentinc/kafka-javascript": 1.7.0
   "@fastify/swagger": 9.6.1
-  "@fastify/swagger-ui": 5.2.3
+  "@fastify/swagger-ui": 5.2.4
   "@pagopa/eslint-config": 5.1.1
   "@tsconfig/node-ts": 23.6.2
   "@tsconfig/node24": 24.0.3
