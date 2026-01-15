@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@knodia/eservice-process-client": "workspace:*",
-    "@knodia/fastify-plugin-openapi-zod": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
     "@dotenvx/dotenvx": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

@@ -20,7 +20,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@knodia/fastify-plugin-openapi-zod": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "zod": "catalog:"

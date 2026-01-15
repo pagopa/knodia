@@ -1,4 +1,4 @@
-import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
+import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
 import Fastify from "fastify";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
