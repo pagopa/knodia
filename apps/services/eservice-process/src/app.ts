@@ -23,6 +23,10 @@ app.register(openapiZodPlugin, {
 });
 
 app.register(eserviceRouter);
-registerErrorHandler(app, "eservice-process");
+registerErrorHandler(app, {
+  correlationId: "TODO", // TODO: implement correlation ID generation
+  logger: app.log,
+  serviceName: "eservice-process",
+});
 
 export default app;

@@ -7,15 +7,19 @@ const makeApiProblem = makeApiProblemBuilder({});
 
 export const registerErrorHandler = (
   app: FastifyInstance,
-  serviceName: ServiceName,
+  context: {
+    // TODO: CorrelationId type
+    correlationId: string;
+    logger: {
+      error: (message: string) => void;
+      warn: (message: string) => void;
+    };
+    serviceName: ServiceName;
+  },
 ) => {
-  app.setErrorHandler((error, req, res) => {
+  app.setErrorHandler((error, _, res) => {
     // TODO: fix context
-    const errorRes = makeApiProblem(error, emptyErrorMapper, {
-      correlationId: req.id,
-      logger: req.log,
-      serviceName,
-    });
+    const errorRes = makeApiProblem(error, emptyErrorMapper, context);
 
     return res
       .status(errorRes.status)

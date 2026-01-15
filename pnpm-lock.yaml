@@ -113,6 +113,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
+      '@knodia/error-commons':
+        specifier: workspace:*
+        version: link:../../../packages/error-commons
       '@knodia/eservice-process-client':
         specifier: workspace:*
         version: link:../../../packages/eservice-process-client
@@ -258,6 +261,9 @@ importers:
       '@fastify/error':
         specifier: 'catalog:'
         version: 4.2.0
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.2
       fastify:
         specifier: 'catalog:'
         version: 5.6.2

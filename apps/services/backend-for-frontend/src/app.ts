@@ -1,3 +1,4 @@
+import { registerErrorHandler, serviceName } from "@knodia/error-commons";
 import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
 import Fastify from "fastify";
 
@@ -25,5 +26,10 @@ app.register(openapiZodPlugin, {
 });
 
 app.register(eserviceRouter, clients.eserviceProcessClient);
+registerErrorHandler(app, {
+  correlationId: "TODO", // TODO: implement correlation ID generation
+  logger: app.log,
+  serviceName: serviceName.BACKEND_FOR_FRONTEND,
+});
 
 export default app;

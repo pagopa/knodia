@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@fastify/error": "catalog:",
+    "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "ts-pattern": "catalog:",
