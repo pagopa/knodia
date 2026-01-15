@@ -1,72 +1,31 @@
-import type { LoggerOptions as PinoLoggerOptions } from "pino";
+import type { LevelWithSilent } from "pino";
 
-import type { LoggerConfig, LogLevel, PrettyPrintOptions } from "./types.ts";
+import { z } from "zod";
 
-import {
-  DEFAULT_LOG_LEVEL,
-  DEFAULT_PRETTY_OPTIONS,
-  DEFAULT_REDACT_PATHS,
-  PRODUCTION_ENVIRONMENTS,
-} from "./constants.ts";
+const logLevels = [
+  "debug",
+  "error",
+  "fatal",
+  "info",
+  "silent",
+  "trace",
+  "warn",
+] as const satisfies LevelWithSilent[]; // guard to ensure valid pino log levels
 
-/**
- * Determines if the current environment is production
- */
-const isProduction = (): boolean => {
-  const env = process.env["NODE_ENV"];
-  return (
-    env !== undefined &&
-    PRODUCTION_ENVIRONMENTS.includes(
-      env as (typeof PRODUCTION_ENVIRONMENTS)[number],
-    )
-  );
-};
+export const LogLevel = z.enum(logLevels);
+export type LogLevel = z.infer<typeof LogLevel>;
 
-/**
- * Resolves pretty print configuration
- */
-const resolvePrettyConfig = (
-  prettyPrint: boolean | PrettyPrintOptions | undefined,
-): Partial<PinoLoggerOptions> => {
-  // If explicitly disabled or in production with no explicit setting
-  if (prettyPrint === false || (prettyPrint === undefined && isProduction())) {
-    return {};
-  }
+const NodeEnv = z.enum(["development", "DEV", "production", "PROD", "test"]);
 
-  const options: PrettyPrintOptions =
-    typeof prettyPrint === "object"
-      ? { ...DEFAULT_PRETTY_OPTIONS, ...prettyPrint }
-      : DEFAULT_PRETTY_OPTIONS;
+export const LoggerConfig = z
+  .object({
+    LOG_LEVEL: LogLevel.default("info"),
+    NODE_ENV: NodeEnv.default("development"),
+  })
+  .transform((c) => ({
+    isProduction: c.NODE_ENV === "production" || c.NODE_ENV === "PROD",
+    logLevel: c.LOG_LEVEL,
+    nodeEnv: c.NODE_ENV,
+  }));
 
-  return {
-    transport: {
-      options: {
-        colorize: options.colorize,
-        ignore: options.ignore,
-        translateTime: options.translateTime,
-      },
-      target: "pino-pretty",
-    },
-  };
-};
-
-/**
- * Builds Pino LoggerOptions from LoggerConfig
- * Use this for Fastify integration or when you need raw options
- */
-export const buildLoggerOptions = (config: LoggerConfig): PinoLoggerOptions => {
-  const level =
-    config.level ??
-    (process.env["LOG_LEVEL"] as LogLevel | undefined) ??
-    DEFAULT_LOG_LEVEL;
-  const redact = config.redact ?? DEFAULT_REDACT_PATHS;
-  const prettyConfig = resolvePrettyConfig(config.prettyPrint);
-
-  return {
-    base: config.base ?? {},
-    level,
-    name: config.serviceName,
-    redact,
-    ...prettyConfig,
-  };
-};
+export type LoggerConfig = z.infer<typeof LoggerConfig>;

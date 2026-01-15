@@ -6,11 +6,12 @@ import {
 import { buildLoggerOptions } from "@knodia/logger/config";
 import Fastify from "fastify";
 
+import { config } from "./config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
-  logger: buildLoggerOptions({ serviceName: "eservice-process" }),
+  logger: buildLoggerOptions(config),
 });
 
 // openapiPlugin must be registered before any routes to ensure proper route discovery

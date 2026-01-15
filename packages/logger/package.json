@@ -10,6 +10,7 @@
     "./config": "./src/config.ts",
     "./constants": "./src/constants.ts",
     "./logger": "./src/logger.ts",
+    "./options": "./src/options.ts",
     "./types": "./src/types.ts"
   },
   "devDependencies": {
@@ -19,7 +20,8 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "pino": "catalog:"
+    "pino": "catalog:",
+    "zod": "catalog:"
   },
   "peerDependencies": {
     "pino-pretty": "catalog:"
