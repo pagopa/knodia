@@ -1,5 +1,8 @@
 /* eslint-disable max-lines-per-function */
 import { FastifyError } from "@fastify/error";
+import { requestContext } from "@fastify/request-context";
+import { serviceErrorCode } from "@knodia/common-models";
+import { getContextValues } from "@knodia/fastify-app-commons";
 import { AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
@@ -10,8 +13,6 @@ import { constants } from "http2";
 import { match, P } from "ts-pattern";
 import z, { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-
-import { serviceErrorCode, ServiceName } from "./services.ts";
 
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
@@ -40,15 +41,6 @@ export type Problem = z.infer<typeof Problem>;
 type MakeApiProblemFn<T extends string> = (
   error: unknown,
   httpMapper: (apiError: ApiError<CommonErrorCodes | T>) => number,
-  context: {
-    // TODO: CorrelationId type
-    correlationId: string;
-    logger: {
-      error: (message: string) => void;
-      warn: (message: string) => void;
-    };
-    serviceName: string;
-  },
   operationalLogMessage?: string,
 ) => Problem;
 
@@ -121,20 +113,10 @@ export function makeApiProblemBuilder<T extends string>(
     options;
   const allErrors = { ...commonErrorCodes, ...errors };
 
-  function retrieveServiceErrorCode(serviceName: string): string {
-    const serviceNameParsed = ServiceName.safeParse(serviceName);
-    return serviceNameParsed.success
-      ? serviceErrorCode[serviceNameParsed.data]
-      : "000";
-  }
-
-  return (
-    error,
-    httpMapper,
-    { correlationId, logger, serviceName },
-    operationalLogMessage,
-  ) => {
-    const serviceErrorCode = retrieveServiceErrorCode(serviceName);
+  return (error, httpMapper, operationalLogMessage) => {
+    const { correlationId, logger, serviceName } =
+      getContextValues(requestContext);
+    const serviceErrorCodeStr = serviceErrorCode[serviceName];
 
     const makeProblem = (
       httpStatus: number,
@@ -146,7 +128,7 @@ export function makeApiProblemBuilder<T extends string>(
               detail: apiError.detail,
               errors: [
                 {
-                  code: `${serviceErrorCode}-${allErrors[apiError.code]}`,
+                  code: `${serviceErrorCodeStr}-${allErrors[apiError.code]}`,
                   detail: apiError.detail,
                 },
               ],
@@ -156,7 +138,7 @@ export function makeApiProblemBuilder<T extends string>(
             ? {
                 detail: "Request doesn't match the schema",
                 errors: apiError.validation.map((validationError) => ({
-                  code: `${serviceErrorCode}-${allErrors.zodFastifySchemaValidationError}`,
+                  code: `${serviceErrorCodeStr}-${allErrors.zodFastifySchemaValidationError}`,
                   detail: validationError.message,
                 })),
                 title: "Response Validation Error",
@@ -165,7 +147,7 @@ export function makeApiProblemBuilder<T extends string>(
               ? {
                   detail: "Response doesn't match the schema",
                   errors: apiError.cause.issues.map((issue) => ({
-                    code: `${serviceErrorCode}-${allErrors.responseSerializationError}`,
+                    code: `${serviceErrorCodeStr}-${allErrors.responseSerializationError}`,
                     detail: issue.message || "Serialization error",
                   })),
 
@@ -175,7 +157,7 @@ export function makeApiProblemBuilder<T extends string>(
                   detail: STATUS_CODES[httpStatus] ?? "Unknown Error",
                   errors: [
                     {
-                      code: `${serviceErrorCode}-0000`,
+                      code: `${serviceErrorCodeStr}-0000`,
                       detail: apiError.message,
                     },
                   ],
