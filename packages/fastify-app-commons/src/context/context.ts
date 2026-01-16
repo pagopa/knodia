@@ -13,17 +13,17 @@ declare module "@fastify/request-context" {
 
 export const getContextValues = (requestContext: RequestContext) => ({
   correlationId:
-    requestContext.get("correlationId") ??
+    requestContext.get("correlationId") ||
     (() => {
       throw new Error("Missing correlationId in request context");
     })(),
   logger:
-    requestContext.get("logger") ??
+    requestContext.get("logger") ||
     (() => {
       throw new Error("Missing logger in request context");
     })(),
   serviceName:
-    requestContext.get("serviceName") ??
+    requestContext.get("serviceName") ||
     (() => {
       throw new Error("Missing serviceName in request context");
     })(),

@@ -28,7 +28,7 @@ export const createFastifyClient = (
   app.register(fastifyRequestContext, {
     defaultStoreValues: (request) => ({
       correlationId:
-        request.headers["x-correlation-id"]?.toString() ?? crypto.randomUUID(),
+        request.headers["x-correlation-id"]?.toString() || crypto.randomUUID(),
       logger: request.log,
       serviceName,
     }),
