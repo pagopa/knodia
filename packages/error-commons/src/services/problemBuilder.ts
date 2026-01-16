@@ -14,14 +14,18 @@ import { match, P } from "ts-pattern";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import type { Problem } from "./models/problem.ts";
+import type { Problem } from "../models/problem.ts";
 
-import { ApiError, createApiError } from "./models/apiError.ts";
+import { ApiError } from "../models/apiError.ts";
+import {
+  commonErrorCodes,
+  type CommonErrorCodes,
+  genericError,
+} from "../models/errors.ts";
+import { defaultCommonErrorMapper } from "./errorMappers.ts";
 
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
-
-export const emptyErrorMapper = (): number => HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
 type MakeApiProblemFn<T extends string> = (
   error: unknown,
@@ -267,31 +271,4 @@ export function makeApiProblemBuilder<T extends string>(
         return genericProblem;
       });
   };
-}
-
-export const commonErrorCodes = {
-  GENERIC_ERROR: { code: "GENERIC_ERROR", number: "9991" },
-  RESPONSE_SERIALIZATION_ERROR: {
-    code: "RESPONSE_SERIALIZATION_ERROR",
-    number: "9993",
-  },
-  ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR: {
-    code: "ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR",
-    number: "9992",
-  },
-} as const;
-
-export type CommonErrorCodes = keyof typeof commonErrorCodes;
-
-/* ===== API Error ===== */
-
-const defaultCommonErrorMapper = (code: CommonErrorCodes): number =>
-  match(code).otherwise(() => HTTP_STATUS_INTERNAL_SERVER_ERROR);
-
-export function genericError(details: string): ApiError<CommonErrorCodes> {
-  return createApiError(
-    commonErrorCodes.GENERIC_ERROR.code,
-    details,
-    "Unexpected Error",
-  );
 }
