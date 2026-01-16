@@ -9,6 +9,7 @@
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
     "lint-openapi": "turbo run lint-openapi",
+    "test": "turbo run test",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "knip": "turbo run build-knip-dependencies && knip",

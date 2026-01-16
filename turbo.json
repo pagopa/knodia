@@ -18,7 +18,7 @@
       "outputs": ["src/generated/**"]
     },
     "generate-openapi": {
-      "dependsOn": ["typecheck"],
+      "dependsOn": ["generate-api-client", "generate-protobuf"],
       "outputs": ["openapi/openapi.yaml"]
     },
     "generate-protobuf": {
@@ -28,6 +28,10 @@
     "lint:autofix": {},
     "lint-openapi": {
       "dependsOn": ["generate-openapi"]
+    },
+    "test": {
+      "dependsOn": ["generate-api-client", "generate-protobuf", "^test"],
+      "outputs": []
     },
     "db:generate": {
       "outputs": ["drizzle/**"]
