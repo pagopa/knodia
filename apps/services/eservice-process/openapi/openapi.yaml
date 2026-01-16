@@ -5,6 +5,46 @@ info:
   version: 1.0.0
 components:
   schemas:
+    ProblemError:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/ProblemError"
+      type: object
+      properties:
+        code:
+          type: string
+        detail:
+          type: string
+      required:
+        - code
+        - detail
+      additionalProperties: false
+    Problem:
+      $schema: https://json-schema.org/draft/2020-12/schema
+      $id: "#/components/schemas/Problem"
+      type: object
+      properties:
+        correlationId:
+          type: string
+        detail:
+          type: string
+        errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProblemError"
+        status:
+          type: number
+        title:
+          type: string
+        type:
+          type: string
+      required:
+        - correlationId
+        - detail
+        - errors
+        - status
+        - title
+        - type
+      additionalProperties: false
     Pagination:
       $schema: https://json-schema.org/draft/2020-12/schema
       $id: "#/components/schemas/Pagination"
@@ -79,3 +119,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Eservices"
+        "400":
+          description: Default Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
