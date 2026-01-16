@@ -1,7 +1,11 @@
+import {
+  healthRouter,
+  healthRouterTag,
+} from "@knodia/fastify-zod-api-commons/health";
 import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
-import { healthRouter } from "@knodia/fastify-zod-api-commons/routers";
 import Fastify from "fastify";
 
+import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
@@ -22,13 +26,10 @@ app.register(openapiZodPlugin, {
     },
     servers: [{ description: "E-service Process API", url: "/" }],
     tags: [
-      {
-        description: "Health check routes",
-        name: "health",
-      },
+      healthRouterTag,
       {
         description: "E-services routes",
-        name: "eservice",
+        name: apiTags.eservice,
       },
     ],
   },

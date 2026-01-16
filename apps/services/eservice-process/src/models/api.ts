@@ -1,27 +1,12 @@
+import {
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
-const API_Pagination = z
-  .strictObject({
-    limit: z.number().min(1).max(50).meta({ format: "int32" }),
-    offset: z.number().min(0).meta({ format: "int32" }),
-    total: z.number().min(0).meta({ format: "int32" }),
-  })
-  .meta({ id: "Pagination" });
-type API_Pagination = z.infer<typeof API_Pagination>;
-
-export const API_EservicesQueryParams = z.strictObject({
-  limit: z.coerce
-    .number()
-    .min(1)
-    .max(50)
-    .describe("Maximum number of items returned")
-    .meta({ format: "int32" }),
-  offset: z.coerce
-    .number()
-    .min(0)
-    .describe("Pagination starting position")
-    .meta({ format: "int32" }),
-});
+export const API_EservicesQueryParams = z
+  .strictObject({})
+  .and(API_PaginationQueryParams);
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
 export const API_Eservice = z
