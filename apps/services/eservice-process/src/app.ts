@@ -16,11 +16,7 @@ const app = Fastify({
 app.register(openapiZodPlugin, {
   openapi: {
     info: {
-      contact: {
-        url: "https://github.com/pagopa/knodia/issues",
-      },
       description: "API for managing Knodia E-services",
-      termsOfService: "https://github.com/pagopa/knodia",
       title: "Knodia E-service Process API",
       version: "1.0.0",
     },
@@ -32,9 +28,6 @@ app.register(openapiZodPlugin, {
         name: apiTags.eservice,
       },
     ],
-  },
-  openapiDocs: {
-    routePrefix: "/docs",
   },
 });
 

@@ -2,8 +2,8 @@ openapi: 3.0.4
 info:
   contact:
     url: https://github.com/pagopa/knodia/issues
+  termsOfService: https://knodia.org/
   description: API for managing Knodia E-services
-  termsOfService: https://github.com/pagopa/knodia
   title: Knodia E-service Process API
   version: 1.0.0
 components:
@@ -152,11 +152,13 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: Default Response
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Eservices"
+                description: E-services retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservices"
     post:
       operationId: createEservice
       tags:
@@ -169,11 +171,13 @@ paths:
               $ref: "#/components/schemas/EserviceSeedInput"
       responses:
         "201":
-          description: Default Response
+          description: E-service created successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Eservice"
+                description: E-service created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservice"
 servers:
   - description: E-service Process API
     url: /
