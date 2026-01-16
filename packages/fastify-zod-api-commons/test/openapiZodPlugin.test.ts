@@ -1,196 +1,26 @@
-import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import type { OpenAPIV3_1 } from "openapi-types";
 
 import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { z } from "zod";
 
 import {
-  API_Pagination,
-  API_PaginationQueryParams,
-} from "../src/models/api.ts";
-import openapiZodPlugin from "../src/utils/openapiZodPlugin.ts";
-
-// TODO add operationId, tags, description, summary, servers
-// TODO move to schemas the z objects
-
-const fastify = Fastify({
-  logger: false,
-});
-
-const testRoute: FastifyPluginAsyncZod = async (fastify) => {
-  fastify.route({
-    handler: (req, res) => {
-      res.send({
-        limit: req.query.limit,
-        offset: req.query.offset,
-        results: ["test1", "test2"],
-        total: 2,
-      });
-    },
-    method: "GET",
-    schema: {
-      querystring: z
-        .strictObject({
-          query: z.string().describe("A string filter"),
-        })
-        .and(API_PaginationQueryParams),
-      response: {
-        200: z
-          .strictObject({
-            results: z.array(z.string()).describe("The response results"),
-          })
-          .and(API_Pagination)
-          .describe("Results retrieved successfully"),
-      },
-    },
-    url: "/test",
-  });
-
-  fastify.route({
-    handler: (req, res) => {
-      res.send({
-        id: "test",
-        prop: req.body.prop,
-      });
-    },
-    method: "POST",
-    schema: {
-      body: z.object({
-        prop: z.string(),
-      }),
-      response: {
-        201: z
-          .object({
-            id: z.string(),
-            prop: z.string(),
-          })
-          .describe("Resource created successfully"),
-      },
-    },
-    url: "/test",
-  });
-};
-
-const expectedPaginationSchema = {
-  additionalProperties: false,
-  properties: {
-    limit: {
-      format: "int32",
-      maximum: 50,
-      minimum: 1,
-      type: "number",
-    },
-    offset: {
-      format: "int32",
-      minimum: 0,
-      type: "number",
-    },
-    total: { format: "int32", minimum: 0, type: "number" },
-  },
-  required: ["limit", "offset", "total"],
-  type: "object",
-};
-
-const expectedOpenApiComponents = {
-  schemas: {
-    Pagination: expectedPaginationSchema,
-    PaginationInput: expectedPaginationSchema,
-  },
-};
-
-const expectedGetTestPath = {
-  parameters: [
-    {
-      description: "A string filter",
-      in: "query",
-      name: "query",
-      required: true,
-      schema: { type: "string" },
-    },
-    {
-      description: "Maximum number of items returned",
-      in: "query",
-      name: "limit",
-      required: true,
-      schema: { format: "int32", maximum: 50, minimum: 1, type: "number" },
-    },
-    {
-      description: "Pagination starting position",
-      in: "query",
-      name: "offset",
-      required: true,
-      schema: { format: "int32", minimum: 0, type: "number" },
-    },
-  ],
-  responses: {
-    "200": {
-      content: {
-        "application/json": {
-          schema: {
-            allOf: [
-              {
-                additionalProperties: false,
-                properties: {
-                  results: {
-                    description: "The response results",
-                    items: { type: "string" },
-                    type: "array",
-                  },
-                },
-                required: ["results"],
-                type: "object",
-              },
-              {
-                $ref: "#/components/schemas/Pagination",
-              },
-            ],
-            description: "Results retrieved successfully",
-          },
-        },
-      },
-      description: "Results retrieved successfully",
-    },
-  },
-};
-
-const expectedPostTestPath = {
-  requestBody: {
-    content: {
-      "application/json": {
-        schema: {
-          properties: {
-            prop: { type: "string" },
-          },
-          required: ["prop"],
-          type: "object",
-        },
-      },
-    },
-    required: true,
-  },
-  responses: {
-    "201": {
-      content: {
-        "application/json": {
-          schema: {
-            additionalProperties: false,
-            description: "Resource created successfully",
-            properties: {
-              id: { type: "string" },
-              prop: { type: "string" },
-            },
-            required: ["id", "prop"],
-            type: "object",
-          },
-        },
-      },
-      description: "Resource created successfully",
-    },
-  },
-};
+  healthRouter,
+  healthRouterTag,
+} from "../../fastify-zod-api-commons/src/routers/healthRouter.ts";
+import openapiZodPlugin from "../../fastify-zod-api-commons/src/utils/openapiZodPlugin.ts";
+import {
+  expectedOpenApiComponents,
+  expectedStatusGet,
+  expectedTestGet,
+  expectedTestPost,
+} from "./expectedOpenapi.ts";
+import { testRouter, testTags } from "./testRouter.ts";
 
 describe("openapiZodPlugin", () => {
+  const fastify = Fastify({
+    logger: false,
+  });
+
   beforeAll(async () => {
     await fastify.register(openapiZodPlugin, {
       openapi: {
@@ -199,11 +29,20 @@ describe("openapiZodPlugin", () => {
           title: "Test API",
           version: "1.0.0",
         },
+        servers: [{ description: "Test API server", url: "/" }],
+        tags: [
+          healthRouterTag,
+          {
+            description: "Tag 1 for testing",
+            name: testTags.test,
+          },
+        ],
       },
       openapiDocs: false,
     });
 
-    await fastify.register(testRoute);
+    await fastify.register(healthRouter);
+    await fastify.register(testRouter);
     await fastify.ready();
   });
 
@@ -226,11 +65,28 @@ describe("openapiZodPlugin", () => {
       },
       openapi: "3.0.4",
       paths: {
+        "/status": expectedStatusGet,
         "/test": {
-          get: expectedGetTestPath,
-          post: expectedPostTestPath,
+          get: expectedTestGet,
+          post: expectedTestPost,
         },
       },
+      servers: [
+        {
+          description: "Test API server",
+          url: "/",
+        },
+      ],
+      tags: [
+        {
+          description: healthRouterTag.description,
+          name: healthRouterTag.name,
+        },
+        {
+          description: "Tag 1 for testing",
+          name: testTags.test,
+        },
+      ],
     });
   });
 });
