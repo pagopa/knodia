@@ -1,53 +1,97 @@
-import { Button as ButtonPrimitive } from "@base-ui/react/button";
-import { cva } from "class-variance-authority";
-import { type VariantProps } from "class-variance-authority";
+import {
+  composeRenderProps,
+  Button as RACButton,
+  ButtonProps as RACButtonProps,
+} from "react-aria-components";
+import { tv } from "tailwind-variants";
 
-import { cn } from "@/libs/utils";
+import { focusRing } from "@/libs/react-aria";
 
-const buttonVariants = cva(
-  "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 aria-invalid:border-destructive rounded-md border border-transparent bg-clip-padding text-sm font-medium focus-visible:ring-[3px] aria-invalid:ring-[3px] [&_svg:not([class*='size-'])]:size-4 inline-flex items-center justify-center whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none shrink-0 [&_svg]:shrink-0 outline-none group/button select-none",
-  {
-    defaultVariants: {
-      size: "default",
-      variant: "default",
+export interface ButtonProps extends RACButtonProps {
+  /** @default 'primary' */
+  variant?: "destructive" | "primary" | "quiet" | "secondary";
+}
+
+const button = tv({
+  base: "relative inline-flex items-center justify-center gap-2 border border-transparent dark:border-white/10 h-9 box-border px-3.5 py-0 [&:has(>svg:only-child)]:px-0 [&:has(>svg:only-child)]:h-8 [&:has(>svg:only-child)]:w-8 font-sans text-sm text-center transition rounded-lg cursor-default [-webkit-tap-highlight-color:transparent]",
+  compoundVariants: [
+    {
+      class: "bg-transparent dark:bg-transparent",
+      isDisabled: true,
+      variant: "quiet",
     },
-    variants: {
-      size: {
-        default: "h-9 gap-1.5 px-2.5",
-        icon: "size-9",
-        "icon-lg": "size-10",
-        "icon-sm": "size-8 rounded-[min(var(--radius-md),10px)]",
-        "icon-xs": "size-6 rounded-[min(var(--radius-md),8px)] ",
-        lg: "h-10 gap-1.5 px-2.5",
-        sm: "h-8 gap-1 rounded-[min(var(--radius-md),10px)] px-2.5",
-        xs: "h-6 gap-1 rounded-[min(var(--radius-md),8px)] px-2 text-xs",
-      },
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        destructive:
-          "bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 text-destructive focus-visible:border-destructive/40",
-        ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground shadow-xs",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-      },
+  ],
+  defaultVariants: {
+    variant: "primary",
+  },
+  extend: focusRing,
+  variants: {
+    isDisabled: {
+      true: "border-transparent dark:border-transparent bg-neutral-100 dark:bg-neutral-800 text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
+    },
+    isPending: {
+      true: "text-transparent",
+    },
+    variant: {
+      destructive: "bg-red-700 hover:bg-red-800 pressed:bg-red-900 text-white",
+      primary: "bg-blue-600 hover:bg-blue-700 pressed:bg-blue-800 text-white",
+      quiet:
+        "border-0 bg-transparent hover:bg-neutral-200 pressed:bg-neutral-300 text-neutral-800 dark:hover:bg-neutral-700 dark:pressed:bg-neutral-600 dark:text-neutral-100",
+      secondary:
+        "border-black/10 bg-neutral-50 hover:bg-neutral-100 pressed:bg-neutral-200 text-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:pressed:bg-neutral-500 dark:text-neutral-100",
     },
   },
-);
+});
 
-export function Button({
-  className,
-  size = "default",
-  variant = "default",
-  ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+export function Button(props: ButtonProps) {
   return (
-    <ButtonPrimitive
-      className={cn(buttonVariants({ className, size, variant }))}
+    <RACButton
       {...props}
-    />
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        button({ ...renderProps, className, variant: props.variant }),
+      )}
+    >
+      {composeRenderProps(props.children, (children, { isPending }) => (
+        <>
+          {children}
+          {isPending && (
+            <span
+              aria-hidden
+              className="flex absolute inset-0 justify-center items-center"
+            >
+              <svg
+                className="w-4 h-4 text-white animate-spin"
+                stroke={
+                  props.variant === "secondary" || props.variant === "quiet"
+                    ? "light-dark(black, white)"
+                    : "white"
+                }
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  fill="none"
+                  r="10"
+                  strokeWidth="4"
+                />
+                <circle
+                  cx="12"
+                  cy="12"
+                  fill="none"
+                  pathLength="100"
+                  r="10"
+                  strokeDasharray="60 140"
+                  strokeDashoffset="0"
+                  strokeLinecap="round"
+                  strokeWidth="4"
+                />
+              </svg>
+            </span>
+          )}
+        </>
+      ))}
+    </RACButton>
   );
 }
