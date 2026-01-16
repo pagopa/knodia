@@ -2,8 +2,8 @@ openapi: 3.0.4
 info:
   contact:
     url: https://github.com/pagopa/knodia/issues
-  description: Knodia backend-for-frontend API
   termsOfService: https://github.com/pagopa/knodia
+  description: Knodia backend-for-frontend API
   title: Knodia BFF API
   version: 1.0.0
 components:

@@ -1,3 +1,5 @@
+import type { OpenAPIV3 } from "openapi-types";
+
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUI from "@fastify/swagger-ui";
 import fastifyPlugin from "fastify-plugin";
@@ -31,6 +33,10 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
       ...swaggerOptions,
       openapi: {
         ...swaggerOptions.openapi,
+        info: {
+          ...defaultContactAndTos,
+          ...swaggerOptions.openapi?.info,
+        } as OpenAPIV3.InfoObject,
         openapi: OPENAPI_VERSION,
       },
       transform: zodToJsonSchemaTransform,
@@ -43,3 +49,13 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
     }
   },
 );
+
+const defaultContactAndTos: Pick<
+  OpenAPIV3.InfoObject,
+  "contact" | "termsOfService"
+> = {
+  contact: {
+    url: "https://github.com/pagopa/knodia/issues",
+  },
+  termsOfService: "https://knodia.org/",
+};
