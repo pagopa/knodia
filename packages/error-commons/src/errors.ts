@@ -284,7 +284,7 @@ export function makeApiProblemBuilder<T extends string>(
                 title: P.string,
                 type: "about:blank",
               },
-              // Matching also AxiosError content to ensure data matches Problem type
+              // Also matching AxiosError content to ensure data matches Problem type
               status: P.number,
             },
           },
