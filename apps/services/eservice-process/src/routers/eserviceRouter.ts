@@ -29,7 +29,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices,
-        400: Problem,
+        404: Problem,
       },
       tags: ["eservice"],
     },
