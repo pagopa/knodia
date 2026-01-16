@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
 import { toAPI_Eservice } from "../models/apiConverter.ts";
+import { apiTags } from "../models/apiTags.ts";
 import { getMockEservices } from "../services/eserviceService.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
@@ -21,7 +22,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
       response: {
         200: API_Eservices,
       },
-      tags: ["eservice"],
+      tags: [apiTags.eservice],
     },
     url: "/eservices",
   });

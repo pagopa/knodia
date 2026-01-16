@@ -4,6 +4,7 @@ import { eserviceProcessApi } from "@knodia/eservice-process-client";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
+import { apiTags } from "../models/apiTags.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
@@ -37,7 +38,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       response: {
         200: API_Eservices,
       },
-      tags: ["eservice"],
+      tags: [apiTags.eservice],
     },
     url: "/eservices",
   });
