@@ -4,9 +4,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
-export const API_EservicesQueryParams = z
-  .strictObject({})
-  .and(API_PaginationQueryParams);
+export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
 const API_Eservice = z
