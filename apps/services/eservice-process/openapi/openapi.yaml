@@ -2,7 +2,7 @@ openapi: 3.0.4
 info:
   contact:
     url: https://github.com/pagopa/knodia/issues
-  termsOfService: https://github.com/pagopa/knodia
+  termsOfService: https://knodia.org/
   description: API for managing Knodia E-services
   title: Knodia E-service Process API
   version: 1.0.0

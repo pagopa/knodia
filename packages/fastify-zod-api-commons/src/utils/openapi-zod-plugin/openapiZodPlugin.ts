@@ -14,7 +14,7 @@ import {
 } from "./zodToJsonSchema.ts";
 
 type OpenapiZodPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
-  openapiDocs: false | fastifySwaggerUI.FastifySwaggerUiOptions;
+  openapiDocs?: false | fastifySwaggerUI.FastifySwaggerUiOptions;
 };
 
 const OPENAPI_VERSION = "3.0.4";
@@ -45,7 +45,12 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
 
     // Optionally register fastify-swagger-ui to serve the OpenAPI docs
     if (openapiDocs !== false) {
-      fastify.register(fastifySwaggerUI, openapiDocs);
+      fastify.register(
+        fastifySwaggerUI,
+        openapiDocs ?? {
+          routePrefix: "/docs",
+        },
+      );
     }
   },
 );

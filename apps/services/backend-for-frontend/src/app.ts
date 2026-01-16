@@ -32,9 +32,6 @@ app.register(openapiZodPlugin, {
       },
     ],
   },
-  openapiDocs: {
-    routePrefix: "/docs",
-  },
 });
 
 app.register(healthRouter);
