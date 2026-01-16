@@ -48,7 +48,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
       response: {
         201: API_Eservice,
       },
-      tags: ["eservice"],
+      tags: [apiTags.eservice],
     },
     url: "/eservices",
   });
