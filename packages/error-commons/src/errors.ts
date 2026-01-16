@@ -11,74 +11,23 @@ import {
 import { STATUS_CODES } from "http";
 import { constants } from "http2";
 import { match, P } from "ts-pattern";
-import z, { ZodError } from "zod";
+import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
+
+import type { Problem } from "./models/problem.ts";
+
+import { ApiError, createApiError } from "./models/apiError.ts";
 
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
 
 export const emptyErrorMapper = (): number => HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-const ProblemError = z
-  .strictObject({
-    code: z.string(),
-    detail: z.string(),
-  })
-  .meta({ id: "ProblemError" });
-
-export const Problem = z
-  .strictObject({
-    correlationId: z.string(),
-    detail: z.string(),
-    errors: z.array(ProblemError),
-    status: z.number(),
-    title: z.string(),
-    type: z.string(),
-  })
-  .meta({ id: "Problem" });
-export type Problem = z.infer<typeof Problem>;
-
 type MakeApiProblemFn<T extends string> = (
   error: unknown,
   httpMapper: (apiError: ApiError<CommonErrorCodes | T>) => number,
   operationalLogMessage?: string,
 ) => Problem;
-
-export class ApiError<T> extends Error {
-  public code: T;
-  public detail: string;
-  public errors: { code: T; detail: string }[];
-  public title: string;
-
-  constructor({
-    code,
-    detail,
-    errors,
-    title,
-  }: {
-    code: T;
-    detail: string;
-    errors?: Error[];
-    title: string;
-  }) {
-    super(detail);
-    this.code = code;
-    this.title = title;
-    this.detail = detail;
-    this.errors =
-      errors && errors.length > 0
-        ? errors.map((e) => ({ code, detail: e.message }))
-        : [{ code, detail }];
-  }
-}
-
-export function createApiError<T>(code: T, detail: string, title: string) {
-  return new ApiError({
-    code,
-    detail,
-    title,
-  });
-}
 
 const makeProblemLogString = (
   problem: Problem,
