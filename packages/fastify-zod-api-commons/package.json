@@ -6,7 +6,7 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "vitest": "catalog:"
+    "test": "vitest"
   },
   "exports": {
     "./openApiZodPlugin": "./src/utils/openapiZodPlugin.ts",

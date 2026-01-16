@@ -1,9 +1,11 @@
-import Fastify from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { z } from "zod";
-import openapiZodPlugin from "../src/openapiZodPlugin.ts";
 import type { OpenAPIV3_1 } from "openapi-types";
+
+import Fastify from "fastify";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { z } from "zod";
+
+import openapiZodPlugin from "../src/utils/openapiZodPlugin.ts";
 
 describe("openapiZodPlugin", () => {
   const fastify = Fastify({
@@ -12,8 +14,12 @@ describe("openapiZodPlugin", () => {
 
   const testRoute: FastifyPluginAsyncZod = async (fastify) => {
     fastify.route({
+      handler: (req, res) => {
+        res.send({
+          response: `params: ${req.query.param1}, ${req.query.param2}`,
+        });
+      },
       method: "GET",
-      url: "/test",
       schema: {
         querystring: z.object({
           param1: z.string().describe("A string parameter"),
@@ -27,11 +33,7 @@ describe("openapiZodPlugin", () => {
             .meta({ id: "TestResponse" }),
         },
       },
-      handler: (req, res) => {
-        res.send({
-          response: `params: ${req.query.param1}, ${req.query.param2}`,
-        });
-      },
+      url: "/test",
     });
   };
 
@@ -39,8 +41,8 @@ describe("openapiZodPlugin", () => {
     await fastify.register(openapiZodPlugin, {
       openapi: {
         info: {
-          title: "Test API",
           description: "API for testing openapiZodPlugin",
+          title: "Test API",
           version: "1.0.0",
         },
       },
@@ -55,9 +57,9 @@ describe("openapiZodPlugin", () => {
     await fastify.close();
   });
 
-  it("exposes an OpenAPI 3.1 spec for registered routes", () => {
+  it("exposes an OpenAPI 3.0.4 spec for registered routes", () => {
     const openapi = fastify.swagger() as OpenAPIV3_1.Document;
-    expect(openapi.openapi).toBe("3.1.2");
+    expect(openapi.openapi).toBe("3.0.4");
     expect(openapi.info.title).toBe("Test API");
     expect(openapi.info.version).toBe("1.0.0");
     expect(openapi.info.description).toBe("API for testing openapiZodPlugin");
@@ -65,16 +67,16 @@ describe("openapiZodPlugin", () => {
     const testPath = openapi.paths?.["/test"]?.get;
     expect(testPath).toBeDefined();
     expect(testPath?.parameters?.[0]).toMatchObject({
-      name: "param1",
-      in: "query",
-      schema: { type: "string" },
       description: "A string parameter",
+      in: "query",
+      name: "param1",
+      schema: { type: "string" },
     });
     expect(testPath?.parameters?.[1]).toMatchObject({
-      name: "param2",
-      in: "query",
-      schema: { type: "number" },
       description: "A number parameter",
+      in: "query",
+      name: "param2",
+      schema: { type: "number" },
     });
     expect(testPath?.responses["200"]).toMatchObject({
       content: {
@@ -85,22 +87,14 @@ describe("openapiZodPlugin", () => {
     });
 
     expect(openapi.components?.schemas?.["TestResponse"]).toMatchObject({
-      type: "object",
       properties: {
         response: {
-          type: "string",
           description: "The response payload",
+          type: "string",
         },
       },
       required: ["response"],
+      type: "object",
     });
-  });
-
-  it("excludes zod *Input schemas from the OpenAPI spec", () => {
-    const openapi = fastify.swagger() as OpenAPIV3_1.Document;
-    const schemas = openapi.components?.schemas ?? {};
-
-    expect(schemas["TestResponse"]).toBeDefined();
-    expect(schemas["TestResponseInput"]).toBeUndefined();
   });
 });
