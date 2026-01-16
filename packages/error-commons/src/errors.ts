@@ -55,7 +55,7 @@ interface ProblemBuilderOptions {
 }
 
 export function makeApiProblemBuilder<T extends string>(
-  errors: Record<T, string>,
+  errors: Record<T, { code: string; number: string }>,
   options: ProblemBuilderOptions = {},
 ): MakeApiProblemFn<T> {
   const { forceGenericProblemOn500 = false, problemErrorsPassthrough = true } =
@@ -77,7 +77,7 @@ export function makeApiProblemBuilder<T extends string>(
               detail: apiError.detail,
               errors: [
                 {
-                  code: `${serviceErrorCodeStr}-${allErrors[apiError.code]}`,
+                  code: `${serviceErrorCodeStr}-${allErrors[apiError.code].number}`,
                   detail: apiError.detail,
                 },
               ],
@@ -87,7 +87,7 @@ export function makeApiProblemBuilder<T extends string>(
             ? {
                 detail: "Request doesn't match the schema",
                 errors: apiError.validation.map((validationError) => ({
-                  code: `${serviceErrorCodeStr}-${allErrors.zodFastifySchemaValidationError}`,
+                  code: `${serviceErrorCodeStr}-${allErrors.ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR.number}`,
                   detail: validationError.message,
                 })),
                 title: "Response Validation Error",
@@ -96,7 +96,7 @@ export function makeApiProblemBuilder<T extends string>(
               ? {
                   detail: "Response doesn't match the schema",
                   errors: apiError.cause.issues.map((issue) => ({
-                    code: `${serviceErrorCodeStr}-${allErrors.responseSerializationError}`,
+                    code: `${serviceErrorCodeStr}-${allErrors.RESPONSE_SERIALIZATION_ERROR.number}`,
                     detail: issue.message || "Serialization error",
                   })),
 
@@ -270,9 +270,15 @@ export function makeApiProblemBuilder<T extends string>(
 }
 
 export const commonErrorCodes = {
-  genericError: "9991",
-  responseSerializationError: "9993",
-  zodFastifySchemaValidationError: "9992",
+  GENERIC_ERROR: { code: "GENERIC_ERROR", number: "9991" },
+  RESPONSE_SERIALIZATION_ERROR: {
+    code: "RESPONSE_SERIALIZATION_ERROR",
+    number: "9993",
+  },
+  ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR: {
+    code: "ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR",
+    number: "9992",
+  },
 } as const;
 
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
@@ -283,5 +289,9 @@ const defaultCommonErrorMapper = (code: CommonErrorCodes): number =>
   match(code).otherwise(() => HTTP_STATUS_INTERNAL_SERVER_ERROR);
 
 export function genericError(details: string): ApiError<CommonErrorCodes> {
-  return createApiError("genericError", details, "Unexpected Error");
+  return createApiError(
+    commonErrorCodes.GENERIC_ERROR.code,
+    details,
+    "Unexpected Error",
+  );
 }
