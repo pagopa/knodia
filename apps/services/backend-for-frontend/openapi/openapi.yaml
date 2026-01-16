@@ -90,11 +90,13 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: Default Response
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Eservices"
+                description: E-services retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservices"
 servers:
   - description: BFF API
     url: /
