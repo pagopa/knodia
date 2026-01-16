@@ -15,6 +15,7 @@
       "dependsOn": ["generate-api-client", "generate-protobuf", "^typecheck"]
     },
     "generate-api-client": {
+      "dependsOn": ["^generate-api-client"],
       "outputs": ["src/generated/**"]
     },
     "generate-openapi": {
@@ -22,6 +23,7 @@
       "outputs": ["openapi/openapi.yaml"]
     },
     "generate-protobuf": {
+      "dependsOn": ["^generate-protobuf"],
       "outputs": ["src/generated/*"]
     },
     "lint": {},
@@ -30,7 +32,7 @@
       "dependsOn": ["generate-openapi"]
     },
     "test": {
-      "dependsOn": ["generate-api-client", "generate-protobuf", "^test"],
+      "dependsOn": ["^test"],
       "outputs": []
     },
     "db:generate": {
