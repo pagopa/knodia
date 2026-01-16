@@ -17,8 +17,11 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@fastify/request-context": "catalog:",
+    "@knodia/common-models": "workspace:*",
     "@knodia/error-commons": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
+    "@knodia/fastify-app-commons": "workspace:*",
     "@knodia/fastify-plugin-openapi-zod": "workspace:*",
     "@dotenvx/dotenvx": "catalog:",
     "fastify": "catalog:",

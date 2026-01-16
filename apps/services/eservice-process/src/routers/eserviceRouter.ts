@@ -10,13 +10,8 @@ import { getMockEservices } from "../services/eserviceService.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
-    errorHandler: (error, req, res) => {
-      // TODO: fix context
-      const errorRes = makeApiProblem(error, eserviceErrorMapper, {
-        correlationId: req.id,
-        logger: req.log,
-        serviceName: "eservice-process",
-      });
+    errorHandler: (error, _req, res) => {
+      const errorRes = makeApiProblem(error, eserviceErrorMapper);
 
       res.statusCode = errorRes.status;
       return res.type("application/problem+json").send(errorRes);
