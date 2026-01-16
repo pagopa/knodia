@@ -3,11 +3,8 @@ import type { OpenAPIV3_1 } from "openapi-types";
 import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import {
-  healthRouter,
-  healthRouterTag,
-} from "../../fastify-zod-api-commons/src/routers/healthRouter.ts";
-import openapiZodPlugin from "../../fastify-zod-api-commons/src/utils/openapiZodPlugin.ts";
+import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
+import openapiZodPlugin from "../src/utils/openapiZodPlugin.ts";
 import {
   expectedOpenApiComponents,
   expectedStatusGet,
@@ -38,7 +35,6 @@ describe("openapiZodPlugin", () => {
           },
         ],
       },
-      openapiDocs: false,
     });
 
     await fastify.register(healthRouter);
