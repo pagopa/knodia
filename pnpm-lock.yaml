@@ -165,9 +165,6 @@ importers:
 
   apps/services/eservice-process:
     dependencies:
-      '@fastify/request-context':
-        specifier: 'catalog:'
-        version: 6.2.1
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -371,9 +368,6 @@ importers:
       fastify:
         specifier: 'catalog:'
         version: 5.6.2
-      zod:
-        specifier: 'catalog:'
-        version: 4.2.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*

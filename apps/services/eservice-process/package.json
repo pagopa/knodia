@@ -17,7 +17,6 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/error-commons": "workspace:*",
     "@knodia/fastify-app-commons": "workspace:*",

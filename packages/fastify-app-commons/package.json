@@ -11,8 +11,7 @@
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/fastify-plugin-openapi-zod": "workspace:*",
-    "fastify": "catalog:",
-    "zod": "catalog:"
+    "fastify": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
