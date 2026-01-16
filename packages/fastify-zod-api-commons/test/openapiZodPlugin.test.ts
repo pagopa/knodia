@@ -39,7 +39,7 @@ describe("openapiZodPlugin", () => {
               results: z.array(z.string()).describe("The response results"),
             })
             .and(API_Pagination)
-            .describe("TestResponse"),
+            .describe("Results retrieved successfully"),
         },
       },
       url: "/test",
@@ -66,112 +66,107 @@ describe("openapiZodPlugin", () => {
     await fastify.close();
   });
 
+  const expectedPaginationSchema = {
+    additionalProperties: false,
+    properties: {
+      limit: {
+        format: "int32",
+        maximum: 50,
+        minimum: 1,
+        type: "number",
+      },
+      offset: {
+        format: "int32",
+        minimum: 0,
+        type: "number",
+      },
+      total: { format: "int32", minimum: 0, type: "number" },
+    },
+    required: ["limit", "offset", "total"],
+    type: "object",
+  };
+
+  const expectedOpenApiComponents = {
+    schemas: {
+      Pagination: expectedPaginationSchema,
+      PaginationInput: expectedPaginationSchema,
+    },
+  };
+
+  const expectedGetTestPath = {
+    get: {
+      parameters: [
+        {
+          description: "A string filter",
+          in: "query",
+          name: "query",
+          required: true,
+          schema: { type: "string" },
+        },
+        {
+          description: "Maximum number of items returned",
+          in: "query",
+          name: "limit",
+          required: true,
+          schema: { format: "int32", maximum: 50, minimum: 1, type: "number" },
+        },
+        {
+          description: "Pagination starting position",
+          in: "query",
+          name: "offset",
+          required: true,
+          schema: { format: "int32", minimum: 0, type: "number" },
+        },
+      ],
+      responses: {
+        "200": {
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  {
+                    additionalProperties: false,
+                    properties: {
+                      results: {
+                        description: "The response results",
+                        items: { type: "string" },
+                        type: "array",
+                      },
+                    },
+                    required: ["results"],
+                    type: "object",
+                  },
+                  {
+                    $ref: "#/components/schemas/Pagination",
+                  },
+                ],
+                description: "Results retrieved successfully",
+              },
+            },
+          },
+          description: "Results retrieved successfully",
+        },
+      },
+    },
+  };
+
   it("exposes an OpenAPI 3.0.4 spec for registered routes", () => {
     const openapi = fastify.swagger() as OpenAPIV3_1.Document;
-    expect(openapi).toBe({
+    expect(openapi).toEqual({
+      components: expectedOpenApiComponents,
       info: {
+        contact: {
+          url: "https://github.com/pagopa/knodia/issues",
+        },
         description: "API for testing openapiZodPlugin",
+        termsOfService: "https://knodia.org/",
         title: "Test API",
         version: "1.0.0",
       },
       openapi: "3.0.4",
       paths: {
-        "/test": {
-          get: {
-            parameters: [
-              {
-                description: "A string filter",
-                in: "query",
-                name: "query",
-                required: true,
-                schema: { type: "string" },
-              },
-              {
-                description: "Maximum number of items returned",
-                in: "query",
-                name: "limit",
-                required: true,
-                schema: { type: "number" },
-              },
-              {
-                description: "Pagination starting position",
-                in: "query",
-                name: "offset",
-                required: true,
-                schema: { type: "number" },
-              },
-            ],
-            responses: {
-              "200": {
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/TestResponse" },
-                  },
-                },
-                description: "TestResponse",
-              },
-            },
-          },
-        },
+        "/test": expectedGetTestPath,
       },
     });
-    // expect(openapi.openapi).toBe("3.0.4");
-    // expect(openapi.info.title).toBe("Test API");
-    // expect(openapi.info.version).toBe("1.0.0");
-    // expect(openapi.info.description).toBe("API for testing openapiZodPlugin");
-
-    // // const testPath = openapi.paths?.["/test"]?.get;
-    // // expect(testPath).toBeDefined();
-    // // const parameters = testPath?.parameters ?? [];
-    // // const parametersByName = Object.fromEntries(
-    // //   parameters.map((parameter) => [
-    // //     (parameter as OpenAPIV3_1.ParameterObject).name,
-    // //     parameter,
-    // //   ]),
-    // // );
-    // // expect(parametersByName.param1).toMatchObject({
-    // //   description: "A string parameter",
-    // //   in: "query",
-    // //   name: "param1",
-    // //   schema: { type: "string" },
-    // // });
-    // // expect(parametersByName.param2).toMatchObject({
-    // //   description: "A number parameter",
-    // //   in: "query",
-    // //   name: "param2",
-    // //   schema: { type: "number" },
-    // // });
-    // // expect(parametersByName.limit).toMatchObject({
-    // //   description: "Maximum number of items returned",
-    // //   in: "query",
-    // //   name: "limit",
-    // // });
-    // // expect(parametersByName.offset).toMatchObject({
-    // //   description: "Pagination starting position",
-    // //   in: "query",
-    // //   name: "offset",
-    // // });
-    // expect(testPath?.responses["200"]).toMatchObject({
-    //   content: {
-    //     "application/json": {
-    //       schema: { $ref: "#/components/schemas/TestResponse" },
-    //     },
-    //   },
-    // });
-
-    // expect(openapi.components?.schemas?.["TestResponse"]).toMatchObject({
-    //   properties: {
-    //     results: {
-    //       description: "The response results",
-    //       type: "array",
-    //       items: { type: "string" },
-    //     },
-    //     limit: expect.any(Object),
-    //     offset: expect.any(Object),
-    //     total: expect.any(Object),
-    //   },
-    //   required: ["results", "limit", "offset", "total"],
-    //   type: "object",
-    // });
   });
 });
