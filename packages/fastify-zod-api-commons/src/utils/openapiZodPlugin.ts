@@ -15,13 +15,13 @@ type OpenapiZodPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
   openapiDocs: false | fastifySwaggerUI.FastifySwaggerUiOptions;
 };
 
-export const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
+const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
     target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
   },
 });
 
-export const zodToJsonSchemaTransform = createJsonSchemaTransform({
+const zodToJsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
     target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
   },
