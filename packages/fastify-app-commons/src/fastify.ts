@@ -4,7 +4,14 @@ import fastifyRequestContext from "@fastify/request-context";
 import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
 import Fastify from "fastify";
 
-export const createFastifyClient = (serviceName: ServiceName) => {
+export const createFastifyClient = (
+  serviceName: ServiceName,
+  openapiInfo: {
+    description: string;
+    title: string;
+    version: string;
+  },
+) => {
   const app = Fastify({
     logger: true, // TODO configure logger - winston? pino?
   });
@@ -12,11 +19,7 @@ export const createFastifyClient = (serviceName: ServiceName) => {
   // openapiPlugin must be registered before any routes to ensure proper route discovery
   app.register(openapiZodPlugin, {
     openapi: {
-      info: {
-        description: "API for managing Knodia E-services",
-        title: "Knodia E-service Process API",
-        version: "1.0.0",
-      },
+      info: openapiInfo,
     },
     openapiDocs: {
       routePrefix: "/docs",
