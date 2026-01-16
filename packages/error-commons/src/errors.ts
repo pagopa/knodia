@@ -1,4 +1,6 @@
+/* eslint-disable max-lines-per-function */
 import { FastifyError } from "@fastify/error";
+import { AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
   isResponseSerializationError,
@@ -111,7 +113,6 @@ interface ProblemBuilderOptions {
   problemErrorsPassthrough?: boolean;
 }
 
-// eslint-disable-next-line max-lines-per-function
 export function makeApiProblemBuilder<T extends string>(
   errors: Record<T, string>,
   options: ProblemBuilderOptions = {},
@@ -265,28 +266,41 @@ export function makeApiProblemBuilder<T extends string>(
         return problem;
       })
       .with(
-        // TODO: this depends on the generated client
         /* this case is to allow a passthrough of Problem errors, so that
            services that call other interop services can forward Problem errors
            as they are, without the need to explicitly handle them */
-        {
-          correlationId: P.string,
-          detail: P.string,
-          errors: P.array({
-            code: P.string,
-            detail: P.string,
-          }),
-          status: P.number,
-          title: P.string,
-          type: "about:blank",
-        },
-        (problem) => {
+        P.intersection(
+          P.when((e): e is AxiosError<Problem> => isAxiosError(e)),
+          {
+            response: {
+              data: {
+                correlationId: P.string.optional(),
+                detail: P.string,
+                errors: P.array({
+                  code: P.string,
+                  detail: P.string,
+                }),
+                status: P.number,
+                title: P.string,
+                type: "about:blank",
+              },
+              // Matching also AxiosError content to ensure data matches Problem type
+              status: P.number,
+            },
+          },
+        ),
+        (e) => {
+          const receivedProblem: Problem = e.response.data;
           if (problemErrorsPassthrough) {
-            const problemLogString = makeProblemLogString(problem, error);
+            const problemLogString = makeProblemLogString(
+              receivedProblem,
+              error,
+            );
 
             if (
               forceGenericProblemOn500 &&
-              problem.status === HTTP_STATUS_INTERNAL_SERVER_ERROR
+              (e.response.status === HTTP_STATUS_INTERNAL_SERVER_ERROR ||
+                receivedProblem.status === HTTP_STATUS_INTERNAL_SERVER_ERROR)
             ) {
               logger.warn(
                 `${problemLogString}. forceGenericProblemOn500 is set to true, returning generic problem`,
@@ -295,14 +309,14 @@ export function makeApiProblemBuilder<T extends string>(
             }
 
             logger.warn(problemLogString);
-            return problem;
+            return receivedProblem;
           } else {
             logger.warn(
               makeProblemLogString(
                 genericProblem,
-                `${problem.title}, code ${
-                  problem.errors.at(0)?.code
-                }, ${problem.errors.at(0)?.detail}`,
+                `${receivedProblem.title}, code ${
+                  receivedProblem.errors.at(0)?.code
+                }, ${receivedProblem.errors.at(0)?.detail}`,
               ),
             );
             return genericProblem;
