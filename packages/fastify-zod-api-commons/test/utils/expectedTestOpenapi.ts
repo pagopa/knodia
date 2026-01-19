@@ -1,4 +1,4 @@
-import { healthRouterTag } from "../src/routers/healthRouter.ts";
+import { healthRouterTag } from "../../src/routers/healthRouter.ts";
 import { testTags } from "./testRouter.ts";
 
 const expectedPaginationSchema = {
@@ -51,35 +51,11 @@ const expectedTestsSchema = {
   ],
 };
 
-const expectedTestsInputSchema = {
-  allOf: [
-    {
-      additionalProperties: false,
-      properties: {
-        results: {
-          items: {
-            $ref: "#/components/schemas/TestInput",
-          },
-          type: "array",
-        },
-      },
-      required: ["results"],
-      type: "object",
-    },
-    {
-      $ref: "#/components/schemas/PaginationInput",
-    },
-  ],
-};
-
 export const expectedOpenApiComponents = {
   schemas: {
     Pagination: expectedPaginationSchema,
-    PaginationInput: expectedPaginationSchema,
     Test: expectedTestSchema,
-    TestInput: expectedTestSchema,
     Tests: expectedTestsSchema,
-    TestsInput: expectedTestsInputSchema,
   },
 };
 
@@ -136,7 +112,7 @@ export const expectedTestPost = {
     content: {
       "application/json": {
         schema: {
-          $ref: "#/components/schemas/TestInput",
+          $ref: "#/components/schemas/Test",
         },
       },
     },
@@ -178,5 +154,13 @@ export const expectedStatusGet = {
       },
     },
     tags: [healthRouterTag.name],
+  },
+};
+
+export const expectedOpenApiPaths = {
+  "/status": expectedStatusGet,
+  "/test": {
+    get: expectedTestGet,
+    post: expectedTestPost,
   },
 };

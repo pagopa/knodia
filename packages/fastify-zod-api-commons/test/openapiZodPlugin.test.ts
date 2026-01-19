@@ -4,14 +4,14 @@ import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
-import openapiZodPlugin from "../src/utils/openapiZodPlugin.ts";
+import openapiZodPlugin from "../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import {
   expectedOpenApiComponents,
   expectedStatusGet,
   expectedTestGet,
   expectedTestPost,
-} from "./expectedOpenapi.ts";
-import { testRouter, testTags } from "./testRouter.ts";
+} from "./utils/expectedTestOpenapi.ts";
+import { testRouter, testTags } from "./utils/testRouter.ts";
 
 describe("openapiZodPlugin", () => {
   const fastify = Fastify({

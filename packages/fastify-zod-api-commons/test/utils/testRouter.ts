@@ -5,7 +5,7 @@ import z from "zod";
 import {
   API_Pagination,
   API_PaginationQueryParams,
-} from "../src/models/api.ts";
+} from "../../src/models/api.ts";
 
 export const testTags = {
   test: "test",
