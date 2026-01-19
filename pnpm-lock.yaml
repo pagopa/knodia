@@ -203,6 +203,55 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  apps/services/eservice-readmodel-writer:
+    dependencies:
+      '@confluentinc/kafka-javascript':
+        specifier: 'catalog:'
+        version: 1.7.0
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/eservice
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-models
+      '@knodia/kafka-commons':
+        specifier: workspace:*
+        version: link:../../../packages/kafka-commons
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      pg:
+        specifier: 'catalog:'
+        version: 8.16.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.16.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/db/event-store/config:
     dependencies:
       drizzle-orm:
