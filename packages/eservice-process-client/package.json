@@ -1,28 +1,24 @@
 {
-  "name": "@knodia/fastify-plugin-openapi-zod",
+  "name": "@knodia/eservice-process-client",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
     "typecheck": "tsc",
+    "generate-api-client": "node ./openapi/generateApiClient.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/openapiZodPlugin.ts",
-    "./generateOpenapi": "./src/generateOpenapi.ts"
+    ".": "./src/index.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
-    "openapi-types": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@fastify/swagger": "catalog:",
-    "@fastify/swagger-ui": "catalog:",
-    "fastify": "catalog:",
-    "fastify-plugin": "catalog:",
-    "fastify-type-provider-zod": "catalog:"
+    "@knodia/openapi-client-generator": "workspace:*",
+    "axios": "catalog:"
   }
 }

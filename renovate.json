@@ -1,0 +1,42 @@
+{
+  "extends": [
+    "github>pagopa/eng-renovate",
+    ":combinePatchMinorReleases",
+    ":ignoreUnstable",
+    ":rebaseStalePrs",
+    ":dependencyDashboard"
+  ],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "enabled": true,
+      "matchDepTypes": ["devDependencies"]
+    },
+    {
+      "enabled": true,
+      "matchDepTypes": ["pnpm.catalog"]
+    }
+  ],
+  "prConcurrentLimit": 2,
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "major": {
+    "enabled": true
+  },
+  "minor": {
+    "enabled": true
+  },
+  "patch": {
+    "enabled": true
+  },
+  "digest": {
+    "enabled": true
+  },
+  "rollback": {
+    "enabled": true
+  },
+  "replacement": {
+    "enabled": true
+  }
+}

@@ -3,3 +3,6 @@ node_modules/
 
 # Turbo
 .turbo/
+
+# General
+.DS_Store

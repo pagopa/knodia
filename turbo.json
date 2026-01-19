@@ -3,13 +3,49 @@
   "tasks": {
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": [
+        "generate-openapi",
+        "generate-api-client",
+        "generate-protobuf",
+        "db:migrate"
+      ]
     },
     "typecheck": {
-      "dependsOn": ["^typecheck"]
+      "dependsOn": ["generate-api-client", "generate-protobuf", "^typecheck"]
     },
-    "generate-openapi": {},
+    "generate-api-client": {
+      "outputs": ["src/generated/**"]
+    },
+    "generate-openapi": {
+      "outputs": ["openapi/openapi.yaml"]
+    },
+    "generate-protobuf": {
+      "outputs": ["src/generated/*"]
+    },
     "lint": {},
-    "lint:autofix": {}
+    "lint:autofix": {},
+    "lint-openapi": {
+      "dependsOn": ["generate-openapi"]
+    },
+    "db:generate": {
+      "outputs": ["drizzle/**"]
+    },
+    "db:migrate": {
+      "dependsOn": ["//#infra:start", "db:generate"],
+      "cache": false
+    },
+    "build-knip-dependencies": {
+      "dependsOn": ["generate-api-client", "generate-protobuf"]
+    },
+    "//#infra:start": {
+      "cache": false
+    },
+    "//#infra:stop": {
+      "cache": false
+    },
+    "//#infra:destroy": {
+      "cache": false
+    }
   }
 }

@@ -18,9 +18,9 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
   },
-
   "files.readonlyInclude": {
-    "**/routeTree.gen.ts": true
+    "**/routeTree.gen.ts": true,
+    "**/generated/**/*.ts": true
   },
   "files.watcherExclude": {
     "**/routeTree.gen.ts": true

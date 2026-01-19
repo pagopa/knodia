@@ -1,13 +1,21 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignoreExportsUsedInFile": {
-    "interface": true,
-    "type": true
-  },
-  "tags": [
-    "-lintignore"
-  ],
   "workspaces": {
-    ".": {}
+    ".": {},
+    "packages/*-process-client": {
+      "entry": ["src/generated/**/*.ts"]
+    },
+    "packages/models/*-models": {
+      "entry": ["src/generated/*.ts"]
+    },
+    "apps/services/backend-for-frontend": {
+      "ignoreDependencies": ["@knodia/spectral-config"]
+    },
+    "apps/services/*-process": {
+      "ignoreDependencies": ["@knodia/spectral-config"]
+    },
+    "apps/web/frontend": {
+      "ignore": ["src/routeTree.gen.ts"]
+    }
   }
 }

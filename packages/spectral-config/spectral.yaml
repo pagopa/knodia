@@ -1,0 +1,18 @@
+documentationUrl: https://github.com/italia/api-oas-checker-rules
+extends:
+  [
+    "https://github.com/italia/api-oas-checker-rules/releases/download/1.4/spectral.yml",
+  ]
+rules:
+  # Errors
+  has-x-summary: off # we don't use the x-summary custom field, unsupported in our setup
+  servers-use-https: off # we use http in local/dev environments
+  paths-status-return-problem: off # /status returns 200 with no content, not a problem
+
+  # Warnings
+  paths-status-problem-schema: off # /status returns 200 with no content, not a problem
+
+  # Hints
+  has-x-api-id: off # we don't use x-api-id custom field
+  allowed-number-format: off # suggests decimal32 instead of int32, but OpenAPI standard uses int32
+  no-method-name-in-operationId: off # we usually use service method name as operationId
