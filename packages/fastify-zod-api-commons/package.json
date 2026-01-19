@@ -9,7 +9,7 @@
     "test": "vitest"
   },
   "exports": {
-    "./openApiZodPlugin": "./src/utils/openapiZodPlugin.ts",
+    "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
     "./generateOpenapi": "./src/utils/generateOpenapi.ts",
     "./health": "./src/routers/healthRouter.ts",
     "./models": "./src/models/api.ts"

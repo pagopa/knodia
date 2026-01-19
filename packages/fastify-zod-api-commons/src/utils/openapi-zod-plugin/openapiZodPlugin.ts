@@ -4,30 +4,19 @@ import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUI from "@fastify/swagger-ui";
 import fastifyPlugin from "fastify-plugin";
 import {
-  createJsonSchemaTransform,
-  createJsonSchemaTransformObject,
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
-const OPENAPI_VERSION = "3.0.4";
-const OPENAPI_3_0_ZOD_TO_JSON_SCHEMA = "openapi-3.0"; // OpenAPI 3.0
+import { OPENAPI_VERSION } from "./constants.ts";
+import {
+  zodToJsonSchemaTransform,
+  zodToJsonSchemaTransformObjectWithoutInputSchemas,
+} from "./zodToJsonSchema.ts";
 
 type OpenapiZodPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
   openapiDocs?: false | fastifySwaggerUI.FastifySwaggerUiOptions;
 };
-
-const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
-  zodToJsonConfig: {
-    target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
-  },
-});
-
-const zodToJsonSchemaTransform = createJsonSchemaTransform({
-  zodToJsonConfig: {
-    target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
-  },
-});
 
 export default fastifyPlugin<OpenapiZodPluginOptions>(
   // Use fastify-plugin so the .swagger and .swaggerUI decorators setup here
@@ -51,7 +40,7 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
         openapi: OPENAPI_VERSION,
       },
       transform: zodToJsonSchemaTransform,
-      transformObject: zodToJsonSchemaTransformObject,
+      transformObject: zodToJsonSchemaTransformObjectWithoutInputSchemas,
     } satisfies fastifySwagger.FastifyDynamicSwaggerOptions);
 
     // Optionally register fastify-swagger-ui to serve the OpenAPI docs
