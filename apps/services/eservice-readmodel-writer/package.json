@@ -24,6 +24,7 @@
     "@knodia/kafka-commons": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
