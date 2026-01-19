@@ -8,7 +8,7 @@ import { z } from "zod";
 const EserviceReadModelWriterConfig =
   ReadModelEserviceConfig.and(KafkaConsumerConfig).and(EserviceTopicConfig);
 
-export type EserviceReadModelWriterConfig = z.infer<
+type EserviceReadModelWriterConfig = z.infer<
   typeof EserviceReadModelWriterConfig
 >;
 
