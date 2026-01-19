@@ -21,8 +21,8 @@ import { Popover } from "@/components/ui/Popover";
 import { composeTailwindRenderProps, focusRing } from "@/libs/react-aria";
 
 const styles = tv({
-  base: "flex items-center text-start gap-4 w-full font-sans border border-black/10 dark:border-white/10 cursor-default rounded-lg pl-3 pr-2 h-9 min-w-[180px] transition bg-neutral-50 dark:bg-neutral-700 [-webkit-tap-highlight-color:transparent]",
   extend: focusRing,
+  base: "flex items-center text-start gap-4 w-full font-sans border border-black/10 dark:border-white/10 cursor-default rounded-lg pl-3 pr-2 h-9 min-w-[180px] transition bg-neutral-50 dark:bg-neutral-700 [-webkit-tap-highlight-color:transparent]",
   variants: {
     isDisabled: {
       false:

@@ -13,12 +13,12 @@ import {
 } from "@/libs/react-aria";
 
 const inputStyles = tv({
-  base: "border-1 rounded-lg min-h-9 font-sans text-sm py-0 px-3 box-border transition",
   extend: focusRing,
+  base: "border-1 rounded-lg min-h-9 font-sans text-sm py-0 px-3 box-border transition",
   variants: {
-    isDisabled: fieldBorderStyles.variants.isDisabled,
     isFocused: fieldBorderStyles.variants.isFocusWithin,
     isInvalid: fieldBorderStyles.variants.isInvalid,
+    isDisabled: fieldBorderStyles.variants.isDisabled,
   },
 });
 

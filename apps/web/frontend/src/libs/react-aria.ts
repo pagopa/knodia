@@ -22,9 +22,6 @@ export function composeTailwindRenderProps<T>(
 export const fieldBorderStyles = tv({
   base: "transition",
   variants: {
-    isDisabled: {
-      true: "border-neutral-200 dark:border-neutral-700 forced-colors:border-[GrayText]",
-    },
     isFocusWithin: {
       false:
         "border-neutral-300 hover:border-neutral-400 dark:border-neutral-600 dark:hover:border-neutral-500 forced-colors:border-[ButtonBorder]",
@@ -32,6 +29,9 @@ export const fieldBorderStyles = tv({
     },
     isInvalid: {
       true: "border-red-600 dark:border-red-600 forced-colors:border-[Mark]",
+    },
+    isDisabled: {
+      true: "border-neutral-200 dark:border-neutral-700 forced-colors:border-[GrayText]",
     },
   },
 });

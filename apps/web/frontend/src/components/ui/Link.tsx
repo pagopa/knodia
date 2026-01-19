@@ -12,11 +12,8 @@ interface LinkProps extends AriaLinkProps {
 }
 
 const styles = tv({
-  base: "underline disabled:no-underline disabled:cursor-default forced-colors:disabled:text-[GrayText] transition rounded-xs [-webkit-tap-highlight-color:transparent]",
-  defaultVariants: {
-    variant: "primary",
-  },
   extend: focusRing,
+  base: "underline disabled:no-underline disabled:cursor-default disabled:text-[GrayText] transition rounded-xs [-webkit-tap-highlight-color:transparent]",
   variants: {
     variant: {
       primary:
@@ -24,6 +21,9 @@ const styles = tv({
       secondary:
         "text-neutral-700 dark:text-neutral-300 underline decoration-neutral-700/50 hover:decoration-neutral-700 dark:decoration-neutral-300/70 dark:hover:decoration-neutral-300",
     },
+  },
+  defaultVariants: {
+    variant: "primary",
   },
 });
 
