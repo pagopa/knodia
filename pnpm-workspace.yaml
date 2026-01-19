@@ -16,6 +16,7 @@ catalog:
   "@fastify/swagger-ui": 5.2.4
   "@hey-api/openapi-ts": 0.89.2
   "@pagopa/eslint-config": 5.1.1
+  "@stoplight/spectral-cli": 6.15.0
   "@tsconfig/node-ts": 23.6.2
   "@tsconfig/node24": 24.0.3
   "@tsconfig/strictest": 2.0.8

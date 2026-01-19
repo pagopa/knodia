@@ -1,13 +1,14 @@
-openapi: 3.1.2
+openapi: 3.0.4
 info:
+  contact:
+    url: https://github.com/pagopa/knodia/issues
+  termsOfService: https://knodia.org/
   description: Knodia backend-for-frontend API
   title: Knodia BFF API
   version: 1.0.0
 components:
   schemas:
     ProblemError:
-      $schema: https://json-schema.org/draft/2020-12/schema
-      $id: "#/components/schemas/ProblemError"
       type: object
       properties:
         code:
@@ -19,8 +20,6 @@ components:
         - detail
       additionalProperties: false
     Problem:
-      $schema: https://json-schema.org/draft/2020-12/schema
-      $id: "#/components/schemas/Problem"
       type: object
       properties:
         correlationId:
@@ -46,18 +45,19 @@ components:
         - type
       additionalProperties: false
     Pagination:
-      $schema: https://json-schema.org/draft/2020-12/schema
-      $id: "#/components/schemas/Pagination"
       type: object
       properties:
         limit:
+          format: int32
           type: number
           minimum: 1
           maximum: 50
         offset:
+          format: int32
           type: number
           minimum: 0
         total:
+          format: int32
           type: number
           minimum: 0
       required:
@@ -66,8 +66,6 @@ components:
         - total
       additionalProperties: false
     Eservice:
-      $schema: https://json-schema.org/draft/2020-12/schema
-      $id: "#/components/schemas/Eservice"
       type: object
       properties:
         id:
@@ -76,8 +74,6 @@ components:
         - id
       additionalProperties: false
     Eservices:
-      $schema: https://json-schema.org/draft/2020-12/schema
-      $id: "#/components/schemas/Eservices"
       type: object
       properties:
         items:
@@ -91,13 +87,28 @@ components:
         - pagination
       additionalProperties: false
 paths:
+  /status:
+    get:
+      operationId: getStatus
+      tags:
+        - health
+      description: Check the health status of the service
+      responses:
+        "200":
+          description: Service status OK
+          content:
+            application/json:
+              schema:
+                description: Service status OK
   /eservices:
     get:
       operationId: getEservices
       tags:
         - eservice
+      description: Retrieve a list of E-services
       parameters:
         - schema:
+            format: int32
             type: number
             minimum: 1
             maximum: 50
@@ -106,6 +117,7 @@ paths:
           required: true
           description: Maximum number of items returned
         - schema:
+            format: int32
             type: number
             minimum: 0
           in: query
@@ -114,14 +126,26 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: Default Response
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Eservices"
-        "404":
-          description: Default Response
+                description: E-services retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservices"
+        "400":
+          description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Problem"
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+servers:
+  - description: BFF API
+    url: /
+tags:
+  - description: Health check routes
+    name: health
+  - description: E-services routes
+    name: eservice

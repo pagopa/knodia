@@ -6,6 +6,7 @@ import { eserviceProcessApi } from "@knodia/eservice-process-client";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
+import { apiTags } from "../models/apiTags.ts";
 import { makeApiProblem } from "../models/errors.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<
@@ -32,6 +33,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
+        // TODO move this defaulting logic to the service, keep routers only for routing
+        // and API models conversion, no logic
         items: eservices.data?.items || [],
         pagination: eservices.data?.pagination || {
           limit: req.query.limit,
@@ -42,13 +45,14 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
+      description: "Retrieve a list of E-services",
       operationId: "getEservices",
       querystring: API_EservicesQueryParams,
       response: {
-        200: API_Eservices,
-        404: Problem,
+        200: API_Eservices.describe("E-services retrieved successfully"),
+        400: Problem.describe("Bad Request"),
       },
-      tags: ["eservice"],
+      tags: [apiTags.eservice],
     },
     url: "/eservices",
   });

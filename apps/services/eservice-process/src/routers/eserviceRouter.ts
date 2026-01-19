@@ -4,6 +4,7 @@ import { Problem } from "@knodia/error-commons";
 
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
 import { toAPI_Eservice } from "../models/apiConverter.ts";
+import { apiTags } from "../models/apiTags.ts";
 import { makeApiProblem } from "../models/errors.ts";
 import { eserviceErrorMapper } from "../services/errorMappers.ts";
 import { getMockEservices } from "../services/eserviceService.ts";
@@ -25,13 +26,14 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
     },
     method: "GET",
     schema: {
+      description: "Retrieve a list of E-services",
       operationId: "getEservices",
       querystring: API_EservicesQueryParams,
       response: {
-        200: API_Eservices,
-        404: Problem,
+        200: API_Eservices.describe("E-services retrieved successfully"),
+        400: Problem.describe("Bad Request"),
       },
-      tags: ["eservice"],
+      tags: [apiTags.eservice],
     },
     url: "/eservices",
   });
