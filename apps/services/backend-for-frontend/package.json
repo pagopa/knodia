@@ -6,11 +6,14 @@
     "typecheck": "tsc",
     "generate-openapi": "pnpm --filter @knodia/eservice-process-client generate-api-client && dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
+    "@knodia/spectral-config": "workspace:*",
+    "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
@@ -18,7 +21,7 @@
   },
   "dependencies": {
     "@knodia/eservice-process-client": "workspace:*",
-    "@knodia/fastify-plugin-openapi-zod": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
     "@dotenvx/dotenvx": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

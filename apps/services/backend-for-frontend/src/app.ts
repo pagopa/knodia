@@ -1,7 +1,12 @@
-import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
+import {
+  healthRouter,
+  healthRouterTag,
+} from "@knodia/fastify-zod-api-commons/health";
+import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
 import Fastify from "fastify";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
+import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
@@ -18,12 +23,18 @@ app.register(openapiZodPlugin, {
       title: "Knodia BFF API",
       version: "1.0.0",
     },
-  },
-  openapiDocs: {
-    routePrefix: "/docs",
+    servers: [{ description: "BFF API", url: "/" }],
+    tags: [
+      healthRouterTag,
+      {
+        description: "E-services routes",
+        name: apiTags.eservice,
+      },
+    ],
   },
 });
 
+app.register(healthRouter);
 app.register(eserviceRouter, clients.eserviceProcessClient);
 
 export default app;

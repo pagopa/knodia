@@ -1,14 +1,14 @@
-import type { OpenAPIV3_1 } from "openapi-types";
+import type { OpenAPIV3 } from "openapi-types";
 
 import {
   createJsonSchemaTransform,
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
 
-const OPENAPI_3_1_ZOD_TO_JSON_SCHEMA = "draft-2020-12"; // OpenAPI 3.1
+const OPENAPI_3_0_ZOD_TO_JSON_SCHEMA = "openapi-3.0"; // OpenAPI 3.0
 const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
-    target: OPENAPI_3_1_ZOD_TO_JSON_SCHEMA,
+    target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
   },
 });
 
@@ -16,13 +16,10 @@ const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
  * Remove all schemas ending with "Input" from the generated OpenAPI spec.
  * This is a workaround, waiting for a proper solution in fastify-type-provider-zod.
  * See: https://github.com/turkerdev/fastify-type-provider-zod/issues/214
- *
- * TODO: consider using spectral lint to autofix the removal of unused schemas
- * instead of this workaround.
  */
 const removeZodInputSchemasFromOpenapi = (
-  openapi: Partial<OpenAPIV3_1.Document>,
-): Partial<OpenAPIV3_1.Document> => {
+  openapi: Partial<OpenAPIV3.Document>,
+): Partial<OpenAPIV3.Document> => {
   if (openapi.components && openapi.components.schemas) {
     const inputKeysToDelete = Object.keys(openapi.components.schemas).filter(
       (key) => key.endsWith("Input"),
@@ -38,12 +35,12 @@ const removeZodInputSchemasFromOpenapi = (
 
 export const zodToJsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
-    target: OPENAPI_3_1_ZOD_TO_JSON_SCHEMA,
+    target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
   },
 });
 
 export const zodToJsonSchemaTransformObjectWithoutInputSchemas: typeof zodToJsonSchemaTransformObject =
   (openapi) =>
     removeZodInputSchemasFromOpenapi(
-      zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3_1.Document>,
+      zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
     );
