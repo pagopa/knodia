@@ -13,6 +13,9 @@
     },
     "apps/services/*-process": {
       "ignoreDependencies": ["@knodia/spectral-config"]
+    },
+    "apps/web/frontend": {
+      "ignore": ["src/routeTree.gen.ts"]
     }
   }
 }

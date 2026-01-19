@@ -4,7 +4,7 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
-export interface RouterContext {
+interface RouterContext {
   queryClient: QueryClient;
 }
 
