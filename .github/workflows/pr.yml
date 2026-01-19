@@ -8,13 +8,13 @@ permissions:
 
 jobs:
   typecheck:
-    name: Turbo typecheck
+    name: Typecheck
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: typecheck
 
   lint:
-    name: Turbo lint
+    name: Lint
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: lint
@@ -26,7 +26,7 @@ jobs:
       command: knip
 
   generate-openapi:
-    name: Generate openapi
+    name: Generate openapi specs
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: generate-openapi
@@ -34,7 +34,12 @@ jobs:
 
   lint-openapi:
     name: Lint OpenAPI specs
-    needs: generate-openapi
     uses: ./.github/workflows/pnpm-job.yml
     with:
       command: lint-openapi
+
+  test:
+    name: Test
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: test
