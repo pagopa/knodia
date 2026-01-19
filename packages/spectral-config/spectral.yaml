@@ -12,7 +12,6 @@ rules:
 
   # Warnings
   paths-status-problem-schema: off # /status returns 200 with no content, not a problem
-  oas3-unused-component: off # zod type provider includes *Input schemas not always used
 
   # Hints
   has-x-api-id: off # we don't use x-api-id custom field
