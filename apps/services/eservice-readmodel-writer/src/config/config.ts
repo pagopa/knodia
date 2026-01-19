@@ -5,7 +5,7 @@ import {
 } from "@knodia/kafka-commons/config";
 import { z } from "zod";
 
-export const EserviceReadModelWriterConfig =
+const EserviceReadModelWriterConfig =
   ReadModelEserviceConfig.and(KafkaConsumerConfig).and(EserviceTopicConfig);
 
 export type EserviceReadModelWriterConfig = z.infer<
