@@ -51,12 +51,11 @@ const updateErrorResponseContentsWithProblemJson = (
         operation.responses,
       )) {
         // Only error responses
-        const numericStatus = Number(statusCode);
-        if (!Number.isInteger(numericStatus) || numericStatus < 400) {
+        const responseStatusCode = Number(statusCode);
+        if (!Number.isInteger(responseStatusCode) || responseStatusCode < 400) {
           continue;
         }
 
-        // Skip $ref responses
         if ("$ref" in response) continue;
 
         const content = response.content;
