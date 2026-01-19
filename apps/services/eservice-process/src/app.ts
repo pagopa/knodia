@@ -1,9 +1,9 @@
-import openapiZodPlugin from "@knodia/fastify-plugin-openapi-zod";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { buildLoggerOptions } from "@knodia/logger/config";
+import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
+import { buildLoggerOptions } from "@knodia/logger/options";
 import Fastify from "fastify";
 
 import { config } from "./config.ts";
@@ -11,7 +11,11 @@ import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
-  logger: buildLoggerOptions(config),
+  logger: buildLoggerOptions({
+    logLevel: config.logLevel,
+    prettyPrint: !config.isProduction,
+    serviceName: config.serviceName,
+  }),
 });
 
 // openapiPlugin must be registered before any routes to ensure proper route discovery

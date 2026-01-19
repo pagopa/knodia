@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "@knodia/fastify-zod-api-commons": "workspace:*",
-    "@knodia/fastify-plugin-openapi-zod": "workspace:*",
     "@knodia/logger": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

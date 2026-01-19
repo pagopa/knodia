@@ -6,7 +6,7 @@ import type { LoggerConfig } from "./config.ts";
 
 import { buildLoggerOptions } from "./options.ts";
 
-export const createPinoLogger = (
+export const createLoggerPino = (
   config: LoggerConfig,
   serviceName: string,
 ): Logger => {
