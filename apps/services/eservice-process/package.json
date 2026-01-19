@@ -22,7 +22,6 @@
   "dependencies": {
     "@knodia/common-models": "workspace:*",
     "@knodia/error-commons": "workspace:*",
-    "@knodia/fastify-app-commons": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

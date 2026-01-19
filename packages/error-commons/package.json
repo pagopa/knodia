@@ -20,7 +20,7 @@
   "dependencies": {
     "@fastify/error": "catalog:",
     "@fastify/request-context": "catalog:",
-    "@knodia/fastify-app-commons": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",

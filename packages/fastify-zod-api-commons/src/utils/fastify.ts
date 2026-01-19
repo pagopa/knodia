@@ -1,10 +1,11 @@
 import type { ServiceName } from "@knodia/common-models";
 
 import fastifyRequestContext from "@fastify/request-context";
+import Fastify, { type FastifyRegisterOptions } from "fastify";
+
 import openapiZodPlugin, {
   type OpenapiZodPluginOptions,
-} from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
-import Fastify, { type FastifyRegisterOptions } from "fastify";
+} from "./openapi-zod-plugin/openapiZodPlugin.ts";
 
 export const createFastifyClient = (
   serviceName: ServiceName,

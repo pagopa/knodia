@@ -2,7 +2,7 @@
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
 import { serviceErrorCode } from "@knodia/common-models";
-import { getContextValues } from "@knodia/fastify-app-commons";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,

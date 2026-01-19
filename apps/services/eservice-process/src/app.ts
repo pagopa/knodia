@@ -1,6 +1,6 @@
 import { serviceName } from "@knodia/common-models";
 import { registerErrorHandler } from "@knodia/error-commons";
-import { createFastifyClient } from "@knodia/fastify-app-commons";
+import { createFastifyClient } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
