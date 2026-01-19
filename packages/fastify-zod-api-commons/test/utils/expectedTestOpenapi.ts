@@ -59,7 +59,7 @@ export const expectedOpenApiComponents = {
   },
 };
 
-export const expectedTestGet = {
+const expectedTestGet = {
   description: "Test GET endpoint",
   operationId: "getTest",
   parameters: [
@@ -105,7 +105,7 @@ export const expectedTestGet = {
   tags: [testTags.test],
 };
 
-export const expectedTestPost = {
+const expectedTestPost = {
   description: "Test POST endpoint",
   operationId: "createTest",
   requestBody: {
@@ -137,7 +137,7 @@ export const expectedTestPost = {
   tags: [testTags.test],
 };
 
-export const expectedStatusGet = {
+const expectedStatusGet = {
   get: {
     description: "Check the health status of the service",
     operationId: "getStatus",
