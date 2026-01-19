@@ -12,7 +12,7 @@ export const Problem = z
     correlationId: z.string(),
     detail: z.string(),
     errors: z.array(ProblemError),
-    status: z.number(),
+    status: z.number().meta({ format: "int32" }),
     title: z.string(),
     type: z.string(),
   })

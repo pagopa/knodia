@@ -31,6 +31,7 @@ components:
           items:
             $ref: "#/components/schemas/ProblemError"
         status:
+          format: int32
           type: number
         title:
           type: string
