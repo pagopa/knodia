@@ -13,9 +13,10 @@ import {
   zodToJsonSchemaTransformObjectWithoutInputSchemas,
 } from "./zodToJsonSchema.ts";
 
-type OpenapiZodPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
-  openapiDocs?: false | fastifySwaggerUI.FastifySwaggerUiOptions;
-};
+export type OpenapiZodPluginOptions =
+  fastifySwagger.FastifyDynamicSwaggerOptions & {
+    openapiDocs?: false | fastifySwaggerUI.FastifySwaggerUiOptions;
+  };
 
 const OPENAPI_VERSION = "3.0.4";
 export default fastifyPlugin<OpenapiZodPluginOptions>(
