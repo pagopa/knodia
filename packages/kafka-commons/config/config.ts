@@ -28,3 +28,12 @@ export const KafkaConsumerConfig = KafkaConfig.and(
     })),
 );
 export type KafkaConsumerConfig = z.infer<typeof KafkaConsumerConfig>;
+
+export const EserviceTopicConfig = z
+  .object({
+    ESERVICE_TOPIC: z.string(),
+  })
+  .transform((c) => ({
+    eserviceTopic: c.ESERVICE_TOPIC,
+  }));
+export type EserviceTopicConfig = z.infer<typeof EserviceTopicConfig>;
