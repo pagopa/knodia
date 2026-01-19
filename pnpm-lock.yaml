@@ -255,9 +255,6 @@ importers:
 
   packages/db/readmodel/config:
     dependencies:
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -268,9 +265,6 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../typescript-config
-      '@types/pg':
-        specifier: 'catalog:'
-        version: 8.16.0
       drizzle-kit:
         specifier: 'catalog:'
         version: 0.31.8
