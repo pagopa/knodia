@@ -7,9 +7,7 @@ import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
 import openapiZodPlugin from "../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import {
   expectedOpenApiComponents,
-  expectedStatusGet,
-  expectedTestGet,
-  expectedTestPost,
+  expectedOpenApiPaths,
 } from "./utils/expectedTestOpenapi.ts";
 import { testRouter, testTags } from "./utils/testRouter.ts";
 
@@ -60,13 +58,7 @@ describe("openapiZodPlugin", () => {
         version: "1.0.0",
       },
       openapi: "3.0.4",
-      paths: {
-        "/status": expectedStatusGet,
-        "/test": {
-          get: expectedTestGet,
-          post: expectedTestPost,
-        },
-      },
+      paths: expectedOpenApiPaths,
       servers: [
         {
           description: "Test API server",
