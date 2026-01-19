@@ -85,4 +85,12 @@ describe("openapiZodPlugin", () => {
       ],
     });
   });
+
+  it("exposes the OpenAPI spec in YAML format", () => {
+    const openapiYaml = fastify.swagger({ yaml: true }) as string;
+    expect(openapiYaml).toContain("openapi: 3.0.4");
+    expect(openapiYaml).toContain("title: Test API");
+    expect(openapiYaml).toContain("version: 1.0.0");
+    expect(openapiYaml).toContain("/test");
+  });
 });
