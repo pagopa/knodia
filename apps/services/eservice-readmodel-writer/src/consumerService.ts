@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import type { EserviceWriterService } from "./eserviceWriterService.ts";
 
-// TODO: define event in eservice-models and import it here
+// TODO: define event in eservice-models
 const EserviceAddedEvent = z.object({
   data: z.strictObject({
     id: z.string(),
@@ -12,7 +12,6 @@ const EserviceAddedEvent = z.object({
 });
 
 const EserviceEvent = z.discriminatedUnion("type", [EserviceAddedEvent]);
-
 type EserviceEvent = z.infer<typeof EserviceEvent>;
 
 export async function handleEserviceEvent(
