@@ -1,0 +1,25 @@
+{
+  "name": "@knodia/kafka-commons",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@confluentinc/kafka-javascript": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "eslint": "catalog:"
+  },
+  "exports": {
+    ".": "./utils.ts",
+    "./config": "./config/config.ts"
+  }
+}

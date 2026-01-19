@@ -1,3 +1,5 @@
+import type { OpenAPIV3 } from "openapi-types";
+
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUI from "@fastify/swagger-ui";
 import fastifyPlugin from "fastify-plugin";
@@ -12,10 +14,10 @@ import {
 } from "./zodToJsonSchema.ts";
 
 type OpenapiZodPluginOptions = fastifySwagger.FastifyDynamicSwaggerOptions & {
-  openapiDocs: false | fastifySwaggerUI.FastifySwaggerUiOptions;
+  openapiDocs?: false | fastifySwaggerUI.FastifySwaggerUiOptions;
 };
 
-const OPENAPI_VERSION = "3.1.2";
+const OPENAPI_VERSION = "3.0.4";
 export default fastifyPlugin<OpenapiZodPluginOptions>(
   // Use fastify-plugin so the .swagger and .swaggerUI decorators setup here
   // bubble up to the fastify instance where this plugin is registered.
@@ -31,6 +33,10 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
       ...swaggerOptions,
       openapi: {
         ...swaggerOptions.openapi,
+        info: {
+          ...defaultContactAndTos,
+          ...swaggerOptions.openapi?.info,
+        } as OpenAPIV3.InfoObject,
         openapi: OPENAPI_VERSION,
       },
       transform: zodToJsonSchemaTransform,
@@ -39,7 +45,22 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
 
     // Optionally register fastify-swagger-ui to serve the OpenAPI docs
     if (openapiDocs !== false) {
-      fastify.register(fastifySwaggerUI, openapiDocs);
+      fastify.register(
+        fastifySwaggerUI,
+        openapiDocs ?? {
+          routePrefix: "/docs",
+        },
+      );
     }
   },
 );
+
+const defaultContactAndTos: Pick<
+  OpenAPIV3.InfoObject,
+  "contact" | "termsOfService"
+> = {
+  contact: {
+    url: "https://github.com/pagopa/knodia/issues",
+  },
+  termsOfService: "https://knodia.org/",
+};
