@@ -6,8 +6,8 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
 import openapiZodPlugin from "../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import {
-  expectedOpenApiComponents,
-  expectedOpenApiPaths,
+  expectedOpenapiComponents,
+  expectedOpenapiPaths,
 } from "./utils/expectedTestOpenapi.ts";
 import { testRouter, testTags } from "./utils/testRouter.ts";
 
@@ -47,7 +47,7 @@ describe("openapiZodPlugin", () => {
   it("exposes an OpenAPI 3.0.4 spec for registered routes", () => {
     const openapi = fastify.swagger() as OpenAPIV3_1.Document;
     expect(openapi).toEqual({
-      components: expectedOpenApiComponents,
+      components: expectedOpenapiComponents,
       info: {
         contact: {
           url: "https://github.com/pagopa/knodia/issues",
@@ -58,7 +58,7 @@ describe("openapiZodPlugin", () => {
         version: "1.0.0",
       },
       openapi: "3.0.4",
-      paths: expectedOpenApiPaths,
+      paths: expectedOpenapiPaths,
       servers: [
         {
           description: "Test API server",

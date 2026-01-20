@@ -51,7 +51,7 @@ const expectedTestsSchema = {
   ],
 };
 
-export const expectedOpenApiComponents = {
+export const expectedOpenapiComponents = {
   schemas: {
     Pagination: expectedPaginationSchema,
     Test: expectedTestSchema,
@@ -157,7 +157,7 @@ const expectedStatusGet = {
   },
 };
 
-export const expectedOpenApiPaths = {
+export const expectedOpenapiPaths = {
   "/status": expectedStatusGet,
   "/test": {
     get: expectedTestGet,
