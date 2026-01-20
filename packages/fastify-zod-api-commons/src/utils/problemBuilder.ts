@@ -105,12 +105,12 @@ export function makeApiProblemBuilder<T extends string>(
           return problem;
         },
       )
-      .with(P.instanceOf(ApiError<CommonErrorCodes | T>), (error) => {
+      .with(P.instanceOf(ApiError<CommonErrorCodes | T>), (e) => {
         const isInternalServerError =
-          error.status === HTTP_STATUS_INTERNAL_SERVER_ERROR;
+          e.status === HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-        const problem = makeProblem(error);
-        const problemLogString = makeProblemLogString(problem, error);
+        const problem = makeProblem(e);
+        const problemLogString = makeProblemLogString(problem, e);
 
         if (forceGenericProblemOn500 && isInternalServerError) {
           logger.warn(
@@ -122,12 +122,11 @@ export function makeApiProblemBuilder<T extends string>(
         logger.warn(problemLogString);
         return problem;
       })
-      .with(P.instanceOf(FastifyError), (error) => {
-        const httpStatus =
-          error.statusCode ?? HTTP_STATUS_INTERNAL_SERVER_ERROR;
+      .with(P.instanceOf(FastifyError), (e) => {
+        const httpStatus = e.statusCode ?? HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-        const problem = makeProblem(fastifyError(httpStatus, error.message));
-        const problemLogString = makeProblemLogString(problem, error);
+        const problem = makeProblem(fastifyError(httpStatus, e.message));
+        const problemLogString = makeProblemLogString(problem, e);
 
         if (
           forceGenericProblemOn500 &&
@@ -168,10 +167,7 @@ export function makeApiProblemBuilder<T extends string>(
         (e) => {
           const receivedProblem: API_Problem = e.response.data;
           if (problemErrorsPassthrough) {
-            const problemLogString = makeProblemLogString(
-              receivedProblem,
-              error,
-            );
+            const problemLogString = makeProblemLogString(receivedProblem, e);
 
             if (
               forceGenericProblemOn500 &&
@@ -199,16 +195,16 @@ export function makeApiProblemBuilder<T extends string>(
           }
         },
       )
-      .with(P.instanceOf(ZodError), (error) => {
+      .with(P.instanceOf(ZodError), (e) => {
         // Zod errors shall always be caught and handled throwing
         // an ApiError. If a ZodError arrives here we log it and
         // return a generic problem
-        const zodError = fromZodError(error);
+        const zodError = fromZodError(e);
         logger.error(makeProblemLogString(genericProblem, zodError));
         return genericProblem;
       })
-      .otherwise((error: unknown): API_Problem => {
-        logger.error(makeProblemLogString(genericProblem, error));
+      .otherwise((e: unknown): API_Problem => {
+        logger.error(makeProblemLogString(genericProblem, e));
         return genericProblem;
       });
   };
