@@ -1,4 +1,3 @@
-import { registerErrorHandler } from "@knodia/fastify-zod-api-commons/errorHandler";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -32,6 +31,5 @@ const app = createFastifyApp(serviceName.BACKEND_FOR_FRONTEND, {
 
 app.register(healthRouter);
 app.register(eserviceRouter, clients.eserviceProcessClient);
-registerErrorHandler(app);
 
 export default app;

@@ -12,7 +12,6 @@
     "./fastify": "./src/utils/fastify.ts",
     "./generateOpenapi": "./src/utils/generateOpenapi.ts",
     "./health": "./src/routers/healthRouter.ts",
-    "./errorHandler": "./src/routers/errorHandler.ts",
     "./errorMappers": "./src/utils/errors/errorMappers.ts",
     "./models/api": "./src/models/api.ts",
     "./models/apiError": "./src/models/errors/apiError.ts",
