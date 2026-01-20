@@ -2,7 +2,6 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
-import { emptyErrorMapper } from "@knodia/fastify-zod-api-commons/errorMappers";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models/api";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
@@ -15,7 +14,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 > = async (fastify, eserviceProcessClient) => {
   fastify.route({
     errorHandler: (err, _req, res) => {
-      const errorRes = makeApiProblem(err, emptyErrorMapper);
+      const errorRes = makeApiProblem(err);
 
       res.statusCode = errorRes.status;
 

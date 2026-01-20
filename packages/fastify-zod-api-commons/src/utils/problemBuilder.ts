@@ -13,25 +13,21 @@ import { match, P } from "ts-pattern";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import type { API_Problem } from "../../models/api.ts";
+import type { API_Problem } from "../models/api.ts";
 
-import { getContextValues } from "../../context/context.ts";
-import { ApiError } from "../../models/errors/apiError.ts";
+import { getContextValues } from "../context/context.ts";
+import { ApiError } from "../models/errors/apiError.ts";
 import {
   commonErrorCodes,
   type CommonErrorCodes,
   genericError,
-} from "../../models/errors/errors.ts";
-import { serviceErrorCode } from "../../models/errors/services.ts";
-import { defaultCommonErrorMapper } from "./errorMappers.ts";
+} from "../models/errors/errors.ts";
+import { serviceErrorCode } from "../models/errors/services.ts";
 
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
 
-type MakeApiProblemFn<T extends string> = (
-  error: unknown,
-  httpMapper: (apiError: ApiError<CommonErrorCodes | T>) => number,
-) => API_Problem;
+type MakeApiProblemFn = (error: unknown) => API_Problem;
 
 const makeProblemLogString = (
   problem: API_Problem,
@@ -43,7 +39,7 @@ const makeProblemLogString = (
 
 interface ProblemBuilderOptions {
   /**
-   * If true, return a generic problem whenever an error is mapped to HTTP 500, hiding the underlying error info.
+   * If true, return a generic problem whenever an error status code is HTTP 500, hiding the underlying error info.
    * This also applies to 500 errors passing through from downstream services.
    *
    * @default false
@@ -61,12 +57,12 @@ interface ProblemBuilderOptions {
 export function makeApiProblemBuilder<T extends string>(
   errors: Record<T, { code: string; number: string }>,
   options: ProblemBuilderOptions = {},
-): MakeApiProblemFn<T> {
+): MakeApiProblemFn {
   const { forceGenericProblemOn500 = false, problemErrorsPassthrough = true } =
     options;
   const allErrors = { ...commonErrorCodes, ...errors };
 
-  return (error, httpMapper) => {
+  return (error) => {
     const { correlationId, logger, serviceName } =
       getContextValues(requestContext);
     const serviceErrorCodeStr = serviceErrorCode[serviceName];
@@ -153,12 +149,7 @@ export function makeApiProblemBuilder<T extends string>(
         },
       )
       .with(P.instanceOf(ApiError<CommonErrorCodes | T>), (error) => {
-        const mappedCode = httpMapper(error);
-        const code =
-          mappedCode === HTTP_STATUS_INTERNAL_SERVER_ERROR
-            ? defaultCommonErrorMapper(error.code as CommonErrorCodes)
-            : mappedCode;
-
+        const code = error.status;
         const isInternalServerError =
           code === HTTP_STATUS_INTERNAL_SERVER_ERROR;
 

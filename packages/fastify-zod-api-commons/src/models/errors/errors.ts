@@ -1,4 +1,9 @@
+import { constants } from "http2";
+
 import { ApiError, createApiError } from "./apiError.ts";
+
+const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
+  constants;
 
 export const commonErrorCodes = {
   GENERIC_ERROR: { code: "GENERIC_ERROR", number: "9991" },
@@ -21,18 +26,20 @@ export type CommonErrorCodes = keyof typeof commonErrorCodes;
 /* ===== API Error ===== */
 
 export function genericError(details: string): ApiError<CommonErrorCodes> {
-  return createApiError(
-    commonErrorCodes.GENERIC_ERROR.code,
-    details,
-    "Unexpected Error",
-  );
+  return createApiError({
+    code: commonErrorCodes.GENERIC_ERROR.code,
+    detail: details,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "Unexpected Error",
+  });
 }
 
 export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
   const title = "Header has not been passed";
-  return createApiError(
-    commonErrorCodes.MISSING_HEADER.code,
-    headerName ? `Missing ${headerName} request header` : title,
+  return createApiError({
+    code: commonErrorCodes.MISSING_HEADER.code,
+    detail: headerName ? `Missing ${headerName} request header` : title,
+    status: HTTP_STATUS_BAD_REQUEST,
     title,
-  );
+  });
 }

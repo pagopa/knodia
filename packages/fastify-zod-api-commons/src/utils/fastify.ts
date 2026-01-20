@@ -1,17 +1,14 @@
 import fastifyRequestContext from "@fastify/request-context";
 import Fastify, { type FastifyRegisterOptions } from "fastify";
-import { constants } from "http2";
 
 import type { ServiceName } from "../models/errors/services.ts";
 
 import { missingHeader } from "../models/errors/errors.ts";
-import { emptyErrorMapper } from "./errors/errorMappers.ts";
-import { makeApiProblemBuilder } from "./errors/problemBuilder.ts";
 import openapiZodPlugin, {
   type OpenapiZodPluginOptions,
 } from "./openapi-zod-plugin/openapiZodPlugin.ts";
+import { makeApiProblemBuilder } from "./problemBuilder.ts";
 
-const { HTTP_STATUS_BAD_REQUEST } = constants;
 const makeApiProblem = makeApiProblemBuilder({});
 
 export const createFastifyApp = (
@@ -38,7 +35,7 @@ export const createFastifyApp = (
   checkCorrelationIdHeader(app, readCorrelationIdFromHeader);
 
   app.setErrorHandler((error, _, res) => {
-    const errorRes = makeApiProblem(error, emptyErrorMapper);
+    const errorRes = makeApiProblem(error);
 
     return res
       .status(errorRes.status)
@@ -58,10 +55,7 @@ const checkCorrelationIdHeader = (
       const correlationId = req.headers["x-correlation-id"];
 
       if (!correlationId) {
-        const problem = makeApiProblem(
-          missingHeader("X-Correlation-Id"),
-          () => HTTP_STATUS_BAD_REQUEST,
-        );
+        const problem = makeApiProblem(missingHeader("X-Correlation-Id"));
         return res.status(problem.status).send(problem);
       }
     });

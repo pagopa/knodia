@@ -11,7 +11,6 @@ import {
 import { toAPI_Eservice } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { makeApiProblem } from "../models/errors.ts";
-import { eserviceErrorMapper } from "../services/errorMappers.ts";
 import {
   createMockEservice,
   getMockEservices,
@@ -20,7 +19,7 @@ import {
 export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
     errorHandler: (err, _req, res) => {
-      const errorRes = makeApiProblem(err, eserviceErrorMapper);
+      const errorRes = makeApiProblem(err);
 
       res.statusCode = errorRes.status;
       return res.type("application/problem+json").send(errorRes);
