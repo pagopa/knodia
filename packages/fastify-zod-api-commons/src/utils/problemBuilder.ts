@@ -5,7 +5,6 @@ import {
   hasZodFastifySchemaValidationErrors,
   isResponseSerializationError,
 } from "fastify-type-provider-zod";
-import { STATUS_CODES } from "http";
 import { constants } from "http2";
 import { match, P } from "ts-pattern";
 import { ZodError } from "zod";
@@ -18,14 +17,14 @@ import { ApiError } from "../models/errors/apiError.ts";
 import {
   commonErrorCodes,
   type CommonErrorCodes,
+  fastifyError,
   genericError,
   responseSerializationError,
   zodFastifySchemaValidationError,
 } from "../models/errors/errors.ts";
 import { serviceErrorCode } from "../models/errors/services.ts";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
-  constants;
+const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = constants;
 
 type MakeApiProblemFn = (error: unknown) => API_Problem;
 
@@ -67,55 +66,29 @@ export function makeApiProblemBuilder<T extends string>(
       getContextValues(requestContext);
     const serviceErrorCodeStr = serviceErrorCode[serviceName];
 
-    const makeProblem = (
-      httpStatus: number,
-      apiError: ApiError<CommonErrorCodes | T> | FastifyError,
-    ): API_Problem => {
-      const { detail, errors, title } =
-        apiError instanceof ApiError
-          ? {
-              detail: apiError.detail,
-              errors: [
-                {
-                  code: `${serviceErrorCodeStr}-${allErrors[apiError.code].number}`,
-                  detail: apiError.detail,
-                },
-              ],
-              title: apiError.title,
-            }
-          : {
-              detail: STATUS_CODES[httpStatus] ?? "Unknown Error",
-              errors: [
-                {
-                  code: `${serviceErrorCodeStr}-0000`,
-                  detail: apiError.message,
-                },
-              ],
-              title: "Fastify Error",
-            };
-
-      return {
-        correlationId,
+    const makeProblem = ({
+      detail,
+      errors,
+      status,
+      title,
+    }: ApiError<CommonErrorCodes | T>): API_Problem => ({
+      correlationId,
+      detail,
+      errors: errors.map(({ code, detail }) => ({
+        code: `${serviceErrorCodeStr}-${allErrors[code].number}`,
         detail,
-        errors,
-        status: httpStatus,
-        title,
-      };
-    };
+      })),
+      status,
+      title,
+    });
 
-    const genericProblem = makeProblem(
-      HTTP_STATUS_INTERNAL_SERVER_ERROR,
-      genericError("Unexpected error"),
-    );
+    const genericProblem = makeProblem(genericError("Unexpected error"));
 
     return match<unknown, API_Problem>(error)
       .with(
         P.when((e) => hasZodFastifySchemaValidationErrors(e)),
         (e) => {
-          const problem = makeProblem(
-            HTTP_STATUS_BAD_REQUEST,
-            zodFastifySchemaValidationError(),
-          );
+          const problem = makeProblem(zodFastifySchemaValidationError());
           const problemLogString = makeProblemLogString(problem, e);
 
           logger.warn(problemLogString);
@@ -125,10 +98,7 @@ export function makeApiProblemBuilder<T extends string>(
       .with(
         P.when((e) => isResponseSerializationError(e)),
         (e) => {
-          const problem = makeProblem(
-            HTTP_STATUS_INTERNAL_SERVER_ERROR,
-            responseSerializationError(),
-          );
+          const problem = makeProblem(responseSerializationError());
           const problemLogString = makeProblemLogString(problem, e);
 
           logger.warn(problemLogString);
@@ -136,11 +106,10 @@ export function makeApiProblemBuilder<T extends string>(
         },
       )
       .with(P.instanceOf(ApiError<CommonErrorCodes | T>), (error) => {
-        const code = error.status;
         const isInternalServerError =
-          code === HTTP_STATUS_INTERNAL_SERVER_ERROR;
+          error.status === HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-        const problem = makeProblem(code, error);
+        const problem = makeProblem(error);
         const problemLogString = makeProblemLogString(problem, error);
 
         if (forceGenericProblemOn500 && isInternalServerError) {
@@ -157,7 +126,7 @@ export function makeApiProblemBuilder<T extends string>(
         const httpStatus =
           error.statusCode ?? HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-        const problem = makeProblem(httpStatus, error);
+        const problem = makeProblem(fastifyError(httpStatus, error.message));
         const problemLogString = makeProblemLogString(problem, error);
 
         if (

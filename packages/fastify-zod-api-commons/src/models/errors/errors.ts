@@ -1,3 +1,4 @@
+import { STATUS_CODES } from "http";
 import { constants } from "http2";
 
 import { ApiError, createApiError } from "./apiError.ts";
@@ -6,6 +7,7 @@ const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
 
 export const commonErrorCodes = {
+  FASTIFY_ERROR: { code: "FASTIFY_ERROR", number: "9995" },
   GENERIC_ERROR: { code: "GENERIC_ERROR", number: "9991" },
   MISSING_HEADER: {
     code: "MISSING_HEADER",
@@ -24,6 +26,18 @@ export const commonErrorCodes = {
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
 
 /* ===== API Error ===== */
+
+export function fastifyError(
+  httpStatus: number,
+  detail: string,
+): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: commonErrorCodes.FASTIFY_ERROR.code,
+    detail,
+    status: httpStatus,
+    title: STATUS_CODES[httpStatus] ?? "Unknown Error",
+  });
+}
 
 export function genericError(details: string): ApiError<CommonErrorCodes> {
   return createApiError({
