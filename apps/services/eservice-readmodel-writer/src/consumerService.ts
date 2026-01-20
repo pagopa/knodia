@@ -20,7 +20,7 @@ export async function handleEserviceEvent(
 ): Promise<void> {
   return match(event.type)
     .with("EserviceAdded", async () => {
-      await writerService.upsertEservice(event.data);
+      await writerService.insertEservice(event.data);
     })
     .exhaustive();
 }
