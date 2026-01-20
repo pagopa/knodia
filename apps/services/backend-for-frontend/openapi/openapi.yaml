@@ -84,18 +84,12 @@ components:
           description: A short, summary of the problem type. Written in english and readable
           type: string
           maxLength: 64
-        type:
-          description: URI reference of type definition
-          type: string
-          enum:
-            - about:blank
       required:
         - correlationId
         - detail
         - errors
         - status
         - title
-        - type
       additionalProperties: false
     Eservice:
       type: object
