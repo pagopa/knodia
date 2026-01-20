@@ -3,6 +3,7 @@ import type { ServiceName } from "@knodia/common-models";
 
 import Fastify from "fastify";
 
+// Documentation: https://github.com/fastify/fastify-request-context#typescript
 declare module "@fastify/request-context" {
   interface RequestContextData {
     correlationId: string;
