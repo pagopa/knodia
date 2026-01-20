@@ -1,10 +1,10 @@
-import { serviceName } from "@knodia/common-models";
 import { registerErrorHandler } from "@knodia/fastify-zod-api-commons/errorHandler";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import { serviceName } from "@knodia/fastify-zod-api-commons/models/services";
 
 import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";

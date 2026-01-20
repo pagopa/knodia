@@ -122,9 +122,6 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/common-models
       '@knodia/eservice-process-client':
         specifier: workspace:*
         version: link:../../../packages/eservice-process-client
@@ -168,9 +165,6 @@ importers:
 
   apps/services/eservice-process:
     dependencies:
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/common-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -322,9 +316,6 @@ importers:
       '@fastify/swagger-ui':
         specifier: 'catalog:'
         version: 5.2.4
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../models/common-models
       axios:
         specifier: 'catalog:'
         version: 1.13.2
@@ -384,25 +375,6 @@ importers:
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  packages/models/common-models:
-    dependencies:
-      zod:
-        specifier: 'catalog:'
-        version: 4.2.0
-    devDependencies:
-      '@knodia/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@knodia/typescript-config':
-        specifier: workspace:*
-        version: link:../../typescript-config
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)

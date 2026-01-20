@@ -1,7 +1,7 @@
-import type { ServiceName } from "@knodia/common-models";
-
 import fastifyRequestContext from "@fastify/request-context";
 import Fastify, { type FastifyRegisterOptions } from "fastify";
+
+import type { ServiceName } from "../models/errors/services.ts";
 
 import openapiZodPlugin, {
   type OpenapiZodPluginOptions,

@@ -2,7 +2,6 @@
 
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
-import { serviceErrorCode } from "@knodia/common-models";
 import { type AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
@@ -23,6 +22,7 @@ import {
   type CommonErrorCodes,
   genericError,
 } from "../../models/errors/errors.ts";
+import { serviceErrorCode } from "../../models/errors/services.ts";
 import { defaultCommonErrorMapper } from "./errorMappers.ts";
 
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =

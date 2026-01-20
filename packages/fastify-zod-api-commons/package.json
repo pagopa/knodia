@@ -17,6 +17,7 @@
     "./models/api": "./src/models/api.ts",
     "./models/apiError": "./src/models/errors/apiError.ts",
     "./models/errors": "./src/models/errors/errors.ts",
+    "./models/services": "./src/models/errors/services.ts",
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
     "./problemBuilder": "./src/utils/errors/problemBuilder.ts"
   },
@@ -33,7 +34,6 @@
     "@fastify/request-context": "catalog:",
     "@fastify/swagger": "catalog:",
     "@fastify/swagger-ui": "catalog:",
-    "@knodia/common-models": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",

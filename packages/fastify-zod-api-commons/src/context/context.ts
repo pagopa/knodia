@@ -2,9 +2,10 @@ import type {
   RequestContext,
   RequestContextData,
 } from "@fastify/request-context";
-import type { ServiceName } from "@knodia/common-models";
 
 import Fastify from "fastify";
+
+import type { ServiceName } from "../models/errors/services.ts";
 
 // Documentation: https://github.com/fastify/fastify-request-context#typescript
 declare module "@fastify/request-context" {
