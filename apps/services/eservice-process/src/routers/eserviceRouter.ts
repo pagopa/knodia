@@ -1,15 +1,23 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
+import {
+  API_Eservice,
+  API_Eservices,
+  API_EserviceSeed,
+  API_EservicesQueryParams,
+} from "../models/api.ts";
 import { toAPI_Eservice } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { getMockEservices } from "../services/eserviceService.ts";
+import {
+  createMockEservice,
+  getMockEservices,
+} from "../services/eserviceService.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
     handler: (req, res) => {
       const eservices = getMockEservices(req.query.offset, req.query.limit);
-      res.send({
+      res.status(200).send({
         items: eservices.items.map(toAPI_Eservice),
         pagination: eservices.pagination,
       });
@@ -21,6 +29,24 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices.describe("E-services retrieved successfully"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices",
+  });
+
+  fastify.route({
+    handler: (req, res) => {
+      const eservice = createMockEservice(req.body.name);
+      res.status(201).send(toAPI_Eservice(eservice));
+    },
+    method: "POST",
+    schema: {
+      body: API_EserviceSeed,
+      description: "Create a new E-service",
+      operationId: "createEservice",
+      response: {
+        201: API_Eservice.describe("E-service created successfully"),
       },
       tags: [apiTags.eservice],
     },
