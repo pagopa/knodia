@@ -1,14 +1,6 @@
+import { startServer } from "@knodia/fastify-zod-api-commons/startServer";
+
 import app from "./app.ts";
 import { config } from "./config.ts";
 
-const start = async () => {
-  try {
-    await app.listen({ host: config.host, port: config.port });
-    app.log.info("Service started successfully");
-  } catch (error) {
-    app.log.error({ err: error }, "Failed to start service");
-    process.exit(1);
-  }
-};
-
-void start();
+void startServer(app, { host: config.host, port: config.port });
