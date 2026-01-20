@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { Problem } from "@knodia/error-commons";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
 import { toAPI_Eservice } from "../models/apiConverter.ts";
@@ -31,7 +31,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices.describe("E-services retrieved successfully"),
-        400: Problem.describe("Bad Request"),
+        400: API_Problem.describe("Bad Request"),
       },
       tags: [apiTags.eservice],
     },

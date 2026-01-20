@@ -1,4 +1,6 @@
 /* eslint-disable max-lines-per-function */
+import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
 import { serviceErrorCode } from "@knodia/common-models";
@@ -13,8 +15,6 @@ import { constants } from "http2";
 import { match, P } from "ts-pattern";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-
-import type { Problem } from "../models/problem.ts";
 
 import { ApiError } from "../models/apiError.ts";
 import {
@@ -31,10 +31,10 @@ type MakeApiProblemFn<T extends string> = (
   error: unknown,
   httpMapper: (apiError: ApiError<CommonErrorCodes | T>) => number,
   operationalLogMessage?: string,
-) => Problem;
+) => API_Problem;
 
 const makeProblemLogString = (
-  problem: Problem,
+  problem: API_Problem,
   originalError: unknown,
 ): string => {
   const errorsString = problem.errors.map((e) => e.detail).join(" - ");
@@ -50,7 +50,7 @@ interface ProblemBuilderOptions {
    */
   forceGenericProblemOn500?: boolean;
   /**
-   * If true, allows Problem objects received from downstream services
+   * If true, allows API_Problem objects received from downstream services
    * to be passed through directly. If false, they are treated as generic errors.
    *
    * @default true
@@ -74,7 +74,7 @@ export function makeApiProblemBuilder<T extends string>(
     const makeProblem = (
       httpStatus: number,
       apiError: ApiError<CommonErrorCodes | T> | FastifyError,
-    ): Problem => {
+    ): API_Problem => {
       const { detail, errors, title } =
         apiError instanceof ApiError
           ? {
@@ -136,7 +136,7 @@ export function makeApiProblemBuilder<T extends string>(
       logger.warn(operationalLogMessage);
     }
 
-    return match<unknown, Problem>(error)
+    return match<unknown, API_Problem>(error)
       .with(
         P.when((e) => hasZodFastifySchemaValidationErrors(e)),
         (e) => {
@@ -201,11 +201,11 @@ export function makeApiProblemBuilder<T extends string>(
         return problem;
       })
       .with(
-        /* this case is to allow a passthrough of Problem errors, so that
-           services that call other interop services can forward Problem errors
+        /* this case is to allow a passthrough of API_Problem errors, so that
+           services that call other interop services can forward API_Problem errors
            as they are, without the need to explicitly handle them */
         P.intersection(
-          P.when((e): e is AxiosError<Problem> => isAxiosError(e)),
+          P.when((e): e is AxiosError<API_Problem> => isAxiosError(e)),
           {
             response: {
               data: {
@@ -219,13 +219,13 @@ export function makeApiProblemBuilder<T extends string>(
                 title: P.string,
                 type: "about:blank",
               },
-              // Also matching AxiosError content to ensure data matches Problem type
+              // Also matching AxiosError content to ensure data matches API_Problem type
               status: P.number,
             },
           },
         ),
         (e) => {
-          const receivedProblem: Problem = e.response.data;
+          const receivedProblem: API_Problem = e.response.data;
           if (problemErrorsPassthrough) {
             const problemLogString = makeProblemLogString(
               receivedProblem,
@@ -266,7 +266,7 @@ export function makeApiProblemBuilder<T extends string>(
         logger.error(makeProblemLogString(genericProblem, zodError));
         return genericProblem;
       })
-      .otherwise((error: unknown): Problem => {
+      .otherwise((error: unknown): API_Problem => {
         logger.error(makeProblemLogString(genericProblem, error));
         return genericProblem;
       });

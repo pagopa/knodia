@@ -1,8 +1,9 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { emptyErrorMapper, Problem } from "@knodia/error-commons";
+import { emptyErrorMapper } from "@knodia/error-commons";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
@@ -50,7 +51,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices.describe("E-services retrieved successfully"),
-        400: Problem.describe("Bad Request"),
+        400: API_Problem.describe("Bad Request"),
       },
       tags: [apiTags.eservice],
     },
