@@ -1,6 +1,6 @@
 import { serviceName } from "@knodia/common-models";
 import { registerErrorHandler } from "@knodia/error-commons";
-import { createFastifyClient } from "@knodia/fastify-zod-api-commons/fastify";
+import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -9,7 +9,7 @@ import {
 import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
-const app = createFastifyClient(serviceName.ESERVICE_PROCESS, {
+const app = createFastifyApp(serviceName.ESERVICE_PROCESS, {
   openapi: {
     info: {
       description: "API for managing Knodia E-services",

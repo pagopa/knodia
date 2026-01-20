@@ -7,7 +7,7 @@ import openapiZodPlugin, {
   type OpenapiZodPluginOptions,
 } from "./openapi-zod-plugin/openapiZodPlugin.ts";
 
-export const createFastifyClient = (
+export const createFastifyApp = (
   serviceName: ServiceName,
   openapi: FastifyRegisterOptions<OpenapiZodPluginOptions>,
 ) => {

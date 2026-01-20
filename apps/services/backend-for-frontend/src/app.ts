@@ -1,6 +1,6 @@
 import { serviceName } from "@knodia/common-models";
 import { registerErrorHandler } from "@knodia/error-commons";
-import { createFastifyClient } from "@knodia/fastify-zod-api-commons/fastify";
+import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -12,7 +12,7 @@ import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const clients = getKnodiaClients();
 
-const app = createFastifyClient(serviceName.BACKEND_FOR_FRONTEND, {
+const app = createFastifyApp(serviceName.BACKEND_FOR_FRONTEND, {
   openapi: {
     info: {
       description: "Knodia backend-for-frontend API",
