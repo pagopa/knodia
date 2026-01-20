@@ -4,6 +4,7 @@ packages:
   - packages/*
   - packages/models/*
   - packages/db/event-store/*
+  - packages/db/readmodel/*
 
 catalog:
   "@bufbuild/buf": 1.61.0
