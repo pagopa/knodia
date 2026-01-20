@@ -5,12 +5,41 @@ import {
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
 
-const OPENAPI_3_0_ZOD_TO_JSON_SCHEMA = "openapi-3.0"; // OpenAPI 3.0
+import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
+
 const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
     target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
   },
 });
+
+const replaceInputRefs = (value: unknown): void => {
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      replaceInputRefs(entry);
+    }
+    return;
+  }
+
+  if (!value || typeof value !== "object") {
+    return;
+  }
+
+  const record = value as Record<string, unknown>;
+  for (const [key, entry] of Object.entries(record)) {
+    if (
+      key === "$ref" &&
+      typeof entry === "string" &&
+      entry.includes("#/components/schemas/") &&
+      entry.endsWith("Input")
+    ) {
+      record[key] = entry.replace(/Input$/, "");
+      continue;
+    }
+
+    replaceInputRefs(entry);
+  }
+};
 
 /**
  * Remove all schemas ending with "Input" from the generated OpenAPI spec.
@@ -29,6 +58,8 @@ const removeZodInputSchemasFromOpenapi = (
       delete openapi.components.schemas[key];
     }
   }
+
+  replaceInputRefs(openapi);
 
   return openapi;
 };

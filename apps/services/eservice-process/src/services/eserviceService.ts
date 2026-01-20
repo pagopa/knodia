@@ -13,3 +13,8 @@ export const getMockEservices = (offset: number, limit: number) => {
     },
   };
 };
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const createMockEservice = (_name: string) => ({
+  id: Math.floor(Math.random() * 1000000),
+});
