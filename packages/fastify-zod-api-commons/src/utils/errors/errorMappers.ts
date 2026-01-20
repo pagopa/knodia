@@ -1,7 +1,7 @@
 import { constants } from "http2";
 import { match } from "ts-pattern";
 
-import type { CommonErrorCodes } from "../models/errors.ts";
+import type { CommonErrorCodes } from "../../models/errors/errors.ts";
 
 const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = constants;
 

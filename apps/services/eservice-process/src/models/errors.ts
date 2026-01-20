@@ -1,4 +1,4 @@
-import { makeApiProblemBuilder } from "@knodia/error-commons";
+import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 
 const errorCodes = {
   ESERVICE_NOT_FOUND: { code: "ESERVICE_NOT_FOUND", number: "0001" },

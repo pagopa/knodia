@@ -1,4 +1,5 @@
-import type { ApiError, CommonErrorCodes } from "@knodia/error-commons";
+import type { ApiError } from "@knodia/fastify-zod-api-commons/models/apiError";
+import type { CommonErrorCodes } from "@knodia/fastify-zod-api-commons/models/errors";
 
 import { constants } from "http2";
 import { match } from "ts-pattern";

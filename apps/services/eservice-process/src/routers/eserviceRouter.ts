@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models/api";
 
 import {
   API_Eservice,

@@ -1,11 +1,9 @@
 /* eslint-disable max-lines-per-function */
-import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
 import { serviceErrorCode } from "@knodia/common-models";
-import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { AxiosError, isAxiosError } from "axios";
+import { type AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
   isResponseSerializationError,
@@ -16,12 +14,15 @@ import { match, P } from "ts-pattern";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import { ApiError } from "../models/apiError.ts";
+import type { API_Problem } from "../../models/api.ts";
+
+import { getContextValues } from "../../context/context.ts";
+import { ApiError } from "../../models/errors/apiError.ts";
 import {
   commonErrorCodes,
   type CommonErrorCodes,
   genericError,
-} from "../models/errors.ts";
+} from "../../models/errors/errors.ts";
 import { defaultCommonErrorMapper } from "./errorMappers.ts";
 
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =

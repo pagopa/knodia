@@ -1,7 +1,7 @@
 import {
   API_Pagination,
   API_PaginationQueryParams,
-} from "@knodia/fastify-zod-api-commons/models";
+} from "@knodia/fastify-zod-api-commons/models/api";
 import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters

@@ -1,9 +1,9 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { emptyErrorMapper } from "@knodia/error-commons";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { emptyErrorMapper } from "@knodia/fastify-zod-api-commons/errorMappers";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models/api";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
@@ -25,7 +25,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const eservices = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: {
-          "X-Correlation-ID": requestContext.get("correlationId"),
+          "X-Correlation-Id": requestContext.get("correlationId"),
         },
         query: {
           limit: req.query.limit,

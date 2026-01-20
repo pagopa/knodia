@@ -1,7 +1,7 @@
 import { type FastifyInstance } from "fastify";
 
-import { emptyErrorMapper } from "../services/errorMappers.ts";
-import { makeApiProblemBuilder } from "../services/problemBuilder.ts";
+import { emptyErrorMapper } from "../utils/errors/errorMappers.ts";
+import { makeApiProblemBuilder } from "../utils/errors/problemBuilder.ts";
 
 const makeApiProblem = makeApiProblemBuilder({});
 
