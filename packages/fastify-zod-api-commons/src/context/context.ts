@@ -1,4 +1,7 @@
-import type { RequestContext } from "@fastify/request-context";
+import type {
+  RequestContext,
+  RequestContextData,
+} from "@fastify/request-context";
 import type { ServiceName } from "@knodia/common-models";
 
 import Fastify from "fastify";
@@ -13,19 +16,18 @@ declare module "@fastify/request-context" {
 }
 
 export const getContextValues = (requestContext: RequestContext) => ({
-  correlationId:
-    requestContext.get("correlationId") ||
-    (() => {
-      throw new Error("Missing correlationId in request context");
-    })(),
-  logger:
-    requestContext.get("logger") ||
-    (() => {
-      throw new Error("Missing logger in request context");
-    })(),
-  serviceName:
-    requestContext.get("serviceName") ||
-    (() => {
-      throw new Error("Missing serviceName in request context");
-    })(),
+  correlationId: getRequiredContextItem(requestContext, "correlationId"),
+  logger: getRequiredContextItem(requestContext, "logger"),
+  serviceName: getRequiredContextItem(requestContext, "serviceName"),
 });
+
+const getRequiredContextItem = <K extends keyof RequestContextData>(
+  requestContext: RequestContext,
+  key: K,
+): RequestContextData[K] => {
+  const value = requestContext.get(key);
+  if (!value) {
+    throw new Error(`Missing ${key} in request context`);
+  }
+  return value;
+};
