@@ -31,7 +31,6 @@ const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
 type MakeApiProblemFn<T extends string> = (
   error: unknown,
   httpMapper: (apiError: ApiError<CommonErrorCodes | T>) => number,
-  operationalLogMessage?: string,
 ) => API_Problem;
 
 const makeProblemLogString = (
@@ -67,7 +66,7 @@ export function makeApiProblemBuilder<T extends string>(
     options;
   const allErrors = { ...commonErrorCodes, ...errors };
 
-  return (error, httpMapper, operationalLogMessage) => {
+  return (error, httpMapper) => {
     const { correlationId, logger, serviceName } =
       getContextValues(requestContext);
     const serviceErrorCodeStr = serviceErrorCode[serviceName];
@@ -131,10 +130,6 @@ export function makeApiProblemBuilder<T extends string>(
       HTTP_STATUS_INTERNAL_SERVER_ERROR,
       genericError("Unexpected error"),
     );
-
-    if (operationalLogMessage) {
-      logger.warn(operationalLogMessage);
-    }
 
     return match<unknown, API_Problem>(error)
       .with(
