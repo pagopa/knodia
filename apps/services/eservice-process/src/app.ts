@@ -3,7 +3,7 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
-import { createLoggerOptions } from "@knodia/logger/logger";
+import { createLoggerOptions } from "@knodia/logger";
 import Fastify from "fastify";
 
 import { config } from "./config.ts";
