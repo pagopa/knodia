@@ -8,6 +8,7 @@ import {
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
+import { OPENAPI_VERSION } from "./constants.ts";
 import {
   zodToJsonSchemaTransform,
   zodToJsonSchemaTransformObjectWithoutInputSchemas,
@@ -18,7 +19,6 @@ export type OpenapiZodPluginOptions =
     openapiDocs?: false | fastifySwaggerUI.FastifySwaggerUiOptions;
   };
 
-const OPENAPI_VERSION = "3.0.4";
 export default fastifyPlugin<OpenapiZodPluginOptions>(
   // Use fastify-plugin so the .swagger and .swaggerUI decorators setup here
   // bubble up to the fastify instance where this plugin is registered.
