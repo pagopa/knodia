@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-export interface StartServerOptions {
+export interface FastifyListenOptions {
   host: string;
   port: number;
 }
@@ -13,7 +13,7 @@ export interface StartServerOptions {
  */
 export const startServer = async (
   app: FastifyInstance,
-  options: StartServerOptions,
+  options: FastifyListenOptions,
 ): Promise<void> => {
   try {
     await app.listen({ host: options.host, port: options.port });
