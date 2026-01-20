@@ -19,9 +19,22 @@ Describe your changes here...
 - [ ] Run `pnpm turbo dev --filter=@knodia/<package-name>` to test runtime
 - [ ] Verified expected behavior
 
-<!-- Add a screenshot below showing the test output (drag & drop or paste image here) -->
+<!-- Add screenshots below showing the test output (drag & drop or paste image here) -->
 
-<img width="800" alt="Test output screenshot" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMGYwIiBzdHJva2U9IiNjY2NjY2MiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWRhc2hhcnJheT0iMTAsMTAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjI0IiBmaWxsPSIjOTk5OTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+QWRkIHNjcmVlbnNob3QgaGVyZTwvdGV4dD48L3N2Zz4=" />
+```
++--------------------------------------------------+
+|                                                  |
+|              +----------------+                  |
+|              |    /\    /\    |                  |
+|              |   /  \  /  \   |                  |
+|              |  /    \/    \  |                  |
+|              | /            \ |                  |
+|              +----------------+                  |
+|                                                  |
+|           [ Add screenshots here ]               |
+|                                                  |
++--------------------------------------------------+
+```
 
 ---
 
