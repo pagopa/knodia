@@ -74,7 +74,6 @@ export const API_Problem = z
       .describe(
         "A short, summary of the problem type. Written in english and readable",
       ),
-    type: z.literal("about:blank").describe("URI reference of type definition"),
   })
   .meta({ id: "Problem" });
 export type API_Problem = z.infer<typeof API_Problem>;

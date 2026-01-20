@@ -123,7 +123,6 @@ export function makeApiProblemBuilder<T extends string>(
         errors,
         status: httpStatus,
         title,
-        type: "about:blank",
       };
     };
 
@@ -217,7 +216,6 @@ export function makeApiProblemBuilder<T extends string>(
                 }),
                 status: P.number,
                 title: P.string,
-                type: "about:blank",
               },
               // Also matching AxiosError content to ensure data matches API_Problem type
               status: P.number,
