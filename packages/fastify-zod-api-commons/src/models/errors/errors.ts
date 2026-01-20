@@ -43,3 +43,21 @@ export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
     title,
   });
 }
+
+export function responseSerializationError(): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: commonErrorCodes.RESPONSE_SERIALIZATION_ERROR.code,
+    detail: "Response doesn't match the schema",
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Response Serialization Error",
+  });
+}
+
+export function zodFastifySchemaValidationError(): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: commonErrorCodes.ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR.code,
+    detail: "Request doesn't match the schema",
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Response Validation Error",
+  });
+}

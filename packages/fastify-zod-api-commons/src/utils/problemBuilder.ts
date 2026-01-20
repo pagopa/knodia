@@ -1,5 +1,3 @@
-/* eslint-disable max-lines-per-function */
-
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
 import { type AxiosError, isAxiosError } from "axios";
@@ -21,6 +19,8 @@ import {
   commonErrorCodes,
   type CommonErrorCodes,
   genericError,
+  responseSerializationError,
+  zodFastifySchemaValidationError,
 } from "../models/errors/errors.ts";
 import { serviceErrorCode } from "../models/errors/services.ts";
 
@@ -83,35 +83,16 @@ export function makeApiProblemBuilder<T extends string>(
               ],
               title: apiError.title,
             }
-          : hasZodFastifySchemaValidationErrors(apiError)
-            ? {
-                detail: "Request doesn't match the schema",
-                errors: apiError.validation.map((validationError) => ({
-                  code: `${serviceErrorCodeStr}-${allErrors.ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR.number}`,
-                  detail: validationError.message,
-                })),
-                title: "Response Validation Error",
-              }
-            : isResponseSerializationError(apiError)
-              ? {
-                  detail: "Response doesn't match the schema",
-                  errors: apiError.cause.issues.map((issue) => ({
-                    code: `${serviceErrorCodeStr}-${allErrors.RESPONSE_SERIALIZATION_ERROR.number}`,
-                    detail: issue.message || "Serialization error",
-                  })),
-
-                  title: "Response Serialization Error",
-                }
-              : {
-                  detail: STATUS_CODES[httpStatus] ?? "Unknown Error",
-                  errors: [
-                    {
-                      code: `${serviceErrorCodeStr}-0000`,
-                      detail: apiError.message,
-                    },
-                  ],
-                  title: "Fastify Error",
-                };
+          : {
+              detail: STATUS_CODES[httpStatus] ?? "Unknown Error",
+              errors: [
+                {
+                  code: `${serviceErrorCodeStr}-0000`,
+                  detail: apiError.message,
+                },
+              ],
+              title: "Fastify Error",
+            };
 
       return {
         correlationId,
@@ -131,7 +112,10 @@ export function makeApiProblemBuilder<T extends string>(
       .with(
         P.when((e) => hasZodFastifySchemaValidationErrors(e)),
         (e) => {
-          const problem = makeProblem(HTTP_STATUS_BAD_REQUEST, e);
+          const problem = makeProblem(
+            HTTP_STATUS_BAD_REQUEST,
+            zodFastifySchemaValidationError(),
+          );
           const problemLogString = makeProblemLogString(problem, e);
 
           logger.warn(problemLogString);
@@ -141,7 +125,10 @@ export function makeApiProblemBuilder<T extends string>(
       .with(
         P.when((e) => isResponseSerializationError(e)),
         (e) => {
-          const problem = makeProblem(HTTP_STATUS_INTERNAL_SERVER_ERROR, e);
+          const problem = makeProblem(
+            HTTP_STATUS_INTERNAL_SERVER_ERROR,
+            responseSerializationError(),
+          );
           const problemLogString = makeProblemLogString(problem, e);
 
           logger.warn(problemLogString);
