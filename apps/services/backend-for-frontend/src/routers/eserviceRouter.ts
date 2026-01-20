@@ -14,8 +14,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
 > = async (fastify, eserviceProcessClient) => {
   fastify.route({
-    errorHandler: (error, _req, res) => {
-      const errorRes = makeApiProblem(error, emptyErrorMapper);
+    errorHandler: (err, _req, res) => {
+      const errorRes = makeApiProblem(err, emptyErrorMapper);
 
       res.statusCode = errorRes.status;
 

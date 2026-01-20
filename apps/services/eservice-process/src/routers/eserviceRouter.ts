@@ -19,8 +19,8 @@ import {
 
 export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
   fastify.route({
-    errorHandler: (error, _req, res) => {
-      const errorRes = makeApiProblem(error, eserviceErrorMapper);
+    errorHandler: (err, _req, res) => {
+      const errorRes = makeApiProblem(err, eserviceErrorMapper);
 
       res.statusCode = errorRes.status;
       return res.type("application/problem+json").send(errorRes);
