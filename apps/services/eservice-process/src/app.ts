@@ -3,13 +3,15 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
+import { createLoggerOptions } from "@knodia/logger";
 import Fastify from "fastify";
 
+import { config } from "./config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const app = Fastify({
-  logger: true, // TODO configure logger - winston? pino?
+  logger: createLoggerOptions(config, config.serviceName),
 });
 
 // openapiPlugin must be registered before any routes to ensure proper route discovery
