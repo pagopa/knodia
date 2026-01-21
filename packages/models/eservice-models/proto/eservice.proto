@@ -4,4 +4,52 @@ package eservice;
 
 message Eservice {
   string id = 1;
+  string producerId = 2;
+  string name = 3;
+  string description = 4;
+  repeated string categories = 5;
+  EServiceMode mode = 6;
+  bool isSignalHubEnabled = 7;
+  int64 createdAt = 8;
+  int64 updatedAt = 9;
+}
+
+enum EServiceMode {
+  PROVIDE_DATA = 0;
+  RECEIVE_DATA = 1;
+}
+
+enum EserviceAccessTokenType {
+  BEARER = 0;
+  DPOP = 1;
+}
+
+message EserviceVersion {
+  string id = 1;
+  string eserviceId = 2;
+  string versionNumber = 3;
+  EserviceVersionState state = 4;
+  string interfaceDocumentId = 5;
+  EserviceAccessTokenType accessTokenType = 6;
+  string accessTokenAudience = 7;
+  string accessTokenDuration = 8;
+  string maxDailyCallsTotal = 9;
+  string maxDailyCallsPerKnode = 10;
+  string maxDailyCallsPerConsumer = 11;
+  int64 createdAt = 12;
+  int64 updatedAt = 13;
+}
+
+message EserviceVersionAttribute {
+  string eserviceId = 1;
+  string eserviceVersionId = 2;
+  string attributeId = 3;
+  string groupId = 4;
+}
+
+
+enum EserviceVersionState {
+  ACTIVE = 0;
+  SUSPENDED = 1;
+  ARCHIVED = 2;
 }
