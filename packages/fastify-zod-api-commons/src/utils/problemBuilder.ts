@@ -22,7 +22,7 @@ import {
   responseSerializationError,
   zodFastifySchemaValidationError,
 } from "../models/errors/errors.ts";
-import { serviceErrorCode } from "../models/errors/services.ts";
+import { serviceErrorCode, ServiceName } from "../models/errors/services.ts";
 
 const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = constants;
 
@@ -61,10 +61,17 @@ export function makeApiProblemBuilder<T extends string>(
     options;
   const allErrors = { ...commonErrorCodes, ...errors };
 
+  function retrieveServiceErrorCode(serviceName: string): string {
+    const serviceNameParsed = ServiceName.safeParse(serviceName);
+    return serviceNameParsed.success
+      ? serviceErrorCode[serviceNameParsed.data]
+      : "000";
+  }
+
   return (error) => {
     const { correlationId, logger, serviceName } =
       getContextValues(requestContext);
-    const serviceErrorCodeStr = serviceErrorCode[serviceName];
+    const serviceErrorCode = retrieveServiceErrorCode(serviceName);
 
     const makeProblem = ({
       errors,
@@ -73,7 +80,7 @@ export function makeApiProblemBuilder<T extends string>(
     }: ApiError<CommonErrorCodes | T>): API_Problem => ({
       correlationId,
       errors: errors.map(({ code, detail }) => ({
-        code: `${serviceErrorCodeStr}-${allErrors[code]}`,
+        code: `${serviceErrorCode}-${allErrors[code]}`,
         detail,
       })),
       status,

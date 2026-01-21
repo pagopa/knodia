@@ -5,14 +5,12 @@ import type {
 
 import Fastify from "fastify";
 
-import type { ServiceName } from "../models/errors/services.ts";
-
 // Documentation: https://github.com/fastify/fastify-request-context#typescript
 declare module "@fastify/request-context" {
   interface RequestContextData {
     correlationId: string;
     logger: Fastify.FastifyBaseLogger;
-    serviceName: ServiceName;
+    serviceName: string;
   }
 }
 

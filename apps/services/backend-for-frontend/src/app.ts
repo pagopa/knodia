@@ -3,17 +3,16 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
+import { config } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const clients = getKnodiaClients();
 
-const app = createFastifyApp(
-  serviceName.BACKEND_FOR_FRONTEND,
-  {
+const app = createFastifyApp({
+  fastifyOptions: {
     openapi: {
       info: {
         description: "Knodia backend-for-frontend API",
@@ -30,8 +29,10 @@ const app = createFastifyApp(
       ],
     },
   },
-  false,
-);
+  loggerConfig: config,
+  readCorrelationIdFromHeader: false,
+  serviceName: config.serviceName,
+});
 
 app.register(healthRouter);
 app.register(eserviceRouter, clients.eserviceProcessClient);
