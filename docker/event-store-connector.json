@@ -1,0 +1,17 @@
+{
+  "name": "event-store-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "event-store",
+    "database.port": "5432",
+    "database.user": "root",
+    "database.password": "root",
+    "database.dbname": "root",
+    "topic.prefix": "event-store",
+    "plugin.name": "pgoutput",
+    "publication.autocreate.mode": "filtered",
+    "slot.name": "event_store_slot",
+    "publication.name": "event_store_pub",
+    "tombstones.on.delete": "false"
+  }
+}
