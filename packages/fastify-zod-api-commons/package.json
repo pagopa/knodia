@@ -14,7 +14,8 @@
     "./health": "./src/routers/healthRouter.ts",
     "./models": "./src/models/index.ts",
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
-    "./problemBuilder": "./src/utils/problemBuilder.ts"
+    "./problemBuilder": "./src/utils/problemBuilder.ts",
+    "./startServer": "./src/utils/startServer.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
@@ -29,6 +30,7 @@
     "@fastify/request-context": "catalog:",
     "@fastify/swagger": "catalog:",
     "@fastify/swagger-ui": "catalog:",
+    "@knodia/logger": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:",
