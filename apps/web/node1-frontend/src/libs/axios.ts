@@ -1,17 +1,18 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { match } from "ts-pattern";
 
-import { ENV } from "@/configs/env";
+import { config } from "@/config/config";
 
 const api = axios.create({
-  baseURL: ENV.VITE_API_BASE_URL,
+  baseURL: config.bffUrl,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = "TODO"; // How do we handle auth tokens?
+  // TODO: How do we handle auth tokens?
+  const token = undefined;
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
