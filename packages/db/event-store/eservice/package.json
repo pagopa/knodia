@@ -18,6 +18,7 @@
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@knodia/db-event-store-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@dotenvx/dotenvx": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",

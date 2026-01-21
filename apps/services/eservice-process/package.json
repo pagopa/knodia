@@ -7,17 +7,21 @@
     "generate-openapi": "node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
+    "test": "vitest run",
+    "test:watch": "vitest --watch"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
-    "@knodia/typescript-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@knodia/fastify-zod-api-commons": "workspace:*",
