@@ -16,3 +16,6 @@ rules:
   has-x-api-id: off # we don't use x-api-id custom field
   allowed-number-format: off # suggests decimal32 instead of int32, but OpenAPI standard uses int32
   no-method-name-in-operationId: off # we usually use service method name as operationId
+
+  # Info
+  use-recommended-names-in-schemas: off # not compatible with our naming conventions

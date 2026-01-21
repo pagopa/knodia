@@ -2,7 +2,7 @@
   "name": "@knodia/eservice-process",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'node --watch ./src/index.ts'",
+    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "generate-openapi": "node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
@@ -12,12 +12,14 @@
     "test:watch": "vitest --watch"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@knodia/test-commons": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
+    "pino-pretty": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
@@ -25,6 +27,7 @@
   },
   "dependencies": {
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/logger": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "zod": "catalog:"

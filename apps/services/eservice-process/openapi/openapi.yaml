@@ -50,6 +50,16 @@ components:
         - items
         - pagination
       additionalProperties: false
+    EserviceSeed:
+      type: object
+      properties:
+        name:
+          description: Name of the E-service
+          type: string
+          minLength: 4
+      required:
+        - name
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -97,6 +107,25 @@ paths:
                 description: E-services retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Eservices"
+    post:
+      operationId: createEservice
+      tags:
+        - eservice
+      description: Create a new E-service
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EserviceSeed"
+      responses:
+        "201":
+          description: E-service created successfully
+          content:
+            application/json:
+              schema:
+                description: E-service created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservice"
 servers:
   - description: E-service Process API
     url: /

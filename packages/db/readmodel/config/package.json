@@ -8,7 +8,6 @@
     "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
-    "drizzle-orm": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
