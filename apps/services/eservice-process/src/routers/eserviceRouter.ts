@@ -46,6 +46,12 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
   });
 
   fastify.route({
+    errorHandler: (err, _req, res) => {
+      const errorRes = makeApiProblem(err);
+
+      res.statusCode = errorRes.status;
+      return res.type("application/problem+json").send(errorRes);
+    },
     handler: (req, res) => {
       const eservice = createMockEservice(req.body.name);
       res.status(201).send(toAPI_Eservice(eservice));
@@ -57,6 +63,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
       operationId: "createEservice",
       response: {
         201: API_Eservice.describe("E-service created successfully"),
+        400: API_Problem.describe("Bad Request"),
       },
       tags: [apiTags.eservice],
     },

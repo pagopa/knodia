@@ -189,6 +189,14 @@ paths:
                 description: E-service created successfully
                 allOf:
                   - $ref: "#/components/schemas/Eservice"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: E-service Process API
     url: /
