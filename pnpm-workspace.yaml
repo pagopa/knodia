@@ -42,3 +42,8 @@ catalog:
   zod: 4.2.0
 
 catalogMode: strict
+
+allowBuilds:
+  esbuild: true
+  "@bufbuild/buf": true
+  "@confluentinc/kafka-javascript": true
