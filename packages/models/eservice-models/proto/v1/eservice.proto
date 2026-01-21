@@ -1,59 +1,53 @@
 syntax = "proto3";
 
-package eservice;
+package eservice.v1;
 
-message Eservice {
+message EserviceV1 {
   string id = 1;
   string producerId = 2;
   string name = 3;
   string description = 4;
   repeated string categories = 5;
-  EServiceMode mode = 6;
+  EServiceModeV1 mode = 6;
   bool isSignalHubEnabled = 7;
   int64 createdAt = 8;
   int64 updatedAt = 9;
 }
 
-enum EServiceMode {
+enum EServiceModeV1 {
   PROVIDE_DATA = 0;
   RECEIVE_DATA = 1;
 }
 
-enum EserviceAccessTokenType {
+enum EserviceAccessTokenTypeV1 {
   BEARER = 0;
   DPOP = 1;
 }
 
-message EserviceVersion {
+message EserviceVersionV1 {
   string id = 1;
   string eserviceId = 2;
   string versionNumber = 3;
-  EserviceVersionState state = 4;
+  EserviceVersionStateV1 state = 4;
   string interfaceDocumentId = 5;
-  EserviceAccessTokenType accessTokenType = 6;
+  EserviceAccessTokenTypeV1 accessTokenType = 6;
   string accessTokenAudience = 7;
   string accessTokenDuration = 8;
   string maxDailyCallsTotal = 9;
   string maxDailyCallsPerKnode = 10;
   string maxDailyCallsPerConsumer = 11;
-  int64 createdAt = 12;
-  int64 updatedAt = 13;
+  repeated EserviceVersionAttributeGroupV1 attributeGroups = 12;
+  int64 createdAt = 13;
+  int64 updatedAt = 14;
 }
 
-message EserviceVersionAttribute {
-  string eserviceId = 1;
-  string eserviceVersionId = 2;
-  string attributeId = 3;
-  string groupId = 4;
-}
-
-enum EserviceVersionState {
+enum EserviceVersionStateV1 {
   ACTIVE = 0;
   SUSPENDED = 1;
   ARCHIVED = 2;
 }
 
-message EserviceDocument {
+message EserviceDocumentV1 {
   string id = 1;
   string name = 2;
   string prettyName = 3;
@@ -62,4 +56,8 @@ message EserviceDocument {
   string checksum = 6;
   string createdAt = 7;
   string updatedAt = 8;
+}
+message EserviceVersionAttributeGroupV1 {
+  string groupId = 1;
+  repeated string attributeIds = 2;
 }
