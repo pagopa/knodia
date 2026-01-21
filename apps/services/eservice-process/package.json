@@ -23,7 +23,6 @@
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
-    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
