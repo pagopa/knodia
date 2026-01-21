@@ -1,5 +1,5 @@
 {
-  "id": "88f24035-9db0-44a8-aabf-972ff1f35f7f",
+  "id": "fb2e2914-14bb-47f2-8f52-5d8e72a281a1",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8,16 +8,413 @@
       "name": "eservice",
       "schema": "eservice",
       "columns": {
+        "categories": {
+          "name": "categories",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "id": {
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
+          "notNull": true
+        },
+        "is_signal_hub_enabled": {
+          "name": "is_signal_hub_enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata_version": {
+          "name": "metadata_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mode": {
+          "name": "mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "producer_id": {
+          "name": "producer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "eservice.eservice_document": {
+      "name": "eservice_document",
+      "schema": "eservice",
+      "columns": {
+        "checksum": {
+          "name": "checksum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eservice_id": {
+          "name": "eservice_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "metadata_version": {
+          "name": "metadata_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pretty_name": {
+          "name": "pretty_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "eservice_document_eservice_id_eservice_id_fk": {
+          "name": "eservice_document_eservice_id_eservice_id_fk",
+          "tableFrom": "eservice_document",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "eservice_document_eservice_id_metadata_version_fkey": {
+          "name": "eservice_document_eservice_id_metadata_version_fkey",
+          "tableFrom": "eservice_document",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id",
+            "metadata_version"
+          ],
+          "columnsTo": [
+            "id",
+            "metadata_version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "eservice.eservice_version": {
+      "name": "eservice_version",
+      "schema": "eservice",
+      "columns": {
+        "access_token_audience": {
+          "name": "access_token_audience",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token_duration": {
+          "name": "access_token_duration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token_type": {
+          "name": "access_token_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eservice_id": {
+          "name": "eservice_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "interface_document_id": {
+          "name": "interface_document_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "max_daily_calls_per_consumer": {
+          "name": "max_daily_calls_per_consumer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "max_daily_calls_per_knode": {
+          "name": "max_daily_calls_per_knode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "max_daily_calls_total": {
+          "name": "max_daily_calls_total",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata_version": {
+          "name": "metadata_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version_number": {
+          "name": "version_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "eservice_version_eservice_id_eservice_id_fk": {
+          "name": "eservice_version_eservice_id_eservice_id_fk",
+          "tableFrom": "eservice_version",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "eservice_version_interface_document_id_eservice_document_id_fk": {
+          "name": "eservice_version_interface_document_id_eservice_document_id_fk",
+          "tableFrom": "eservice_version",
+          "tableTo": "eservice_document",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "interface_document_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "eservice_version_eservice_id_metadata_version_fkey": {
+          "name": "eservice_version_eservice_id_metadata_version_fkey",
+          "tableFrom": "eservice_version",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id",
+            "metadata_version"
+          ],
+          "columnsTo": [
+            "id",
+            "metadata_version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "eservice.eservice_version_attribute_group": {
+      "name": "eservice_version_attribute_group",
+      "schema": "eservice",
+      "columns": {
+        "attribute_ids": {
+          "name": "attribute_ids",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eservice_id": {
+          "name": "eservice_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eservice_version_id": {
+          "name": "eservice_version_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "group_id": {
+          "name": "group_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata_version": {
+          "name": "metadata_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "eservice_version_attribute_group_eservice_id_eservice_id_fk": {
+          "name": "eservice_version_attribute_group_eservice_id_eservice_id_fk",
+          "tableFrom": "eservice_version_attribute_group",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "eservice_version_attribute_group_eservice_version_id_eservice_version_id_fk": {
+          "name": "eservice_version_attribute_group_eservice_version_id_eservice_version_id_fk",
+          "tableFrom": "eservice_version_attribute_group",
+          "tableTo": "eservice_version",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_version_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "eservice_version_attribute_group_eservice_id_metadata_version_fkey": {
+          "name": "eservice_version_attribute_group_eservice_id_metadata_version_fkey",
+          "tableFrom": "eservice_version_attribute_group",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id",
+            "metadata_version"
+          ],
+          "columnsTo": [
+            "id",
+            "metadata_version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "eservice_version_attribute_group_pk": {
+          "name": "eservice_version_attribute_group_pk",
+          "columns": [
+            "eservice_version_id",
+            "group_id"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},

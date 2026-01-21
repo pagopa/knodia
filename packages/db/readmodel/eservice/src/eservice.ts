@@ -1,4 +1,13 @@
-import { pgSchema, uuid } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  foreignKey,
+  integer,
+  pgSchema,
+  primaryKey,
+  text,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { readModelEserviceConfig } from "../config/config.ts";
 
@@ -7,8 +16,130 @@ export const eserviceSchema = pgSchema(
 );
 
 export const readmodelEservice = eserviceSchema.table("eservice", {
+  categories: text().array().notNull(),
+  createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  description: text().notNull(),
   id: uuid().primaryKey(),
+  isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
+  metadataVersion: integer("metadata_version").notNull(),
+  mode: text().notNull(),
+  name: text().notNull(),
+  producerId: uuid("producer_id").notNull(),
+  updatedAt: timestamp("updated_at", {
+    mode: "date",
+    withTimezone: true,
+  }).notNull(),
 });
 
+export const readmodelEserviceDocument = eserviceSchema.table(
+  "eservice_document",
+  {
+    checksum: text().notNull(),
+    contentType: text("content_type").notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
+    eserviceId: uuid("eservice_id")
+      .notNull()
+      .references(() => readmodelEservice.id),
+    id: uuid().primaryKey(),
+    metadataVersion: integer("metadata_version").notNull(),
+    name: text().notNull(),
+    path: text().notNull(),
+    prettyName: text("pretty_name").notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.eserviceId, table.metadataVersion],
+      foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
+      name: "eservice_document_eservice_id_metadata_version_fkey",
+    }),
+  ],
+);
+
+export const readmodelEserviceVersion = eserviceSchema.table(
+  "eservice_version",
+  {
+    accessTokenAudience: text("access_token_audience").notNull(),
+    accessTokenDuration: text("access_token_duration").notNull(),
+    accessTokenType: text("access_token_type").notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
+    eserviceId: uuid("eservice_id")
+      .notNull()
+      .references(() => readmodelEservice.id),
+    id: uuid().primaryKey(),
+    interfaceDocumentId: uuid("interface_document_id")
+      .notNull()
+      .references(() => readmodelEserviceDocument.id),
+    maxDailyCallsPerConsumer: text("max_daily_calls_per_consumer").notNull(),
+    maxDailyCallsPerKnode: text("max_daily_calls_per_knode").notNull(),
+    maxDailyCallsTotal: text("max_daily_calls_total").notNull(),
+    metadataVersion: integer("metadata_version").notNull(),
+    state: text("state").notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
+    versionNumber: text("version_number").notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.eserviceId, table.metadataVersion],
+      foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
+      name: "eservice_version_eservice_id_metadata_version_fkey",
+    }),
+  ],
+);
+
+export const readmodelEserviceVersionAttributeGroup = eserviceSchema.table(
+  "eservice_version_attribute_group",
+  {
+    attributeIds: text("attribute_ids").array().notNull(),
+    eserviceId: uuid("eservice_id")
+      .notNull()
+      .references(() => readmodelEservice.id),
+    eserviceVersionId: uuid("eservice_version_id")
+      .notNull()
+      .references(() => readmodelEserviceVersion.id),
+    groupId: text("group_id").notNull(),
+    metadataVersion: integer("metadata_version").notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.eserviceId, table.metadataVersion],
+      foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
+      name: "eservice_version_attribute_group_eservice_id_metadata_version_fkey",
+    }),
+    primaryKey({
+      columns: [table.eserviceVersionId, table.groupId],
+      name: "eservice_version_attribute_group_pk",
+    }),
+  ],
+);
+
 export type NewReadmodelEservice = typeof readmodelEservice.$inferInsert;
+export type NewReadmodelEserviceDocument =
+  typeof readmodelEserviceDocument.$inferInsert;
+export type NewReadmodelEserviceVersion =
+  typeof readmodelEserviceVersion.$inferInsert;
+
+export type NewReadmodelEserviceVersionAttributeGroup =
+  typeof readmodelEserviceVersionAttributeGroup.$inferInsert;
+
 export type ReadmodelEservice = typeof readmodelEservice.$inferSelect;
+export type ReadmodelEserviceDocument =
+  typeof readmodelEserviceDocument.$inferSelect;
+export type ReadmodelEserviceVersion =
+  typeof readmodelEserviceVersion.$inferSelect;
+export type ReadmodelEserviceVersionAttributeGroup =
+  typeof readmodelEserviceVersionAttributeGroup.$inferSelect;
