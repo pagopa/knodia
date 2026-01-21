@@ -17,7 +17,7 @@ while true; do
     -H "Accept:application/json" \
     -H "Content-Type:application/json" \
     -w "%{http_code}\n" \
-    -d "@docker/debezium/event-store-connector.json" \
+    -d "@docker/event-store-connector.json" \
     "$URL")
 
   if [ "$response" -eq "201" ]; then
