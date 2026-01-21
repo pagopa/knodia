@@ -12,10 +12,7 @@
     "./fastify": "./src/utils/fastify.ts",
     "./generateOpenapi": "./src/utils/generateOpenapi.ts",
     "./health": "./src/routers/healthRouter.ts",
-    "./models/api": "./src/models/api.ts",
-    "./models/apiError": "./src/models/errors/apiError.ts",
-    "./models/errors": "./src/models/errors/errors.ts",
-    "./models/services": "./src/models/errors/services.ts",
+    "./models": "./src/models/index.ts",
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
     "./problemBuilder": "./src/utils/problemBuilder.ts"
   },
