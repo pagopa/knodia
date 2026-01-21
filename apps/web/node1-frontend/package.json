@@ -1,8 +1,9 @@
 {
-  "name": "@knodia/frontend",
+  "name": "@knodia/node1-frontend",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",

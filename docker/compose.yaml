@@ -15,5 +15,20 @@ services:
     volumes:
       - event-store-data:/var/lib/postgresql
 
+  readmodel:
+    security_opt:
+      - no-new-privileges:true
+    image: postgres:18@sha256:5773fe724c49c42a7a9ca70202e11e1dff21fb7235b335a73f39297d200b73a2
+    container_name: knodia-readmodel
+    ports:
+      - 6002:5432
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: root
+    volumes:
+      - readmodel-data:/var/lib/postgresql
+
 volumes:
   event-store-data:
+  readmodel-data:
