@@ -50,14 +50,6 @@ export const API_Problem = z
       .max(64)
       .meta({ example: "53af4f2d-0c87-41ef-a645-b726a821852b" })
       .describe("Unique identifier of the request"),
-    detail: z
-      .string()
-      .max(4096)
-      .meta({
-        example: "Request took too long to complete",
-        pattern: "^.{0,1024}$",
-      })
-      .describe("A human readable explanation of the problem"),
     errors: z.array(API_ProblemError).min(1),
     status: z
       .number()

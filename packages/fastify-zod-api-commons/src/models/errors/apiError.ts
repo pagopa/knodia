@@ -1,6 +1,7 @@
+import type { ZodIssue } from "zod-validation-error";
+
 export class ApiError<T> extends Error {
   public code: T;
-  public detail: string;
   public errors: { code: T; detail: string }[];
   public status: number;
   public title: string;
@@ -14,14 +15,13 @@ export class ApiError<T> extends Error {
   }: {
     code: T;
     detail: string;
-    errors?: Error[];
+    errors?: Error[] | ZodIssue[];
     status: number;
     title: string;
   }) {
     super(detail);
     this.code = code;
     this.title = title;
-    this.detail = detail;
     this.errors =
       errors && errors.length > 0
         ? errors.map((e) => ({ code, detail: e.message }))
@@ -33,17 +33,20 @@ export class ApiError<T> extends Error {
 export function createApiError<T>({
   code,
   detail,
+  errors,
   status,
   title,
 }: {
   code: T;
   detail: string;
+  errors?: Error[] | ZodIssue[];
   status: number;
   title: string;
 }) {
   return new ApiError({
     code,
     detail,
+    errors,
     status,
     title,
   });

@@ -33,7 +33,7 @@ const makeProblemLogString = (
   originalError: unknown,
 ): string => {
   const errorsString = problem.errors.map((e) => e.detail).join(" - ");
-  return `- title: ${problem.title} - detail: ${problem.detail} - errors: ${errorsString} - original error: ${originalError}`;
+  return `- title: ${problem.title} - errors: ${errorsString} - original error: ${originalError}`;
 };
 
 interface ProblemBuilderOptions {
@@ -67,13 +67,11 @@ export function makeApiProblemBuilder<T extends string>(
     const serviceErrorCodeStr = serviceErrorCode[serviceName];
 
     const makeProblem = ({
-      detail,
       errors,
       status,
       title,
     }: ApiError<CommonErrorCodes | T>): API_Problem => ({
       correlationId,
-      detail,
       errors: errors.map(({ code, detail }) => ({
         code: `${serviceErrorCodeStr}-${allErrors[code]}`,
         detail,
@@ -88,7 +86,7 @@ export function makeApiProblemBuilder<T extends string>(
       .with(
         P.when((e) => hasZodFastifySchemaValidationErrors(e)),
         (e) => {
-          const problem = makeProblem(zodFastifySchemaValidationError());
+          const problem = makeProblem(zodFastifySchemaValidationError(e));
           const problemLogString = makeProblemLogString(problem, e);
 
           logger.warn(problemLogString);
@@ -98,7 +96,7 @@ export function makeApiProblemBuilder<T extends string>(
       .with(
         P.when((e) => isResponseSerializationError(e)),
         (e) => {
-          const problem = makeProblem(responseSerializationError());
+          const problem = makeProblem(responseSerializationError(e));
           const problemLogString = makeProblemLogString(problem, e);
 
           logger.warn(problemLogString);

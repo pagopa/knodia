@@ -1,3 +1,9 @@
+import type { FastifyError } from "@fastify/error";
+import type {
+  ResponseSerializationError,
+  ZodFastifySchemaValidationError,
+} from "fastify-type-provider-zod";
+
 import { STATUS_CODES } from "http";
 import { constants } from "http2";
 
@@ -50,20 +56,28 @@ export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
   });
 }
 
-export function responseSerializationError(): ApiError<CommonErrorCodes> {
+export function responseSerializationError(
+  error: ResponseSerializationError,
+): ApiError<CommonErrorCodes> {
   return createApiError({
     code: "RESPONSE_SERIALIZATION_ERROR",
     detail: "Response doesn't match the schema",
-    status: HTTP_STATUS_BAD_REQUEST,
+    errors: error.cause.issues,
+    status: error.statusCode || HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Response Serialization Error",
   });
 }
 
-export function zodFastifySchemaValidationError(): ApiError<CommonErrorCodes> {
+export function zodFastifySchemaValidationError(
+  error: Omit<FastifyError, "validation"> & {
+    validation: ZodFastifySchemaValidationError[];
+  },
+): ApiError<CommonErrorCodes> {
   return createApiError({
     code: "ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR",
     detail: "Request doesn't match the schema",
+    errors: error.validation,
     status: HTTP_STATUS_BAD_REQUEST,
-    title: "Response Validation Error",
+    title: "Request Validation Error",
   });
 }
