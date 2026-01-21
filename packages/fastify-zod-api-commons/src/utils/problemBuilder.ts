@@ -54,7 +54,7 @@ interface ProblemBuilderOptions {
 }
 
 export function makeApiProblemBuilder<T extends string>(
-  errors: Record<T, { code: string; number: string }>,
+  errors: Record<T, string>,
   options: ProblemBuilderOptions = {},
 ): MakeApiProblemFn {
   const { forceGenericProblemOn500 = false, problemErrorsPassthrough = true } =
@@ -75,7 +75,7 @@ export function makeApiProblemBuilder<T extends string>(
       correlationId,
       detail,
       errors: errors.map(({ code, detail }) => ({
-        code: `${serviceErrorCodeStr}-${allErrors[code].number}`,
+        code: `${serviceErrorCodeStr}-${allErrors[code]}`,
         detail,
       })),
       status,

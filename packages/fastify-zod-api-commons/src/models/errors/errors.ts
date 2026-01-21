@@ -6,23 +6,15 @@ import { ApiError, createApiError } from "./apiError.ts";
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
 
+/* eslint-disable perfectionist/sort-objects */
 export const commonErrorCodes = {
-  FASTIFY_ERROR: { code: "FASTIFY_ERROR", number: "9995" },
-  GENERIC_ERROR: { code: "GENERIC_ERROR", number: "9991" },
-  MISSING_HEADER: {
-    code: "MISSING_HEADER",
-    number: "9994",
-  },
-  RESPONSE_SERIALIZATION_ERROR: {
-    code: "RESPONSE_SERIALIZATION_ERROR",
-    number: "9993",
-  },
-  ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR: {
-    code: "ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR",
-    number: "9992",
-  },
+  GENERIC_ERROR: "9991",
+  ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR: "9992",
+  RESPONSE_SERIALIZATION_ERROR: "9993",
+  MISSING_HEADER: "9994",
+  FASTIFY_ERROR: "9995",
 } as const;
-
+/* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
 
 /* ===== API Error ===== */
@@ -32,7 +24,7 @@ export function fastifyError(
   detail: string,
 ): ApiError<CommonErrorCodes> {
   return createApiError({
-    code: commonErrorCodes.FASTIFY_ERROR.code,
+    code: "FASTIFY_ERROR",
     detail,
     status: httpStatus,
     title: STATUS_CODES[httpStatus] ?? "Unknown Error",
@@ -41,7 +33,7 @@ export function fastifyError(
 
 export function genericError(details: string): ApiError<CommonErrorCodes> {
   return createApiError({
-    code: commonErrorCodes.GENERIC_ERROR.code,
+    code: "GENERIC_ERROR",
     detail: details,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Unexpected Error",
@@ -51,7 +43,7 @@ export function genericError(details: string): ApiError<CommonErrorCodes> {
 export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
   const title = "Header has not been passed";
   return createApiError({
-    code: commonErrorCodes.MISSING_HEADER.code,
+    code: "MISSING_HEADER",
     detail: headerName ? `Missing ${headerName} request header` : title,
     status: HTTP_STATUS_BAD_REQUEST,
     title,
@@ -60,7 +52,7 @@ export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
 
 export function responseSerializationError(): ApiError<CommonErrorCodes> {
   return createApiError({
-    code: commonErrorCodes.RESPONSE_SERIALIZATION_ERROR.code,
+    code: "RESPONSE_SERIALIZATION_ERROR",
     detail: "Response doesn't match the schema",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Response Serialization Error",
@@ -69,7 +61,7 @@ export function responseSerializationError(): ApiError<CommonErrorCodes> {
 
 export function zodFastifySchemaValidationError(): ApiError<CommonErrorCodes> {
   return createApiError({
-    code: commonErrorCodes.ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR.code,
+    code: "ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR",
     detail: "Request doesn't match the schema",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Response Validation Error",
