@@ -47,9 +47,19 @@ message EserviceVersionAttribute {
   string groupId = 4;
 }
 
-
 enum EserviceVersionState {
   ACTIVE = 0;
   SUSPENDED = 1;
   ARCHIVED = 2;
+}
+
+message EserviceDocument {
+  string id = 1;
+  string name = 2;
+  string prettyName = 3;
+  string contentType = 4;
+  string path = 5;
+  string checksum = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
 }
