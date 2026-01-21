@@ -58,12 +58,6 @@ components:
           description: Unique identifier of the request
           type: string
           maxLength: 64
-        detail:
-          example: Request took too long to complete
-          pattern: ^.{0,1024}$
-          description: A human readable explanation of the problem
-          type: string
-          maxLength: 4096
         errors:
           minItems: 1
           type: array
@@ -86,7 +80,6 @@ components:
           maxLength: 64
       required:
         - correlationId
-        - detail
         - errors
         - status
         - title
