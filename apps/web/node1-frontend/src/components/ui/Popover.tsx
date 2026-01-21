@@ -1,6 +1,6 @@
 import {
   Popover as AriaPopover,
-  PopoverProps as AriaPopoverProps,
+  type PopoverProps as AriaPopoverProps,
   composeRenderProps,
   OverlayArrow,
 } from "react-aria-components";

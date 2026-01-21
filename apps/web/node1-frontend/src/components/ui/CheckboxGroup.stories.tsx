@@ -1,4 +1,5 @@
-import { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
 import { Form } from "react-aria-components";
 
 import { Button } from "@/components/ui//Button";

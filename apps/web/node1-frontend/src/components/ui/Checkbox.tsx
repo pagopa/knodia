@@ -1,7 +1,7 @@
 import { Check, Minus } from "lucide-react";
 import {
   Checkbox as AriaCheckbox,
-  CheckboxProps,
+  type CheckboxProps,
   composeRenderProps,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";

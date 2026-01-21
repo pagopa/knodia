@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 import {
   CheckboxGroup as AriaCheckboxGroup,
-  CheckboxGroupProps as AriaCheckboxGroupProps,
-  ValidationResult,
+  type CheckboxGroupProps as AriaCheckboxGroupProps,
+  type ValidationResult,
 } from "react-aria-components";
 
 import { Description, FieldError, Label } from "@/components/ui/Field";

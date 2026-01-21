@@ -2,13 +2,13 @@ import { Check } from "lucide-react";
 import {
   ListBox as AriaListBox,
   ListBoxItem as AriaListBoxItem,
-  ListBoxProps as AriaListBoxProps,
+  type ListBoxProps as AriaListBoxProps,
   Collection,
   composeRenderProps,
   Header,
-  ListBoxItemProps,
+  type ListBoxItemProps,
   ListBoxSection,
-  SectionProps,
+  type SectionProps,
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
