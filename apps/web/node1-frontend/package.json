@@ -7,8 +7,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "preview": "vite preview",
-    "storybook": "storybook dev -p 6006"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource-variable/inter": "catalog:",
@@ -34,8 +33,8 @@
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/ui-kit": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
-    "@storybook/react-vite": "catalog:",
     "@tanstack/router-plugin": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
@@ -43,8 +42,6 @@
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
-    "eslint-plugin-storybook": "catalog:",
-    "storybook": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   }
