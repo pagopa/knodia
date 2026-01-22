@@ -11,6 +11,8 @@ catalog:
   "@bufbuild/protobuf": 2.10.2
   "@confluentinc/kafka-javascript": 1.7.0
   "@dotenvx/dotenvx": 1.51.4
+  "@fastify/error": 4.2.0
+  "@fastify/request-context": 6.2.1
   "@fastify/swagger": 9.6.1
   "@fastify/swagger-ui": 5.2.4
   "@hey-api/openapi-ts": 0.89.2
@@ -38,6 +40,7 @@ catalog:
   turbo: 2.7.3
   typescript: 5.9.3
   zod: 4.2.0
+  zod-validation-error: 5.0.0
 
 catalogMode: strict
 

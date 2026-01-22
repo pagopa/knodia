@@ -1,3 +1,6 @@
-import app from "./app.ts";
+import { startServer } from "@knodia/fastify-zod-api-commons/startServer";
 
-app.listen({ port: 3600 });
+import app from "./app.ts";
+import { config } from "./config/config.ts";
+
+void startServer(app, { host: config.host, port: config.port });
