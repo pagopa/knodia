@@ -7,7 +7,11 @@ import type {
 import { STATUS_CODES } from "http";
 import { constants } from "http2";
 
-import { ApiError, createApiError } from "./apiError.ts";
+import {
+  ApiError,
+  createApiError,
+  createApiErrorFromErrorsList,
+} from "./apiError.ts";
 
 const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
   constants;
@@ -23,7 +27,7 @@ export const commonErrorCodes = {
 /* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
 
-/* ===== API Error ===== */
+/* ===== Common API errors ===== */
 
 export function fastifyError(
   httpStatus: number,
@@ -59,9 +63,8 @@ export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
 export function responseSerializationError(
   error: ResponseSerializationError,
 ): ApiError<CommonErrorCodes> {
-  return createApiError({
+  return createApiErrorFromErrorsList({
     code: "RESPONSE_SERIALIZATION_ERROR",
-    detail: "Response doesn't match the schema",
     errors: error.cause.issues,
     status: error.statusCode || HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Response Serialization Error",
@@ -73,9 +76,8 @@ export function zodFastifySchemaValidationError(
     validation: ZodFastifySchemaValidationError[];
   },
 ): ApiError<CommonErrorCodes> {
-  return createApiError({
+  return createApiErrorFromErrorsList({
     code: "ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR",
-    detail: "Request doesn't match the schema",
     errors: error.validation,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Request Validation Error",

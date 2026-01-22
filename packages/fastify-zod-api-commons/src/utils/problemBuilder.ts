@@ -32,8 +32,10 @@ const makeProblemLogString = (
   problem: API_Problem,
   originalError: unknown,
 ): string => {
-  const errorsString = problem.errors.map((e) => e.detail).join(" - ");
-  return `- title: ${problem.title} - errors: ${errorsString} - original error: ${originalError}`;
+  const errorsString = problem.errors
+    ? `- errors: ${problem.errors.map((e) => `${e.code}, ${e.detail}`).join("; ")}`
+    : "";
+  return `- title: ${problem.title} ${errorsString} - original error: ${originalError}`;
 };
 
 interface ProblemBuilderOptions {
@@ -183,9 +185,7 @@ export function makeApiProblemBuilder<T extends string>(
             logger.warn(
               makeProblemLogString(
                 genericProblem,
-                `${receivedProblem.title}, code ${
-                  receivedProblem.errors.at(0)?.code
-                }, ${receivedProblem.errors.at(0)?.detail}`,
+                `${receivedProblem.title} - status ${receivedProblem.status}`,
               ),
             );
             return genericProblem;
