@@ -6,6 +6,7 @@ import Fastify, { type FastifyRegisterOptions } from "fastify";
 
 import { missingHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";
+import { healthRouterUrl } from "../routers/healthRouter.ts";
 import openapiZodPlugin, {
   type OpenapiZodPluginOptions,
 } from "./openapi-zod-plugin/openapiZodPlugin.ts";
@@ -65,8 +66,9 @@ const checkCorrelationIdHeader = (
 ) => {
   if (readCorrelationIdFromHeader) {
     app.addHook("onRequest", async (req, res) => {
-      const correlationId = req.headers[CORRELATION_ID_HEADER];
+      if (req.url === healthRouterUrl) return;
 
+      const correlationId = req.headers[CORRELATION_ID_HEADER];
       if (!correlationId) {
         const problem = makeApiProblem(missingHeader(CORRELATION_ID_HEADER));
         return res.status(problem.status).send(problem);
