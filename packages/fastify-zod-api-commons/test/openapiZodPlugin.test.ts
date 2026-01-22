@@ -1,4 +1,4 @@
-import type { OpenAPIV3_1 } from "openapi-types";
+import type { OpenAPIV3 } from "openapi-types";
 
 import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -45,7 +45,7 @@ describe("openapiZodPlugin", () => {
   });
 
   it("exposes an OpenAPI 3.0.4 spec for registered routes", () => {
-    const openapi = fastify.swagger() as OpenAPIV3_1.Document;
+    const openapi = fastify.swagger() as OpenAPIV3.Document;
     expect(openapi).toEqual({
       components: expectedOpenapiComponents,
       info: {
