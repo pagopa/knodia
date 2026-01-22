@@ -3,6 +3,11 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import {
+  API_Problem,
+  processHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
+
+import {
   API_Eservice,
   API_Eservices,
   API_EserviceSeed,
@@ -34,6 +39,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
     method: "GET",
     schema: {
       description: "Retrieve a list of E-services",
+      headers: processHeaders,
       operationId: "getEservices",
       querystring: API_EservicesQueryParams,
       response: {
@@ -60,6 +66,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
     schema: {
       body: API_EserviceSeed,
       description: "Create a new E-service",
+      headers: processHeaders,
       operationId: "createEservice",
       response: {
         201: API_Eservice.describe("E-service created successfully"),

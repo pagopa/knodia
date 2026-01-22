@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   CORRELATION_ID_HEADER,
@@ -24,10 +25,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       return res.type("application/problem+json").send(errorRes);
     },
     handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
       const eservices = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: {
-          [CORRELATION_ID_HEADER]: requestContext.get("correlationId"),
+          [CORRELATION_ID_HEADER]: correlationId,
         },
         query: {
           limit: req.query.limit,

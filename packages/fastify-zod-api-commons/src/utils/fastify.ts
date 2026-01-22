@@ -9,18 +9,21 @@ import { CORRELATION_ID_HEADER } from "../models/headers.ts";
 import openapiZodPlugin, {
   type OpenapiZodPluginOptions,
 } from "./openapi-zod-plugin/openapiZodPlugin.ts";
-import { makeApiProblemBuilder } from "./problemBuilder.ts";
-
-const makeApiProblem = makeApiProblemBuilder({});
+import {
+  makeApiProblemBuilder,
+  type MakeApiProblemFn,
+} from "./problemBuilder.ts";
 
 export const createFastifyApp = ({
   fastifyOptions,
   loggerConfig,
+  makeApiProblem = makeApiProblemBuilder({}),
   readCorrelationIdFromHeader = true,
   serviceName,
 }: {
   fastifyOptions: FastifyRegisterOptions<OpenapiZodPluginOptions>;
   loggerConfig: LoggerConfig;
+  makeApiProblem: MakeApiProblemFn;
   readCorrelationIdFromHeader?: boolean;
   serviceName: string;
 }) => {
@@ -41,7 +44,7 @@ export const createFastifyApp = ({
     }),
   });
 
-  checkCorrelationIdHeader(app, readCorrelationIdFromHeader);
+  checkCorrelationIdHeader(app, makeApiProblem, readCorrelationIdFromHeader);
 
   app.setErrorHandler((error, _, res) => {
     const errorRes = makeApiProblem(error);
@@ -57,6 +60,7 @@ export const createFastifyApp = ({
 
 const checkCorrelationIdHeader = (
   app: Fastify.FastifyInstance,
+  makeApiProblem: MakeApiProblemFn,
   readCorrelationIdFromHeader: boolean,
 ) => {
   if (readCorrelationIdFromHeader) {
