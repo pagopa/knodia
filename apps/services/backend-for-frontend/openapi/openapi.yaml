@@ -61,6 +61,7 @@ components:
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         errors:
+          minItems: 1
           type: array
           items:
             $ref: "#/components/schemas/ProblemError"
@@ -81,6 +82,7 @@ components:
           maxLength: 64
       required:
         - correlationId
+        - errors
         - status
         - title
       additionalProperties: false
@@ -116,11 +118,9 @@ paths:
         "200":
           description: Service status OK
           content:
-            application/problem+json:
+            application/json:
               schema:
                 description: Service status OK
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /eservices:
     get:
       operationId: getEservices
