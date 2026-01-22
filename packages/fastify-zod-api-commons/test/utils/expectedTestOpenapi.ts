@@ -113,7 +113,7 @@ const expectedProblemSchema = {
       type: "string",
     },
   },
-  required: ["correlationId", "errors", "status", "title"],
+  required: ["correlationId", "status", "title"],
   type: "object",
 };
 
