@@ -17,6 +17,9 @@
     "apps/web/**/*": {
       "ignore": ["src/routeTree.gen.ts"],
       "ignoreDependencies": ["babel-plugin-react-compiler"]
+    },
+    "packages/ui-kit": {
+      "ignoreUnresolved": ["packages\\/ui-kit\\/.*\\.\\{ts,tsx\\}"]
     }
   }
 }
