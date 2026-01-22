@@ -28,7 +28,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           offset: req.query.offset,
         },
       });
-      console.log("🚀 ~ eserviceRouter ~ eservices:", eservices);
 
       res.send({
         // TODO move this defaulting logic to the service, keep routers only for routing
