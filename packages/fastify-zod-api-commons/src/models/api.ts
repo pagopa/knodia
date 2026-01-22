@@ -28,6 +28,11 @@ export type API_PaginationQueryParams = z.infer<
 
 const API_ProblemError = z
   .strictObject({
+    code: z
+      .string()
+      .length(8)
+      .meta({ example: "123-4567", pattern: "^[0-9]{3}-[0-9]{4}$" })
+      .describe("Internal code of the error"),
     detail: z
       .string()
       .max(4096)
@@ -40,11 +45,6 @@ const API_ProblemError = z
 
 export const API_Problem = z
   .strictObject({
-    code: z
-      .string()
-      .length(8)
-      .meta({ example: "123-4567", pattern: "^[0-9]{3}-[0-9]{4}$" })
-      .describe("Internal code of the error"),
     correlationId: z
       .string()
       .max(64)

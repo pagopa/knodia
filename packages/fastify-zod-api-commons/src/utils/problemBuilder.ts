@@ -32,8 +32,10 @@ const makeProblemLogString = (
   problem: API_Problem,
   originalError: unknown,
 ): string => {
-  const errorsString = problem.errors?.map((e) => e.detail).join(" - ");
-  return `- title: ${problem.title} - code: ${problem.code} - ${errorsString ? `errors: ${errorsString} - ` : ""}
+  const errorsString = problem.errors
+    ?.map((e) => `${e.code}, ${e.detail}`)
+    .join(" - ");
+  return `- title: ${problem.title} - ${errorsString ? `errors: ${errorsString} - ` : ""}
   original error: ${originalError}`;
 };
 
@@ -75,14 +77,15 @@ export function makeApiProblemBuilder<T extends string>(
     const serviceErrorCode = retrieveServiceErrorCode(serviceName);
 
     const makeProblem = ({
-      code,
       errors,
       status,
       title,
     }: ApiError<CommonErrorCodes | T>): API_Problem => ({
-      code: `${serviceErrorCode}-${allErrors[code]}`,
       correlationId,
-      errors,
+      errors: errors.map(({ code, detail }) => ({
+        code: `${serviceErrorCode}-${allErrors[code]}`,
+        detail,
+      })),
       status,
       title,
     });
@@ -189,7 +192,7 @@ export function makeApiProblemBuilder<T extends string>(
             logger.warn(
               makeProblemLogString(
                 genericProblem,
-                `${receivedProblem.title} (code ${receivedProblem.code})`,
+                `${receivedProblem.title} - status ${receivedProblem.status}`,
               ),
             );
             return genericProblem;
