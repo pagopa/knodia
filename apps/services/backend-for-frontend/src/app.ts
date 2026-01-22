@@ -7,6 +7,7 @@ import {
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { config } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
+import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 const clients = getKnodiaClients();
@@ -30,6 +31,7 @@ const app = createFastifyApp({
     },
   },
   loggerConfig: config,
+  makeApiProblem,
   readCorrelationIdFromHeader: false,
   serviceName: config.serviceName,
 });
