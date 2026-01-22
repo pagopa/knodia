@@ -2,6 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   CORRELATION_ID_HEADER,
@@ -10,30 +11,24 @@ import {
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { makeApiProblem } from "../models/errors.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
 > = async (fastify, eserviceProcessClient) => {
   fastify.route({
-    errorHandler: (err, _req, res) => {
-      const errorRes = makeApiProblem(err);
-
-      res.statusCode = errorRes.status;
-
-      return res.type("application/problem+json").send(errorRes);
-    },
     handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
       const eservices = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: {
-          [CORRELATION_ID_HEADER]: requestContext.get("correlationId"),
+          [CORRELATION_ID_HEADER]: correlationId,
         },
         query: {
           limit: req.query.limit,
           offset: req.query.offset,
         },
       });
+      console.log("🚀 ~ eserviceRouter ~ eservices:", eservices);
 
       res.send({
         // TODO move this defaulting logic to the service, keep routers only for routing

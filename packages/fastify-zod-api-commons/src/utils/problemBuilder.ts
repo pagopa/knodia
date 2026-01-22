@@ -26,7 +26,7 @@ import { serviceErrorCode, ServiceName } from "../models/errors/services.ts";
 
 const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = constants;
 
-type MakeApiProblemFn = (error: unknown) => API_Problem;
+export type MakeApiProblemFn = (error: unknown) => API_Problem;
 
 const makeProblemLogString = (
   problem: API_Problem,
@@ -149,7 +149,6 @@ export function makeApiProblemBuilder<T extends string>(
             response: {
               data: {
                 correlationId: P.string.optional(),
-                detail: P.string,
                 errors: P.array({
                   code: P.string,
                   detail: P.string,
