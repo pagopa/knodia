@@ -36,7 +36,6 @@ CREATE TABLE "eservice"."eservice_version" (
 	"interface_id" uuid NOT NULL,
 	"max_daily_calls_per_consumer" text NOT NULL,
 	"max_daily_calls_per_knode" text NOT NULL,
-	"max_daily_calls_total" text NOT NULL,
 	"metadata_version" integer NOT NULL,
 	"state" text NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL,
@@ -44,12 +43,12 @@ CREATE TABLE "eservice"."eservice_version" (
 );
 --> statement-breakpoint
 CREATE TABLE "eservice"."eservice_version_attribute_group" (
-	"attribute_ids" text[] NOT NULL,
+	"attribute_id" text NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,
 	"group_id" integer NOT NULL,
 	"metadata_version" integer NOT NULL,
-	CONSTRAINT "eservice_version_attribute_group_pk" PRIMARY KEY("eservice_version_id","group_id")
+	CONSTRAINT "eservice_version_attribute_group_pk" PRIMARY KEY("attribute_id","eservice_version_id","group_id")
 );
 --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

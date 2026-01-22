@@ -1,5 +1,5 @@
 {
-  "id": "fb2e2914-14bb-47f2-8f52-5d8e72a281a1",
+  "id": "49af6f40-1b9a-4ba0-8d11-3e060ff7ff2b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -78,8 +78,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "eservice.eservice_document": {
-      "name": "eservice_document",
+    "eservice.eservice_interface": {
+      "name": "eservice_interface",
       "schema": "eservice",
       "columns": {
         "checksum": {
@@ -145,9 +145,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "eservice_document_eservice_id_eservice_id_fk": {
-          "name": "eservice_document_eservice_id_eservice_id_fk",
-          "tableFrom": "eservice_document",
+        "eservice_interface_eservice_id_eservice_id_fk": {
+          "name": "eservice_interface_eservice_id_eservice_id_fk",
+          "tableFrom": "eservice_interface",
           "tableTo": "eservice",
           "schemaTo": "eservice",
           "columnsFrom": [
@@ -159,9 +159,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "eservice_document_eservice_id_metadata_version_fkey": {
-          "name": "eservice_document_eservice_id_metadata_version_fkey",
-          "tableFrom": "eservice_document",
+        "eservice_interface_eservice_id_metadata_version_fkey": {
+          "name": "eservice_interface_eservice_id_metadata_version_fkey",
+          "tableFrom": "eservice_interface",
           "tableTo": "eservice",
           "schemaTo": "eservice",
           "columnsFrom": [
@@ -222,8 +222,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "interface_document_id": {
-          "name": "interface_document_id",
+        "interface_id": {
+          "name": "interface_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -236,12 +236,6 @@
         },
         "max_daily_calls_per_knode": {
           "name": "max_daily_calls_per_knode",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "max_daily_calls_total": {
-          "name": "max_daily_calls_total",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -287,13 +281,13 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "eservice_version_interface_document_id_eservice_document_id_fk": {
-          "name": "eservice_version_interface_document_id_eservice_document_id_fk",
+        "eservice_version_interface_id_eservice_interface_id_fk": {
+          "name": "eservice_version_interface_id_eservice_interface_id_fk",
           "tableFrom": "eservice_version",
-          "tableTo": "eservice_document",
+          "tableTo": "eservice_interface",
           "schemaTo": "eservice",
           "columnsFrom": [
-            "interface_document_id"
+            "interface_id"
           ],
           "columnsTo": [
             "id"
@@ -328,9 +322,9 @@
       "name": "eservice_version_attribute_group",
       "schema": "eservice",
       "columns": {
-        "attribute_ids": {
-          "name": "attribute_ids",
-          "type": "text[]",
+        "attribute_id": {
+          "name": "attribute_id",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -348,7 +342,7 @@
         },
         "group_id": {
           "name": "group_id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -410,6 +404,7 @@
         "eservice_version_attribute_group_pk": {
           "name": "eservice_version_attribute_group_pk",
           "columns": [
+            "attribute_id",
             "eservice_version_id",
             "group_id"
           ]
