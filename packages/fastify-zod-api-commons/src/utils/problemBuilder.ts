@@ -33,7 +33,7 @@ const makeProblemLogString = (
   originalError: unknown,
 ): string => {
   const errorsString = problem.errors.map((e) => e.detail).join(" - ");
-  return `- title: ${problem.title} - errors: ${errorsString} - original error: ${originalError}`;
+  return `- title: ${problem.title} - code: ${problem.code} - errors: ${errorsString} - original error: ${originalError}`;
 };
 
 interface ProblemBuilderOptions {
@@ -74,15 +74,14 @@ export function makeApiProblemBuilder<T extends string>(
     const serviceErrorCode = retrieveServiceErrorCode(serviceName);
 
     const makeProblem = ({
+      code,
       errors,
       status,
       title,
     }: ApiError<CommonErrorCodes | T>): API_Problem => ({
+      code: `${serviceErrorCode}-${allErrors[code]}`,
       correlationId,
-      errors: errors.map(({ code, detail }) => ({
-        code: `${serviceErrorCode}-${allErrors[code]}`,
-        detail,
-      })),
+      errors,
       status,
       title,
     });
@@ -155,10 +154,8 @@ export function makeApiProblemBuilder<T extends string>(
           {
             response: {
               data: {
-                correlationId: P.string.optional(),
-                detail: P.string,
+                code: P.string,
                 errors: P.array({
-                  code: P.string,
                   detail: P.string,
                 }),
                 status: P.number,
@@ -191,9 +188,7 @@ export function makeApiProblemBuilder<T extends string>(
             logger.warn(
               makeProblemLogString(
                 genericProblem,
-                `${receivedProblem.title}, code ${
-                  receivedProblem.errors.at(0)?.code
-                }, ${receivedProblem.errors.at(0)?.detail}`,
+                `${receivedProblem.title} (code ${receivedProblem.code})`,
               ),
             );
             return genericProblem;
