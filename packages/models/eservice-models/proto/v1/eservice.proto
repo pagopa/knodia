@@ -12,6 +12,7 @@ message EserviceV1 {
   bool isSignalHubEnabled = 7;
   int64 createdAt = 8;
   int64 updatedAt = 9;
+  repeated EserviceVersionV1 versions = 10;
 }
 
 enum EServiceModeV1 {
@@ -26,19 +27,17 @@ enum EserviceAccessTokenTypeV1 {
 
 message EserviceVersionV1 {
   string id = 1;
-  string eserviceId = 2;
   string versionNumber = 3;
   EserviceVersionStateV1 state = 4;
-  string interfaceDocumentId = 5;
+  EserviceInterfaceV1 interfaceDocument = 5;
   EserviceAccessTokenTypeV1 accessTokenType = 6;
   string accessTokenAudience = 7;
   string accessTokenDuration = 8;
-  string maxDailyCallsTotal = 9;
-  string maxDailyCallsPerKnode = 10;
-  string maxDailyCallsPerConsumer = 11;
-  repeated EserviceVersionAttributeGroupV1 attributeGroups = 12;
-  int64 createdAt = 13;
-  int64 updatedAt = 14;
+  string maxDailyCallsPerKnode = 9;
+  string maxDailyCallsPerConsumer = 10;
+  repeated EserviceVersionAttributeGroupV1 attributeGroups = 11;
+  int64 createdAt = 12;
+  int64 updatedAt = 13;
 }
 
 enum EserviceVersionStateV1 {
@@ -47,7 +46,7 @@ enum EserviceVersionStateV1 {
   ARCHIVED = 2;
 }
 
-message EserviceDocumentV1 {
+message EserviceInterfaceV1 {
   string id = 1;
   string name = 2;
   string prettyName = 3;
@@ -58,6 +57,6 @@ message EserviceDocumentV1 {
   string updatedAt = 8;
 }
 message EserviceVersionAttributeGroupV1 {
-  string groupId = 1;
+  int32 groupId = 1;
   repeated string attributeIds = 2;
 }

@@ -5,16 +5,11 @@ package eservice.v1;
 import "v1/eservice.proto";
 
 
-// TODO what should we save in events? in each event, the full e-service
-// and all the sub-resources? or only the one affected by the event?
 message EServiceCreatedV1 {
   EserviceV1 eservice = 1;
 }
 
 message EserviceVersionCreatedV1 {
-  EserviceVersionV1 eserviceVersion = 1;
-}
-
-message EserviceVersionDocumentCreatedV1 {
-  EserviceDocumentV1 eserviceVersionDocument = 1;
+  string eserviceVersionId = 1;
+  EserviceV1 eservice = 2;
 }

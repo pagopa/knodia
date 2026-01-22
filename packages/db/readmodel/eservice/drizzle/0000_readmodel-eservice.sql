@@ -13,7 +13,7 @@ CREATE TABLE "eservice"."eservice" (
 	"updated_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "eservice"."eservice_document" (
+CREATE TABLE "eservice"."eservice_interface" (
 	"checksum" text NOT NULL,
 	"content_type" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE "eservice"."eservice_version" (
 	"created_at" timestamp with time zone NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
-	"interface_document_id" uuid NOT NULL,
+	"interface_id" uuid NOT NULL,
 	"max_daily_calls_per_consumer" text NOT NULL,
 	"max_daily_calls_per_knode" text NOT NULL,
 	"max_daily_calls_total" text NOT NULL,
@@ -47,15 +47,15 @@ CREATE TABLE "eservice"."eservice_version_attribute_group" (
 	"attribute_ids" text[] NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,
-	"group_id" text NOT NULL,
+	"group_id" integer NOT NULL,
 	"metadata_version" integer NOT NULL,
 	CONSTRAINT "eservice_version_attribute_group_pk" PRIMARY KEY("eservice_version_id","group_id")
 );
 --> statement-breakpoint
-ALTER TABLE "eservice"."eservice_document" ADD CONSTRAINT "eservice_document_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "eservice"."eservice_document" ADD CONSTRAINT "eservice_document_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_interface_document_id_eservice_document_id_fk" FOREIGN KEY ("interface_document_id") REFERENCES "eservice"."eservice_document"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_interface_id_eservice_interface_id_fk" FOREIGN KEY ("interface_id") REFERENCES "eservice"."eservice_interface"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version_attribute_group" ADD CONSTRAINT "eservice_version_attribute_group_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version_attribute_group" ADD CONSTRAINT "eservice_version_attribute_group_eservice_version_id_eservice_version_id_fk" FOREIGN KEY ("eservice_version_id") REFERENCES "eservice"."eservice_version"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

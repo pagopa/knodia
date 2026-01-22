@@ -33,8 +33,8 @@ export const readmodelEservice = eserviceSchema.table("eservice", {
   }).notNull(),
 });
 
-export const readmodelEserviceDocument = eserviceSchema.table(
-  "eservice_document",
+export const readmodelEserviceInterface = eserviceSchema.table(
+  "eservice_interface",
   {
     checksum: text().notNull(),
     contentType: text("content_type").notNull(),
@@ -59,7 +59,7 @@ export const readmodelEserviceDocument = eserviceSchema.table(
     foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
       foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
-      name: "eservice_document_eservice_id_metadata_version_fkey",
+      name: "eservice_interface_eservice_id_metadata_version_fkey",
     }),
   ],
 );
@@ -78,12 +78,11 @@ export const readmodelEserviceVersion = eserviceSchema.table(
       .notNull()
       .references(() => readmodelEservice.id),
     id: uuid().primaryKey(),
-    interfaceDocumentId: uuid("interface_document_id")
+    interfaceId: uuid("interface_id")
       .notNull()
-      .references(() => readmodelEserviceDocument.id),
+      .references(() => readmodelEserviceInterface.id),
     maxDailyCallsPerConsumer: text("max_daily_calls_per_consumer").notNull(),
     maxDailyCallsPerKnode: text("max_daily_calls_per_knode").notNull(),
-    maxDailyCallsTotal: text("max_daily_calls_total").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
     state: text("state").notNull(),
     updatedAt: timestamp("updated_at", {
@@ -104,14 +103,14 @@ export const readmodelEserviceVersion = eserviceSchema.table(
 export const readmodelEserviceVersionAttributeGroup = eserviceSchema.table(
   "eservice_version_attribute_group",
   {
-    attributeIds: text("attribute_ids").array().notNull(),
+    attributeId: text("attribute_id").notNull(),
     eserviceId: uuid("eservice_id")
       .notNull()
       .references(() => readmodelEservice.id),
     eserviceVersionId: uuid("eservice_version_id")
       .notNull()
       .references(() => readmodelEserviceVersion.id),
-    groupId: text("group_id").notNull(),
+    groupId: integer("group_id").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
   },
   (table) => [
@@ -121,15 +120,15 @@ export const readmodelEserviceVersionAttributeGroup = eserviceSchema.table(
       name: "eservice_version_attribute_group_eservice_id_metadata_version_fkey",
     }),
     primaryKey({
-      columns: [table.eserviceVersionId, table.groupId],
+      columns: [table.attributeId, table.eserviceVersionId, table.groupId],
       name: "eservice_version_attribute_group_pk",
     }),
   ],
 );
 
 export type NewReadmodelEservice = typeof readmodelEservice.$inferInsert;
-export type NewReadmodelEserviceDocument =
-  typeof readmodelEserviceDocument.$inferInsert;
+export type NewReadmodelEserviceInterface =
+  typeof readmodelEserviceInterface.$inferInsert;
 export type NewReadmodelEserviceVersion =
   typeof readmodelEserviceVersion.$inferInsert;
 
@@ -137,8 +136,8 @@ export type NewReadmodelEserviceVersionAttributeGroup =
   typeof readmodelEserviceVersionAttributeGroup.$inferInsert;
 
 export type ReadmodelEservice = typeof readmodelEservice.$inferSelect;
-export type ReadmodelEserviceDocument =
-  typeof readmodelEserviceDocument.$inferSelect;
+export type ReadmodelEserviceInterface =
+  typeof readmodelEserviceInterface.$inferSelect;
 export type ReadmodelEserviceVersion =
   typeof readmodelEserviceVersion.$inferSelect;
 export type ReadmodelEserviceVersionAttributeGroup =
