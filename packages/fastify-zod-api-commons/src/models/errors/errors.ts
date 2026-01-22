@@ -9,7 +9,7 @@ import { constants } from "http2";
 
 import {
   ApiError,
-  createApiErrorFromDetail,
+  createApiError,
   createApiErrorFromErrorsList,
 } from "./apiError.ts";
 
@@ -33,7 +33,7 @@ export function fastifyError(
   httpStatus: number,
   detail: string,
 ): ApiError<CommonErrorCodes> {
-  return createApiErrorFromDetail({
+  return createApiError({
     code: "FASTIFY_ERROR",
     detail,
     status: httpStatus,
@@ -42,7 +42,7 @@ export function fastifyError(
 }
 
 export function genericError(details: string): ApiError<CommonErrorCodes> {
-  return createApiErrorFromDetail({
+  return createApiError({
     code: "GENERIC_ERROR",
     detail: details,
     status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
@@ -52,7 +52,7 @@ export function genericError(details: string): ApiError<CommonErrorCodes> {
 
 export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
   const title = "Header has not been passed";
-  return createApiErrorFromDetail({
+  return createApiError({
     code: "MISSING_HEADER",
     detail: headerName ? `Missing ${headerName} request header` : title,
     status: HTTP_STATUS_BAD_REQUEST,

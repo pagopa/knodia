@@ -21,7 +21,7 @@ export class ApiError<T> extends Error {
   }
 }
 
-export function createApiErrorFromDetail<T>({
+export function createApiError<T>({
   code,
   detail,
   status,
