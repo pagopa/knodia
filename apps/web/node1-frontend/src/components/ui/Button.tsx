@@ -8,90 +8,164 @@ import { tv } from "tailwind-variants";
 import { focusRing } from "@/libs/react-aria";
 
 export interface ButtonProps extends RACButtonProps {
-  /** @default 'primary' */
-  variant?: "destructive" | "primary" | "quiet" | "secondary";
+  /** @default 'brand' */
+  hierarchy?: "brand" | "danger" | "neutral";
+  /** @default 'filled' */
+  kind?: "elevated" | "filled" | "ghost" | "outlined" | "tonal";
+  /** @default 'md' */
+  size?: "lg" | "md" | "sm";
 }
 
-const button = tv({
+// eslint-disable-next-line react-refresh/only-export-components
+export const buttonVariants = tv({
   extend: focusRing,
-  base: "relative inline-flex items-center justify-center gap-2 border border-transparent dark:border-white/10 h-9 box-border px-3.5 py-0 [&:has(>svg:only-child)]:px-0 [&:has(>svg:only-child)]:h-8 [&:has(>svg:only-child)]:w-8 font-sans text-sm text-center transition rounded-lg cursor-default [-webkit-tap-highlight-color:transparent]",
+  base: "relative inline-flex items-center justify-center gap-2 border box-border py-0 text-sm font-semibold text-center transition rounded-lg [-webkit-tap-highlight-color:transparent] leading-[1.6]",
   variants: {
-    variant: {
-      primary: "bg-blue-600 hover:bg-blue-700 pressed:bg-blue-800 text-white",
-      secondary:
-        "border-black/10 bg-neutral-50 hover:bg-neutral-100 pressed:bg-neutral-200 text-neutral-800 dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:pressed:bg-neutral-500 dark:text-neutral-100",
-      destructive: "bg-red-700 hover:bg-red-800 pressed:bg-red-900 text-white",
-      quiet:
-        "border-0 bg-transparent hover:bg-neutral-200 pressed:bg-neutral-300 text-neutral-800 dark:hover:bg-neutral-700 dark:pressed:bg-neutral-600 dark:text-neutral-100",
+    kind: {
+      filled: "border-transparent",
+      outlined: "bg-white",
+      tonal: "border-transparent",
+      ghost: "bg-transparent border-transparent",
+      elevated:
+        "border border-neutral-100 bg-white shadow-[0_2px_4px_var(--shadow-color)]",
+    },
+    hierarchy: {
+      brand: "",
+      danger: "",
+      neutral: "",
+    },
+    size: {
+      sm: "h-8 px-2",
+      md: "h-9 px-3",
+      lg: "h-10 px-4",
     },
     isDisabled: {
-      true: "border-transparent dark:border-transparent bg-neutral-100 dark:bg-neutral-800 text-neutral-300 dark:text-neutral-600 forced-colors:text-[GrayText]",
-    },
-    isPending: {
-      true: "text-transparent",
+      true: "cursor-not-allowed opacity-30",
     },
   },
   defaultVariants: {
-    variant: "primary",
+    hierarchy: "brand",
+    kind: "filled",
+    size: "md",
   },
   compoundVariants: [
+    // --- FILLED buttons ---
     {
-      variant: "quiet",
-      isDisabled: true,
-      class: "bg-transparent dark:bg-transparent",
+      kind: "filled",
+      hierarchy: "brand",
+      class:
+        "bg-primary-700 hover:bg-primary-800 pressed:bg-primary-800 text-white",
+    },
+    {
+      kind: "filled",
+      hierarchy: "danger",
+      class:
+        "bg-danger-600 hover:bg-danger-700 pressed:bg-danger-700 text-white",
+    },
+    {
+      kind: "filled",
+      hierarchy: "neutral",
+      class:
+        "bg-neutral-700 text-white hover:bg-neutral-800 pressed:bg-neutral-800",
+    },
+
+    // --- OUTLINED buttons ---
+    {
+      kind: "outlined",
+      hierarchy: "brand",
+      class:
+        "border-primary-200 text-primary-700 hover:bg-primary-50 pressed:bg-primary-50",
+    },
+    {
+      kind: "outlined",
+      hierarchy: "danger",
+      class:
+        "border-danger-200 text-danger-600 hover:bg-danger-50 pressed:bg-danger-50",
+    },
+    {
+      kind: "outlined",
+      hierarchy: "neutral",
+      class:
+        "border-neutral-200 text-neutral-700 hover:bg-neutral-50 pressed:bg-neutral-50",
+    },
+
+    // --- TONAL buttons ---
+    {
+      kind: "tonal",
+      hierarchy: "brand",
+      class:
+        "bg-primary-50 hover:bg-primary-100 pressed:bg-primary-100 text-primary-700",
+    },
+    {
+      kind: "tonal",
+      hierarchy: "danger",
+      class:
+        "bg-danger-50 hover:bg-danger-100 pressed:bg-danger-100 text-danger-600",
+    },
+    {
+      kind: "tonal",
+      hierarchy: "neutral",
+      class:
+        "bg-neutral-50 hover:bg-neutral-100 pressed:bg-neutral-100 text-neutral-700",
+    },
+
+    // --- GHOST buttons ---
+    {
+      kind: "ghost",
+      hierarchy: "brand",
+      class: "text-primary-700 hover:bg-primary-50 pressed:bg-primary-50",
+    },
+    {
+      kind: "ghost",
+      hierarchy: "danger",
+      class: "text-danger-600 hover:bg-danger-50 pressed:bg-danger-50",
+    },
+    {
+      kind: "ghost",
+      hierarchy: "neutral",
+      class: "text-neutral-700 hover:bg-neutral-50 pressed:bg-neutral-50",
+    },
+
+    // --- ELEVATED buttons ---
+    {
+      kind: "elevated",
+      hierarchy: "brand",
+      class: "text-primary-700 hover:bg-primary-50 pressed:bg-primary-50",
+    },
+    {
+      kind: "elevated",
+      hierarchy: "danger",
+      class: "text-danger-600 hover:bg-danger-50 pressed:bg-danger-50",
+    },
+    {
+      kind: "elevated",
+      hierarchy: "neutral",
+      class: "text-neutral-700 hover:bg-neutral-50 pressed:bg-neutral-50",
     },
   ],
 });
 
-export function Button(props: ButtonProps) {
+export function Button({
+  hierarchy,
+  kind,
+  size,
+  children,
+  ...props
+}: ButtonProps) {
   return (
     <RACButton
       {...props}
       className={composeRenderProps(props.className, (className, renderProps) =>
-        button({ ...renderProps, className, variant: props.variant }),
+        buttonVariants({
+          ...renderProps,
+          className,
+          hierarchy,
+          kind,
+          size,
+        }),
       )}
     >
-      {composeRenderProps(props.children, (children, { isPending }) => (
-        <>
-          {children}
-          {isPending && (
-            <span
-              aria-hidden
-              className="flex absolute inset-0 justify-center items-center"
-            >
-              <svg
-                className="w-4 h-4 text-white animate-spin"
-                stroke={
-                  props.variant === "secondary" || props.variant === "quiet"
-                    ? "light-dark(black, white)"
-                    : "white"
-                }
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  fill="none"
-                  r="10"
-                  strokeWidth="4"
-                />
-                <circle
-                  cx="12"
-                  cy="12"
-                  fill="none"
-                  pathLength="100"
-                  r="10"
-                  strokeDasharray="60 140"
-                  strokeDashoffset="0"
-                  strokeLinecap="round"
-                  strokeWidth="4"
-                />
-              </svg>
-            </span>
-          )}
-        </>
-      ))}
+      {children}
     </RACButton>
   );
 }
