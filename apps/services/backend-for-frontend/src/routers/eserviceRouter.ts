@@ -10,19 +10,11 @@ import {
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { makeApiProblem } from "../models/errors.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
 > = async (fastify, eserviceProcessClient) => {
   fastify.route({
-    errorHandler: (err, _req, res) => {
-      const errorRes = makeApiProblem(err);
-
-      res.statusCode = errorRes.status;
-
-      return res.type("application/problem+json").send(errorRes);
-    },
     handler: async (req, res) => {
       const eservices = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
