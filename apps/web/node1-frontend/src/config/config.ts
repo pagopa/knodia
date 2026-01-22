@@ -18,5 +18,5 @@ if (!parsed.success) {
   throw new Error("Invalid environment variables");
 }
 
-export type FrontendNode1Config = z.infer<typeof FrontendNode1Config>;
+type FrontendNode1Config = z.infer<typeof FrontendNode1Config>;
 export const config = parsed.data;

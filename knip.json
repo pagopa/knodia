@@ -14,8 +14,9 @@
     "apps/services/*-process": {
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
-    "apps/web/frontend": {
-      "ignore": ["src/routeTree.gen.ts"]
+    "apps/web/**/*": {
+      "ignore": ["src/routeTree.gen.ts"],
+      "ignoreDependencies": ["babel-plugin-react-compiler"]
     }
   }
 }
