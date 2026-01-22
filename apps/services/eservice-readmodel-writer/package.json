@@ -1,0 +1,30 @@
+{
+  "name": "@knodia/eservice-readmodel-writer",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@confluentinc/kafka-javascript": "catalog:",
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/db-readmodel-eservice": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
+    "@knodia/kafka-commons": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "ts-pattern": "catalog:",
+    "zod": "catalog:"
+  }
+}
