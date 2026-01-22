@@ -43,13 +43,16 @@ const API_ProblemError = z
   })
   .meta({ id: "ProblemError" });
 
+export const API_CorrelationId = z.uuid().meta({
+  id: "CorrelationId",
+});
+export type API_CorrelationId = z.infer<typeof API_CorrelationId>;
+
 export const API_Problem = z
   .strictObject({
-    correlationId: z
-      .uuid()
-      .max(64)
-      .meta({ example: "53af4f2d-0c87-41ef-a645-b726a821852b" })
-      .describe("Unique identifier of the request"),
+    correlationId: API_CorrelationId.meta({
+      example: "53af4f2d-0c87-41ef-a645-b726a821852b",
+    }).describe("Unique identifier of the request"),
     errors: z.array(API_ProblemError).min(1).optional(),
     status: z
       .number()

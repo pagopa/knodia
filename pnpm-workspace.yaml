@@ -39,6 +39,7 @@ catalog:
   ts-pattern: 5.9.0
   turbo: 2.7.3
   typescript: 5.9.3
+  vitest: 4.0.17
   zod: 4.2.0
   zod-validation-error: 5.0.0
 
