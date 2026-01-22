@@ -156,7 +156,6 @@ export function makeApiProblemBuilder<T extends string>(
             response: {
               data: {
                 correlationId: P.string.optional(),
-                detail: P.string,
                 errors: P.array({
                   code: P.string,
                   detail: P.string,
