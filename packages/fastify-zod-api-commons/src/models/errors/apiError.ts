@@ -1,31 +1,22 @@
 import type { ZodIssue } from "zod-validation-error";
 
 export class ApiError<T> extends Error {
-  public code: T;
   public errors: { code: T; detail: string }[];
   public status: number;
   public title: string;
 
   constructor({
-    code,
-    detail,
     errors,
     status,
     title,
   }: {
-    code: T;
-    detail: string;
-    errors?: Error[] | ZodIssue[];
+    errors: { code: T; detail: string }[];
     status: number;
     title: string;
   }) {
-    super(detail);
-    this.code = code;
+    super(title);
     this.title = title;
-    this.errors =
-      errors && errors.length > 0
-        ? errors.map((e) => ({ code, detail: e.message }))
-        : [{ code, detail }];
+    this.errors = errors;
     this.status = status;
   }
 }
@@ -33,20 +24,34 @@ export class ApiError<T> extends Error {
 export function createApiError<T>({
   code,
   detail,
-  errors,
   status,
   title,
 }: {
   code: T;
   detail: string;
-  errors?: Error[] | ZodIssue[];
   status: number;
   title: string;
 }) {
   return new ApiError({
-    code,
-    detail,
-    errors,
+    errors: [{ code, detail }],
+    status,
+    title,
+  });
+}
+
+export function createApiErrorFromErrorsList<T>({
+  code,
+  errors,
+  status,
+  title,
+}: {
+  code: T;
+  errors: Error[] | ZodIssue[];
+  status: number;
+  title: string;
+}) {
+  return new ApiError({
+    errors: errors.map((error) => ({ code, detail: error.message })),
     status,
     title,
   });
