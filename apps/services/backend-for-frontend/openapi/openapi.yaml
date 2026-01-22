@@ -50,16 +50,18 @@ components:
         - code
         - detail
       additionalProperties: false
+    CorrelationId:
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     Problem:
       type: object
       properties:
         correlationId:
           example: 53af4f2d-0c87-41ef-a645-b726a821852b
           description: Unique identifier of the request
-          type: string
-          maxLength: 64
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          allOf:
+            - $ref: "#/components/schemas/CorrelationId"
         errors:
           minItems: 1
           type: array

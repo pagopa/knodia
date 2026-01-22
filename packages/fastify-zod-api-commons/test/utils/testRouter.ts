@@ -5,7 +5,9 @@ import z from "zod";
 import {
   API_Pagination,
   API_PaginationQueryParams,
+  API_Problem,
 } from "../../src/models/api.ts";
+import { processHeaders } from "../../src/models/index.ts";
 
 export const testTags = {
   test: "test",
@@ -37,6 +39,7 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
     method: "GET",
     schema: {
       description: "Test GET endpoint",
+      headers: processHeaders,
       operationId: "getTest",
       querystring: z
         .strictObject({
@@ -45,6 +48,7 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
         .and(API_PaginationQueryParams),
       response: {
         200: API_Tests.describe("Results retrieved successfully"),
+        400: API_Problem.describe("Bad Request"),
       },
       tags: [testTags.test],
     },
@@ -61,9 +65,11 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
     schema: {
       body: API_Test,
       description: "Test POST endpoint",
+      headers: processHeaders,
       operationId: "createTest",
       response: {
         201: API_Test.describe("Resource created successfully"),
+        400: API_Problem.describe("Bad Request"),
       },
       tags: [testTags.test],
     },
