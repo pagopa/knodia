@@ -53,7 +53,7 @@ export const API_Problem = z
     correlationId: API_CorrelationId.meta({
       example: "53af4f2d-0c87-41ef-a645-b726a821852b",
     }).describe("Unique identifier of the request"),
-    errors: z.array(API_ProblemError).min(1),
+    errors: z.array(API_ProblemError).min(1).optional(),
     status: z
       .number()
       .min(100)

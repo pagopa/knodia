@@ -84,7 +84,6 @@ components:
           maxLength: 64
       required:
         - correlationId
-        - errors
         - status
         - title
       additionalProperties: false
