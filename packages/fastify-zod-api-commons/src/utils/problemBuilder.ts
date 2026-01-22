@@ -61,13 +61,6 @@ export function makeApiProblemBuilder<T extends string>(
     options;
   const allErrors = { ...commonErrorCodes, ...errors };
 
-  function retrieveServiceErrorCode(serviceName: string): string {
-    const serviceNameParsed = ServiceName.safeParse(serviceName);
-    return serviceNameParsed.success
-      ? serviceErrorCode[serviceNameParsed.data]
-      : "000";
-  }
-
   return (error) => {
     const { correlationId, logger, serviceName } =
       getContextValues(requestContext);
@@ -213,4 +206,10 @@ export function makeApiProblemBuilder<T extends string>(
         return genericProblem;
       });
   };
+}
+export function retrieveServiceErrorCode(serviceName: string): string {
+  const serviceNameParsed = ServiceName.safeParse(serviceName);
+  return serviceNameParsed.success
+    ? serviceErrorCode[serviceNameParsed.data]
+    : "000";
 }

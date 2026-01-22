@@ -81,9 +81,12 @@ const updateErrorResponseContentsWithProblemJson = (
       for (const [statusCode, response] of Object.entries(
         operation.responses,
       )) {
-        // Only error responses
+        // Only error and health check responses
         const responseStatusCode = Number(statusCode);
-        if (!Number.isInteger(responseStatusCode) || responseStatusCode < 400) {
+        if (
+          !Number.isInteger(responseStatusCode) ||
+          (responseStatusCode < 400 && !operation.tags?.includes("health"))
+        ) {
           continue;
         }
 
