@@ -79,7 +79,6 @@ components:
       required:
         - code
         - correlationId
-        - errors
         - status
         - title
       additionalProperties: false
