@@ -33,10 +33,9 @@ const makeProblemLogString = (
   originalError: unknown,
 ): string => {
   const errorsString = problem.errors
-    ?.map((e) => `${e.code}, ${e.detail}`)
-    .join(" - ");
-  return `- title: ${problem.title} - ${errorsString ? `errors: ${errorsString} - ` : ""}
-  original error: ${originalError}`;
+    ? `- errors: ${problem.errors.map((e) => `${e.code}, ${e.detail}`).join("; ")}`
+    : "";
+  return `- title: ${problem.title} ${errorsString} - original error: ${originalError}`;
 };
 
 interface ProblemBuilderOptions {
