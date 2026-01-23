@@ -1,11 +1,15 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 
 import { runConsumer } from "@knodia/kafka-commons";
+import { decodeKafkaMessage } from "@knodia/kafka-commons/utils";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 import { config } from "./config/config.ts";
-import { handleEserviceEvent, parseEserviceEvent } from "./consumerService.ts";
+import {
+  EserviceEventEnvelope,
+  handleEserviceEvent,
+} from "./consumerService.ts";
 import { eserviceWriterServiceBuilder } from "./eserviceWriterService.ts";
 
 const pool = new Pool({
@@ -22,13 +26,17 @@ const db = drizzle(pool);
 const eserviceWriterService = eserviceWriterServiceBuilder(db);
 
 async function processMessage({ message }: EachMessagePayload): Promise<void> {
-  if (!message.value) {
-    return;
-  }
+  const event = decodeKafkaMessage(message);
 
-  const payload = message.value.toString();
-  const event = parseEserviceEvent(payload);
-  await handleEserviceEvent(event, eserviceWriterService);
+  console.log("Processing event:", {
+    event,
+  });
+
+  await handleEserviceEvent(
+    // TODO: remove the cast after adding proper typings and models
+    event as unknown as EserviceEventEnvelope,
+    eserviceWriterService,
+  );
 }
 
 await runConsumer([config.eserviceTopic], processMessage, config);
