@@ -14,3 +14,14 @@ export type OrganizationId = z.infer<typeof OrganizationId>;
 
 export const AttributeId = z.string().brand<"AttributeId">();
 export type AttributeId = z.infer<typeof AttributeId>;
+
+type IDS =
+  | AttributeId
+  | EserviceId
+  | EserviceInterfaceId
+  | EserviceVersionId
+  | OrganizationId;
+
+export function generateId<T extends IDS>(): T {
+  return crypto.randomUUID() as T;
+}
