@@ -67,6 +67,18 @@ services:
       - kafka-data:/var/lib/kafka/data
     depends_on:
       - zookeeper
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "bash",
+          "-lc",
+          "kafka-broker-api-versions --bootstrap-server localhost:9092 >/dev/null 2>&1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
 
   debezium-connect:
     image: debezium/connect:2.7.3.Final
@@ -88,11 +100,13 @@ services:
       VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
       CONNECT_PLUGIN_PATH: /kafka/connect
       CONNECT_TOPIC_CREATION_ENABLE: "true"
-      CONNECT_TOPIC_CREATION_DEFAULT_REPLICATION_FACTOR: 3
+      CONNECT_TOPIC_CREATION_DEFAULT_REPLICATION_FACTOR: 1
       CONNECT_TOPIC_CREATION_DEFAULT_PARTITIONS: 10
     depends_on:
-      - kafka
-      - event-store
+      kafka:
+        condition: service_healthy
+      event-store:
+        condition: service_started
 
 volumes:
   event-store-data:
