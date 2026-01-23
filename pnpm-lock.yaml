@@ -238,9 +238,6 @@ importers:
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
-      '@knodia/eservice-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/eservice-models
       '@knodia/kafka-commons':
         specifier: workspace:*
         version: link:../../../packages/kafka-commons
