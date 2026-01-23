@@ -67,8 +67,8 @@ export const readmodelEserviceInterface = eserviceSchema.table(
 export const readmodelEserviceVersion = eserviceSchema.table(
   "eservice_version",
   {
-    accessTokenAudience: text("access_token_audience").notNull(),
-    accessTokenDuration: text("access_token_duration").notNull(),
+    accessTokenAudience: text("access_token_audience").array().notNull(),
+    accessTokenDuration: integer("access_token_duration").notNull(),
     accessTokenType: text("access_token_type").notNull(),
     createdAt: timestamp("created_at", {
       mode: "date",
@@ -81,15 +81,15 @@ export const readmodelEserviceVersion = eserviceSchema.table(
     interfaceId: uuid("interface_id")
       .notNull()
       .references(() => readmodelEserviceInterface.id),
-    maxDailyCallsPerConsumer: text("max_daily_calls_per_consumer").notNull(),
-    maxDailyCallsPerKnode: text("max_daily_calls_per_knode").notNull(),
+    maxDailyCallsPerConsumer: integer("max_daily_calls_per_consumer").notNull(),
+    maxDailyCallsPerKnode: integer("max_daily_calls_per_knode").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
     state: text("state").notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
     }).notNull(),
-    versionNumber: text("version_number").notNull(),
+    versionNumber: integer("version_number").notNull(),
   },
   (table) => [
     foreignKey({
