@@ -6,10 +6,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 import { config } from "./config/config.ts";
-import {
-  EserviceEventEnvelope,
-  handleEserviceEvent,
-} from "./consumerService.ts";
+import { type EserviceEvent, handleEserviceEvent } from "./consumerService.ts";
 import { eserviceWriterServiceBuilder } from "./eserviceWriterService.ts";
 
 const pool = new Pool({
@@ -26,17 +23,13 @@ const db = drizzle(pool);
 const eserviceWriterService = eserviceWriterServiceBuilder(db);
 
 async function processMessage({ message }: EachMessagePayload): Promise<void> {
-  const event = decodeKafkaMessage(message);
+  const event = decodeKafkaMessage<EserviceEvent>(message);
 
   console.log("Processing event:", {
     event,
   });
 
-  await handleEserviceEvent(
-    // TODO: remove the cast after adding proper typings and models
-    event as unknown as EserviceEventEnvelope,
-    eserviceWriterService,
-  );
+  await handleEserviceEvent(event, eserviceWriterService);
 }
 
 await runConsumer([config.eserviceTopic], processMessage, config);

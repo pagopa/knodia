@@ -26,7 +26,9 @@ export type EventEnvelope<TEvent> = z.infer<
  * @param {KafkaMessage} message - The Kafka message to decode.
  * @throws {Error} - If the message is invalid or missing required data.
  */
-export function decodeKafkaMessage(message: KafkaMessage) {
+export function decodeKafkaMessage<TEvent>(
+  message: KafkaMessage,
+): EventEnvelope<TEvent> {
   try {
     const value = message.value;
     const parsedValue = JSON.parse(value?.toString() ?? "");

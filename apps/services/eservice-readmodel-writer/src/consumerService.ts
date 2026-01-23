@@ -14,7 +14,7 @@ const EserviceAddedEvent = z.object({
 });
 
 const EserviceEvent = z.discriminatedUnion("type", [EserviceAddedEvent]);
-type EserviceEvent = z.infer<typeof EserviceEvent>;
+export type EserviceEvent = z.infer<typeof EserviceEvent>;
 
 // TODO: define events and models in shared model package
 export const EserviceEventEnvelope = EventEnvelope(EserviceEvent);
