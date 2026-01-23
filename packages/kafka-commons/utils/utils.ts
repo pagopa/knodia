@@ -20,17 +20,6 @@ export type EventEnvelope<TEvent> = z.infer<
   ReturnType<typeof EventEnvelope<z.ZodType<TEvent>>>
 >;
 
-export const DebeziumCreatePayload = <TEventZodType extends z.ZodType>(
-  event: TEventZodType,
-) =>
-  z.object({
-    after: EventEnvelope(event),
-    op: z.enum(["c", "r", "u", "d"]),
-  });
-export type DebeziumCreatePayload<TEvent> = z.infer<
-  ReturnType<typeof DebeziumCreatePayload<z.ZodType<TEvent>>>
->;
-
 /**
  * Decodes a Kafka message using the provided event schema.
  *
