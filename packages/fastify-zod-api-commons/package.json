@@ -5,7 +5,8 @@
     "dev": "tsc --watch",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "test": "vitest"
   },
   "exports": {
     "./config": "./src/config/config.ts",
@@ -24,7 +25,8 @@
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "openapi-types": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@fastify/error": "catalog:",
