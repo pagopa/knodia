@@ -36,7 +36,7 @@ services:
       - readmodel-data:/var/lib/postgresql
 
   kafka:
-    image: confluentinc/cp-kafka:7.6.1
+    image: confluentinc/cp-kafka:7.6.9@sha256:652f4017a6389f22930eb27ad02ce730622ebe145efa442625d7f439f1bc111e
     container_name: knodia-kafka
     ports:
       - 9092:9092
@@ -72,7 +72,7 @@ services:
       retries: 30
 
   debezium-connect:
-    image: debezium/connect:2.7.3.Final
+    image: debezium/connect:2.7.3.Final@sha256:997b67feff614549acd20d54bfed398fc73b339881c649d42821c1e55ec9972b
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
