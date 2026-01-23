@@ -1,30 +1,25 @@
-import { match } from "ts-pattern";
-import { z } from "zod";
+import {
+  type EserviceEvent,
+  EserviceEventSchema,
+} from "@knodia/eservice-models/events";
+import { match, P } from "ts-pattern";
 
 import type { EserviceWriterService } from "./eserviceWriterService.ts";
-
-// TODO: define event in eservice-models
-const EserviceAddedEvent = z.object({
-  data: z.strictObject({
-    id: z.string(),
-  }),
-  type: z.literal("EserviceAdded"),
-});
-
-const EserviceEvent = z.discriminatedUnion("type", [EserviceAddedEvent]);
-type EserviceEvent = z.infer<typeof EserviceEvent>;
 
 export async function handleEserviceEvent(
   event: EserviceEvent,
   writerService: EserviceWriterService,
 ): Promise<void> {
-  return match(event.type)
-    .with("EserviceAdded", async () => {
-      await writerService.insertEservice(event.data);
-    })
+  return match(event)
+    .with(
+      { type: P.union("EServiceCreatedV1", "EserviceVersionCreatedV1") },
+      async (e) => {
+        await writerService.insertEservice(e.data.eservice);
+      },
+    )
     .exhaustive();
 }
 
 export function parseEserviceEvent(payload: string): EserviceEvent {
-  return EserviceEvent.parse(JSON.parse(payload));
+  return EserviceEventSchema.parse(JSON.parse(payload));
 }

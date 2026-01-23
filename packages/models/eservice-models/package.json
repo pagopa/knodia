@@ -21,6 +21,7 @@
   },
   "exports": {
     ".": "./src/eservice.ts",
+    "./events": "./src/eserviceEvents.ts",
     "./proto": "./src/generated/eservice.ts"
   }
 }
