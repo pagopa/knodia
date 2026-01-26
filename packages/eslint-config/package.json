@@ -2,10 +2,14 @@
   "name": "@knodia/eslint-config",
   "type": "module",
   "exports": {
-    "./node": "./eslint.node.js"
+    "./node": "./eslint.node.js",
+    "./react": "./eslint.react.js"
   },
   "devDependencies": {
     "@pagopa/eslint-config": "catalog:",
-    "eslint": "catalog:"
+    "eslint": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "eslint-plugin-react-refresh": "catalog:",
+    "globals": "catalog:"
   }
 }
