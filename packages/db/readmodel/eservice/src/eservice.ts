@@ -1,7 +1,10 @@
+import type { LocalizedText } from "@knodia/common-models/localization";
+
 import {
   boolean,
   foreignKey,
   integer,
+  jsonb,
   pgSchema,
   primaryKey,
   text,
@@ -19,12 +22,12 @@ export const readmodelEservice = eserviceSchema.table("eservice", {
   createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
     .defaultNow()
     .notNull(),
-  description: text().notNull(),
+  description: jsonb().$type<LocalizedText>().notNull(),
   id: uuid().primaryKey(),
   isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
   metadataVersion: integer("metadata_version").notNull(),
   mode: text().notNull(),
-  name: text().notNull(),
+  name: jsonb().$type<LocalizedText>().notNull(),
   producerId: uuid("producer_id").notNull(),
   updatedAt: timestamp("updated_at", {
     mode: "date",
@@ -76,7 +79,7 @@ export const readmodelEserviceInterface = eserviceSchema.table(
     metadataVersion: integer("metadata_version").notNull(),
     name: text().notNull(),
     path: text().notNull(),
-    prettyName: text("pretty_name").notNull(),
+    prettyName: jsonb("pretty_name").$type<LocalizedText>().notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,

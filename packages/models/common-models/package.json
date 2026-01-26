@@ -8,7 +8,8 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    "./ids": "./src/brandedIds.ts"
+    "./ids": "./src/brandedIds.ts",
+    "./localization": "./src/localization.ts"
   },
   "dependencies": {
     "zod": "catalog:"

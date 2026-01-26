@@ -4,6 +4,7 @@ import {
   EserviceVersionId,
   OrganizationId,
 } from "@knodia/common-models/ids";
+import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
 const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
@@ -22,7 +23,7 @@ const EserviceInterface = z.strictObject({
   id: EserviceInterfaceId,
   name: z.string(),
   path: z.string(),
-  prettyName: z.string(),
+  prettyName: LocalizedText,
   updatedAt: z.coerce.date(),
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
@@ -60,11 +61,11 @@ export type EserviceCategory = z.infer<typeof EserviceCategory>;
 const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
-  description: z.string().min(10).max(250),
+  description: LocalizedText,
   id: EserviceId,
   isSignalHubEnabled: z.boolean(),
   mode: EserviceMode,
-  name: z.string().min(5).max(60),
+  name: LocalizedText,
   producerId: OrganizationId,
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),

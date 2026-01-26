@@ -381,6 +381,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../models/common-models
       '@knodia/db-readmodel-config':
         specifier: workspace:*
         version: link:../config

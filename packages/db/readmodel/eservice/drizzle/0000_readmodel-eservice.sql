@@ -2,12 +2,12 @@ CREATE SCHEMA "eservice";
 --> statement-breakpoint
 CREATE TABLE "eservice"."eservice" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"description" text NOT NULL,
+	"description" jsonb NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
 	"is_signal_hub_enabled" boolean NOT NULL,
 	"metadata_version" integer NOT NULL,
 	"mode" text NOT NULL,
-	"name" text NOT NULL,
+	"name" jsonb NOT NULL,
 	"producer_id" uuid NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
 );
@@ -29,7 +29,7 @@ CREATE TABLE "eservice"."eservice_interface" (
 	"metadata_version" integer NOT NULL,
 	"name" text NOT NULL,
 	"path" text NOT NULL,
-	"pretty_name" text NOT NULL,
+	"pretty_name" jsonb NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
 );
 --> statement-breakpoint
@@ -50,12 +50,12 @@ CREATE TABLE "eservice"."eservice_version" (
 );
 --> statement-breakpoint
 CREATE TABLE "eservice"."eservice_version_required_attribute" (
+	"code" text NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,
 	"group_id" integer NOT NULL,
 	"metadata_version" integer NOT NULL,
 	"scheme" text NOT NULL,
-	"code" text NOT NULL,
 	CONSTRAINT "eservice_version_required_attribute_pk" PRIMARY KEY("eservice_version_id","group_id","scheme","code")
 );
 --> statement-breakpoint

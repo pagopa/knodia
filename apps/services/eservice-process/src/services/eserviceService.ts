@@ -20,11 +20,11 @@ export function eserviceServiceBuilder() {
       const eservice: Eservice = {
         categories: [{ code: "category-1", scheme: "vocab-1" }],
         createdAt: now,
-        description: "Mock description",
+        description: { en: "Mock description" },
         id: generateId<EserviceId>(),
         isSignalHubEnabled: false,
         mode: "ProvideData",
-        name,
+        name: { en: name },
         producerId: generateId<OrganizationId>(),
         updatedAt: now,
         versions: [
@@ -41,7 +41,9 @@ export function eserviceServiceBuilder() {
               id: generateId<EserviceInterfaceId>(),
               name: "Interface 1",
               path: "/interfaces/1.json",
-              prettyName: "Interface 1",
+              prettyName: {
+                en: "Interface 1",
+              },
               updatedAt: now,
             },
             maxDailyCallsPerConsumer: 100,

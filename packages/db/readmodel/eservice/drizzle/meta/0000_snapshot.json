@@ -1,5 +1,5 @@
 {
-  "id": "812f07ac-de96-485b-8bea-c0119b2bbdee",
+  "id": "b64494cd-3bc1-4e0a-ad0d-ee801afbc592",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -17,7 +17,7 @@
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
@@ -47,7 +47,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
@@ -204,7 +204,7 @@
         },
         "pretty_name": {
           "name": "pretty_name",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
@@ -394,6 +394,12 @@
       "name": "eservice_version_required_attribute",
       "schema": "eservice",
       "columns": {
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "eservice_id": {
           "name": "eservice_id",
           "type": "uuid",
@@ -420,12 +426,6 @@
         },
         "scheme": {
           "name": "scheme",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "code": {
-          "name": "code",
           "type": "text",
           "primaryKey": false,
           "notNull": true
