@@ -1,41 +1,72 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { Form } from "react-aria-components";
+import { TextField, type TextFieldProps } from "../components/ui/TextField";
+import { MockIcon, renderStickerSheet } from "./utils";
 
-import { Button } from "../components/ui/Button";
-import { TextField } from "../components/ui/TextField";
+const sizes: NonNullable<TextFieldProps["size"]>[] = ["sm", "md", "lg"];
 
 const meta: Meta<typeof TextField> = {
+  title: "Components/ui/TextField",
   component: TextField,
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
-  args: {
-    label: "Name",
-    placeholder: "Enter your full name",
-  },
 };
 
 export default meta;
+type Story = StoryObj<typeof TextField>;
 
-type Story = StoryObj<typeof meta>;
-
-export const Example: Story = {
-  render: (args) => <TextField {...args} />,
+export const Default: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    value: "Value",
+  },
 };
 
-export const Validation: Story = {
-  render: (args) => (
-    <Form className="flex flex-col gap-2 items-start">
-      <TextField {...args} />
-      <Button type="submit" variant="secondary">
-        Submit
-      </Button>
-    </Form>
+export const WithDescription: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    value: "Value",
+    description: "Hint message",
+  },
+};
+
+export const WithIcon: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    value: "Value",
+    endIcon: <MockIcon />,
+  },
+};
+
+export const Invalid: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    value: "Value",
+    isInvalid: true,
+    errorMessage: "This is an error message",
+  },
+};
+
+export const StickerSheet: Story = {
+  render: renderStickerSheet(
+    [["default", "disabled", "invalid", "readonly"]],
+    (state) =>
+      sizes.map((size) => (
+        <TextField
+          endIcon={<MockIcon />}
+          isDisabled={state === "disabled"}
+          isInvalid={state === "invalid"}
+          isReadOnly={state === "readonly"}
+          key={`${size}-${state}`}
+          label={"Label"}
+          size={size}
+          value="Value"
+        />
+      )),
   ),
-};
-
-Validation.args = {
-  isRequired: true,
 };

@@ -9,6 +9,12 @@
   },
   "exports": {
     "./themes/node1": {
+      "import": "./src/themes/node1.css",
+      "style": "./src/themes/node1.css",
+      "default": "./src/themes/node1.css"
+    },
+    "./themes/node1.css": {
+      "import": "./src/themes/node1.css",
       "style": "./src/themes/node1.css",
       "default": "./src/themes/node1.css"
     },

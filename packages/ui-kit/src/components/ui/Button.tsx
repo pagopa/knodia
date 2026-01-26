@@ -3,29 +3,20 @@ import {
   Button as RACButton,
   type ButtonProps as RACButtonProps,
 } from "react-aria-components";
-import { tv } from "tailwind-variants";
+import { tv, type VariantProps } from "tailwind-variants";
 
 import { focusRing } from "../../libs/react-aria";
-
-export interface ButtonProps extends RACButtonProps {
-  /** @default 'brand' */
-  hierarchy?: "brand" | "danger" | "neutral";
-  /** @default 'filled' */
-  kind?: "elevated" | "filled" | "ghost" | "outlined" | "tonal";
-  /** @default 'md' */
-  size?: "lg" | "md" | "sm";
-}
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const buttonVariants = tv({
   extend: focusRing,
-  base: "relative inline-flex items-center justify-center gap-2 border box-border py-0 text-sm font-semibold text-center transition rounded-lg [-webkit-tap-highlight-color:transparent] leading-[1.6]",
+  base: "body-md-em relative box-border inline-flex items-center justify-center gap-2 rounded-lg border py-0 text-center transition [-webkit-tap-highlight-color:transparent]",
   variants: {
     kind: {
       filled: "border-transparent",
       outlined: "bg-white",
       tonal: "border-transparent",
-      ghost: "bg-transparent border-transparent",
+      ghost: "border-transparent bg-transparent",
       elevated:
         "border border-neutral-100 bg-white shadow-[0_2px_4px_var(--shadow-color)]",
     },
@@ -53,20 +44,18 @@ export const buttonVariants = tv({
     {
       kind: "filled",
       hierarchy: "brand",
-      class:
-        "bg-primary-700 hover:bg-primary-800 pressed:bg-primary-800 text-white",
+      class: "bg-brand-700 hover:bg-brand-800 pressed:bg-brand-800 text-white",
     },
     {
       kind: "filled",
       hierarchy: "danger",
-      class:
-        "bg-danger-600 hover:bg-danger-700 pressed:bg-danger-700 text-white",
+      class: "bg-error-600 hover:bg-error-700 pressed:bg-error-700 text-white",
     },
     {
       kind: "filled",
       hierarchy: "neutral",
       class:
-        "bg-neutral-700 text-white hover:bg-neutral-800 pressed:bg-neutral-800",
+        "pressed:bg-neutral-800 bg-neutral-700 text-white hover:bg-neutral-800",
     },
 
     // --- OUTLINED buttons ---
@@ -74,19 +63,19 @@ export const buttonVariants = tv({
       kind: "outlined",
       hierarchy: "brand",
       class:
-        "border-primary-200 text-primary-700 hover:bg-primary-50 pressed:bg-primary-50",
+        "border-primary-200 text-primary-700 hover:bg-brand-50 pressed:bg-brand-50",
     },
     {
       kind: "outlined",
       hierarchy: "danger",
       class:
-        "border-danger-200 text-danger-600 hover:bg-danger-50 pressed:bg-danger-50",
+        "border-error-200 text-error-600 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "outlined",
       hierarchy: "neutral",
       class:
-        "border-neutral-200 text-neutral-700 hover:bg-neutral-50 pressed:bg-neutral-50",
+        "pressed:bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-50",
     },
 
     // --- TONAL buttons ---
@@ -94,56 +83,60 @@ export const buttonVariants = tv({
       kind: "tonal",
       hierarchy: "brand",
       class:
-        "bg-primary-50 hover:bg-primary-100 pressed:bg-primary-100 text-primary-700",
+        "bg-brand-50 hover:bg-brand-100 pressed:bg-brand-100 text-primary-700",
     },
     {
       kind: "tonal",
       hierarchy: "danger",
       class:
-        "bg-danger-50 hover:bg-danger-100 pressed:bg-danger-100 text-danger-600",
+        "bg-error-50 hover:bg-error-100 pressed:bg-error-100 text-error-600",
     },
     {
       kind: "tonal",
       hierarchy: "neutral",
       class:
-        "bg-neutral-50 hover:bg-neutral-100 pressed:bg-neutral-100 text-neutral-700",
+        "pressed:bg-neutral-100 bg-neutral-50 text-neutral-700 hover:bg-neutral-100",
     },
 
     // --- GHOST buttons ---
     {
       kind: "ghost",
       hierarchy: "brand",
-      class: "text-primary-700 hover:bg-primary-50 pressed:bg-primary-50",
+      class: "text-primary-700 hover:bg-brand-50 pressed:bg-brand-50",
     },
     {
       kind: "ghost",
       hierarchy: "danger",
-      class: "text-danger-600 hover:bg-danger-50 pressed:bg-danger-50",
+      class: "text-error-600 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "ghost",
       hierarchy: "neutral",
-      class: "text-neutral-700 hover:bg-neutral-50 pressed:bg-neutral-50",
+      class: "pressed:bg-neutral-50 text-neutral-700 hover:bg-neutral-50",
     },
 
     // --- ELEVATED buttons ---
     {
       kind: "elevated",
       hierarchy: "brand",
-      class: "text-primary-700 hover:bg-primary-50 pressed:bg-primary-50",
+      class: "text-primary-700 hover:bg-brand-50 pressed:bg-brand-50",
     },
     {
       kind: "elevated",
       hierarchy: "danger",
-      class: "text-danger-600 hover:bg-danger-50 pressed:bg-danger-50",
+      class: "text-error-600 hover:bg-error-50 pressed:bg-error-50",
     },
     {
       kind: "elevated",
       hierarchy: "neutral",
-      class: "text-neutral-700 hover:bg-neutral-50 pressed:bg-neutral-50",
+      class: "pressed:bg-neutral-50 text-neutral-700 hover:bg-neutral-50",
     },
   ],
 });
+
+export type ButtonProps = ButtonVariants & RACButtonProps;
+
+type ButtonVariants = VariantProps<typeof buttonVariants>;
 
 export function Button({
   hierarchy,

@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Breadcrumb, Breadcrumbs } from "../components/ui/Breadcrumbs";
 
 const meta: Meta<typeof Breadcrumbs> = {
-  title: "Components/Breadcrumbs",
+  title: "Components/ui/Breadcrumbs",
   component: Breadcrumbs,
   parameters: {
     layout: "centered",
@@ -13,7 +13,7 @@ const meta: Meta<typeof Breadcrumbs> = {
 export default meta;
 type Story = StoryObj<typeof Breadcrumbs>;
 
-export const StickerSheet: Story = {
+export const Default: Story = {
   render: () => (
     <Breadcrumbs>
       <Breadcrumb href="#">Root</Breadcrumb>

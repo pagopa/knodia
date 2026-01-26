@@ -1,27 +1,29 @@
 import type { HTMLAttributes } from "react";
 
-import { tv } from "tailwind-variants";
+import { tv, type VariantProps } from "tailwind-variants";
 
-export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
+const avatar = tv({
+  base: "bg-brand-100 text-primary-light-high-contrast inline-flex items-center justify-center overflow-hidden rounded-full select-none",
+  variants: {
+    size: {
+      sm: "label-sm size-6",
+      md: "label-md size-10",
+      lg: "label-lg size-14",
+    },
+  },
+  defaultVariants: { size: "md" },
+});
+
+export interface AvatarProps
+  extends AvatarVariants, HTMLAttributes<HTMLSpanElement> {
   fallback?: string;
   image?: {
     alt?: string;
     src: string;
   };
-  size?: "lg" | "md" | "sm";
 }
 
-const avatar = tv({
-  base: "inline-flex items-center justify-center overflow-hidden bg-primary-100 text-primary-light-high-contrast font-medium select-none rounded-full",
-  variants: {
-    size: {
-      sm: "size-6 text-sm",
-      md: "size-10",
-      lg: "size-14",
-    },
-  },
-  defaultVariants: { size: "md" },
-});
+type AvatarVariants = VariantProps<typeof avatar>;
 
 export function Avatar({
   image,
@@ -39,7 +41,7 @@ export function Avatar({
           src={image.src}
         />
       ) : (
-        <span className="leading-none">{fallback}</span>
+        <span>{fallback}</span>
       )}
     </span>
   );

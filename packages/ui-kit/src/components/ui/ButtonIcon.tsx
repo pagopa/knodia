@@ -7,11 +7,12 @@ export type ButtonIconProps = ButtonProps;
 
 const buttonIconVariants = tv({
   extend: buttonVariants,
+  base: "[&>svg]:h-5 [&>svg]:w-5",
   variants: {
     size: {
-      sm: "p-1.5 h-auto",
-      md: "p-2 h-auto",
-      lg: "p-2.5 h-auto",
+      sm: "h-auto p-1.5",
+      md: "h-auto p-2",
+      lg: "h-auto p-2.5",
     },
   },
 });
