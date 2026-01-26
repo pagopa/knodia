@@ -1,4 +1,4 @@
-import { Button } from "@knodia/ui-kit/ui/Button";
+import { Button } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -14,7 +14,7 @@ function Index() {
   return (
     <div>
       <h1>Home</h1>
-      <Button>Tefnkdsnjkfdsdsnjkfnkjst</Button>
+      <Button>Test</Button>
       <pre>{JSON.stringify(data, null, 2)}</pre>
     </div>
   );
