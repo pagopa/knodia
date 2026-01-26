@@ -74,6 +74,7 @@ catalog:
   turbo: 2.7.3
   typescript: 5.9.3
   vite: npm:rolldown-vite@7.2.5
+  vitest: 4.0.17
   zod: 4.2.0
   zod-validation-error: 5.0.0
 
