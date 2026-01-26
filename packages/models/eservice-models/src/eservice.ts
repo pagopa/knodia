@@ -28,16 +28,18 @@ const EserviceInterface = z.strictObject({
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
 
+const RequiredAttributeGroup = z.array(AttributeId);
+
 const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),
-  accessTokenDuration: z.number(),
+  accessTokenDuration: z.number().max(68400), // max 1140 minutes
   accessTokenType: EserviceAccessTokenType,
-  attributeGroups: z.array(z.array(AttributeId)),
   createdAt: z.coerce.date(),
   id: EserviceVersionId,
   interfaceDocument: EserviceInterface,
   maxDailyCallsPerConsumer: z.number(),
   maxDailyCallsPerKnode: z.number(),
+  requiredAttributes: z.array(RequiredAttributeGroup),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),
   versionNumber: z.int(),
@@ -47,11 +49,11 @@ export type EserviceVersion = z.infer<typeof EserviceVersion>;
 const Eservice = z.strictObject({
   categories: z.array(z.string()),
   createdAt: z.coerce.date(),
-  description: z.string(),
+  description: z.string().min(10).max(250),
   id: EserviceId,
   isSignalHubEnabled: z.boolean(),
   mode: EserviceMode,
-  name: z.string(),
+  name: z.string().min(5).max(60),
   producerId: OrganizationId,
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),

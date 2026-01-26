@@ -1,5 +1,5 @@
 {
-  "id": "49af6f40-1b9a-4ba0-8d11-3e060ff7ff2b",
+  "id": "1576e994-5028-4d61-9fea-acd630f4381a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -188,13 +188,13 @@
       "columns": {
         "access_token_audience": {
           "name": "access_token_audience",
-          "type": "text",
+          "type": "text[]",
           "primaryKey": false,
           "notNull": true
         },
         "access_token_duration": {
           "name": "access_token_duration",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -230,13 +230,13 @@
         },
         "max_daily_calls_per_consumer": {
           "name": "max_daily_calls_per_consumer",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
         "max_daily_calls_per_knode": {
           "name": "max_daily_calls_per_knode",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -260,7 +260,7 @@
         },
         "version_number": {
           "name": "version_number",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }
@@ -318,8 +318,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "eservice.eservice_version_attribute_group": {
-      "name": "eservice_version_attribute_group",
+    "eservice.eservice_version_required_attribute": {
+      "name": "eservice_version_required_attribute",
       "schema": "eservice",
       "columns": {
         "attribute_id": {
@@ -355,9 +355,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "eservice_version_attribute_group_eservice_id_eservice_id_fk": {
-          "name": "eservice_version_attribute_group_eservice_id_eservice_id_fk",
-          "tableFrom": "eservice_version_attribute_group",
+        "eservice_version_required_attribute_eservice_id_eservice_id_fk": {
+          "name": "eservice_version_required_attribute_eservice_id_eservice_id_fk",
+          "tableFrom": "eservice_version_required_attribute",
           "tableTo": "eservice",
           "schemaTo": "eservice",
           "columnsFrom": [
@@ -369,9 +369,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "eservice_version_attribute_group_eservice_version_id_eservice_version_id_fk": {
-          "name": "eservice_version_attribute_group_eservice_version_id_eservice_version_id_fk",
-          "tableFrom": "eservice_version_attribute_group",
+        "eservice_version_required_attribute_eservice_version_id_eservice_version_id_fk": {
+          "name": "eservice_version_required_attribute_eservice_version_id_eservice_version_id_fk",
+          "tableFrom": "eservice_version_required_attribute",
           "tableTo": "eservice_version",
           "schemaTo": "eservice",
           "columnsFrom": [
@@ -383,9 +383,9 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "eservice_version_attribute_group_eservice_id_metadata_version_fkey": {
-          "name": "eservice_version_attribute_group_eservice_id_metadata_version_fkey",
-          "tableFrom": "eservice_version_attribute_group",
+        "eservice_version_required_attribute_eservice_id_metadata_version_fkey": {
+          "name": "eservice_version_required_attribute_eservice_id_metadata_version_fkey",
+          "tableFrom": "eservice_version_required_attribute",
           "tableTo": "eservice",
           "schemaTo": "eservice",
           "columnsFrom": [
@@ -401,8 +401,8 @@
         }
       },
       "compositePrimaryKeys": {
-        "eservice_version_attribute_group_pk": {
-          "name": "eservice_version_attribute_group_pk",
+        "eservice_version_required_attribute_pk": {
+          "name": "eservice_version_required_attribute_pk",
           "columns": [
             "attribute_id",
             "eservice_version_id",

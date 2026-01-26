@@ -35,7 +35,7 @@ message EserviceVersionV1 {
   int32 accessTokenDuration = 7;
   int32 maxDailyCallsPerKnode = 8;
   int32 maxDailyCallsPerConsumer = 9;
-  repeated EserviceVersionAttributeGroupV1 attributeGroups = 10;
+  repeated EserviceVersionRequiredAttributeGroupV1 requiredAttributes = 10;
   int64 createdAt = 11;
   int64 updatedAt = 12;
 }
@@ -56,7 +56,7 @@ message EserviceInterfaceV1 {
   string createdAt = 7;
   string updatedAt = 8;
 }
-message EserviceVersionAttributeGroupV1 {
+message EserviceVersionRequiredAttributeGroupV1 {
   int32 groupId = 1;
   repeated string attributeIds = 2;
 }

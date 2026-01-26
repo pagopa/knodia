@@ -100,8 +100,8 @@ export const readmodelEserviceVersion = eserviceSchema.table(
   ],
 );
 
-export const readmodelEserviceVersionAttributeGroup = eserviceSchema.table(
-  "eservice_version_attribute_group",
+export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
+  "eservice_version_required_attribute",
   {
     attributeId: text("attribute_id").notNull(),
     eserviceId: uuid("eservice_id")
@@ -117,11 +117,11 @@ export const readmodelEserviceVersionAttributeGroup = eserviceSchema.table(
     foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
       foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
-      name: "eservice_version_attribute_group_eservice_id_metadata_version_fkey",
+      name: "eservice_version_required_attribute_eservice_id_metadata_version_fkey",
     }),
     primaryKey({
       columns: [table.attributeId, table.eserviceVersionId, table.groupId],
-      name: "eservice_version_attribute_group_pk",
+      name: "eservice_version_required_attribute_pk",
     }),
   ],
 );
@@ -132,13 +132,13 @@ export type NewReadmodelEserviceInterface =
 export type NewReadmodelEserviceVersion =
   typeof readmodelEserviceVersion.$inferInsert;
 
-export type NewReadmodelEserviceVersionAttributeGroup =
-  typeof readmodelEserviceVersionAttributeGroup.$inferInsert;
+export type NewReadmodelEserviceVersionRequiredAttribute =
+  typeof readmodelEserviceVersionRequiredAttribute.$inferInsert;
 
 export type ReadmodelEservice = typeof readmodelEservice.$inferSelect;
 export type ReadmodelEserviceInterface =
   typeof readmodelEserviceInterface.$inferSelect;
 export type ReadmodelEserviceVersion =
   typeof readmodelEserviceVersion.$inferSelect;
-export type ReadmodelEserviceVersionAttributeGroup =
-  typeof readmodelEserviceVersionAttributeGroup.$inferSelect;
+export type ReadmodelEserviceVersionRequiredAttribute =
+  typeof readmodelEserviceVersionRequiredAttribute.$inferSelect;

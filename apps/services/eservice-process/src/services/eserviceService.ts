@@ -33,7 +33,6 @@ export function eserviceServiceBuilder() {
             accessTokenAudience: ["audience-1"],
             accessTokenDuration: 3600,
             accessTokenType: "Bearer",
-            attributeGroups: [[generateId<AttributeId>()]],
             createdAt: now,
             id: generateId<EserviceVersionId>(),
             interfaceDocument: {
@@ -48,6 +47,7 @@ export function eserviceServiceBuilder() {
             },
             maxDailyCallsPerConsumer: 100,
             maxDailyCallsPerKnode: 1000,
+            requiredAttributes: [[generateId<AttributeId>()]],
             state: "Active",
             updatedAt: now,
             versionNumber: 1,
