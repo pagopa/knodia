@@ -8,6 +8,6 @@ export const ServiceName = z.enum(Object.values(serviceName));
 export type ServiceName = z.infer<typeof ServiceName>;
 
 export const serviceErrorCode: Record<ServiceName, string> = {
-  [serviceName.BACKEND_FOR_FRONTEND]: "002",
-  [serviceName.ESERVICE_PROCESS]: "001",
+  [serviceName.BACKEND_FOR_FRONTEND]: "001",
+  [serviceName.ESERVICE_PROCESS]: "002",
 };
