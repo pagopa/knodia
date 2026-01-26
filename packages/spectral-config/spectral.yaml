@@ -9,7 +9,10 @@ rules:
   servers-use-https: off # we use http in local/dev environments
 
   # Warnings
-  paths-status-problem-schema: off # /status returns 200 with no content, not a problem
+  paths-status-problem-schema:
+    off # our Problem schema has no "detail";
+    # also, our generated OpenAPI files have allOf when there is a $ref + description,
+    # in line with OpenAPI 3.0 spec
 
   # Hints
   has-x-api-id: off # we don't use x-api-id custom field
