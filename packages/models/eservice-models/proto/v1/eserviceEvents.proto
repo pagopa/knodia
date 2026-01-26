@@ -5,11 +5,7 @@ package eservice.v1;
 import "v1/eservice.proto";
 
 
-message EserviceCreatedV1 {
+message EserviceVersionActivatedV1 {
   EserviceV1 eservice = 1;
-}
-
-message EserviceVersionCreatedV1 {
-  string eserviceVersionId = 1;
-  EserviceV1 eservice = 2;
+  string eserviceVersionId = 2;
 }
