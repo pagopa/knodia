@@ -22,6 +22,7 @@ export function eserviceServiceBuilder() {
         createdAt: now,
         description: { en: "Mock description" },
         id: generateId<EserviceId>(),
+        isConsumerOperatorIdentificationRequired: false,
         isSignalHubEnabled: false,
         mode: "ProvideData",
         name: { en: name },

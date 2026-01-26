@@ -63,6 +63,7 @@ const Eservice = z.strictObject({
   createdAt: z.coerce.date(),
   description: LocalizedText,
   id: EserviceId,
+  isConsumerOperatorIdentificationRequired: z.boolean(),
   isSignalHubEnabled: z.boolean(),
   mode: EserviceMode,
   name: LocalizedText,

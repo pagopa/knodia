@@ -24,6 +24,9 @@ export const readmodelEservice = eserviceSchema.table("eservice", {
     .notNull(),
   description: jsonb().$type<LocalizedText>().notNull(),
   id: uuid().primaryKey(),
+  isConsumerOperatorIdentificationRequired: boolean(
+    "is_consumer_operator_identification_required",
+  ).notNull(),
   isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
   metadataVersion: integer("metadata_version").notNull(),
   mode: text().notNull(),

@@ -4,6 +4,7 @@ CREATE TABLE "eservice"."eservice" (
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"description" jsonb NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
+	"is_consumer_operator_identification_required" boolean NOT NULL,
 	"is_signal_hub_enabled" boolean NOT NULL,
 	"metadata_version" integer NOT NULL,
 	"mode" text NOT NULL,

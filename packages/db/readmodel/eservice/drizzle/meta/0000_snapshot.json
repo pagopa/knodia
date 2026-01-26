@@ -1,5 +1,5 @@
 {
-  "id": "b64494cd-3bc1-4e0a-ad0d-ee801afbc592",
+  "id": "a45bdea8-8989-4982-bea9-06e55193963b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -25,6 +25,12 @@
           "name": "id",
           "type": "uuid",
           "primaryKey": true,
+          "notNull": true
+        },
+        "is_consumer_operator_identification_required": {
+          "name": "is_consumer_operator_identification_required",
+          "type": "boolean",
+          "primaryKey": false,
           "notNull": true
         },
         "is_signal_hub_enabled": {
