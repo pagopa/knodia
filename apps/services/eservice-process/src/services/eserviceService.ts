@@ -18,7 +18,7 @@ export function eserviceServiceBuilder() {
       const now = new Date();
 
       const eservice: Eservice = {
-        categories: [{ scheme: "vocab-1", code: "category-1" }],
+        categories: [{ code: "category-1", scheme: "vocab-1" }],
         createdAt: now,
         description: "Mock description",
         id: generateId<EserviceId>(),
@@ -46,7 +46,7 @@ export function eserviceServiceBuilder() {
             },
             maxDailyCallsPerConsumer: 100,
             maxDailyCallsPerKnode: 1000,
-            requiredAttributes: [[{ scheme: "attr-scheme-1", code: "attr-1" }]],
+            requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
             state: "Active",
             updatedAt: now,
             versionNumber: 1,
