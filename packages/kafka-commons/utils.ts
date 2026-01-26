@@ -21,7 +21,7 @@ export async function runConsumer(
   const kafka = await initKafka(config);
 
   const consumer = kafka.consumer({
-    "auto.offset.reset": "earliest",
+    "auto.offset.reset": config.topicStartingOffset,
     "group.id": config.kafkaGroupId,
   });
 
