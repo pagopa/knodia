@@ -15,7 +15,6 @@ import { twMerge } from "tailwind-merge";
 import {
   composeTailwindRenderProps,
   fieldInputStyle,
-  focusRing,
 } from "../../libs/react-aria";
 
 export type InputProps = ComponentPropsWithoutRef<typeof RACInput>;
@@ -52,7 +51,6 @@ export function Input(props: InputProps) {
       className={composeRenderProps(props.className, (className, renderProps) =>
         twMerge(
           fieldInputStyle({ ...renderProps, isReadOnly: props.readOnly }),
-          focusRing(renderProps),
           className,
         ),
       )}

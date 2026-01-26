@@ -13,8 +13,17 @@ export const focusRing = tv({
 });
 
 export const fieldInputStyle = tv({
-  base: "border-primary-light-decorative box-border w-full rounded-lg border-1 px-3 text-sm leading-[1.6] transition",
+  extend: focusRing,
+  base: "border-primary-light-decorative box-border w-full rounded-lg border px-3 text-sm leading-[1.6] transition",
   variants: {
+    isInvalid: {
+      true: "",
+      false: "",
+    },
+    isFocused: {
+      true: "",
+      false: "",
+    },
     isReadOnly: {
       true: "bg-secondary-light border-primary-light-decorative cursor-default",
     },

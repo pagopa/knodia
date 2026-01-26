@@ -7,6 +7,7 @@ export * from "./Divider";
 export * from "./Field";
 export * from "./InteractiveIcon";
 export * from "./Link";
+export * from "./ListItem";
 export * from "./TextArea";
 export * from "./TextField";
 export * from "./Tooltip";

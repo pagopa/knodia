@@ -73,6 +73,7 @@
 
   /* Shadows */
   --shadow-color: rgba(51, 65, 85, 0.08);
+  --shadow-dropdown: 0 16px 32px 0px rgba(51, 65, 85, 0.24);
 
   /* Mapped Colors */
   --color-neutral-50: var(--color-slate-50);
