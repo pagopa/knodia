@@ -1,7 +1,7 @@
+import { Button } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { Button } from "@/components/ui/Button";
 import { eserviceQueries } from "@/features/e-service/api/queries";
 
 export const Route = createFileRoute("/")({

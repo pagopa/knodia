@@ -5,6 +5,8 @@ import ReactDOM from "react-dom/client";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 
+import "@knodia/ui-kit/themes/node1.css";
+
 const router = createRouter({
   context: {
     queryClient,
