@@ -1,5 +1,5 @@
 {
-  "id": "1576e994-5028-4d61-9fea-acd630f4381a",
+  "id": "73121c38-16da-4407-9c62-7c9a2f687802",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8,12 +8,6 @@
       "name": "eservice",
       "schema": "eservice",
       "columns": {
-        "categories": {
-          "name": "categories",
-          "type": "text[]",
-          "primaryKey": false,
-          "notNull": true
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -73,6 +67,84 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "eservice.eservice_category": {
+      "name": "eservice_category",
+      "schema": "eservice",
+      "columns": {
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eservice_id": {
+          "name": "eservice_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata_version": {
+          "name": "metadata_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scheme": {
+          "name": "scheme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "eservice_category_eservice_id_eservice_id_fk": {
+          "name": "eservice_category_eservice_id_eservice_id_fk",
+          "tableFrom": "eservice_category",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "eservice_category_eservice_id_metadata_version_fkey": {
+          "name": "eservice_category_eservice_id_metadata_version_fkey",
+          "tableFrom": "eservice_category",
+          "tableTo": "eservice",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_id",
+            "metadata_version"
+          ],
+          "columnsTo": [
+            "id",
+            "metadata_version"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "eservice_category_pk": {
+          "name": "eservice_category_pk",
+          "columns": [
+            "eservice_id",
+            "metadata_version",
+            "scheme",
+            "code"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},

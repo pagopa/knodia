@@ -16,7 +16,6 @@ export const eserviceSchema = pgSchema(
 );
 
 export const readmodelEservice = eserviceSchema.table("eservice", {
-  categories: text().array().notNull(),
   createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -32,6 +31,34 @@ export const readmodelEservice = eserviceSchema.table("eservice", {
     withTimezone: true,
   }).notNull(),
 });
+
+export const readmodelEserviceCategory = eserviceSchema.table(
+  "eservice_category",
+  {
+    code: text().notNull(),
+    eserviceId: uuid("eservice_id")
+      .notNull()
+      .references(() => readmodelEservice.id),
+    metadataVersion: integer("metadata_version").notNull(),
+    scheme: text().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.eserviceId, table.metadataVersion],
+      foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
+      name: "eservice_category_eservice_id_metadata_version_fkey",
+    }),
+    primaryKey({
+      columns: [
+        table.eserviceId,
+        table.metadataVersion,
+        table.scheme,
+        table.code,
+      ],
+      name: "eservice_category_pk",
+    }),
+  ],
+);
 
 export const readmodelEserviceInterface = eserviceSchema.table(
   "eservice_interface",
@@ -127,6 +154,8 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
 );
 
 export type NewReadmodelEservice = typeof readmodelEservice.$inferInsert;
+export type NewReadmodelEserviceCategory =
+  typeof readmodelEserviceCategory.$inferInsert;
 export type NewReadmodelEserviceInterface =
   typeof readmodelEserviceInterface.$inferInsert;
 export type NewReadmodelEserviceVersion =
@@ -136,6 +165,8 @@ export type NewReadmodelEserviceVersionRequiredAttribute =
   typeof readmodelEserviceVersionRequiredAttribute.$inferInsert;
 
 export type ReadmodelEservice = typeof readmodelEservice.$inferSelect;
+export type ReadmodelEserviceCategory =
+  typeof readmodelEserviceCategory.$inferSelect;
 export type ReadmodelEserviceInterface =
   typeof readmodelEserviceInterface.$inferSelect;
 export type ReadmodelEserviceVersion =

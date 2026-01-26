@@ -19,7 +19,7 @@ export function eserviceServiceBuilder() {
       const now = new Date();
 
       const eservice: Eservice = {
-        categories: ["category-1"],
+        categories: [{ scheme: "vocab-1", code: "category-1" }],
         createdAt: now,
         description: "Mock description",
         id: generateId<EserviceId>(),

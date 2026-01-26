@@ -1,7 +1,6 @@
 CREATE SCHEMA "eservice";
 --> statement-breakpoint
 CREATE TABLE "eservice"."eservice" (
-	"categories" text[] NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"description" text NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
@@ -11,6 +10,14 @@ CREATE TABLE "eservice"."eservice" (
 	"name" text NOT NULL,
 	"producer_id" uuid NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "eservice"."eservice_category" (
+	"code" text NOT NULL,
+	"eservice_id" uuid NOT NULL,
+	"metadata_version" integer NOT NULL,
+	"scheme" text NOT NULL,
+	CONSTRAINT "eservice_category_pk" PRIMARY KEY("eservice_id","metadata_version","scheme","code")
 );
 --> statement-breakpoint
 CREATE TABLE "eservice"."eservice_interface" (
@@ -51,6 +58,8 @@ CREATE TABLE "eservice"."eservice_version_required_attribute" (
 	CONSTRAINT "eservice_version_required_attribute_pk" PRIMARY KEY("attribute_id","eservice_version_id","group_id")
 );
 --> statement-breakpoint
+ALTER TABLE "eservice"."eservice_category" ADD CONSTRAINT "eservice_category_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "eservice"."eservice_category" ADD CONSTRAINT "eservice_category_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

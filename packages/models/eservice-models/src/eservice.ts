@@ -46,8 +46,14 @@ const EserviceVersion = z.strictObject({
 });
 export type EserviceVersion = z.infer<typeof EserviceVersion>;
 
+const EserviceCategory = z.strictObject({
+  code: z.string(),
+  scheme: z.string(),
+});
+export type EserviceCategory = z.infer<typeof EserviceCategory>;
+
 const Eservice = z.strictObject({
-  categories: z.array(z.string()),
+  categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
   description: z.string().min(10).max(250),
   id: EserviceId,
