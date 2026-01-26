@@ -247,21 +247,28 @@ const expectedTestPost = {
   tags: [testTags.test],
 };
 
+const expectedHealthResponse = {
+  content: {
+    "application/problem+json": {
+      schema: {
+        allOf: [
+          {
+            $ref: "#/components/schemas/Problem",
+          },
+        ],
+        description: "Service status OK",
+      },
+    },
+  },
+  description: "Service status OK",
+};
+
 const expectedStatusGet = {
   get: {
     description: "Check the health status of the service",
     operationId: "getStatus",
     responses: {
-      "200": {
-        content: {
-          "application/json": {
-            schema: {
-              description: "Service status OK",
-            },
-          },
-        },
-        description: "Service status OK",
-      },
+      "200": expectedHealthResponse,
     },
     tags: [healthRouterTag.name],
   },

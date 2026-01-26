@@ -5,6 +5,7 @@ import {
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
 
+import { healthRouterTag } from "../../routers/healthRouter.ts";
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
 
 const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
@@ -81,9 +82,13 @@ const updateErrorResponseContentsWithProblemJson = (
       for (const [statusCode, response] of Object.entries(
         operation.responses,
       )) {
-        // Only error responses
+        // Ignore non-error responses except for health endpoints
         const responseStatusCode = Number(statusCode);
-        if (!Number.isInteger(responseStatusCode) || responseStatusCode < 400) {
+        if (
+          !Number.isInteger(responseStatusCode) ||
+          (responseStatusCode < 400 &&
+            !operation.tags?.includes(healthRouterTag.name))
+        ) {
           continue;
         }
 
