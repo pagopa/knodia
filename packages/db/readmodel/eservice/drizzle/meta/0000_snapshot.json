@@ -1,5 +1,5 @@
 {
-  "id": "73121c38-16da-4407-9c62-7c9a2f687802",
+  "id": "812f07ac-de96-485b-8bea-c0119b2bbdee",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -394,12 +394,6 @@
       "name": "eservice_version_required_attribute",
       "schema": "eservice",
       "columns": {
-        "attribute_id": {
-          "name": "attribute_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "eservice_id": {
           "name": "eservice_id",
           "type": "uuid",
@@ -421,6 +415,18 @@
         "metadata_version": {
           "name": "metadata_version",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scheme": {
+          "name": "scheme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         }
@@ -476,9 +482,10 @@
         "eservice_version_required_attribute_pk": {
           "name": "eservice_version_required_attribute_pk",
           "columns": [
-            "attribute_id",
             "eservice_version_id",
-            "group_id"
+            "group_id",
+            "scheme",
+            "code"
           ]
         }
       },

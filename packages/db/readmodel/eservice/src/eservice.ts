@@ -130,7 +130,6 @@ export const readmodelEserviceVersion = eserviceSchema.table(
 export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
   "eservice_version_required_attribute",
   {
-    attributeId: text("attribute_id").notNull(),
     eserviceId: uuid("eservice_id")
       .notNull()
       .references(() => readmodelEservice.id),
@@ -139,6 +138,8 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
       .references(() => readmodelEserviceVersion.id),
     groupId: integer("group_id").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
+    scheme: text().notNull(),
+    code: text().notNull(),
   },
   (table) => [
     foreignKey({
@@ -147,7 +148,7 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
       name: "eservice_version_required_attribute_eservice_id_metadata_version_fkey",
     }),
     primaryKey({
-      columns: [table.attributeId, table.eserviceVersionId, table.groupId],
+      columns: [table.eserviceVersionId, table.groupId, table.scheme, table.code],
       name: "eservice_version_required_attribute_pk",
     }),
   ],

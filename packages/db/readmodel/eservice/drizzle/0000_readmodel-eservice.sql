@@ -50,12 +50,13 @@ CREATE TABLE "eservice"."eservice_version" (
 );
 --> statement-breakpoint
 CREATE TABLE "eservice"."eservice_version_required_attribute" (
-	"attribute_id" text NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,
 	"group_id" integer NOT NULL,
 	"metadata_version" integer NOT NULL,
-	CONSTRAINT "eservice_version_required_attribute_pk" PRIMARY KEY("attribute_id","eservice_version_id","group_id")
+	"scheme" text NOT NULL,
+	"code" text NOT NULL,
+	CONSTRAINT "eservice_version_required_attribute_pk" PRIMARY KEY("eservice_version_id","group_id","scheme","code")
 );
 --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_category" ADD CONSTRAINT "eservice_category_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint

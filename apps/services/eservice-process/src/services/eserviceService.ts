@@ -1,7 +1,6 @@
 import type { Eservice } from "@knodia/eservice-models";
 
 import {
-  type AttributeId,
   type EserviceId,
   type EserviceInterfaceId,
   type EserviceVersionId,
@@ -47,7 +46,7 @@ export function eserviceServiceBuilder() {
             },
             maxDailyCallsPerConsumer: 100,
             maxDailyCallsPerKnode: 1000,
-            requiredAttributes: [[generateId<AttributeId>()]],
+            requiredAttributes: [[{ scheme: "attr-scheme-1", code: "attr-1" }]],
             state: "Active",
             updatedAt: now,
             versionNumber: 1,

@@ -1,5 +1,4 @@
 import {
-  AttributeId,
   EserviceId,
   EserviceInterfaceId,
   EserviceVersionId,
@@ -28,7 +27,13 @@ const EserviceInterface = z.strictObject({
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
 
-const RequiredAttributeGroup = z.array(AttributeId);
+const RequiredAttribute = z.strictObject({
+  code: z.string(),
+  scheme: z.string(),
+});
+export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
+
+const RequiredAttributeGroup = z.array(RequiredAttribute);
 
 const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),
