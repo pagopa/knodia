@@ -4,7 +4,7 @@ import {
   EserviceInterfaceId,
   EserviceVersionId,
   OrganizationId,
-} from "@knodia/common-models";
+} from "@knodia/common-models/ids";
 import z from "zod";
 
 const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);

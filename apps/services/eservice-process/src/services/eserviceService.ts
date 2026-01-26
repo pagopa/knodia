@@ -7,7 +7,7 @@ import {
   type EserviceVersionId,
   generateId,
   type OrganizationId,
-} from "@knodia/common-models";
+} from "@knodia/common-models/ids";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
