@@ -17,7 +17,7 @@ type Story = StoryObj<typeof Dropdown>;
 
 export const Default: Story = {
   render: (args) => (
-    <Dropdown {...args} selectionMode="single">
+    <Dropdown {...args} className="w-80" selectionMode="single">
       {Array.from({ length: 6 }).map((_, index) => (
         <ListItem endIcon={<MockIcon />} key={index} startIcon={<MockIcon />}>
           Item {index + 1}

@@ -70,7 +70,7 @@ export function Select<T extends Iterable<unknown>>({
           })
         }
       >
-        <SelectValue className="flex-1 body-md">
+        <SelectValue className="flex-1 body-md truncate">
           {({ selectedText, defaultChildren }) =>
             selectedText || defaultChildren
           }
