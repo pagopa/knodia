@@ -5,7 +5,7 @@ package eservice.v1;
 import "v1/eservice.proto";
 
 
-message EServiceCreatedV1 {
+message EserviceCreatedV1 {
   EserviceV1 eservice = 1;
 }
 

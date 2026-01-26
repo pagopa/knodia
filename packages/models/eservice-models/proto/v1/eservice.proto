@@ -7,7 +7,7 @@ message EserviceV1 {
   string producerId = 2;
   string name = 3;
   string description = 4;
-  EServiceModeV1 mode = 5;
+  EserviceModeV1 mode = 5;
   bool isSignalHubEnabled = 6;
   repeated string categories = 7;
   repeated EserviceVersionV1 versions = 8;
@@ -15,7 +15,7 @@ message EserviceV1 {
   int64 updatedAt = 10;
 }
 
-enum EServiceModeV1 {
+enum EserviceModeV1 {
   PROVIDE_DATA = 0;
   RECEIVE_DATA = 1;
 }
