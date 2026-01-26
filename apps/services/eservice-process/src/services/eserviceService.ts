@@ -64,7 +64,7 @@ export function eserviceServiceBuilder() {
       offset: number,
       limit: number,
     ): {
-      items: { name: string }[];
+      items: { name: { en: string } }[];
       pagination: { limit: number; offset: number; total: number };
     } {
       // Mock data: 100 e-services with ids 0 to 99, with pagination support
@@ -74,7 +74,7 @@ export function eserviceServiceBuilder() {
 
       return {
         items: eservices.slice(offset, offset + limit).map((eservice) => ({
-          name: `E-service ${eservice.id}`,
+          name: { en: `E-service ${eservice.id}` },
         })),
         pagination: {
           limit,
