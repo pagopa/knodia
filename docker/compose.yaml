@@ -12,12 +12,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: root
-    command:
-      - postgres
-      - -c
-      - wal_level=logical
-      - -c
-      - max_connections=512
+    command: -c 'max_connections=512' -c 'wal_level=logical'
     volumes:
       - event-store-data:/var/lib/postgresql
 
@@ -36,6 +31,8 @@ services:
       - readmodel-data:/var/lib/postgresql
 
   kafka:
+    security_opt:
+      - no-new-privileges:true
     image: confluentinc/cp-kafka:7.6.9@sha256:652f4017a6389f22930eb27ad02ce730622ebe145efa442625d7f439f1bc111e
     container_name: knodia-kafka
     ports:
@@ -72,6 +69,8 @@ services:
       retries: 30
 
   debezium-connect:
+    security_opt:
+      - no-new-privileges:true
     image: debezium/connect:2.7.3.Final@sha256:997b67feff614549acd20d54bfed398fc73b339881c649d42821c1e55ec9972b
     container_name: knodia-debezium-connect
     ports:
