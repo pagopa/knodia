@@ -11,7 +11,7 @@
     "lint-openapi": "turbo run lint-openapi",
     "test": "turbo run test",
     "db:generate": "turbo run db:generate",
-    "db:migrate": "turbo run db:migrate",
+    "db:convert-to-flyway": "turbo run db:convert-to-flyway",
     "knip": "turbo run build-knip-dependencies && knip",
     "infra:start": "./scripts/infra-start.sh",
     "infra:stop": "./scripts/infra-stop.sh",

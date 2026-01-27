@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "db:generate": "dotenvx run -- drizzle-kit generate --name=event-store-eservice",
-    "db:migrate": "dotenvx run -- drizzle-kit migrate"
+    "db:convert-to-flyway": "../../../../scripts/flyway/drizzle-to-flyway.sh event-store eservice"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",
