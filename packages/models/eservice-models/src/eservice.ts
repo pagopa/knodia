@@ -38,7 +38,7 @@ const RequiredAttributeGroup = z.array(RequiredAttribute);
 
 const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),
-  accessTokenDuration: z.number().max(68400), // max 1140 minutes
+  accessTokenDuration: z.number().max(86400), // max 86400 seconds = 24 hours
   accessTokenType: EserviceAccessTokenType,
   createdAt: z.coerce.date(),
   id: EserviceVersionId,
