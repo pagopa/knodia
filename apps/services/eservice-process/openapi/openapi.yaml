@@ -90,10 +90,10 @@ components:
     Eservice:
       type: object
       properties:
-        id:
+        name:
           type: string
       required:
-        - id
+        - name
       additionalProperties: false
     Eservices:
       type: object

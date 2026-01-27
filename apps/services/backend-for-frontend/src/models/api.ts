@@ -9,7 +9,7 @@ export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
 const API_Eservice = z
   .strictObject({
-    id: z.string(),
+    name: z.string(),
   })
   .meta({ id: "Eservice" });
 type API_Eservice = z.infer<typeof API_Eservice>;

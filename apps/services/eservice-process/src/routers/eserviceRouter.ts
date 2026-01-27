@@ -5,6 +5,8 @@ import {
   processHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 
+import type { EserviceService } from "../services/eserviceService.ts";
+
 import {
   API_Eservice,
   API_Eservices,
@@ -13,15 +15,17 @@ import {
 } from "../models/api.ts";
 import { toAPI_Eservice } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
-import {
-  createMockEservice,
-  getMockEservices,
-} from "../services/eserviceService.ts";
 
-export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
+export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
+  fastify,
+  eserviceService,
+) => {
   fastify.route({
     handler: (req, res) => {
-      const eservices = getMockEservices(req.query.offset, req.query.limit);
+      const eservices = eserviceService.getMockEservices(
+        req.query.offset,
+        req.query.limit,
+      );
       res.status(200).send({
         items: eservices.items.map(toAPI_Eservice),
         pagination: eservices.pagination,
@@ -44,7 +48,7 @@ export const eserviceRouter: FastifyPluginAsyncZod = async (fastify) => {
 
   fastify.route({
     handler: (req, res) => {
-      const eservice = createMockEservice(req.body.name);
+      const eservice = eserviceService.createEservice(req.body.name);
       res.status(201).send(toAPI_Eservice(eservice));
     },
     method: "POST",

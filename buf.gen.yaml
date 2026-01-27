@@ -8,3 +8,4 @@ plugins:
     opt:
       - enumsAsLiterals=true
       - esModuleInterop=true
+      - importSuffix=.ts

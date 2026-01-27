@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package eservice.v1;
+
+import "v1/eservice.proto";
+
+
+message EserviceVersionActivatedV1 {
+  EserviceV1 eservice = 1;
+  string eserviceVersionId = 2;
+}
