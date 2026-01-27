@@ -15,11 +15,11 @@
       "dependsOn": ["generate-api-client", "generate-protobuf", "^typecheck"]
     },
     "generate-api-client": {
-      "dependsOn": ["^generate-openapi"],
+      "dependsOn": ["^generate-api-client"],
       "outputs": ["src/generated/**"]
     },
     "generate-openapi": {
-      "dependsOn": ["generate-protobuf"],
+      "dependsOn": ["generate-api-client", "generate-protobuf"],
       "outputs": ["openapi/openapi.yaml"]
     },
     "generate-protobuf": {
