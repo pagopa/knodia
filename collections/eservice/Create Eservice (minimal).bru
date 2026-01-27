@@ -1,0 +1,36 @@
+meta {
+  name: Create Eservice (minimal)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{host-eservice-process}}/eservices
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{randomName}}"
+    },
+    "description": {
+      "en": "Minimal e-service with only required fields"
+    }
+  }
+}
+
+vars:post-response {
+  eserviceId: res.body.id
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("randomName", `Minimal Eservice ${random}`)
+}
