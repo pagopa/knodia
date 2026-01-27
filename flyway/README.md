@@ -39,6 +39,7 @@ flyway/
 ### 1. Define Your Schema (Drizzle TypeScript)
 
 Edit your schema definitions in TypeScript:
+
 - Event Store: `packages/db/event-store/eservice/src/eservice.ts`
 - ReadModel: `packages/db/readmodel/eservice/src/eservice.ts`
 
@@ -67,16 +68,10 @@ Convert Drizzle migrations to Flyway naming convention:
 ```bash
 # Convert all migrations
 pnpm db:convert-to-flyway
-
-# Or for specific packages
-cd packages/db/event-store/eservice
-pnpm db:convert-to-flyway
-
-cd packages/db/readmodel/eservice
-pnpm db:convert-to-flyway
 ```
 
 This copies migrations from `drizzle/` to this centralized `flyway/` directory with Flyway naming:
+
 - `packages/db/event-store/eservice/drizzle/0000_event-store-eservice.sql` → `flyway/event-store/eservice/V001__event_store_eservice.sql`
 
 ### 4. Start Infrastructure (Migrations Run Automatically)
@@ -88,6 +83,7 @@ pnpm infra:start
 ```
 
 Flyway services (`flyway-event-store` and `flyway-readmodel`) will:
+
 1. Wait for databases to be healthy
 2. Scan all schema directories under `flyway/event-store/` and `flyway/readmodel/`
 3. Apply any pending migrations
@@ -105,9 +101,10 @@ Flyway migration files follow the pattern: `V{version}__{description}.sql`
 
 ## Adding New Schemas
 
-When you add new schemas (e.g., `agreement`, `auth`), follow these steps:
+When you add new schemas (e.g., `agreement`, `purpose`), follow these steps:
 
 1. Create the schema directory structure:
+
    ```
    packages/db/event-store/agreement/
    ├── src/agreement.ts
@@ -132,30 +129,43 @@ No need to update `docker/compose.yaml` - the migration script dynamically finds
 | `pnpm infra:stop`           | Stop infrastructure                                        |
 | `pnpm infra:destroy`        | Stop and remove all containers and volumes                 |
 
-## Do Not Edit Manually
+## Custom Migrations
 
-Do not manually edit files in this directory. Always:
-1. Modify the TypeScript schema definitions in `packages/db/`
-2. Regenerate with `pnpm db:generate`
-3. Convert with `pnpm db:convert-to-flyway`
+You can safely add custom migration files directly to the flyway directories. The conversion script intelligently tracks which files were generated from Drizzle sources and will preserve any custom migrations you add.
 
-This ensures consistency between your code and database schema.
+### How It Works
 
-## Implementation Details
+Generated migration files include a source tracking comment at the top:
 
-### Files Modified
+```sql
+-- Drizzle source: 0000_event-store-eservice.sql
+CREATE SCHEMA "eservice";
+...
+```
 
-- `docker/compose.yaml` - Added Flyway services with healthchecks
-- `scripts/flyway/drizzle-to-flyway.sh` - Drizzle to Flyway conversion script
-- `scripts/flyway/migrate-all-schemas.sh` - Dynamic migration runner
-- `turbo.json` - Updated task dependencies (db:convert-to-flyway runs before dev)
-- Package.json files - Updated scripts in db packages
+The conversion script (`drizzle-to-flyway.sh`):
 
-### Notes
+1. Reads all existing Flyway migration files
+2. Builds a map of already-converted Drizzle sources from these comments
+3. Skips any Drizzle migrations that were already converted
+4. Only converts NEW Drizzle migrations, starting from the highest existing version number
 
-- Drizzle ORM is still used for queries in application code
-- Drizzle generates migrations from TypeScript schemas, Flyway applies them
-- Flyway tracks migration history in `flyway_schema_history` tables
-- Each schema gets its own `flyway_schema_history` table
-- Migrations are centralized in this directory for better organization
-- The setup scales automatically - no configuration changes needed when adding new schemas
+### Adding Custom Migrations
+
+You can add custom migrations for things like grants, data seeding, or manual schema changes:
+
+```bash
+# Example: Add a custom migration for user grants
+cat > flyway/event-store/eservice/V003__grant_user_permissions.sql <<EOF
+GRANT SELECT, INSERT ON eservice.events TO my_app_user;
+EOF
+```
+
+These custom files (without the `-- Drizzle source:` comment) will be preserved when you run `pnpm db:convert-to-flyway` again. The script will only add NEW Drizzle-generated migrations, continuing the version sequence from V004, V005, etc.
+
+### Best Practices
+
+- Do not edit files that have the `-- Drizzle source:` comment - they represent generated code from Drizzle schemas and should match the TypeScript source
+- Custom migrations should not have the source tracking comment
+- Follow the same naming convention: `V{version}__{description}.sql`
+- Keep version numbers sequential

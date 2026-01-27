@@ -43,7 +43,7 @@ services:
   flyway-event-store:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11.1.0
+    image: flyway/flyway:11.20.3@sha256:01605f443e1a891b3762f66e66d92403c33b6e0c29099ad550af94b6c1cbc3c1
     container_name: knodia-flyway-event-store
     entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
     volumes:
@@ -61,7 +61,7 @@ services:
   flyway-readmodel:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11.1.0
+    image: flyway/flyway:11.20.3@sha256:01605f443e1a891b3762f66e66d92403c33b6e0c29099ad550af94b6c1cbc3c1
     container_name: knodia-flyway-readmodel
     entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
     volumes:
