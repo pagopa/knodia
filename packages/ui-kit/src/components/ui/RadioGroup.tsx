@@ -11,7 +11,7 @@ import { tv } from "tailwind-variants";
 import { composeTailwindRenderProps, focusRing } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
 
-export interface RadioGroupProps extends Omit<RACRadioGroupProps, "children"> {
+interface RadioGroupProps extends Omit<RACRadioGroupProps, "children"> {
   children?: React.ReactNode;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
@@ -51,7 +51,7 @@ const radio = tv({
   },
 });
 
-export interface RadioProps extends RACRadioProps {
+interface RadioProps extends RACRadioProps {
   description?: React.ReactNode;
 }
 
