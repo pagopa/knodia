@@ -47,6 +47,7 @@ export const API_EserviceSeed = z
   .strictObject({
     categories: z
       .array(API_EserviceCategory)
+      .optional()
       .describe("Categories of the E-service"),
     description: API_LocalizedText.describe("Description of the E-service"),
     isConsumerOperatorIdentificationRequired: z

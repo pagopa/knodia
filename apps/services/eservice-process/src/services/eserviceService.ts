@@ -14,7 +14,7 @@ import {
 } from "@knodia/common-models/ids";
 
 export interface EserviceSeed {
-  categories: EserviceCategory[];
+  categories?: EserviceCategory[];
   description: LocalizedText;
   isConsumerOperatorIdentificationRequired?: boolean;
   isSignalHubEnabled?: boolean;
@@ -32,7 +32,7 @@ export function eserviceServiceBuilder() {
       const now = new Date();
 
       const eservice: Eservice = {
-        categories: seed.categories,
+        categories: seed.categories ?? [],
         createdAt: now,
         description: seed.description,
         id: generateId<EserviceId>(),

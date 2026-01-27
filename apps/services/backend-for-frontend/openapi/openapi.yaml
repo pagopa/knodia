@@ -179,7 +179,6 @@ components:
           allOf:
             - $ref: "#/components/schemas/LocalizedText"
       required:
-        - categories
         - description
         - name
       additionalProperties: false
