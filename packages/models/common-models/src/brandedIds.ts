@@ -12,11 +12,7 @@ export type EserviceInterfaceId = z.infer<typeof EserviceInterfaceId>;
 export const OrganizationId = z.uuid().brand<"OrganizationId">();
 export type OrganizationId = z.infer<typeof OrganizationId>;
 
-export const AttributeId = z.uuid().brand<"AttributeId">();
-export type AttributeId = z.infer<typeof AttributeId>;
-
 type IDS =
-  | AttributeId
   | EserviceId
   | EserviceInterfaceId
   | EserviceVersionId
