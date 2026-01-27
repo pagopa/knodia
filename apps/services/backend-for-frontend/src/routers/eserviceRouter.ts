@@ -9,8 +9,14 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
-import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
+import {
+  API_Eservice,
+  API_Eservices,
+  API_EserviceSeed,
+  API_EservicesQueryParams,
+} from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { makeApiProblem } from "../models/errors.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
@@ -47,6 +53,41 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices.describe("E-services retrieved successfully"),
+        400: API_Problem.describe("Bad Request"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
+      try {
+        const createdEservice = await eserviceProcessApi.createEservice({
+          body: {
+            name: req.body.name,
+          },
+          client: eserviceProcessClient,
+          headers: {
+            [CORRELATION_ID_HEADER]: correlationId,
+          },
+        });
+        res.status(201).send({
+          name: createdEservice.data?.name || "", // TODO: parse the respose, return the eservice, not only the id
+        });
+      } catch (error) {
+        const errorRes = makeApiProblem(error);
+        return res.status(400).send(errorRes); // TODO: use errorRes.status (define the error code)
+      }
+    },
+    method: "POST",
+    schema: {
+      body: API_EserviceSeed,
+      description: "Create a new E-service",
+      operationId: "createEservice",
+      response: {
+        201: API_Eservice.describe("E-service created successfully"),
         400: API_Problem.describe("Bad Request"),
       },
       tags: [apiTags.eservice],

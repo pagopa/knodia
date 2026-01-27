@@ -7,12 +7,12 @@ import { z } from "zod";
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
-const API_Eservice = z
+export const API_Eservice = z
   .strictObject({
     name: z.string(),
   })
   .meta({ id: "Eservice" });
-type API_Eservice = z.infer<typeof API_Eservice>;
+export type API_Eservice = z.infer<typeof API_Eservice>;
 
 export const API_Eservices = z
   .strictObject({
@@ -21,3 +21,11 @@ export const API_Eservices = z
   })
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
+
+// TODO: extend the eservice
+export const API_EserviceSeed = z
+  .strictObject({
+    name: z.string().min(4).describe("Name of the E-service"),
+  })
+  .meta({ id: "EserviceSeed" });
+export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
