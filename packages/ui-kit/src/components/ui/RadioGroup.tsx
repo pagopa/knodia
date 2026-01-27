@@ -28,7 +28,7 @@ export function RadioGroup(props: RadioGroupProps) {
       )}
     >
       <Label>{props.label}</Label>
-      <div className="flex group-orientation-vertical:flex-col gap-4 group-orientation-horizontal:gap-4">
+      <div className="flex group-orientation-vertical:flex-col gap-4">
         {props.children}
       </div>
       {props.description && <Description>{props.description}</Description>}
