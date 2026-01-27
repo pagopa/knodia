@@ -8,6 +8,7 @@ import { config } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 
 const app = createFastifyApp({
   fastifyOptions: {
@@ -33,6 +34,6 @@ const app = createFastifyApp({
 });
 
 app.register(healthRouter);
-app.register(eserviceRouter);
+app.register(eserviceRouter, eserviceServiceBuilder());
 
 export default app;

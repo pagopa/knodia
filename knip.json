@@ -6,7 +6,7 @@
       "entry": ["src/generated/**/*.ts"]
     },
     "packages/models/*-models": {
-      "entry": ["src/generated/*.ts"]
+      "entry": ["src/generated/**/*.ts"]
     },
     "apps/services/backend-for-frontend": {
       "ignoreDependencies": ["@knodia/spectral-config"]
