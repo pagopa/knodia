@@ -331,6 +331,9 @@ importers:
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-models
       '@knodia/kafka-commons':
         specifier: workspace:*
         version: link:../../../packages/kafka-commons
@@ -343,6 +346,9 @@ importers:
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -506,28 +512,6 @@ importers:
       drizzle-kit:
         specifier: 'catalog:'
         version: 0.31.8
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  packages/db/event-store/writer:
-    dependencies:
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
-    devDependencies:
-      '@knodia/db-event-store-eservice':
-        specifier: workspace:*
-        version: link:../eservice
-      '@knodia/eslint-config':
-        specifier: workspace:*
-        version: link:../../../eslint-config
-      '@knodia/typescript-config':
-        specifier: workspace:*
-        version: link:../../../typescript-config
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)

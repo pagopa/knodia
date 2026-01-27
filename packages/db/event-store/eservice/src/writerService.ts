@@ -1,26 +1,27 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { type EserviceId } from "@knodia/common-models/ids";
-import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
+import { EserviceEventV1 } from "@knodia/eservice-models";
 import { desc, eq } from "drizzle-orm";
+
+import { eventStoreEserviceEvents } from "./eservice.ts";
 
 export type EventStoreWriterService = ReturnType<
   typeof eventStoreWriterServiceBuilder
 >;
 
 // TODO generalize to reuse for other event store writers
-export interface NewEventStoreEserviceEvent {
+export interface NewEventStoreEserviceEvent<TEvent extends EserviceEventV1> {
   correlationId: string;
   currentMetadataVersion: bigint | null;
-  data: Buffer<ArrayBufferLike>;
+  event: TEvent;
   streamId: EserviceId;
-  type: string; // TODO type based on Eservice events?
 }
 
 export function eventStoreWriterServiceBuilder(db: NodePgDatabase) {
   return {
-    async insertEserviceEvent(
-      event: NewEventStoreEserviceEvent,
+    async insertEserviceEvent<T extends EserviceEventV1>(
+      event: NewEventStoreEserviceEvent<T>,
     ): Promise<void> {
       // TODO generalize logic to reuse for other event store writers
       return db.transaction(async (tx) => {
@@ -50,11 +51,12 @@ export function eventStoreWriterServiceBuilder(db: NodePgDatabase) {
             ? currentMetadataVersion + BigInt(1)
             : BigInt(1);
 
+        const { data, type } = EserviceEventV1.encode(event.event);
         await tx.insert(eventStoreEserviceEvents).values({
           correlationId: event.correlationId,
-          data: event.data,
+          data: Buffer.from(data),
           streamId: event.streamId,
-          type: event.type,
+          type,
           version: newVersion,
         });
       });

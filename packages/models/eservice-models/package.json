@@ -22,7 +22,6 @@
     "typescript": "catalog:"
   },
   "exports": {
-    ".": "./src/eservice.ts",
-    "./proto": "./src/generated/eservice.ts"
+    ".": "./src/index.ts"
   }
 }

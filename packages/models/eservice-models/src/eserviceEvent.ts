@@ -1,12 +1,12 @@
 import { EventEnvelope } from "@knodia/common-models/event";
-import { protobufCodec } from "@knodia/common-models/protobuf";
+import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { z } from "zod";
 
 import { EserviceVersionActivatedV1 } from "./generated/v1/eserviceEvents.ts";
 
-const EserviceEventV1 = z.discriminatedUnion("type", [
+export const EserviceEventV1 = z.discriminatedUnion("type", [
   z.strictObject({
-    data: protobufCodec(EserviceVersionActivatedV1),
+    data: protobufBinaryCodec(EserviceVersionActivatedV1),
     type: z.literal("EserviceVersionActivatedV1"),
   }),
 ]);
