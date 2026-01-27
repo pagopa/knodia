@@ -65,17 +65,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const { correlationId } = getContextValues(requestContext);
       try {
         const createdEservice = await eserviceProcessApi.createEservice({
-          body: {
-            name: req.body.name,
-          },
+          body: req.body,
           client: eserviceProcessClient,
           headers: {
             [CORRELATION_ID_HEADER]: correlationId,
           },
         });
-        res.status(201).send({
-          name: createdEservice.data?.name || "", // TODO: parse the respose, return the eservice, not only the id
-        });
+        res.status(201).send(API_Eservice.parse(createdEservice.data));
       } catch (error) {
         const errorRes = makeApiProblem(error);
         return res.status(400).send(errorRes); // TODO: use errorRes.status (define the error code)

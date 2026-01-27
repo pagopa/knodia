@@ -87,12 +87,54 @@ components:
         - status
         - title
       additionalProperties: false
+    LocalizedText:
+      type: object
+      properties:
+        en:
+          type: string
+      required:
+        - en
+      additionalProperties: false
+    EserviceCategory:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Eservice:
       type: object
       properties:
-        name:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          $ref: "#/components/schemas/LocalizedText"
+        id:
           type: string
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        mode:
+          type: string
+          enum:
+            - ProvideData
+            - ReceiveData
+        name:
+          $ref: "#/components/schemas/LocalizedText"
       required:
+        - categories
+        - description
+        - id
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - mode
         - name
       additionalProperties: false
     Eservices:
@@ -111,11 +153,34 @@ components:
     EserviceSeed:
       type: object
       properties:
+        categories:
+          description: Categories of the E-service
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          description: Description of the E-service
+          allOf:
+            - $ref: "#/components/schemas/LocalizedText"
+        isConsumerOperatorIdentificationRequired:
+          description: Whether consumer operator identification is required
+          type: boolean
+        isSignalHubEnabled:
+          description: Whether SignalHub is enabled for the E-service
+          type: boolean
+        mode:
+          description: Mode of the E-service
+          type: string
+          enum:
+            - ProvideData
+            - ReceiveData
         name:
           description: Name of the E-service
-          type: string
-          minLength: 4
+          allOf:
+            - $ref: "#/components/schemas/LocalizedText"
       required:
+        - categories
+        - description
         - name
       additionalProperties: false
 paths:

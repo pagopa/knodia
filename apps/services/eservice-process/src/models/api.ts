@@ -7,9 +7,30 @@ import { z } from "zod";
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
+const API_LocalizedText = z
+  .strictObject({
+    en: z.string(),
+  })
+  .meta({ id: "LocalizedText" });
+
+const API_EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
+
+const API_EserviceCategory = z
+  .strictObject({
+    code: z.string(),
+    scheme: z.string(),
+  })
+  .meta({ id: "EserviceCategory" });
+
 export const API_Eservice = z
   .strictObject({
-    name: z.string(),
+    categories: z.array(API_EserviceCategory),
+    description: API_LocalizedText,
+    id: z.string(),
+    isConsumerOperatorIdentificationRequired: z.boolean(),
+    isSignalHubEnabled: z.boolean(),
+    mode: API_EserviceMode,
+    name: API_LocalizedText,
   })
   .meta({ id: "Eservice" });
 export type API_Eservice = z.infer<typeof API_Eservice>;
@@ -24,7 +45,20 @@ export type API_Eservices = z.infer<typeof API_Eservices>;
 
 export const API_EserviceSeed = z
   .strictObject({
-    name: z.string().min(4).describe("Name of the E-service"),
+    categories: z
+      .array(API_EserviceCategory)
+      .describe("Categories of the E-service"),
+    description: API_LocalizedText.describe("Description of the E-service"),
+    isConsumerOperatorIdentificationRequired: z
+      .boolean()
+      .optional()
+      .describe("Whether consumer operator identification is required"),
+    isSignalHubEnabled: z
+      .boolean()
+      .optional()
+      .describe("Whether SignalHub is enabled for the E-service"),
+    mode: API_EserviceMode.describe("Mode of the E-service").optional(),
+    name: API_LocalizedText.describe("Name of the E-service"),
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
