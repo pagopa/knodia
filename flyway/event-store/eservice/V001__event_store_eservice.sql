@@ -1,5 +1,5 @@
 -- Drizzle source: 0000_event-store-eservice.sql
-CREATE SCHEMA "eservice";
+CREATE SCHEMA IF NOT EXISTS "eservice";
 
 CREATE TABLE "eservice"."events" (
 	"correlation_id" text NOT NULL,

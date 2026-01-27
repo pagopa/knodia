@@ -117,13 +117,16 @@ for file in "$DRIZZLE_DIR"/*.sql; do
   fi
 
   # Check if already converted
-  if [ -n "${converted_files[$filename]}" ]; then
+  if [ -n "${converted_files[$filename]:-}" ]; then
     SKIPPED_COUNT=$((SKIPPED_COUNT + 1))
     continue
   fi
 
   # Remove Drizzle-specific comments (all --> comments) and clean content
-  if ! sed 's/-->.*$//g' "$file" | sed '/^$/N;/^\n$/D' > "$TEMP_FILE"; then
+  # Also add IF NOT EXISTS to CREATE SCHEMA statements for Flyway compatibility
+  if ! sed 's/-->.*$//g' "$file" | \
+       sed '/^$/N;/^\n$/D' | \
+       sed 's/CREATE SCHEMA \("[^"]*"\)/CREATE SCHEMA IF NOT EXISTS \1/g' > "$TEMP_FILE"; then
     echo "Error: Failed to process file: $file"
     continue
   fi
