@@ -74,7 +74,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         res.status(201).send(API_Eservice.parse(createdEservice.data));
       } catch (error) {
         const errorRes = makeApiProblem(error);
-        return res.status(400).send(errorRes); // TODO: use errorRes.status (define the error code)
+        return res.status(400).send(errorRes);
       }
     },
     method: "POST",
