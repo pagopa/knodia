@@ -20,7 +20,6 @@
     "@confluentinc/kafka-javascript": "catalog:",
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/db-readmodel-eservice": "workspace:*",
-    "@knodia/eservice-models": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
