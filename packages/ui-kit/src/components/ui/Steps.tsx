@@ -1,7 +1,7 @@
 import { Check, X } from "lucide-react";
 import { tv } from "tailwind-variants";
 
-export interface StepsProps {
+interface StepsProps {
   ariaLabel: string;
   current: number;
   isCurrentInvalid?: boolean;

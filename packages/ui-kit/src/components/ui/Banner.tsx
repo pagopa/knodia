@@ -37,8 +37,7 @@ const bannerIcon = tv({
   },
 });
 
-export interface BannerProps
-  extends BannerVariants, HTMLAttributes<HTMLDivElement> {
+interface BannerProps extends BannerVariants, HTMLAttributes<HTMLDivElement> {
   icon?: ReactNode;
 }
 
