@@ -1,26 +1,53 @@
-import { composeRenderProps } from "react-aria-components";
-import { twMerge } from "tailwind-merge";
+import {
+  Button,
+  type ButtonProps,
+  composeRenderProps,
+} from "react-aria-components";
+import { tv, type VariantProps } from "tailwind-variants";
 
-import { ButtonIcon, type ButtonIconProps } from "./ButtonIcon";
+import { focusRing } from "../../libs/react-aria";
 
-export type InteractiveIconProps = Omit<ButtonIconProps, "kind" | "size">;
+// eslint-disable-next-line react-refresh/only-export-components
+export const buttonVariants = tv({
+  extend: focusRing,
+  base: "body-md-em relative inline-flex items-center justify-center rounded-full transition p-2 [&>svg]:size-5",
+  variants: {
+    hierarchy: {
+      brand: "text-brand-700 hover:bg-brand-700/10 pressed:bg-brand-700/10",
+      danger: "text-error-700 hover:bg-error-700/10 pressed:bg-error-700/10",
+      neutral:
+        "pressed:bg-neutral-600/10 text-neutral-600 hover:bg-neutral-600/10",
+    },
+    isDisabled: {
+      true: "cursor-not-allowed opacity-30",
+    },
+  },
+  defaultVariants: {
+    hierarchy: "neutral",
+  },
+});
+
+export type InteractiveIconProps = ButtonProps & ButtonVariants;
+
+type ButtonVariants = VariantProps<typeof buttonVariants>;
 
 export function InteractiveIcon({
   children,
-  hierarchy = "neutral",
+  hierarchy,
   ...props
 }: InteractiveIconProps) {
   return (
-    <ButtonIcon
+    <Button
       {...props}
-      className={composeRenderProps(props.className, (className) =>
-        twMerge("rounded-full", className),
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        buttonVariants({
+          ...renderProps,
+          className,
+          hierarchy,
+        }),
       )}
-      hierarchy={hierarchy}
-      kind="ghost"
-      size="sm"
     >
       {children}
-    </ButtonIcon>
+    </Button>
   );
 }
