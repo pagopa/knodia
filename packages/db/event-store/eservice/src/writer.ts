@@ -49,7 +49,7 @@ export function eserviceEventStoreWriterBuilder(db: NodePgDatabase) {
         const newVersion =
           currentMetadataVersion !== null
             ? currentMetadataVersion + BigInt(1)
-            : BigInt(1);
+            : BigInt(0);
 
         const { data, type } = EserviceEventV1.encode(event.event);
         await tx.insert(eventStoreEserviceEvents).values({
