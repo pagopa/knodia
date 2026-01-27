@@ -343,9 +343,6 @@ importers:
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
-      zod:
-        specifier: 'catalog:'
-        version: 4.2.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -706,6 +703,9 @@ importers:
       '@confluentinc/kafka-javascript':
         specifier: 'catalog:'
         version: 1.7.0
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../models/common-models
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -794,6 +794,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

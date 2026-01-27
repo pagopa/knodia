@@ -14,10 +14,11 @@
   },
   "devDependencies": {
     "@bufbuild/buf": "catalog:",
-    "@bufbuild/protobuf": "catalog:",
     "@knodia/eslint-config": "workspace:*",
+    "@bufbuild/protobuf": "catalog:",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "ts-pattern": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {
