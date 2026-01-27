@@ -6,8 +6,8 @@ import { desc, eq } from "drizzle-orm";
 
 import { eventStoreEserviceEvents } from "./eservice.ts";
 
-export type EventStoreWriterService = ReturnType<
-  typeof eventStoreWriterServiceBuilder
+export type EserviceEventStoreWriter = ReturnType<
+  typeof eserviceEventStoreWriterBuilder
 >;
 
 // TODO generalize to reuse for other event store writers
@@ -18,7 +18,7 @@ export interface NewEventStoreEserviceEvent<TEvent extends EserviceEventV1> {
   streamId: EserviceId;
 }
 
-export function eventStoreWriterServiceBuilder(db: NodePgDatabase) {
+export function eserviceEventStoreWriterBuilder(db: NodePgDatabase) {
   return {
     async insertEserviceEvent<T extends EserviceEventV1>(
       event: NewEventStoreEserviceEvent<T>,

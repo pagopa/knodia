@@ -27,7 +27,7 @@
     "typescript": "catalog:"
   },
   "exports": {
-    "./writer": "./src/writerService.ts",
+    "./writer": "./src/writer.ts",
     "./config": "./config/config.ts"
   }
 }
