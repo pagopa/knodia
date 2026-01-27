@@ -1,0 +1,4 @@
+version: v1
+name: buf.build/knodia/eservice-models
+deps:
+  - buf.build/knodia/common-models

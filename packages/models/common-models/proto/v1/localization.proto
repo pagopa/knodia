@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package common.v1;
+
+message LocalizedTextV1 {
+  string en = 1;
+}

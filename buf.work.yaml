@@ -1,0 +1,4 @@
+version: v1
+directories:
+  - packages/models/common-models/proto
+  - packages/models/eservice-models/proto

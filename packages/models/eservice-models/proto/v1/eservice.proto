@@ -2,11 +2,13 @@ syntax = "proto3";
 
 package eservice.v1;
 
+import "v1/localization.proto";
+
 message EserviceV1 {
   string id = 1;
   string producerId = 2;
-  LocalizedTextV1 name = 3;
-  LocalizedTextV1 description = 4;
+  common.v1.LocalizedTextV1 name = 3;
+  common.v1.LocalizedTextV1 description = 4;
   EserviceModeV1 mode = 5;
   bool isSignalHubEnabled = 6;
   bool isConsumerOperatorIdentificationRequired = 7;
@@ -55,7 +57,7 @@ enum EserviceVersionStateV1 {
 message EserviceInterfaceV1 {
   string id = 1;
   string name = 2;
-  LocalizedTextV1 prettyName = 3;
+  common.v1.LocalizedTextV1 prettyName = 3;
   string contentType = 4;
   string path = 5;
   string checksum = 6;
@@ -70,9 +72,4 @@ message EserviceVersionRequiredAttributeGroupV1 {
 message EserviceDescriptorAttributeV1 {
   string scheme = 1;
   string code = 2;
-}
-
-message LocalizedTextV1 {
-  // TODO find a way to share this in common models and make proto gen work
-  string en = 1;
 }
