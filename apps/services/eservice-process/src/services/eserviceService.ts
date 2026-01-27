@@ -13,7 +13,9 @@ import {
   type OrganizationId,
 } from "@knodia/common-models/ids";
 
-export interface EserviceSeed {
+export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
+
+interface EserviceSeed {
   categories?: EserviceCategory[];
   description: LocalizedText;
   isConsumerOperatorIdentificationRequired?: boolean;
@@ -21,8 +23,6 @@ export interface EserviceSeed {
   mode?: EserviceMode;
   name: LocalizedText;
 }
-
-export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder() {
   return {
