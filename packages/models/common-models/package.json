@@ -9,7 +9,9 @@
   },
   "exports": {
     "./ids": "./src/brandedIds.ts",
-    "./localization": "./src/localization.ts"
+    "./localization": "./src/localization.ts",
+    "./event": "./src/events.ts",
+    "./protobuf": "./src/protobuf.ts"
   },
   "dependencies": {
     "zod": "catalog:"

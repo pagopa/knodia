@@ -15,17 +15,19 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-event-store-config": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
-    "@knodia/db-event-store-config": "workspace:*",
-    "@dotenvx/dotenvx": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {
-    ".": "./src/eservice.ts",
+    "./writer": "./src/writer.ts",
     "./config": "./config/config.ts"
   }
 }
