@@ -1,8 +1,9 @@
 {
   "name": "@knodia/typescript-config",
   "devDependencies": {
-    "@tsconfig/node24": "catalog:",
     "@tsconfig/node-ts": "catalog:",
-    "@tsconfig/strictest": "catalog:"
+    "@tsconfig/node24": "catalog:",
+    "@tsconfig/strictest": "catalog:",
+    "@tsconfig/vite-react": "catalog:"
   }
 }

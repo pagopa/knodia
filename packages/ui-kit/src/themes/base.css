@@ -1,0 +1,5 @@
+@import "tailwindcss";
+@plugin "tailwindcss-react-aria-components";
+@plugin "tailwindcss-animate";
+
+@source "../../../../packages/ui-kit/**/*.{ts,tsx}";

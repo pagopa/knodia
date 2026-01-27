@@ -26,8 +26,7 @@ export async function handleEserviceEvent(
 ): Promise<void> {
   return match(message.type)
     .with("EserviceAdded", async () => {
-      const eservice = message.data;
-      await writerService.insertEservice(eservice);
+      await writerService.insertEservice();
     })
     .otherwise(() => {
       console.warn("Unhandled event type: ", message.type);

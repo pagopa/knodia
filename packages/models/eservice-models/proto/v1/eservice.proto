@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package eservice.v1;
+
+message EserviceV1 {
+  string id = 1;
+  string producerId = 2;
+  LocalizedTextV1 name = 3;
+  LocalizedTextV1 description = 4;
+  EserviceModeV1 mode = 5;
+  bool isSignalHubEnabled = 6;
+  bool isConsumerOperatorIdentificationRequired = 7;
+  repeated EserviceCategoryV1 categories = 8;
+  repeated EserviceVersionV1 versions = 9;
+  int64 createdAt = 10;
+  int64 updatedAt = 11;
+}
+
+message EserviceCategoryV1 {
+  string scheme = 1;
+  string code = 2;
+}
+
+enum EserviceModeV1 {
+  PROVIDE_DATA = 0;
+  RECEIVE_DATA = 1;
+}
+
+enum EserviceAccessTokenTypeV1 {
+  BEARER = 0;
+  DPOP = 1;
+}
+
+message EserviceVersionV1 {
+  string id = 1;
+  int32 versionNumber = 2;
+  EserviceVersionStateV1 state = 3;
+  EserviceInterfaceV1 interfaceDocument = 4;
+  EserviceAccessTokenTypeV1 accessTokenType = 5;
+  repeated string accessTokenAudience = 6;
+  int32 accessTokenDuration = 7;
+  int32 maxDailyCallsPerKnode = 8;
+  int32 maxDailyCallsPerConsumer = 9;
+  repeated EserviceVersionRequiredAttributeGroupV1 requiredAttributes = 10;
+  int64 createdAt = 11;
+  int64 updatedAt = 12;
+}
+
+enum EserviceVersionStateV1 {
+  ACTIVE = 0;
+  SUSPENDED = 1;
+  ARCHIVED = 2;
+}
+
+message EserviceInterfaceV1 {
+  string id = 1;
+  string name = 2;
+  LocalizedTextV1 prettyName = 3;
+  string contentType = 4;
+  string path = 5;
+  string checksum = 6;
+  string createdAt = 7;
+  string updatedAt = 8;
+}
+message EserviceVersionRequiredAttributeGroupV1 {
+  int32 groupId = 1;
+  repeated EserviceDescriptorAttributeV1 attributes = 2;
+}
+
+message EserviceDescriptorAttributeV1 {
+  string scheme = 1;
+  string code = 2;
+}
+
+message LocalizedTextV1 {
+  // TODO find a way to share this in common models and make proto gen work
+  string en = 1;
+}

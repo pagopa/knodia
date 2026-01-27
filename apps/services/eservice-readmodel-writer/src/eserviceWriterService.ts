@@ -1,4 +1,3 @@
-import type { Eservice } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { readmodelEservice } from "@knodia/db-readmodel-eservice";
@@ -9,10 +8,12 @@ export type EserviceWriterService = ReturnType<
 
 export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
   return {
-    async insertEservice(eservice: Eservice): Promise<void> {
+    async insertEservice(): Promise<void> {
       await db
         .insert(readmodelEservice)
-        .values({ id: eservice.id })
+        .values([
+          // TODO: populate with real data from event
+        ])
         .onConflictDoNothing();
     },
   };
