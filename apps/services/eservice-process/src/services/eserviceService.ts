@@ -8,7 +8,9 @@ import {
   generateId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
-import { type Eservice, toEserviceV1 } from "@knodia/eservice-models";
+import { type Eservice } from "@knodia/eservice-models";
+
+import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -65,19 +67,13 @@ export function eserviceServiceBuilder(
         ],
       };
 
-      // TODO move event creation to a dedicated function?
-      eventStoreWriter.insertEserviceEvent({
-        correlationId: ctx.correlationId,
-        currentMetadataVersion: null,
-        event: {
-          data: {
-            eservice: toEserviceV1(eservice),
-            eserviceVersionId: eserviceVersionId,
-          },
-          type: "EserviceVersionActivatedV1",
-        },
-        streamId: eservice.id,
-      });
+      eventStoreWriter.insertEserviceEvent(
+        createEserviceVersionActivatedV1Event(
+          eservice,
+          eserviceVersionId,
+          ctx.correlationId,
+        ),
+      );
 
       return eservice;
     },
