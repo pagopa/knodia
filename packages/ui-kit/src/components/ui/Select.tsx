@@ -13,9 +13,8 @@ import {
   composeTailwindRenderProps,
   fieldInputStyle,
 } from "../../libs/react-aria";
-import { Dropdown } from "./Dropdown";
+import { Dropdown, DropdownItem, type DropdownItemProps } from "./Dropdown";
 import { Description, FieldError, Label } from "./Field";
-import { ListItem, type ListItemProps } from "./ListItem";
 
 const styles = tv({
   extend: fieldInputStyle,
@@ -89,6 +88,6 @@ export function Select<T extends Iterable<unknown>>({
   );
 }
 
-export function SelectItem(props: ListItemProps) {
-  return <ListItem {...props} />;
+export function SelectItem(props: DropdownItemProps) {
+  return <DropdownItem {...props} />;
 }

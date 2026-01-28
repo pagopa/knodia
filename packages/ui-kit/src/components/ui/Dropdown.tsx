@@ -1,9 +1,18 @@
 import {
   ListBox as AriaListBox,
   type ListBoxProps as AriaListBoxProps,
+  composeRenderProps,
+  ListBoxItem,
+  type ListBoxItemProps,
 } from "react-aria-components";
 
 import { composeTailwindRenderProps } from "../../libs/react-aria";
+import { ListItem } from "./ListItem";
+
+export interface DropdownItemProps extends ListBoxItemProps {
+  endIcon?: React.ReactNode;
+  startIcon?: React.ReactNode;
+}
 
 type DropdownProps<T> = Omit<AriaListBoxProps<T>, "layout" | "orientation">;
 
@@ -21,5 +30,24 @@ export function Dropdown<T extends object>({
     >
       {children}
     </AriaListBox>
+  );
+}
+
+export function DropdownItem({
+  startIcon,
+  endIcon,
+  ...props
+}: DropdownItemProps) {
+  const textValue =
+    props.textValue ||
+    (typeof props.children === "string" ? props.children : "");
+  return (
+    <ListBoxItem {...props} textValue={textValue}>
+      {composeRenderProps(props.children, (children, renderProps) => (
+        <ListItem {...renderProps} endIcon={endIcon} startIcon={startIcon}>
+          {children}
+        </ListItem>
+      ))}
+    </ListBoxItem>
   );
 }
