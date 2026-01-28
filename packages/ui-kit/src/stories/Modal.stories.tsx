@@ -8,6 +8,8 @@ import { Modal } from "../components/ui/Modal";
 
 const meta: Meta<typeof Modal> = {
   args: {
+    title: "Modal Title",
+    description: "This is a description that provides additional context.",
     actionLabel: "Action",
     kind: "default",
   },
@@ -23,9 +25,6 @@ type Story = StoryObj<typeof Modal>;
 
 export const Default: Story = {
   args: {
-    title: "Modal Title",
-    description: "This is a description that provides additional context.",
-    actionLabel: "Confirm",
     isDismissable: true,
   },
   render: (args) => {
@@ -51,8 +50,7 @@ export const Default: Story = {
 
 export const Destructive: Story = {
   args: {
-    title: "Delete Item",
-    actionLabel: "Delete",
+    title: "Destructive Modal",
     kind: "destructive",
   },
   render: (args) => {
@@ -79,7 +77,6 @@ export const Destructive: Story = {
 export const NonDismissable: Story = {
   args: {
     title: "Non-Dismissable Modal",
-    actionLabel: "Confirm",
     isDismissable: false,
   },
   render: (args) => {
@@ -105,8 +102,7 @@ export const NonDismissable: Story = {
 
 export const WithDontShowAgain: Story = {
   args: {
-    title: "Helpful Tip",
-    actionLabel: "Got it",
+    title: "Modal With Don't Show Again",
     showDontShowAgain: true,
   },
   render: (args) => {
