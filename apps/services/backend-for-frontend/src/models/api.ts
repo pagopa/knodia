@@ -1,4 +1,6 @@
 import {
+  API_LocalizedDescription,
+  API_LocalizedName,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/fastify-zod-api-commons/models";
@@ -6,12 +8,6 @@ import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
-
-const API_LocalizedText = z
-  .strictObject({
-    en: z.string(),
-  })
-  .meta({ id: "LocalizedText" });
 
 const API_EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 
@@ -22,15 +18,24 @@ const API_EserviceCategory = z
   })
   .meta({ id: "EserviceCategory" });
 
+const API_AccessTokenType = z.enum(["Bearer", "DPoP"]);
+
+const API_EserviceAttribute = z
+  .strictObject({
+    code: z.string(),
+    scheme: z.string(),
+  })
+  .meta({ id: "EserviceAttribute" });
+
 const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
-    description: API_LocalizedText,
+    description: API_LocalizedDescription,
     id: z.string(),
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
-    name: API_LocalizedText,
+    name: API_LocalizedName,
   })
   .meta({ id: "Eservice" });
 type API_Eservice = z.infer<typeof API_Eservice>;
@@ -45,11 +50,27 @@ export type API_Eservices = z.infer<typeof API_Eservices>;
 
 export const API_EserviceSeed = z
   .strictObject({
+    accessTokenAudience: z
+      .array(z.string())
+      .describe("Audience for the access token"),
+    accessTokenDuration: z
+      .number()
+      .int()
+      .positive()
+      .max(1440)
+      .optional()
+      .default(60)
+      .describe("Duration of the access token in minutes"),
+    accessTokenType: API_AccessTokenType.optional()
+      .default("Bearer")
+      .describe("Type of the access token"),
     categories: z
       .array(API_EserviceCategory)
       .optional()
       .describe("Categories of the E-service"),
-    description: API_LocalizedText.describe("Description of the E-service"),
+    description: API_LocalizedDescription.describe(
+      "Description of the E-service",
+    ),
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()
@@ -58,8 +79,21 @@ export const API_EserviceSeed = z
       .boolean()
       .optional()
       .describe("Whether SignalHub is enabled for the E-service"),
+    maxDailyCallsPerConsumer: z
+      .number()
+      .int()
+      .positive()
+      .describe("Maximum daily calls per consumer"),
+    maxDailyCallsPerKnode: z
+      .number()
+      .int()
+      .positive()
+      .describe("Maximum daily calls per Knode"),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
-    name: API_LocalizedText.describe("Name of the E-service"),
+    name: API_LocalizedName.describe("Name of the E-service"),
+    requiredAttributes: z
+      .array(z.array(API_EserviceAttribute))
+      .describe("Required attributes for the E-service"),
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;

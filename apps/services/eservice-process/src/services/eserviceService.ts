@@ -42,11 +42,12 @@ export function eserviceServiceBuilder() {
         updatedAt: now,
         versions: [
           {
-            accessTokenAudience: ["audience-1"],
-            accessTokenDuration: 3600,
-            accessTokenType: "Bearer",
+            accessTokenAudience: seed.accessTokenAudience,
+            accessTokenDuration: seed.accessTokenDuration ?? 60,
+            accessTokenType: seed.accessTokenType ?? "Bearer",
             createdAt: now,
             id: generateId<EserviceVersionId>(),
+            // TODO: implement interface document upload
             interfaceDocument: {
               checksum: "checksum-1",
               contentType: "application/json",
@@ -57,9 +58,9 @@ export function eserviceServiceBuilder() {
               prettyName: { en: "Interface 1" },
               updatedAt: now,
             },
-            maxDailyCallsPerConsumer: 100,
-            maxDailyCallsPerKnode: 1000,
-            requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
+            maxDailyCallsPerConsumer: seed.maxDailyCallsPerConsumer,
+            maxDailyCallsPerKnode: seed.maxDailyCallsPerKnode,
+            requiredAttributes: seed.requiredAttributes,
             state: "Active",
             updatedAt: now,
             versionNumber: 1,

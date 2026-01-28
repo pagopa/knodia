@@ -9,6 +9,20 @@ export const API_Pagination = z
   .meta({ id: "Pagination" });
 export type API_Pagination = z.infer<typeof API_Pagination>;
 
+export const API_LocalizedName = z
+  .strictObject({
+    en: z.string().min(5).max(60),
+  })
+  .meta({ id: "LocalizedName" });
+export type API_LocalizedName = z.infer<typeof API_LocalizedName>;
+
+export const API_LocalizedDescription = z
+  .strictObject({
+    en: z.string().min(10).max(250),
+  })
+  .meta({ id: "LocalizedDescription" });
+export type API_LocalizedDescription = z.infer<typeof API_LocalizedDescription>;
+
 export const API_PaginationQueryParams = z.strictObject({
   limit: z.coerce
     .number()

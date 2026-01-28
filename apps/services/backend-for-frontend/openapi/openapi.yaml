@@ -29,6 +29,26 @@ components:
         - offset
         - total
       additionalProperties: false
+    LocalizedName:
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedDescription:
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
     ProblemError:
       type: object
       properties:
@@ -87,15 +107,18 @@ components:
         - status
         - title
       additionalProperties: false
-    LocalizedText:
+    EserviceCategory:
       type: object
       properties:
-        en:
+        code:
+          type: string
+        scheme:
           type: string
       required:
-        - en
+        - code
+        - scheme
       additionalProperties: false
-    EserviceCategory:
+    EserviceAttribute:
       type: object
       properties:
         code:
@@ -114,7 +137,7 @@ components:
           items:
             $ref: "#/components/schemas/EserviceCategory"
         description:
-          $ref: "#/components/schemas/LocalizedText"
+          $ref: "#/components/schemas/LocalizedDescription"
         id:
           type: string
         isConsumerOperatorIdentificationRequired:
@@ -127,7 +150,7 @@ components:
             - ProvideData
             - ReceiveData
         name:
-          $ref: "#/components/schemas/LocalizedText"
+          $ref: "#/components/schemas/LocalizedName"
       required:
         - categories
         - description
@@ -153,6 +176,24 @@ components:
     EserviceSeed:
       type: object
       properties:
+        accessTokenAudience:
+          description: Audience for the access token
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          description: Duration of the access token in minutes
+          default: 60
+          type: integer
+          exclusiveMinimum: true
+          maximum: 1440
+        accessTokenType:
+          description: Type of the access token
+          default: Bearer
+          type: string
+          enum:
+            - Bearer
+            - DPoP
         categories:
           description: Categories of the E-service
           type: array
@@ -161,13 +202,23 @@ components:
         description:
           description: Description of the E-service
           allOf:
-            - $ref: "#/components/schemas/LocalizedText"
+            - $ref: "#/components/schemas/LocalizedDescription"
         isConsumerOperatorIdentificationRequired:
           description: Whether consumer operator identification is required
           type: boolean
         isSignalHubEnabled:
           description: Whether SignalHub is enabled for the E-service
           type: boolean
+        maxDailyCallsPerConsumer:
+          description: Maximum daily calls per consumer
+          type: integer
+          exclusiveMinimum: true
+          maximum: 9007199254740991
+        maxDailyCallsPerKnode:
+          description: Maximum daily calls per Knode
+          type: integer
+          exclusiveMinimum: true
+          maximum: 9007199254740991
         mode:
           description: Mode of the E-service
           type: string
@@ -177,10 +228,23 @@ components:
         name:
           description: Name of the E-service
           allOf:
-            - $ref: "#/components/schemas/LocalizedText"
+            - $ref: "#/components/schemas/LocalizedName"
+        requiredAttributes:
+          description: Required attributes for the E-service
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
       required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
         - description
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
         - name
+        - requiredAttributes
       additionalProperties: false
     CreatedResource:
       type: object
