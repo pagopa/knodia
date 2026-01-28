@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { PlaceholderIcon } from "@phosphor-icons/react";
+
 import { InteractiveIcon } from "../components/ui/InteractiveIcon";
-import { MockIcon, renderStickerSheet } from "./utils";
+import { renderStickerSheet } from "./utils";
 
 const states = ["default", "disabled"] as const;
 
@@ -18,7 +20,7 @@ type Story = StoryObj<typeof InteractiveIcon>;
 
 export const Default: Story = {
   args: {
-    children: <MockIcon />,
+    children: <PlaceholderIcon />,
   },
 };
 
@@ -30,7 +32,7 @@ export const StickerSheet: Story = {
         isDisabled={state === "disabled"}
         key={`${hierarchy}-${state}`}
       >
-        <MockIcon />
+        <PlaceholderIcon />
       </InteractiveIcon>
     )),
   ),
