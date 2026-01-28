@@ -1,4 +1,9 @@
-import { Check, X } from "lucide-react";
+import {
+  CheckCircleIcon,
+  CircleIcon,
+  DotOutlineIcon,
+  XCircleIcon,
+} from "@phosphor-icons/react";
 import { tv } from "tailwind-variants";
 
 interface StepsProps {
@@ -59,26 +64,30 @@ function Step({
 }
 
 const stepDot = tv({
-  base: "m-0.5 size-6 rounded-full border-2 shrink-0 p-0.5 [&>svg]:size-full",
+  base: "size-6 shrink-0",
   variants: {
     status: {
-      completed:
-        "border-brand-light-low-contrast bg-brand-light-low-contrast text-white",
-      current: "border-primary-light-low-contrast bg-white",
-      error:
-        "border-error-light-low-contrast bg-white text-error-light-low-contrast",
-      uncompleted: "border-0 size-1 m-2 bg-primary-light-low-contrast",
+      completed: "text-brand-light-low-contrast",
+      current: "text-primary-light-low-contrast",
+      error: "text-error-light-low-contrast",
+      uncompleted: "text-primary-light-low-contrast",
     },
   },
 });
 
 function StepDot({ status }: { status: StepStatus }) {
-  return (
-    <div aria-hidden="true" className={stepDot({ status })}>
-      {status === "completed" && <Check />}
-      {status === "error" && <X />}
-    </div>
-  );
+  const className = stepDot({ status });
+
+  switch (status) {
+    case "completed":
+      return <CheckCircleIcon className={className} weight="fill" />;
+    case "current":
+      return <CircleIcon className={className} />;
+    case "error":
+      return <XCircleIcon className={className} />;
+    case "uncompleted":
+      return <DotOutlineIcon className={className} weight="fill" />;
+  }
 }
 
 const stepLine = tv({
