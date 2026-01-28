@@ -5,6 +5,7 @@ export * from "./ButtonIcon";
 export * from "./Chip";
 export * from "./Divider";
 export * from "./Field";
+export * from "./FileUpload";
 export * from "./InteractiveIcon";
 export * from "./Link";
 export * from "./TextArea";
