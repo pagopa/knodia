@@ -9,6 +9,7 @@ const client = bffApi.createClient({
   headers: {
     "Content-Type": "application/json",
   },
+  throwOnError: true,
 });
 
 client.instance.interceptors.request.use(
