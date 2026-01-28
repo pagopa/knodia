@@ -13,12 +13,9 @@ import {
 } from "react-aria-components";
 import { tv, type VariantProps } from "tailwind-variants";
 
-import {
-  composeTailwindRenderProps,
-  fieldInputStyle,
-} from "../../libs/react-aria";
+import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
-import { ListItem } from "./ListItem";
+import { fieldInputStyle, listItemStyles } from "./styles";
 
 const styles = tv({
   extend: fieldInputStyle,
@@ -113,11 +110,19 @@ export function SelectItem({
     (typeof props.children === "string" ? props.children : "");
 
   return (
-    <ListBoxItem {...props} textValue={textValue}>
-      {composeRenderProps(props.children, (children, renderProps) => (
-        <ListItem {...renderProps} endIcon={endIcon} startIcon={startIcon}>
-          {children}
-        </ListItem>
+    <ListBoxItem {...props} className={listItemStyles} textValue={textValue}>
+      {composeRenderProps(props.children, (children) => (
+        <>
+          {startIcon && <span aria-hidden="true">{startIcon}</span>}
+
+          <span className="min-w-0 flex-1 truncate">{children}</span>
+
+          {endIcon && (
+            <span aria-hidden="true" className="ml-auto">
+              {endIcon}
+            </span>
+          )}
+        </>
       ))}
     </ListBoxItem>
   );
