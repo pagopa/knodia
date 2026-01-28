@@ -17,6 +17,7 @@ import {
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
+// TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
 > = async (fastify, eserviceProcessClient) => {
