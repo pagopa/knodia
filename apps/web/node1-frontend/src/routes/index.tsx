@@ -9,7 +9,9 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const { data } = useQuery(eserviceQueries.getEServices());
+  const { data } = useQuery(
+    eserviceQueries.getEServices({ limit: 10, offset: 0 }),
+  );
 
   return (
     <div>

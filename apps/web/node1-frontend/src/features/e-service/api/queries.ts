@@ -1,14 +1,13 @@
+import { bffApi, type GetEservicesData } from "@knodia/bff-client";
 import { queryOptions } from "@tanstack/react-query";
 
-import { api } from "@/libs/axios";
+import { client } from "@/libs/axios";
 
 export const eserviceQueries = {
-  getEServices: () =>
+  getEServices: (query: GetEservicesData["query"]) =>
     queryOptions({
-      queryFn: async () =>
-        api
-          .get("https://jsonplaceholder.typicode.com/posts")
-          .then((res) => res.data),
-      queryKey: ["eservices"],
+      queryFn: () =>
+        bffApi.getEservices({ client, query }).then((res) => res.data),
+      queryKey: ["eservices", query],
     }),
 };

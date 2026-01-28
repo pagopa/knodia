@@ -1,26 +1,29 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { bffApi } from "@knodia/bff-client";
+import { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { match } from "ts-pattern";
 
 import { config } from "@/config/config";
 
-const api = axios.create({
+const client = bffApi.createClient({
   baseURL: config.bffUrl,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  // TODO: How do we handle auth tokens?
-  const token = undefined;
-  if (token) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+client.instance.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    // TODO: How do we handle auth tokens?
+    const token = undefined;
+    if (token) {
+      config.headers = config.headers ?? {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+);
 
-api.interceptors.response.use(
+client.instance.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     match(error.response?.status)
@@ -34,4 +37,4 @@ api.interceptors.response.use(
   },
 );
 
-export { api };
+export { client };
