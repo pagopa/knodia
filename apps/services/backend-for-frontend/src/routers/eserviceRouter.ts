@@ -16,7 +16,6 @@ import {
   API_EservicesQueryParams,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { makeApiProblem } from "../models/errors.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
@@ -63,19 +62,14 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
-      try {
-        const createdEservice = await eserviceProcessApi.createEservice({
-          body: req.body,
-          client: eserviceProcessClient,
-          headers: {
-            [CORRELATION_ID_HEADER]: correlationId,
-          },
-        });
-        res.status(201).send(API_Eservice.parse(createdEservice.data));
-      } catch (error) {
-        const errorRes = makeApiProblem(error);
-        return res.status(400).send(errorRes);
-      }
+      const createdEservice = await eserviceProcessApi.createEservice({
+        body: req.body,
+        client: eserviceProcessClient,
+        headers: {
+          [CORRELATION_ID_HEADER]: correlationId,
+        },
+      });
+      res.status(201).send(API_Eservice.parse(createdEservice.data));
     },
     method: "POST",
     schema: {
