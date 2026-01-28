@@ -137,7 +137,7 @@ export const buttonStyles = tv({
       kind: "outlined",
       hierarchy: "brand",
       class:
-        "border-primary-200 text-primary-700 hover:bg-brand-50 pressed:bg-brand-50",
+        "border-brand-200 text-brand-700 hover:bg-brand-50 pressed:bg-brand-50",
     },
     {
       kind: "outlined",
@@ -157,7 +157,7 @@ export const buttonStyles = tv({
       kind: "tonal",
       hierarchy: "brand",
       class:
-        "bg-brand-50 hover:bg-brand-100 pressed:bg-brand-100 text-primary-700",
+        "bg-brand-50 hover:bg-brand-100 pressed:bg-brand-100 text-brand-700",
     },
     {
       kind: "tonal",
@@ -176,7 +176,7 @@ export const buttonStyles = tv({
     {
       kind: "ghost",
       hierarchy: "brand",
-      class: "text-primary-700 hover:bg-brand-50 pressed:bg-brand-50",
+      class: "text-brand-700 hover:bg-brand-50 pressed:bg-brand-50",
     },
     {
       kind: "ghost",
@@ -193,7 +193,7 @@ export const buttonStyles = tv({
     {
       kind: "elevated",
       hierarchy: "brand",
-      class: "text-primary-700 hover:bg-brand-50 pressed:bg-brand-50",
+      class: "text-brand-700 hover:bg-brand-50 pressed:bg-brand-50",
     },
     {
       kind: "elevated",
