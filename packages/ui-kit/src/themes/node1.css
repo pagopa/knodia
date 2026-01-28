@@ -8,6 +8,7 @@
   /* Brand Colors */
   --color-brand-light: var(--color-blue-50);
   --color-brand-light-decorative: var(--color-blue-300);
+  --color-brand-light-low-contrast: var(--color-blue-500);
   --color-brand-light-mid-contrast: var(--color-blue-700);
   --color-brand-light-high-contrast: var(--color-blue-800);
   --color-brand-dark: var(--color-blue-800);
