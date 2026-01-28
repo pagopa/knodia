@@ -7,16 +7,16 @@ import {
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
-const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
+export const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;
 
-const EserviceAccessTokenType = z.enum(["Bearer", "DPoP"]);
+export const EserviceAccessTokenType = z.enum(["Bearer", "DPoP"]);
 export type EserviceAccessTokenType = z.infer<typeof EserviceAccessTokenType>;
 
-const EserviceVersionState = z.enum(["Active", "Suspended", "Archived"]);
+export const EserviceVersionState = z.enum(["Active", "Suspended", "Archived"]);
 export type EserviceVersionState = z.infer<typeof EserviceVersionState>;
 
-const EserviceInterface = z.strictObject({
+export const EserviceInterface = z.strictObject({
   checksum: z.string(),
   contentType: z.string(),
   createdAt: z.coerce.date(),
