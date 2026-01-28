@@ -7,7 +7,8 @@ import { tv, type VariantProps } from "tailwind-variants";
 
 import { focusRing } from "../../libs/react-aria";
 
-const interactiveIcon = tv({
+// eslint-disable-next-line react-refresh/only-export-components
+export const buttonVariants = tv({
   extend: focusRing,
   base: "body-md-em relative inline-flex items-center justify-center rounded-full transition p-2 [&>svg]:size-5",
   variants: {
@@ -26,9 +27,9 @@ const interactiveIcon = tv({
   },
 });
 
-export type InteractiveIconProps = ButtonProps & InteractiveIconVariants;
+export type InteractiveIconProps = ButtonProps & ButtonVariants;
 
-type InteractiveIconVariants = VariantProps<typeof interactiveIcon>;
+type ButtonVariants = VariantProps<typeof buttonVariants>;
 
 export function InteractiveIcon({
   children,
@@ -39,7 +40,7 @@ export function InteractiveIcon({
     <Button
       {...props}
       className={composeRenderProps(props.className, (className, renderProps) =>
-        interactiveIcon({
+        buttonVariants({
           ...renderProps,
           className,
           hierarchy,
