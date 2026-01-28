@@ -82,7 +82,7 @@ export function zodFastifySchemaValidationError(
     const path = validationError.instancePath || "";
     const message = validationError.message || "Invalid value";
     const fullPath = path ? `${context}${path}` : context;
-    return new Error(`${message} at "${fullPath}"`);
+    return new Error(`${message} at ${fullPath}`);
   });
 
   return createApiErrorFromErrorsList({
