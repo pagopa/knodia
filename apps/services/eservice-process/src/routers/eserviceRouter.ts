@@ -48,7 +48,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: (req, res) => {
-      const eservice = eserviceService.createEservice(req.body);
+      const eservice = eserviceService.createEservice(req.body, req.log);
       res.status(201).send(toAPI_Eservice(eservice));
     },
     method: "POST",

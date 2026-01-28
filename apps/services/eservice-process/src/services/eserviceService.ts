@@ -4,6 +4,7 @@ import type {
   EserviceCategory,
   EserviceMode,
 } from "@knodia/eservice-models";
+import type { FastifyBaseLogger } from "fastify";
 
 import {
   type EserviceId,
@@ -26,8 +27,13 @@ interface EserviceSeed {
 
 export function eserviceServiceBuilder() {
   return {
-    createEservice(seed: EserviceSeed): Eservice {
-      // TODO use logger from context and log the creation
+    createEservice(seed: EserviceSeed, logger: FastifyBaseLogger): Eservice {
+      const eserviceId = generateId<EserviceId>();
+      const producerId = generateId<OrganizationId>();
+
+      logger.info(
+        `Creating E-service ${eserviceId} for producer ${producerId}`,
+      );
 
       const now = new Date();
 
@@ -35,13 +41,13 @@ export function eserviceServiceBuilder() {
         categories: seed.categories ?? [],
         createdAt: now,
         description: seed.description,
-        id: generateId<EserviceId>(),
+        id: eserviceId,
         isConsumerOperatorIdentificationRequired:
           seed.isConsumerOperatorIdentificationRequired ?? false,
         isSignalHubEnabled: seed.isSignalHubEnabled ?? false,
         mode: seed.mode ?? "ProvideData",
         name: seed.name,
-        producerId: generateId<OrganizationId>(),
+        producerId,
         updatedAt: now,
         versions: [
           {
