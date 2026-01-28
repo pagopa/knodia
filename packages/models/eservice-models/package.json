@@ -17,6 +17,7 @@
     "@knodia/eslint-config": "workspace:*",
     "@bufbuild/protobuf": "catalog:",
     "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
     "eslint": "catalog:",
     "ts-pattern": "catalog:",
     "typescript": "catalog:"
