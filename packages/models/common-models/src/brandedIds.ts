@@ -12,11 +12,14 @@ export type EserviceInterfaceId = z.infer<typeof EserviceInterfaceId>;
 export const OrganizationId = z.uuid().brand<"OrganizationId">();
 export type OrganizationId = z.infer<typeof OrganizationId>;
 
-type IDS =
-  | EserviceId
-  | EserviceInterfaceId
-  | EserviceVersionId
-  | OrganizationId;
+const IDS = EserviceId.or(EserviceVersionId)
+  .or(EserviceInterfaceId)
+  .or(OrganizationId);
+export type IDS = z.infer<typeof IDS>;
+
+export function brandId<T extends IDS>(id: string): T {
+  return IDS.parse(id) as T;
+}
 
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
