@@ -2,7 +2,7 @@ import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/ka
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 
-import { KafkaConfig, KafkaConsumerConfig } from "./config/config.ts";
+import { KafkaConfig, KafkaConsumerConfig } from "../config/config.ts";
 
 export async function runAdminClient(config: KafkaConfig) {
   const kafka = await initKafka(config);
