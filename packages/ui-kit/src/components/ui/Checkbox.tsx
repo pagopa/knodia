@@ -1,4 +1,4 @@
-import { Check, Minus } from "lucide-react";
+import { CheckFatIcon, MinusIcon } from "@phosphor-icons/react";
 import {
   Checkbox as AriaCheckbox,
   composeRenderProps,
@@ -6,7 +6,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { focusRing } from "../../libs/react-aria";
+import { focusRing } from "./styles";
 
 const checkboxStyles = tv({
   base: "flex relative gap-2 items-start group label-md text-primary-light-high-contrast transition",
@@ -30,7 +30,7 @@ const boxStyles = tv({
   },
 });
 
-const iconStyles = "w-3 h-3 text-white";
+const iconStyles = "w-2.5 h-2.5 text-white";
 
 interface CheckboxProps extends RACCheckboxProps {
   description?: string;
@@ -55,9 +55,13 @@ export function Checkbox({ description, ...props }: CheckboxProps) {
               })}
             >
               {isIndeterminate ? (
-                <Minus aria-hidden className={iconStyles} />
+                <MinusIcon aria-hidden className={iconStyles} />
               ) : isSelected ? (
-                <Check aria-hidden className={iconStyles} />
+                <CheckFatIcon
+                  aria-hidden
+                  className={iconStyles}
+                  weight="fill"
+                />
               ) : null}
             </div>
             <div className="flex-1 flex flex-col">

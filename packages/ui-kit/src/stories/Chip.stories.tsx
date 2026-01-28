@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { PlaceholderIcon } from "@phosphor-icons/react";
-import { X } from "lucide-react";
+import { PlaceholderIcon, XIcon } from "@phosphor-icons/react";
 
 import { Chip, type ChipProps } from "../components/ui/Chip";
 import { renderStickerSheet } from "./utils";
@@ -38,7 +37,7 @@ export const StickerSheet: Story = {
     (kind) =>
       types.map((type) => (
         <Chip
-          icon={<X />}
+          icon={<XIcon />}
           key={`${kind}-${type}`}
           kind={kind}
           label="Label"

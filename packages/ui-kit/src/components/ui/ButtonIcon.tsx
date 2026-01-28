@@ -1,12 +1,13 @@
 import { composeRenderProps, Button as RACButton } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { type ButtonProps, buttonVariants } from "./Button";
+import { type ButtonProps } from "./Button";
+import { buttonStyles } from "./styles";
 
 export type ButtonIconProps = ButtonProps;
 
 const buttonIconVariants = tv({
-  extend: buttonVariants,
+  extend: buttonStyles,
   base: "[&>svg]:h-5 [&>svg]:w-5",
   variants: {
     size: {

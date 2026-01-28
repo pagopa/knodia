@@ -8,20 +8,17 @@ import {
 import { twMerge } from "tailwind-merge";
 import { tv, type VariantProps } from "tailwind-variants";
 
-import {
-  composeTailwindRenderProps,
-  fieldInputStyle,
-  focusRing,
-} from "../../libs/react-aria";
+import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
+import { fieldInputStyle, focusRing } from "./styles";
 
 const textArea = tv({
   base: "resize-none",
   variants: {
     size: {
-      sm: "py-[5px]",
-      md: "py-[7px]",
-      lg: "py-[9px]",
+      sm: "py-1.25",
+      md: "py-1.75",
+      lg: "py-2.25",
     },
   },
   defaultVariants: {

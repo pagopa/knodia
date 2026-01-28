@@ -15,7 +15,6 @@
     "@fontsource-variable/inter": "catalog:",
     "@phosphor-icons/react": "catalog:",
     "@tailwindcss/vite": "catalog:",
-    "lucide-react": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
