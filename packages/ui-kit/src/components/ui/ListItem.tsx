@@ -4,7 +4,7 @@ import { focusRing } from "../../libs/react-aria";
 
 const listItem = tv({
   extend: focusRing,
-  base: "group body-md relative flex w-full cursor-default items-center gap-3 rounded-md px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",
+  base: "group body-md relative flex w-full items-center gap-3 rounded-md px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",
   variants: {
     isDisabled: { true: "", false: "" },
     isSelected: { true: "", false: "" },
