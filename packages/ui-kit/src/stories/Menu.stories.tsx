@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { Ellipsis } from "lucide-react";
+import { DotsThreeIcon } from "@phosphor-icons/react";
 
-import {} from "../components/layout";
-import { Button } from "../components/ui";
+import { ButtonIcon } from "../components/ui";
 import { Menu } from "../components/ui/Menu";
 import { MenuItem, MenuTrigger } from "../components/ui/Menu";
 
@@ -19,9 +18,9 @@ type Story = StoryObj<typeof Menu>;
 export const Default: Story = {
   render: () => (
     <MenuTrigger>
-      <Button aria-label="Actions">
-        <Ellipsis size={18} />
-      </Button>
+      <ButtonIcon>
+        <DotsThreeIcon />
+      </ButtonIcon>
       <Menu>
         <MenuItem>Profile</MenuItem>
         <MenuItem>Switch organization</MenuItem>

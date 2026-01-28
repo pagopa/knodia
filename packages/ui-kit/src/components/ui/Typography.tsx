@@ -11,6 +11,7 @@ const typography = tv({
       bodyMdEm: "body-md-em",
       labelMd: "label-md",
       labelSm: "label-sm",
+      labelSmEm: "label-sm-em",
       labelLg: "label-lg",
     },
   },

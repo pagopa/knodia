@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { CheckFatIcon } from "@phosphor-icons/react";
 import { Children } from "react";
 import {
   Menu as AriaMenu,
@@ -40,7 +40,7 @@ export function MenuItem(props: MenuItemProps) {
           <>
             {selectionMode !== "none" && (
               <span className="flex items-center w-4">
-                {isSelected && <Check aria-hidden className="w-4 h-4" />}
+                {isSelected && <CheckFatIcon aria-hidden className="w-4 h-4" />}
               </span>
             )}
             <span>{children}</span>

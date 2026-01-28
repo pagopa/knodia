@@ -1,5 +1,4 @@
-import { ChevronDown } from "lucide-react";
-import * as React from "react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import { twMerge } from "tailwind-merge";
 
 import { Avatar, type AvatarProps, InteractiveIcon } from "../ui";
@@ -74,7 +73,7 @@ export function NavbarUserMenu({
 
       <MenuTrigger>
         <InteractiveIcon aria-label={menuAriaLabel} hierarchy="inverse">
-          <ChevronDown />
+          <CaretDownIcon />
         </InteractiveIcon>
 
         <Menu>{children}</Menu>
