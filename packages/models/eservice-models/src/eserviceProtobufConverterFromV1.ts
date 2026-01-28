@@ -16,7 +16,7 @@ import {
   type EserviceV1,
   EserviceVersionStateV1,
   EserviceVersionV1,
-} from "./generated/v1/eservice.js";
+} from "./generated/v1/eservice.ts";
 
 export const fromEserviceV1 = (input: EserviceV1): Eservice => ({
   ...input,
