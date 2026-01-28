@@ -45,7 +45,6 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       CLUSTER_ID: "KYKz4GOqSZurqXVpzOsgNA"
       KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTROLLER://0.0.0.0:29093"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
@@ -97,6 +96,19 @@ services:
         condition: service_healthy
       event-store:
         condition: service_started
+
+  kafbat-ui:
+    security_opt:
+      - no-new-privileges:true
+    container_name: kafka-ui
+    image: kafbat/kafka-ui:v1.4.2@sha256:8dd62c9b18a01b732824cae91c6fe5203fac8e931448a2a639bd20270b8fed2b
+    ports:
+      - 8084:8080
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
 
 volumes:
   event-store-data:
