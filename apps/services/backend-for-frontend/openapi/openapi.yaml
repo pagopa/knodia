@@ -107,6 +107,11 @@ components:
         - status
         - title
       additionalProperties: false
+    EserviceMode:
+      type: string
+      enum:
+        - ProvideData
+        - ReceiveData
     EserviceCategory:
       type: object
       properties:
@@ -118,6 +123,11 @@ components:
         - code
         - scheme
       additionalProperties: false
+    AccessTokenType:
+      type: string
+      enum:
+        - Bearer
+        - DPoP
     EserviceAttribute:
       type: object
       properties:
@@ -149,10 +159,7 @@ components:
         isSignalHubEnabled:
           type: boolean
         mode:
-          type: string
-          enum:
-            - ProvideData
-            - ReceiveData
+          $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
         producerId:
@@ -204,10 +211,8 @@ components:
         accessTokenType:
           description: Type of the access token
           default: Bearer
-          type: string
-          enum:
-            - Bearer
-            - DPoP
+          allOf:
+            - $ref: "#/components/schemas/AccessTokenType"
         categories:
           description: Categories of the E-service
           type: array
@@ -237,10 +242,8 @@ components:
           maximum: 9007199254740991
         mode:
           description: Mode of the E-service
-          type: string
-          enum:
-            - ProvideData
-            - ReceiveData
+          allOf:
+            - $ref: "#/components/schemas/EserviceMode"
         name:
           description: Name of the E-service
           allOf:
