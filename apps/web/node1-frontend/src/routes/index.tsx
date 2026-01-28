@@ -10,7 +10,5 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { data } = useQuery(eserviceQueries.getEServices());
 
-  console.log(data);
-
-  return <div>asdsjkdjkasjdkad</div>;
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }

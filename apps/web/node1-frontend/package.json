@@ -20,7 +20,6 @@
     "axios": "catalog:",
     "lucide-react": "catalog:",
     "react": "catalog:",
-    "react-aria-components": "catalog:",
     "react-dom": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
