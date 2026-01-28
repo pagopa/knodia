@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { PlaceholderIcon } from "@phosphor-icons/react";
+
 import { Button, type ButtonProps } from "../components/ui/Button";
-import { MockIcon, renderStickerSheet } from "./utils";
+import { renderStickerSheet } from "./utils";
 
 const sizes: NonNullable<ButtonProps["size"]>[] = ["sm", "md", "lg"];
 const states = ["default", "disabled"] as const;
@@ -39,9 +41,9 @@ export const StickerSheet: Story = {
             kind={kind}
             size={size}
           >
-            <MockIcon />
+            <PlaceholderIcon />
             Button
-            <MockIcon />
+            <PlaceholderIcon />
           </Button>
         )),
       ),

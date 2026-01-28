@@ -39,6 +39,9 @@ catalogs:
     '@pagopa/eslint-config':
       specifier: 5.1.1
       version: 5.1.1
+    '@phosphor-icons/react':
+      specifier: 2.1.10
+      version: 2.1.10
     '@stoplight/spectral-cli':
       specifier: 6.15.0
       version: 6.15.0
@@ -810,6 +813,9 @@ importers:
       '@fontsource-variable/inter':
         specifier: 'catalog:'
         version: 5.2.8
+      '@phosphor-icons/react':
+        specifier: 'catalog:'
+        version: 2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.1.18(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -1857,6 +1863,13 @@ packages:
     resolution: {integrity: sha512-AeLwIXjeJnFtqiwCBwcFFRnPhUlj4DJLiHZquFarHB2HAXl0ohOOQ/P8IXTJ/y1oyt/mW03f6tWuH9KoU04yjg==}
     peerDependencies:
       eslint: ^9.39.1
+
+  '@phosphor-icons/react@2.1.10':
+    resolution: {integrity: sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
@@ -6880,6 +6893,11 @@ snapshots:
       - prettier
       - supports-color
       - vitest
+
+  '@phosphor-icons/react@2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   '@pinojs/redact@0.4.0': {}
 

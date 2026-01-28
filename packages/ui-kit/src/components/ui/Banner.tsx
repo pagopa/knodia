@@ -1,11 +1,11 @@
 import type { HTMLAttributes, ReactNode } from "react";
 
 import {
-  AlertTriangleIcon,
-  CheckCircleIcon,
+  CheckSquareIcon,
   InfoIcon,
-  XCircleIcon,
-} from "lucide-react";
+  WarningDiamondIcon,
+} from "@phosphor-icons/react";
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { tv, type VariantProps } from "tailwind-variants";
 
 const banner = tv({
@@ -24,6 +24,32 @@ const banner = tv({
   },
 });
 
+interface BannerProps extends BannerVariants, HTMLAttributes<HTMLDivElement> {
+  icon?: ReactNode;
+}
+
+type BannerVariants = VariantProps<typeof banner>;
+
+export function Banner({
+  kind = "informative",
+  icon,
+  className,
+  children,
+  role,
+  ...props
+}: BannerProps) {
+  const resolvedRole = role ?? (kind === "error" ? "alert" : "status");
+
+  return (
+    <div {...props} className={banner({ kind, className })} role={resolvedRole}>
+      <span aria-hidden className={bannerIcon({ kind })}>
+        {icon ?? <DefaultBannerIcon kind={kind} />}
+      </span>
+      <div>{children}</div>
+    </div>
+  );
+}
+
 const bannerIcon = tv({
   base: "shrink-0 [&_svg]:size-5",
   variants: {
@@ -37,37 +63,17 @@ const bannerIcon = tv({
   },
 });
 
-interface BannerProps extends BannerVariants, HTMLAttributes<HTMLDivElement> {
-  icon?: ReactNode;
-}
-
-type BannerVariants = VariantProps<typeof banner>;
-
-const defaultIcons: Record<NonNullable<BannerVariants["kind"]>, ReactNode> = {
-  informative: <InfoIcon aria-hidden="true" />,
-  success: <CheckCircleIcon aria-hidden="true" />,
-  warning: <AlertTriangleIcon aria-hidden="true" />,
-  error: <XCircleIcon aria-hidden="true" />,
-  neutral: <InfoIcon aria-hidden="true" />,
-};
-
-export function Banner({
-  kind = "informative",
-  icon,
-  className,
-  children,
-  role,
-  ...props
-}: BannerProps) {
-  const resolvedRole = role ?? (kind === "error" ? "alert" : "status");
-  const resolvedIcon = icon ?? defaultIcons[kind];
-
-  return (
-    <div {...props} className={banner({ kind, className })} role={resolvedRole}>
-      <span aria-hidden="true" className={bannerIcon({ kind })}>
-        {resolvedIcon}
-      </span>
-      <p>{children}</p>
-    </div>
-  );
+function DefaultBannerIcon({ kind }: { kind: BannerVariants["kind"] }) {
+  switch (kind) {
+    case "error":
+      return <WarningDiamondIcon />;
+    case "success":
+      return <CheckSquareIcon />;
+    case "warning":
+      return <WarningIcon />;
+    case "informative":
+    case "neutral":
+    default:
+      return <InfoIcon />;
+  }
 }
