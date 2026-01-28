@@ -453,9 +453,6 @@ importers:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
         version: link:../openapi-client-generator
-      axios:
-        specifier: 'catalog:'
-        version: 1.13.2
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
