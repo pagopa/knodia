@@ -1,9 +1,4 @@
-import type { LocalizedText } from "@knodia/common-models/localization";
-import type {
-  Eservice,
-  EserviceCategory,
-  EserviceMode,
-} from "@knodia/eservice-models";
+import type { Eservice } from "@knodia/eservice-models";
 import type { FastifyBaseLogger } from "fastify";
 
 import {
@@ -14,20 +9,16 @@ import {
   type OrganizationId,
 } from "@knodia/common-models/ids";
 
-export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
+import type { API_EserviceSeed } from "../models/api.ts";
 
-interface EserviceSeed {
-  categories?: EserviceCategory[];
-  description: LocalizedText;
-  isConsumerOperatorIdentificationRequired?: boolean;
-  isSignalHubEnabled?: boolean;
-  mode?: EserviceMode;
-  name: LocalizedText;
-}
+export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder() {
   return {
-    createEservice(seed: EserviceSeed, logger: FastifyBaseLogger): Eservice {
+    createEservice(
+      seed: API_EserviceSeed,
+      logger: FastifyBaseLogger,
+    ): Eservice {
       const eserviceId = generateId<EserviceId>();
       const producerId = generateId<OrganizationId>();
 
