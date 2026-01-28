@@ -124,9 +124,37 @@ const expectedCorrelationIdSchema = {
   type: "string",
 };
 
+const expectedLocalizedNameSchema = {
+  additionalProperties: false,
+  properties: {
+    en: {
+      maxLength: 60,
+      minLength: 5,
+      type: "string",
+    },
+  },
+  required: ["en"],
+  type: "object",
+};
+
+const expectedLocalizedDescriptionSchema = {
+  additionalProperties: false,
+  properties: {
+    en: {
+      maxLength: 250,
+      minLength: 10,
+      type: "string",
+    },
+  },
+  required: ["en"],
+  type: "object",
+};
+
 export const expectedOpenapiComponents = {
   schemas: {
     CorrelationId: expectedCorrelationIdSchema,
+    LocalizedDescription: expectedLocalizedDescriptionSchema,
+    LocalizedName: expectedLocalizedNameSchema,
     Pagination: expectedPaginationSchema,
     Problem: expectedProblemSchema,
     ProblemError: expectedProblemErrorSchema,

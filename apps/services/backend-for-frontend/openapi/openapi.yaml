@@ -183,9 +183,10 @@ components:
             type: string
         accessTokenDuration:
           description: Duration of the access token in minutes
+          format: int32
           default: 60
           type: integer
-          exclusiveMinimum: true
+          minimum: 1
           maximum: 1440
         accessTokenType:
           description: Type of the access token
@@ -211,13 +212,15 @@ components:
           type: boolean
         maxDailyCallsPerConsumer:
           description: Maximum daily calls per consumer
+          format: int32
           type: integer
-          exclusiveMinimum: true
+          minimum: 1
           maximum: 9007199254740991
         maxDailyCallsPerKnode:
           description: Maximum daily calls per Knode
+          format: int32
           type: integer
-          exclusiveMinimum: true
+          minimum: 1
           maximum: 9007199254740991
         mode:
           description: Mode of the E-service

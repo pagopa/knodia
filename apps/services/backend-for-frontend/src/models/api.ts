@@ -56,11 +56,12 @@ export const API_EserviceSeed = z
     accessTokenDuration: z
       .number()
       .int()
-      .positive()
+      .min(1)
       .max(1440)
       .optional()
       .default(60)
-      .describe("Duration of the access token in minutes"),
+      .describe("Duration of the access token in minutes")
+      .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.optional()
       .default("Bearer")
       .describe("Type of the access token"),
@@ -82,13 +83,15 @@ export const API_EserviceSeed = z
     maxDailyCallsPerConsumer: z
       .number()
       .int()
-      .positive()
-      .describe("Maximum daily calls per consumer"),
+      .min(1)
+      .describe("Maximum daily calls per consumer")
+      .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
-      .positive()
-      .describe("Maximum daily calls per Knode"),
+      .min(1)
+      .describe("Maximum daily calls per Knode")
+      .meta({ format: "int32" }),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
     name: API_LocalizedName.describe("Name of the E-service"),
     requiredAttributes: z
