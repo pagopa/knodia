@@ -30,12 +30,15 @@ const API_EserviceAttribute = z
 const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
+    createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
     id: z.string(),
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
+    producerId: z.string(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
 type API_Eservice = z.infer<typeof API_Eservice>;

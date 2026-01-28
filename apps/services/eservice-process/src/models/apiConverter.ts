@@ -4,6 +4,7 @@ import type { API_Eservice } from "./api.ts";
 
 export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   categories: eservice.categories,
+  createdAt: eservice.createdAt.toISOString(),
   description: eservice.description,
   id: eservice.id,
   isConsumerOperatorIdentificationRequired:
@@ -11,4 +12,6 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   isSignalHubEnabled: eservice.isSignalHubEnabled,
   mode: eservice.mode,
   name: eservice.name,
+  producerId: eservice.producerId,
+  updatedAt: eservice.updatedAt.toISOString(),
 });
