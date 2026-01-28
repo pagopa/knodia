@@ -22,7 +22,7 @@ const API_EserviceCategory = z
   })
   .meta({ id: "EserviceCategory" });
 
-export const API_Eservice = z
+const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedText,
@@ -33,7 +33,7 @@ export const API_Eservice = z
     name: API_LocalizedText,
   })
   .meta({ id: "Eservice" });
-export type API_Eservice = z.infer<typeof API_Eservice>;
+type API_Eservice = z.infer<typeof API_Eservice>;
 
 export const API_Eservices = z
   .strictObject({
