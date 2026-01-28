@@ -73,7 +73,7 @@ export function NavbarUserMenu({
       </div>
 
       <MenuTrigger>
-        <InteractiveIcon aria-label={menuAriaLabel}>
+        <InteractiveIcon aria-label={menuAriaLabel} hierarchy="inverse">
           <ChevronDown />
         </InteractiveIcon>
 

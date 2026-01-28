@@ -16,6 +16,7 @@ const interactiveIconStyles = tv({
       danger: "text-error-700 hover:bg-error-700/10 pressed:bg-error-700/10",
       neutral:
         "pressed:bg-neutral-600/10 text-neutral-600 hover:bg-neutral-600/10",
+      inverse: "pressed:bg-white/10 text-white hover:bg-white/10",
     },
     isDisabled: {
       true: "cursor-not-allowed opacity-30",

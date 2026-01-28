@@ -23,15 +23,17 @@ export const Default: Story = {
 };
 
 export const StickerSheet: Story = {
-  render: renderStickerSheet([["neutral", "brand", "danger"]], (hierarchy) =>
-    states.map((state) => (
-      <InteractiveIcon
-        hierarchy={hierarchy}
-        isDisabled={state === "disabled"}
-        key={`${hierarchy}-${state}`}
-      >
-        <MockIcon />
-      </InteractiveIcon>
-    )),
+  render: renderStickerSheet(
+    [["neutral", "brand", "danger", "inverse"]],
+    (hierarchy) =>
+      states.map((state) => (
+        <InteractiveIcon
+          hierarchy={hierarchy}
+          isDisabled={state === "disabled"}
+          key={`${hierarchy}-${state}`}
+        >
+          <MockIcon />
+        </InteractiveIcon>
+      )),
   ),
 };

@@ -1,9 +1,13 @@
 import {
+  Navbar,
+  NavbarBrand,
+  NavbarUserMenu,
   Sidebar,
   SidebarHeader,
   SidebarNavItem,
   SidebarSection,
 } from "@knodia/ui-kit/layout";
+import { MenuItem } from "@knodia/ui-kit/ui";
 import { Link, type LinkProps, useLocation } from "@tanstack/react-router";
 import {
   Cog,
@@ -29,12 +33,29 @@ interface SidebarSection {
 export function AppLayout({ children }: { children?: React.ReactNode }) {
   return (
     <>
-      {/* <Navbar /> */}
+      <AppNavbar />
       <div className="flex h-[calc(100vh-72px)]">
         <AppSidebar />
         <main className="p-10 flex-1 overflow-auto">{children}</main>
       </div>
     </>
+  );
+}
+
+function AppNavbar() {
+  return (
+    <Navbar>
+      <NavbarBrand>Orion Knode</NavbarBrand>
+      <NavbarUserMenu
+        avatar={{ fallback: "JS" }}
+        name="John Smith"
+        role="Administrative"
+      >
+        <MenuItem>Edit Profile</MenuItem>
+        <MenuItem>Settings</MenuItem>
+        <MenuItem>Logout</MenuItem>
+      </NavbarUserMenu>
+    </Navbar>
   );
 }
 
