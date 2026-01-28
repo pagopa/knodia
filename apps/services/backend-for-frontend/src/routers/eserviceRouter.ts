@@ -10,7 +10,7 @@ import {
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import {
-  API_Eservice,
+  API_CreatedResource,
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
@@ -69,7 +69,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           [CORRELATION_ID_HEADER]: correlationId,
         },
       });
-      res.status(201).send(API_Eservice.parse(createdEservice.data));
+      res
+        .status(201)
+        .send(API_CreatedResource.parse({ id: createdEservice.data?.id }));
     },
     method: "POST",
     schema: {
@@ -77,7 +79,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       description: "Create a new E-service",
       operationId: "createEservice",
       response: {
-        201: API_Eservice.describe("E-service created successfully"),
+        201: API_CreatedResource.describe("E-service created successfully"),
         400: API_Problem.describe("Bad Request"),
       },
       tags: [apiTags.eservice],
