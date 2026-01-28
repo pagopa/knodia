@@ -2,7 +2,7 @@ import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/ka
 
 import { EserviceEventV1 } from "@knodia/eservice-models";
 import { runConsumer } from "@knodia/kafka-commons";
-import { decodeKafkaMessage } from "@knodia/kafka-commons/utils";
+import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -24,7 +24,7 @@ const db = drizzle(pool);
 const eserviceWriterService = eserviceWriterServiceBuilder(db);
 
 async function processMessage({ message }: EachMessagePayload): Promise<void> {
-  const event = decodeKafkaMessage(message, EserviceEventV1);
+  const event = decodeKafkaMessageEvent(message, EserviceEventV1);
 
   console.log("Processing event:", {
     event,
