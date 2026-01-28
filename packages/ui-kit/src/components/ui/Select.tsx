@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import {
   Select as AriaSelect,
   type SelectProps as AriaSelectProps,
@@ -80,7 +80,7 @@ export function Select<T extends Iterable<unknown>>({
             selectedText || defaultChildren
           }
         </SelectValue>
-        <ChevronDown
+        <CaretDownIcon
           aria-hidden
           className="w-5 h-5 text-primary-light-low-contrast"
         />

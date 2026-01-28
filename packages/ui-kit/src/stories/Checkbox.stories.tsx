@@ -25,3 +25,9 @@ export const Disabled: Story = {
     isDisabled: true,
   },
 };
+
+export const Indeterminate: Story = {
+  args: {
+    isIndeterminate: true,
+  },
+};
