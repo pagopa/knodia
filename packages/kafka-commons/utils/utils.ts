@@ -9,7 +9,7 @@ import { kafkaMessageEnvelope } from "@knodia/common-models/event";
  * @param {KafkaMessage} message - The Kafka message to decode.
  * @throws {Error} - If the message is invalid or missing required data.
  */
-export function decodeKafkaMessage<TEvent extends ZodType>(
+export function decodeKafkaMessageEvent<TEvent extends ZodType>(
   message: KafkaMessage,
   event: TEvent,
 ) {
