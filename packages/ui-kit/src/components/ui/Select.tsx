@@ -3,6 +3,10 @@ import {
   Select as AriaSelect,
   type SelectProps as AriaSelectProps,
   Button,
+  composeRenderProps,
+  ListBox,
+  ListBoxItem,
+  type ListBoxItemProps,
   Popover,
   SelectValue,
   type ValidationResult,
@@ -13,8 +17,8 @@ import {
   composeTailwindRenderProps,
   fieldInputStyle,
 } from "../../libs/react-aria";
-import { Dropdown, DropdownItem, type DropdownItemProps } from "./Dropdown";
 import { Description, FieldError, Label } from "./Field";
+import { ListItem } from "./ListItem";
 
 const styles = tv({
   extend: fieldInputStyle,
@@ -31,6 +35,10 @@ const styles = tv({
   },
 });
 
+export interface DropdownItemProps extends ListBoxItemProps {
+  endIcon?: React.ReactNode;
+  startIcon?: React.ReactNode;
+}
 export interface SelectProps<T extends Iterable<unknown>>
   extends Omit<AriaSelectProps<T>, "children">, SelectVariants {
   children: ((item: T) => React.ReactNode) | React.ReactNode;
@@ -39,6 +47,7 @@ export interface SelectProps<T extends Iterable<unknown>>
   items: Iterable<T>;
   label?: string;
 }
+
 type SelectVariants = VariantProps<typeof styles>;
 
 export function Select<T extends Iterable<unknown>>({
@@ -82,12 +91,34 @@ export function Select<T extends Iterable<unknown>>({
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
       <Popover className="min-w-(--trigger-width)">
-        <Dropdown items={items}>{children}</Dropdown>
+        <ListBox
+          className={
+            "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto"
+          }
+          items={items}
+        >
+          {children}
+        </ListBox>
       </Popover>
     </AriaSelect>
   );
 }
+export function SelectItem({
+  endIcon,
+  startIcon,
+  ...props
+}: DropdownItemProps) {
+  const textValue =
+    props.textValue ||
+    (typeof props.children === "string" ? props.children : "");
 
-export function SelectItem(props: DropdownItemProps) {
-  return <DropdownItem {...props} />;
+  return (
+    <ListBoxItem {...props} textValue={textValue}>
+      {composeRenderProps(props.children, (children, renderProps) => (
+        <ListItem {...renderProps} endIcon={endIcon} startIcon={startIcon}>
+          {children}
+        </ListItem>
+      ))}
+    </ListBoxItem>
+  );
 }

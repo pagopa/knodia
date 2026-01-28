@@ -1,3 +1,10 @@
+import {
+  Children,
+  cloneElement,
+  isValidElement,
+  type ReactElement,
+} from "react";
+import { twMerge } from "tailwind-merge";
 import { tv, type VariantProps } from "tailwind-variants";
 
 import { focusRing } from "../../libs/react-aria";
@@ -31,6 +38,7 @@ const listItem = tv({
 });
 
 export type ListItemProps = VariantProps<typeof listItem> & {
+  asChild?: boolean;
   children: React.ReactNode;
   className?: string;
   endIcon?: React.ReactNode;
@@ -38,22 +46,46 @@ export type ListItemProps = VariantProps<typeof listItem> & {
 };
 
 export function ListItem({
+  asChild = false,
   startIcon,
   endIcon,
   children,
-  ...props
+  className,
+  ...variants
 }: ListItemProps) {
-  return (
-    <span className={listItem(props)}>
-      {startIcon && <span aria-hidden>{startIcon}</span>}
+  const classes = listItem({ ...variants, className });
+
+  const content = (
+    <>
+      {startIcon && <span aria-hidden="true">{startIcon}</span>}
 
       <span className="min-w-0 flex-1 truncate">{children}</span>
 
       {endIcon && (
-        <span aria-hidden className="ml-auto">
+        <span aria-hidden="true" className="ml-auto">
           {endIcon}
         </span>
       )}
-    </span>
+    </>
   );
+
+  if (asChild) {
+    if (!isValidElement(children)) {
+      throw new Error(
+        "ListItem with asChild expects a single React element child.",
+      );
+    }
+
+    const child = Children.only(children) as ReactElement<{
+      children?: React.ReactNode;
+      className?: string;
+    }>;
+
+    return cloneElement(child, {
+      className: twMerge(classes, child.props.className),
+      children: content,
+    });
+  }
+
+  return <span className={classes}>{content}</span>;
 }
