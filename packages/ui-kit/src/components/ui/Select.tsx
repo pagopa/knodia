@@ -15,7 +15,7 @@ import { tv, type VariantProps } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
-import { fieldInputStyle, listItemStyles } from "./styles";
+import { dropdownStyles, fieldInputStyle, listItemStyles } from "./styles";
 
 const styles = tv({
   extend: fieldInputStyle,
@@ -88,12 +88,7 @@ export function Select<T extends Iterable<unknown>>({
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
       <Popover className="min-w-(--trigger-width)">
-        <ListBox
-          className={
-            "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto"
-          }
-          items={items}
-        >
+        <ListBox className={dropdownStyles} items={items}>
           {children}
         </ListBox>
       </Popover>

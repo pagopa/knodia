@@ -395,9 +395,15 @@ importers:
       axios:
         specifier: 'catalog:'
         version: 1.13.2
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.562.0(react@19.2.0)
       react:
         specifier: 'catalog:'
         version: 19.2.0
+      react-aria-components:
+        specifier: 'catalog:'
+        version: 1.14.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-dom:
         specifier: 'catalog:'
         version: 19.2.0(react@19.2.0)

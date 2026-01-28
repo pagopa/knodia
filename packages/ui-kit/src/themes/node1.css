@@ -13,6 +13,7 @@
   --color-brand-dark: var(--color-blue-800);
   --color-brand-dark-decorative: var(--color-blue-600);
   --color-brand-dark-mid-contrast: var(--color-blue-300);
+  --color-brand-dark-high-contrast: var(--color-white);
 
   /* Primary Colors */
   --color-primary-light: var(--color-white);
@@ -114,13 +115,14 @@
 
   /* Typography */
   --font-family-title: var(--font-sans);
+  --line-height-title: 1.25;
   --font-size-title-md: 18px;
   --letter-spacing-title-md: 0px;
-  --line-height-title-md-em: 1.25;
   --font-weight-title-em: 600;
 
   --font-family-label: var(--font-sans);
   --font-weight-label: 500;
+  --font-weight-label-em: 700;
   --letter-spacing-label: 0px;
   --line-height-label: 1.2;
   --letter-spacing-label: 0px;
@@ -138,6 +140,12 @@
   --line-height-body-sm: 1.6;
   --font-weight-body: 400;
   --font-weight-body-em: 600;
+
+  --font-family-headline: var(--font-sans);
+  --line-height-headline: 1.2;
+  --font-size-headline-sm: 24px;
+  --font-weight-headline-em: 600;
+  --letter-spacing-headline-sm: 0px;
 }
 
 @layer utilities {
@@ -146,12 +154,19 @@
     font-size: var(--font-size-title-md);
     font-weight: var(--font-weight-title-em);
     letter-spacing: var(--letter-spacing-title-md);
-    line-height: var(--line-height-title-md-em);
+    line-height: var(--line-height-title);
   }
   .label-sm {
     font-family: var(--font-family-label);
     font-size: var(--font-size-label-sm);
     font-weight: var(--font-weight-label);
+    letter-spacing: var(--letter-spacing-label);
+    line-height: var(--line-height-label);
+  }
+  .label-sm-em {
+    font-family: var(--font-family-label);
+    font-size: var(--font-size-label-sm);
+    font-weight: var(--font-weight-label-em);
     letter-spacing: var(--letter-spacing-label);
     line-height: var(--line-height-label);
   }
@@ -189,5 +204,13 @@
     font-weight: var(--font-weight-body);
     letter-spacing: var(--letter-spacing-body-sm);
     line-height: var(--line-height-body-sm);
+  }
+
+  .headline-sm-em {
+    font-family: var(--font-family-headline);
+    font-size: var(--font-size-headline-sm);
+    font-weight: var(--font-weight-headline-em);
+    letter-spacing: var(--letter-spacing-headline-sm);
+    line-height: var(--line-height-headline);
   }
 }

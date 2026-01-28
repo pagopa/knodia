@@ -54,6 +54,10 @@ export const fieldInputStyle = tv({
   ],
 });
 
+export const dropdownStyles = tv({
+  base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto",
+});
+
 export const listItemStyles = tv({
   extend: focusRing,
   base: "group body-md relative flex w-full items-center gap-3 rounded-md px-4 py-3 will-change-transform forced-color-adjust-none select-none [&_svg]:size-5 [&_svg]:shrink-0",
