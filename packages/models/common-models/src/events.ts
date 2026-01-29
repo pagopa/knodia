@@ -17,22 +17,23 @@ export type EventEnvelope<TEvent> = z.infer<
   ReturnType<typeof EventEnvelope<z.ZodType<TEvent>>>
 >;
 
-type EventEnvelopeOutput<TEventZodType extends z.ZodType> = z.output<
-  ReturnType<typeof EventEnvelope<TEventZodType>>
->;
-
-export const kafkaMessageEnvelope = <TEvent extends z.ZodType>(event: TEvent) =>
+const KafkaMessageValue = <TEventZodType extends z.ZodType>(
+  event: TEventZodType,
+) =>
   z
     .object({
-      value: z.preprocess(
-        (value) => JSON.parse(value?.toString() ?? ""),
-        z.object({
-          after: EventEnvelope(event) as z.ZodType<EventEnvelopeOutput<TEvent>>,
-        }),
-      ),
+      after: z.unknown(),
     })
-    .transform((v) => v.value.after);
+    .transform((v) => EventEnvelope(event).parse(v.after));
+
+export const KafkaMessageEnvelope = <TEvent extends z.ZodType>(event: TEvent) =>
+  z
+    .object({
+      value: z.unknown(),
+    })
+    .transform((v) => JSON.parse(String(v.value ?? "")))
+    .pipe(KafkaMessageValue(event));
 
 export type KafkaMessageEnvelope<TEvent> = z.infer<
-  ReturnType<typeof kafkaMessageEnvelope<z.ZodType<TEvent>>>
+  ReturnType<typeof KafkaMessageEnvelope<z.ZodType<TEvent>>>
 >;

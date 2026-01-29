@@ -1,6 +1,6 @@
 import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 
-import { kafkaMessageEnvelope } from "@knodia/common-models/event";
+import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { z } from "zod";
 
 /**
@@ -14,7 +14,7 @@ export function decodeKafkaMessageEvent<TEvent extends z.ZodType>(
   event: TEvent,
 ) {
   try {
-    return kafkaMessageEnvelope(event).decode(message);
+    return KafkaMessageEnvelope(event).decode(message);
   } catch (error) {
     throw new Error("Invalid message: " + JSON.stringify(error));
   }
