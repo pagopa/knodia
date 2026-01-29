@@ -11,7 +11,7 @@ export interface NewEventStoreEvent<
   TStreamId extends EventStoreStreamIds,
 > {
   correlationId: string;
-  currentMetadataVersion: bigint | null;
+  currentMetadataVersion: bigint | undefined;
   event: TEvent;
   streamId: TStreamId;
 }
@@ -24,6 +24,26 @@ type EventStoreStreamIds = EserviceId; // | AgreementId | ...;
 
 type EventStoreTables =
   typeof eventStoreEserviceEvents; /* | typeof eventStoreAgreementEvents | ... */
+
+export const computeNextMetadataVersion = <
+  TStreamId extends EventStoreStreamIds,
+>({
+  currentVersion,
+  latestVersion,
+  streamId,
+}: {
+  currentVersion: bigint | undefined;
+  latestVersion: bigint | undefined;
+  streamId: TStreamId;
+}): bigint => {
+  if (latestVersion !== currentVersion) {
+    throw new Error(
+      `Current metadata version ${currentVersion} is not the latest for stream ${streamId} (latest is ${latestVersion})`,
+    );
+  }
+
+  return currentVersion !== undefined ? currentVersion + BigInt(1) : BigInt(0);
+};
 
 export function eventStoreWriterBuilder<
   TEvent extends EventStoreEvents,
@@ -43,17 +63,11 @@ export function eventStoreWriterBuilder<
           .orderBy(desc(eventsTable.version))
           .limit(1);
 
-        const latestVersion = latestEvent?.version ?? null;
-        const currentVersion = event.currentMetadataVersion ?? null;
-
-        if (latestVersion !== currentVersion) {
-          throw new Error(
-            `Current metadata version ${currentVersion} is not the latest for stream ${String(event.streamId)} (latest is ${latestVersion})`,
-          );
-        }
-
-        const newVersion =
-          currentVersion !== null ? currentVersion + BigInt(1) : BigInt(0);
+        const newVersion = computeNextMetadataVersion({
+          currentVersion: event.currentMetadataVersion,
+          latestVersion: latestEvent?.version,
+          streamId: event.streamId,
+        });
 
         const { data, type } = EventStoreEvents.encode(event.event);
         await tx.insert(eventsTable).values({

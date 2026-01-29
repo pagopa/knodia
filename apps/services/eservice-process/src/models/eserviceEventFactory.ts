@@ -10,7 +10,7 @@ export const createEserviceVersionActivatedV1Event = (
   correlationId: string,
 ): NewEventStoreEserviceEvent => ({
   correlationId,
-  currentMetadataVersion: null,
+  currentMetadataVersion: undefined,
   event: {
     data: {
       eservice: toEserviceV1(eservice),

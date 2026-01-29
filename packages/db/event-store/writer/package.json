@@ -3,6 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
+    "test": "vitest",
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
@@ -18,7 +19,8 @@
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "exports": {
     "./eservice": "./src/eserviceEventWriter.ts"
