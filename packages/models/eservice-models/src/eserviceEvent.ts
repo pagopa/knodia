@@ -5,7 +5,7 @@ import { z } from "zod";
 import { EserviceVersionActivatedV1 } from "./generated/v1/eserviceEvents.ts";
 
 export const EserviceEventV1 = z.discriminatedUnion("type", [
-  z.strictObject({
+  z.object({
     data: protobufBinaryCodec(EserviceVersionActivatedV1),
     type: z.literal("EserviceVersionActivatedV1"),
   }),

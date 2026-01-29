@@ -1,38 +1,69 @@
 import z from "zod";
 
-export const EventEnvelope = <TEventZodType extends z.ZodType>(
+export type EventSchema<
+  TEvent extends EventWithDataAndType = EventWithDataAndType,
+> = z.ZodType<TEvent>;
+
+interface EventWithDataAndType {
+  data: unknown;
+  type: string;
+}
+
+export const EventEnvelope = <TEventZodType extends EventSchema>(
   event: TEventZodType,
 ) =>
-  z.intersection(
-    z.object({
-      correlation_id: z.string().nullish(),
-      log_date: z.coerce.date(),
-      sequence_num: z.number(),
-      stream_id: z.uuid(),
-      version: z.number(),
-    }),
-    event,
-  );
-export type EventEnvelope<TEvent> = z.infer<
-  ReturnType<typeof EventEnvelope<z.ZodType<TEvent>>>
->;
+  z.preprocess(
+    (payload) => {
+      if (!payload || typeof payload !== "object") {
+        throw new Error("Expected event .value.after to be an object");
+      }
 
-type EventEnvelopeOutput<TEventZodType extends z.ZodType> = z.output<
+      const { data, ...rest } = payload as { data: unknown };
+
+      if (typeof data !== "string") {
+        throw new Error("Expected event .value.after.data to be a hex string");
+      }
+
+      return {
+        ...rest,
+        data: Uint8Array.from(Buffer.from(data, "hex")),
+      };
+    },
+    z
+      .object({
+        correlation_id: z.string(),
+        log_date: z.coerce.date(),
+        sequence_num: z.number(),
+        stream_id: z.uuid(),
+        version: z.number(),
+      })
+      .and(event),
+  );
+
+export type EventEnvelope<TEventZodType extends EventSchema> = z.infer<
   ReturnType<typeof EventEnvelope<TEventZodType>>
 >;
 
-export const kafkaMessageEnvelope = <TEvent extends z.ZodType>(event: TEvent) =>
+const KafkaMessageValue = <TEventZodType extends EventSchema>(
+  event: TEventZodType,
+) =>
   z
     .object({
-      value: z.preprocess(
-        (value) => JSON.parse(value?.toString() ?? ""),
-        z.object({
-          after: EventEnvelope(event) as z.ZodType<EventEnvelopeOutput<TEvent>>,
-        }),
-      ),
+      after: z.nonoptional(z.unknown()),
     })
-    .transform((v) => v.value.after);
+    .transform(({ after }) => after)
+    .pipe(EventEnvelope(event));
 
-export type KafkaMessageEnvelope<TEvent> = z.infer<
-  ReturnType<typeof kafkaMessageEnvelope<z.ZodType<TEvent>>>
+export const KafkaMessageEnvelope = <TEventZodType extends EventSchema>(
+  event: TEventZodType,
+) =>
+  z
+    .object({
+      value: z.nonoptional(z.unknown()),
+    })
+    .transform((v) => JSON.parse(String(v.value)))
+    .pipe(KafkaMessageValue(event));
+
+export type KafkaMessageEnvelope<TEventZodType extends EventSchema> = z.infer<
+  ReturnType<typeof KafkaMessageEnvelope<TEventZodType>>
 >;
