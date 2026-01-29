@@ -17,7 +17,6 @@
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
-    "pino-pretty": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
@@ -32,6 +31,7 @@
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "pino-pretty": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   }
