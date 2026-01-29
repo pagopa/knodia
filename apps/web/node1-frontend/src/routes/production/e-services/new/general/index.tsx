@@ -1,8 +1,9 @@
-import { Button, TextArea, TextField } from "@knodia/ui-kit/ui";
+import { TextArea, TextField, Typography } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { withForm } from "@/contexts/form";
 import { useStepsContext } from "@/contexts/steps/useStepsContext";
+import { Footer } from "@/features/e-service/components/createFormSteps/Footer";
 import { useEServiceForm } from "@/features/e-service/contexts/EServiceFormContext";
 import { ESERVICE_FORM_DEFAULTS } from "@/features/e-service/types/eserviceCreateForm";
 
@@ -15,9 +16,22 @@ const GeneralStepForm = withForm({
   render: function GeneralStep({ form }) {
     const { nextStep } = useStepsContext();
 
+    const onCancel = () => {
+      form.reset();
+      window.history.back();
+    };
+
     return (
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">General</h2>
+      <div className="space-y-6">
+        <div>
+          <Typography className="headline-sm-em">
+            General Information
+          </Typography>
+          <Typography variant="bodySm">
+            This information will be used to find your E-Service. Be precise and
+            clear.
+          </Typography>
+        </div>
 
         <form.Field name="name">
           {(field) => (
@@ -43,7 +57,7 @@ const GeneralStepForm = withForm({
           )}
         </form.Field>
 
-        <Button onPress={nextStep}>Next</Button>
+        <Footer cancelLabel="Back" onCancel={onCancel} onConfirm={nextStep} />
       </div>
     );
   },

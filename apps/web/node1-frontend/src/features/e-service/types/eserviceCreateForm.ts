@@ -1,20 +1,14 @@
-import type { EserviceMode } from "@knodia/eservice-models";
-
 import type { StepConfig } from "@/contexts/steps/useStepsContext";
 
 export interface EServiceFormData {
+  accessTokenDuration: string;
   description: string;
-  mode: EserviceMode;
   name: string;
 }
 
-export function isEserviceMode(value: string): value is EserviceMode {
-  return value === "ProvideData" || value === "ReceiveData";
-}
-
 export const ESERVICE_FORM_DEFAULTS: EServiceFormData = {
+  accessTokenDuration: "3600",
   description: "",
-  mode: "ProvideData",
   name: "",
 };
 

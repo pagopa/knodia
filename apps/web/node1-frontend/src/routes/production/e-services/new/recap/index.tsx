@@ -1,14 +1,30 @@
-import { Button } from "@knodia/ui-kit/ui";
+import { Typography } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { withForm } from "@/contexts/form";
 import { useStepsContext } from "@/contexts/steps/useStepsContext";
+import { Footer } from "@/features/e-service/components/createFormSteps/Footer";
 import { useEServiceForm } from "@/features/e-service/contexts/EServiceFormContext";
 import { ESERVICE_FORM_DEFAULTS } from "@/features/e-service/types/eserviceCreateForm";
 
 export const Route = createFileRoute("/production/e-services/new/recap/")({
   component: RecapStepRoute,
 });
+
+function RecapField({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
+  return (
+    <div className="flex justify-between py-2">
+      <span className="text-secondary-light-mid-contrast">{label}</span>
+      <span className="font-medium">{value}</span>
+    </div>
+  );
+}
 
 const RecapStepForm = withForm({
   defaultValues: ESERVICE_FORM_DEFAULTS,
@@ -17,28 +33,28 @@ const RecapStepForm = withForm({
     const values = form.state.values;
 
     return (
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Recap</h2>
-
-        <div className="space-y-2 rounded border p-4">
-          <div>
-            <span className="font-medium">Name:</span> {values.name}
-          </div>
-          <div>
-            <span className="font-medium">Description:</span>{" "}
-            {values.description}
-          </div>
-          <div>
-            <span className="font-medium">Mode:</span> {values.mode}
-          </div>
+      <div className="space-y-6">
+        <div>
+          <Typography className="headline-sm-em">Recap </Typography>
+          <Typography variant="bodySm">
+            Check that everything is correct before the publication.
+          </Typography>
         </div>
 
-        <div className="flex gap-2">
-          <Button hierarchy="neutral" kind="outlined" onPress={prevStep}>
-            Back
-          </Button>
-          <Button onPress={() => form.handleSubmit()}>Create E-Service</Button>
+        <div className="rounded-lg border border-secondary-light-low-contrast p-4">
+          <RecapField label="Name" value={values.name || "-"} />
+          <RecapField label="Description" value={values.description || "-"} />
+          <RecapField
+            label="Access Token Duration"
+            value={`${values.accessTokenDuration} seconds`}
+          />
         </div>
+
+        <Footer
+          confirmLabel="Publish"
+          onCancel={prevStep}
+          onConfirm={() => form.handleSubmit()}
+        />
       </div>
     );
   },

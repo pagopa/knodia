@@ -1,14 +1,11 @@
-import { Button, Radio, RadioGroup } from "@knodia/ui-kit/ui";
+import { TextField, Typography } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
-import { match, P } from "ts-pattern";
 
 import { withForm } from "@/contexts/form";
 import { useStepsContext } from "@/contexts/steps/useStepsContext";
+import { Footer } from "@/features/e-service/components/createFormSteps/Footer";
 import { useEServiceForm } from "@/features/e-service/contexts/EServiceFormContext";
-import {
-  ESERVICE_FORM_DEFAULTS,
-  isEserviceMode,
-} from "@/features/e-service/types/eserviceCreateForm";
+import { ESERVICE_FORM_DEFAULTS } from "@/features/e-service/types/eserviceCreateForm";
 
 export const Route = createFileRoute("/production/e-services/new/technical/")({
   component: TechnicalStepRoute,
@@ -20,32 +17,27 @@ const TechnicalStepForm = withForm({
     const { nextStep, prevStep } = useStepsContext();
 
     return (
-      <div className="space-y-4">
-        <h2 className="text-xl font-semibold">Technical</h2>
+      <div className="space-y-6">
+        <div>
+          <Typography className="headline-sm-em">Technical details</Typography>
+          <Typography variant="bodySm">
+            Define the technical specifications of your E-Service.
+          </Typography>
+        </div>
 
-        <form.Field name="mode">
+        <form.Field name="accessTokenDuration">
           {(field) => (
-            <RadioGroup
-              label="Mode"
-              onChange={(value) =>
-                match(value)
-                  .with(P.when(isEserviceMode), (v) => field.handleChange(v))
-                  .otherwise(() => undefined)
-              }
+            <TextField
+              label="Access Token Duration (seconds)"
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={(value) => field.handleChange(value)}
               value={field.state.value}
-            >
-              <Radio value="ProvideData">Provide Data</Radio>
-              <Radio value="ReceiveData">Receive Data</Radio>
-            </RadioGroup>
+            />
           )}
         </form.Field>
 
-        <div className="flex gap-2">
-          <Button hierarchy="neutral" kind="outlined" onPress={prevStep}>
-            Back
-          </Button>
-          <Button onPress={nextStep}>Next</Button>
-        </div>
+        <Footer onCancel={prevStep} onConfirm={nextStep} />
       </div>
     );
   },
