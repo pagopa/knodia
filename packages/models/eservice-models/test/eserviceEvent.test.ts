@@ -1,4 +1,5 @@
 import { generateId } from "@knodia/common-models/ids";
+import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
 
 import type { Eservice } from "../src/eservice.ts";
@@ -6,8 +7,9 @@ import type { Eservice } from "../src/eservice.ts";
 import { KafkaMessageEnvelope } from "../../common-models/src/events.ts";
 import { EserviceEventV1 } from "../src/eserviceEvent.ts";
 import { toEserviceV1 } from "../src/eserviceProtobufConverterToV1.ts";
+import { EserviceVersionActivatedV1 } from "../src/generated/v1/eserviceEvents.js";
 
-describe("EserviceEventV1.encode/decode", () => {
+describe("EserviceEventV1 codec", () => {
   const eservice: Eservice = {
     categories: [{ code: "CODE", scheme: "SCHEME" }],
     createdAt: new Date(1),
@@ -53,7 +55,7 @@ describe("EserviceEventV1.encode/decode", () => {
     ],
   };
 
-  it("encodes and decodes an EserviceVersionActivatedV1 payload", () => {
+  it("encodes and decodes an EserviceVersionActivatedV1 payload (EserviceEventV1 full codec)", () => {
     const event: EserviceEventV1 = {
       data: {
         eservice: toEserviceV1(eservice),
@@ -68,6 +70,17 @@ describe("EserviceEventV1.encode/decode", () => {
 
     const decoded = EserviceEventV1.decode(encoded);
     expect(decoded).toMatchObject(event);
+  });
+
+  it("encodes and decodes an EserviceVersionActivatedV1 payload (protobufBinaryCodec-only)", () => {
+    const codec = protobufBinaryCodec(EserviceVersionActivatedV1);
+    const value = {
+      eservice: toEserviceV1(eservice),
+      eserviceVersionId: generateId(),
+    };
+    const bytes = codec.encode(value);
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(codec.decode(bytes)).toEqual(value);
   });
 
   it("decodes a KafkaKafkaMessageEnvelope with EserviceEventV1 data", () => {
