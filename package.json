@@ -11,6 +11,7 @@
     "lint-openapi": "turbo run lint-openapi",
     "dev:storybook": "turbo run dev:storybook",
     "build:storybook": "turbo run build:storybook",
+    "dev:fe": "turbo run dev --filter @knodia/node1-frontend",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "knip": "turbo run generate-artifacts && knip",

@@ -8,43 +8,44 @@ packages:
   - packages/clients/*
 
 allowBuilds:
-  '@bufbuild/buf': true
-  '@confluentinc/kafka-javascript': true
+  "@bufbuild/buf": true
+  "@confluentinc/kafka-javascript": true
   esbuild: true
 
 catalog:
-  '@aws-sdk/client-s3': 3.982.0
-  '@bufbuild/buf': 1.61.0
-  '@bufbuild/protobuf': 2.10.2
-  '@confluentinc/kafka-javascript': 1.7.0
-  '@dotenvx/dotenvx': 1.51.4
-  '@fastify/error': 4.2.0
-  '@fastify/request-context': 6.2.1
-  '@fastify/swagger': 9.6.1
-  '@fastify/swagger-ui': 5.2.4
-  '@fontsource-variable/inter': 5.2.8
-  '@hey-api/openapi-ts': 0.89.2
-  '@pagopa/eslint-config': 5.1.1
-  '@phosphor-icons/react': 2.1.10
-  '@stoplight/spectral-cli': 6.15.0
-  '@storybook/react-vite': 10.1.11
-  '@tailwindcss/vite': 4.1.18
-  '@tanstack/devtools-vite': 0.4.0
-  '@tanstack/react-devtools': 0.9.0
-  '@tanstack/react-query': 5.90.16
-  '@tanstack/react-query-devtools': 5.91.2
-  '@tanstack/react-router': 1.144.0
-  '@tanstack/react-router-devtools': 1.144.0
-  '@tanstack/router-plugin': 1.145.2
-  '@tsconfig/node-ts': 23.6.2
-  '@tsconfig/node24': 24.0.3
-  '@tsconfig/strictest': 2.0.8
-  '@tsconfig/vite-react': 7.0.2
-  '@types/node': 25.0.0
-  '@types/pg': 8.16.0
-  '@types/react': 19.2.5
-  '@types/react-dom': 19.2.3
-  '@vitejs/plugin-react': 5.1.1
+  "@aws-sdk/client-s3": 3.982.0
+  "@bufbuild/buf": 1.61.0
+  "@bufbuild/protobuf": 2.10.2
+  "@confluentinc/kafka-javascript": 1.7.0
+  "@dotenvx/dotenvx": 1.51.4
+  "@fastify/error": 4.2.0
+  "@fastify/request-context": 6.2.1
+  "@fastify/swagger": 9.6.1
+  "@fastify/swagger-ui": 5.2.4
+  "@fontsource-variable/inter": 5.2.8
+  "@hey-api/openapi-ts": 0.89.2
+  "@pagopa/eslint-config": 5.1.1
+  "@phosphor-icons/react": 2.1.10
+  "@stoplight/spectral-cli": 6.15.0
+  "@storybook/react-vite": 10.1.11
+  "@tailwindcss/vite": 4.1.18
+  "@tanstack/devtools-vite": 0.4.0
+  "@tanstack/react-devtools": 0.9.0
+  "@tanstack/react-query": 5.90.16
+  "@tanstack/react-query-devtools": 5.91.2
+  "@tanstack/react-router": 1.144.0
+  "@tanstack/react-router-devtools": 1.144.0
+  "@tanstack/router-plugin": 1.145.2
+  "@tsconfig/node-ts": 23.6.2
+  "@tsconfig/node24": 24.0.3
+  "@tsconfig/strictest": 2.0.8
+  "@tsconfig/vite-react": 7.0.2
+  "@types/node": 25.0.0
+  "@types/pg": 8.16.0
+  "@types/react": 19.2.5
+  "@types/react-dom": 19.2.3
+  "@vitejs/plugin-react": 5.1.1
+  "@tanstack/react-form": 1.28.0
   axios: 1.13.2
   babel-plugin-react-compiler: 1.0.0
   concurrently: 9.2.1
