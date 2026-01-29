@@ -20,6 +20,17 @@ import {
   EserviceVersionV1,
 } from "./generated/v1/eservice.ts";
 
+const throwIfMissing = <T, R = T>(
+  value: T | undefined,
+  message: string,
+  converter?: (value: T) => R,
+): R => {
+  if (value === undefined) {
+    throw new Error(message);
+  }
+  return converter ? converter(value) : (value as unknown as R);
+};
+
 export const fromEserviceV1 = (input: EserviceV1): Eservice => ({
   ...input,
   createdAt: new Date(input.createdAt),
@@ -35,18 +46,7 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => ({
   versions: input.versions.map(fromEserviceVersionV1),
 });
 
-export const throwIfMissing = <T, R = T>(
-  value: T | undefined,
-  message: string,
-  converter?: (value: T) => R,
-): R => {
-  if (value === undefined) {
-    throw new Error(message);
-  }
-  return converter ? converter(value) : (value as unknown as R);
-};
-
-export const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
+const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
   match(input)
     .with(EserviceModeV1.PROVIDE_DATA, () => EserviceMode.enum.ProvideData)
     .with(EserviceModeV1.RECEIVE_DATA, () => EserviceMode.enum.ReceiveData)
@@ -55,9 +55,7 @@ export const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
     })
     .exhaustive();
 
-export const fromEserviceVersionV1 = (
-  input: EserviceVersionV1,
-): EserviceVersion => ({
+const fromEserviceVersionV1 = (input: EserviceVersionV1): EserviceVersion => ({
   ...input,
   accessTokenType: fromEserviceVersionAccessTokenTypeV1(input.accessTokenType),
   createdAt: new Date(input.createdAt),
@@ -74,11 +72,11 @@ export const fromEserviceVersionV1 = (
   updatedAt: new Date(input.updatedAt),
 });
 
-export const fromEserviceVersionRequiredAttributeGroupV1 = (
+const fromEserviceVersionRequiredAttributeGroupV1 = (
   input: EserviceVersionRequiredAttributeGroupV1,
 ): RequiredAttributeGroup => input.attributes;
 
-export const fromEserviceVersionAccessTokenTypeV1 = (
+const fromEserviceVersionAccessTokenTypeV1 = (
   input: EserviceAccessTokenTypeV1,
 ): EserviceAccessTokenType =>
   match(input)
@@ -95,7 +93,7 @@ export const fromEserviceVersionAccessTokenTypeV1 = (
     })
     .exhaustive();
 
-export const fromEserviceVersionStateV1 = (
+const fromEserviceVersionStateV1 = (
   input: EserviceVersionStateV1,
 ): EserviceVersionState =>
   match(input)
@@ -113,7 +111,7 @@ export const fromEserviceVersionStateV1 = (
     })
     .exhaustive();
 
-export const fromEserviceVersionInterfaceV1 = (
+const fromEserviceVersionInterfaceV1 = (
   input: EserviceInterfaceV1,
 ): EserviceInterface => ({
   ...input,
