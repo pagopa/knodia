@@ -72,7 +72,7 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
-    image: debezium/connect:2.7.3.Final@sha256:997b67feff614549acd20d54bfed398fc73b339881c649d42821c1e55ec9972b
+    image: quay.io/debezium/connect:3.4.1.Final@sha256:c6180baabe6b77865518cf3bd911022c8b45d5935a12e133ae8b98e0c07c328f
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
