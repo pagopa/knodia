@@ -9,18 +9,59 @@ import { startTestPostgresContainer } from "./testcontainers/postgres.ts";
 
 const READMODEL_DB_PASSWORD = "readmodel_testpassword";
 const READMODEL_DB_USER = "readmodel_testuser";
+const READMODEL_DB_TEMPLATE_NAME = "readmodel_template";
 
+/**
+ * Truncates readmodel data to keep tests isolated across runs.
+ * Should be called after each test.
+ */
 export async function cleanupReadmodelTestDatabase(db: NodePgDatabase) {
   await db.execute('TRUNCATE TABLE "eservice"."eservice" CASCADE');
 }
 
+/**
+ * !!! Intended to be called once in global test setup !!!
+ *
+ *  Starts the shared Postgres test container and prepares a template database.
+ *  It creates the readmodel template, applies migrations once, and marks it as a Postgres template.
+ */
 export async function setupReadmodelTestContainer() {
-  return await startTestPostgresContainer({
+  const startedContainer = await startTestPostgresContainer({
     dbPassword: READMODEL_DB_PASSWORD,
     dbUser: READMODEL_DB_USER,
   });
+
+  const adminDb = drizzle(startedContainer.connectionString + `/postgres`);
+
+  try {
+    await adminDb.execute(`CREATE DATABASE "${READMODEL_DB_TEMPLATE_NAME}"`);
+
+    const templateDb = drizzle(
+      startedContainer.connectionString + `/${READMODEL_DB_TEMPLATE_NAME}`,
+    );
+
+    try {
+      await applyReadmodelMigrations(templateDb);
+    } finally {
+      await templateDb.$client.end();
+    }
+
+    await adminDb.execute(
+      `ALTER DATABASE "${READMODEL_DB_TEMPLATE_NAME}" IS_TEMPLATE true`,
+    );
+  } finally {
+    await adminDb.$client.end();
+  }
+
+  return startedContainer;
 }
 
+/**
+ * Creates a dedicated database for a single test file by cloning the template.
+ * It generates a unique DB name, creates it using TEMPLATE, and returns a Drizzle connection.
+ *
+ * Intended to be called in beforeAll of each test file.
+ */
 export async function setupReadmodelTestDatabase(connectionString: string) {
   const randomId = crypto.randomUUID();
   const dbName = `test_readmodel_db_worker_${randomId}`;
@@ -28,18 +69,14 @@ export async function setupReadmodelTestDatabase(connectionString: string) {
   const adminDb = drizzle(connectionString + `/postgres`);
 
   try {
-    await adminDb.execute(`CREATE DATABASE "${dbName}"`);
+    await adminDb.execute(
+      `CREATE DATABASE "${dbName}" TEMPLATE "${READMODEL_DB_TEMPLATE_NAME}"`,
+    );
   } finally {
     await adminDb.$client.end();
   }
 
-  const dbConnectionString = connectionString + `/${dbName}`;
-
-  const db = drizzle(dbConnectionString);
-
-  await applyReadmodelMigrations(db);
-
-  return db;
+  return drizzle(connectionString + `/${dbName}`);
 }
 
 async function applyReadmodelMigrations(db: NodePgDatabase) {

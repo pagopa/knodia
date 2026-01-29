@@ -8,8 +8,8 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
-    "test": "vitest run",
-    "test:watch": "vitest --watch"
+    "test": "pnpm -w test --project @knodia/eservice-process",
+    "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
