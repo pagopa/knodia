@@ -11,32 +11,7 @@ const READMODEL_DB_PASSWORD = "readmodel_testpassword";
 const READMODEL_DB_USER = "readmodel_testuser";
 
 export async function cleanupReadmodelTestDatabase(db: NodePgDatabase) {
-  await db.execute("TRUNCATE TABLE eservice CASCADE");
-}
-
-export function destroyReadmodelTestDatabase(connectionString: string) {
-  return async () => {
-    const dbName = connectionString.split("/").pop() as string;
-
-    const adminDb = drizzle(
-      connectionString.replace(`/${dbName}`, `/postgres`),
-    );
-
-    try {
-      // Terminate all connections to the database
-      await adminDb.execute(`
-        SELECT pg_terminate_backend(pg_stat_activity.pid)
-        FROM pg_stat_activity
-        WHERE pg_stat_activity.datname = '${dbName}'
-          AND pid <> pg_backend_pid();
-      `);
-
-      // Drop the database
-      await adminDb.execute(`DROP DATABASE IF EXISTS "${dbName}"`);
-    } finally {
-      await adminDb.$client.end();
-    }
-  };
+  await db.execute('TRUNCATE TABLE "eservice"."eservice" CASCADE');
 }
 
 export async function setupReadmodelTestContainer() {
@@ -62,13 +37,9 @@ export async function setupReadmodelTestDatabase(connectionString: string) {
 
   const db = drizzle(dbConnectionString);
 
-  try {
-    await applyReadmodelMigrations(db);
-  } finally {
-    await db.$client.end();
-  }
+  await applyReadmodelMigrations(db);
 
-  return dbConnectionString;
+  return db;
 }
 
 async function applyReadmodelMigrations(db: NodePgDatabase) {

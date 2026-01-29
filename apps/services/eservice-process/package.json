@@ -16,6 +16,7 @@
     "@knodia/eslint-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
+    "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/test-commons": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
