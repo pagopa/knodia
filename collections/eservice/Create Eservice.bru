@@ -9,6 +9,10 @@ post {
   body: json
 }
 
+headers {
+  X-Correlation-Id: {{correlation-id}}
+}
+
 body:json {
   {
     "name": {

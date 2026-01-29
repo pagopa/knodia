@@ -9,6 +9,10 @@ get {
   body: none
 }
 
+headers {
+  X-Correlation-Id: {{correlation-id}}
+}
+
 params:query {
   offset: 0
   limit: 50
