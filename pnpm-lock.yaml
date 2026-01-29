@@ -799,6 +799,9 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
