@@ -10,7 +10,8 @@ CREATE TABLE "eservice"."eservice" (
 	"mode" text NOT NULL,
 	"name" jsonb NOT NULL,
 	"producer_id" uuid NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL
+	"updated_at" timestamp with time zone NOT NULL,
+	CONSTRAINT "eservice_id_metadata_version_unique" UNIQUE("id","metadata_version")
 );
 --> statement-breakpoint
 CREATE TABLE "eservice"."eservice_category" (
