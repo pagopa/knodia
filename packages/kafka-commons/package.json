@@ -19,7 +19,8 @@
     "eslint": "catalog:"
   },
   "exports": {
-    ".": "./utils.ts",
+    ".": "./utils/kafka.ts",
+    "./utils": "./utils/utils.ts",
     "./config": "./config/config.ts"
   }
 }

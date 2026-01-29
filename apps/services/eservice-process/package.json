@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
-    "generate-openapi": "node ./openapi/generateOpenapi.ts",
+    "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
@@ -28,6 +28,8 @@
   "dependencies": {
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
+    "@knodia/common-models": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "zod": "catalog:"

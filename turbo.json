@@ -31,6 +31,10 @@
     "lint-openapi": {
       "dependsOn": ["generate-openapi"]
     },
+    "test": {
+      "dependsOn": [],
+      "outputs": []
+    },
     "db:generate": {
       "outputs": ["drizzle/**"]
     },

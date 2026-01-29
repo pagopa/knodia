@@ -1,39 +1,39 @@
+import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import openapiZodPlugin from "@knodia/fastify-zod-api-commons/openApiZodPlugin";
-import { createLoggerOptions } from "@knodia/logger";
-import Fastify from "fastify";
 
-import { config } from "./config.ts";
+import { config } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
+import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 
-const app = Fastify({
-  logger: createLoggerOptions(config, config.serviceName),
-});
-
-// openapiPlugin must be registered before any routes to ensure proper route discovery
-app.register(openapiZodPlugin, {
-  openapi: {
-    info: {
-      description: "API for managing Knodia E-services",
-      title: "Knodia E-service Process API",
-      version: "1.0.0",
-    },
-    servers: [{ description: "E-service Process API", url: "/" }],
-    tags: [
-      healthRouterTag,
-      {
-        description: "E-services routes",
-        name: apiTags.eservice,
+const app = createFastifyApp({
+  fastifyOptions: {
+    openapi: {
+      info: {
+        description: "API for managing Knodia E-services",
+        title: "Knodia E-service Process API",
+        version: "1.0.0",
       },
-    ],
+      servers: [{ description: "E-service Process API", url: "/" }],
+      tags: [
+        healthRouterTag,
+        {
+          description: "E-services routes",
+          name: apiTags.eservice,
+        },
+      ],
+    },
   },
+  loggerConfig: config,
+  makeApiProblem,
+  serviceName: config.serviceName,
 });
 
 app.register(healthRouter);
-app.register(eserviceRouter);
+app.register(eserviceRouter, eserviceServiceBuilder());
 
 export default app;

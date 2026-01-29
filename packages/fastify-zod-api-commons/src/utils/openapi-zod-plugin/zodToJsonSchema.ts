@@ -5,6 +5,7 @@ import {
   createJsonSchemaTransformObject,
 } from "fastify-type-provider-zod";
 
+import { healthRouterTag } from "../../routers/healthRouter.ts";
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
 
 const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
@@ -64,14 +65,68 @@ const removeZodInputSchemasFromOpenapi = (
   return openapi;
 };
 
+const updateErrorResponseContentsWithProblemJson = (
+  openapi: Partial<OpenAPIV3.Document>,
+): Partial<OpenAPIV3.Document> => {
+  if (!openapi.paths) {
+    return openapi;
+  }
+
+  for (const pathItem of Object.values(openapi.paths)) {
+    if (!pathItem) continue;
+
+    for (const operation of Object.values(pathItem)) {
+      if (!operation || typeof operation !== "object") continue;
+      if (!("responses" in operation) || !operation.responses) continue;
+
+      for (const [statusCode, response] of Object.entries(
+        operation.responses,
+      )) {
+        // Ignore non-error responses except for health endpoints
+        const responseStatusCode = Number(statusCode);
+        if (
+          !Number.isInteger(responseStatusCode) ||
+          (responseStatusCode < 400 &&
+            !operation.tags?.includes(healthRouterTag.name))
+        ) {
+          continue;
+        }
+
+        if ("$ref" in response) continue;
+
+        const content = response.content;
+        if (!content || !content["application/json"]) continue;
+
+        response.content = {
+          "application/problem+json": content["application/json"],
+        };
+      }
+    }
+  }
+
+  return openapi;
+};
+
 export const zodToJsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
     target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
   },
 });
 
+const applyOpenApiTransforms = (
+  openapi: Partial<OpenAPIV3.Document>,
+  transforms: ((
+    d: Partial<OpenAPIV3.Document>,
+  ) => Partial<OpenAPIV3.Document>)[],
+): Partial<OpenAPIV3.Document> =>
+  transforms.reduce((acc, transform) => transform(acc), openapi);
+
 export const zodToJsonSchemaTransformObjectWithoutInputSchemas: typeof zodToJsonSchemaTransformObject =
   (openapi) =>
-    removeZodInputSchemasFromOpenapi(
+    applyOpenApiTransforms(
       zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
+      [
+        removeZodInputSchemasFromOpenapi,
+        updateErrorResponseContentsWithProblemJson,
+      ],
     );

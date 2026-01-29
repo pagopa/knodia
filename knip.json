@@ -6,13 +6,20 @@
       "entry": ["src/generated/**/*.ts"]
     },
     "packages/models/*-models": {
-      "entry": ["src/generated/*.ts"]
+      "entry": ["src/generated/**/*.ts"]
     },
     "apps/services/backend-for-frontend": {
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/services/*-process": {
       "ignoreDependencies": ["@knodia/spectral-config"]
+    },
+    "apps/web/**/*": {
+      "ignore": ["src/routeTree.gen.ts"],
+      "ignoreDependencies": ["babel-plugin-react-compiler"]
+    },
+    "packages/ui-kit": {
+      "ignoreUnresolved": ["packages\\/ui-kit\\/.*\\.\\{ts,tsx\\}"]
     }
   }
 }
