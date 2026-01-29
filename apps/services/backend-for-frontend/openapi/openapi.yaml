@@ -233,13 +233,13 @@ components:
           format: int32
           type: integer
           minimum: 1
-          maximum: 9007199254740991
+          maximum: 1000000000
         maxDailyCallsPerKnode:
           description: Maximum daily calls per Knode
           format: int32
           type: integer
           minimum: 1
-          maximum: 9007199254740991
+          maximum: 1000000000
         mode:
           description: Mode of the E-service
           allOf:

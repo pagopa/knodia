@@ -91,12 +91,14 @@ export const API_EserviceSeed = z
       .number()
       .int()
       .min(1)
+      .max(1000000000)
       .describe("Maximum daily calls per consumer")
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
       .min(1)
+      .max(1000000000)
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
