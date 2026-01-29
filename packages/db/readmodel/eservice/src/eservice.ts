@@ -50,7 +50,7 @@ export const readmodelEserviceCategory = eserviceSchema.table(
     code: text().notNull(),
     eserviceId: uuid("eservice_id")
       .notNull()
-      .references(() => readmodelEservice.id),
+      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
     metadataVersion: integer("metadata_version").notNull(),
     scheme: text().notNull(),
   },
@@ -83,7 +83,7 @@ export const readmodelEserviceInterface = eserviceSchema.table(
     }).notNull(),
     eserviceId: uuid("eservice_id")
       .notNull()
-      .references(() => readmodelEservice.id),
+      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
     id: uuid().primaryKey(),
     metadataVersion: integer("metadata_version").notNull(),
     name: text().notNull(),
@@ -115,11 +115,11 @@ export const readmodelEserviceVersion = eserviceSchema.table(
     }).notNull(),
     eserviceId: uuid("eservice_id")
       .notNull()
-      .references(() => readmodelEservice.id),
+      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
     id: uuid().primaryKey(),
     interfaceId: uuid("interface_id")
       .notNull()
-      .references(() => readmodelEserviceInterface.id),
+      .references(() => readmodelEserviceInterface.id, { onDelete: "cascade" }),
     maxDailyCallsPerConsumer: integer("max_daily_calls_per_consumer").notNull(),
     maxDailyCallsPerKnode: integer("max_daily_calls_per_knode").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
@@ -145,10 +145,10 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
     code: text().notNull(),
     eserviceId: uuid("eservice_id")
       .notNull()
-      .references(() => readmodelEservice.id),
+      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
     eserviceVersionId: uuid("eservice_version_id")
       .notNull()
-      .references(() => readmodelEserviceVersion.id),
+      .references(() => readmodelEserviceVersion.id, { onDelete: "cascade" }),
     groupId: integer("group_id").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
     scheme: text().notNull(),
@@ -171,7 +171,26 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
   ],
 );
 
+export type EserviceCategorySQL = InferSelectModel<
+  typeof readmodelEserviceCategory
+>;
+export type EserviceInterfaceSQL = InferSelectModel<
+  typeof readmodelEserviceInterface
+>;
+export interface EserviceItemsSQL {
+  eserviceCategoriesSQL: EserviceCategorySQL[];
+  eserviceInterfacesSQL: EserviceInterfaceSQL[];
+  eserviceSQL: EserviceSQL;
+  eserviceVersionRequiredAttributesSQL: EserviceVersionRequiredAttributeSQL[];
+  eserviceVersionsSQL: EserviceVersionSQL[];
+}
 export type EserviceSQL = InferSelectModel<typeof readmodelEservice>;
+export type EserviceVersionRequiredAttributeSQL = InferSelectModel<
+  typeof readmodelEserviceVersionRequiredAttribute
+>;
+export type EserviceVersionSQL = InferSelectModel<
+  typeof readmodelEserviceVersion
+>;
 
 export type NewReadmodelEservice = typeof readmodelEservice.$inferInsert;
 export type NewReadmodelEserviceCategory =
