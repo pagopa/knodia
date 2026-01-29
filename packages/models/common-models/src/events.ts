@@ -5,7 +5,7 @@ export const EventEnvelope = <TEventZodType extends z.ZodType>(
 ) =>
   z.intersection(
     z.object({
-      correlation_id: z.string().nullish(),
+      correlation_id: z.string(),
       log_date: z.coerce.date(),
       sequence_num: z.number(),
       stream_id: z.uuid(),
@@ -22,16 +22,16 @@ const KafkaMessageValue = <TEventZodType extends z.ZodType>(
 ) =>
   z
     .object({
-      after: z.unknown(),
+      after: z.nonoptional(z.unknown()),
     })
     .transform((v) => EventEnvelope(event).parse(v.after));
 
 export const KafkaMessageEnvelope = <TEvent extends z.ZodType>(event: TEvent) =>
   z
     .object({
-      value: z.unknown(),
+      value: z.nonoptional(z.unknown()),
     })
-    .transform((v) => JSON.parse(String(v.value ?? "")))
+    .transform((v) => JSON.parse(String(v.value)))
     .pipe(KafkaMessageValue(event));
 
 export type KafkaMessageEnvelope<TEvent> = z.infer<
