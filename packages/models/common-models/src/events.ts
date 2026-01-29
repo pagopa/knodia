@@ -55,16 +55,7 @@ export const KafkaMessageEnvelope = <TEventZodType extends EventSchema>(
     .object({
       value: z.nonoptional(z.unknown()),
     })
-    .transform((v) => {
-      const json = JSON.parse(String(v.value));
-      return {
-        ...json,
-        after: {
-          ...json.after,
-          data: Uint8Array.from(Buffer.from(json.after.data, "hex")),
-        },
-      };
-    })
+    .transform((v) => JSON.parse(String(v.value)))
     .pipe(KafkaMessageValue(event));
 
 export type KafkaMessageEnvelope<TEventZodType extends EventSchema> = z.infer<
