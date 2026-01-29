@@ -17,6 +17,19 @@ body:json {
     "description": {
       "en": "This is a test e-service"
     },
+    "accessTokenAudience": ["https://api.example.com"],
+    "accessTokenDuration": 60,
+    "accessTokenType": "Bearer",
+    "maxDailyCallsPerConsumer": 1000,
+    "maxDailyCallsPerKnode": 10000,
+    "requiredAttributes": [
+      [
+        {
+          "code": "test-attribute",
+          "scheme": "test-scheme"
+        }
+      ]
+    ],
     "mode": "ProvideData",
     "categories": [
       {
