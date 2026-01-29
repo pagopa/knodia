@@ -8,12 +8,14 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
+  type RequiredAttributeGroup,
 } from "./eservice.ts";
 import {
   EserviceAccessTokenTypeV1,
   EserviceInterfaceV1,
   EserviceModeV1,
   type EserviceV1,
+  EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
   EserviceVersionV1,
 } from "./generated/v1/eservice.ts";
@@ -65,11 +67,16 @@ export const fromEserviceVersionV1 = (
     "EserviceVersion interfaceDocument is undefined",
     fromEserviceVersionInterfaceV1,
   ),
-  // TODO: convert
-  requiredAttributes: [],
+  requiredAttributes: input.requiredAttributes.map(
+    fromEserviceVersionRequiredAttributeGroupV1,
+  ),
   state: fromEserviceVersionStateV1(input.state),
   updatedAt: new Date(input.updatedAt),
 });
+
+export const fromEserviceVersionRequiredAttributeGroupV1 = (
+  input: EserviceVersionRequiredAttributeGroupV1,
+): RequiredAttributeGroup => input.attributes;
 
 export const fromEserviceVersionAccessTokenTypeV1 = (
   input: EserviceAccessTokenTypeV1,
