@@ -36,18 +36,6 @@ export function NavbarBrand({
   );
 }
 
-export function NavbarRight({
-  children,
-  className,
-  ...props
-}: React.ComponentPropsWithoutRef<"div">) {
-  return (
-    <div {...props} className={twMerge("flex items-center", className)}>
-      {children}
-    </div>
-  );
-}
-
 export function NavbarUserMenu({
   name,
   role,
