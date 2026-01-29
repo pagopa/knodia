@@ -24,7 +24,7 @@ export function eserviceEventStoreWriterBuilder(db: NodePgDatabase) {
       event: NewEventStoreEserviceEvent<T>,
     ): Promise<void> {
       // TODO generalize logic to reuse for other event store writers
-      return db.transaction(async (tx) => {
+      await db.transaction(async (tx) => {
         const [latestEvent] = await tx
           .select({ version: eventStoreEserviceEvents.version })
           .from(eventStoreEserviceEvents)
