@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const serviceName = {
+const serviceName = {
   BACKEND_FOR_FRONTEND: "backend-for-frontend",
   ESERVICE_PROCESS: "eservice-process",
 } as const;
