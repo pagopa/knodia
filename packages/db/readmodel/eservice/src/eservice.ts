@@ -9,6 +9,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  unique,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -18,25 +19,29 @@ export const eserviceSchema = pgSchema(
   readModelEserviceConfig.readModelDbEserviceSchema,
 );
 
-export const readmodelEservice = eserviceSchema.table("eservice", {
-  createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  description: jsonb().$type<LocalizedText>().notNull(),
-  id: uuid().primaryKey(),
-  isConsumerOperatorIdentificationRequired: boolean(
-    "is_consumer_operator_identification_required",
-  ).notNull(),
-  isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
-  metadataVersion: integer("metadata_version").notNull(),
-  mode: text().notNull(),
-  name: jsonb().$type<LocalizedText>().notNull(),
-  producerId: uuid("producer_id").notNull(),
-  updatedAt: timestamp("updated_at", {
-    mode: "date",
-    withTimezone: true,
-  }).notNull(),
-});
+export const readmodelEservice = eserviceSchema.table(
+  "eservice",
+  {
+    createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    description: jsonb().$type<LocalizedText>().notNull(),
+    id: uuid().primaryKey(),
+    isConsumerOperatorIdentificationRequired: boolean(
+      "is_consumer_operator_identification_required",
+    ).notNull(),
+    isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
+    metadataVersion: integer("metadata_version").notNull(),
+    mode: text().notNull(),
+    name: jsonb().$type<LocalizedText>().notNull(),
+    producerId: uuid("producer_id").notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
+  },
+  (table) => [unique().on(table.id, table.metadataVersion)],
+);
 
 export const readmodelEserviceCategory = eserviceSchema.table(
   "eservice_category",

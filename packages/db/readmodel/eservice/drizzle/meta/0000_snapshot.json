@@ -1,5 +1,5 @@
 {
-  "id": "a45bdea8-8989-4982-bea9-06e55193963b",
+  "id": "b5f47c26-122c-410d-a01f-3818093b170d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -73,7 +73,16 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "eservice_id_metadata_version_unique": {
+          "name": "eservice_id_metadata_version_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "metadata_version"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
