@@ -32,7 +32,7 @@
       "dependsOn": ["generate-openapi"]
     },
     "test": {
-      "dependsOn": [],
+      "dependsOn": ["generate-protobuf"],
       "outputs": []
     },
     "db:generate": {
