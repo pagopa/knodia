@@ -19,8 +19,8 @@ const DocsStepForm = withForm({
     return (
       <div className="space-y-6">
         <div>
-          <Typography className="headline-sm-em">Documents</Typography>
-          <Typography variant="bodySm">Upload the API specs file.</Typography>
+          <Typography className="headline-lg-em">Documents</Typography>
+          <Typography variant="bodyMd">Upload the API specs file.</Typography>
         </div>
 
         <Footer onCancel={prevStep} onConfirm={nextStep} />

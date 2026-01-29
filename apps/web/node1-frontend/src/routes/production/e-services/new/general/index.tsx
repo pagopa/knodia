@@ -1,5 +1,5 @@
 import { TextArea, TextField, Typography } from "@knodia/ui-kit/ui";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { withForm } from "@/contexts/form";
 import { useStepsContext } from "@/contexts/steps/useStepsContext";
@@ -15,19 +15,20 @@ const GeneralStepForm = withForm({
   defaultValues: ESERVICE_FORM_DEFAULTS,
   render: function GeneralStep({ form }) {
     const { nextStep } = useStepsContext();
+    const navigate = useNavigate();
 
     const onCancel = () => {
       form.reset();
-      window.history.back();
+      navigate({ to: "/production/e-services" });
     };
 
     return (
       <div className="space-y-6">
         <div>
-          <Typography className="headline-sm-em">
+          <Typography className="headline-lg-em">
             General Information
           </Typography>
-          <Typography variant="bodySm">
+          <Typography variant="bodyMd">
             This information will be used to find your E-Service. Be precise and
             clear.
           </Typography>

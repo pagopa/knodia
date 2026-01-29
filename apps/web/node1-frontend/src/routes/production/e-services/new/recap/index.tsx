@@ -35,8 +35,8 @@ const RecapStepForm = withForm({
     return (
       <div className="space-y-6">
         <div>
-          <Typography className="headline-sm-em">Recap </Typography>
-          <Typography variant="bodySm">
+          <Typography className="headline-lg-em">Recap </Typography>
+          <Typography variant="bodyMd">
             Check that everything is correct before the publication.
           </Typography>
         </div>

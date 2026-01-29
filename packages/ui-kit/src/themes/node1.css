@@ -144,8 +144,10 @@
   --font-family-headline: var(--font-sans);
   --line-height-headline: 1.2;
   --font-size-headline-sm: 24px;
+  --font-size-headline-lg: 32px;
   --font-weight-headline-em: 600;
   --letter-spacing-headline-sm: 0px;
+  --letter-spacing-headline-lg: 0px;
 }
 
 @layer utilities {
@@ -213,7 +215,15 @@
     letter-spacing: var(--letter-spacing-headline-sm);
     line-height: var(--line-height-headline);
   }
-  
+
+  .headline-lg-em {
+    font-family: var(--font-family-headline);
+    font-size: var(--font-size-headline-lg);
+    font-weight: var(--font-weight-headline-em);
+    letter-spacing: var(--letter-spacing-headline-lg);
+    line-height: var(--line-height-headline);
+  }
+
   /* Elevation Shadows */
   .elevation-1 {
     box-shadow: 0 2px 4px 0

@@ -19,8 +19,8 @@ const AttributesStepForm = withForm({
     return (
       <div className="space-y-6">
         <div>
-          <Typography className="headline-sm-em">Attributes</Typography>
-          <Typography variant="bodySm">
+          <Typography className="headline-lg-em">Attributes</Typography>
+          <Typography variant="bodyMd">
             Choose which organization can request an Agreement for your
             E-Service.
           </Typography>

@@ -19,8 +19,8 @@ const TechnicalStepForm = withForm({
     return (
       <div className="space-y-6">
         <div>
-          <Typography className="headline-sm-em">Technical details</Typography>
-          <Typography variant="bodySm">
+          <Typography className="headline-lg-em">Technical details</Typography>
+          <Typography variant="bodyMd">
             Define the technical specifications of your E-Service.
           </Typography>
         </div>

@@ -1,11 +1,11 @@
 import { Link } from "@knodia/ui-kit/ui";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/production/e-services/")({
-  component: RouteComponent,
+export const Route = createFileRoute("/production/e-services")({
+  component: EServicesLayout,
 });
 
-function RouteComponent() {
+function EServicesLayout() {
   return (
     <div>
       <Link
@@ -15,6 +15,7 @@ function RouteComponent() {
         Create E-service
       </Link>
       Hello "/production/e-services"!
+      <Outlet />
     </div>
   );
 }
