@@ -43,24 +43,17 @@ export function eventStoreWriterBuilder<
           .orderBy(desc(eventsTable.version))
           .limit(1);
 
-        const currentMetadataVersion =
-          event.currentMetadataVersion !== null
-            ? BigInt(event.currentMetadataVersion)
-            : null;
-        const latestVersion = latestEvent?.version
-          ? BigInt(latestEvent.version)
-          : null;
+        const latestVersion = latestEvent?.version ?? null;
+        const currentVersion = event.currentMetadataVersion ?? null;
 
-        if (latestVersion !== currentMetadataVersion) {
+        if (latestVersion !== currentVersion) {
           throw new Error(
-            `Current metadata version ${currentMetadataVersion} is not the latest for stream ${String(event.streamId)} (latest is ${latestVersion})`,
+            `Current metadata version ${currentVersion} is not the latest for stream ${String(event.streamId)} (latest is ${latestVersion})`,
           );
         }
 
         const newVersion =
-          currentMetadataVersion !== null
-            ? currentMetadataVersion + BigInt(1)
-            : BigInt(0);
+          currentVersion !== null ? currentVersion + BigInt(1) : BigInt(0);
 
         const { data, type } = EventStoreEvents.encode(event.event);
         await tx.insert(eventsTable).values({
