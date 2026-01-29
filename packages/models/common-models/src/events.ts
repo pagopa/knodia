@@ -13,9 +13,15 @@ export const EventEnvelope = <TEventZodType extends EventSchema>(
   event: TEventZodType,
 ) =>
   z.preprocess(
-    ({ data, ...rest }: { data: unknown }) => {
+    (payload) => {
+      if (!payload || typeof payload !== "object") {
+        throw new Error("Expected event .value.after to be an object");
+      }
+
+      const { data, ...rest } = payload as { data: unknown };
+
       if (typeof data !== "string") {
-        throw new Error("Expected data to be a hex string");
+        throw new Error("Expected event .value.after.data to be a hex string");
       }
 
       return {
