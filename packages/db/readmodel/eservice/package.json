@@ -10,16 +10,16 @@
     "db:migrate": "dotenvx run -- drizzle-kit migrate"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-config": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
-    "@knodia/db-readmodel-config": "workspace:*",
-    "@knodia/common-models": "workspace:*",
-    "@dotenvx/dotenvx": "catalog:",
     "@types/pg": "catalog:",
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
