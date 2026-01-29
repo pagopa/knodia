@@ -27,13 +27,13 @@ const EventStoreEvents = z.union([
 type EventStoreEvents = z.infer<typeof EventStoreEvents>;
 type EventStoreStreamIds = EserviceId; // | AgreementId | ...;
 
+type EventStoreTables =
+  typeof eventStoreEserviceEvents; /* | typeof eventStoreAgreementEvents | ... */
+
 export function eventStoreWriterBuilder<
   TEvent extends EventStoreEvents,
   TStreamId extends EventStoreStreamIds,
->(options: {
-  db: NodePgDatabase;
-  eventsTable: typeof eventStoreEserviceEvents; // | typeof eventStoreAgreementEvents | ...;
-}) {
+>(options: { db: NodePgDatabase; eventsTable: EventStoreTables }) {
   const { db, eventsTable } = options;
 
   return {
