@@ -21,6 +21,6 @@
     "typescript": "catalog:"
   },
   "exports": {
-    "./writer": "./src/writer.ts"
+    "./eservice": "./src/eserviceEventWriter.ts"
   }
 }

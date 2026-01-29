@@ -1,28 +1,24 @@
+import type { EserviceId } from "@knodia/common-models/ids";
+import type { EserviceEventV1 } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { type EserviceId } from "@knodia/common-models/ids";
-import { EserviceEventV1 } from "@knodia/eservice-models";
+import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
 
-import type { NewEventStoreEvent } from "./eventWriter.ts";
-
-import { eventStoreEserviceEvents } from "../../eservice/src/eservice.ts";
-import { eventStoreWriterBuilder } from "./eventWriter.ts";
+import {
+  eventStoreWriterBuilder,
+  type NewEventStoreEvent,
+} from "./eventWriter.ts";
 
 export type EserviceEventStoreWriter = ReturnType<
   typeof eserviceEventStoreWriterBuilder
 >;
+export type NewEventStoreEserviceEvent = NewEventStoreEvent<
+  EserviceEventV1,
+  EserviceId
+>;
 
-export type NewEventStoreEserviceEvent<TEvent extends EserviceEventV1> =
-  NewEventStoreEvent<TEvent, EserviceId>;
-
-export function eserviceEventStoreWriterBuilder(db: NodePgDatabase) {
-  const writer = eventStoreWriterBuilder({
+export const eserviceEventStoreWriterBuilder = (db: NodePgDatabase) =>
+  eventStoreWriterBuilder({
     db,
-    eventEncoder: EserviceEventV1.encode,
     eventsTable: eventStoreEserviceEvents,
   });
-
-  return {
-    insertEserviceEvent: writer.insertEvent,
-  };
-}

@@ -6,9 +6,10 @@ import { EserviceEventV1 } from "@knodia/eservice-models";
 import { desc, eq } from "drizzle-orm";
 import z from "zod";
 
-// export type EventStoreWriter<TEvent, TStreamId> = ReturnType<
-//   typeof eventStoreWriterBuilder<TEvent, TStreamId>
-// >;
+export type EventStoreWriter<
+  TEvent extends EventStoreEvents,
+  TStreamId extends EventStoreStreamIds,
+> = ReturnType<typeof eventStoreWriterBuilder<TEvent, TStreamId>>;
 
 export interface NewEventStoreEvent<
   TEvent extends EventStoreEvents,

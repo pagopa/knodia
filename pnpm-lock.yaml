@@ -276,6 +276,9 @@ importers:
       '@knodia/db-event-store-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/event-store/eservice
+      '@knodia/db-event-store-writer':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/writer
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
