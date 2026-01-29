@@ -12,23 +12,17 @@ import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
 import { focusRing } from "./styles";
 
-interface RadioGroupProps<T extends string = string>
-  extends Omit<RACRadioGroupProps, "children" | "onChange"> {
+interface RadioGroupProps extends Omit<RACRadioGroupProps, "children"> {
   children?: React.ReactNode;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
   label?: string;
-  onChange?: (value: T) => void;
 }
 
-export function RadioGroup<T extends string = string>({
-  onChange,
-  ...props
-}: RadioGroupProps<T>) {
+export function RadioGroup(props: RadioGroupProps) {
   return (
     <RACRadioGroup
       {...props}
-      {...(onChange && { onChange: onChange as (value: string) => void })}
       className={composeTailwindRenderProps(
         props.className,
         "group flex flex-col gap-3 font-sans",

@@ -12,7 +12,7 @@ export const Route = createFileRoute("/production/e-services/new/attributes/")({
 
 const AttributesStepForm = withForm({
   defaultValues: ESERVICE_FORM_DEFAULTS,
-  render: function AttributesStep({ form: _form }) {
+  render: function AttributesStep() {
     const { nextStep, prevStep } = useStepsContext();
 
     return (

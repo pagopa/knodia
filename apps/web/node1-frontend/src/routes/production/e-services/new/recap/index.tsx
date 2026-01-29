@@ -25,7 +25,8 @@ const RecapStepForm = withForm({
             <span className="font-medium">Name:</span> {values.name}
           </div>
           <div>
-            <span className="font-medium">Description:</span> {values.description}
+            <span className="font-medium">Description:</span>{" "}
+            {values.description}
           </div>
           <div>
             <span className="font-medium">Mode:</span> {values.mode}

@@ -1,12 +1,14 @@
-import type { EserviceMode } from "@knodia/eservice-models";
-
 import { Button, Radio, RadioGroup } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
+import { match, P } from "ts-pattern";
 
 import { withForm } from "@/contexts/form";
 import { useStepsContext } from "@/contexts/steps/useStepsContext";
 import { useEServiceForm } from "@/features/e-service/contexts/EServiceFormContext";
-import { ESERVICE_FORM_DEFAULTS } from "@/features/e-service/types/eserviceCreateForm";
+import {
+  ESERVICE_FORM_DEFAULTS,
+  isEserviceMode,
+} from "@/features/e-service/types/eserviceCreateForm";
 
 export const Route = createFileRoute("/production/e-services/new/technical/")({
   component: TechnicalStepRoute,
@@ -23,9 +25,13 @@ const TechnicalStepForm = withForm({
 
         <form.Field name="mode">
           {(field) => (
-            <RadioGroup<EserviceMode>
+            <RadioGroup
               label="Mode"
-              onChange={field.handleChange}
+              onChange={(value) =>
+                match(value)
+                  .with(P.when(isEserviceMode), (v) => field.handleChange(v))
+                  .otherwise(() => undefined)
+              }
               value={field.state.value}
             >
               <Radio value="ProvideData">Provide Data</Radio>

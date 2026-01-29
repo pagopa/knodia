@@ -12,7 +12,7 @@ export const Route = createFileRoute("/production/e-services/new/docs/")({
 
 const DocsStepForm = withForm({
   defaultValues: ESERVICE_FORM_DEFAULTS,
-  render: function DocsStep({ form: _form }) {
+  render: function DocsStep() {
     const { nextStep, prevStep } = useStepsContext();
 
     return (

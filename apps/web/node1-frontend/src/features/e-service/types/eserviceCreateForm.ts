@@ -8,6 +8,10 @@ export interface EServiceFormData {
   name: string;
 }
 
+export function isEserviceMode(value: string): value is EserviceMode {
+  return value === "ProvideData" || value === "ReceiveData";
+}
+
 export const ESERVICE_FORM_DEFAULTS: EServiceFormData = {
   description: "",
   mode: "ProvideData",

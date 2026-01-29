@@ -1,9 +1,14 @@
 import { createContext, useContext } from "react";
 
-import type { useAppForm } from "@/contexts/form";
-import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
+import { useAppForm } from "@/contexts/form";
+import { ESERVICE_FORM_DEFAULTS } from "@/features/e-service/types/eserviceCreateForm";
 
-type EServiceForm = ReturnType<typeof useAppForm<EServiceFormData>>;
+export function useEServiceAppForm() {
+  return useAppForm({ defaultValues: ESERVICE_FORM_DEFAULTS });
+}
+
+// eslint-disable-next-line perfectionist/sort-modules -- type depends on function above
+export type EServiceForm = ReturnType<typeof useEServiceAppForm>;
 
 const EServiceFormContext = createContext<EServiceForm | null>(null);
 

@@ -8,7 +8,3 @@ export const { useAppForm, withForm } = createFormHook({
   formComponents: {},
   formContext,
 });
-
-export type AppForm<
-  TFormData extends Record<string, unknown> = Record<string, unknown>,
-> = ReturnType<typeof useAppForm<TFormData>>;
