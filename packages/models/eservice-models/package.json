@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -19,7 +20,6 @@
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "ts-pattern": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {

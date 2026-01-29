@@ -10,15 +10,15 @@
     "db:migrate": "dotenvx run -- drizzle-kit migrate"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-event-store-config": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
-    "@knodia/common-models": "workspace:*",
-    "@knodia/db-event-store-config": "workspace:*",
-    "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/pg": "catalog:",
