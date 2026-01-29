@@ -12,25 +12,28 @@ interface EventWithDataAndType {
 export const EventEnvelope = <TEventZodType extends EventSchema>(
   event: TEventZodType,
 ) =>
-  z
-    .object({
-      correlation_id: z.string(),
-      log_date: z.coerce.date(),
-      sequence_num: z.number(),
-      stream_id: z.uuid(),
-      version: z.number(),
-    })
-    .and(event)
-    .transform(({ data, ...rest }) => {
+  z.preprocess(
+    ({ data, ...rest }: { data: unknown }) => {
       if (typeof data !== "string") {
         throw new Error("Expected data to be a hex string");
       }
 
-      return event.parse({
+      return {
         ...rest,
         data: Uint8Array.from(Buffer.from(data, "hex")),
-      });
-    });
+      };
+    },
+    z
+      .object({
+        correlation_id: z.string(),
+        log_date: z.coerce.date(),
+        sequence_num: z.number(),
+        stream_id: z.uuid(),
+        version: z.number(),
+      })
+      .and(event),
+  );
+
 export type EventEnvelope<TEventZodType extends EventSchema> = z.infer<
   ReturnType<typeof EventEnvelope<TEventZodType>>
 >;
