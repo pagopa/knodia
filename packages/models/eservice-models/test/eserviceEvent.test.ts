@@ -82,20 +82,25 @@ describe("EserviceEventV1.encode/decode", () => {
       type: "EserviceVersionActivatedV1",
     };
 
+    // This the encoding we perform when writing into the event store DB
     const { data, type } = EserviceEventV1.encode(event);
+
+    // This is the envelope as produced in Kafka by Debezium from the event store DB
     const envelope = {
-      correlation_id: generateId(),
-      data: toHex(data),
-      log_date: new Date().toISOString(),
-      sequence_num: 1,
-      stream_id: generateId(),
-      type,
-      version: 1,
+      value: JSON.stringify({
+        after: {
+          correlation_id: generateId(),
+          data: toHex(data),
+          log_date: new Date().toISOString(),
+          sequence_num: 1,
+          stream_id: generateId(),
+          type,
+          version: 1,
+        },
+      }),
     };
 
-    const decoded = KafkaMessageEnvelope(EserviceEventV1).decode({
-      value: JSON.stringify({ after: envelope }),
-    });
+    const decoded = KafkaMessageEnvelope(EserviceEventV1).decode(envelope);
     expect(decoded).toMatchObject(event);
   });
 });
