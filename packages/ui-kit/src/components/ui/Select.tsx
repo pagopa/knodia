@@ -90,7 +90,7 @@ export function Select<T extends Iterable<unknown>>({
       <Popover className="min-w-(--trigger-width)">
         <ListBox
           className={
-            "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto"
+            "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl elevation-4 flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto"
           }
           items={items}
         >
