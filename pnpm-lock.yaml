@@ -276,6 +276,9 @@ importers:
       '@knodia/db-event-store-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/event-store/eservice
+      '@knodia/db-event-store-writer':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/writer
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
@@ -493,21 +496,12 @@ importers:
 
   packages/db/event-store/eservice:
     dependencies:
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../models/common-models
       '@knodia/db-event-store-config':
         specifier: workspace:*
         version: link:../config
-      '@knodia/eservice-models':
-        specifier: workspace:*
-        version: link:../../../models/eservice-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
-      pg:
-        specifier: 'catalog:'
-        version: 8.16.3
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -533,6 +527,40 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  packages/db/event-store/writer:
+    dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../models/common-models
+      '@knodia/db-event-store-eservice':
+        specifier: workspace:*
+        version: link:../eservice
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../models/eservice-models
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/db/readmodel/config:
     dependencies:

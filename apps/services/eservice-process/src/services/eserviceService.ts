@@ -1,4 +1,4 @@
-import type { EserviceEventStoreWriter } from "@knodia/db-event-store-eservice/writer";
+import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
 
 import { type RequestContextData } from "@fastify/request-context";
 import {
@@ -67,7 +67,7 @@ export function eserviceServiceBuilder(
         ],
       };
 
-      eventStoreWriter.insertEserviceEvent(
+      eventStoreWriter.insertEvent(
         createEserviceVersionActivatedV1Event(
           eservice,
           eserviceVersionId,
