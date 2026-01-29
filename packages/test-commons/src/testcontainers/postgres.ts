@@ -12,6 +12,7 @@ export async function startTestPostgresContainer({
 }) {
   const container = await new GenericContainer(TEST_POSTGRES_IMAGE)
     .withExposedPorts(TEST_POSTGRES_DB_PORT)
+    .withReuse()
     .withEnvironment({
       POSTGRES_PASSWORD: dbPassword,
       POSTGRES_USER: dbUser,
