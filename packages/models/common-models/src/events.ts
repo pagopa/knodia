@@ -1,32 +1,54 @@
 import z from "zod";
 
-export const EventEnvelope = <TEventZodType extends z.ZodType>(
+export type EventSchema<
+  TEvent extends EventWithDataAndType = EventWithDataAndType,
+> = z.ZodType<TEvent>;
+
+interface EventWithDataAndType {
+  data: unknown;
+  type: string;
+}
+
+export const EventEnvelope = <TEventZodType extends EventSchema>(
   event: TEventZodType,
 ) =>
-  z.intersection(
-    z.object({
+  z
+    .object({
       correlation_id: z.string(),
       log_date: z.coerce.date(),
       sequence_num: z.number(),
       stream_id: z.uuid(),
       version: z.number(),
-    }),
-    event,
-  );
-export type EventEnvelope<TEvent> = z.infer<
-  ReturnType<typeof EventEnvelope<z.ZodType<TEvent>>>
+    })
+    .and(event)
+    .transform(({ data, ...rest }) => {
+      if (typeof data !== "string") {
+        throw new Error("Expected data to be a hex string");
+      }
+
+      return event.parse({
+        ...rest,
+        data: Uint8Array.from(Buffer.from(data, "hex")),
+      });
+    });
+
+export type EventEnvelope<TEventZodType extends EventSchema> = z.infer<
+  ReturnType<typeof EventEnvelope<TEventZodType>>
 >;
 
-const KafkaMessageValue = <TEventZodType extends z.ZodType>(
+const KafkaMessageValue = <TEventZodType extends EventSchema>(
   event: TEventZodType,
 ) =>
   z
     .object({
       after: z.nonoptional(z.unknown()),
     })
-    .transform((v) => EventEnvelope(event).parse(v.after));
+    .transform(({ after }) => after)
+    .pipe(EventEnvelope(event));
 
-export const KafkaMessageEnvelope = <TEvent extends z.ZodType>(event: TEvent) =>
+export const KafkaMessageEnvelope = <TEventZodType extends EventSchema>(
+  event: TEventZodType,
+) =>
   z
     .object({
       value: z.nonoptional(z.unknown()),
@@ -34,6 +56,6 @@ export const KafkaMessageEnvelope = <TEvent extends z.ZodType>(event: TEvent) =>
     .transform((v) => JSON.parse(String(v.value)))
     .pipe(KafkaMessageValue(event));
 
-export type KafkaMessageEnvelope<TEvent> = z.infer<
-  ReturnType<typeof KafkaMessageEnvelope<z.ZodType<TEvent>>>
+export type KafkaMessageEnvelope<TEventZodType extends EventSchema> = z.infer<
+  ReturnType<typeof KafkaMessageEnvelope<TEventZodType>>
 >;

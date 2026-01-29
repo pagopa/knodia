@@ -1,16 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { z, ZodError } from "zod";
 
+import { generateId } from "../src/brandedIds.ts";
 import { KafkaMessageEnvelope } from "../src/events.ts";
 
 describe("KafkaMessageEnvelope.decode", () => {
+  const toHex = (value: string) => Buffer.from(value, "utf8").toString("hex");
+
   const TestEvent = z.discriminatedUnion("type", [
     z.object({
-      data: z.object({ test: z.string() }),
+      data: z.unknown(),
       type: z.literal("TestEvent1"),
     }),
     z.object({
-      data: z.object({ test: z.number() }),
+      data: z.unknown(),
       type: z.literal("TestEvent2"),
     }),
   ]);
@@ -19,11 +22,11 @@ describe("KafkaMessageEnvelope.decode", () => {
     const message = {
       value: JSON.stringify({
         after: {
-          correlation_id: "00000000-0000-0000-0000-000000000000",
-          data: { test: "test value" },
+          correlation_id: generateId(),
+          data: toHex("test value"),
           log_date: new Date().toISOString(),
           sequence_num: 1,
-          stream_id: "00000000-0000-0000-0000-000000000000",
+          stream_id: generateId(),
           type: "TestEvent1",
           version: 0,
         },
@@ -31,25 +34,31 @@ describe("KafkaMessageEnvelope.decode", () => {
     };
 
     const decoded = KafkaMessageEnvelope(TestEvent).decode(message);
-    expect(decoded).toMatchObject({ type: "TestEvent1" });
+    expect(decoded).toMatchObject({
+      data: expect.any(Uint8Array),
+      type: "TestEvent1",
+    });
   });
 
   it("successfully decodes a valid TestEvent2 message", () => {
     const message = {
       value: JSON.stringify({
         after: {
-          correlation_id: "00000000-0000-0000-0000-000000000000",
-          data: { test: 42 },
+          correlation_id: generateId(),
+          data: toHex("test value"),
           log_date: new Date().toISOString(),
           sequence_num: 2,
-          stream_id: "00000000-0000-0000-0000-000000000000",
+          stream_id: generateId(),
           type: "TestEvent2",
           version: 1,
         },
       }),
     };
     const decoded = KafkaMessageEnvelope(TestEvent).decode(message);
-    expect(decoded).toMatchObject({ type: "TestEvent2" });
+    expect(decoded).toMatchObject({
+      data: expect.any(Uint8Array),
+      type: "TestEvent2",
+    });
   });
 
   it.each([{}, { value: undefined }])(
@@ -96,9 +105,9 @@ describe("KafkaMessageEnvelope.decode", () => {
           // correlation_id is missing
           // sequence_num is missing
           // type is missing
-          data: { test: "test value" },
+          data: toHex("test value"),
           log_date: new Date().toISOString(),
-          stream_id: "00000000-0000-0000-0000-000000000000",
+          stream_id: generateId(),
           version: 0,
         },
       }),
@@ -120,33 +129,6 @@ describe("KafkaMessageEnvelope.decode", () => {
       expect(zodError.issues[2]).toMatchObject({
         message: /Invalid input.*/,
         path: ["type"],
-      });
-    }
-  });
-
-  it("throws a meaningful error when event data is invalid", () => {
-    const message = {
-      value: JSON.stringify({
-        after: {
-          correlation_id: "00000000-0000-0000-0000-000000000000",
-          data: { test: 42 }, // Invalid type for TestEvent1
-          log_date: new Date().toISOString(),
-          sequence_num: 1,
-          stream_id: "00000000-0000-0000-0000-000000000000",
-          type: "TestEvent1",
-          version: 0,
-        },
-      }),
-    };
-
-    try {
-      KafkaMessageEnvelope(TestEvent).decode(message);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ZodError);
-      const zodError = error as ZodError;
-      expect(zodError.issues[0]).toMatchObject({
-        message: "Invalid input: expected string, received number",
-        path: ["data", "test"],
       });
     }
   });

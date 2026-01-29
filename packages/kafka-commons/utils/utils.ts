@@ -1,7 +1,9 @@
 import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 
-import { KafkaMessageEnvelope } from "@knodia/common-models/event";
-import { z } from "zod";
+import {
+  type EventSchema,
+  KafkaMessageEnvelope,
+} from "@knodia/common-models/event";
 
 /**
  * Decodes a Kafka message using the provided event schema.
@@ -9,7 +11,7 @@ import { z } from "zod";
  * @param {KafkaMessage} message - The Kafka message to decode.
  * @throws {Error} - If the message is invalid or missing required data.
  */
-export function decodeKafkaMessageEvent<TEvent extends z.ZodType>(
+export function decodeKafkaMessageEvent<TEvent extends EventSchema>(
   message: KafkaMessage,
   event: TEvent,
 ) {
