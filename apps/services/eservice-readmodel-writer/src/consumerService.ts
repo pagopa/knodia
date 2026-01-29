@@ -1,5 +1,7 @@
 import type { EserviceEventEnvelopeV1 } from "@knodia/eservice-models";
 
+import { fromEserviceV1 } from "@knodia/eservice-models";
+import { missingKafkaMessageDataError } from "@knodia/fastify-zod-api-commons/models";
 import { match } from "ts-pattern";
 
 import type { EserviceWriterService } from "./eserviceWriterService.ts";
@@ -9,11 +11,17 @@ export async function handleEserviceEvent(
   writerService: EserviceWriterService,
 ): Promise<void> {
   return match(message)
-    .with({ type: "EserviceVersionActivatedV1" }, async () => {
-      await writerService.insertEservice();
-      // ^ TODO populate with real data from event
+    .with({ type: "EserviceVersionActivatedV1" }, async (msg) => {
+      const eservice = msg.data.eservice;
+
+      if (!eservice) {
+        throw missingKafkaMessageDataError("eservice", msg.type);
+      }
+
+      await writerService.insertEservice(
+        fromEserviceV1(eservice),
+        message.version,
+      );
     })
-    .otherwise(() => {
-      console.warn("Unhandled event type: ", message.type);
-    });
+    .exhaustive();
 }

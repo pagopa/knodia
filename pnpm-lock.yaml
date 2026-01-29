@@ -346,6 +346,9 @@ importers:
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../../packages/fastify-zod-api-commons
       '@knodia/kafka-commons':
         specifier: workspace:*
         version: link:../../../packages/kafka-commons

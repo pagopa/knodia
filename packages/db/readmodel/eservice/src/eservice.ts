@@ -1,4 +1,5 @@
 import type { LocalizedText } from "@knodia/common-models/localization";
+import type { InferSelectModel } from "drizzle-orm";
 
 import {
   boolean,
@@ -169,6 +170,8 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
     }),
   ],
 );
+
+export type EserviceSQL = InferSelectModel<typeof readmodelEservice>;
 
 export type NewReadmodelEservice = typeof readmodelEservice.$inferInsert;
 export type NewReadmodelEserviceCategory =

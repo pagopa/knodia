@@ -21,6 +21,7 @@
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",

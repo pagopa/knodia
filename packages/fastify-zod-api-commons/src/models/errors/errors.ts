@@ -23,6 +23,7 @@ export const commonErrorCodes = {
   RESPONSE_SERIALIZATION_ERROR: "9993",
   MISSING_HEADER: "9994",
   FASTIFY_ERROR: "9995",
+  MISSING_KAFKA_MESSAGE_DATA: "9996",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
@@ -57,6 +58,18 @@ export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
     detail: headerName ? `Missing ${headerName} request header` : title,
     status: HTTP_STATUS_BAD_REQUEST,
     title,
+  });
+}
+
+export function missingKafkaMessageDataError(
+  dataName: string,
+  eventType: string,
+): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: "MISSING_KAFKA_MESSAGE_DATA",
+    detail: `Invalid message: missing data '${dataName}' in ${eventType} event`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "Invalid Kafka Message Data",
   });
 }
 
