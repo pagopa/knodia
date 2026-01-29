@@ -20,6 +20,7 @@ export async function startTestPostgresContainer({
     .start();
 
   const port = container.getMappedPort(TEST_POSTGRES_DB_PORT);
+  const connectionString = `postgresql://${dbUser}:${dbPassword}@${container.getHost()}:${port}`;
 
-  return { container, port };
+  return { connectionString, container, port };
 }

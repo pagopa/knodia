@@ -5,7 +5,6 @@ describe("Sample Test", () => {
     expect(true).toBe(true);
   });
   it("should pass2", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
     expect(true).toBe(true);
   });
 });

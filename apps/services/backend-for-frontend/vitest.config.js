@@ -1,7 +1,3 @@
 import { defineProject } from "vitest/config";
 
-export default defineProject({
-  test: {
-    globalSetup: ["./globalTestSetup.ts"],
-  },
-});
+export default defineProject({});

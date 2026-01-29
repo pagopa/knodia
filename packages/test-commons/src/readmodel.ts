@@ -14,6 +14,31 @@ export async function cleanupReadmodelTestDatabase(db: NodePgDatabase) {
   await db.execute("TRUNCATE TABLE eservice CASCADE");
 }
 
+export function destroyReadmodelTestDatabase(connectionString: string) {
+  return async () => {
+    const dbName = connectionString.split("/").pop() as string;
+
+    const adminDb = drizzle(
+      connectionString.replace(`/${dbName}`, `/postgres`),
+    );
+
+    try {
+      // Terminate all connections to the database
+      await adminDb.execute(`
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '${dbName}'
+          AND pid <> pg_backend_pid();
+      `);
+
+      // Drop the database
+      await adminDb.execute(`DROP DATABASE IF EXISTS "${dbName}"`);
+    } finally {
+      await adminDb.$client.end();
+    }
+  };
+}
+
 export async function setupReadmodelTestContainer() {
   return await startTestPostgresContainer({
     dbPassword: READMODEL_DB_PASSWORD,
@@ -21,29 +46,29 @@ export async function setupReadmodelTestContainer() {
   });
 }
 
-export async function setupReadmodelTestDatabase() {
-  const { container, port } = await setupReadmodelTestContainer();
-
+export async function setupReadmodelTestDatabase(connectionString: string) {
   const randomId = crypto.randomUUID();
   const dbName = `test_readmodel_db_worker_${randomId}`;
 
-  await container.exec([
-    "psql",
-    "-U",
-    READMODEL_DB_USER,
-    "-d",
-    "postgres",
-    "-c",
-    `CREATE DATABASE "${dbName}";`,
-  ]);
+  const adminDb = drizzle(connectionString + `/postgres`);
 
-  const connectionString = `postgresql://${READMODEL_DB_USER}:${READMODEL_DB_PASSWORD}@${container.getHost()}:${port}/${dbName}`;
+  try {
+    await adminDb.execute(`CREATE DATABASE "${dbName}"`);
+  } finally {
+    await adminDb.$client.end();
+  }
 
-  const db = drizzle(connectionString);
-  await applyReadmodelMigrations(db);
-  await db.$client.end();
+  const dbConnectionString = connectionString + `/${dbName}`;
 
-  return connectionString;
+  const db = drizzle(dbConnectionString);
+
+  try {
+    await applyReadmodelMigrations(db);
+  } finally {
+    await db.$client.end();
+  }
+
+  return dbConnectionString;
 }
 
 async function applyReadmodelMigrations(db: NodePgDatabase) {
