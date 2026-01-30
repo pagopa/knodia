@@ -55,8 +55,8 @@ const toEserviceInterfaceV1 = (
   eserviceInterface: EserviceInterface,
 ): EserviceInterfaceV1 => ({
   ...eserviceInterface,
-  createdAt: eserviceInterface.createdAt.getTime().toString(),
-  updatedAt: eserviceInterface.updatedAt.getTime().toString(),
+  createdAt: eserviceInterface.createdAt.getTime(),
+  updatedAt: eserviceInterface.updatedAt.getTime(),
 });
 
 const toEserviceVersionV1 = (version: EserviceVersion): EserviceVersionV1 => ({
