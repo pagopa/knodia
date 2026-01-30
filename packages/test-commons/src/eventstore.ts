@@ -20,7 +20,7 @@ const EVENTSTORE_DB_TEMPLATE_NAME = "eventstore_template";
  * Should be called after each test.
  */
 export async function cleanupEventstoreTestDatabase(db: NodePgDatabase) {
-  await truncateDbTables(db, ['"eservice"."eservice"']);
+  await truncateDbTables(db, ['"eservice"."events"']);
 }
 
 /**
@@ -31,9 +31,9 @@ export async function cleanupEventstoreTestDatabase(db: NodePgDatabase) {
  */
 export async function setupEventstoreTestContainer() {
   const startedContainer = await startTestPostgresContainer({
-    dbPassword: EVENTSTORE_DB_PASSWORD,
-    dbUser: EVENTSTORE_DB_USER,
+    password: EVENTSTORE_DB_PASSWORD,
     testContainerName: "knodia-event-store-test-container",
+    user: EVENTSTORE_DB_USER,
   });
 
   await createPostgresTemplateFromMigrations({

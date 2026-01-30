@@ -31,9 +31,9 @@ export async function cleanupReadmodelTestDatabase(db: NodePgDatabase) {
  */
 export async function setupReadmodelTestContainer() {
   const startedContainer = await startTestPostgresContainer({
-    dbPassword: READMODEL_DB_PASSWORD,
-    dbUser: READMODEL_DB_USER,
+    password: READMODEL_DB_PASSWORD,
     testContainerName: "knodia-readmodel-test-container",
+    user: READMODEL_DB_USER,
   });
 
   await createPostgresTemplateFromMigrations({
