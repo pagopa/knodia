@@ -340,6 +340,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EserviceSeed"
+        required: true
       responses:
         "201":
           description: E-service created successfully
