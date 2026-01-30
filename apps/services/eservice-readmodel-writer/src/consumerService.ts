@@ -18,7 +18,7 @@ export async function handleEserviceEvent(
         throw missingKafkaMessageDataError("eservice", msg.type);
       }
 
-      await writerService.insertEservice(
+      await writerService.upsertEservice(
         fromEserviceV1(eservice),
         message.version,
       );
