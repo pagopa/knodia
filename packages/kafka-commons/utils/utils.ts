@@ -1,0 +1,23 @@
+import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+
+import {
+  type EventSchema,
+  KafkaMessageEnvelope,
+} from "@knodia/common-models/event";
+
+/**
+ * Decodes a Kafka message using the provided event schema.
+ *
+ * @param {KafkaMessage} message - The Kafka message to decode.
+ * @throws {Error} - If the message is invalid or missing required data.
+ */
+export function decodeKafkaMessageEvent<TEvent extends EventSchema>(
+  message: KafkaMessage,
+  event: TEvent,
+) {
+  try {
+    return KafkaMessageEnvelope(event).decode(message);
+  } catch (error) {
+    throw new Error("Invalid message: " + JSON.stringify(error));
+  }
+}

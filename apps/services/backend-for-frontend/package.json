@@ -20,8 +20,10 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@fastify/request-context": "catalog:",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/logger": "workspace:*",
     "@dotenvx/dotenvx": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

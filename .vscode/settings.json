@@ -19,6 +19,20 @@
     "source.fixAll.eslint": "always"
   },
   "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true,
     "**/generated/**/*.ts": true
-  }
+  },
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "tailwindCSS.classFunctions": ["tv"]
 }

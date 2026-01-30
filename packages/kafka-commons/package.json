@@ -8,6 +8,7 @@
     "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "@confluentinc/kafka-javascript": "catalog:",
     "zod": "catalog:"
   },
@@ -19,7 +20,8 @@
     "eslint": "catalog:"
   },
   "exports": {
-    ".": "./utils.ts",
+    ".": "./utils/kafka.ts",
+    "./utils": "./utils/utils.ts",
     "./config": "./config/config.ts"
   }
 }
