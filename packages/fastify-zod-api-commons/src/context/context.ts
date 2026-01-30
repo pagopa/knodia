@@ -14,7 +14,9 @@ declare module "@fastify/request-context" {
   }
 }
 
-export const getContextValues = (requestContext: RequestContext) => ({
+export const getContextValues = (
+  requestContext: RequestContext,
+): RequestContextData => ({
   correlationId: getRequiredContextItem(requestContext, "correlationId"),
   logger: getRequiredContextItem(requestContext, "logger"),
   serviceName: getRequiredContextItem(requestContext, "serviceName"),

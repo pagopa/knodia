@@ -1,5 +1,6 @@
-import type { Eservice } from "@knodia/eservice-models";
+import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
 
+import { type RequestContextData } from "@fastify/request-context";
 import {
   type EserviceId,
   type EserviceInterfaceId,
@@ -7,26 +8,35 @@ import {
   generateId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
+import { type Eservice } from "@knodia/eservice-models";
+
+import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
-export function eserviceServiceBuilder() {
+export function eserviceServiceBuilder(
+  eventStoreWriter: EserviceEventStoreWriter,
+) {
   return {
-    createEservice(name: string): Eservice {
+    createEservice(name: string, ctx: RequestContextData): Eservice {
       // TODO use logger from context and log the creation
 
       const now = new Date();
 
+      const eserviceId = generateId<EserviceId>();
+      const eserviceVersionId = generateId<EserviceVersionId>();
+      const eserviceInterfaceId = generateId<EserviceInterfaceId>();
+      const producerId = generateId<OrganizationId>(); // TODO get from context after implementing auth
       const eservice: Eservice = {
         categories: [{ code: "category-1", scheme: "vocab-1" }],
         createdAt: now,
         description: { en: "Mock description" },
-        id: generateId<EserviceId>(),
+        id: eserviceId,
         isConsumerOperatorIdentificationRequired: false,
         isSignalHubEnabled: false,
         mode: "ProvideData",
         name: { en: name },
-        producerId: generateId<OrganizationId>(),
+        producerId,
         updatedAt: now,
         versions: [
           {
@@ -34,12 +44,12 @@ export function eserviceServiceBuilder() {
             accessTokenDuration: 3600,
             accessTokenType: "Bearer",
             createdAt: now,
-            id: generateId<EserviceVersionId>(),
+            id: eserviceVersionId,
             interfaceDocument: {
               checksum: "checksum-1",
               contentType: "application/json",
               createdAt: now,
-              id: generateId<EserviceInterfaceId>(),
+              id: eserviceInterfaceId,
               name: "Interface 1",
               path: "/interfaces/1.json",
               prettyName: {
@@ -56,7 +66,14 @@ export function eserviceServiceBuilder() {
           },
         ],
       };
-      // TODO write in event store
+
+      eventStoreWriter.insertEvent(
+        createEserviceVersionActivatedV1Event(
+          eservice,
+          eserviceVersionId,
+          ctx.correlationId,
+        ),
+      );
 
       return eservice;
     },
