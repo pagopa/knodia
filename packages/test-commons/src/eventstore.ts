@@ -33,6 +33,7 @@ export async function setupEventstoreTestContainer() {
   const startedContainer = await startTestPostgresContainer({
     dbPassword: EVENTSTORE_DB_PASSWORD,
     dbUser: EVENTSTORE_DB_USER,
+    testContainerName: "knodia-event-store-test-container",
   });
 
   await createPostgresTemplateFromMigrations({

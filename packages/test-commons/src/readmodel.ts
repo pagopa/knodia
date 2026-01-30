@@ -33,6 +33,7 @@ export async function setupReadmodelTestContainer() {
   const startedContainer = await startTestPostgresContainer({
     dbPassword: READMODEL_DB_PASSWORD,
     dbUser: READMODEL_DB_USER,
+    testContainerName: "knodia-readmodel-test-container",
   });
 
   await createPostgresTemplateFromMigrations({

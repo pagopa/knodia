@@ -55,11 +55,14 @@ export async function createPostgresTemplateFromMigrations({
 export async function startTestPostgresContainer({
   dbPassword,
   dbUser,
+  testContainerName,
 }: {
   dbPassword: string;
   dbUser: string;
+  testContainerName: string;
 }) {
   const container = await new GenericContainer(TEST_POSTGRES_IMAGE)
+    .withName(testContainerName)
     .withExposedPorts(TEST_POSTGRES_DB_PORT)
     .withReuse()
     .withEnvironment({
