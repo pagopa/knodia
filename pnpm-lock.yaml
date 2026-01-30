@@ -811,6 +811,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../../db/readmodel/eservice
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0

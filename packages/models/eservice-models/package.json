@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-eservice": "workspace:*",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
