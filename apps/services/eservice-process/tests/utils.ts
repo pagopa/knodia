@@ -5,7 +5,7 @@ import {
 } from "@knodia/test-commons/eventstore";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
-import buildApp from "../src/app.ts";
+import { buildApp } from "../src/app.ts";
 
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
 let app: ReturnType<typeof buildApp>;

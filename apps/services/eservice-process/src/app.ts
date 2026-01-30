@@ -7,13 +7,17 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
+
+import type { EserviceProcessConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 
-function buildApp({
+export function buildApp({
   eventStoreDb,
   loggerConfig,
   serviceName,
@@ -54,4 +58,27 @@ function buildApp({
   return app;
 }
 
-export default buildApp;
+export function buildAppFromConfig(config: EserviceProcessConfig) {
+  const pool = new Pool({
+    database: config.eventStoreDbName,
+    host: config.eventStoreDbHost,
+    password: config.eventStoreDbPassword,
+    port: config.eventStoreDbPort,
+    ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.eventStoreDbUser,
+  });
+
+  const eventStoreDb = drizzle(pool);
+
+  const app = buildApp({
+    eventStoreDb,
+    loggerConfig: config,
+    serviceName: config.serviceName,
+  });
+
+  app.addHook("onClose", async () => {
+    await pool.end();
+  });
+
+  return app;
+}
