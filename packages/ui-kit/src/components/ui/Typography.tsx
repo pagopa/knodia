@@ -7,10 +7,12 @@ const typography = tv({
   variants: {
     variant: {
       titleMdEm: "title-md-em",
+      bodySm: "body-sm",
       bodyMd: "body-md",
       bodyMdEm: "body-md-em",
       labelMd: "label-md",
       labelSm: "label-sm",
+      labelSmEm: "label-sm-em",
       labelLg: "label-lg",
     },
   },

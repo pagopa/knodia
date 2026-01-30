@@ -9,7 +9,8 @@
   },
   "exports": {
     "./themes/node1.css": "./src/themes/node1.css",
-    "./ui": "./src/components/ui/index.ts"
+    "./ui": "./src/components/ui/index.ts",
+    "./layout": "./src/components/layout/index.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "catalog:",

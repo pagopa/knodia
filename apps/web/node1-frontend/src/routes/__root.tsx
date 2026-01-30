@@ -4,6 +4,8 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { AppLayout } from "@/layouts/AppLayout";
+
 interface RouterContext {
   queryClient: QueryClient;
 }
@@ -15,7 +17,9 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 function RootLayout() {
   return (
     <>
-      <Outlet />
+      <AppLayout>
+        <Outlet />
+      </AppLayout>
       <TanStackDevtools
         plugins={[
           {
