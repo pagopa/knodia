@@ -192,6 +192,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EserviceSeed"
+        required: true
       parameters:
         - schema:
             allOf:
