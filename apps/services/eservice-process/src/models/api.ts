@@ -36,12 +36,12 @@ export const API_Eservice = z
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
-    id: z.string(),
+    id: z.uuid(),
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producerId: z.string(),
+    producerId: z.uuid(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
