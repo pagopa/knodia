@@ -16,7 +16,7 @@
     "vitest": "catalog:"
   },
   "exports": {
-    "./readmodel": "./src/readModel.ts",
+    "./readmodel": "./src/readmodel.ts",
     "./eventstore": "./src/eventstore.ts"
   }
 }
