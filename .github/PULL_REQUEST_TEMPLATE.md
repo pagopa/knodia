@@ -1,78 +1,28 @@
 Close [KN-XXX](https://pagopa.atlassian.net/browse/KN-XXX)
 
 # Description
-
 <!-- Brief description of what this PR does -->
+<!-- Describe your changes here  -->
 
-Describe your changes here...
+## Impacted packages
+<!-- List packages impacted by this PR or new packages added -->
 
-### Context
 
-<!-- List the main changes introduced by this PR -->
-
--
-
-### Test Plan
-
-<!-- Describe how to test these changes as a checkbox list -->
+## Test Plan
+<!-- Describe how you tested these changes -->
 
 - [ ] Run `pnpm turbo dev --filter=@knodia/<package-name>` to test runtime
 - [ ] Verified expected behavior
 
 <!-- Add screenshots below showing the test output (drag & drop or paste image here) -->
-
-```
-+--------------------------------------------------+
-|                                                  |
-|              +----------------+                  |
-|              |    /\    /\    |                  |
-|              |   /  \  /  \   |                  |
-|              |  /    \/    \  |                  |
-|              | /            \ |                  |
-|              +----------------+                  |
-|                                                  |
-|           [ Add screenshots here ]               |
-|                                                  |
-+--------------------------------------------------+
-```
+Add screenshots below showing the test output
 
 ---
 
-<!-- OPTIONAL: Remove the sections below if not applicable to your PR -->
+<!-- OPTIONAL: Usage Example provide code examples if helpful
+```typescript 
+  // Example usage
+``` -->
 
-### New Package: `@knodia/<package-name>`
-
-<!-- OPTIONAL: If introducing a new package, describe its purpose and features -->
-
-A new package that provides:
-
-- **Feature 1** - Description
-
----
-
-### New Dependencies (Workspace Catalog)
-
-<!-- OPTIONAL: If adding new dependencies, list them here -->
-
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `package-name` | `x.x.x` | Description |
-
----
-
-### Usage Example
-
-<!-- OPTIONAL: Provide code examples if helpful -->
-
-```typescript
-// Example usage
-```
-
----
-
-### Breaking Changes
-
-<!-- OPTIONAL: List any breaking changes and migration steps if applicable -->
-
-- None
+<!-- OPTIONAL: Notes add important note that can be relevant, for example list any breaking changes and migration steps if applicable -->
 
