@@ -325,9 +325,6 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
-      '@knodia/db-readmodel-eservice':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/eservice
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
@@ -536,9 +533,6 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../eslint-config
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../typescript-config

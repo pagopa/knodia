@@ -18,7 +18,10 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
 ) {
   return {
-    createEservice(name: string, ctx: RequestContextData): Eservice {
+    async createEservice(
+      name: string,
+      ctx: RequestContextData,
+    ): Promise<Eservice> {
       // TODO use logger from context and log the creation
 
       const now = new Date();
@@ -67,7 +70,7 @@ export function eserviceServiceBuilder(
         ],
       };
 
-      eventStoreWriter.insertEvent(
+      await eventStoreWriter.insertEvent(
         createEserviceVersionActivatedV1Event(
           eservice,
           eserviceVersionId,

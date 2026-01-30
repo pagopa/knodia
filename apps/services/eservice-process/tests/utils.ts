@@ -1,38 +1,45 @@
-import { readmodelEservice } from "@knodia/db-readmodel-eservice";
+import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
 import {
-  cleanupReadmodelTestDatabase,
-  setupReadmodelTestDatabase,
-} from "@knodia/test-commons/readmodel";
+  cleanupEventstoreTestDatabase,
+  setupEventstoreTestDatabase,
+} from "@knodia/test-commons/eventstore";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
-let db: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
+import buildApp from "../src/app.ts";
+
+let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
+let app: ReturnType<typeof buildApp>;
 
 beforeAll(async () => {
-  db = await setupReadmodelTestDatabase(inject("READMODEL_CONNECTION_STRING"));
+  eventStoreDb = await setupEventstoreTestDatabase(
+    inject("EVENTSTORE_CONNECTION_STRING"),
+  );
+
+  app = buildApp({
+    eventStoreDb,
+    loggerConfig: {
+      isProduction: false,
+      logLevel: "silent",
+      nodeEnv: "test",
+    },
+    serviceName: "eservice-process-test",
+  });
 });
 
 afterEach(async () => {
-  await cleanupReadmodelTestDatabase(db);
+  await cleanupEventstoreTestDatabase(eventStoreDb);
 });
 
 afterAll(async () => {
-  await db.$client.end();
+  await eventStoreDb.$client.end();
 });
 
-export async function getAllEservices() {
-  return await db.select().from(readmodelEservice);
+export async function getAllEserviceEvents() {
+  return await eventStoreDb.select().from(eventStoreEserviceEvents);
 }
 
-export async function insertMockEservice() {
-  await db.insert(readmodelEservice).values({
-    description: { en: "Description" },
-    id: crypto.randomUUID(),
-    isConsumerOperatorIdentificationRequired: true,
-    isSignalHubEnabled: false,
-    metadataVersion: 1,
-    mode: "REST",
-    name: { en: "Test Service " + crypto.randomUUID() },
-    producerId: crypto.randomUUID(),
-    updatedAt: new Date(),
+export function injectAppRequest() {
+  return app.inject().headers({
+    "x-correlation-id": crypto.randomUUID(),
   });
 }
