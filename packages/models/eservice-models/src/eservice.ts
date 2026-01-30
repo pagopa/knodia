@@ -7,6 +7,20 @@ import {
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
+export const LocalizedName = LocalizedText.extend({
+  en: z.string().min(5).max(60),
+})
+  .describe("Name of the E-service")
+  .meta({ id: "LocalizedName" });
+export type LocalizedName = z.infer<typeof LocalizedName>;
+
+export const LocalizedDescription = LocalizedText.extend({
+  en: z.string().min(10).max(250),
+})
+  .describe("Description of the E-service")
+  .meta({ id: "LocalizedDescription" });
+export type LocalizedDescription = z.infer<typeof LocalizedDescription>;
+
 const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;
 
@@ -23,7 +37,7 @@ const EserviceInterface = z.strictObject({
   id: EserviceInterfaceId,
   name: z.string(),
   path: z.string(),
-  prettyName: LocalizedText,
+  prettyName: LocalizedName,
   updatedAt: z.coerce.date(),
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
@@ -62,12 +76,12 @@ export type EserviceCategory = z.infer<typeof EserviceCategory>;
 const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
-  description: LocalizedText,
+  description: LocalizedDescription,
   id: EserviceId,
   isConsumerOperatorIdentificationRequired: z.boolean(),
   isSignalHubEnabled: z.boolean(),
   mode: EserviceMode,
-  name: LocalizedText,
+  name: LocalizedName,
   producerId: OrganizationId,
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),

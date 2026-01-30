@@ -1,6 +1,5 @@
+import { LocalizedDescription, LocalizedName } from "@knodia/eservice-models";
 import {
-  API_LocalizedDescription,
-  API_LocalizedName,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/fastify-zod-api-commons/models";
@@ -35,12 +34,12 @@ export const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
-    description: API_LocalizedDescription,
+    description: LocalizedDescription,
     id: z.uuid(),
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
-    name: API_LocalizedName,
+    name: LocalizedName,
     producerId: z.uuid(),
     updatedAt: z.iso.datetime(),
   })
@@ -76,9 +75,7 @@ export const API_EserviceSeed = z
       .array(API_EserviceCategory)
       .optional()
       .describe("Categories of the E-service"),
-    description: API_LocalizedDescription.describe(
-      "Description of the E-service",
-    ),
+    description: LocalizedDescription,
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()
@@ -102,7 +99,7 @@ export const API_EserviceSeed = z
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
-    name: API_LocalizedName.describe("Name of the E-service"),
+    name: LocalizedName,
     requiredAttributes: z
       .array(z.array(API_EserviceAttribute))
       .describe("Required attributes for the E-service"),
