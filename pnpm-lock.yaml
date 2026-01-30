@@ -536,9 +536,6 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../eslint-config
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../typescript-config
