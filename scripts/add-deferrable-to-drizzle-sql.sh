@@ -38,9 +38,13 @@ echo "$SQL_FILES"
 for FILE in $SQL_FILES; do
   echo "→ Processing $FILE"
 
+  # Add IF NOT EXISTS to CREATE SCHEMA statements
   sed -i.bak -E 's/^CREATE SCHEMA (")/CREATE SCHEMA IF NOT EXISTS \1/' "$FILE"
+
+  # Add IF NOT EXISTS to CREATE TABLE statements
   sed -i.bak -E 's/^CREATE TABLE (")/CREATE TABLE IF NOT EXISTS \1/' "$FILE"
 
+  # For each ADD CONSTRAINT statement, add a DROP CONSTRAINT IF EXISTS before it 
   sed -i.bak -E '/ALTER TABLE .* ADD CONSTRAINT/ {
     /--updated/ ! {
       s/ALTER TABLE ("[^"]+"\."[^"]+") ADD CONSTRAINT ("[^"]+") (.*);/ALTER TABLE \1 DROP CONSTRAINT IF EXISTS \2; --added --> statement-breakpoint\
