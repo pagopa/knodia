@@ -2,10 +2,14 @@ import type {} from "vitest";
 
 import { drizzle } from "drizzle-orm/node-postgres";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { fileURLToPath } from "node:url";
 
-import { startTestPostgresContainer } from "./testcontainers/postgres.ts";
+import {
+  createPostgresDatabaseFromTemplate,
+  createPostgresTemplateFromMigrations,
+  startTestPostgresContainer,
+  truncateDbTables,
+} from "./testcontainers/postgres.ts";
 
 const READMODEL_DB_PASSWORD = "readmodel_testpassword";
 const READMODEL_DB_USER = "readmodel_testuser";
@@ -16,7 +20,7 @@ const READMODEL_DB_TEMPLATE_NAME = "readmodel_template";
  * Should be called after each test.
  */
 export async function cleanupReadmodelTestDatabase(db: NodePgDatabase) {
-  await db.execute('TRUNCATE TABLE "eservice"."eservice" CASCADE');
+  await truncateDbTables(db, ['"eservice"."eservice"']);
 }
 
 /**
@@ -31,27 +35,15 @@ export async function setupReadmodelTestContainer() {
     dbUser: READMODEL_DB_USER,
   });
 
-  const adminDb = drizzle(startedContainer.connectionString + `/postgres`);
-
-  try {
-    await adminDb.execute(`CREATE DATABASE "${READMODEL_DB_TEMPLATE_NAME}"`);
-
-    const templateDb = drizzle(
-      startedContainer.connectionString + `/${READMODEL_DB_TEMPLATE_NAME}`,
-    );
-
-    try {
-      await applyReadmodelMigrations(templateDb);
-    } finally {
-      await templateDb.$client.end();
-    }
-
-    await adminDb.execute(
-      `ALTER DATABASE "${READMODEL_DB_TEMPLATE_NAME}" IS_TEMPLATE true`,
-    );
-  } finally {
-    await adminDb.$client.end();
-  }
+  await createPostgresTemplateFromMigrations({
+    connectionString: startedContainer.connectionString,
+    migrationFolders: [
+      fileURLToPath(
+        new URL(`../../db/readmodel/eservice/drizzle`, import.meta.url),
+      ),
+    ],
+    templateName: READMODEL_DB_TEMPLATE_NAME,
+  });
 
   return startedContainer;
 }
@@ -66,32 +58,13 @@ export async function setupReadmodelTestDatabase(connectionString: string) {
   const randomId = crypto.randomUUID();
   const dbName = `test_readmodel_db_worker_${randomId}`;
 
-  const adminDb = drizzle(connectionString + `/postgres`);
-
-  try {
-    await adminDb.execute(
-      `CREATE DATABASE "${dbName}" TEMPLATE "${READMODEL_DB_TEMPLATE_NAME}"`,
-    );
-  } finally {
-    await adminDb.$client.end();
-  }
+  await createPostgresDatabaseFromTemplate(
+    connectionString,
+    READMODEL_DB_TEMPLATE_NAME,
+    dbName,
+  );
 
   return drizzle(connectionString + `/${dbName}`);
-}
-
-async function applyReadmodelMigrations(db: NodePgDatabase) {
-  const getMigrationPath = (entity: string) =>
-    fileURLToPath(
-      new URL(`../../db/readmodel/${entity}/drizzle`, import.meta.url),
-    );
-
-  const migrations = [getMigrationPath("eservice")];
-
-  for (const migration of migrations) {
-    await migrate(db, {
-      migrationsFolder: migration,
-    });
-  }
 }
 
 declare module "vitest" {
