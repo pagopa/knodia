@@ -53,28 +53,32 @@ export async function createPostgresTemplateFromMigrations({
 }
 
 export async function startTestPostgresContainer({
-  dbPassword,
-  dbUser,
+  password,
   testContainerName,
+  user,
 }: {
-  dbPassword: string;
-  dbUser: string;
+  password: string;
   testContainerName: string;
+  user: string;
 }) {
   const container = await new GenericContainer(TEST_POSTGRES_IMAGE)
     .withName(testContainerName)
     .withExposedPorts(TEST_POSTGRES_DB_PORT)
     .withReuse()
     .withEnvironment({
-      POSTGRES_PASSWORD: dbPassword,
-      POSTGRES_USER: dbUser,
+      POSTGRES_PASSWORD: password,
+      POSTGRES_USER: user,
     })
     .start();
 
   const port = container.getMappedPort(TEST_POSTGRES_DB_PORT);
-  const connectionString = `postgresql://${dbUser}:${dbPassword}@${container.getHost()}:${port}`;
+  const host = container.getHost();
+  const connectionString = `postgresql://${user}:${password}@${host}:${port}`;
 
-  return { connectionString, container, port };
+  return {
+    connectionString,
+    container,
+  };
 }
 
 export async function truncateDbTables(
