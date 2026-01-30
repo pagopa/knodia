@@ -1,0 +1,28 @@
+{
+  "name": "@knodia/db-event-store-writer",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@knodia/db-event-store-eservice": "workspace:*",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    "./eservice": "./src/eserviceEventWriter.ts"
+  }
+}

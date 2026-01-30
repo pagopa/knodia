@@ -107,6 +107,34 @@ const updateErrorResponseContentsWithProblemJson = (
   return openapi;
 };
 
+/**
+ * Mark all request bodies as required in the generated OpenAPI spec.
+ * This is a workaround because fastify-swagger does not set `required: true`
+ * on request bodies by default when a body schema is defined.
+ * See: https://github.com/fastify/fastify-swagger/issues/894
+ */
+const markRequestBodiesAsRequired = (
+  openapi: Partial<OpenAPIV3.Document>,
+): Partial<OpenAPIV3.Document> => {
+  if (!openapi.paths) {
+    return openapi;
+  }
+
+  for (const pathItem of Object.values(openapi.paths)) {
+    if (!pathItem) continue;
+
+    for (const operation of Object.values(pathItem)) {
+      if (!operation || typeof operation !== "object") continue;
+      if (!("requestBody" in operation) || !operation.requestBody) continue;
+      if ("$ref" in operation.requestBody) continue;
+
+      operation.requestBody.required = true;
+    }
+  }
+
+  return openapi;
+};
+
 export const zodToJsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
     target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
@@ -128,5 +156,6 @@ export const zodToJsonSchemaTransformObjectWithoutInputSchemas: typeof zodToJson
       [
         removeZodInputSchemasFromOpenapi,
         updateErrorResponseContentsWithProblemJson,
+        markRequestBodiesAsRequired,
       ],
     );

@@ -1,4 +1,4 @@
-import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-eservice/writer";
+import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/eservice";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
