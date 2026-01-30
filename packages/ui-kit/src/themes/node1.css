@@ -76,10 +76,6 @@
   --color-error-dark-decorative: var(--color-rose-600);
   --color-error-dark-mid-contrast: var(--color-rose-200);
 
-  /* Shadows */
-  --shadow-color: rgba(51, 65, 85, 0.08);
-  --shadow-dropdown: 0 16px 32px 0px rgba(51, 65, 85, 0.24);
-
   /* Mapped Colors */
   --color-neutral-50: var(--color-slate-50);
   --color-neutral-100: var(--color-slate-100);
@@ -216,5 +212,27 @@
     font-weight: var(--font-weight-headline-em);
     letter-spacing: var(--letter-spacing-headline-sm);
     line-height: var(--line-height-headline);
+  }
+  
+  /* Elevation Shadows */
+  .elevation-1 {
+    box-shadow: 0 2px 4px 0
+      color-mix(in srgb, var(--color-slate-700) 8%, transparent);
+  }
+  .elevation-2 {
+    box-shadow: 0 4px 8px 0
+      color-mix(in srgb, var(--color-slate-700) 12%, transparent);
+  }
+  .elevation-3 {
+    box-shadow: 0 8px 16px 0
+      color-mix(in srgb, var(--color-slate-700) 16%, transparent);
+  }
+  .elevation-4 {
+    box-shadow: 0 16px 32px 0
+      color-mix(in srgb, var(--color-slate-700) 24%, transparent);
+  }
+  .elevation-5 {
+    box-shadow: 0 32px 64px 0
+      color-mix(in srgb, var(--color-slate-700) 32%, transparent);
   }
 }

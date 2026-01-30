@@ -8,6 +8,7 @@
     "lint:autofix": "eslint . --fix"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
@@ -18,8 +19,8 @@
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
-    "@dotenvx/dotenvx": "catalog:",
     "@knodia/db-readmodel-eservice": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",

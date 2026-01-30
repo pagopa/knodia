@@ -59,8 +59,8 @@ message EserviceInterfaceV1 {
   string contentType = 4;
   string path = 5;
   string checksum = 6;
-  string createdAt = 7;
-  string updatedAt = 8;
+  int64 createdAt = 7;
+  int64 updatedAt = 8;
 }
 message EserviceVersionRequiredAttributeGroupV1 {
   int32 groupId = 1;
