@@ -31,10 +31,6 @@
     "lint-openapi": {
       "dependsOn": ["generate-openapi"]
     },
-    "test": {
-      "dependsOn": ["generate-protobuf"],
-      "outputs": []
-    },
     "db:generate": {
       "outputs": ["drizzle/**"]
     },
@@ -53,7 +49,6 @@
     },
     "//#infra:destroy": {
       "cache": false
-    },
-    "//#test": {}
+    }
   }
 }
