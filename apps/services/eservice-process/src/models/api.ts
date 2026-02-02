@@ -48,10 +48,10 @@ export const API_EserviceSeed = z
       .number()
       .int()
       .min(1)
-      .max(1440)
+      .max(86400)
       .optional()
-      .default(60)
-      .describe("Duration of the access token in minutes")
+      .default(3600)
+      .describe("Duration of the access token in seconds")
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.optional()
       .default("Bearer")
