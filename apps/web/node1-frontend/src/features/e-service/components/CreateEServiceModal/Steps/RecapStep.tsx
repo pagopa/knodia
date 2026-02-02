@@ -23,6 +23,7 @@ export function RecapStep() {
           label="Access Token Duration"
           value={`${values.accessTokenDuration} seconds`}
         />
+        <RecapField label="Categories" value={values.categories || "-"} />
       </div>
 
       <Footer

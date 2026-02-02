@@ -19,7 +19,7 @@ import { dropdownStyles, fieldInputStyle, listItemStyles } from "./styles";
 
 const styles = tv({
   extend: fieldInputStyle,
-  base: "flex items-center text-start gap-4 w-full",
+  base: "flex items-center text-start gap-4 w-full text-primary-light-high-contrast",
   variants: {
     size: {
       sm: "py-1.25",
@@ -75,7 +75,7 @@ export function Select<T extends Iterable<unknown>>({
           })
         }
       >
-        <SelectValue className="flex-1 body-md truncate">
+        <SelectValue className="flex-1 body-md truncate data-placeholder:text-primary-light-low-contrast">
           {({ selectedText, defaultChildren }) =>
             selectedText || defaultChildren
           }
