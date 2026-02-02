@@ -11,7 +11,7 @@ export const EventStoreEserviceConfig = EventStoreConfig.and(
       eventStoreDbEserviceSchema: c.EVENTSTORE_DB_ESERVICE_SCHEMA,
     })),
 );
-export type EventStoreEserviceConfig = z.infer<typeof EventStoreEserviceConfig>;
+type EventStoreEserviceConfig = z.infer<typeof EventStoreEserviceConfig>;
 
 export const eventStoreEserviceConfig: EventStoreEserviceConfig =
   EventStoreEserviceConfig.parse(env);

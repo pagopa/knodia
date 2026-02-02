@@ -4,15 +4,6 @@ import { KafkaJS } from "@confluentinc/kafka-javascript";
 
 import { KafkaConfig, KafkaConsumerConfig } from "../config/config.ts";
 
-export async function runAdminClient(config: KafkaConfig) {
-  const kafka = await initKafka(config);
-
-  const admin = kafka.admin();
-  await admin.connect();
-
-  return admin;
-}
-
 export async function runConsumer(
   topics: string[],
   consumerHandler: (messagePayload: EachMessagePayload) => Promise<void>,

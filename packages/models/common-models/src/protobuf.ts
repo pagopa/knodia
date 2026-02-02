@@ -1,6 +1,6 @@
 import z from "zod";
 
-export const protobufBytes = z.custom<Uint8Array<ArrayBufferLike>>(
+const protobufBytes = z.custom<Uint8Array<ArrayBufferLike>>(
   (value): value is Uint8Array<ArrayBufferLike> => value instanceof Uint8Array,
   { message: "Expected Uint8Array" },
 );
