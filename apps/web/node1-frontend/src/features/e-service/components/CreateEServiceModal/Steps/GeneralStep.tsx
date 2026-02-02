@@ -1,9 +1,10 @@
-import { TextArea, TextField, Typography } from "@knodia/ui-kit/ui";
+import { TextArea, TextField } from "@knodia/ui-kit/ui";
 
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
+import { StepTitle } from "../StepsTitle";
 
 interface Props {
   onCancel: () => void;
@@ -15,13 +16,10 @@ export function GeneralStep({ onCancel }: Props) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Typography className="headline-lg-em">General Information</Typography>
-        <Typography variant="bodyMd">
-          This information will be used to find your E-Service. Be precise and
-          clear.
-        </Typography>
-      </div>
+      <StepTitle
+        description="This information will be used to find your E-Service. Be precise and clear."
+        title="General Information"
+      />
 
       <form.Field name="name">
         {(field) => (

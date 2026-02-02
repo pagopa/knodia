@@ -1,9 +1,8 @@
-import { Typography } from "@knodia/ui-kit/ui";
-
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
+import { StepTitle } from "../StepsTitle";
 
 export function RecapStep() {
   const form = useEServiceFormContext();
@@ -12,12 +11,10 @@ export function RecapStep() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Typography className="headline-lg-em">Recap</Typography>
-        <Typography variant="bodyMd">
-          Check that everything is correct before the publication.
-        </Typography>
-      </div>
+      <StepTitle
+        description="Check that everything is correct before the publication."
+        title="Recap"
+      />
 
       <div className="rounded-lg border border-secondary-light-low-contrast p-4">
         <RecapField label="Name" value={values.name || "-"} />

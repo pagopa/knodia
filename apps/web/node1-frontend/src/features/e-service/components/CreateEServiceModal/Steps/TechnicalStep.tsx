@@ -1,9 +1,10 @@
-import { TextField, Typography } from "@knodia/ui-kit/ui";
+import { TextField } from "@knodia/ui-kit/ui";
 
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
+import { StepTitle } from "../StepsTitle";
 
 export function TechnicalStep() {
   const form = useEServiceFormContext();
@@ -11,12 +12,10 @@ export function TechnicalStep() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <Typography className="headline-lg-em">Technical details</Typography>
-        <Typography variant="bodyMd">
-          Define the technical specifications of your E-Service.
-        </Typography>
-      </div>
+      <StepTitle
+        description="Define the technical specifications of your E-Service."
+        title="Technical details"
+      />
 
       <form.Field name="accessTokenDuration">
         {(field) => (

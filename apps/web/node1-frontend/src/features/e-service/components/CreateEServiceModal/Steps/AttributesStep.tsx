@@ -1,20 +1,17 @@
-import { Typography } from "@knodia/ui-kit/ui";
-
 import { useStepsContext } from "@/contexts/steps";
 
 import { Footer } from "../Footer";
+import { StepTitle } from "../StepsTitle";
 
 export function AttributesStep() {
   const { nextStep, prevStep } = useStepsContext();
 
   return (
     <div className="space-y-6">
-      <div>
-        <Typography className="headline-lg-em">Attributes</Typography>
-        <Typography variant="bodyMd">
-          Choose which organization can request an Agreement for your E-Service.
-        </Typography>
-      </div>
+      <StepTitle
+        description="Choose which organization can request an Agreement for your E-Service."
+        title="Attributes"
+      />
 
       <Footer onCancel={prevStep} onConfirm={nextStep} />
     </div>
