@@ -7,6 +7,7 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -20,11 +21,9 @@ import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 export function buildApp({
   eventStoreDb,
   loggerConfig,
-  serviceName,
 }: {
   eventStoreDb: NodePgDatabase;
   loggerConfig: LoggerConfig;
-  serviceName: string;
 }) {
   const app = createFastifyApp({
     fastifyOptions: {
@@ -46,7 +45,7 @@ export function buildApp({
     },
     loggerConfig,
     makeApiProblem,
-    serviceName,
+    serviceName: serviceName.ESERVICE_PROCESS,
   });
 
   app.register(healthRouter);
@@ -73,7 +72,6 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
   const app = buildApp({
     eventStoreDb,
     loggerConfig: config,
-    serviceName: config.serviceName,
   });
 
   app.addHook("onClose", async () => {
