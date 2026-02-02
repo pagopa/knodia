@@ -38,7 +38,7 @@ const modal = tv({
   },
 });
 
-export interface ModalProps extends AriaModalOverlayProps {
+interface ModalProps extends AriaModalOverlayProps {
   actionLabel: string;
   cancelLabel?: string;
   children: React.ReactNode;

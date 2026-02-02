@@ -32,10 +32,6 @@ const styles = tv({
   },
 });
 
-export interface DropdownItemProps extends ListBoxItemProps {
-  endIcon?: React.ReactNode;
-  startIcon?: React.ReactNode;
-}
 export interface SelectProps<T extends Iterable<unknown>>
   extends Omit<AriaSelectProps<T>, "children">, SelectVariants {
   children: ((item: T) => React.ReactNode) | React.ReactNode;
@@ -43,6 +39,10 @@ export interface SelectProps<T extends Iterable<unknown>>
   errorMessage?: ((validation: ValidationResult) => string) | string;
   items?: Iterable<T>;
   label?: string;
+}
+interface DropdownItemProps extends ListBoxItemProps {
+  endIcon?: React.ReactNode;
+  startIcon?: React.ReactNode;
 }
 
 type SelectVariants = VariantProps<typeof styles>;

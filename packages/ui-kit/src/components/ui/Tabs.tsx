@@ -64,16 +64,16 @@ const tab = tv({
   ],
 });
 
-export interface TabListProps<T extends object = object>
+interface TabListProps<T extends object = object>
   extends RACTabListProps<T>, TabListVariants {}
 
-export type TabPanelProps = RACTabPanelProps;
-export interface TabProps extends RACTabProps, TabVariants {}
+type TabListVariants = VariantProps<typeof tabList>;
+type TabPanelProps = RACTabPanelProps;
 
-export interface TabsProps extends RACTabsProps {
+interface TabProps extends RACTabProps, TabVariants {}
+interface TabsProps extends RACTabsProps {
   kind?: TabsKind;
 }
-type TabListVariants = VariantProps<typeof tabList>;
 
 type TabVariants = Omit<VariantProps<typeof tab>, "isSelected">;
 

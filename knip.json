@@ -5,7 +5,8 @@
     ".": {},
     "packages/*-process-client": {
       "entry": ["src/generated/**/*.ts"],
-      "ignore": ["src/generated/**/*.ts"]
+      "ignore": ["src/generated/**/*.ts"],
+      "ignoreDependencies": ["axios"]
     },
     "packages/models/*-models": {
       "entry": ["src/generated/**/*.ts"],

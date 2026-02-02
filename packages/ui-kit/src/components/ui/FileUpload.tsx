@@ -5,7 +5,7 @@ import { Description } from "./Field";
 
 const DEFAULT_ACCEPTED_FILE_TYPES = [".yaml", ".yml", ".json", ".xml"];
 
-export interface FileUploadProps extends Pick<
+interface FileUploadProps extends Pick<
   FileTriggerProps,
   "acceptedFileTypes" | "allowsMultiple" | "onSelect"
 > {
