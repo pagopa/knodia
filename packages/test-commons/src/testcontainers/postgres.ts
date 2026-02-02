@@ -3,7 +3,7 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { GenericContainer } from "testcontainers";
 
 const TEST_POSTGRES_DB_PORT = 5432;
-const TEST_POSTGRES_IMAGE = "postgres:14";
+const TEST_POSTGRES_IMAGE = "postgres:18";
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,

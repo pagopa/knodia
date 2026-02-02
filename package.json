@@ -16,7 +16,7 @@
     "infra:stop": "./scripts/infra-stop.sh",
     "infra:destroy": "./scripts/infra-destroy.sh",
     "prune-modules": "find . -name 'node_modules' -type d -exec rm -rf {} +",
-    "test": "turbo run generate-openapi generate-protobuf && vitest run"
+    "test": "turbo run build-knip-dependencies && vitest run"
   },
   "devDependencies": {
     "knip": "catalog:",
