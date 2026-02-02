@@ -1,4 +1,5 @@
 import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
+import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   cleanupEventstoreTestDatabase,
   setupEventstoreTestDatabase,
@@ -40,6 +41,6 @@ export async function getAllEserviceEvents() {
 
 export function injectAppRequest() {
   return app.inject().headers({
-    "x-correlation-id": crypto.randomUUID(),
+    [CORRELATION_ID_HEADER]: crypto.randomUUID(),
   });
 }

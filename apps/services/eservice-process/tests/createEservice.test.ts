@@ -19,4 +19,20 @@ describe("POST /eservices (createEservice)", () => {
       type: "EserviceVersionActivatedV1",
     });
   });
+
+  it.each([
+    { wrongProperty: "wrong" },
+    { name: 99 },
+    { name: "" },
+    { name: "Test E-service", wrongProperty: "wrong" },
+    {},
+  ])(
+    "should return 400 if the body is not correctly formatted (%o)",
+    async (body) => {
+      const response = await injectAppRequest()
+        .post("/eservices")
+        .body(body as never);
+      expect(response.statusCode).toBe(400);
+    },
+  );
 });
