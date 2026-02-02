@@ -81,15 +81,6 @@ export async function startTestPostgresContainer({
   };
 }
 
-export async function truncateDbTables(
-  db: NodePgDatabase,
-  tableNames: string[],
-) {
-  for (const tableName of tableNames) {
-    await db.execute(`TRUNCATE TABLE ${tableName} CASCADE`);
-  }
-}
-
 async function applyMigrations(migrationFolders: string[], db: NodePgDatabase) {
   for (const migration of migrationFolders) {
     await migrate(db, {

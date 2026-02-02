@@ -1,27 +1,17 @@
 import type {} from "vitest";
 
 import { drizzle } from "drizzle-orm/node-postgres";
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { fileURLToPath } from "node:url";
 
 import {
   createPostgresDatabaseFromTemplate,
   createPostgresTemplateFromMigrations,
   startTestPostgresContainer,
-  truncateDbTables,
 } from "./testcontainers/postgres.ts";
 
 const EVENTSTORE_DB_PASSWORD = "eventstore_testpassword";
 const EVENTSTORE_DB_USER = "eventstore_testuser";
 const EVENTSTORE_DB_TEMPLATE_NAME = "eventstore_template";
-
-/**
- * Truncates eventstore data to keep tests isolated across runs.
- * Should be called after each test.
- */
-export async function cleanupEventstoreTestDatabase(db: NodePgDatabase) {
-  await truncateDbTables(db, ['"eservice"."events"']);
-}
 
 /**
  * !!! Intended to be called once in global test setup !!!
