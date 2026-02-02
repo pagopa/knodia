@@ -253,6 +253,7 @@ const expectedTestPost = {
         },
       },
     },
+    required: true,
   },
   responses: {
     "201": {

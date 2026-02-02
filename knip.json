@@ -1,12 +1,15 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
+  "includeEntryExports": true,
   "workspaces": {
     ".": {},
     "packages/*-process-client": {
-      "entry": ["src/generated/**/*.ts"]
+      "entry": ["src/generated/**/*.ts"],
+      "ignore": ["src/generated/**/*.ts"]
     },
     "packages/models/*-models": {
-      "entry": ["src/generated/**/*.ts"]
+      "entry": ["src/generated/**/*.ts"],
+      "ignore": ["src/generated/**/*.ts"]
     },
     "apps/services/backend-for-frontend": {
       "ignoreDependencies": ["@knodia/spectral-config"]

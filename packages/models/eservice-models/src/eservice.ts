@@ -32,9 +32,10 @@ const RequiredAttribute = z.strictObject({
   code: z.string(),
   scheme: z.string(),
 });
-export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
+type RequiredAttribute = z.infer<typeof RequiredAttribute>;
 
 const RequiredAttributeGroup = z.array(RequiredAttribute);
+export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
 
 const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),
@@ -56,7 +57,7 @@ const EserviceCategory = z.strictObject({
   code: z.string(),
   scheme: z.string(),
 });
-export type EserviceCategory = z.infer<typeof EserviceCategory>;
+type EserviceCategory = z.infer<typeof EserviceCategory>;
 
 const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),

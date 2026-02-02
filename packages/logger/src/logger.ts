@@ -2,7 +2,7 @@ import type { LoggerOptions } from "pino";
 
 import type { LoggerConfig } from "./config.ts";
 
-export const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
+const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
 
 /**
  * Resolves pretty print configuration for logs based on environment

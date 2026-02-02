@@ -1,6 +1,8 @@
+import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
 import type { Eservice } from "@knodia/eservice-models";
 import type { FastifyBaseLogger } from "fastify";
 
+import { type RequestContextData } from "@fastify/request-context";
 import {
   type EserviceId,
   type EserviceInterfaceId,
@@ -11,22 +13,28 @@ import {
 
 import type { API_EserviceSeed } from "../models/api.ts";
 
+import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
+
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
-export function eserviceServiceBuilder() {
+export function eserviceServiceBuilder(
+  eventStoreWriter: EserviceEventStoreWriter,
+) {
   return {
     createEservice(
       seed: API_EserviceSeed,
-      logger: FastifyBaseLogger,
+      { correlationId, logger }: RequestContextData,
     ): Eservice {
       const eserviceId = generateId<EserviceId>();
-      const producerId = generateId<OrganizationId>();
+      const producerId = generateId<OrganizationId>(); // TODO get from context after implementing auth
 
       logger.info(
-        `Creating E-service ${eserviceId} for producer ${producerId}`,
+        `Creating E-service ${eserviceId} for producer ${producerId} `,
       );
 
       const now = new Date();
+      const eserviceVersionId = generateId<EserviceVersionId>();
+      const eserviceInterfaceId = generateId<EserviceInterfaceId>();
 
       const eservice: Eservice = {
         categories: seed.categories ?? [],
@@ -43,16 +51,16 @@ export function eserviceServiceBuilder() {
         versions: [
           {
             accessTokenAudience: seed.accessTokenAudience,
-            accessTokenDuration: seed.accessTokenDuration ?? 60,
+            accessTokenDuration: seed.accessTokenDuration ?? 3600,
             accessTokenType: seed.accessTokenType ?? "Bearer",
             createdAt: now,
-            id: generateId<EserviceVersionId>(),
+            id: eserviceVersionId,
             // TODO: implement interface document upload
             interfaceDocument: {
               checksum: "checksum-1",
               contentType: "application/json",
               createdAt: now,
-              id: generateId<EserviceInterfaceId>(),
+              id: eserviceInterfaceId,
               name: "Interface 1",
               path: "/interfaces/1.json",
               prettyName: { en: "Interface 1" },
@@ -67,7 +75,14 @@ export function eserviceServiceBuilder() {
           },
         ],
       };
-      // TODO write in event store
+
+      eventStoreWriter.insertEvent(
+        createEserviceVersionActivatedV1Event(
+          eservice,
+          eserviceVersionId,
+          correlationId,
+        ),
+      );
 
       return eservice;
     },
@@ -98,6 +113,7 @@ export function eserviceServiceBuilder() {
             accessTokenType: "Bearer" as const,
             createdAt: now,
             id: generateId<EserviceVersionId>(),
+            // TODO: implement interface document upload
             interfaceDocument: {
               checksum: "checksum-1",
               contentType: "application/json",

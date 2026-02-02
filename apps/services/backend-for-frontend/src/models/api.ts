@@ -1,6 +1,12 @@
 import {
+  API_AccessTokenType,
+  API_EserviceAttribute,
+  API_EserviceCategory,
+  API_EserviceMode,
   API_LocalizedDescription,
   API_LocalizedName,
+} from "@knodia/eservice-models/api";
+import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/fastify-zod-api-commons/models";
@@ -36,12 +42,12 @@ const API_Eservice = z
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
-    id: z.string(),
+    id: z.uuid(),
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producerId: z.string(),
+    producerId: z.uuid(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
@@ -64,10 +70,10 @@ export const API_EserviceSeed = z
       .number()
       .int()
       .min(1)
-      .max(1440)
+      .max(86400)
       .optional()
-      .default(60)
-      .describe("Duration of the access token in minutes")
+      .default(3600)
+      .describe("Duration of the access token in seconds")
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.optional()
       .default("Bearer")
@@ -76,9 +82,7 @@ export const API_EserviceSeed = z
       .array(API_EserviceCategory)
       .optional()
       .describe("Categories of the E-service"),
-    description: API_LocalizedDescription.describe(
-      "Description of the E-service",
-    ),
+    description: API_LocalizedDescription,
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()
@@ -102,7 +106,7 @@ export const API_EserviceSeed = z
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
-    name: API_LocalizedName.describe("Name of the E-service"),
+    name: API_LocalizedName,
     requiredAttributes: z
       .array(z.array(API_EserviceAttribute))
       .describe("Required attributes for the E-service"),
@@ -112,7 +116,7 @@ export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 
 export const API_CreatedResource = z
   .strictObject({
-    id: z.string(),
+    id: z.uuid(),
   })
   .meta({ id: "CreatedResource" });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;

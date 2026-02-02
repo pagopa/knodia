@@ -1,5 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
+import { requestContext } from "@fastify/request-context";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   processHeaders,
@@ -48,7 +50,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: (req, res) => {
-      const eservice = eserviceService.createEservice(req.body, req.log);
+      const ctx = getContextValues(requestContext);
+      const eservice = eserviceService.createEservice(req.body, ctx);
       res.status(201).send(toAPI_Eservice(eservice));
     },
     method: "POST",

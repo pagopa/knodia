@@ -7,6 +7,7 @@ const errorCodes = {
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes);
 
+// TODO: remove if unused
 // function eserviceNotFound(id: string): ApiError<ErrorCodes> {
 //   return createApiError({
 //     code: "ESERVICE_NOT_FOUND",
