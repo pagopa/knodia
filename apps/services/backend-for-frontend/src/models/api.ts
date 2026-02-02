@@ -15,28 +15,6 @@ import { z } from "zod";
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
-const API_EserviceMode = z
-  .enum(["ProvideData", "ReceiveData"])
-  .meta({ id: "EserviceMode" });
-
-const API_EserviceCategory = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({ id: "EserviceCategory" });
-
-const API_AccessTokenType = z
-  .enum(["Bearer", "DPoP"])
-  .meta({ id: "AccessTokenType" });
-
-const API_EserviceAttribute = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({ id: "EserviceAttribute" });
-
 const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),

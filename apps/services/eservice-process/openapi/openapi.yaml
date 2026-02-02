@@ -29,26 +29,6 @@ components:
         - offset
         - total
       additionalProperties: false
-    LocalizedName:
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 5
-          maxLength: 60
-      required:
-        - en
-      additionalProperties: false
-    LocalizedDescription:
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
-      additionalProperties: false
     ProblemError:
       type: object
       properties:
