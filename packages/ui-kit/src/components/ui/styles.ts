@@ -55,7 +55,7 @@ export const fieldInputStyle = tv({
 });
 
 export const dropdownStyles = tv({
-  base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto",
+  base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
 });
 
 export const listItemStyles = tv({
@@ -95,8 +95,7 @@ export const buttonStyles = tv({
       outlined: "bg-white",
       tonal: "border-transparent",
       ghost: "border-transparent bg-transparent",
-      elevated:
-        "border border-neutral-100 bg-white shadow-[0_2px_4px_var(--shadow-color)]",
+      elevated: "border border-neutral-100 bg-white elevation-1",
     },
     hierarchy: {
       brand: "",
@@ -107,6 +106,9 @@ export const buttonStyles = tv({
       sm: "h-8 px-2",
       md: "h-9 px-3",
       lg: "h-10 px-4",
+      "icon-sm": "[&>svg]:h-5 [&>svg]:w-5 h-auto p-1.5",
+      "icon-md": "[&>svg]:h-5 [&>svg]:w-5 h-auto p-2",
+      "icon-lg": "[&>svg]:h-5 [&>svg]:w-5 h-auto p-2.5",
     },
     isDisabled: {
       true: "cursor-not-allowed opacity-30",

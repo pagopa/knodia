@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { DotsThreeIcon } from "@phosphor-icons/react";
 
-import { ButtonIcon } from "../components/ui";
+import { Button } from "../components/ui";
 import { Menu } from "../components/ui/Menu";
 import { MenuItem, MenuTrigger } from "../components/ui/Menu";
 
@@ -18,9 +18,9 @@ type Story = StoryObj<typeof Menu>;
 export const Default: Story = {
   render: () => (
     <MenuTrigger>
-      <ButtonIcon>
+      <Button size="icon-md">
         <DotsThreeIcon />
-      </ButtonIcon>
+      </Button>
       <Menu>
         <MenuItem>Profile</MenuItem>
         <MenuItem>Switch organization</MenuItem>

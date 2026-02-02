@@ -1,7 +1,7 @@
 import { CaretDownIcon } from "@phosphor-icons/react";
 import { twMerge } from "tailwind-merge";
 
-import { Avatar, type AvatarProps, InteractiveIcon, Typography } from "../ui";
+import { Avatar, type AvatarProps, InteractiveIcon } from "../ui";
 import { Menu, MenuTrigger } from "../ui/Menu";
 
 type NavbarProps = React.ComponentPropsWithoutRef<"nav">;
@@ -48,19 +48,13 @@ export function NavbarUserMenu({
       <div className="flex items-center gap-3">
         <Avatar {...avatar} />
         <div className="min-w-0">
-          <Typography
-            className="text-brand-dark-high-contrast truncate"
-            variant="labelMd"
-          >
+          <p className="text-brand-dark-high-contrast truncate label-md">
             {name}
-          </Typography>
+          </p>
           {role && (
-            <Typography
-              className="text-brand-dark-mid-contrast truncate"
-              variant="bodySm"
-            >
+            <p className="text-brand-dark-mid-contrast truncate body-sm">
               {role}
-            </Typography>
+            </p>
           )}
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { Children, cloneElement, useId } from "react";
 import { twMerge } from "tailwind-merge";
 
-import { Typography } from "../ui";
 import { listItemStyles } from "../ui/styles";
 
 interface SidebarNavItemProps {
@@ -31,11 +30,7 @@ export function Sidebar({ children, className, ...props }: SidebarProps) {
 }
 
 export function SidebarHeader({ children }: { children?: React.ReactNode }) {
-  return (
-    <Typography as="h2" variant="titleMdEm">
-      {children}
-    </Typography>
-  );
+  return <h2 className="title-md-em">{children}</h2>;
 }
 
 export function SidebarNavItem({ children, isCurrent }: SidebarNavItemProps) {
@@ -61,13 +56,12 @@ export function SidebarSection({ children, title }: SidebarSectionProps) {
   return (
     <nav aria-labelledby={title ? labelId : undefined}>
       {title && (
-        <Typography
-          className="uppercase text-primary-light-low-contrast mb-2"
+        <p
+          className="uppercase text-primary-light-low-contrast mb-2 label-sm-em"
           id={labelId}
-          variant="labelSmEm"
         >
           {title}
-        </Typography>
+        </p>
       )}
       <ul className="space-y-1" role="list">
         {children}
