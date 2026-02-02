@@ -21,13 +21,6 @@ import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/pu
 import { Route as ConsumptionEServicesRouteImport } from './routes/consumption/e-services'
 import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
 import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
-import { Route as ProductionEServicesNewRouteRouteImport } from './routes/production/e-services/new/route'
-import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
-import { Route as ProductionEServicesNewTechnicalIndexRouteImport } from './routes/production/e-services/new/technical/index'
-import { Route as ProductionEServicesNewRecapIndexRouteImport } from './routes/production/e-services/new/recap/index'
-import { Route as ProductionEServicesNewGeneralIndexRouteImport } from './routes/production/e-services/new/general/index'
-import { Route as ProductionEServicesNewDocsIndexRouteImport } from './routes/production/e-services/new/docs/index'
-import { Route as ProductionEServicesNewAttributesIndexRouteImport } from './routes/production/e-services/new/attributes/index'
 
 const OperatorsRoute = OperatorsRouteImport.update({
   id: '/operators',
@@ -90,55 +83,13 @@ const ProductionEServicesRouteRoute =
     path: '/production/e-services',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ProductionEServicesNewRouteRoute =
-  ProductionEServicesNewRouteRouteImport.update({
-    id: '/new',
-    path: '/new',
-    getParentRoute: () => ProductionEServicesRouteRoute,
-  } as any)
-const ProductionEServicesNewIndexRoute =
-  ProductionEServicesNewIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => ProductionEServicesNewRouteRoute,
-  } as any)
-const ProductionEServicesNewTechnicalIndexRoute =
-  ProductionEServicesNewTechnicalIndexRouteImport.update({
-    id: '/technical/',
-    path: '/technical/',
-    getParentRoute: () => ProductionEServicesNewRouteRoute,
-  } as any)
-const ProductionEServicesNewRecapIndexRoute =
-  ProductionEServicesNewRecapIndexRouteImport.update({
-    id: '/recap/',
-    path: '/recap/',
-    getParentRoute: () => ProductionEServicesNewRouteRoute,
-  } as any)
-const ProductionEServicesNewGeneralIndexRoute =
-  ProductionEServicesNewGeneralIndexRouteImport.update({
-    id: '/general/',
-    path: '/general/',
-    getParentRoute: () => ProductionEServicesNewRouteRoute,
-  } as any)
-const ProductionEServicesNewDocsIndexRoute =
-  ProductionEServicesNewDocsIndexRouteImport.update({
-    id: '/docs/',
-    path: '/docs/',
-    getParentRoute: () => ProductionEServicesNewRouteRoute,
-  } as any)
-const ProductionEServicesNewAttributesIndexRoute =
-  ProductionEServicesNewAttributesIndexRouteImport.update({
-    id: '/attributes/',
-    path: '/attributes/',
-    getParentRoute: () => ProductionEServicesNewRouteRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
-  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
+  '/production/e-services': typeof ProductionEServicesRouteRoute
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
   '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
@@ -146,20 +97,13 @@ export interface FileRoutesByFullPath {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
-  '/production/e-services/new': typeof ProductionEServicesNewRouteRouteWithChildren
-  '/production/e-services/new/': typeof ProductionEServicesNewIndexRoute
-  '/production/e-services/new/attributes': typeof ProductionEServicesNewAttributesIndexRoute
-  '/production/e-services/new/docs': typeof ProductionEServicesNewDocsIndexRoute
-  '/production/e-services/new/general': typeof ProductionEServicesNewGeneralIndexRoute
-  '/production/e-services/new/recap': typeof ProductionEServicesNewRecapIndexRoute
-  '/production/e-services/new/technical': typeof ProductionEServicesNewTechnicalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
-  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
+  '/production/e-services': typeof ProductionEServicesRouteRoute
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
   '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
@@ -167,12 +111,6 @@ export interface FileRoutesByTo {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
-  '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
-  '/production/e-services/new/attributes': typeof ProductionEServicesNewAttributesIndexRoute
-  '/production/e-services/new/docs': typeof ProductionEServicesNewDocsIndexRoute
-  '/production/e-services/new/general': typeof ProductionEServicesNewGeneralIndexRoute
-  '/production/e-services/new/recap': typeof ProductionEServicesNewRecapIndexRoute
-  '/production/e-services/new/technical': typeof ProductionEServicesNewTechnicalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -180,7 +118,7 @@ export interface FileRoutesById {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
-  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
+  '/production/e-services': typeof ProductionEServicesRouteRoute
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
   '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
@@ -188,13 +126,6 @@ export interface FileRoutesById {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption/': typeof ConsumptionIndexRoute
   '/production/': typeof ProductionIndexRoute
-  '/production/e-services/new': typeof ProductionEServicesNewRouteRouteWithChildren
-  '/production/e-services/new/': typeof ProductionEServicesNewIndexRoute
-  '/production/e-services/new/attributes/': typeof ProductionEServicesNewAttributesIndexRoute
-  '/production/e-services/new/docs/': typeof ProductionEServicesNewDocsIndexRoute
-  '/production/e-services/new/general/': typeof ProductionEServicesNewGeneralIndexRoute
-  '/production/e-services/new/recap/': typeof ProductionEServicesNewRecapIndexRoute
-  '/production/e-services/new/technical/': typeof ProductionEServicesNewTechnicalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -211,13 +142,6 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
-    | '/production/e-services/new'
-    | '/production/e-services/new/'
-    | '/production/e-services/new/attributes'
-    | '/production/e-services/new/docs'
-    | '/production/e-services/new/general'
-    | '/production/e-services/new/recap'
-    | '/production/e-services/new/technical'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -232,12 +156,6 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
-    | '/production/e-services/new'
-    | '/production/e-services/new/attributes'
-    | '/production/e-services/new/docs'
-    | '/production/e-services/new/general'
-    | '/production/e-services/new/recap'
-    | '/production/e-services/new/technical'
   id:
     | '__root__'
     | '/'
@@ -252,13 +170,6 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption/'
     | '/production/'
-    | '/production/e-services/new'
-    | '/production/e-services/new/'
-    | '/production/e-services/new/attributes/'
-    | '/production/e-services/new/docs/'
-    | '/production/e-services/new/general/'
-    | '/production/e-services/new/recap/'
-    | '/production/e-services/new/technical/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -266,7 +177,7 @@ export interface RootRouteChildren {
   DetailsAndAttributesRoute: typeof DetailsAndAttributesRoute
   KeychainsRoute: typeof KeychainsRoute
   OperatorsRoute: typeof OperatorsRoute
-  ProductionEServicesRouteRoute: typeof ProductionEServicesRouteRouteWithChildren
+  ProductionEServicesRouteRoute: typeof ProductionEServicesRouteRoute
   ConsumptionAgreementsRoute: typeof ConsumptionAgreementsRoute
   ConsumptionEServicesRoute: typeof ConsumptionEServicesRoute
   ConsumptionPurposesRoute: typeof ConsumptionPurposesRoute
@@ -362,107 +273,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionEServicesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/production/e-services/new': {
-      id: '/production/e-services/new'
-      path: '/new'
-      fullPath: '/production/e-services/new'
-      preLoaderRoute: typeof ProductionEServicesNewRouteRouteImport
-      parentRoute: typeof ProductionEServicesRouteRoute
-    }
-    '/production/e-services/new/': {
-      id: '/production/e-services/new/'
-      path: '/'
-      fullPath: '/production/e-services/new/'
-      preLoaderRoute: typeof ProductionEServicesNewIndexRouteImport
-      parentRoute: typeof ProductionEServicesNewRouteRoute
-    }
-    '/production/e-services/new/technical/': {
-      id: '/production/e-services/new/technical/'
-      path: '/technical'
-      fullPath: '/production/e-services/new/technical'
-      preLoaderRoute: typeof ProductionEServicesNewTechnicalIndexRouteImport
-      parentRoute: typeof ProductionEServicesNewRouteRoute
-    }
-    '/production/e-services/new/recap/': {
-      id: '/production/e-services/new/recap/'
-      path: '/recap'
-      fullPath: '/production/e-services/new/recap'
-      preLoaderRoute: typeof ProductionEServicesNewRecapIndexRouteImport
-      parentRoute: typeof ProductionEServicesNewRouteRoute
-    }
-    '/production/e-services/new/general/': {
-      id: '/production/e-services/new/general/'
-      path: '/general'
-      fullPath: '/production/e-services/new/general'
-      preLoaderRoute: typeof ProductionEServicesNewGeneralIndexRouteImport
-      parentRoute: typeof ProductionEServicesNewRouteRoute
-    }
-    '/production/e-services/new/docs/': {
-      id: '/production/e-services/new/docs/'
-      path: '/docs'
-      fullPath: '/production/e-services/new/docs'
-      preLoaderRoute: typeof ProductionEServicesNewDocsIndexRouteImport
-      parentRoute: typeof ProductionEServicesNewRouteRoute
-    }
-    '/production/e-services/new/attributes/': {
-      id: '/production/e-services/new/attributes/'
-      path: '/attributes'
-      fullPath: '/production/e-services/new/attributes'
-      preLoaderRoute: typeof ProductionEServicesNewAttributesIndexRouteImport
-      parentRoute: typeof ProductionEServicesNewRouteRoute
-    }
   }
 }
-
-interface ProductionEServicesNewRouteRouteChildren {
-  ProductionEServicesNewIndexRoute: typeof ProductionEServicesNewIndexRoute
-  ProductionEServicesNewAttributesIndexRoute: typeof ProductionEServicesNewAttributesIndexRoute
-  ProductionEServicesNewDocsIndexRoute: typeof ProductionEServicesNewDocsIndexRoute
-  ProductionEServicesNewGeneralIndexRoute: typeof ProductionEServicesNewGeneralIndexRoute
-  ProductionEServicesNewRecapIndexRoute: typeof ProductionEServicesNewRecapIndexRoute
-  ProductionEServicesNewTechnicalIndexRoute: typeof ProductionEServicesNewTechnicalIndexRoute
-}
-
-const ProductionEServicesNewRouteRouteChildren: ProductionEServicesNewRouteRouteChildren =
-  {
-    ProductionEServicesNewIndexRoute: ProductionEServicesNewIndexRoute,
-    ProductionEServicesNewAttributesIndexRoute:
-      ProductionEServicesNewAttributesIndexRoute,
-    ProductionEServicesNewDocsIndexRoute: ProductionEServicesNewDocsIndexRoute,
-    ProductionEServicesNewGeneralIndexRoute:
-      ProductionEServicesNewGeneralIndexRoute,
-    ProductionEServicesNewRecapIndexRoute:
-      ProductionEServicesNewRecapIndexRoute,
-    ProductionEServicesNewTechnicalIndexRoute:
-      ProductionEServicesNewTechnicalIndexRoute,
-  }
-
-const ProductionEServicesNewRouteRouteWithChildren =
-  ProductionEServicesNewRouteRoute._addFileChildren(
-    ProductionEServicesNewRouteRouteChildren,
-  )
-
-interface ProductionEServicesRouteRouteChildren {
-  ProductionEServicesNewRouteRoute: typeof ProductionEServicesNewRouteRouteWithChildren
-}
-
-const ProductionEServicesRouteRouteChildren: ProductionEServicesRouteRouteChildren =
-  {
-    ProductionEServicesNewRouteRoute:
-      ProductionEServicesNewRouteRouteWithChildren,
-  }
-
-const ProductionEServicesRouteRouteWithChildren =
-  ProductionEServicesRouteRoute._addFileChildren(
-    ProductionEServicesRouteRouteChildren,
-  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DetailsAndAttributesRoute: DetailsAndAttributesRoute,
   KeychainsRoute: KeychainsRoute,
   OperatorsRoute: OperatorsRoute,
-  ProductionEServicesRouteRoute: ProductionEServicesRouteRouteWithChildren,
+  ProductionEServicesRouteRoute: ProductionEServicesRouteRoute,
   ConsumptionAgreementsRoute: ConsumptionAgreementsRoute,
   ConsumptionEServicesRoute: ConsumptionEServicesRoute,
   ConsumptionPurposesRoute: ConsumptionPurposesRoute,

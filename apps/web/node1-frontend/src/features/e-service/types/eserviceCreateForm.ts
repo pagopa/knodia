@@ -13,9 +13,9 @@ export const ESERVICE_FORM_DEFAULTS: EServiceFormData = {
 };
 
 export const CREATE_FORM_STEPS: StepConfig[] = [
-  { href: "/production/e-services/new/general", label: "General" },
-  { href: "/production/e-services/new/technical", label: "Technical" },
-  { href: "/production/e-services/new/docs", label: "Docs" },
-  { href: "/production/e-services/new/attributes", label: "Attributes" },
-  { href: "/production/e-services/new/recap", label: "Recap" },
+  { label: "General" },
+  { label: "Technical" },
+  { label: "Docs" },
+  { label: "Attributes" },
+  { label: "Recap" },
 ];

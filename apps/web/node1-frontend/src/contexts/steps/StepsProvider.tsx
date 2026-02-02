@@ -1,51 +1,39 @@
-import type { ReactNode } from "react";
-
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { type ReactNode, useState } from "react";
 
 import { type StepConfig, StepsContext } from "./useStepsContext";
 
+interface StepsProviderProps {
+  children: ReactNode;
+  initialStep?: number;
+  stepConfig: StepConfig[];
+}
+
 export function StepsProvider({
   children,
+  initialStep = 0,
   stepConfig,
-}: {
-  children: ReactNode;
-  stepConfig: StepConfig[];
-}) {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const currentStepIndex = stepConfig.findIndex(
-    (step) => step.href === location.pathname,
-  );
+}: StepsProviderProps) {
+  const [currentStepIndex, setCurrentStepIndex] = useState(initialStep);
+  const totalSteps = stepConfig.length;
 
   const goToStep = (stepIndex: number) => {
-    const step = stepConfig[stepIndex];
-    if (step) {
-      navigate({ to: step.href });
+    if (stepIndex >= 0 && stepIndex < totalSteps) {
+      setCurrentStepIndex(stepIndex);
     }
   };
 
-  const nextStep = () => {
-    goToStep(currentStepIndex + 1);
-  };
-
-  const prevStep = () => {
-    goToStep(currentStepIndex - 1);
-  };
-
-  const reset = () => {
-    goToStep(0);
-  };
+  const nextStep = () => goToStep(currentStepIndex + 1);
+  const prevStep = () => goToStep(currentStepIndex - 1);
 
   return (
     <StepsContext.Provider
       value={{
-        currentStepIndex: Math.max(0, currentStepIndex),
+        currentStepIndex,
         goToStep,
         nextStep,
         prevStep,
-        reset,
         steps: stepConfig,
+        totalSteps,
       }}
     >
       {children}
