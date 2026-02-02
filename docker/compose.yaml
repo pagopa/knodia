@@ -99,10 +99,10 @@ services:
       event-store:
         condition: service_started
 
-  kafbat-ui:
+  kafka-ui:
     security_opt:
       - no-new-privileges:true
-    container_name: knodia-kafbat-ui
+    container_name: knodia-kafka-ui
     image: kafbat/kafka-ui:v1.4.2@sha256:8dd62c9b18a01b732824cae91c6fe5203fac8e931448a2a639bd20270b8fed2b
     ports:
       - 8084:8080
