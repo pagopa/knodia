@@ -66,7 +66,7 @@ const checkCorrelationIdHeader = (
 ) => {
   if (readCorrelationIdFromHeader) {
     app.addHook("onRequest", async (req, res) => {
-      if (req.url === healthRouterUrl) return;
+      if (req.url === healthRouterUrl || req.url.startsWith("/docs")) return;
 
       const correlationId = req.headers[CORRELATION_ID_HEADER];
       if (!correlationId) {
