@@ -15,9 +15,9 @@ type Story = StoryObj<typeof Tabs>;
 
 const labels = ["Label", "Label", "Label", "Label", "Label"] as const;
 
-function renderTabs(kind: "hug" | "fill") {
+function renderTabs(kind: "fill" | "hug") {
   return (
-    <div className="w-[800px]">
+    <div className="w-200">
       <Tabs defaultSelectedKey="tab-1" kind={kind}>
         <TabList aria-label="Tabs">
           {labels.map((label, index) => (
