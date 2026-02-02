@@ -20,11 +20,13 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
 ) {
   return {
-    createEservice(seed: API_EserviceSeed, ctx: RequestContextData): Eservice {
+    createEservice(
+      seed: API_EserviceSeed,
+      { correlationId, logger }: RequestContextData,
+    ): Eservice {
       const eserviceId = generateId<EserviceId>();
       const producerId = generateId<OrganizationId>(); // TODO get from context after implementing auth
 
-      const logger = ctx.logger;
       logger.info(
         `Creating E-service ${eserviceId} for producer ${producerId} `,
       );
@@ -77,7 +79,7 @@ export function eserviceServiceBuilder(
         createEserviceVersionActivatedV1Event(
           eservice,
           eserviceVersionId,
-          ctx.correlationId,
+          correlationId,
         ),
       );
 
