@@ -7,13 +7,12 @@ import type {
   EserviceVersionRequiredAttributeSQL,
   EserviceVersionSQL,
 } from "@knodia/db-readmodel-eservice";
-
 import type {
   Eservice,
   EserviceCategory,
   EserviceVersion,
   RequiredAttribute,
-} from "../eservice.ts";
+} from "@knodia/eservice-models";
 
 export const splitEserviceIntoObjectsSQL = (
   eservice: Eservice,

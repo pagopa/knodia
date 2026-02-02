@@ -8,10 +8,8 @@ import {
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
-import {
-  type Eservice,
-  splitEserviceIntoObjectsSQL,
-} from "@knodia/eservice-models";
+import { splitEserviceIntoObjectsSQL } from "@knodia/db-readmodel-eservice/splitters";
+import { type Eservice } from "@knodia/eservice-models";
 import { genericError } from "@knodia/fastify-zod-api-commons/models";
 import { eq, SQL } from "drizzle-orm";
 
