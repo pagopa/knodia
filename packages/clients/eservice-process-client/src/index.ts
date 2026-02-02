@@ -5,3 +5,5 @@ export const eserviceProcessApi = {
   ...generatedEserviceProcessApi,
   createClient,
 };
+
+export type * from "./generated/types.gen.ts";
