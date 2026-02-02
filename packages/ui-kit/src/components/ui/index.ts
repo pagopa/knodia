@@ -2,7 +2,6 @@ export * from "./Avatar";
 export * from "./Banner";
 export * from "./Breadcrumbs";
 export * from "./Button";
-export * from "./ButtonIcon";
 export * from "./ButtonLink";
 export * from "./Checkbox";
 export * from "./CheckboxGroup";

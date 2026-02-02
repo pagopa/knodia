@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { Navbar } from "@knodia/ui-kit/layout";
-import { ButtonIcon, Typography } from "@knodia/ui-kit/ui";
+import { Button } from "@knodia/ui-kit/ui";
 import { XIcon } from "@phosphor-icons/react";
 
 interface Props {
@@ -14,12 +14,15 @@ export function FullPageModal({ children, onClose, title }: Props) {
   return (
     <div className="fixed inset-0 z-50 bg-white">
       <Navbar className="bg-brand-light">
-        <Typography className="text-brand-light-high-contrast">
-          {title}
-        </Typography>
-        <ButtonIcon hierarchy="neutral" kind="ghost" onPress={onClose}>
+        <span className="text-brand-light-high-contrast">{title}</span>
+        <Button
+          hierarchy="neutral"
+          kind="ghost"
+          onPress={onClose}
+          size="icon-md"
+        >
           <XIcon />
-        </ButtonIcon>
+        </Button>
       </Navbar>
       {children}
     </div>
