@@ -1,7 +1,7 @@
 export * from "./Avatar";
 export * from "./Breadcrumbs";
 export * from "./Button";
-export * from "./ButtonIcon";
+export * from "./ButtonLink";
 export * from "./Chip";
 export * from "./Divider";
 export * from "./Field";
@@ -13,5 +13,6 @@ export * from "./Modal";
 export * from "./Select";
 export * from "./TextArea";
 export * from "./TextField";
+export * from "./Tabs";
 export * from "./Tooltip";
 export * from "./Typography";

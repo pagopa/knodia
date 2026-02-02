@@ -6,6 +6,11 @@ import { Button, type ButtonProps } from "../components/ui/Button";
 import { renderStickerSheet } from "./utils";
 
 const sizes: NonNullable<ButtonProps["size"]>[] = ["sm", "md", "lg"];
+const iconSizes: NonNullable<ButtonProps["size"]>[] = [
+  "icon-sm",
+  "icon-md",
+  "icon-lg",
+];
 const states = ["default", "disabled"] as const;
 
 const meta: Meta<typeof Button> = {
@@ -43,6 +48,29 @@ export const StickerSheet: Story = {
           >
             <PlaceholderIcon />
             Button
+            <PlaceholderIcon />
+          </Button>
+        )),
+      ),
+  ),
+};
+
+export const WithIconStickerSheet: Story = {
+  render: renderStickerSheet(
+    [
+      ["filled", "outlined", "ghost", "tonal", "elevated"],
+      ["neutral", "brand", "danger"],
+    ],
+    (kind, hierarchy) =>
+      states.map((state) =>
+        iconSizes.map((size) => (
+          <Button
+            hierarchy={hierarchy}
+            isDisabled={state === "disabled"}
+            key={`${hierarchy}-${kind}-${state}-${size}`}
+            kind={kind}
+            size={size}
+          >
             <PlaceholderIcon />
           </Button>
         )),
