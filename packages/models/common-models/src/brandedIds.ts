@@ -17,10 +17,10 @@ const IDS = EserviceId.or(EserviceVersionId)
   .or(OrganizationId);
 type IDS = z.infer<typeof IDS>;
 
-export function brandId<T extends IDS>(id: string): T {
-  return IDS.parse(id) as T;
-}
-
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
+}
+
+export function unsafeBrandId<T extends IDS>(id: string): T {
+  return z.uuid().parse(id) as T;
 }

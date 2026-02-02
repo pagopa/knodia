@@ -1,4 +1,4 @@
-import { brandId } from "@knodia/common-models/ids";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { match } from "ts-pattern";
 
 import {
@@ -38,10 +38,10 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => ({
     input.description,
     "Eservice description is undefined",
   ),
-  id: brandId(input.id),
+  id: unsafeBrandId(input.id),
   mode: fromEserviceModeV1(input.mode),
   name: throwIfMissing(input.name, "Eservice name is undefined"),
-  producerId: brandId(input.producerId),
+  producerId: unsafeBrandId(input.producerId),
   updatedAt: new Date(input.updatedAt),
   versions: input.versions.map(fromEserviceVersionV1),
 });
@@ -59,7 +59,7 @@ const fromEserviceVersionV1 = (input: EserviceVersionV1): EserviceVersion => ({
   ...input,
   accessTokenType: fromEserviceVersionAccessTokenTypeV1(input.accessTokenType),
   createdAt: new Date(input.createdAt),
-  id: brandId(input.id),
+  id: unsafeBrandId(input.id),
   interfaceDocument: throwIfMissing(
     input.interfaceDocument,
     "EserviceVersion interfaceDocument is undefined",
@@ -116,7 +116,7 @@ const fromEserviceVersionInterfaceV1 = (
 ): EserviceInterface => ({
   ...input,
   createdAt: new Date(input.createdAt),
-  id: brandId(input.id),
+  id: unsafeBrandId(input.id),
   prettyName: throwIfMissing(
     input.prettyName,
     "EserviceInterface prettyName is undefined",
