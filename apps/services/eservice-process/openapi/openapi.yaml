@@ -8,28 +8,6 @@ info:
   version: 1.0.0
 components:
   schemas:
-    LocalizedName:
-      description: Name of the E-service
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 5
-          maxLength: 60
-      required:
-        - en
-      additionalProperties: false
-    LocalizedDescription:
-      description: Description of the E-service
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
-      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -108,6 +86,28 @@ components:
         - correlationId
         - status
         - title
+      additionalProperties: false
+    LocalizedName:
+      description: Name of the E-service
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedDescription:
+      description: Description of the E-service
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
       additionalProperties: false
     EserviceMode:
       type: string

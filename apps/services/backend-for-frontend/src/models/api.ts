@@ -1,4 +1,7 @@
-import { LocalizedDescription, LocalizedName } from "@knodia/eservice-models";
+import {
+  API_LocalizedDescription,
+  API_LocalizedName,
+} from "@knodia/eservice-models/api";
 import {
   API_Pagination,
   API_PaginationQueryParams,
@@ -34,12 +37,12 @@ const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
-    description: LocalizedDescription,
+    description: API_LocalizedDescription,
     id: z.uuid(),
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
-    name: LocalizedName,
+    name: API_LocalizedName,
     producerId: z.uuid(),
     updatedAt: z.iso.datetime(),
   })
@@ -75,7 +78,7 @@ export const API_EserviceSeed = z
       .array(API_EserviceCategory)
       .optional()
       .describe("Categories of the E-service"),
-    description: LocalizedDescription,
+    description: API_LocalizedDescription,
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()
@@ -99,7 +102,7 @@ export const API_EserviceSeed = z
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
-    name: LocalizedName,
+    name: API_LocalizedName,
     requiredAttributes: z
       .array(z.array(API_EserviceAttribute))
       .describe("Required attributes for the E-service"),
