@@ -1,7 +1,16 @@
+import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
-import { useAppForm } from "@/contexts/form";
 import { ESERVICE_FORM_DEFAULTS } from "@/features/e-service/types/eserviceCreateForm";
+
+const { fieldContext, formContext } = createFormHookContexts();
+
+const { useAppForm } = createFormHook({
+  fieldComponents: {},
+  fieldContext,
+  formComponents: {},
+  formContext,
+});
 
 export function useEServiceAppForm() {
   return useAppForm({

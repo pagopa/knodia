@@ -2,7 +2,7 @@ import { Steps } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { StepsProvider, useStepsContext } from "@/contexts/steps";
-import { EServiceFormProvider } from "@/features/e-service/contexts/EServiceFormContext";
+import { EServiceFormProvider } from "@/features/e-service/contexts/EServiceFormProvider";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
 import { CREATE_FORM_STEPS } from "../../types/eserviceCreateForm";
@@ -17,15 +17,11 @@ interface Props {
 }
 
 export function CreateEServiceModal({ onClose }: Props) {
-  const handleClose = () => {
-    onClose();
-  };
-
   return (
-    <FullPageModal onClose={handleClose} title="Create E-Service">
+    <FullPageModal onClose={onClose} title="Create E-Service">
       <StepsProvider stepConfig={CREATE_FORM_STEPS}>
         <EServiceFormProvider>
-          <ModalContent onClose={handleClose} />
+          <ModalContent onClose={onClose} />
         </EServiceFormProvider>
       </StepsProvider>
     </FullPageModal>
