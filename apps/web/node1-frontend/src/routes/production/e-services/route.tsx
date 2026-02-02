@@ -1,28 +1,21 @@
 import { Button } from "@knodia/ui-kit/ui";
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-
-import { CreateEServiceModal } from "@/features/e-service/components/CreateEServiceModal/CreateEServiceModal";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/production/e-services")({
   component: EServicesLayout,
 });
 
 function EServicesLayout() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const onPress = () => navigate({ to: "/production/e-services/new" });
 
   return (
     <div>
-      <Button
-        className="absolute top-4 right-4"
-        onPress={() => setIsModalOpen(true)}
-      >
+      <Button className="absolute top-4 right-4" onPress={onPress}>
         Create E-service
       </Button>
       Hello "/production/e-services"!
-      {isModalOpen && (
-        <CreateEServiceModal onClose={() => setIsModalOpen(false)} />
-      )}
+      <Outlet />
     </div>
   );
 }

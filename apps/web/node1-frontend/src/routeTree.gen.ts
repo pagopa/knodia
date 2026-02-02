@@ -21,6 +21,7 @@ import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/pu
 import { Route as ConsumptionEServicesRouteImport } from './routes/consumption/e-services'
 import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
 import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
+import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
 
 const OperatorsRoute = OperatorsRouteImport.update({
   id: '/operators',
@@ -83,13 +84,19 @@ const ProductionEServicesRouteRoute =
     path: '/production/e-services',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProductionEServicesNewIndexRoute =
+  ProductionEServicesNewIndexRouteImport.update({
+    id: '/new/',
+    path: '/new/',
+    getParentRoute: () => ProductionEServicesRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
-  '/production/e-services': typeof ProductionEServicesRouteRoute
+  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
   '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
@@ -97,13 +104,14 @@ export interface FileRoutesByFullPath {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
-  '/production/e-services': typeof ProductionEServicesRouteRoute
+  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
   '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
@@ -111,6 +119,7 @@ export interface FileRoutesByTo {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,7 +127,7 @@ export interface FileRoutesById {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
-  '/production/e-services': typeof ProductionEServicesRouteRoute
+  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
   '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
@@ -126,6 +135,7 @@ export interface FileRoutesById {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption/': typeof ConsumptionIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/production/e-services/new/': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/production/e-services/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/production/e-services/new'
   id:
     | '__root__'
     | '/'
@@ -170,6 +182,7 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption/'
     | '/production/'
+    | '/production/e-services/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -177,7 +190,7 @@ export interface RootRouteChildren {
   DetailsAndAttributesRoute: typeof DetailsAndAttributesRoute
   KeychainsRoute: typeof KeychainsRoute
   OperatorsRoute: typeof OperatorsRoute
-  ProductionEServicesRouteRoute: typeof ProductionEServicesRouteRoute
+  ProductionEServicesRouteRoute: typeof ProductionEServicesRouteRouteWithChildren
   ConsumptionAgreementsRoute: typeof ConsumptionAgreementsRoute
   ConsumptionEServicesRoute: typeof ConsumptionEServicesRoute
   ConsumptionPurposesRoute: typeof ConsumptionPurposesRoute
@@ -273,15 +286,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionEServicesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/production/e-services/new/': {
+      id: '/production/e-services/new/'
+      path: '/new'
+      fullPath: '/production/e-services/new'
+      preLoaderRoute: typeof ProductionEServicesNewIndexRouteImport
+      parentRoute: typeof ProductionEServicesRouteRoute
+    }
   }
 }
+
+interface ProductionEServicesRouteRouteChildren {
+  ProductionEServicesNewIndexRoute: typeof ProductionEServicesNewIndexRoute
+}
+
+const ProductionEServicesRouteRouteChildren: ProductionEServicesRouteRouteChildren =
+  {
+    ProductionEServicesNewIndexRoute: ProductionEServicesNewIndexRoute,
+  }
+
+const ProductionEServicesRouteRouteWithChildren =
+  ProductionEServicesRouteRoute._addFileChildren(
+    ProductionEServicesRouteRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DetailsAndAttributesRoute: DetailsAndAttributesRoute,
   KeychainsRoute: KeychainsRoute,
   OperatorsRoute: OperatorsRoute,
-  ProductionEServicesRouteRoute: ProductionEServicesRouteRoute,
+  ProductionEServicesRouteRoute: ProductionEServicesRouteRouteWithChildren,
   ConsumptionAgreementsRoute: ConsumptionAgreementsRoute,
   ConsumptionEServicesRoute: ConsumptionEServicesRoute,
   ConsumptionPurposesRoute: ConsumptionPurposesRoute,
