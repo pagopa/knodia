@@ -20,16 +20,23 @@ import {
   EserviceVersionV1,
 } from "./generated/v1/eservice.ts";
 
-const throwIfMissing = <T, R = T>(
+// TODO: move to a shared utilities package
+function throwIfMissing<T>(value: T | undefined, message: string): T;
+function throwIfMissing<T, R>(
+  value: T | undefined,
+  message: string,
+  converter: (value: T) => R,
+): R;
+function throwIfMissing<T, R>(
   value: T | undefined,
   message: string,
   converter?: (value: T) => R,
-): R => {
+): R | T {
   if (value === undefined) {
     throw new Error(message);
   }
-  return converter ? converter(value) : (value as unknown as R);
-};
+  return converter ? converter(value) : value;
+}
 
 export const fromEserviceV1 = (input: EserviceV1): Eservice => ({
   ...input,
