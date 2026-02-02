@@ -11,12 +11,12 @@
     "lint-openapi": "turbo run lint-openapi",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
-    "knip": "turbo run build-knip-dependencies && knip",
+    "knip": "turbo run generate-artifacts && knip",
     "infra:start": "./scripts/infra-start.sh",
     "infra:stop": "./scripts/infra-stop.sh",
     "infra:destroy": "./scripts/infra-destroy.sh",
     "prune-modules": "find . -name 'node_modules' -type d -exec rm -rf {} +",
-    "test": "turbo run build-knip-dependencies && vitest run"
+    "test": "turbo run generate-artifacts && vitest run"
   },
   "devDependencies": {
     "knip": "catalog:",
