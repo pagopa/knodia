@@ -20,6 +20,7 @@
     "@tanstack/react-router-devtools": "catalog:",
     "axios": "catalog:",
     "react": "catalog:",
+    "react-aria-components": "catalog:",
     "react-dom": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
