@@ -18,7 +18,7 @@ import {
   focusRing,
 } from "../../libs/react-aria";
 
-export type InputProps = ComponentPropsWithoutRef<typeof RACInput>;
+type InputProps = ComponentPropsWithoutRef<typeof RACInput>;
 
 export function Description(props: TextProps) {
   return (

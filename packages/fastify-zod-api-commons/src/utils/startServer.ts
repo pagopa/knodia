@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-export interface FastifyListenOptions {
+interface FastifyListenOptions {
   host: string;
   port: number;
 }
