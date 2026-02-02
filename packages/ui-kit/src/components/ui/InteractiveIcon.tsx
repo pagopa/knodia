@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 
 import { ButtonIcon, type ButtonIconProps } from "./ButtonIcon";
 
-export type InteractiveIconProps = Omit<ButtonIconProps, "kind" | "size">;
+type InteractiveIconProps = Omit<ButtonIconProps, "kind" | "size">;
 
 export function InteractiveIcon({
   children,
