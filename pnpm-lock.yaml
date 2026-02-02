@@ -223,7 +223,7 @@ importers:
         version: 6.2.1
       '@knodia/eservice-process-client':
         specifier: workspace:*
-        version: link:../../../packages/eservice-process-client
+        version: link:../../../packages/clients/eservice-process-client
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -394,7 +394,7 @@ importers:
     dependencies:
       '@knodia/bff-client':
         specifier: workspace:*
-        version: link:../../../packages/bff-client
+        version: link:../../../packages/clients/bff-client
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.1.18(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -469,21 +469,43 @@ importers:
         specifier: 'catalog:'
         version: rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/bff-client:
+  packages/clients/bff-client:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
-        version: link:../openapi-client-generator
+        version: link:../../openapi-client-generator
       axios:
         specifier: 'catalog:'
         version: 1.13.2
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
-        version: link:../eslint-config
+        version: link:../../eslint-config
       '@knodia/typescript-config':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/eservice-process-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.2
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -642,28 +664,6 @@ importers:
       drizzle-kit:
         specifier: 'catalog:'
         version: 0.31.8
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  packages/eservice-process-client:
-    dependencies:
-      '@knodia/openapi-client-generator':
-        specifier: workspace:*
-        version: link:../openapi-client-generator
-      axios:
-        specifier: 'catalog:'
-        version: 1.13.2
-    devDependencies:
-      '@knodia/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@knodia/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)

@@ -1,0 +1,12 @@
+[2026-02-02T11:15:30.900Z] Error: Error opening file "/Users/carmine.porricelli/Documents/GitHub/knodia/packages/apps/services/backend-for-frontend/openapi/openapi.yaml" 
+ENOENT: no such file or directory, open '/Users/carmine.porricelli/Documents/GitHub/knodia/packages/apps/services/backend-for-frontend/openapi/openapi.yaml'
+Stack:
+ResolverError: Error opening file "/Users/carmine.porricelli/Documents/GitHub/knodia/packages/apps/services/backend-for-frontend/openapi/openapi.yaml" 
+ENOENT: no such file or directory, open '/Users/carmine.porricelli/Documents/GitHub/knodia/packages/apps/services/backend-for-frontend/openapi/openapi.yaml'
+    at Object.handler (/Users/carmine.porricelli/Documents/GitHub/knodia/node_modules/.pnpm/@hey-api+json-schema-ref-parser@1.2.2/node_modules/@hey-api/json-schema-ref-parser/dist/lib/resolvers/file.js:58:19)
+    at async $RefParser.parse (/Users/carmine.porricelli/Documents/GitHub/knodia/node_modules/.pnpm/@hey-api+json-schema-ref-parser@1.2.2/node_modules/@hey-api/json-schema-ref-parser/dist/lib/index.js:225:17)
+    at async $RefParser.bundle (/Users/carmine.porricelli/Documents/GitHub/knodia/node_modules/.pnpm/@hey-api+json-schema-ref-parser@1.2.2/node_modules/@hey-api/json-schema-ref-parser/dist/lib/index.js:132:9)
+    at async W (file:///Users/carmine.porricelli/Documents/GitHub/knodia/node_modules/.pnpm/@hey-api+openapi-ts@0.89.2_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/src-novPNOHw.mjs:1:12943)
+    at async file:///Users/carmine.porricelli/Documents/GitHub/knodia/node_modules/.pnpm/@hey-api+openapi-ts@0.89.2_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/src-novPNOHw.mjs:10:2576
+    at async Promise.all (index 0)
+    at async ee (file:///Users/carmine.porricelli/Documents/GitHub/knodia/node_modules/.pnpm/@hey-api+openapi-ts@0.89.2_typescript@5.9.3/node_modules/@hey-api/openapi-ts/dist/src-novPNOHw.mjs:10:2523)
