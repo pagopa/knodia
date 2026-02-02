@@ -1,6 +1,5 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
 import type { Eservice } from "@knodia/eservice-models";
-import type { FastifyBaseLogger } from "fastify";
 
 import { type RequestContextData } from "@fastify/request-context";
 import {
@@ -55,7 +54,6 @@ export function eserviceServiceBuilder(
             accessTokenType: seed.accessTokenType ?? "Bearer",
             createdAt: now,
             id: eserviceVersionId,
-            // TODO: implement interface document upload
             interfaceDocument: {
               checksum: "checksum-1",
               contentType: "application/json",
