@@ -249,18 +249,12 @@ importers:
         specifier: 'catalog:'
         version: 4.2.0
     devDependencies:
-      '@knodia/db-readmodel-eservice':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/eservice
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config
@@ -279,9 +273,6 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
 
   apps/services/eservice-process:
     dependencies:

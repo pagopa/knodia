@@ -38,7 +38,7 @@
       "dependsOn": ["//#infra:start", "db:generate"],
       "cache": false
     },
-    "build-knip-dependencies": {
+    "generate-artifacts": {
       "dependsOn": ["generate-api-client", "generate-protobuf"]
     },
     "//#infra:start": {

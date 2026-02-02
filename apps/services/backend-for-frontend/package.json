@@ -15,14 +15,11 @@
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
-    "@knodia/test-commons": "workspace:*",
-    "@knodia/db-readmodel-eservice": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "typescript": "catalog:"
   },
   "dependencies": {
     "@fastify/request-context": "catalog:",
