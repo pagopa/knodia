@@ -1,6 +1,6 @@
-import type { StepConfig } from "@/contexts/steps/useStepsContext";
+import type { StepConfig } from "@/contexts/steps";
 
-export interface EServiceFormData {
+interface EServiceFormData {
   accessTokenDuration: string;
   description: string;
   name: string;

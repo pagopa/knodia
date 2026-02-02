@@ -4,7 +4,7 @@ export interface StepConfig {
   label: string;
 }
 
-export interface StepsContextValue {
+interface StepsContextValue {
   currentStepIndex: number;
   goToStep: (stepIndex: number) => void;
   nextStep: () => void;
