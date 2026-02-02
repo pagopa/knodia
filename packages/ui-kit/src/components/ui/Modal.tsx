@@ -13,7 +13,6 @@ import { tv } from "tailwind-variants";
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
 import { InteractiveIcon } from "./InteractiveIcon";
-import { Typography } from "./Typography";
 
 const overlay = tv({
   base: "fixed left-0 top-0 isolate z-50 flex h-(--visual-viewport-height) w-full items-center justify-center bg-black/50 p-4",
@@ -86,9 +85,9 @@ export function Modal({
         >
           <div className="flex flex-col gap-2">
             <div className="flex justify-between items-start gap-6">
-              <Typography id={titleId} variant="titleMdEm">
+              <p className="title-md-em" id={titleId}>
                 {title}
-              </Typography>
+              </p>
               <InteractiveIcon
                 className="text-primary-light-low-contrast p-0"
                 {...(onDismiss && { onPress: onDismiss })}
@@ -97,14 +96,12 @@ export function Modal({
               </InteractiveIcon>
             </div>
             {description && (
-              <Typography
-                as="span"
-                className="text-primary-light-low-contrast"
+              <span
+                className="text-primary-light-low-contrast body-md"
                 id={descriptionId}
-                variant="bodyMd"
               >
                 {description}
-              </Typography>
+              </span>
             )}
           </div>
 
