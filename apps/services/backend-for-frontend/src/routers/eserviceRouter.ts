@@ -9,9 +9,15 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
-import { API_Eservices, API_EservicesQueryParams } from "../models/api.ts";
+import {
+  API_CreatedResource,
+  API_Eservices,
+  API_EserviceSeed,
+  API_EservicesQueryParams,
+} from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
+// TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceProcessClient
 > = async (fastify, eserviceProcessClient) => {
@@ -47,6 +53,34 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       querystring: API_EservicesQueryParams,
       response: {
         200: API_Eservices.describe("E-services retrieved successfully"),
+        400: API_Problem.describe("Bad Request"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
+      const createdEservice = await eserviceProcessApi.createEservice({
+        body: req.body,
+        client: eserviceProcessClient,
+        headers: {
+          [CORRELATION_ID_HEADER]: correlationId,
+        },
+      });
+      res
+        .status(201)
+        .send(API_CreatedResource.parse({ id: createdEservice.data?.id }));
+    },
+    method: "POST",
+    schema: {
+      body: API_EserviceSeed,
+      description: "Create a new E-service",
+      operationId: "createEservice",
+      response: {
+        201: API_CreatedResource.describe("E-service created successfully"),
         400: API_Problem.describe("Bad Request"),
       },
       tags: [apiTags.eservice],
