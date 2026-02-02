@@ -10,7 +10,7 @@ export function RecapStep() {
   const values = form.state.values;
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <StepTitle
         description="Check that everything is correct before the publication."
         title="Recap"

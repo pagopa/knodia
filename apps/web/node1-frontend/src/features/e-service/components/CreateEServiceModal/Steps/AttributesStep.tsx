@@ -7,7 +7,7 @@ export function AttributesStep() {
   const { nextStep, prevStep } = useStepsContext();
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <StepTitle
         description="Choose which organization can request an Agreement for your E-Service."
         title="Attributes"

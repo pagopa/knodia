@@ -41,14 +41,12 @@ function ModalContent({ onClose }: Props) {
     .otherwise(() => null);
 
   return (
-    <div className="mx-auto max-w-2xl p-6">
-      <div className="mb-6">
-        <Steps
-          ariaLabel="E-Service creation steps"
-          current={currentStepIndex}
-          steps={stepLabels}
-        />
-      </div>
+    <div className="mx-auto max-w-160 p-10 pb-16 flex flex-col gap-16">
+      <Steps
+        ariaLabel="E-Service creation steps"
+        current={currentStepIndex}
+        steps={stepLabels}
+      />
       {currentStep}
     </div>
   );

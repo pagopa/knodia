@@ -15,37 +15,41 @@ export function GeneralStep({ onCancel }: Props) {
   const { nextStep } = useStepsContext();
 
   return (
-    <div className="space-y-6">
-      <StepTitle
-        description="This information will be used to find your E-Service. Be precise and clear."
-        title="General Information"
-      />
+    <>
+      <div className="flex flex-col gap-10">
+        <StepTitle
+          description="This information will be used to find your E-Service. Be precise and clear."
+          title="General Information"
+        />
 
-      <form.Field name="name">
-        {(field) => (
-          <TextField
-            label="Name"
-            name={field.name}
-            onBlur={field.handleBlur}
-            onChange={field.handleChange}
-            value={field.state.value}
-          />
-        )}
-      </form.Field>
+        <div className="flex flex-col gap-6">
+          <form.Field name="name">
+            {(field) => (
+              <TextField
+                label="Name"
+                name={field.name}
+                onBlur={field.handleBlur}
+                onChange={field.handleChange}
+                value={field.state.value}
+              />
+            )}
+          </form.Field>
 
-      <form.Field name="description">
-        {(field) => (
-          <TextArea
-            label="Description"
-            name={field.name}
-            onBlur={field.handleBlur}
-            onChange={field.handleChange}
-            value={field.state.value}
-          />
-        )}
-      </form.Field>
+          <form.Field name="description">
+            {(field) => (
+              <TextArea
+                label="Description"
+                name={field.name}
+                onBlur={field.handleBlur}
+                onChange={field.handleChange}
+                value={field.state.value}
+              />
+            )}
+          </form.Field>
+        </div>
+      </div>
 
       <Footer cancelLabel="Back" onCancel={onCancel} onConfirm={nextStep} />
-    </div>
+    </>
   );
 }

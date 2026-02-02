@@ -11,7 +11,7 @@ export function TechnicalStep() {
   const { nextStep, prevStep } = useStepsContext();
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <StepTitle
         description="Define the technical specifications of your E-Service."
         title="Technical details"

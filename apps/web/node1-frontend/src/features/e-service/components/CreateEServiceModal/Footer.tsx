@@ -14,7 +14,7 @@ export function Footer({
   onConfirm,
 }: FooterProps) {
   return (
-    <div className="flex justify-end gap-4 pt-4">
+    <div className="flex justify-end gap-4">
       <Button hierarchy="neutral" kind="tonal" onPress={onCancel}>
         {cancelLabel}
       </Button>
