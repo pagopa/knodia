@@ -27,7 +27,7 @@ const interactiveIconStyles = tv({
   },
 });
 
-export type InteractiveIconProps = ButtonProps & InteractiveIconVariants;
+type InteractiveIconProps = ButtonProps & InteractiveIconVariants;
 
 type InteractiveIconVariants = VariantProps<typeof interactiveIconStyles>;
 

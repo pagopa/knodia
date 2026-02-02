@@ -6,7 +6,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-export interface TooltipProps extends Omit<AriaTooltipProps, "children"> {
+interface TooltipProps extends Omit<AriaTooltipProps, "children"> {
   children: React.ReactNode;
 }
 

@@ -15,7 +15,7 @@ import { twMerge } from "tailwind-merge";
 import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { fieldInputStyle } from "./styles";
 
-export type InputProps = ComponentPropsWithoutRef<typeof RACInput>;
+type InputProps = ComponentPropsWithoutRef<typeof RACInput>;
 
 export function Description(props: TextProps) {
   return (
