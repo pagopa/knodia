@@ -1,4 +1,8 @@
 import {
+  API_AccessTokenType,
+  API_EserviceAttribute,
+  API_EserviceCategory,
+  API_EserviceMode,
   API_LocalizedDescription,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
@@ -10,28 +14,6 @@ import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
-
-const API_EserviceMode = z
-  .enum(["ProvideData", "ReceiveData"])
-  .meta({ id: "EserviceMode" });
-
-const API_EserviceCategory = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({ id: "EserviceCategory" });
-
-const API_AccessTokenType = z
-  .enum(["Bearer", "DPoP"])
-  .meta({ id: "AccessTokenType" });
-
-const API_EserviceAttribute = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({ id: "EserviceAttribute" });
 
 export const API_Eservice = z
   .strictObject({
