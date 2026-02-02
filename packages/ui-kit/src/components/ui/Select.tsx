@@ -41,7 +41,7 @@ export interface SelectProps<T extends Iterable<unknown>>
   children: ((item: T) => React.ReactNode) | React.ReactNode;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
-  items: Iterable<T>;
+  items?: Iterable<T>;
   label?: string;
 }
 
@@ -88,7 +88,7 @@ export function Select<T extends Iterable<unknown>>({
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
       <Popover className="min-w-(--trigger-width)">
-        <ListBox className={dropdownStyles} items={items}>
+        <ListBox className={dropdownStyles} items={items as Iterable<T>}>
           {children}
         </ListBox>
       </Popover>
