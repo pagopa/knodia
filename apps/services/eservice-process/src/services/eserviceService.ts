@@ -54,6 +54,7 @@ export function eserviceServiceBuilder(
             accessTokenType: seed.accessTokenType ?? "Bearer",
             createdAt: now,
             id: eserviceVersionId,
+            // TODO: implement interface document upload
             interfaceDocument: {
               checksum: "checksum-1",
               contentType: "application/json",
@@ -111,7 +112,6 @@ export function eserviceServiceBuilder(
             accessTokenType: "Bearer" as const,
             createdAt: now,
             id: generateId<EserviceVersionId>(),
-            // TODO: implement interface document upload
             interfaceDocument: {
               checksum: "checksum-1",
               contentType: "application/json",
