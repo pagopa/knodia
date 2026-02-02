@@ -8,6 +8,7 @@ import { missingHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";
 import { healthRouterUrl } from "../routers/healthRouter.ts";
 import openapiZodPlugin, {
+  docsRoutePrefix,
   type OpenapiZodPluginOptions,
 } from "./openapi-zod-plugin/openapiZodPlugin.ts";
 import {
@@ -66,7 +67,8 @@ const checkCorrelationIdHeader = (
 ) => {
   if (readCorrelationIdFromHeader) {
     app.addHook("onRequest", async (req, res) => {
-      if (req.url === healthRouterUrl || req.url.startsWith("/docs")) return;
+      if (req.url === healthRouterUrl || req.url.startsWith(docsRoutePrefix))
+        return;
 
       const correlationId = req.headers[CORRELATION_ID_HEADER];
       if (!correlationId) {
