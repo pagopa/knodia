@@ -12,8 +12,8 @@ const logLevels = [
   "warn",
 ] as const satisfies LevelWithSilent[]; // guard to ensure valid pino log levels
 
-export const LogLevel = z.enum(logLevels);
-export type LogLevel = z.infer<typeof LogLevel>;
+const LogLevel = z.enum(logLevels);
+type LogLevel = z.infer<typeof LogLevel>;
 
 const NodeEnv = z.enum(["development", "DEV", "production", "PROD", "test"]);
 

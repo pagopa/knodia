@@ -1,9 +1,6 @@
 import { readmodelEservice } from "@knodia/db-readmodel-eservice";
-import {
-  cleanupReadmodelTestDatabase,
-  setupReadmodelTestDatabase,
-} from "@knodia/test-commons/readmodel";
-import { afterAll, afterEach, beforeAll, inject } from "vitest";
+import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 let db: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 
@@ -11,8 +8,12 @@ beforeAll(async () => {
   db = await setupReadmodelTestDatabase(inject("READMODEL_CONNECTION_STRING"));
 });
 
+beforeEach(async () => {
+  await db.execute("BEGIN");
+});
+
 afterEach(async () => {
-  await cleanupReadmodelTestDatabase(db);
+  await db.execute("ROLLBACK");
 });
 
 afterAll(async () => {

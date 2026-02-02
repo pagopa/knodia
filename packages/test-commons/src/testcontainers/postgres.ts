@@ -3,7 +3,7 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { GenericContainer } from "testcontainers";
 
 const TEST_POSTGRES_DB_PORT = 5432;
-const TEST_POSTGRES_IMAGE = "postgres:14";
+const TEST_POSTGRES_IMAGE = "postgres:18";
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
@@ -79,15 +79,6 @@ export async function startTestPostgresContainer({
     connectionString,
     container,
   };
-}
-
-export async function truncateDbTables(
-  db: NodePgDatabase,
-  tableNames: string[],
-) {
-  for (const tableName of tableNames) {
-    await db.execute(`TRUNCATE TABLE ${tableName} CASCADE`);
-  }
 }
 
 async function applyMigrations(migrationFolders: string[], db: NodePgDatabase) {

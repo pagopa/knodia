@@ -1,10 +1,7 @@
 import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
-import {
-  cleanupEventstoreTestDatabase,
-  setupEventstoreTestDatabase,
-} from "@knodia/test-commons/eventstore";
-import { afterAll, afterEach, beforeAll, inject } from "vitest";
+import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
+import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
@@ -27,8 +24,12 @@ beforeAll(async () => {
   });
 });
 
+beforeEach(async () => {
+  await eventStoreDb.execute("BEGIN");
+});
+
 afterEach(async () => {
-  await cleanupEventstoreTestDatabase(eventStoreDb);
+  await eventStoreDb.execute("ROLLBACK");
 });
 
 afterAll(async () => {

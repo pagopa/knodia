@@ -1,27 +1,17 @@
 import type {} from "vitest";
 
 import { drizzle } from "drizzle-orm/node-postgres";
-import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { fileURLToPath } from "node:url";
 
 import {
   createPostgresDatabaseFromTemplate,
   createPostgresTemplateFromMigrations,
   startTestPostgresContainer,
-  truncateDbTables,
 } from "./testcontainers/postgres.ts";
 
 const READMODEL_DB_PASSWORD = "readmodel_testpassword";
 const READMODEL_DB_USER = "readmodel_testuser";
 const READMODEL_DB_TEMPLATE_NAME = "readmodel_template";
-
-/**
- * Truncates readmodel data to keep tests isolated across runs.
- * Should be called after each test.
- */
-export async function cleanupReadmodelTestDatabase(db: NodePgDatabase) {
-  await truncateDbTables(db, ['"eservice"."eservice"']);
-}
 
 /**
  * !!! Intended to be called once in global test setup !!!
