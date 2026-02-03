@@ -217,6 +217,13 @@
     letter-spacing: var(--letter-spacing-body-sm);
     line-height: var(--line-height-body-sm);
   }
+  .body-sm-em {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-body-sm);
+    font-weight: var(--font-weight-body-em);
+    letter-spacing: var(--letter-spacing-body-sm);
+    line-height: var(--line-height-body-sm);
+  }
 
   .headline-sm {
     font-family: var(--font-family-headline);
