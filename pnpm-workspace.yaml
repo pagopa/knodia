@@ -12,6 +12,10 @@ allowBuilds:
   esbuild: true
 
 catalog:
+  "@usebruno/converters": 0.2.0
+  "@usebruno/lang": 0.24.0
+  js-yaml: 4.1.0
+  "@types/js-yaml": 4.0.9
   "@bufbuild/buf": 1.61.0
   "@bufbuild/protobuf": 2.10.2
   "@confluentinc/kafka-javascript": 1.7.0
