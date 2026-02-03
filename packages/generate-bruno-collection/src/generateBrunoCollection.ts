@@ -63,13 +63,18 @@ export async function generateBruFile(
 
   const fileName = formatName(matchedRequest.name);
   const filePath = path.join(outputDir, `${fileName}.bru`);
-  if (fs.existsSync(filePath)) {
-    throw new Error(
-      `File already exists: ${filePath}\nUse a different endpoint or remove the existing file.`,
-    );
+
+  try {
+    fs.writeFileSync(filePath, bruContent, { flag: "wx" });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+      throw new Error(
+        `File already exists: ${filePath}\nUse a different endpoint or remove the existing file.`,
+      );
+    }
+    throw error;
   }
 
-  fs.writeFileSync(filePath, bruContent);
   return filePath;
 }
 
