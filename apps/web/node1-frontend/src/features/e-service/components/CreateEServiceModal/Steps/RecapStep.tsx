@@ -29,6 +29,10 @@ export function RecapStep() {
           General information
         </h2>
         <div className="flex flex-col gap-10">
+          <div className="flex flex-col gap-2">
+            <RecapField label="Name" value={values.name || "-"} />
+            <RecapField label="Description" value={values.description || "-"} />
+          </div>
           <div className="flex flex-col gap-6">
             <h3 className="title-sm-em text-primary-light-high-contrast">
               Requesting proof of residence
