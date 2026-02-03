@@ -6,6 +6,6 @@ import { z } from "zod";
 const EserviceProcessConfig = LoggerConfig.and(HTTPServerConfig).and(
   EventStoreEserviceConfig,
 );
-type EserviceProcessConfig = z.infer<typeof EserviceProcessConfig>;
+export type EserviceProcessConfig = z.infer<typeof EserviceProcessConfig>;
 
 export const config = EserviceProcessConfig.parse(process.env);
