@@ -13,9 +13,11 @@
       "ignore": ["src/generated/**/*.ts"]
     },
     "apps/services/backend-for-frontend": {
+      "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/services/*-process": {
+      "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/web/**/*": {

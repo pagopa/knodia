@@ -1,5 +1,6 @@
 import generateOpenapi from "@knodia/fastify-zod-api-commons/generateOpenapi";
 
-import app from "../src/app.ts";
+import { buildAppFromConfig } from "../src/app.ts";
+import { config } from "../src/config/config.ts";
 
-await generateOpenapi(app);
+await generateOpenapi(buildAppFromConfig(config));

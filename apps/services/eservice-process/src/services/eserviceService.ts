@@ -20,10 +20,10 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
 ) {
   return {
-    createEservice(
+    async createEservice(
       seed: API_EserviceSeed,
       { correlationId, logger }: RequestContextData,
-    ): Eservice {
+    ): Promise<Eservice> {
       const eserviceId = generateId<EserviceId>();
       const producerId = generateId<OrganizationId>(); // TODO get from context after implementing auth
 
@@ -75,7 +75,7 @@ export function eserviceServiceBuilder(
         ],
       };
 
-      eventStoreWriter.insertEvent(
+      await eventStoreWriter.insertEvent(
         createEserviceVersionActivatedV1Event(
           eservice,
           eserviceVersionId,

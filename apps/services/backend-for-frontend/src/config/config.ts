@@ -11,6 +11,6 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig).and(
       eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
     })),
 );
-type BffProcessConfig = z.infer<typeof BffProcessConfig>;
+export type BffProcessConfig = z.infer<typeof BffProcessConfig>;
 
 export const config = BffProcessConfig.parse(process.env);
