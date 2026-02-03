@@ -8,7 +8,7 @@ const args = process.argv.slice(2);
 
 function printUsage(): void {
   console.log(`
-Usage: generate-bruno-collection <openapi-file> --method <METHOD> --path <PATH>
+Usage: generate-bruno-collection <openapi-file> --method <METHOD> --path <PATH> [--output <DIR>]
 
 Arguments:
   openapi-file   Path to the OpenAPI file (YAML)
@@ -16,11 +16,12 @@ Arguments:
 Options:
   --method <METHOD>   HTTP method (GET, POST, PUT, DELETE, PATCH)
   --path <PATH>       API endpoint path (e.g., /eservices)
+  --output <DIR>      Output directory for the .bru file (default: collections/<service-name>/)
 
 Examples:
   pnpm -w generate-bruno-collection apps/services/eservice-process/openapi/openapi.yaml --method GET --path /eservices
   pnpm -w generate-bruno-collection apps/services/eservice-process/openapi/openapi.yaml --method POST --path /eservices
-  pnpm -w generate-bruno-collection apps/services/backend-for-frontend/openapi/openapi.yaml --method GET --path /status
+  pnpm -w generate-bruno-collection apps/services/backend-for-frontend/openapi/openapi.yaml --method GET --path /status --output collections/backend-for-frontend/eservices
 `);
 }
 
@@ -59,7 +60,12 @@ if (!serviceNameMatch?.[1]) {
 const serviceName = serviceNameMatch[1];
 
 const hostVar = `host-${serviceName}`;
-const outputDir = path.resolve(process.cwd(), "collections", serviceName);
+
+const outputIndex = args.indexOf("--output");
+const outputArg = outputIndex !== -1 ? args[outputIndex + 1] : undefined;
+const outputDir = outputArg
+  ? path.resolve(process.cwd(), outputArg)
+  : path.resolve(process.cwd(), "collections", serviceName);
 
 try {
   const filePath = await generateBruFile({
