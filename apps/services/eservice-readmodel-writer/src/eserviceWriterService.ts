@@ -91,22 +91,26 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
 
         await tx.insert(readmodelEservice).values(eserviceSQL);
 
-        for (const eserviceVersion of eserviceVersionsSQL) {
-          await tx.insert(readmodelEserviceVersion).values(eserviceVersion);
+        if (eserviceVersionsSQL.length > 0) {
+          await tx.insert(readmodelEserviceVersion).values(eserviceVersionsSQL);
         }
 
-        for (const eserviceInterface of eserviceInterfacesSQL) {
-          await tx.insert(readmodelEserviceInterface).values(eserviceInterface);
+        if (eserviceInterfacesSQL.length > 0) {
+          await tx
+            .insert(readmodelEserviceInterface)
+            .values(eserviceInterfacesSQL);
         }
 
-        for (const category of eserviceCategoriesSQL) {
-          await tx.insert(readmodelEserviceCategory).values(category);
+        if (eserviceCategoriesSQL.length > 0) {
+          await tx
+            .insert(readmodelEserviceCategory)
+            .values(eserviceCategoriesSQL);
         }
 
-        for (const attribute of eserviceVersionRequiredAttributesSQL) {
+        if (eserviceVersionRequiredAttributesSQL.length > 0) {
           await tx
             .insert(readmodelEserviceVersionRequiredAttribute)
-            .values(attribute);
+            .values(eserviceVersionRequiredAttributesSQL);
         }
       });
     },
