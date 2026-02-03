@@ -1,15 +1,6 @@
-/* eslint-disable perfectionist/sort-objects */
-export const commonErrorCodes = {
-  GENERIC_ERROR: "9991",
-  ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR: "9992",
-  RESPONSE_SERIALIZATION_ERROR: "9993",
-  MISSING_HEADER: "9994",
-  FASTIFY_ERROR: "9995",
-  MISSING_KAFKA_MESSAGE_DATA: "9996",
-} as const;
-/* eslint-enable perfectionist/sort-objects */
-export type CommonErrorCodes = keyof typeof commonErrorCodes;
-
+type CommonInternalErrors =
+  | "GENERIC_INTERNAL_ERROR"
+  | "MISSING_KAFKA_MESSAGE_DATA";
 export class InternalError<T> extends Error {
   public code: T;
   public detail: string;
@@ -23,9 +14,9 @@ export class InternalError<T> extends Error {
 
 export function genericInternalError(
   message: string,
-): InternalError<CommonErrorCodes> {
+): InternalError<CommonInternalErrors> {
   return new InternalError({
-    code: "GENERIC_ERROR",
+    code: "GENERIC_INTERNAL_ERROR",
     detail: message,
   });
 }
@@ -33,7 +24,7 @@ export function genericInternalError(
 export function missingKafkaMessageDataError(
   dataName: string,
   eventType: string,
-): InternalError<CommonErrorCodes> {
+): InternalError<CommonInternalErrors> {
   return new InternalError({
     code: "MISSING_KAFKA_MESSAGE_DATA",
     detail: `Invalid message: missing data '${dataName}' in ${eventType} event`,
