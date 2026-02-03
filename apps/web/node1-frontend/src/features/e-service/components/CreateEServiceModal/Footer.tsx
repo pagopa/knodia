@@ -15,10 +15,12 @@ export function Footer({
 }: FooterProps) {
   return (
     <div className="flex justify-end gap-4">
-      <Button hierarchy="neutral" kind="tonal" onPress={onCancel}>
+      <Button hierarchy="neutral" kind="tonal" onPress={onCancel} size="lg">
         {cancelLabel}
       </Button>
-      <Button onPress={onConfirm}>{confirmLabel}</Button>
+      <Button onPress={onConfirm} size="lg">
+        {confirmLabel}
+      </Button>
     </div>
   );
 }

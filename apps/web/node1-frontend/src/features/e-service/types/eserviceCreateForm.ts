@@ -15,6 +15,8 @@ interface EServiceFormData {
   maxDailyCallsPerKnode: string;
   mode: "ProvideData" | "ReceiveData";
   name: string;
+  // TODO: will this need to be a string?
+  requiredAttributes: string;
 }
 
 export const ESERVICE_FORM_DEFAULTS: EServiceFormData = {
@@ -29,6 +31,7 @@ export const ESERVICE_FORM_DEFAULTS: EServiceFormData = {
   maxDailyCallsPerKnode: "",
   mode: "ProvideData",
   name: "",
+  requiredAttributes: "",
 };
 
 export const CREATE_FORM_STEPS: StepConfig[] = [
