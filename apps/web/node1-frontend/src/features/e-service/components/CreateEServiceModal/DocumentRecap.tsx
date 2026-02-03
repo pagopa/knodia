@@ -1,0 +1,25 @@
+import { Button } from "@knodia/ui-kit/ui";
+import { DownloadSimpleIcon, FileTextIcon } from "@phosphor-icons/react";
+
+interface Props {
+  name: string;
+  showDownloadButton?: boolean;
+}
+
+export const DocumentRecap = ({ name, showDownloadButton = false }: Props) => (
+  <div className="bg-primary-light border-slate-100 border py-3 px-4 rounded-2xl flex justify-between elevation-1">
+    <div className="flex gap-4 items-center">
+      <FileTextIcon className="text-brand-dark" size={24} />
+      <span className="body-lg-em text-primary-light-high-contrast">
+        {name}
+      </span>
+    </div>
+
+    {showDownloadButton ? (
+      // TODO: handle click
+      <Button hierarchy="neutral" kind="tonal" size="icon-md">
+        <DownloadSimpleIcon />
+      </Button>
+    ) : null}
+  </div>
+);

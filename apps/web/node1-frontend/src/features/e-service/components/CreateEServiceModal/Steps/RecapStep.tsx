@@ -4,6 +4,7 @@ import { BookOpenTextIcon, CopyIcon } from "@phosphor-icons/react";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
 
+import { DocumentRecap } from "../DocumentRecap";
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
@@ -99,8 +100,11 @@ export function RecapStep() {
               value={values.isSignalHubEnabled ? "Yes" : "No"}
             />
           </div>
-          {/* TODO: Appoint Orion Knode as the data processor */}
-          ```Appoint Orion Knode as the data processor```
+          {/* TODO: handle documents */}
+          <DocumentRecap
+            name="Appoint Orion Knode as the data processor"
+            showDownloadButton
+          />
         </div>
 
         <Divider />
@@ -109,8 +113,7 @@ export function RecapStep() {
           <h2 className="headline-sm-em text-primary-light-high-contrast">
             Documents
           </h2>
-          {/* TODO: api_spec.pdf */}
-          ```api_spec.pdf```
+          <DocumentRecap name="api_spec.pdf" />
           {/* TODO: only show if checksum. */}
           {/* TODO: use component */}
           <div>

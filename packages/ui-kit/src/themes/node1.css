@@ -134,6 +134,9 @@
   --font-size-label-lg: 16px;
 
   --font-family-body: var(--font-sans);
+  --font-size-body-lg: 16px;
+  --letter-spacing-body-lg: 0px;
+  --line-height-body-lg: 1.6;
   --font-size-body-md: 14px;
   --letter-spacing-body-md: 0px;
   --line-height-body-md: 1.6;
@@ -195,6 +198,13 @@
     font-weight: var(--font-weight-label);
     letter-spacing: var(--letter-spacing-label);
     line-height: var(--line-height-label);
+  }
+  .body-lg-em {
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-body-lg);
+    font-weight: var(--font-weight-body-em);
+    letter-spacing: var(--letter-spacing-body-lg);
+    line-height: var(--line-height-body-lg);
   }
   .body-md {
     font-family: var(--font-family-body);
