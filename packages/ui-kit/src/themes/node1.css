@@ -116,7 +116,9 @@
   /* Typography */
   --font-family-title: var(--font-sans);
   --line-height-title: 1.25;
+  --font-size-title-sm: 16px;
   --font-size-title-md: 18px;
+  --letter-spacing-title-sm: 0px;
   --letter-spacing-title-md: 0px;
   --font-weight-title-em: 600;
 
@@ -152,6 +154,13 @@
 }
 
 @layer utilities {
+  .title-sm-em {
+    font-family: var(--font-family-title);
+    font-size: var(--font-size-title-sm);
+    font-weight: var(--font-weight-title-em);
+    letter-spacing: var(--letter-spacing-title-sm);
+    line-height: var(--line-height-title);
+  }
   .title-md-em {
     font-family: var(--font-family-title);
     font-size: var(--font-size-title-md);

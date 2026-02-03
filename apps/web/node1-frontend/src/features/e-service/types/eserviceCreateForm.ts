@@ -7,6 +7,7 @@ interface EServiceFormData {
   // TODO: will this need to be a string?
   categories?: string;
   description: string;
+  interfaceDocument: File | null;
   isSignalHubEnabled: boolean;
   // TODO: this should be a number
   maxDailyCallsPerConsumer: string;
@@ -22,6 +23,7 @@ export const ESERVICE_FORM_DEFAULTS: EServiceFormData = {
   accessTokenType: "Bearer",
   categories: "",
   description: "",
+  interfaceDocument: null,
   isSignalHubEnabled: false,
   maxDailyCallsPerConsumer: "",
   maxDailyCallsPerKnode: "",
