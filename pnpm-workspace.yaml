@@ -70,11 +70,13 @@ catalog:
   tailwindcss: 4.1.18
   tailwindcss-animate: 1.0.7
   tailwindcss-react-aria-components: 2.0.1
+  testcontainers: 11.11.0
   ts-pattern: 5.9.0
   turbo: 2.7.3
   typescript: 5.9.3
   vite: npm:rolldown-vite@7.2.5
   vitest: 4.0.17
+  zocker: 3.0.0
   zod: 4.2.0
   zod-validation-error: 5.0.0
 
