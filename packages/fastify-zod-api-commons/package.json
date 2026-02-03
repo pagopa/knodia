@@ -33,6 +33,7 @@
     "@fastify/request-context": "catalog:",
     "@fastify/swagger": "catalog:",
     "@fastify/swagger-ui": "catalog:",
+    "@knodia/common-models": "workspace:*",
     "@knodia/logger": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",
