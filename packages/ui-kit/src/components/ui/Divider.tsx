@@ -1,13 +1,12 @@
+import { Separator, type SeparatorProps } from "react-aria-components";
 import { tv, type VariantProps } from "tailwind-variants";
 
-import type { PolymorphicProps } from "../../types";
-
 const divider = tv({
-  base: "shrink-0",
+  base: "border-none",
   variants: {
     orientation: {
       horizontal: "h-px w-full",
-      vertical: "w-px",
+      vertical: "w-px min-h-8 h-full",
     },
     type: {
       dark: "",
@@ -102,26 +101,19 @@ const divider = tv({
   },
 });
 
-export type DividerProps<E extends React.ElementType = "div"> =
-  PolymorphicProps<E, DividerVariants>;
+export type DividerProps = DividerVariants & SeparatorProps;
 type DividerVariants = VariantProps<typeof divider>;
 
-export function Divider<E extends React.ElementType = "div">({
-  as,
-  orientation,
-  kind,
-  className,
-  type,
-  ...props
-}: PolymorphicProps<E, DividerVariants>) {
-  const Component = as || "div";
-
+export function Divider({ kind, type, ...props }: DividerProps) {
   return (
-    <Component
-      aria-orientation={orientation}
-      className={divider({ orientation, kind, type, className })}
-      role="separator"
+    <Separator
       {...props}
+      className={divider({
+        kind,
+        type,
+        orientation: props.orientation,
+        className: props.className,
+      })}
     />
   );
 }

@@ -9,12 +9,13 @@
   },
   "exports": {
     "./themes/node1.css": "./src/themes/node1.css",
-    "./ui": "./src/components/ui/index.ts"
+    "./ui": "./src/components/ui/index.ts",
+    "./layout": "./src/components/layout/index.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "catalog:",
+    "@phosphor-icons/react": "catalog:",
     "@tailwindcss/vite": "catalog:",
-    "lucide-react": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",

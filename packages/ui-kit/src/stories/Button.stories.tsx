@@ -1,9 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { PlaceholderIcon } from "@phosphor-icons/react";
+
 import { Button, type ButtonProps } from "../components/ui/Button";
-import { MockIcon, renderStickerSheet } from "./utils";
+import { renderStickerSheet } from "./utils";
 
 const sizes: NonNullable<ButtonProps["size"]>[] = ["sm", "md", "lg"];
+const iconSizes: NonNullable<ButtonProps["size"]>[] = [
+  "icon-sm",
+  "icon-md",
+  "icon-lg",
+];
 const states = ["default", "disabled"] as const;
 
 const meta: Meta<typeof Button> = {
@@ -39,9 +46,32 @@ export const StickerSheet: Story = {
             kind={kind}
             size={size}
           >
-            <MockIcon />
+            <PlaceholderIcon />
             Button
-            <MockIcon />
+            <PlaceholderIcon />
+          </Button>
+        )),
+      ),
+  ),
+};
+
+export const WithIconStickerSheet: Story = {
+  render: renderStickerSheet(
+    [
+      ["filled", "outlined", "ghost", "tonal", "elevated"],
+      ["neutral", "brand", "danger"],
+    ],
+    (kind, hierarchy) =>
+      states.map((state) =>
+        iconSizes.map((size) => (
+          <Button
+            hierarchy={hierarchy}
+            isDisabled={state === "disabled"}
+            key={`${hierarchy}-${kind}-${state}-${size}`}
+            kind={kind}
+            size={size}
+          >
+            <PlaceholderIcon />
           </Button>
         )),
       ),

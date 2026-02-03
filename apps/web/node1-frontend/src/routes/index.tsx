@@ -1,4 +1,3 @@
-import { Button } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -11,11 +10,5 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { data } = useQuery(eserviceQueries.getEServices());
 
-  return (
-    <div>
-      <h1>Home</h1>
-      <Button>Test</Button>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
-  );
+  return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }

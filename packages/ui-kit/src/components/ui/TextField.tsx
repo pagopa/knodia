@@ -11,9 +11,9 @@ import { Description, FieldError, Input, Label } from "./Field";
 const textField = tv({
   variants: {
     size: {
-      sm: "py-[5px]",
-      md: "py-[7px]",
-      lg: "py-[9px]",
+      sm: "py-1.25",
+      md: "py-1.75",
+      lg: "py-2.25",
     },
   },
   defaultVariants: {
