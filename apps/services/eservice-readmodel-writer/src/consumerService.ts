@@ -1,7 +1,7 @@
 import type { EserviceEventEnvelopeV1 } from "@knodia/eservice-models";
 
-import { missingKafkaMessageDataError } from "@knodia/common-models/errors";
 import { fromEserviceV1 } from "@knodia/eservice-models";
+import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import { match } from "ts-pattern";
 
 import type { EserviceWriterService } from "./eserviceWriterService.ts";
@@ -10,16 +10,12 @@ export async function handleEserviceEvent(
   message: EserviceEventEnvelopeV1,
   writerService: EserviceWriterService,
 ): Promise<void> {
+  assertDataExistsInEvent(message, "eservice");
+
   return match(message)
     .with({ type: "EserviceVersionActivatedV1" }, async (msg) => {
-      const eservice = msg.data.eservice;
-
-      if (!eservice) {
-        throw missingKafkaMessageDataError("eservice", msg.type);
-      }
-
       await writerService.upsertEservice(
-        fromEserviceV1(eservice),
+        fromEserviceV1(msg.data.eservice),
         message.version,
       );
     })
