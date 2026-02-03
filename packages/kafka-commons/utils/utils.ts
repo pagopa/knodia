@@ -19,13 +19,17 @@ export function assertDataExistsInEvent<
 ): asserts message is z.infer<TEventZodType> & {
   data: Record<K, NonNullable<unknown>>;
 } {
-  if (typeof message.data !== "object" || message.data === null) {
+  function isPlainObject(obj: unknown): obj is Record<string, unknown> {
+    return obj !== null && Object.getPrototypeOf(obj) === Object.prototype;
+  }
+
+  if (!isPlainObject(message.data)) {
     throw genericInternalError(
       `Expected event data to be an object, got ${typeof message.data}`,
     );
   }
 
-  if (!(key in message.data)) {
+  if (!(key in message.data) || message.data[key] == null) {
     throw missingKafkaMessageDataError(key, message.type);
   }
 }
