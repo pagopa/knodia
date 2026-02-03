@@ -18,9 +18,7 @@ interface GenerateBruOptions {
   outputDir: string;
 }
 
-export async function generateBruFile(
-  options: GenerateBruOptions,
-): Promise<string> {
+export function generateBruFile(options: GenerateBruOptions): string {
   const { endpointPath, hostVar, method, openapiPath, outputDir } = options;
 
   const absoluteOpenapiPath = path.resolve(openapiPath);

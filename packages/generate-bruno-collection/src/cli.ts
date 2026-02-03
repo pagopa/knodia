@@ -68,7 +68,7 @@ const outputDir = outputArg
   : path.resolve(process.cwd(), "collections", serviceName);
 
 try {
-  const filePath = await generateBruFile({
+  const filePath = generateBruFile({
     endpointPath,
     hostVar,
     method,
