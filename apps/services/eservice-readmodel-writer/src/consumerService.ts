@@ -1,7 +1,7 @@
 import type { EserviceEventEnvelopeV1 } from "@knodia/eservice-models";
 
+import { missingKafkaMessageDataError } from "@knodia/common-models/errors";
 import { fromEserviceV1 } from "@knodia/eservice-models";
-import { missingKafkaMessageDataError } from "@knodia/fastify-zod-api-commons/models";
 import { match } from "ts-pattern";
 
 import type { EserviceWriterService } from "./eserviceWriterService.ts";

@@ -1,6 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { AnyPgColumn, AnyPgTable } from "drizzle-orm/pg-core";
 
+import { genericInternalError } from "@knodia/common-models/errors";
 import {
   readmodelEservice,
   readmodelEserviceCategory,
@@ -10,7 +11,6 @@ import {
 } from "@knodia/db-readmodel-eservice";
 import { splitEserviceIntoObjectsSQL } from "@knodia/db-readmodel-eservice/splitters";
 import { type Eservice } from "@knodia/eservice-models";
-import { genericError } from "@knodia/fastify-zod-api-commons/models";
 import { eq, SQL } from "drizzle-orm";
 
 export type EserviceWriterService = ReturnType<
@@ -49,7 +49,7 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
           filter: SQL | undefined,
         ): Promise<boolean> => {
           if (filter === undefined) {
-            throw genericError("Filter cannot be undefined");
+            throw genericInternalError("Filter cannot be undefined");
           }
           const [row] = await tx
             .select({

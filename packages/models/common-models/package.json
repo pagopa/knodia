@@ -12,7 +12,8 @@
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
     "./event": "./src/events.ts",
-    "./protobuf": "./src/protobuf.ts"
+    "./protobuf": "./src/protobuf.ts",
+    "./errors": "./src/errors.ts"
   },
   "dependencies": {
     "zod": "catalog:"
