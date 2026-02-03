@@ -1,7 +1,10 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
-import { ESERVICE_FORM_DEFAULTS } from "@/features/e-service/types/eserviceCreateForm";
+import {
+  ESERVICE_FORM_DEFAULTS,
+  eserviceFormSchema,
+} from "@/features/e-service/types/eserviceCreateForm";
 
 const { fieldContext, formContext } = createFormHookContexts();
 
@@ -17,6 +20,10 @@ export function useEServiceAppForm() {
     defaultValues: ESERVICE_FORM_DEFAULTS,
     // TODO: add submit handler
     onSubmit: console.log,
+    // TODO: debounce validation
+    validators: {
+      onChange: eserviceFormSchema,
+    },
   });
 }
 

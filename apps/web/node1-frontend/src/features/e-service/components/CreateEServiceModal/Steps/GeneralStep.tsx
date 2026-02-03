@@ -28,6 +28,13 @@ export function GeneralStep({ onCancel }: Props) {
             {(field) => (
               <TextField
                 description="Min 5 characters, max 60 characters"
+                // TODO: centralize this
+                errorMessage={field.state.meta.errors
+                  .map((e) => e?.message)
+                  .join(", ")}
+                isInvalid={
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                }
                 label="Name"
                 name={field.name}
                 onBlur={field.handleBlur}
@@ -41,6 +48,13 @@ export function GeneralStep({ onCancel }: Props) {
             {(field) => (
               <TextArea
                 description="Min 10 characters, max 250 characters"
+                // TODO: centralize this
+                errorMessage={field.state.meta.errors
+                  .map((e) => e?.message)
+                  .join(", ")}
+                isInvalid={
+                  field.state.meta.isTouched && !field.state.meta.isValid
+                }
                 label="Description"
                 name={field.name}
                 onBlur={field.handleBlur}
@@ -71,7 +85,16 @@ export function GeneralStep({ onCancel }: Props) {
         </div>
       </div>
 
-      <Footer cancelLabel="Back" onCancel={onCancel} onConfirm={nextStep} />
+      <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit]}>
+        {([isPristine, canSubmit]) => (
+          <Footer
+            cancelLabel="Back"
+            isDisabled={isPristine || !canSubmit}
+            onCancel={onCancel}
+            onConfirm={nextStep}
+          />
+        )}
+      </form.Subscribe>
     </>
   );
 }

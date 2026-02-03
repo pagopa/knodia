@@ -1,23 +1,35 @@
+import { z } from "zod";
+
 import type { StepConfig } from "@/contexts/steps";
 
-interface EServiceFormData {
-  accessTokenAudience: string;
-  accessTokenDuration: string;
-  accessTokenType: "Bearer" | "DPoP";
+export const eserviceFieldSchemas = {
+  accessTokenAudience: z.string().optional(),
+  accessTokenDuration: z.string().optional(),
+  accessTokenType: z.enum(["Bearer", "DPoP"]),
   // TODO: will this need to be a string?
-  categories?: string;
-  description: string;
-  interfaceDocument: File | null;
-  isSignalHubEnabled: boolean;
+  categories: z.string().optional(),
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters.")
+    .max(250, "Description must be at most 250 characters."),
+  interfaceDocument: z.instanceof(File).nullable(),
+  isSignalHubEnabled: z.boolean(),
   // TODO: this should be a number
-  maxDailyCallsPerConsumer: string;
+  maxDailyCallsPerConsumer: z.string().optional(),
   // TODO: this should be a number
-  maxDailyCallsPerKnode: string;
-  mode: "ProvideData" | "ReceiveData";
-  name: string;
+  maxDailyCallsPerKnode: z.string().optional(),
+  mode: z.enum(["ProvideData", "ReceiveData"]),
+  name: z
+    .string()
+    .min(5, "Name must be at least 5 characters.")
+    .max(60, "Name must be at most 60 characters."),
   // TODO: will this need to be a string?
-  requiredAttributes: string;
-}
+  requiredAttributes: z.string().optional(),
+};
+
+export const eserviceFormSchema = z.object(eserviceFieldSchemas);
+
+export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
 export const ESERVICE_FORM_DEFAULTS: EServiceFormData = {
   accessTokenAudience: "",

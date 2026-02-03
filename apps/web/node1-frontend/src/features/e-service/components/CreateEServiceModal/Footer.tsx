@@ -3,6 +3,7 @@ import { Button } from "@knodia/ui-kit/ui";
 interface FooterProps {
   cancelLabel?: string;
   confirmLabel?: string;
+  isDisabled?: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -10,6 +11,7 @@ interface FooterProps {
 export function Footer({
   cancelLabel = "Previous",
   confirmLabel = "Next",
+  isDisabled = false,
   onCancel,
   onConfirm,
 }: FooterProps) {
@@ -18,7 +20,7 @@ export function Footer({
       <Button hierarchy="neutral" kind="tonal" onPress={onCancel} size="lg">
         {cancelLabel}
       </Button>
-      <Button onPress={onConfirm} size="lg">
+      <Button isDisabled={isDisabled} onPress={onConfirm} size="lg">
         {confirmLabel}
       </Button>
     </div>
