@@ -5,7 +5,7 @@ import { useStepsContext } from "@/contexts/steps";
 import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
-import { StepTitle } from "../StepsTitle";
+import { StepHeader } from "../StepsHeader";
 
 interface Props {
   onCancel: () => void;
@@ -18,7 +18,7 @@ export function GeneralStep({ onCancel }: Props) {
   return (
     <>
       <div className="flex flex-col gap-10">
-        <StepTitle
+        <StepHeader
           description="This information will be used to find your E-Service. Be precise and clear."
           title="General Information"
         />

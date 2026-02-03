@@ -12,7 +12,7 @@ interface Props {
 
 export function FullPageModal({ children, onClose, title }: Props) {
   return (
-    <div className="fixed inset-0 z-50 bg-white">
+    <div className="fixed inset-0 z-50 bg-white flex flex-col">
       <Navbar className="bg-brand-light">
         <span className="text-brand-light-high-contrast headline-sm">
           {title}
@@ -26,7 +26,7 @@ export function FullPageModal({ children, onClose, title }: Props) {
           <XIcon />
         </Button>
       </Navbar>
-      {children}
+      <div className="flex-1 overflow-auto">{children}</div>
     </div>
   );
 }

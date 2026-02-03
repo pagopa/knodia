@@ -2,7 +2,7 @@ import { useStepsContext } from "@/contexts/steps";
 import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
-import { StepTitle } from "../StepsTitle";
+import { StepHeader } from "../StepsHeader";
 
 export function RecapStep() {
   const form = useEServiceFormContext();
@@ -11,7 +11,7 @@ export function RecapStep() {
 
   return (
     <div className="flex flex-col gap-6">
-      <StepTitle
+      <StepHeader
         description="Check that everything is correct before the publication."
         title="Recap"
       />
