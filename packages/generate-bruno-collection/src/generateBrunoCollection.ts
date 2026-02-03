@@ -10,7 +10,7 @@ import yaml from "js-yaml";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-export interface GenerateBruOptions {
+interface GenerateBruOptions {
   endpointPath: string;
   hostVar: string;
   method: string;
