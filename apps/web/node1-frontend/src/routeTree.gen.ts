@@ -9,38 +9,206 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as OperatorsRouteImport } from './routes/operators'
+import { Route as KeychainsRouteImport } from './routes/keychains'
+import { Route as DetailsAndAttributesRouteImport } from './routes/details-and-attributes'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductionIndexRouteImport } from './routes/production/index'
+import { Route as ConsumptionIndexRouteImport } from './routes/consumption/index'
+import { Route as ProductionPurposesRouteImport } from './routes/production/purposes'
+import { Route as ProductionEServicesRouteImport } from './routes/production/e-services'
+import { Route as ProductionAgreementsRouteImport } from './routes/production/agreements'
+import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/purposes'
+import { Route as ConsumptionEServicesRouteImport } from './routes/consumption/e-services'
+import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
 
+const OperatorsRoute = OperatorsRouteImport.update({
+  id: '/operators',
+  path: '/operators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeychainsRoute = KeychainsRouteImport.update({
+  id: '/keychains',
+  path: '/keychains',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DetailsAndAttributesRoute = DetailsAndAttributesRouteImport.update({
+  id: '/details-and-attributes',
+  path: '/details-and-attributes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductionIndexRoute = ProductionIndexRouteImport.update({
+  id: '/production/',
+  path: '/production/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsumptionIndexRoute = ConsumptionIndexRouteImport.update({
+  id: '/consumption/',
+  path: '/consumption/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductionPurposesRoute = ProductionPurposesRouteImport.update({
+  id: '/production/purposes',
+  path: '/production/purposes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductionEServicesRoute = ProductionEServicesRouteImport.update({
+  id: '/production/e-services',
+  path: '/production/e-services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductionAgreementsRoute = ProductionAgreementsRouteImport.update({
+  id: '/production/agreements',
+  path: '/production/agreements',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsumptionPurposesRoute = ConsumptionPurposesRouteImport.update({
+  id: '/consumption/purposes',
+  path: '/consumption/purposes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsumptionEServicesRoute = ConsumptionEServicesRouteImport.update({
+  id: '/consumption/e-services',
+  path: '/consumption/e-services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConsumptionAgreementsRoute = ConsumptionAgreementsRouteImport.update({
+  id: '/consumption/agreements',
+  path: '/consumption/agreements',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/details-and-attributes': typeof DetailsAndAttributesRoute
+  '/keychains': typeof KeychainsRoute
+  '/operators': typeof OperatorsRoute
+  '/consumption/agreements': typeof ConsumptionAgreementsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRoute
+  '/consumption/purposes': typeof ConsumptionPurposesRoute
+  '/production/agreements': typeof ProductionAgreementsRoute
+  '/production/e-services': typeof ProductionEServicesRoute
+  '/production/purposes': typeof ProductionPurposesRoute
+  '/consumption': typeof ConsumptionIndexRoute
+  '/production': typeof ProductionIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/details-and-attributes': typeof DetailsAndAttributesRoute
+  '/keychains': typeof KeychainsRoute
+  '/operators': typeof OperatorsRoute
+  '/consumption/agreements': typeof ConsumptionAgreementsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRoute
+  '/consumption/purposes': typeof ConsumptionPurposesRoute
+  '/production/agreements': typeof ProductionAgreementsRoute
+  '/production/e-services': typeof ProductionEServicesRoute
+  '/production/purposes': typeof ProductionPurposesRoute
+  '/consumption': typeof ConsumptionIndexRoute
+  '/production': typeof ProductionIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/details-and-attributes': typeof DetailsAndAttributesRoute
+  '/keychains': typeof KeychainsRoute
+  '/operators': typeof OperatorsRoute
+  '/consumption/agreements': typeof ConsumptionAgreementsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRoute
+  '/consumption/purposes': typeof ConsumptionPurposesRoute
+  '/production/agreements': typeof ProductionAgreementsRoute
+  '/production/e-services': typeof ProductionEServicesRoute
+  '/production/purposes': typeof ProductionPurposesRoute
+  '/consumption/': typeof ConsumptionIndexRoute
+  '/production/': typeof ProductionIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/details-and-attributes'
+    | '/keychains'
+    | '/operators'
+    | '/consumption/agreements'
+    | '/consumption/e-services'
+    | '/consumption/purposes'
+    | '/production/agreements'
+    | '/production/e-services'
+    | '/production/purposes'
+    | '/consumption'
+    | '/production'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/details-and-attributes'
+    | '/keychains'
+    | '/operators'
+    | '/consumption/agreements'
+    | '/consumption/e-services'
+    | '/consumption/purposes'
+    | '/production/agreements'
+    | '/production/e-services'
+    | '/production/purposes'
+    | '/consumption'
+    | '/production'
+  id:
+    | '__root__'
+    | '/'
+    | '/details-and-attributes'
+    | '/keychains'
+    | '/operators'
+    | '/consumption/agreements'
+    | '/consumption/e-services'
+    | '/consumption/purposes'
+    | '/production/agreements'
+    | '/production/e-services'
+    | '/production/purposes'
+    | '/consumption/'
+    | '/production/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DetailsAndAttributesRoute: typeof DetailsAndAttributesRoute
+  KeychainsRoute: typeof KeychainsRoute
+  OperatorsRoute: typeof OperatorsRoute
+  ConsumptionAgreementsRoute: typeof ConsumptionAgreementsRoute
+  ConsumptionEServicesRoute: typeof ConsumptionEServicesRoute
+  ConsumptionPurposesRoute: typeof ConsumptionPurposesRoute
+  ProductionAgreementsRoute: typeof ProductionAgreementsRoute
+  ProductionEServicesRoute: typeof ProductionEServicesRoute
+  ProductionPurposesRoute: typeof ProductionPurposesRoute
+  ConsumptionIndexRoute: typeof ConsumptionIndexRoute
+  ProductionIndexRoute: typeof ProductionIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/operators': {
+      id: '/operators'
+      path: '/operators'
+      fullPath: '/operators'
+      preLoaderRoute: typeof OperatorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keychains': {
+      id: '/keychains'
+      path: '/keychains'
+      fullPath: '/keychains'
+      preLoaderRoute: typeof KeychainsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/details-and-attributes': {
+      id: '/details-and-attributes'
+      path: '/details-and-attributes'
+      fullPath: '/details-and-attributes'
+      preLoaderRoute: typeof DetailsAndAttributesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +216,78 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/production/': {
+      id: '/production/'
+      path: '/production'
+      fullPath: '/production'
+      preLoaderRoute: typeof ProductionIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumption/': {
+      id: '/consumption/'
+      path: '/consumption'
+      fullPath: '/consumption'
+      preLoaderRoute: typeof ConsumptionIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/production/purposes': {
+      id: '/production/purposes'
+      path: '/production/purposes'
+      fullPath: '/production/purposes'
+      preLoaderRoute: typeof ProductionPurposesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/production/e-services': {
+      id: '/production/e-services'
+      path: '/production/e-services'
+      fullPath: '/production/e-services'
+      preLoaderRoute: typeof ProductionEServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/production/agreements': {
+      id: '/production/agreements'
+      path: '/production/agreements'
+      fullPath: '/production/agreements'
+      preLoaderRoute: typeof ProductionAgreementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumption/purposes': {
+      id: '/consumption/purposes'
+      path: '/consumption/purposes'
+      fullPath: '/consumption/purposes'
+      preLoaderRoute: typeof ConsumptionPurposesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumption/e-services': {
+      id: '/consumption/e-services'
+      path: '/consumption/e-services'
+      fullPath: '/consumption/e-services'
+      preLoaderRoute: typeof ConsumptionEServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumption/agreements': {
+      id: '/consumption/agreements'
+      path: '/consumption/agreements'
+      fullPath: '/consumption/agreements'
+      preLoaderRoute: typeof ConsumptionAgreementsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DetailsAndAttributesRoute: DetailsAndAttributesRoute,
+  KeychainsRoute: KeychainsRoute,
+  OperatorsRoute: OperatorsRoute,
+  ConsumptionAgreementsRoute: ConsumptionAgreementsRoute,
+  ConsumptionEServicesRoute: ConsumptionEServicesRoute,
+  ConsumptionPurposesRoute: ConsumptionPurposesRoute,
+  ProductionAgreementsRoute: ProductionAgreementsRoute,
+  ProductionEServicesRoute: ProductionEServicesRoute,
+  ProductionPurposesRoute: ProductionPurposesRoute,
+  ConsumptionIndexRoute: ConsumptionIndexRoute,
+  ProductionIndexRoute: ProductionIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

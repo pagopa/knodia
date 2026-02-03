@@ -1,7 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { PlaceholderIcon } from "@phosphor-icons/react";
+
 import { TextField, type TextFieldProps } from "../components/ui/TextField";
-import { MockIcon, renderStickerSheet } from "./utils";
+import { renderStickerSheet } from "./utils";
 
 const sizes: NonNullable<TextFieldProps["size"]>[] = ["sm", "md", "lg"];
 
@@ -38,7 +40,7 @@ export const WithIcon: Story = {
     label: "Label",
     size: "md",
     value: "Value",
-    endIcon: <MockIcon />,
+    endIcon: <PlaceholderIcon />,
   },
 };
 
@@ -58,7 +60,7 @@ export const StickerSheet: Story = {
     (state) =>
       sizes.map((size) => (
         <TextField
-          endIcon={<MockIcon />}
+          endIcon={<PlaceholderIcon />}
           isDisabled={state === "disabled"}
           isInvalid={state === "invalid"}
           isReadOnly={state === "readonly"}

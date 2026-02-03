@@ -39,6 +39,9 @@ catalogs:
     '@pagopa/eslint-config':
       specifier: 5.1.1
       version: 5.1.1
+    '@phosphor-icons/react':
+      specifier: 2.1.10
+      version: 2.1.10
     '@stoplight/spectral-cli':
       specifier: 6.15.0
       version: 6.15.0
@@ -124,8 +127,8 @@ catalogs:
       specifier: 10.1.11
       version: 10.1.11
     fastify:
-      specifier: 5.6.2
-      version: 5.6.2
+      specifier: 5.7.3
+      version: 5.7.3
     fastify-plugin:
       specifier: 5.1.0
       version: 5.1.0
@@ -138,9 +141,6 @@ catalogs:
     knip:
       specifier: 5.73.4
       version: 5.73.4
-    lucide-react:
-      specifier: 0.562.0
-      version: 0.562.0
     openapi-types:
       specifier: 12.1.3
       version: 12.1.3
@@ -244,10 +244,10 @@ importers:
         version: link:../../../packages/logger
       fastify:
         specifier: 'catalog:'
-        version: 5.6.2
+        version: 5.7.3
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.6.2)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -305,10 +305,10 @@ importers:
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
-        version: 5.6.2
+        version: 5.7.3
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.6.2)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -413,6 +413,9 @@ importers:
 
   apps/web/node1-frontend:
     dependencies:
+      '@phosphor-icons/react':
+        specifier: 'catalog:'
+        version: 2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.1.18(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -440,6 +443,9 @@ importers:
       react:
         specifier: 'catalog:'
         version: 19.2.0
+      react-aria-components:
+        specifier: 'catalog:'
+        version: 1.14.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-dom:
         specifier: 'catalog:'
         version: 19.2.0(react@19.2.0)
@@ -707,13 +713,13 @@ importers:
         version: 1.13.2
       fastify:
         specifier: 'catalog:'
-        version: 5.6.2
+        version: 5.7.3
       fastify-plugin:
         specifier: 'catalog:'
         version: 5.1.0
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.6.2)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -925,12 +931,12 @@ importers:
       '@fontsource-variable/inter':
         specifier: 'catalog:'
         version: 5.2.8
+      '@phosphor-icons/react':
+        specifier: 'catalog:'
+        version: 2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       '@tailwindcss/vite':
         specifier: 'catalog:'
         version: 4.1.18(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
-      lucide-react:
-        specifier: 'catalog:'
-        version: 0.562.0(react@19.2.0)
       react:
         specifier: 'catalog:'
         version: 19.2.0
@@ -1996,6 +2002,13 @@ packages:
     resolution: {integrity: sha512-AeLwIXjeJnFtqiwCBwcFFRnPhUlj4DJLiHZquFarHB2HAXl0ohOOQ/P8IXTJ/y1oyt/mW03f6tWuH9KoU04yjg==}
     peerDependencies:
       eslint: ^9.39.1
+
+  '@phosphor-icons/react@2.1.10':
+    resolution: {integrity: sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
@@ -4448,8 +4461,8 @@ packages:
       openapi-types: ^12.1.3
       zod: '>=4.1.5'
 
-  fastify@5.6.2:
-    resolution: {integrity: sha512-dPugdGnsvYkBlENLhCgX8yhyGCsCPrpA8lFWbTNU428l+YOnLgYHR69hzV8HWPC79n536EqzqQtvhtdaCE0dKg==}
+  fastify@5.7.3:
+    resolution: {integrity: sha512-QHzWSmTNUg9Ba8tNXzb92FTH77K+c8yeQPH80EeSIc9wyZj85jbPisMP0rwmyKv8oJwUFPe1UpN8HkNIXwCnUQ==}
 
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
@@ -5162,11 +5175,6 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
-
-  lucide-react@0.562.0:
-    resolution: {integrity: sha512-82hOAu7y0dbVuFfmO4bYF1XEwYk/mEbM5E+b1jgci/udUBEE/R7LF5Ip0CCEmXe8AybRM8L+04eP+LGZeDvkiw==}
-    peerDependencies:
-      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lz-string@1.5.0:
     resolution: {integrity: sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ==}
@@ -7387,6 +7395,11 @@ snapshots:
       - prettier
       - supports-color
       - vitest
+
+  '@phosphor-icons/react@2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)':
+    dependencies:
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
 
   '@pinojs/redact@0.4.0': {}
 
@@ -10580,15 +10593,15 @@ snapshots:
 
   fastify-plugin@5.1.0: {}
 
-  fastify-type-provider-zod@6.1.0(@fastify/swagger@9.6.1)(fastify@5.6.2)(openapi-types@12.1.3)(zod@4.2.0):
+  fastify-type-provider-zod@6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0):
     dependencies:
       '@fastify/error': 4.2.0
       '@fastify/swagger': 9.6.1
-      fastify: 5.6.2
+      fastify: 5.7.3
       openapi-types: 12.1.3
       zod: 4.2.0
 
-  fastify@5.6.2:
+  fastify@5.7.3:
     dependencies:
       '@fastify/ajv-compiler': 4.0.5
       '@fastify/error': 4.2.0
@@ -11279,10 +11292,6 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
-
-  lucide-react@0.562.0(react@19.2.0):
-    dependencies:
-      react: 19.2.0
 
   lz-string@1.5.0: {}
 
