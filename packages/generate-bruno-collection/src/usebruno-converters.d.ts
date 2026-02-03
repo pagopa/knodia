@@ -1,5 +1,5 @@
 declare module "@usebruno/converters" {
-  export interface BrunoHeader {
+  interface BrunoHeader {
     description: string;
     enabled: boolean;
     name: string;
@@ -7,7 +7,7 @@ declare module "@usebruno/converters" {
     value: string;
   }
 
-  export interface BrunoParam {
+  interface BrunoParam {
     description: string;
     enabled: boolean;
     name: string;
@@ -16,7 +16,7 @@ declare module "@usebruno/converters" {
     value: string;
   }
 
-  export interface BrunoBody {
+  interface BrunoBody {
     formUrlEncoded: unknown[];
     json: null | string;
     mode: string;
