@@ -44,6 +44,7 @@ export async function setupReadmodelTestContainer() {
  * It generates a unique DB name, creates it using TEMPLATE, and returns a Drizzle connection.
  *
  * Intended to be called in beforeAll of each test file.
+ * @beta
  */
 export async function setupReadmodelTestDatabase(connectionString: string) {
   const randomId = crypto.randomUUID();
