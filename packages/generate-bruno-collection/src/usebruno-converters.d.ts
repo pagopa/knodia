@@ -39,6 +39,7 @@ declare module "@usebruno/converters" {
       method: string;
       params: BrunoParam[];
       script: {
+        req: unknown;
         res: unknown;
       };
       url: string;

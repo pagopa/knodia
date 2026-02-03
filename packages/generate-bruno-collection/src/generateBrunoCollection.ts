@@ -99,7 +99,7 @@ function collectionItemToBruLang(item: BrunoRequest): Record<string, unknown> {
     },
     params,
     script: {
-      req: script?.res ? "" : "",
+      req: script?.req ?? "",
       res: script?.res ?? "",
     },
   };
