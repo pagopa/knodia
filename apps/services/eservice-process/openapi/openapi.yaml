@@ -87,13 +87,104 @@ components:
         - status
         - title
       additionalProperties: false
+    LocalizedName:
+      description: Name of the E-service
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedDescription:
+      description: Description of the E-service
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    EserviceMode:
+      type: string
+      enum:
+        - ProvideData
+        - ReceiveData
+    EserviceCategory:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    AccessTokenType:
+      type: string
+      enum:
+        - Bearer
+        - DPoP
+    EserviceAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Eservice:
       type: object
       properties:
-        name:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        createdAt:
           type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
+        - categories
+        - createdAt
+        - description
+        - id
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - mode
         - name
+        - producerId
+        - updatedAt
       additionalProperties: false
     Eservices:
       type: object
@@ -111,12 +202,70 @@ components:
     EserviceSeed:
       type: object
       properties:
+        accessTokenAudience:
+          description: Audience for the access token
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          description: Duration of the access token in seconds
+          format: int32
+          default: 3600
+          type: integer
+          minimum: 1
+          maximum: 86400
+        accessTokenType:
+          description: Type of the access token
+          default: Bearer
+          allOf:
+            - $ref: "#/components/schemas/AccessTokenType"
+        categories:
+          description: Categories of the E-service
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        isConsumerOperatorIdentificationRequired:
+          description: Whether consumer operator identification is required
+          type: boolean
+        isSignalHubEnabled:
+          description: Whether SignalHub is enabled for the E-service
+          type: boolean
+        maxDailyCallsPerConsumer:
+          description: Maximum daily calls per consumer
+          format: int32
+          type: integer
+          minimum: 1
+          maximum: 1000000000
+        maxDailyCallsPerKnode:
+          description: Maximum daily calls per Knode
+          format: int32
+          type: integer
+          minimum: 1
+          maximum: 1000000000
+        mode:
+          description: Mode of the E-service
+          allOf:
+            - $ref: "#/components/schemas/EserviceMode"
         name:
-          description: Name of the E-service
-          type: string
-          minLength: 4
+          $ref: "#/components/schemas/LocalizedName"
+        requiredAttributes:
+          description: Required attributes for the E-service
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
       required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - description
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
         - name
+        - requiredAttributes
       additionalProperties: false
 paths:
   /status:

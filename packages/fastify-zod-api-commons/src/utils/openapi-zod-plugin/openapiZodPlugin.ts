@@ -14,6 +14,8 @@ import {
   zodToJsonSchemaTransformObjectWithoutInputSchemas,
 } from "./zodToJsonSchema.ts";
 
+export const docsRoutePrefix = "/docs";
+
 export type OpenapiZodPluginOptions =
   fastifySwagger.FastifyDynamicSwaggerOptions & {
     openapiDocs?: false | fastifySwaggerUI.FastifySwaggerUiOptions;
@@ -49,7 +51,7 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
       fastify.register(
         fastifySwaggerUI,
         openapiDocs ?? {
-          routePrefix: "/docs",
+          routePrefix: docsRoutePrefix,
         },
       );
     }

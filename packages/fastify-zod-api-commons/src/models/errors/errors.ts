@@ -62,13 +62,22 @@ export function responseSerializationError(
 }
 
 export function zodFastifySchemaValidationError(
-  error: Omit<FastifyError, "validation"> & {
+  error: Omit<FastifyError, "validation" | "validationContext"> & {
     validation: ZodFastifySchemaValidationError[];
+    validationContext?: string;
   },
 ): ApiError<CommonErrorCodes> {
+  const context = error.validationContext ?? "request";
+  const errors = error.validation.map((validationError) => {
+    const path = validationError.instancePath || "";
+    const message = validationError.message || "Invalid value";
+    const fullPath = path ? `${context}${path}` : context;
+    return new Error(`${message} at ${fullPath}`);
+  });
+
   return createApiErrorFromErrorsList({
     code: "ZOD_FASTIFY_SCHEMA_VALIDATION_ERROR",
-    errors: error.validation,
+    errors,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Request Validation Error",
   });
