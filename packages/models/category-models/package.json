@@ -1,0 +1,20 @@
+{
+  "name": "@knodia/category-models",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}
