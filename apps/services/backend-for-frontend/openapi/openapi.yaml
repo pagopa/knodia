@@ -199,25 +199,42 @@ components:
         - items
         - pagination
       additionalProperties: false
-    FileUpload:
+    InterfaceDocumentSeed:
       type: object
       properties:
+        checksum:
+          description: Checksum of the uploaded interface document
+          type: string
         content:
           description: Base64-encoded file content
           type: string
           format: base64
           pattern: ^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$
-        filename:
-          description: Original filename from the user's upload
+        contentType:
+          description: MIME type of the uploaded interface document
           type: string
-          minLength: 1
+        name:
+          description: Name of the uploaded interface document
+          type: string
+        path:
+          description: Path where the interface document is stored
+          type: string
         prettyName:
-          description: Display name for the document in the UI
-          type: string
-          minLength: 1
+          description: Pretty name for the document in different languages
+          type: object
+          properties:
+            en:
+              description: English pretty name
+              type: string
+          required:
+            - en
+          additionalProperties: false
       required:
+        - checksum
         - content
-        - filename
+        - contentType
+        - name
+        - path
         - prettyName
       additionalProperties: false
     EserviceSeed:
@@ -250,7 +267,7 @@ components:
         interfaceDocument:
           description: Interface document for the E-service
           allOf:
-            - $ref: "#/components/schemas/FileUpload"
+            - $ref: "#/components/schemas/InterfaceDocumentSeed"
         isConsumerOperatorIdentificationRequired:
           description: Whether consumer operator identification is required
           type: boolean
