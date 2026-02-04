@@ -9,6 +9,7 @@ export function initFileManager() {
   return {
     storeBytes: async (s3File: {
       bucket: string;
+      checksum?: string;
       content: Buffer;
       key: string;
     }): Promise<string> => {
@@ -16,10 +17,9 @@ export function initFileManager() {
         new PutObjectCommand({
           Body: s3File.content,
           Bucket: s3File.bucket,
-          ChecksumSHA256: crypto
-            .createHash("sha256")
-            .update(s3File.content)
-            .digest("base64"),
+          ChecksumSHA256:
+            s3File.checksum ??
+            crypto.createHash("sha256").update(s3File.content).digest("base64"),
           Key: s3File.key,
         }),
       );

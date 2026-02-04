@@ -81,6 +81,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const s3Key = await fileManager.storeBytes({
         bucket: config.eserviceInterfacesS3Bucket,
+        checksum: interfaceDocumentRest.checksum,
         content: Buffer.from(content, "base64"),
         key: `${interfaceDocumentId}/${name}`,
       });

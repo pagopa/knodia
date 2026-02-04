@@ -44,7 +44,9 @@ export const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z
       .string()
-      .describe("Checksum of the uploaded interface document"),
+      .describe(
+        "Base64-encoded SHA-256 checksum of the uploaded interface document",
+      ),
     contentType: z
       .string()
       .describe("MIME type of the uploaded interface document"),
