@@ -1,14 +1,31 @@
-import { Banner, Button, Select } from "@knodia/ui-kit/ui";
+import { Banner, Button, FieldError, Select } from "@knodia/ui-kit/ui";
 
 import { useStepsContext } from "@/contexts/steps";
-import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
+import {
+  useAttributesStepForm,
+  useEServiceWizardContext,
+} from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
 export function AttributesStep() {
-  const form = useEServiceFormContext();
+  const { data, updateAttributesStep } = useEServiceWizardContext();
   const { nextStep, prevStep } = useStepsContext();
+
+  const form = useAttributesStepForm(
+    {
+      requiredAttributes: data.requiredAttributes ?? [],
+    },
+    (stepData) => {
+      updateAttributesStep(stepData);
+      nextStep();
+    },
+  );
+
+  function handleNext() {
+    void form.handleSubmit();
+  }
 
   return (
     <>
@@ -30,7 +47,7 @@ export function AttributesStep() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3">
             <h3 className="headline-sm-em text-primary-light-high-contrast">
-              Group 1
+              Group 1 *
             </h3>
             <span className="body-md text-primary-light-high-contrast">
               Organizations must have at least one attribute inside this group.
@@ -38,13 +55,21 @@ export function AttributesStep() {
           </div>
           <form.Field name="requiredAttributes">
             {(field) => (
-              <Select
-                children={undefined} // TODO: add attributes
-                className="flex-1"
-                label="Attributes"
-                name={field.name}
-                placeholder="Select one or more attributes"
-              />
+              <div className="flex flex-col gap-2">
+                <Select
+                  children={undefined} // TODO: add attributes
+                  className="flex-1"
+                  isRequired
+                  label="Attributes"
+                  name={field.name}
+                  placeholder="Select one or more attributes"
+                />
+                {field.state.meta.isTouched && !field.state.meta.isValid && (
+                  <FieldError>
+                    {field.state.meta.errors.map((e) => e?.message).join(", ")}
+                  </FieldError>
+                )}
+              </div>
             )}
           </form.Field>
         </div>
@@ -53,7 +78,16 @@ export function AttributesStep() {
           Add group
         </Button>
       </div>
-      <Footer onCancel={prevStep} onConfirm={nextStep} />
+
+      <form.Subscribe selector={(state) => state.canSubmit}>
+        {(canSubmit) => (
+          <Footer
+            isDisabled={!canSubmit}
+            onCancel={prevStep}
+            onConfirm={handleNext}
+          />
+        )}
+      </form.Subscribe>
     </>
   );
 }

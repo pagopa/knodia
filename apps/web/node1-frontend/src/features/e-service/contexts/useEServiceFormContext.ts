@@ -1,46 +1,102 @@
 import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
-import {
-  ESERVICE_FORM_DEFAULTS,
-  eserviceFormSchema,
+import type {
+  AttributesStepData,
+  DocsStepData,
+  EServiceFormData,
+  GeneralStepData,
+  TechnicalStepData,
 } from "@/features/e-service/types/eserviceCreateForm";
 
+import {
+  ATTRIBUTES_STEP_DEFAULTS,
+  attributesStepSchema,
+  DOCS_STEP_DEFAULTS,
+  docsStepSchema,
+  ESERVICE_FORM_DEFAULTS,
+  GENERAL_STEP_DEFAULTS,
+  generalStepSchema,
+  TECHNICAL_STEP_DEFAULTS,
+  technicalStepSchema,
+} from "@/features/e-service/types/eserviceCreateForm";
+
+// Wizard context for accumulated data
+export interface EServiceWizardContextValue {
+  data: Partial<EServiceFormData>;
+  updateAttributesStep: (data: AttributesStepData) => void;
+  updateDocsStep: (data: DocsStepData) => void;
+  updateGeneralStep: (data: GeneralStepData) => void;
+  updateTechnicalStep: (data: TechnicalStepData) => void;
+}
+
+export const EServiceWizardContext =
+  createContext<EServiceWizardContextValue | null>(null);
+
+// Form hook setup
 const { fieldContext, formContext } = createFormHookContexts();
 
-const { useAppForm } = createFormHook({
+export const { useAppForm } = createFormHook({
   fieldComponents: {},
   fieldContext,
   formComponents: {},
   formContext,
 });
 
-export function useEServiceAppForm() {
+// Step form hooks
+export function useAttributesStepForm(
+  defaultValues?: Partial<AttributesStepData>,
+  onSubmit?: (data: AttributesStepData) => void,
+) {
   return useAppForm({
-    defaultValues: ESERVICE_FORM_DEFAULTS,
-    // TODO: add submit handler
-    onSubmit: console.log,
-    // TODO: debounce validation
-    validators: {
-      onChange: eserviceFormSchema,
-    },
+    defaultValues: { ...ATTRIBUTES_STEP_DEFAULTS, ...defaultValues },
+    onSubmit: ({ value }) => onSubmit?.(value as AttributesStepData),
+    validators: { onChange: attributesStepSchema },
   });
 }
 
-// eslint-disable-next-line perfectionist/sort-modules -- type depends on function above
-type EServiceForm = ReturnType<typeof useEServiceAppForm>;
+export function useDocsStepForm(
+  defaultValues?: Partial<DocsStepData>,
+  onSubmit?: (data: DocsStepData) => void,
+) {
+  return useAppForm({
+    defaultValues: { ...DOCS_STEP_DEFAULTS, ...defaultValues },
+    onSubmit: ({ value }) => onSubmit?.(value as DocsStepData),
+    validators: { onChange: docsStepSchema },
+  });
+}
 
-export const EServiceFormContext = createContext<EServiceForm | null>(null);
-
-// useFormContext from createFormHookContexts does not handle type inference
-// unless strongly typed with "as unknown as".
-// We need to do use a custom context to pass the correct form type.
-export function useEServiceFormContext() {
-  const context = useContext(EServiceFormContext);
+export function useEServiceWizardContext() {
+  const context = useContext(EServiceWizardContext);
   if (!context) {
     throw new Error(
-      "useEServiceFormContext must be used within an EServiceFormProvider",
+      "useEServiceWizardContext must be used within an EServiceWizardProvider",
     );
   }
   return context;
 }
+
+export function useGeneralStepForm(
+  defaultValues?: Partial<GeneralStepData>,
+  onSubmit?: (data: GeneralStepData) => void,
+) {
+  return useAppForm({
+    defaultValues: { ...GENERAL_STEP_DEFAULTS, ...defaultValues },
+    onSubmit: ({ value }) => onSubmit?.(value as GeneralStepData),
+    validators: { onChange: generalStepSchema },
+  });
+}
+
+export function useTechnicalStepForm(
+  defaultValues?: Partial<TechnicalStepData>,
+  onSubmit?: (data: TechnicalStepData) => void,
+) {
+  return useAppForm({
+    defaultValues: { ...TECHNICAL_STEP_DEFAULTS, ...defaultValues },
+    onSubmit: ({ value }) => onSubmit?.(value as TechnicalStepData),
+    validators: { onChange: technicalStepSchema },
+  });
+}
+
+// Export defaults for initial state
+export { ESERVICE_FORM_DEFAULTS };

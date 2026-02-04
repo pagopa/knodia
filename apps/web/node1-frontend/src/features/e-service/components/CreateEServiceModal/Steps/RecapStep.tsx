@@ -2,16 +2,19 @@ import { Banner, Button, Chip, Divider } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon, CopyIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
-import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
+import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { DocumentRecap } from "../DocumentRecap";
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
-export function RecapStep() {
-  const form = useEServiceFormContext();
+interface Props {
+  onPublish: () => void;
+}
+
+export function RecapStep({ onPublish }: Props) {
+  const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
-  const values = form.state.values;
 
   return (
     <>
@@ -30,8 +33,8 @@ export function RecapStep() {
         </h2>
         <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-2">
-            <RecapField label="Name" value={values.name || "-"} />
-            <RecapField label="Description" value={values.description || "-"} />
+            <RecapField label="Name" value={data.name || "-"} />
+            <RecapField label="Description" value={data.description || "-"} />
           </div>
           <div className="flex flex-col gap-6">
             <h3 className="title-sm-em text-primary-light-high-contrast">
@@ -56,9 +59,7 @@ export function RecapStep() {
 
         <RecapField
           label="Mode"
-          value={
-            values.mode === "ReceiveData" ? "Receive data" : "Provide data"
-          }
+          value={data.mode === "ReceiveData" ? "Receive data" : "Provide data"}
         />
 
         <div className="flex flex-col gap-6">
@@ -68,13 +69,13 @@ export function RecapStep() {
           <div className="flex flex-col gap-2">
             <RecapField
               label="Duration"
-              value={values.accessTokenDuration || "-"}
+              value={data.accessTokenDuration || "-"}
             />
             <RecapField
               label="Audience"
-              value={values.accessTokenAudience || "-"}
+              value={data.accessTokenAudience || "-"}
             />
-            <RecapField label="Type" value={values.accessTokenType || "-"} />
+            <RecapField label="Type" value={data.accessTokenType || "-"} />
           </div>
         </div>
 
@@ -85,11 +86,11 @@ export function RecapStep() {
           <div className="flex flex-col gap-2">
             <RecapField
               label="Per Knode"
-              value={values.maxDailyCallsPerKnode || "-"}
+              value={data.maxDailyCallsPerKnode || "-"}
             />
             <RecapField
               label="Per consumer"
-              value={values.maxDailyCallsPerConsumer || "-"}
+              value={data.maxDailyCallsPerConsumer || "-"}
             />
           </div>
         </div>
@@ -101,7 +102,7 @@ export function RecapStep() {
           <div className="flex flex-col gap-2">
             <RecapField
               label="Available on Signal Hub"
-              value={values.isSignalHubEnabled ? "Yes" : "No"}
+              value={data.isSignalHubEnabled ? "Yes" : "No"}
             />
           </div>
           {/* TODO: handle documents */}
@@ -173,7 +174,7 @@ export function RecapStep() {
       <Footer
         confirmLabel="Publish"
         onCancel={prevStep}
-        onConfirm={() => form.handleSubmit()}
+        onConfirm={onPublish}
       />
     </>
   );

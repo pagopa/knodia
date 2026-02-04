@@ -1,14 +1,31 @@
-import { Banner, FileUpload } from "@knodia/ui-kit/ui";
+import { Banner, FieldError, FileUpload } from "@knodia/ui-kit/ui";
 
 import { useStepsContext } from "@/contexts/steps";
-import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
+import {
+  useDocsStepForm,
+  useEServiceWizardContext,
+} from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
 export function DocsStep() {
-  const form = useEServiceFormContext();
+  const { data, updateDocsStep } = useEServiceWizardContext();
   const { nextStep, prevStep } = useStepsContext();
+
+  const form = useDocsStepForm(
+    {
+      interfaceDocument: data.interfaceDocument ?? null,
+    },
+    (stepData) => {
+      updateDocsStep(stepData);
+      nextStep();
+    },
+  );
+
+  function handleNext() {
+    void form.handleSubmit();
+  }
 
   return (
     <>
@@ -21,19 +38,45 @@ export function DocsStep() {
 
         <div className="flex flex-col gap-6">
           <h3 className="title-sm-em text-secondary-light-low-contrast">
-            API specs
+            API specs *
           </h3>
           <form.Field name="interfaceDocument">
-            {() => (
-              <FileUpload
-                description="Accepted format: YAML, JSON, XML"
-                // TODO: handle file change and other field props
-              />
+            {(field) => (
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-4">
+                  <FileUpload
+                    description="Accepted format: YAML, JSON, XML"
+                    onSelect={(files) => {
+                      const file = files?.[0] ?? null;
+                      field.handleChange(file);
+                    }}
+                  />
+                  {field.state.value && (
+                    <span className="body-md text-primary-light-high-contrast">
+                      {field.state.value.name}
+                    </span>
+                  )}
+                </div>
+                {field.state.meta.isTouched && !field.state.meta.isValid && (
+                  <FieldError>
+                    {field.state.meta.errors.map((e) => e?.message).join(", ")}
+                  </FieldError>
+                )}
+              </div>
             )}
           </form.Field>
         </div>
       </div>
-      <Footer onCancel={prevStep} onConfirm={nextStep} />
+
+      <form.Subscribe selector={(state) => state.canSubmit}>
+        {(canSubmit) => (
+          <Footer
+            isDisabled={!canSubmit}
+            onCancel={prevStep}
+            onConfirm={handleNext}
+          />
+        )}
+      </form.Subscribe>
     </>
   );
 }

@@ -2,7 +2,10 @@ import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
-import { useEServiceFormContext } from "@/features/e-service/contexts/useEServiceFormContext";
+import {
+  useEServiceWizardContext,
+  useGeneralStepForm,
+} from "@/features/e-service/contexts/useEServiceFormContext";
 
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
@@ -12,8 +15,24 @@ interface Props {
 }
 
 export function GeneralStep({ onCancel }: Props) {
-  const form = useEServiceFormContext();
+  const { data, updateGeneralStep } = useEServiceWizardContext();
   const { nextStep } = useStepsContext();
+
+  const form = useGeneralStepForm(
+    {
+      categories: data.categories ?? "",
+      description: data.description ?? "",
+      name: data.name ?? "",
+    },
+    (stepData) => {
+      updateGeneralStep(stepData);
+      nextStep();
+    },
+  );
+
+  function handleNext() {
+    void form.handleSubmit();
+  }
 
   return (
     <>
@@ -35,6 +54,7 @@ export function GeneralStep({ onCancel }: Props) {
                 isInvalid={
                   field.state.meta.isTouched && !field.state.meta.isValid
                 }
+                isRequired
                 label="Name"
                 name={field.name}
                 onBlur={field.handleBlur}
@@ -55,6 +75,7 @@ export function GeneralStep({ onCancel }: Props) {
                 isInvalid={
                   field.state.meta.isTouched && !field.state.meta.isValid
                 }
+                isRequired
                 label="Description"
                 name={field.name}
                 onBlur={field.handleBlur}
@@ -85,13 +106,13 @@ export function GeneralStep({ onCancel }: Props) {
         </div>
       </div>
 
-      <form.Subscribe selector={(state) => [state.isPristine, state.canSubmit]}>
-        {([isPristine, canSubmit]) => (
+      <form.Subscribe selector={(state) => state.canSubmit}>
+        {(canSubmit) => (
           <Footer
             cancelLabel="Back"
-            isDisabled={isPristine || !canSubmit}
+            isDisabled={!canSubmit}
             onCancel={onCancel}
-            onConfirm={nextStep}
+            onConfirm={handleNext}
           />
         )}
       </form.Subscribe>
