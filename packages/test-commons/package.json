@@ -21,6 +21,6 @@
   "exports": {
     "./readmodel": "./src/readmodel.ts",
     "./eventstore": "./src/eventstore.ts",
-    "./kafka": "./src/kafka.ts"
+    "./kafka": "./src/testcontainers/kafka.ts"
   }
 }
