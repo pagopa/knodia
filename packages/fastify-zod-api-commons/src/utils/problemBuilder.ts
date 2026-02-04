@@ -1,9 +1,5 @@
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
-import {
-  commonErrorCodes,
-  type CommonErrorCodes,
-} from "@knodia/common-models/errors";
 import { type AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
@@ -18,6 +14,10 @@ import type { API_Problem } from "../models/api.ts";
 
 import { getContextValues } from "../context/context.ts";
 import { ApiError } from "../models/errors/apiError.ts";
+import {
+  commonErrorCodes,
+  type CommonErrorCodes,
+} from "../models/errors/errors.ts";
 import {
   fastifyError,
   genericError,
