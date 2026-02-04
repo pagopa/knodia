@@ -84,6 +84,9 @@ export const readmodelEserviceInterface = eserviceSchema.table(
     eserviceId: uuid("eservice_id")
       .notNull()
       .references(() => readmodelEservice.id, { onDelete: "cascade" }),
+    eserviceVersionId: uuid("eservice_version_id")
+      .notNull()
+      .references(() => readmodelEserviceVersion.id, { onDelete: "cascade" }),
     id: uuid().primaryKey(),
     metadataVersion: integer("metadata_version").notNull(),
     name: text().notNull(),
@@ -117,9 +120,6 @@ export const readmodelEserviceVersion = eserviceSchema.table(
       .notNull()
       .references(() => readmodelEservice.id, { onDelete: "cascade" }),
     id: uuid().primaryKey(),
-    interfaceId: uuid("interface_id")
-      .notNull()
-      .references(() => readmodelEserviceInterface.id, { onDelete: "cascade" }),
     maxDailyCallsPerConsumer: integer("max_daily_calls_per_consumer").notNull(),
     maxDailyCallsPerKnode: integer("max_daily_calls_per_knode").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
