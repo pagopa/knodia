@@ -147,7 +147,7 @@ const toEserviceVersionSQL = ({
   metadataVersion,
 });
 
-export const toEserviceSQL = (
+const toEserviceSQL = (
   eservice: Eservice,
   metadataVersion: number,
 ): EserviceSQL => ({
