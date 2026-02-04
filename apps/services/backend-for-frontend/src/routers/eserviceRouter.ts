@@ -1,6 +1,8 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { generateId } from "@knodia/common-models/ids";
+import { EserviceInterfaceId } from "@knodia/common-models/ids";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -63,8 +65,24 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
+      const {
+        interfaceDocument: { content, ...interfaceDocumentRest },
+        ...rest
+      } = req.body;
+
+      // TODO upload content to S3
+      const interfaceDocumentId = generateId<EserviceInterfaceId>();
+
+      const seed = {
+        ...rest,
+        interfaceDocument: {
+          ...interfaceDocumentRest,
+          id: interfaceDocumentId,
+        },
+      };
+
       const createdEservice = await eserviceProcessApi.createEservice({
-        body: req.body,
+        body: seed,
         client: eserviceProcessClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,

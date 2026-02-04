@@ -1,3 +1,4 @@
+import { EserviceInterfaceId } from "@knodia/common-models/ids";
 import {
   API_AccessTokenType,
   API_EserviceAttribute,
@@ -39,6 +40,27 @@ export const API_Eservices = z
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
+export const API_InterfaceDocumentSeed = z
+  .strictObject({
+    checksum: z
+      .string()
+      .describe("Checksum of the uploaded interface document"),
+    contentType: z
+      .string()
+      .describe("MIME type of the uploaded interface document"),
+    id: EserviceInterfaceId.describe(
+      "Unique identifier of the interface document",
+    ),
+    name: z.string().describe("Name of the uploaded interface document"),
+    path: z.string().describe("Path where the interface document is stored"),
+    prettyName: z
+      .strictObject({
+        en: z.string().describe("English pretty name"),
+      })
+      .describe("Pretty name for the document in different languages"),
+  })
+  .meta({ id: "InterfaceDocumentSeed" });
+
 export const API_EserviceSeed = z
   .strictObject({
     accessTokenAudience: z
@@ -61,6 +83,7 @@ export const API_EserviceSeed = z
       .optional()
       .describe("Categories of the E-service"),
     description: API_LocalizedDescription,
+    interfaceDocument: API_InterfaceDocumentSeed.describe("Interface document"),
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()

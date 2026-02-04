@@ -230,6 +230,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
@@ -760,6 +763,21 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/file-manager:
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/kafka-commons:
     dependencies:
