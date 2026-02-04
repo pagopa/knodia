@@ -1,1 +1,1 @@
-export { attributes, type Attribute } from "./attributes.ts";
+export { type Attribute, attributes } from "./attributes.ts";
