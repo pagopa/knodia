@@ -6,16 +6,17 @@ import { KafkaContainer } from "@testcontainers/kafka";
 
 const { logLevel } = KafkaJS;
 
-const KAFKA_PORT = 9093;
+const TEST_KAFKA_PORT = 9093;
+const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:7.6.9";
 
 export async function setupKafkaTestContainer() {
-  const container = await new KafkaContainer("confluentinc/cp-kafka:7.6.9")
+  const container = await new KafkaContainer(TEST_KAFKA_IMAGE)
     .withKraft()
     .withExposedPorts()
     .withReuse()
     .start();
 
-  const mappedPort = container.getMappedPort(KAFKA_PORT);
+  const mappedPort = container.getMappedPort(TEST_KAFKA_PORT);
   const host = container.getHost();
   const broker = `${host}:${mappedPort}`;
 
