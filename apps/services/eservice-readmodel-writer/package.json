@@ -6,7 +6,7 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "test": "dotenvx run -- pnpm -w test --project @knodia/eservice-readmodel-writer",
+    "test": "pnpm -w test --project @knodia/eservice-readmodel-writer",
     "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
