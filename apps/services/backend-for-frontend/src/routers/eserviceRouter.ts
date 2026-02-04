@@ -83,6 +83,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         bucket: config.eserviceInterfacesS3Bucket,
         checksum: interfaceDocumentRest.checksum,
         content: Buffer.from(content, "base64"),
+        contentType: interfaceDocumentRest.contentType,
         key: `${interfaceDocumentId}/${name}`,
       });
 

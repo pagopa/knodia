@@ -11,6 +11,7 @@ export function initFileManager() {
       bucket: string;
       checksum?: string;
       content: Buffer;
+      contentType: string;
       key: string;
     }): Promise<string> => {
       await client.send(
@@ -20,6 +21,7 @@ export function initFileManager() {
           ChecksumSHA256:
             s3File.checksum ??
             crypto.createHash("sha256").update(s3File.content).digest("base64"),
+          ContentType: s3File.contentType,
           Key: s3File.key,
         }),
       );
