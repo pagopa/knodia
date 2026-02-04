@@ -4,6 +4,8 @@ import fastifyRequestContext from "@fastify/request-context";
 import { createLoggerOptions } from "@knodia/logger";
 import Fastify, { type FastifyRegisterOptions } from "fastify";
 
+import type { ServiceName } from "../models/index.ts";
+
 import { missingHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";
 import { healthRouterUrl } from "../routers/healthRouter.ts";
@@ -27,7 +29,7 @@ export const createFastifyApp = ({
   loggerConfig: LoggerConfig;
   makeApiProblem: MakeApiProblemFn;
   readCorrelationIdFromHeader?: boolean;
-  serviceName: string;
+  serviceName: ServiceName;
 }) => {
   const app = Fastify({
     logger: createLoggerOptions(loggerConfig, serviceName),

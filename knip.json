@@ -5,16 +5,19 @@
     ".": {},
     "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],
-      "ignore": ["src/generated/**/*.ts"]
+      "ignore": ["src/generated/**/*.ts"],
+      "ignoreDependencies": ["axios"]
     },
     "packages/models/*-models": {
       "entry": ["src/generated/**/*.ts"],
       "ignore": ["src/generated/**/*.ts"]
     },
     "apps/services/backend-for-frontend": {
+      "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/services/*-process": {
+      "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/web/**/*": {

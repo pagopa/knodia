@@ -1,5 +1,5 @@
 {
-  "id": "b5f47c26-122c-410d-a01f-3818093b170d",
+  "id": "eb640d1e-6396-4c74-b7b6-160eb63721b8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -129,7 +129,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "eservice_category_eservice_id_metadata_version_fkey": {
@@ -243,7 +243,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "eservice_interface_eservice_id_metadata_version_fkey": {
@@ -365,7 +365,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "eservice_version_interface_id_eservice_interface_id_fk": {
@@ -379,7 +379,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "eservice_version_eservice_id_metadata_version_fkey": {
@@ -459,7 +459,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "eservice_version_required_attribute_eservice_version_id_eservice_version_id_fk": {
@@ -473,7 +473,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         },
         "eservice_version_required_attribute_eservice_id_metadata_version_fkey": {
