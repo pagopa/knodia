@@ -1,3 +1,4 @@
+import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -11,6 +12,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
+import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
   API_Eservices,
@@ -19,10 +21,15 @@ import {
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
+interface EserviceRouterOptions {
+  eserviceProcessClient: EserviceProcessClient;
+  fileManager: FileManager;
+}
+
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceRouter: FastifyPluginAsyncZod<
-  EserviceProcessClient
-> = async (fastify, eserviceProcessClient) => {
+  EserviceRouterOptions
+> = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
@@ -66,18 +73,27 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
       const {
-        interfaceDocument: { content, ...interfaceDocumentRest },
+        interfaceDocument: { content, name, path, ...interfaceDocumentRest },
         ...rest
       } = req.body;
 
-      // TODO upload content to S3
       const interfaceDocumentId = generateId<EserviceInterfaceId>();
+
+      const s3Key = await fileManager.storeBytes({
+        bucket: config.eserviceInterfacesS3Bucket,
+        content: Buffer.from(content, "base64"),
+        name,
+        path,
+        resourceId: interfaceDocumentId,
+      });
 
       const seed = {
         ...rest,
         interfaceDocument: {
           ...interfaceDocumentRest,
           id: interfaceDocumentId,
+          name,
+          path: s3Key,
         },
       };
 

@@ -6,3 +6,6 @@ node_modules/
 
 # General
 .DS_Store
+
+# MinIO container data
+docker/minio-data

@@ -1,18 +1,10 @@
-import {
-  PutObjectCommand,
-  S3Client,
-  type S3ClientConfig,
-} from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import crypto from "crypto";
 
-import type { FileManagerConfig } from "../config/config.ts";
+export type FileManager = ReturnType<typeof initFileManager>;
 
-export function initFileManager(config: FileManagerConfig) {
-  const s3ClientConfig: S3ClientConfig = {
-    endpoint: config.s3CustomServerUri,
-    forcePathStyle: config.s3CustomServerUri !== undefined,
-  };
-  const client = new S3Client(s3ClientConfig);
+export function initFileManager() {
+  const client = new S3Client();
 
   const buildS3Key = (
     path: string,
