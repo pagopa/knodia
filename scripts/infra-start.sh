@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker compose --env-file ./docker/.env -f docker/compose.yaml up -d --wait
+docker compose -f docker/compose.yaml up -d --wait
 
 CONNECTORS_URL="localhost:8083/connectors"
 
