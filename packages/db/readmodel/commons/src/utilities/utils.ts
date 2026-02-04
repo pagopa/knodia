@@ -50,9 +50,7 @@ const checkMetadataVersionByFilter = async (
   return existingMetadataVersion <= metadataVersion;
 };
 
-export const getTablePKColumns = <TTable extends AnyPgTable>(
-  table: TTable,
-): string[] => {
+const getTablePKColumns = (table: AnyPgTable): string[] => {
   const tableConfig = getTableConfig(table);
   const pk = tableConfig.primaryKeys[0];
   if (!pk) {
