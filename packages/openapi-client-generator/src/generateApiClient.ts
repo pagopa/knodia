@@ -1,6 +1,9 @@
 import { createClient } from "@hey-api/openapi-ts";
 
-export function generateApiClient(openapiPath: string): void {
+export function generateApiClient(
+  openapiPath: string,
+  options?: { generateZodSchemas?: boolean },
+): void {
   createClient({
     input: openapiPath,
     output: {
@@ -15,6 +18,7 @@ export function generateApiClient(openapiPath: string): void {
         name: "@hey-api/client-axios",
       },
       "@hey-api/sdk",
+      ...(options?.generateZodSchemas ? ["zod"] : []),
     ],
   });
 }
