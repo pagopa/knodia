@@ -1,10 +1,15 @@
-import { Children, cloneElement, useId } from "react";
+import { useId } from "react";
+import {
+  composeRenderProps,
+  Link,
+  type LinkProps,
+} from "react-aria-components";
 import { twMerge } from "tailwind-merge";
 
 import { listItemStyles } from "../ui/styles";
 
-interface SidebarNavItemProps {
-  children: React.ReactElement;
+interface SidebarNavItemProps extends LinkProps {
+  children?: React.ReactNode;
   isCurrent?: boolean;
 }
 
@@ -33,19 +38,27 @@ export function SidebarHeader({ children }: { children?: React.ReactNode }) {
   return <h2 className="title-md-em">{children}</h2>;
 }
 
-export function SidebarNavItem({ children, isCurrent }: SidebarNavItemProps) {
-  const child = Children.only(children) as React.ReactElement<{
-    className?: string;
-  }>;
-
+export function SidebarNavItem({
+  children,
+  isCurrent,
+  ...props
+}: SidebarNavItemProps) {
   return (
     <li>
-      {cloneElement(child, {
-        className: twMerge(
-          listItemStyles({ isSelected: isCurrent }),
-          child.props.className,
-        ),
-      })}
+      <Link
+        {...props}
+        className={composeRenderProps(
+          props.className,
+          (className, renderProps) =>
+            listItemStyles({
+              ...renderProps,
+              isSelected: isCurrent,
+              className,
+            }),
+        )}
+      >
+        {children}
+      </Link>
     </li>
   );
 }

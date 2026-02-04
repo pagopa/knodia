@@ -1,0 +1,84 @@
+import { ButtonLink, Chip, Divider } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
+
+import { GenericInfoCard } from "@/components/GenericInfoCard";
+
+import type { EserviceMode, EserviceVersionState } from "../types";
+
+import { EserviceModeChip } from "./EserviceModeChip";
+import { EserviceStateChip } from "./EserviceStateChip";
+
+export function ProductionEserviceCard() {
+  const eserviceName = "E-Service name";
+
+  return (
+    <EserviceCard>
+      <EserviceCardHeader title={eserviceName} />
+      <EserviceCardInfoGrid>
+        <GenericInfoCard label="Active Agreements">0</GenericInfoCard>
+        <GenericInfoCard label="Active Purposes">0</GenericInfoCard>
+      </EserviceCardInfoGrid>
+      <EserviceCardFooter mode="ProvideData" state="Active">
+        <CategoryChip label="Category 1" />
+        <CategoryChip label="Category 2" />
+      </EserviceCardFooter>
+    </EserviceCard>
+  );
+}
+
+function CategoryChip({ label }: { label: string }) {
+  return (
+    <Chip icon={<CheckIcon />} kind="neutral" label={label} type="light" />
+  );
+}
+
+function EserviceCard({ children }: { children: React.ReactNode }) {
+  return (
+    <article className="p-4 flex flex-col gap-4 rounded-lg elevation-1 border border-slate-100">
+      {children}
+    </article>
+  );
+}
+
+function EserviceCardFooter({
+  children,
+  mode,
+  state,
+}: {
+  children?: React.ReactNode;
+  mode: EserviceMode;
+  state: EserviceVersionState;
+}) {
+  return (
+    <footer className="flex items-center">
+      <EserviceStateChip state={state} />
+      <Divider className="mx-6" orientation="vertical" />
+      <div className="flex gap-2 flex-wrap">
+        <EserviceModeChip mode={mode} />
+
+        {children}
+      </div>
+    </footer>
+  );
+}
+
+function EserviceCardHeader({ title }: { title: string }) {
+  return (
+    <header className="flex items-center">
+      <h3 className="flex-1 min-w-0 title-md-em truncate">{title}</h3>
+      <ButtonLink
+        aria-label="Go to e-service"
+        hierarchy="neutral"
+        href={{ to: "/" }}
+        kind="outlined"
+        size="icon-md"
+      >
+        <ArrowRightIcon />
+      </ButtonLink>
+    </header>
+  );
+}
+
+function EserviceCardInfoGrid({ children }: { children: React.ReactNode }) {
+  return <div className="grid grid-cols-2 gap-1.5">{children}</div>;
+}

@@ -1,11 +1,9 @@
-import { CheckFatIcon } from "@phosphor-icons/react";
 import { Children } from "react";
 import {
   Menu as AriaMenu,
   MenuItem as AriaMenuItem,
   MenuTrigger as AriaMenuTrigger,
   type MenuTriggerProps as AriaMenuTriggerProps,
-  composeRenderProps,
   type MenuItemProps,
   type MenuProps,
   Popover,
@@ -34,19 +32,7 @@ export function MenuItem(props: MenuItemProps) {
     (typeof props.children === "string" ? props.children : "");
   return (
     <AriaMenuItem textValue={textValue} {...props} className={listItemStyles}>
-      {composeRenderProps(
-        props.children,
-        (children, { selectionMode, isSelected }) => (
-          <>
-            {selectionMode !== "none" && (
-              <span className="flex items-center w-4">
-                {isSelected && <CheckFatIcon aria-hidden className="w-4 h-4" />}
-              </span>
-            )}
-            <span>{children}</span>
-          </>
-        ),
-      )}
+      {props.children}
     </AriaMenuItem>
   );
 }

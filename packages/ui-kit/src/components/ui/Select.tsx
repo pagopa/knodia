@@ -19,7 +19,7 @@ import { dropdownStyles, fieldInputStyle, listItemStyles } from "./styles";
 
 const styles = tv({
   extend: fieldInputStyle,
-  base: "flex items-center text-start gap-4 w-full",
+  base: "bg-white flex items-center text-start gap-4 w-full",
   variants: {
     size: {
       sm: "py-1.25",
@@ -32,7 +32,7 @@ const styles = tv({
   },
 });
 
-export interface SelectProps<T extends Iterable<unknown>>
+export interface SelectProps<T extends object>
   extends Omit<AriaSelectProps<T>, "children">, SelectVariants {
   children: ((item: T) => React.ReactNode) | React.ReactNode;
   description?: string;
@@ -47,7 +47,7 @@ interface DropdownItemProps extends ListBoxItemProps {
 
 type SelectVariants = VariantProps<typeof styles>;
 
-export function Select<T extends Iterable<unknown>>({
+export function Select<T extends object>({
   label,
   description,
   errorMessage,
@@ -71,11 +71,20 @@ export function Select<T extends Iterable<unknown>>({
             ...renderProps,
             size,
             isInvalid: props.isInvalid,
-            isFocused: renderProps.isPressed,
+            isFocused: renderProps.isFocused,
           })
         }
       >
-        <SelectValue className="flex-1 body-md truncate">
+        <SelectValue
+          className={(renderProps) =>
+            [
+              "flex-1 body-md truncate",
+              renderProps.isPlaceholder
+                ? "text-primary-light-low-contrast"
+                : "text-primary-light-high-contrast",
+            ].join(" ")
+          }
+        >
           {({ selectedText, defaultChildren }) =>
             selectedText || defaultChildren
           }

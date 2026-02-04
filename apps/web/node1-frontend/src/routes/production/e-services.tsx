@@ -1,9 +1,71 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { Button, Pagination } from "@knodia/ui-kit/ui";
+import { ArchiveIcon } from "@phosphor-icons/react";
+import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
+
+import { PageHeader } from "@/components/PageHeader";
+import { ProductionEserviceFilters } from "@/features/e-service/components/ProductionEserviceFilters";
+import { ProductionEserviceList } from "@/features/e-service/components/ProductionEserviceList";
+import {
+  productionEserviceSearchDefaultValues,
+  productionEserviceSearchSchema,
+} from "@/features/e-service/models/search-params";
 
 export const Route = createFileRoute("/production/e-services")({
   component: RouteComponent,
+  search: {
+    middlewares: [stripSearchParams(productionEserviceSearchDefaultValues)],
+  },
+  validateSearch: productionEserviceSearchSchema,
 });
 
 function RouteComponent() {
-  return <div>Hello "/production/e-services"!</div>;
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const { offset, ...filterDefaultValues } = search;
+
+  function handleSearchChange(values: Partial<typeof search>) {
+    navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
+  }
+
+  return (
+    <>
+      <PageHeader
+        actions={
+          <>
+            <Button hierarchy="neutral" kind="ghost">
+              <ArchiveIcon />
+              Archive
+            </Button>
+            <Button hierarchy="brand">Create E-Service</Button>
+          </>
+        }
+        subtitle="Production"
+        title="E-Services"
+      />
+      {/*
+        TODO: The filters are NTH. Let's leave them out for now.
+        I leave the code in place and just not render it to keep knip happy and to not forget about it.
+      */}
+      {/* eslint-disable-next-line no-constant-binary-expression */}
+      {false && (
+        <ProductionEserviceFilters
+          defaultValues={filterDefaultValues}
+          onDebouncedChange={handleSearchChange}
+        />
+      )}
+
+      <ProductionEserviceList />
+
+      <div className="flex">
+        <Pagination
+          className="mx-auto mt-6"
+          limit={10}
+          offset={offset}
+          onOffsetChange={(offset) => handleSearchChange({ offset })}
+          totalItems={120}
+        />
+      </div>
+    </>
+  );
 }

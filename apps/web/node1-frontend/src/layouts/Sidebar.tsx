@@ -13,7 +13,7 @@ import {
   TargetIcon,
   UsersThreeIcon,
 } from "@phosphor-icons/react";
-import { Link, type LinkProps, useLocation } from "@tanstack/react-router";
+import { type LinkProps, useLocation } from "@tanstack/react-router";
 
 interface SidebarItem {
   Icon: Icon;
@@ -75,13 +75,12 @@ export function Sidebar() {
         <SidebarSection key={idx} title={section.title}>
           {section.items.map((item) => (
             <SidebarNavItem
+              href={{ to: item.to }}
               isCurrent={location.pathname.startsWith(item.to)}
               key={`${item.to}-${item.label}`}
             >
-              <Link to={item.to}>
-                <item.Icon />
-                {item.label}
-              </Link>
+              <item.Icon />
+              {item.label}
             </SidebarNavItem>
           ))}
         </SidebarSection>
