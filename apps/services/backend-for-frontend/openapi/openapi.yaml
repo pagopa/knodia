@@ -482,8 +482,12 @@ paths:
           required: false
           description: Sort direction
         - schema:
-            allOf:
-              - $ref: "#/components/schemas/EserviceStatus"
+            anyOf:
+              - type: array
+                items:
+                  $ref: "#/components/schemas/EserviceStatus"
+              - allOf:
+                  - $ref: "#/components/schemas/EserviceStatus"
           in: query
           name: status
           required: false

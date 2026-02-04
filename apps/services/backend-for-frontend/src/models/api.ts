@@ -117,9 +117,13 @@ export const API_ProducerEservicesQueryParams =
       .optional()
       .default("asc")
       .describe("Sort direction"),
-    status: API_EserviceStatus.optional().describe(
-      "Filter by E-service status",
-    ),
+    status: z
+      .union([
+        z.array(API_EserviceStatus),
+        API_EserviceStatus.transform((v) => [v]),
+      ])
+      .optional()
+      .describe("Filter by E-service status"),
   });
 export type API_ProducerEservicesQueryParams = z.infer<
   typeof API_ProducerEservicesQueryParams

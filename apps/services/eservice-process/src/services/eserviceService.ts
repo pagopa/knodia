@@ -119,6 +119,7 @@ export function eserviceServiceBuilder(
       // TODO: get real data, producerId from auth context
       const producerId = generateId<OrganizationId>();
       const eservices = generateMockEservices(producerId);
+      const { limit, mode, offset, q, status } = params;
 
       // Enrich with random mock counts
       let items = eservices.map((eservice) => ({
@@ -127,8 +128,8 @@ export function eserviceServiceBuilder(
       }));
 
       // Filter by search query (name, description, categories)
-      if (params.q) {
-        const query = params.q.toLowerCase();
+      if (q) {
+        const query = q.toLowerCase();
         items = items.filter(
           (item) =>
             item.eservice.name.en.toLowerCase().includes(query) ||
@@ -140,15 +141,15 @@ export function eserviceServiceBuilder(
       }
 
       // Filter by status
-      if (params.status) {
-        items = items.filter(
-          (item) => deriveEserviceStatus(item.eservice) === params.status,
+      if (status && status.length > 0) {
+        items = items.filter((item) =>
+          status.includes(deriveEserviceStatus(item.eservice)),
         );
       }
 
       // Filter by mode
-      if (params.mode) {
-        items = items.filter((item) => item.eservice.mode === params.mode);
+      if (mode) {
+        items = items.filter((item) => item.eservice.mode === mode);
       }
 
       // Sort
@@ -172,16 +173,13 @@ export function eserviceServiceBuilder(
 
       // Paginate (after filtering and sorting)
       const total = items.length;
-      const paginatedItems = items.slice(
-        params.offset,
-        params.offset + params.limit,
-      );
+      const paginatedItems = items.slice(offset, offset + limit);
 
       return {
         items: paginatedItems,
         pagination: {
-          limit: params.limit,
-          offset: params.offset,
+          limit,
+          offset,
           total,
         },
       };
