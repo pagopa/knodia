@@ -18,7 +18,7 @@ export function generateApiClient(
         name: "@hey-api/client-axios",
       },
       "@hey-api/sdk",
-      ...(options?.generateZodSchemas ? ["zod"] : []),
+      ...(options?.generateZodSchemas ? ["zod" as const] : []),
     ],
   });
 }
