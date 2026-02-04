@@ -1,9 +1,9 @@
 import {
   API_AccessTokenType,
   API_EserviceAttribute,
-  API_EserviceAvailability,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceStatus,
   API_LocalizedDescription,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
@@ -95,9 +95,6 @@ export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 
 export const API_ProducerEservicesQueryParams =
   API_PaginationQueryParams.extend({
-    availability: API_EserviceAvailability.optional().describe(
-      "Filter by E-service availability",
-    ),
     mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
     q: z
       .string()
@@ -113,6 +110,9 @@ export const API_ProducerEservicesQueryParams =
       .optional()
       .default("asc")
       .describe("Sort direction"),
+    status: API_EserviceStatus.optional().describe(
+      "Filter by E-service status",
+    ),
   });
 export type API_ProducerEservicesQueryParams = z.infer<
   typeof API_ProducerEservicesQueryParams
@@ -132,12 +132,12 @@ export const API_ProducerEserviceListItem = z
       .min(0)
       .describe("Number of active purposes")
       .meta({ format: "int32" }),
-    availability: API_EserviceAvailability,
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
+    status: API_EserviceStatus,
   })
   .meta({ id: "ProducerEserviceListItem" });
 export type API_ProducerEserviceListItem = z.infer<

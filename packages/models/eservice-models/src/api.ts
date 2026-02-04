@@ -20,10 +20,10 @@ export const API_EserviceMode = z
   .meta({ id: "EserviceMode" });
 export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
 
-export const API_EserviceAvailability = z
-  .enum(["Available", "Unavailable"])
-  .meta({ id: "EserviceAvailability" });
-export type API_EserviceAvailability = z.infer<typeof API_EserviceAvailability>;
+export const API_EserviceStatus = z
+  .enum(["Available", "Unavailable", "Archived"])
+  .meta({ id: "EserviceStatus" });
+export type API_EserviceStatus = z.infer<typeof API_EserviceStatus>;
 
 export const API_EserviceCategory = z
   .strictObject({

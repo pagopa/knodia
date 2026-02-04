@@ -92,8 +92,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { availability, limit, mode, offset, q, sortBy, sortOrder } =
-        req.query;
+      const { limit, mode, offset, q, sortBy, sortOrder, status } = req.query;
       const { correlationId } = getContextValues(requestContext);
       const result = await eserviceProcessApi.getProducerEservices({
         client: eserviceProcessClient,
@@ -101,13 +100,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           [CORRELATION_ID_HEADER]: correlationId,
         },
         query: {
-          availability,
           limit,
           mode,
           offset,
           q,
           sortBy,
           sortOrder,
+          status,
         },
       });
 

@@ -1,4 +1,4 @@
-import { deriveEserviceAvailability, Eservice } from "@knodia/eservice-models";
+import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
 
 import { API_Eservice, API_ProducerEserviceListItem } from "./api.ts";
 
@@ -8,12 +8,12 @@ export const toAPI_ProducerEserviceListItem = (
 ): API_ProducerEserviceListItem => ({
   activeAgreements: counts.activeAgreements,
   activePurposes: counts.activePurposes,
-  availability: deriveEserviceAvailability(eservice),
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,
+  status: deriveEserviceStatus(eservice),
 });
 
 export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({

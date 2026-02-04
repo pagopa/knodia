@@ -8,7 +8,7 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { deriveEserviceAvailability, Eservice } from "@knodia/eservice-models";
+import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
 
 import type {
   API_EserviceSeed,
@@ -139,11 +139,10 @@ export function eserviceServiceBuilder(
         );
       }
 
-      // Filter by availability
-      if (params.availability) {
+      // Filter by status
+      if (params.status) {
         items = items.filter(
-          (item) =>
-            deriveEserviceAvailability(item.eservice) === params.availability,
+          (item) => deriveEserviceStatus(item.eservice) === params.status,
         );
       }
 

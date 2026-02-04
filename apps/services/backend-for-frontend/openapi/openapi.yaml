@@ -114,11 +114,12 @@ components:
       enum:
         - ProvideData
         - ReceiveData
-    EserviceAvailability:
+    EserviceStatus:
       type: string
       enum:
         - Available
         - Unavailable
+        - Archived
     EserviceCategory:
       type: object
       properties:
@@ -297,8 +298,6 @@ components:
           type: integer
           minimum: 0
           maximum: 9007199254740991
-        availability:
-          $ref: "#/components/schemas/EserviceAvailability"
         categories:
           type: array
           items:
@@ -313,15 +312,17 @@ components:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
+        status:
+          $ref: "#/components/schemas/EserviceStatus"
       required:
         - activeAgreements
         - activePurposes
-        - availability
         - categories
         - description
         - id
         - mode
         - name
+        - status
       additionalProperties: false
     ProducerEservices:
       type: object
@@ -448,13 +449,6 @@ paths:
           description: Pagination starting position
         - schema:
             allOf:
-              - $ref: "#/components/schemas/EserviceAvailability"
-          in: query
-          name: availability
-          required: false
-          description: Filter by E-service availability
-        - schema:
-            allOf:
               - $ref: "#/components/schemas/EserviceMode"
           in: query
           name: mode
@@ -487,6 +481,13 @@ paths:
           name: sortOrder
           required: false
           description: Sort direction
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/EserviceStatus"
+          in: query
+          name: status
+          required: false
+          description: Filter by E-service status
       responses:
         "200":
           description: Producer E-services retrieved successfully
