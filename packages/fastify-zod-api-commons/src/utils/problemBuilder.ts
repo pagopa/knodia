@@ -17,8 +17,6 @@ import { ApiError } from "../models/errors/apiError.ts";
 import {
   commonErrorCodes,
   type CommonErrorCodes,
-} from "../models/errors/errors.ts";
-import {
   fastifyError,
   genericError,
   responseSerializationError,
