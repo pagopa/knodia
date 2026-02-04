@@ -54,6 +54,27 @@ export const fieldInputStyle = tv({
   ],
 });
 
+export const fieldBorderStyles = tv({
+  variants: {
+    isFocusWithin: {
+      false: "border-primary-light-decorative",
+      true: "border-primary-low-contrast",
+    },
+    isInvalid: {
+      true: "border-error-light-decorative",
+    },
+    isDisabled: {
+      true: "border-primary-light-decorative",
+    },
+  },
+});
+
+export const fieldGroupStyles = tv({
+  extend: focusRing,
+  base: "group flex h-10 items-center overflow-hidden rounded-lg border bg-white",
+  variants: fieldBorderStyles.variants,
+});
+
 export const dropdownStyles = tv({
   base: "outline-0 p-2 bg-white border border-primary-light-decorative rounded-2xl shadow-dropdown flex flex-col gap-1 outline-hidden box-border max-h-[inherit] overflow-auto elevation-4",
 });

@@ -13,6 +13,7 @@ export * from "./InteractiveIcon";
 export * from "./Link";
 export * from "./Menu";
 export * from "./Modal";
+export * from "./NumberField";
 export * from "./RadioGroup";
 export * from "./Select";
 export * from "./Steps";

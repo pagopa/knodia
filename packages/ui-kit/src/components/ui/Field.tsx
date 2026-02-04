@@ -3,6 +3,8 @@ import type { ComponentPropsWithoutRef } from "react";
 import {
   composeRenderProps,
   type FieldErrorProps,
+  Group,
+  type GroupProps,
   type LabelProps,
   FieldError as RACFieldError,
   Input as RACInput,
@@ -13,7 +15,7 @@ import {
 import { twMerge } from "tailwind-merge";
 
 import { composeTailwindRenderProps } from "../../libs/react-aria";
-import { fieldInputStyle } from "./styles";
+import { fieldGroupStyles, fieldInputStyle } from "./styles";
 
 type InputProps = ComponentPropsWithoutRef<typeof RACInput>;
 
@@ -37,6 +39,17 @@ export function FieldError(props: FieldErrorProps) {
       className={composeTailwindRenderProps(
         props.className,
         "body-sm text-error-light-low-contrast",
+      )}
+    />
+  );
+}
+
+export function FieldGroup(props: GroupProps) {
+  return (
+    <Group
+      {...props}
+      className={composeRenderProps(props.className, (className, renderProps) =>
+        fieldGroupStyles({ ...renderProps, className }),
       )}
     />
   );
