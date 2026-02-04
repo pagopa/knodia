@@ -1,8 +1,8 @@
-import { createClient } from "@hey-api/openapi-ts";
+import { createClient, type UserConfig } from "@hey-api/openapi-ts";
 
 export function generateApiClient(
   openapiPath: string,
-  options?: { generateZodSchemas?: boolean },
+  customPlugins: UserConfig["plugins"] = [],
 ): void {
   createClient({
     input: openapiPath,
@@ -18,7 +18,7 @@ export function generateApiClient(
         name: "@hey-api/client-axios",
       },
       "@hey-api/sdk",
-      ...(options?.generateZodSchemas ? ["zod" as const] : []),
+      ...customPlugins,
     ],
   });
 }

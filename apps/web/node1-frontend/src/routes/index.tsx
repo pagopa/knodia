@@ -1,7 +1,8 @@
+import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { eserviceQueries } from "@/features/e-service/api/queries";
+import { client } from "@/libs/axios";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -9,7 +10,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { data } = useQuery(
-    eserviceQueries.getEServices({ limit: 10, offset: 0 }),
+    getEservicesOptions({ client, query: { limit: 10, offset: 0 } }),
   );
 
   return <pre>{JSON.stringify(data, null, 2)}</pre>;

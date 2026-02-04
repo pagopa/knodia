@@ -9,7 +9,8 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./tanstack-query": "./src/tanstack-query.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "@knodia/openapi-client-generator": "workspace:*",
+    "@tanstack/react-query": "catalog:",
     "axios": "catalog:"
   }
 }
