@@ -7,13 +7,18 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/fileManager.ts"
   },
   "devDependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@aws-sdk/client-s3": "catalog:",
+    "zod": "catalog:"
+  }
 }
