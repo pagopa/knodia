@@ -96,7 +96,6 @@ export function eserviceServiceBuilder(
       items: Eservice[];
       pagination: { limit: number; offset: number; total: number };
     } {
-      // Mock data: 100 e-services with ids 0 to 99, with pagination support
       const eservices = generateMockEservices();
 
       return {
