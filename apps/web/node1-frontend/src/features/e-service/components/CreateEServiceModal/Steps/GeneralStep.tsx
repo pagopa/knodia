@@ -30,10 +30,6 @@ export function GeneralStep({ onCancel }: Props) {
     },
   );
 
-  function handleNext() {
-    void form.handleSubmit();
-  }
-
   return (
     <>
       <div className="flex flex-col gap-10">
@@ -112,7 +108,7 @@ export function GeneralStep({ onCancel }: Props) {
             cancelLabel="Back"
             isDisabled={!canSubmit}
             onCancel={onCancel}
-            onConfirm={handleNext}
+            onConfirm={form.handleSubmit}
           />
         )}
       </form.Subscribe>

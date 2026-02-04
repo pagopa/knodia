@@ -50,7 +50,7 @@ export function useAttributesStepForm(
 ) {
   return useAppForm({
     defaultValues: { ...ATTRIBUTES_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value as AttributesStepData),
+    onSubmit: ({ value }) => onSubmit?.(value),
     validators: { onChange: attributesStepSchema },
   });
 }
@@ -61,7 +61,7 @@ export function useDocsStepForm(
 ) {
   return useAppForm({
     defaultValues: { ...DOCS_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value as DocsStepData),
+    onSubmit: ({ value }) => onSubmit?.(value),
     validators: { onChange: docsStepSchema },
   });
 }
@@ -82,7 +82,7 @@ export function useGeneralStepForm(
 ) {
   return useAppForm({
     defaultValues: { ...GENERAL_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value as GeneralStepData),
+    onSubmit: ({ value }) => onSubmit?.(value),
     validators: { onChange: generalStepSchema },
   });
 }
@@ -93,7 +93,7 @@ export function useTechnicalStepForm(
 ) {
   return useAppForm({
     defaultValues: { ...TECHNICAL_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value as TechnicalStepData),
+    onSubmit: ({ value }) => onSubmit?.(value),
     validators: { onChange: technicalStepSchema },
   });
 }

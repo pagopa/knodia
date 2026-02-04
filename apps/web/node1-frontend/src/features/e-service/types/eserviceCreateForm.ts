@@ -41,7 +41,8 @@ export const eserviceFieldSchemas = {
           .min(1, "Group must have at least one attribute."),
       }),
     )
-    .min(1, "At least one attribute group is required."),
+    .min(1, "At least one attribute group is required.")
+    .optional(),
 };
 
 export const eserviceFormSchema = z.object(eserviceFieldSchemas);

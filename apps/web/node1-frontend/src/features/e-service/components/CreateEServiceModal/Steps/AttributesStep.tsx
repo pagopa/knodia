@@ -23,10 +23,6 @@ export function AttributesStep() {
     },
   );
 
-  function handleNext() {
-    void form.handleSubmit();
-  }
-
   return (
     <>
       <div className="flex flex-col gap-10">
@@ -84,7 +80,7 @@ export function AttributesStep() {
           <Footer
             isDisabled={!canSubmit}
             onCancel={prevStep}
-            onConfirm={handleNext}
+            onConfirm={form.handleSubmit}
           />
         )}
       </form.Subscribe>

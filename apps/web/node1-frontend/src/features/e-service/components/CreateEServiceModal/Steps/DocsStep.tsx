@@ -1,4 +1,4 @@
-import { Banner, FieldError, FileUpload } from "@knodia/ui-kit/ui";
+import { Banner, FileUpload } from "@knodia/ui-kit/ui";
 
 import { useStepsContext } from "@/contexts/steps";
 import {
@@ -6,6 +6,7 @@ import {
   useEServiceWizardContext,
 } from "@/features/e-service/contexts/useEServiceFormContext";
 
+import { DocumentRecap } from "../DocumentRecap";
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
@@ -23,10 +24,6 @@ export function DocsStep() {
     },
   );
 
-  function handleNext() {
-    void form.handleSubmit();
-  }
-
   return (
     <>
       <div className="flex flex-col gap-10">
@@ -40,31 +37,30 @@ export function DocsStep() {
           <h3 className="title-sm-em text-secondary-light-low-contrast">
             API specs *
           </h3>
-          <form.Field name="interfaceDocument">
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-4">
-                  <FileUpload
-                    description="Accepted format: YAML, JSON, XML"
-                    onSelect={(files) => {
-                      const file = files?.[0] ?? null;
-                      field.handleChange(file);
-                    }}
-                  />
-                  {field.state.value && (
-                    <span className="body-md text-primary-light-high-contrast">
-                      {field.state.value.name}
-                    </span>
-                  )}
-                </div>
-                {field.state.meta.isTouched && !field.state.meta.isValid && (
-                  <FieldError>
-                    {field.state.meta.errors.map((e) => e?.message).join(", ")}
-                  </FieldError>
-                )}
-              </div>
-            )}
-          </form.Field>
+
+          <div className="flex flex-col gap-4">
+            <form.Subscribe selector={(state) => state.values}>
+              {(values) =>
+                values.interfaceDocument && (
+                  <DocumentRecap name={values.interfaceDocument.name} />
+                )
+              }
+            </form.Subscribe>
+            <form.Field name="interfaceDocument">
+              {(field) => (
+                <FileUpload
+                  description="Accepted format: YAML, JSON, XML"
+                  errorMessage={field.state.meta.errors
+                    .map((e) => e?.message)
+                    .join(", ")}
+                  onSelect={(files) => {
+                    const file = files?.[0] ?? null;
+                    field.handleChange(file);
+                  }}
+                />
+              )}
+            </form.Field>
+          </div>
         </div>
       </div>
 
@@ -73,7 +69,7 @@ export function DocsStep() {
           <Footer
             isDisabled={!canSubmit}
             onCancel={prevStep}
-            onConfirm={handleNext}
+            onConfirm={form.handleSubmit}
           />
         )}
       </form.Subscribe>
