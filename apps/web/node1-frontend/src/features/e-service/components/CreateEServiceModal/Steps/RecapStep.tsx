@@ -32,22 +32,24 @@ export function RecapStep({ onPublish }: Props) {
           General information
         </h2>
         <div className="flex flex-col gap-10">
-          <div className="flex flex-col gap-2">
-            <RecapField label="Name" value={data.name || "-"} />
-            <RecapField label="Description" value={data.description || "-"} />
-          </div>
           <div className="flex flex-col gap-6">
             <h3 className="title-sm-em text-primary-light-high-contrast">
-              Requesting proof of residence
+              {data.name || "-"}
             </h3>
-            <span className="body-md text-primary-light-low-contrast">
-              Confirmation of registration at the current address on the date.
-            </span>
+            <p className="body-md text-primary-light-low-contrast">
+              {data.description || "-"}
+            </p>
           </div>
 
           <div className="flex gap-3">
-            <Chip kind="neutral" label="Residence place" type="light" />
-            <Chip kind="neutral" label="Digital domicile" type="light" />
+            {data.categories?.map((category) => (
+              <Chip
+                key={category}
+                kind="neutral"
+                label={category}
+                type="light"
+              />
+            ))}
           </div>
         </div>
 

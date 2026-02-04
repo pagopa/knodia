@@ -20,7 +20,7 @@ export function GeneralStep({ onCancel }: Props) {
 
   const form = useGeneralStepForm(
     {
-      categories: data.categories ?? "",
+      categories: data.categories ?? [],
       description: data.description ?? "",
       name: data.name ?? "",
     },

@@ -10,7 +10,7 @@ export const eserviceFieldSchemas = {
     .min(1, "Duration must be at least 1 minute.")
     .max(1440, "Duration must be at most 1440 minutes (24 hours)."),
   accessTokenType: z.enum(["Bearer", "DPoP"]),
-  categories: z.string().optional(),
+  categories: z.array(z.string()).optional(),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters.")
@@ -81,7 +81,7 @@ export type TechnicalStepData = z.infer<typeof technicalStepSchema>;
 
 // Step defaults
 export const GENERAL_STEP_DEFAULTS: z.input<typeof generalStepSchema> = {
-  categories: "",
+  categories: [],
   description: "",
   name: "",
 };
