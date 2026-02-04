@@ -7,6 +7,7 @@ meta {
 post {
   url: {{host-bff}}/eservices
   body: json
+  auth: none
 }
 
 body:json {
@@ -20,7 +21,12 @@ body:json {
     "accessTokenAudience": ["https://api.example.com"],
     "maxDailyCallsPerConsumer": 1000,
     "maxDailyCallsPerKnode": 10000,
-    "requiredAttributes": []
+    "requiredAttributes": [],
+    "interfaceDocument": {
+      "content": "b3BlbmFwaTogIjMuMC4wIgppbmZvOgogIHRpdGxlOiBUZXN0CiAgdmVyc2lvbjogIjEuMCIKcGF0aHM6IHt9Cg==",
+      "filename": "openapi.yaml",
+      "prettyName": "Test Interface"
+    }
   }
 }
 

@@ -39,6 +39,20 @@ export const API_Eservices = z
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
+const API_FileUpload = z
+  .strictObject({
+    content: z.base64().describe("Base64-encoded file content"),
+    filename: z
+      .string()
+      .min(1)
+      .describe("Original filename from the user's upload"),
+    prettyName: z
+      .string()
+      .min(1)
+      .describe("Display name for the document in the UI"),
+  })
+  .meta({ id: "FileUpload" });
+
 export const API_EserviceSeed = z
   .strictObject({
     accessTokenAudience: z
@@ -61,6 +75,9 @@ export const API_EserviceSeed = z
       .optional()
       .describe("Categories of the E-service"),
     description: API_LocalizedDescription,
+    interfaceDocument: API_FileUpload.describe(
+      "Interface document for the E-service",
+    ),
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()

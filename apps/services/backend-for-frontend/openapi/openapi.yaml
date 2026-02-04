@@ -199,6 +199,27 @@ components:
         - items
         - pagination
       additionalProperties: false
+    FileUpload:
+      type: object
+      properties:
+        content:
+          description: Base64-encoded file content
+          type: string
+          format: base64
+          pattern: ^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$
+        filename:
+          description: Original filename from the user's upload
+          type: string
+          minLength: 1
+        prettyName:
+          description: Display name for the document in the UI
+          type: string
+          minLength: 1
+      required:
+        - content
+        - filename
+        - prettyName
+      additionalProperties: false
     EserviceSeed:
       type: object
       properties:
@@ -226,6 +247,10 @@ components:
             $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
+        interfaceDocument:
+          description: Interface document for the E-service
+          allOf:
+            - $ref: "#/components/schemas/FileUpload"
         isConsumerOperatorIdentificationRequired:
           description: Whether consumer operator identification is required
           type: boolean
@@ -262,6 +287,7 @@ components:
         - accessTokenDuration
         - accessTokenType
         - description
+        - interfaceDocument
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - name
