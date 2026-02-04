@@ -1,3 +1,5 @@
+import type { WithMetadata } from "@knodia/db-readmodel-commons";
+
 import {
   EserviceId,
   EserviceInterfaceId,
@@ -6,8 +8,7 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
-import { toEserviceSQL } from "@knodia/db-readmodel-eservice/splitters";
-import { toEserviceV1 } from "@knodia/eservice-models";
+import { type Eservice, toEserviceV1 } from "@knodia/eservice-models";
 import { runConsumer } from "@knodia/kafka-commons";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import { describe, expect, it } from "vitest";
@@ -16,8 +17,8 @@ import { EserviceVersionActivatedV1 } from "../../../../packages/models/eservice
 import { consumedMessages, kafkaConfig, producer, topicName } from "./setup.ts";
 import { getAllEservices, testConsumerHandler } from "./utils.ts";
 
-describe("Test", async () => {
-  it("test", async () => {
+describe("E-service read model writer tests", async () => {
+  it("EserviceVersionActivatedV1", async () => {
     const now = new Date();
     const eservice = {
       categories: [{ code: "category-1", scheme: "vocab-1" }],
@@ -79,8 +80,9 @@ describe("Test", async () => {
     const retrievedEservices = await getAllEservices();
 
     expect(retrievedEservices.length).toEqual(1);
-    expect(retrievedEservices[0]).toEqual(
-      toEserviceSQL(eservice, metadataVersion),
-    );
+    expect(retrievedEservices[0]).toEqual({
+      data: eservice,
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Eservice>);
   });
 });
