@@ -8,7 +8,7 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/attributes.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",

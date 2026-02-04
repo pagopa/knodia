@@ -1,4 +1,4 @@
-export interface Category {
+interface Category {
   code: string;
   name: string;
   scheme: string;

@@ -1,4 +1,4 @@
-export interface Attribute {
+interface Attribute {
   code: string;
   name: string;
   scheme: string;
