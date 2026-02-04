@@ -4,7 +4,7 @@ services:
   event-store:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:5773fe724c49c42a7a9ca70202e11e1dff21fb7235b335a73f39297d200b73a2
+    image: ${POSTGRES_IMAGE}
     container_name: knodia-event-store
     ports:
       - 6001:5432
@@ -19,7 +19,7 @@ services:
   readmodel:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:5773fe724c49c42a7a9ca70202e11e1dff21fb7235b335a73f39297d200b73a2
+    image: ${POSTGRES_IMAGE}
     container_name: knodia-readmodel
     ports:
       - 6002:5432
@@ -33,7 +33,7 @@ services:
   kafka:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:7.6.9@sha256:652f4017a6389f22930eb27ad02ce730622ebe145efa442625d7f439f1bc111e
+    image: ${KAFKA_IMAGE}
     container_name: knodia-kafka
     ports:
       - 9092:9092
@@ -72,7 +72,7 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
-    image: quay.io/debezium/connect:3.4.1.Final@sha256:c6180baabe6b77865518cf3bd911022c8b45d5935a12e133ae8b98e0c07c328f
+    image: ${DEBEZIUM_CONNECT_IMAGE}
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
@@ -103,7 +103,7 @@ services:
     security_opt:
       - no-new-privileges:true
     container_name: knodia-kafka-ui
-    image: kafbat/kafka-ui:v1.4.2@sha256:8dd62c9b18a01b732824cae91c6fe5203fac8e931448a2a639bd20270b8fed2b
+    image: ${KAFKA_UI_IMAGE}
     ports:
       - 8084:8080
     depends_on:
