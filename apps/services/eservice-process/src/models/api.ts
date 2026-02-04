@@ -1,6 +1,7 @@
 import {
   API_AccessTokenType,
   API_EserviceAttribute,
+  API_EserviceAvailability,
   API_EserviceCategory,
   API_EserviceMode,
   API_LocalizedDescription,
@@ -91,3 +92,62 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
+
+export const API_ProducerEservicesQueryParams =
+  API_PaginationQueryParams.extend({
+    availability: API_EserviceAvailability.optional().describe(
+      "Filter by E-service availability",
+    ),
+    mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
+    q: z
+      .string()
+      .optional()
+      .describe("Search by name, description or categories"),
+    sortBy: z
+      .enum(["name", "activeAgreements", "activePurposes"])
+      .optional()
+      .default("name")
+      .describe("Field to sort by"),
+    sortOrder: z
+      .enum(["asc", "desc"])
+      .optional()
+      .default("asc")
+      .describe("Sort direction"),
+  });
+export type API_ProducerEservicesQueryParams = z.infer<
+  typeof API_ProducerEservicesQueryParams
+>;
+
+export const API_ProducerEserviceListItem = z
+  .strictObject({
+    activeAgreements: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Number of active agreements")
+      .meta({ format: "int32" }),
+    activePurposes: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Number of active purposes")
+      .meta({ format: "int32" }),
+    availability: API_EserviceAvailability,
+    categories: z.array(API_EserviceCategory),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+  })
+  .meta({ id: "ProducerEserviceListItem" });
+export type API_ProducerEserviceListItem = z.infer<
+  typeof API_ProducerEserviceListItem
+>;
+
+export const API_ProducerEservices = z
+  .strictObject({
+    items: z.array(API_ProducerEserviceListItem),
+    pagination: API_Pagination,
+  })
+  .meta({ id: "ProducerEservices" });
+export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;

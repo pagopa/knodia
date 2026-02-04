@@ -1,18 +1,22 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
-import type { Eservice } from "@knodia/eservice-models";
 
 import { type RequestContextData } from "@fastify/request-context";
 import {
-  type EserviceId,
-  type EserviceInterfaceId,
-  type EserviceVersionId,
+  EserviceId,
+  EserviceInterfaceId,
+  EserviceVersionId,
   generateId,
-  type OrganizationId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
+import { deriveEserviceAvailability, Eservice } from "@knodia/eservice-models";
 
-import type { API_EserviceSeed } from "../models/api.ts";
+import type {
+  API_EserviceSeed,
+  API_ProducerEservicesQueryParams,
+} from "../models/api.ts";
 
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
+import { mockEservices } from "./mockEservices.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -93,44 +97,7 @@ export function eserviceServiceBuilder(
       pagination: { limit: number; offset: number; total: number };
     } {
       // Mock data: 100 e-services with ids 0 to 99, with pagination support
-      const now = new Date();
-      const eservices: Eservice[] = new Array(100).fill(null).map((_, idx) => ({
-        categories: [{ code: "category-1", scheme: "vocab-1" }],
-        createdAt: now,
-        description: { en: `Description for E-service ${idx}` },
-        id: generateId<EserviceId>(),
-        isConsumerOperatorIdentificationRequired: false,
-        isSignalHubEnabled: false,
-        mode: "ProvideData" as const,
-        name: { en: `E-service ${idx}` },
-        producerId: generateId<OrganizationId>(),
-        updatedAt: now,
-        versions: [
-          {
-            accessTokenAudience: ["audience-1"],
-            accessTokenDuration: 3600,
-            accessTokenType: "Bearer" as const,
-            createdAt: now,
-            id: generateId<EserviceVersionId>(),
-            interfaceDocument: {
-              checksum: "checksum-1",
-              contentType: "application/json",
-              createdAt: now,
-              id: generateId<EserviceInterfaceId>(),
-              name: "Interface 1",
-              path: "/interfaces/1.json",
-              prettyName: { en: "Interface 1" },
-              updatedAt: now,
-            },
-            maxDailyCallsPerConsumer: 100,
-            maxDailyCallsPerKnode: 1000,
-            requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
-            state: "Active" as const,
-            updatedAt: now,
-            versionNumber: 1,
-          },
-        ],
-      }));
+      const eservices = generateMockEservices();
 
       return {
         items: eservices.slice(offset, offset + limit),
@@ -141,5 +108,136 @@ export function eserviceServiceBuilder(
         },
       };
     },
+    getProducerEservices(params: API_ProducerEservicesQueryParams): {
+      items: {
+        activeAgreements: number;
+        activePurposes: number;
+        eservice: Eservice;
+      }[];
+      pagination: { limit: number; offset: number; total: number };
+    } {
+      // TODO: get real data, producerId from auth context
+      const producerId = generateId<OrganizationId>();
+      const eservices = generateMockEservices(producerId);
+
+      // Enrich with random mock counts
+      let items = eservices.map((eservice) => ({
+        ...generateMockCounts(),
+        eservice,
+      }));
+
+      // Filter by search query (name, description, categories)
+      if (params.q) {
+        const query = params.q.toLowerCase();
+        items = items.filter(
+          (item) =>
+            item.eservice.name.en.toLowerCase().includes(query) ||
+            item.eservice.description.en.toLowerCase().includes(query) ||
+            item.eservice.categories.some((c) =>
+              c.code.toLowerCase().includes(query),
+            ),
+        );
+      }
+
+      // Filter by availability
+      if (params.availability) {
+        items = items.filter(
+          (item) =>
+            deriveEserviceAvailability(item.eservice) === params.availability,
+        );
+      }
+
+      // Filter by mode
+      if (params.mode) {
+        items = items.filter((item) => item.eservice.mode === params.mode);
+      }
+
+      // Sort
+      const sortBy = params.sortBy ?? "name";
+      const sortOrder = params.sortOrder ?? "asc";
+      const direction = sortOrder === "asc" ? 1 : -1;
+
+      items.sort((a, b) => {
+        switch (sortBy) {
+          case "activeAgreements":
+            return (a.activeAgreements - b.activeAgreements) * direction;
+          case "activePurposes":
+            return (a.activePurposes - b.activePurposes) * direction;
+          case "name":
+          default:
+            return (
+              a.eservice.name.en.localeCompare(b.eservice.name.en) * direction
+            );
+        }
+      });
+
+      // Paginate (after filtering and sorting)
+      const total = items.length;
+      const paginatedItems = items.slice(
+        params.offset,
+        params.offset + params.limit,
+      );
+
+      return {
+        items: paginatedItems,
+        pagination: {
+          limit: params.limit,
+          offset: params.offset,
+          total,
+        },
+      };
+    },
   };
+}
+
+function generateMockCounts(): {
+  activeAgreements: number;
+  activePurposes: number;
+} {
+  return {
+    activeAgreements: Math.floor(Math.random() * 500),
+    activePurposes: Math.floor(Math.random() * 1000),
+  };
+}
+
+function generateMockEservices(sharedProducerId?: OrganizationId): Eservice[] {
+  const now = new Date();
+
+  return mockEservices.map((mock) => ({
+    categories: mock.categories,
+    createdAt: now,
+    description: { en: mock.description },
+    id: generateId<EserviceId>(),
+    isConsumerOperatorIdentificationRequired: false,
+    isSignalHubEnabled: false,
+    mode: mock.mode,
+    name: { en: mock.name },
+    producerId: sharedProducerId ?? generateId<OrganizationId>(),
+    updatedAt: now,
+    versions: [
+      {
+        accessTokenAudience: ["audience-1"],
+        accessTokenDuration: 3600,
+        accessTokenType: "Bearer" as const,
+        createdAt: now,
+        id: generateId<EserviceVersionId>(),
+        interfaceDocument: {
+          checksum: "checksum-1",
+          contentType: "application/json",
+          createdAt: now,
+          id: generateId<EserviceInterfaceId>(),
+          name: "Interface 1",
+          path: "/interfaces/1.json",
+          prettyName: { en: "Interface 1" },
+          updatedAt: now,
+        },
+        maxDailyCallsPerConsumer: 100,
+        maxDailyCallsPerKnode: 1000,
+        requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
+        state: mock.state,
+        updatedAt: now,
+        versionNumber: 1,
+      },
+    ],
+  }));
 }

@@ -58,7 +58,7 @@ const EserviceCategory = z.strictObject({
 });
 export type EserviceCategory = z.infer<typeof EserviceCategory>;
 
-const Eservice = z.strictObject({
+export const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
   description: LocalizedText,

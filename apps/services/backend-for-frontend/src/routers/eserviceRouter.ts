@@ -14,6 +14,8 @@ import {
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
+  API_ProducerEservices,
+  API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -86,5 +88,52 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { availability, limit, mode, offset, q, sortBy, sortOrder } =
+        req.query;
+      const { correlationId } = getContextValues(requestContext);
+      const result = await eserviceProcessApi.getProducerEservices({
+        client: eserviceProcessClient,
+        headers: {
+          [CORRELATION_ID_HEADER]: correlationId,
+        },
+        query: {
+          availability,
+          limit,
+          mode,
+          offset,
+          q,
+          sortBy,
+          sortOrder,
+        },
+      });
+
+      res.send({
+        items: result.data?.items || [],
+        pagination: result.data?.pagination || {
+          limit,
+          offset,
+          total: 0,
+        },
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a paginated list of E-services produced by the logged-in user's organization",
+      operationId: "getProducerEservices",
+      querystring: API_ProducerEservicesQueryParams,
+      response: {
+        200: API_ProducerEservices.describe(
+          "Producer E-services retrieved successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices",
   });
 };
