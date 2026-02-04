@@ -203,7 +203,7 @@ components:
       type: object
       properties:
         checksum:
-          description: Checksum of the uploaded interface document
+          description: Base64-encoded SHA-256 checksum of the uploaded interface document
           type: string
         content:
           description: Base64-encoded file content
@@ -214,10 +214,7 @@ components:
           description: MIME type of the uploaded interface document
           type: string
         name:
-          description: Name of the uploaded interface document
-          type: string
-        path:
-          description: Path where the interface document is stored
+          description: Name of the uploaded interface document, with extension
           type: string
         prettyName:
           description: Pretty name for the document in different languages
@@ -234,7 +231,6 @@ components:
         - content
         - contentType
         - name
-        - path
         - prettyName
       additionalProperties: false
     EserviceSeed:

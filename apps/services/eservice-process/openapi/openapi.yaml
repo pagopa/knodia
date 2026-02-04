@@ -203,7 +203,7 @@ components:
       type: object
       properties:
         checksum:
-          description: Checksum of the uploaded interface document
+          description: Base64-encoded SHA-256 checksum of the uploaded interface document
           type: string
         contentType:
           description: MIME type of the uploaded interface document
@@ -214,7 +214,7 @@ components:
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         name:
-          description: Name of the uploaded interface document
+          description: Name of the uploaded interface document, with extension
           type: string
         path:
           description: Path where the interface document is stored
