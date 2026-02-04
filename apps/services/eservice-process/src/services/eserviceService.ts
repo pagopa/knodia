@@ -121,8 +121,8 @@ export function eserviceServiceBuilder(
       const { limit, mode, offset, q, status } = params;
 
       // Enrich with random mock counts
-      let items = eservices.map((eservice) => ({
-        ...generateMockCounts(),
+      let items = eservices.map((eservice, idx) => ({
+        ...generateMockCounts(idx),
         eservice,
       }));
 
@@ -186,24 +186,24 @@ export function eserviceServiceBuilder(
   };
 }
 
-function generateMockCounts(): {
+function generateMockCounts(idx: number): {
   activeAgreements: number;
   activePurposes: number;
 } {
   return {
-    activeAgreements: Math.floor(Math.random() * 500),
-    activePurposes: Math.floor(Math.random() * 1000),
+    activeAgreements: idx + 5,
+    activePurposes: idx + 1,
   };
 }
 
 function generateMockEservices(sharedProducerId?: OrganizationId): Eservice[] {
   const now = new Date();
 
-  return mockEservices.map((mock) => ({
+  return mockEservices.map((mock, idx) => ({
     categories: mock.categories,
     createdAt: now,
     description: { en: mock.description },
-    id: generateId<EserviceId>(),
+    id: `00000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceId,
     isConsumerOperatorIdentificationRequired: false,
     isSignalHubEnabled: false,
     mode: mock.mode,
@@ -216,12 +216,12 @@ function generateMockEservices(sharedProducerId?: OrganizationId): Eservice[] {
         accessTokenDuration: 3600,
         accessTokenType: "Bearer" as const,
         createdAt: now,
-        id: generateId<EserviceVersionId>(),
+        id: `10000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceVersionId,
         interfaceDocument: {
           checksum: "checksum-1",
           contentType: "application/json",
           createdAt: now,
-          id: generateId<EserviceInterfaceId>(),
+          id: `20000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceInterfaceId,
           name: "Interface 1",
           path: "/interfaces/1.json",
           prettyName: { en: "Interface 1" },
