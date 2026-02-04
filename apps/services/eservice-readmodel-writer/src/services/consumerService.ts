@@ -4,7 +4,7 @@ import { fromEserviceV1 } from "@knodia/eservice-models";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import { match } from "ts-pattern";
 
-import type { EserviceWriterService } from "./eserviceWriterService.ts";
+import { type EserviceWriterService } from "./eserviceWriterService.ts";
 
 export async function handleEserviceEvent(
   message: EserviceEventEnvelopeV1,
