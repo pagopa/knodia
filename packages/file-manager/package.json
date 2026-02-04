@@ -10,7 +10,6 @@
     ".": "./src/fileManager.ts"
   },
   "devDependencies": {
-    "@knodia/common-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
@@ -18,7 +17,6 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "catalog:",
-    "zod": "catalog:"
+    "@aws-sdk/client-s3": "catalog:"
   }
 }

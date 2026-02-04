@@ -775,13 +775,7 @@ importers:
       '@aws-sdk/client-s3':
         specifier: 'catalog:'
         version: 3.982.0
-      zod:
-        specifier: 'catalog:'
-        version: 4.2.0
     devDependencies:
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../models/common-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config

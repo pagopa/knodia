@@ -40,7 +40,7 @@ export const API_Eservices = z
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
-export const API_InterfaceDocumentSeed = z
+const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z
       .string()
