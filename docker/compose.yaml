@@ -53,6 +53,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: "0"
       KAFKA_LOG_DIRS: "/var/lib/kafka/data"
+      KAFKA_NUM_PARTITIONS: "3"
     volumes:
       - kafka-data:/var/lib/kafka/data
     restart: unless-stopped
@@ -71,7 +72,7 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
-    image: debezium/connect:2.7.3.Final@sha256:997b67feff614549acd20d54bfed398fc73b339881c649d42821c1e55ec9972b
+    image: quay.io/debezium/connect:3.4.1.Final@sha256:c6180baabe6b77865518cf3bd911022c8b45d5935a12e133ae8b98e0c07c328f
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
@@ -97,6 +98,19 @@ services:
         condition: service_healthy
       event-store:
         condition: service_started
+
+  kafka-ui:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-kafka-ui
+    image: kafbat/kafka-ui:v1.4.2@sha256:8dd62c9b18a01b732824cae91c6fe5203fac8e931448a2a639bd20270b8fed2b
+    ports:
+      - 8084:8080
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
 
   # MinIO is a local S3-compatible storage, to replace AWS S3 in local development
   minio:

@@ -3,6 +3,7 @@ import type {
   RequestContextData,
 } from "@fastify/request-context";
 
+import { genericInternalError } from "@knodia/common-models/errors";
 import Fastify from "fastify";
 
 // Documentation: https://github.com/fastify/fastify-request-context#typescript
@@ -28,7 +29,7 @@ const getRequiredContextItem = <K extends keyof RequestContextData>(
 ): RequestContextData[K] => {
   const value = requestContext.get(key);
   if (!value) {
-    throw new Error(`Missing ${key} in request context`);
+    throw genericInternalError(`Missing ${key} in request context`);
   }
   return value;
 };

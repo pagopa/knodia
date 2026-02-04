@@ -21,3 +21,7 @@ type IDS =
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
 }
+
+export function unsafeBrandId<T extends IDS>(id: string): T {
+  return z.uuid().parse(id) as T;
+}
