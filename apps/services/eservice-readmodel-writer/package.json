@@ -5,11 +5,14 @@
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "test": "dotenvx run -- pnpm -w test --project @knodia/eservice-readmodel-writer",
+    "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
