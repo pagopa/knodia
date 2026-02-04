@@ -1,5 +1,10 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
+import {
+  createRouter,
+  type NavigateOptions,
+  RouterProvider,
+  type ToOptions,
+} from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 
 import { queryClient } from "@/libs/tanstack-query";
@@ -28,6 +33,17 @@ const router = createRouter({
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
+  }
+}
+
+/**
+ * Configure the type of the `href` and `routerOptions` props on all React Aria components.
+ * @see https://react-aria.adobe.com/frameworks
+ */
+declare module "react-aria-components" {
+  interface RouterConfig {
+    href: ToOptions;
+    routerOptions: Omit<NavigateOptions, keyof ToOptions>;
   }
 }
 

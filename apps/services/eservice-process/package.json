@@ -13,11 +13,11 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
+    "@knodia/db-event-store-eservice": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
-    "@knodia/typescript-config": "workspace:*",
-    "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/test-commons": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
@@ -37,8 +37,9 @@
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
-    "pino-pretty": "catalog:",
     "pg": "catalog:",
+    "pino-pretty": "catalog:",
+    "zocker": "catalog:",
     "zod": "catalog:"
   }
 }

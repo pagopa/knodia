@@ -1,22 +1,36 @@
-import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
-let db: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
+import { buildApp } from "../src/app.ts";
+
+let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
+let app: ReturnType<typeof buildApp>;
 
 beforeAll(async () => {
-  db = await setupReadmodelTestDatabase(inject("READMODEL_CONNECTION_STRING"));
+  eventStoreDb = await setupEventstoreTestDatabase(
+    inject("EVENTSTORE_CONNECTION_STRING"),
+  );
+
+  app = buildApp({
+    eventStoreDb,
+    loggerConfig: {
+      isProduction: false,
+      logLevel: "silent",
+      nodeEnv: "test",
+    },
+  });
 });
 
 beforeEach(async () => {
-  await db.execute("BEGIN");
+  await eventStoreDb.execute("BEGIN");
 });
 
 afterEach(async () => {
-  await db.execute("ROLLBACK");
+  await eventStoreDb.execute("ROLLBACK");
 });
 
 afterAll(async () => {
-  await db.$client.end();
+  await eventStoreDb.$client.end();
 });
 
-export { db };
+export { app, eventStoreDb };

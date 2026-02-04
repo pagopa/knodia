@@ -1,21 +1,14 @@
-import { readmodelEservice } from "@knodia/db-readmodel-eservice";
+import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
+import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 
-import { db } from "./setup.ts";
+import { app, eventStoreDb } from "./setup.ts";
 
-export async function getAllEservices() {
-  return await db.select().from(readmodelEservice);
+export async function getAllEserviceEvents() {
+  return await eventStoreDb.select().from(eventStoreEserviceEvents);
 }
 
-export async function insertMockEservice() {
-  await db.insert(readmodelEservice).values({
-    description: { en: "Description" },
-    id: crypto.randomUUID(),
-    isConsumerOperatorIdentificationRequired: true,
-    isSignalHubEnabled: false,
-    metadataVersion: 1,
-    mode: "REST",
-    name: { en: "Test Service " + crypto.randomUUID() },
-    producerId: crypto.randomUUID(),
-    updatedAt: new Date(),
+export function injectAppRequest() {
+  return app.inject().headers({
+    [CORRELATION_ID_HEADER]: crypto.randomUUID(),
   });
 }
