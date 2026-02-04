@@ -48,8 +48,9 @@ const API_InterfaceDocumentSeed = z
     contentType: z
       .string()
       .describe("MIME type of the uploaded interface document"),
-    name: z.string().describe("Name of the uploaded interface document"),
-    path: z.string().describe("Path where the interface document is stored"),
+    name: z
+      .string()
+      .describe("Name of the uploaded interface document, with extension"),
     prettyName: z
       .strictObject({
         en: z.string().describe("English pretty name"),

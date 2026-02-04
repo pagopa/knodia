@@ -73,7 +73,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
       const {
-        interfaceDocument: { content, name, path, ...interfaceDocumentRest },
+        interfaceDocument: { content, name, ...interfaceDocumentRest },
         ...rest
       } = req.body;
 
@@ -82,9 +82,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const s3Key = await fileManager.storeBytes({
         bucket: config.eserviceInterfacesS3Bucket,
         content: Buffer.from(content, "base64"),
-        name,
-        path,
-        resourceId: interfaceDocumentId,
+        key: `${interfaceDocumentId}/${name}`,
       });
 
       const seed = {

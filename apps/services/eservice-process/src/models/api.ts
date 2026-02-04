@@ -51,7 +51,9 @@ export const API_InterfaceDocumentSeed = z
     id: EserviceInterfaceId.describe(
       "Unique identifier of the interface document",
     ),
-    name: z.string().describe("Name of the uploaded interface document"),
+    name: z
+      .string()
+      .describe("Name of the uploaded interface document, with extension"),
     path: z.string().describe("Path where the interface document is stored"),
     prettyName: z
       .strictObject({
