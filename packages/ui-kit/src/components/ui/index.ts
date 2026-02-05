@@ -9,6 +9,7 @@ export * from "./Field";
 export * from "./FileUpload";
 export * from "./InteractiveIcon";
 export * from "./Link";
+export * from "./Loader";
 export * from "./Menu";
 export * from "./Modal";
 export * from "./Pagination";

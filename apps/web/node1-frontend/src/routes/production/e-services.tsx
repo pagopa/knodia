@@ -23,9 +23,8 @@ export const Route = createFileRoute("/production/e-services")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({ context: { queryClient }, deps: { offset } }) => {
-    queryClient.ensureQueryData(eservicesQuery(offset));
-  },
+  loader: async ({ context: { queryClient }, deps: { offset } }) =>
+    await queryClient.ensureQueryData(eservicesQuery(offset)),
   search: {
     middlewares: [stripSearchParams(productionEserviceSearchDefaultValues)],
   },
@@ -38,8 +37,9 @@ function RouteComponent() {
 
   const { offset, ...filterDefaultValues } = search;
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     ...eservicesQuery(offset),
+    initialData: Route.useLoaderData(),
     placeholderData: keepPreviousData,
   });
 
@@ -73,8 +73,6 @@ function RouteComponent() {
           onDebouncedChange={handleSearchChange}
         />
       )}
-
-      {(isLoading || !data) && <div>Loading...</div>}
 
       {data && data.items.length > 0 && (
         <ProductionEserviceList eservices={data.items} />

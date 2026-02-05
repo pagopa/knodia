@@ -1,3 +1,5 @@
+import { Empty, Loader } from "@knodia/ui-kit/ui";
+import { BracketsCurlyIcon } from "@phosphor-icons/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
   createRouter,
@@ -6,18 +8,42 @@ import {
   type ToOptions,
 } from "@tanstack/react-router";
 import { StrictMode } from "react";
+import "@knodia/ui-kit/themes/node1.css";
 import ReactDOM from "react-dom/client";
 
 import { queryClient } from "@/libs/tanstack-query";
-
-import "@knodia/ui-kit/themes/node1.css";
-
 import { routeTree } from "@/routeTree.gen";
 
 const router = createRouter({
   context: {
     queryClient,
   },
+  defaultErrorComponent: () => (
+    <div className="mt-10 flex items-center justify-center">
+      <Empty
+        description="Please try again later"
+        kind="error"
+        title="Something went wrong"
+      />
+    </div>
+  ),
+  defaultNotFoundComponent: () => (
+    <div className="mt-10 flex items-center justify-center">
+      <Empty
+        description="The page you're looking for doesn't exists or has been moved."
+        icon={<BracketsCurlyIcon />}
+        kind="neutral"
+        title="Page not found"
+      />
+    </div>
+  ),
+  defaultPendingComponent: () => (
+    <div className="mt-20 flex items-center justify-center">
+      <Loader label="Loading..." />
+    </div>
+  ),
+  defaultPendingMinMs: 0,
+  defaultPendingMs: 0,
   defaultPreload: "intent",
   // Since we're using React Query, we don't want loader calls to ever be stale
   // This will ensure that the loader is always called when the route is preloaded or visited

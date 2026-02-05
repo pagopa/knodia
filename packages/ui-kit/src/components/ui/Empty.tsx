@@ -14,7 +14,7 @@ import { Button } from "./Button";
 import { ButtonLink } from "./ButtonLink";
 
 const empty = tv({
-  base: "flex flex-col items-center gap-8 text-center w-60 max-w-full",
+  base: "flex flex-col items-center gap-8 text-center max-w-60",
 });
 
 const emptyIconWrapper = tv({
