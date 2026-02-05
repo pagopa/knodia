@@ -16,7 +16,7 @@ export const DocumentRecap = ({ name, showDownloadButton = false }: Props) => (
     </div>
 
     {showDownloadButton ? (
-      // TODO: handle click
+      // TODO: handle document download
       <Button hierarchy="neutral" kind="tonal" size="icon-md">
         <DownloadSimpleIcon />
       </Button>

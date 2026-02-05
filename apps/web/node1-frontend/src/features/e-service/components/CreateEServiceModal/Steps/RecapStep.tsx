@@ -1,5 +1,6 @@
 import { Banner, Button, Chip, Divider } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon, CopyIcon } from "@phosphor-icons/react";
+import { Fragment } from "react/jsx-runtime";
 
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
@@ -11,6 +12,9 @@ import { StepHeader } from "../StepsHeader";
 interface Props {
   onPublish: () => void;
 }
+
+// TODO: use real Knode name
+const KNODE_NAME = "Orion Knode";
 
 export function RecapStep({ onPublish }: Props) {
   const { data } = useEServiceWizardContext();
@@ -107,11 +111,12 @@ export function RecapStep({ onPublish }: Props) {
               value={data.isSignalHubEnabled ? "Yes" : "No"}
             />
           </div>
-          {/* TODO: handle documents */}
-          <DocumentRecap
-            name="Appoint Orion Knode as the data processor"
-            showDownloadButton
-          />
+          {data.isSignalHubEnabled ? (
+            <DocumentRecap
+              name={`Appoint ${KNODE_NAME} as the data processor`}
+              showDownloadButton
+            />
+          ) : null}
         </div>
 
         <Divider />
@@ -120,7 +125,7 @@ export function RecapStep({ onPublish }: Props) {
           <h2 className="headline-sm-em text-primary-light-high-contrast">
             Documents
           </h2>
-          <DocumentRecap name="api_spec.pdf" />
+          <DocumentRecap name={data.interfaceDocument?.name || "-"} />
           {/* TODO: only show if checksum. */}
           {/* TODO: use component */}
           <div>
@@ -151,21 +156,23 @@ export function RecapStep({ onPublish }: Props) {
             Attributes
           </h2>
           <div className="flex flex-col gap-2">
-            <RecapField>
-              <span className="flex items-center gap-4">
-                <span className="flex gap-1">
-                  NUTS1 <BookOpenTextIcon size={20} />
-                </span>
-                <span className="body-sm text-secondary-light-low-contrast">
-                  or
-                </span>
-                <span className="flex gap-1">
-                  NUTS2 <BookOpenTextIcon size={20} />
-                </span>
-              </span>
-            </RecapField>
-            <RecapField label="NUTS3" />
-            <RecapField label="NUTS0" />
+            {data.requiredAttributes?.map((group, index) => (
+              <RecapFieldCustom key={index}>
+                {group.map((attribute, attIdx) => (
+                  <Fragment key={attribute.code}>
+                    {attIdx > 0 && (
+                      <span className="body-sm text-secondary-light-low-contrast">
+                        or
+                      </span>
+                    )}
+
+                    <span className="flex gap-1">
+                      {attribute.code} <BookOpenTextIcon size={20} />
+                    </span>
+                  </Fragment>
+                ))}
+              </RecapFieldCustom>
+            ))}
           </div>
         </div>
       </div>
@@ -183,21 +190,24 @@ export function RecapStep({ onPublish }: Props) {
 }
 
 function RecapField({
-  children,
   label,
   value,
 }: {
-  children?: React.ReactNode;
-  label?: string;
+  label: string;
   value?: React.ReactNode;
 }) {
   return (
     <div className="flex justify-between py-3 px-4 bg-secondary-light rounded-lg">
-      <span className="text-secondary-light-mid-contrast body-md">
-        {label}
-        {children}
-      </span>
+      <span className="text-secondary-light-mid-contrast body-md">{label}</span>
       <span className="body-md-em">{value}</span>
+    </div>
+  );
+}
+
+function RecapFieldCustom({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex items-center gap-4 py-3 px-4 bg-secondary-light rounded-lg text-secondary-light-mid-contrast body-md ">
+      {children}
     </div>
   );
 }
