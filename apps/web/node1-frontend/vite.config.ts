@@ -30,6 +30,14 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: env["APP_PORT"] ? Number(env["APP_PORT"]) : 5673,
+      proxy: {
+        "/bff": {
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/bff/, ""),
+          secure: false,
+          target: "http://localhost:3600/",
+        },
+      },
     },
   };
 });
