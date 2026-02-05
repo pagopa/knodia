@@ -9,6 +9,12 @@ const { logLevel } = KafkaJS;
 const TEST_KAFKA_PORT = 9093;
 const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:7.6.9";
 
+/**
+ * !!! Intended to be called once in global test setup !!!
+ *
+ *  Starts the shared Kafka test container.
+ *  It returns the broker address to be used by test files.
+ */
 export async function setupKafkaTestContainer() {
   const container = await new KafkaContainer(TEST_KAFKA_IMAGE)
     .withKraft()
@@ -23,8 +29,8 @@ export async function setupKafkaTestContainer() {
   return { broker, container };
 }
 /**
- * Creates a dedicated database for a single test file by cloning the template.
- * It generates a unique DB name, creates it using TEMPLATE, and returns a Drizzle connection.
+ * Creates a dedicated Kafka topic for a single test file by using the test container broker.
+ * It returns the Kafka configuration, producer, and topic name.
  *
  * Intended to be called in beforeAll of each test file.
  */
