@@ -3,7 +3,7 @@
   "includeEntryExports": true,
   "workspaces": {
     ".": {},
-    "packages/*-process-client": {
+    "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],
       "ignore": ["src/generated/**/*.ts"]
     },

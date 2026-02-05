@@ -18,6 +18,7 @@
     "@tanstack/react-query-devtools": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
+    "@knodia/bff-client": "workspace:*",
     "axios": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",
