@@ -1,5 +1,3 @@
-import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
-
 import {
   readmodelEservice,
   readmodelEserviceCategory,
@@ -13,7 +11,7 @@ import {
 } from "@knodia/db-readmodel-eservice/services";
 import { eq } from "drizzle-orm";
 
-import { consumedMessages, processMessage, readmodelDb } from "./setup.ts";
+import { readmodelDb } from "./setup.ts";
 
 export async function getAllEservices() {
   const queryRes = await readmodelDb
@@ -50,8 +48,3 @@ export async function getAllEservices() {
 
   return aggregateEservices(toEserviceAggregatorArray(queryRes));
 }
-
-export const testConsumerHandler = async (payload: EachMessagePayload) => {
-  consumedMessages.push(payload);
-  await processMessage(payload);
-};

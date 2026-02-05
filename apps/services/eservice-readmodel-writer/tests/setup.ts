@@ -1,4 +1,3 @@
-import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
 
 import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
@@ -12,7 +11,6 @@ let producer: Awaited<ReturnType<typeof setupKafkaTestProducer>>["producer"];
 let topicName: Awaited<ReturnType<typeof setupKafkaTestProducer>>["topicName"];
 let kafkaConfig: KafkaConsumerConfig;
 let processMessage: ReturnType<typeof createProcessMessage>;
-let consumedMessages: EachMessagePayload[];
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
@@ -27,7 +25,6 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  consumedMessages = [];
   await readmodelDb.execute("BEGIN");
 });
 
@@ -40,11 +37,4 @@ afterAll(async () => {
   await producer.disconnect();
 });
 
-export {
-  consumedMessages,
-  kafkaConfig,
-  processMessage,
-  producer,
-  readmodelDb,
-  topicName,
-};
+export { kafkaConfig, processMessage, producer, readmodelDb, topicName };
