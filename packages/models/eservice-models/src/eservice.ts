@@ -7,7 +7,7 @@ import {
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
-export const INT32_MAX = 2_147_483_647;
+const INT32_MAX = 2_147_483_647;
 
 export const minAccessTokenDuration = 1;
 export const maxAccessTokenDuration = 86400; // max 86400 seconds = 24 hours
@@ -15,7 +15,7 @@ export const maxAccessTokenDuration = 86400; // max 86400 seconds = 24 hours
 export const minDailyCalls = 1;
 export const maxDailyCalls = 1_000_000_000;
 
-export const minEserviceVersionNumber = 1;
+const minEserviceVersionNumber = 1;
 
 export const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;

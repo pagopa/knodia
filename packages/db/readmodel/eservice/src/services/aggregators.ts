@@ -1,7 +1,6 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
   getTablePKString,
-  throwIfMultipleOrEmpty,
   type WithMetadata,
 } from "@knodia/db-readmodel-commons";
 import {
@@ -193,33 +192,34 @@ const createEserviceSQLPropertyMap = <
     return acc;
   }, new Map<EserviceId, T[]>());
 
-export const toEserviceAggregator = (
-  queryRes: {
-    category: EserviceCategorySQL | null;
-    eservice: EserviceSQL;
-    interface: EserviceInterfaceSQL | null;
-    requiredAttribute: EserviceVersionRequiredAttributeSQL | null;
-    version: EserviceVersionSQL | null;
-  }[],
-): EserviceItemsSQL => {
-  const {
-    categoriesSQL: categoriesSQL,
-    eservicesSQL: eservicesSQL,
-    interfacesSQL: interfacesSQL,
-    requiredAttributesSQL: requiredAttributesSQL,
-    versionsSQL: versionsSQL,
-  } = toEserviceAggregatorArray(queryRes);
+// TODO: uncomment when needed
+// export const toEserviceAggregator = (
+//   queryRes: {
+//     category: EserviceCategorySQL | null;
+//     eservice: EserviceSQL;
+//     interface: EserviceInterfaceSQL | null;
+//     requiredAttribute: EserviceVersionRequiredAttributeSQL | null;
+//     version: EserviceVersionSQL | null;
+//   }[],
+// ): EserviceItemsSQL => {
+//   const {
+//     categoriesSQL: categoriesSQL,
+//     eservicesSQL: eservicesSQL,
+//     interfacesSQL: interfacesSQL,
+//     requiredAttributesSQL: requiredAttributesSQL,
+//     versionsSQL: versionsSQL,
+//   } = toEserviceAggregatorArray(queryRes);
 
-  const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
+//   const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
 
-  return {
-    eserviceCategoriesSQL: categoriesSQL,
-    eserviceInterfacesSQL: interfacesSQL,
-    eserviceSQL,
-    eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
-    eserviceVersionsSQL: versionsSQL,
-  };
-};
+//   return {
+//     eserviceCategoriesSQL: categoriesSQL,
+//     eserviceInterfacesSQL: interfacesSQL,
+//     eserviceSQL,
+//     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
+//     eserviceVersionsSQL: versionsSQL,
+//   };
+// };
 
 export const toEserviceAggregatorArray = (
   queryRes: {
