@@ -26,7 +26,7 @@
  * 4. GENERATE TYPE EXPORTS FOR ALL TABLES
  *    Creates TypeScript type exports using $inferSelect and $inferInsert.
  *
- * Usage: node --experimental-strip-types scripts/add-schema-env-comment.ts [schema-file-path]
+ * Usage: node --experimental-strip-types scripts/normalize-drizzle-output.ts [schema-file-path]
  *
  * If no path is provided, defaults to: generated/schema.ts
  */
