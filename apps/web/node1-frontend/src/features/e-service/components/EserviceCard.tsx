@@ -1,3 +1,5 @@
+import type { Eservice } from "@knodia/bff-client";
+
 import { ButtonLink, Chip, Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
 
@@ -8,19 +10,18 @@ import type { EserviceMode, EserviceVersionState } from "../types";
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
 
-export function ProductionEserviceCard() {
-  const eserviceName = "E-Service name";
-
+export function ProductionEserviceCard({ eservice }: { eservice: Eservice }) {
   return (
     <EserviceCard>
-      <EserviceCardHeader title={eserviceName} />
+      <EserviceCardHeader title={eservice.name.en} />
       <EserviceCardInfoGrid>
-        <GenericInfoCard label="Active Agreements">0</GenericInfoCard>
-        <GenericInfoCard label="Active Purposes">0</GenericInfoCard>
+        <GenericInfoCard label="Active Agreements">-</GenericInfoCard>
+        <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
       </EserviceCardInfoGrid>
       <EserviceCardFooter mode="ProvideData" state="Active">
-        <CategoryChip label="Category 1" />
-        <CategoryChip label="Category 2" />
+        {eservice.categories.map((category) => (
+          <CategoryChip key={category.code} label={category.code} />
+        ))}
       </EserviceCardFooter>
     </EserviceCard>
   );

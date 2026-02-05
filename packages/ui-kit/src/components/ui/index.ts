@@ -4,6 +4,7 @@ export * from "./Button";
 export * from "./ButtonLink";
 export * from "./Chip";
 export * from "./Divider";
+export * from "./Empty";
 export * from "./Field";
 export * from "./FileUpload";
 export * from "./InteractiveIcon";

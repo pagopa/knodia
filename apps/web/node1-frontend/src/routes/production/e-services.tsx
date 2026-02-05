@@ -1,5 +1,7 @@
-import { Button, Pagination } from "@knodia/ui-kit/ui";
-import { ArchiveIcon } from "@phosphor-icons/react";
+import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
+import { Button, Empty, Pagination } from "@knodia/ui-kit/ui";
+import { ArchiveIcon, SelectionPlusIcon } from "@phosphor-icons/react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -9,9 +11,21 @@ import {
   productionEserviceSearchDefaultValues,
   productionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
+import { client } from "@/libs/axios";
+
+const eservicesQuery = (offset: number) =>
+  getEservicesOptions({
+    client,
+    query: { limit: 10, offset },
+  });
 
 export const Route = createFileRoute("/production/e-services")({
   component: RouteComponent,
+  loaderDeps: ({ search: { offset } }) => ({ offset }),
+  // eslint-disable-next-line perfectionist/sort-objects
+  loader: async ({ context: { queryClient }, deps: { offset } }) => {
+    queryClient.ensureQueryData(eservicesQuery(offset));
+  },
   search: {
     middlewares: [stripSearchParams(productionEserviceSearchDefaultValues)],
   },
@@ -23,6 +37,11 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const { offset, ...filterDefaultValues } = search;
+
+  const { data, isLoading } = useQuery({
+    ...eservicesQuery(offset),
+    placeholderData: keepPreviousData,
+  });
 
   function handleSearchChange(values: Partial<typeof search>) {
     navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
@@ -55,15 +74,29 @@ function RouteComponent() {
         />
       )}
 
-      <ProductionEserviceList />
+      {(isLoading || !data) && <div>Loading...</div>}
+
+      {data && data.items.length > 0 && (
+        <ProductionEserviceList eservices={data.items} />
+      )}
+
+      {data && data.items.length === 0 && (
+        <div className="flex justify-center">
+          <Empty
+            description="Create your first one"
+            icon={<SelectionPlusIcon />}
+            title="You don't have any E-Services yet"
+          />
+        </div>
+      )}
 
       <div className="flex">
         <Pagination
           className="mx-auto mt-6"
-          limit={10}
+          limit={data?.pagination.limit ?? 0}
           offset={offset}
           onOffsetChange={(offset) => handleSearchChange({ offset })}
-          totalItems={120}
+          totalItems={data?.pagination.total ?? 0}
         />
       </div>
     </>
