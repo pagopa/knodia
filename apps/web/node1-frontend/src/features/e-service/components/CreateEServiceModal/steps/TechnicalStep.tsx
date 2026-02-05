@@ -213,6 +213,7 @@ function SignalHubSection({ form }: { form: TechnicalStepForm }) {
       <form.Field name="isSignalHubEnabled">
         {(field) => (
           <Checkbox
+            isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
             isSelected={field.state.value}
             name={field.name}
