@@ -12,6 +12,7 @@ export function LeaveConfirmModal({ isOpen, onCancel, onConfirm }: Props) {
       actionLabel="Leave anyway"
       cancelLabel="Cancel"
       description="Are you sure you want to leave the process? Your changes won't be saved."
+      isDismissable
       isOpen={isOpen}
       kind="destructive"
       onClose={onCancel}

@@ -75,6 +75,9 @@ export function Modal({
       className={composeRenderProps(className, (className, renderProps) =>
         overlay({ ...renderProps, className }),
       )}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) onDismiss?.();
+      }}
     >
       <AriaModal className={(renderProps) => modal({ ...renderProps })}>
         <AriaDialog
@@ -87,15 +90,17 @@ export function Modal({
               <p className="title-md-em" id={titleId}>
                 {title}
               </p>
-              <Button
-                className="p-0"
-                hierarchy="neutral"
-                kind="ghost"
-                size="icon-sm"
-                {...(onDismiss && { onPress: onDismiss })}
-              >
-                <XIcon />
-              </Button>
+              {onDismiss && (
+                <Button
+                  className="p-0"
+                  hierarchy="neutral"
+                  kind="ghost"
+                  onPress={onDismiss}
+                  size="icon-sm"
+                >
+                  <XIcon />
+                </Button>
+              )}
             </div>
             {description && (
               <span className=" body-md" id={descriptionId}>
@@ -120,6 +125,7 @@ export function Modal({
             )}
             <div className="flex gap-3">
               <Button
+                autoFocus
                 hierarchy="neutral"
                 kind="tonal"
                 size="md"

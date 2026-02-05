@@ -5,18 +5,14 @@ import { LeaveConfirmModal } from "../components/CreateEServiceModal/LeaveConfir
 export const useLeaveConfirmModal = (onClose: () => void) => {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
-  const onModalShow = () => {
-    setShowLeaveConfirm(true);
-  };
+  const onModalShow = () => setShowLeaveConfirm(true);
 
   const handleConfirmLeave = () => {
     setShowLeaveConfirm(false);
     onClose();
   };
 
-  const handleCancelLeave = () => {
-    setShowLeaveConfirm(false);
-  };
+  const handleCancelLeave = () => setShowLeaveConfirm(false);
 
   return {
     modal: (
