@@ -36,8 +36,6 @@ type CopyButtonProps = CopyButtonVariants &
     copiedTooltipText?: string;
     /** The text to copy to clipboard */
     textToCopy: string;
-    /** Tooltip text shown before copying (defaults to "Copy") */
-    tooltipText?: string;
   };
 
 type CopyButtonVariants = Omit<
@@ -47,7 +45,6 @@ type CopyButtonVariants = Omit<
 
 export function CopyButton({
   textToCopy,
-  tooltipText = "Copy",
   copiedTooltipText = "Copied to clipboard",
   hierarchy,
   ...props
@@ -81,7 +78,7 @@ export function CopyButton({
       >
         <CopyIcon />
       </Button>
-      <Tooltip>{isCopied ? copiedTooltipText : tooltipText}</Tooltip>
+      <Tooltip>{copiedTooltipText}</Tooltip>
     </TooltipTrigger>
   );
 }
