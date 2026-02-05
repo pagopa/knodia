@@ -30,6 +30,6 @@
   "exports": {
     ".": "./src/eservice.ts",
     "./config": "./config/config.ts",
-    "./services": "./src/services/index.ts"
+    "./converters": "./src/converters/index.ts"
   }
 }

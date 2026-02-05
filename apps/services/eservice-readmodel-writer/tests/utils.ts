@@ -8,7 +8,7 @@ import {
 import {
   aggregateEservices,
   toEserviceAggregatorArray,
-} from "@knodia/db-readmodel-eservice/services";
+} from "@knodia/db-readmodel-eservice/converters";
 import { eq } from "drizzle-orm";
 
 import { readmodelDb } from "./setup.ts";

@@ -8,7 +8,7 @@ import {
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
-import { splitEserviceIntoObjectsSQL } from "@knodia/db-readmodel-eservice/services";
+import { splitEserviceIntoObjectsSQL } from "@knodia/db-readmodel-eservice/converters";
 import { type Eservice } from "@knodia/eservice-models";
 import { eq } from "drizzle-orm";
 
