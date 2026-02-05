@@ -5,10 +5,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 FLYWAY_IMAGE="flyway/flyway:11"
 
-# Local environment configuration
-# In CI/production, these are supplied via environment variables or flyway.conf
-LOCAL_NAMESPACE="${FLYWAY_NAMESPACE:-local}"
-LOCAL_PASSWORD="${FLYWAY_DEFAULT_PASSWORD:-root}"
+# Environment configuration
+DB_NAMESPACE="${DB_NAMESPACE:-local}"
+DB_NAME="${DB_NAME:-root}"
+DB_USER="${DB_USER:-root}"
+DB_PASSWORD="${DB_PASSWORD:-root}"
+# DB_DEFAULT_PASSWORD is used by R__grants.sql migrations via the ${default_password} placeholder
+# to set passwords for database roles (readonly_user, admin_user, service users)
+DB_DEFAULT_PASSWORD="${DB_DEFAULT_PASSWORD:-root}"
 
 # Auto-detect which Docker network to use based on running containers
 # Sets: DOCKER_NETWORK, ES_HOST, ES_PORT, RM_HOST, RM_PORT
@@ -69,14 +73,14 @@ run_flyway() {
     --network "$DOCKER_NETWORK" \
     -v "${migration_dir}:/flyway/sql:ro" \
     "$FLYWAY_IMAGE" \
-    -url="jdbc:postgresql://${db_host}:${db_port}/root" \
-    -user="root" \
-    -password="root" \
-    -schemas="${LOCAL_NAMESPACE}_${schema_name}" \
-    -defaultSchema="${LOCAL_NAMESPACE}_${schema_name}" \
+    -url="jdbc:postgresql://${db_host}:${db_port}/${DB_NAME}" \
+    -user="$DB_USER" \
+    -password="$DB_PASSWORD" \
+    -schemas="${DB_NAMESPACE}_${schema_name}" \
+    -defaultSchema="${DB_NAMESPACE}_${schema_name}" \
     -connectRetries=5 \
-    -placeholders.namespace="${LOCAL_NAMESPACE}" \
-    -placeholders.default_password="${LOCAL_PASSWORD}" \
+    -placeholders.namespace="${DB_NAMESPACE}" \
+    -placeholders.default_password="${DB_DEFAULT_PASSWORD}" \
     migrate
 
   echo "Flyway migrations applied for ${db_type}/${schema_name}."

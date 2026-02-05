@@ -31,14 +31,7 @@
     "lint-openapi": {
       "dependsOn": ["generate-openapi"]
     },
-    "db:generate": {
-      "outputs": ["drizzle/**"]
-    },
-    "db:migrate": {
-      "dependsOn": ["//#infra:start", "db:generate"],
-      "cache": false
-    },
-    "generate-artifacts": {
+        "generate-artifacts": {
       "dependsOn": ["generate-api-client", "generate-protobuf"]
     },
     "dev:storybook": {},

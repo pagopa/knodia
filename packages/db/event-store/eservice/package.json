@@ -6,8 +6,6 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "db:generate": "dotenvx run -- drizzle-kit generate --name=event-store-eservice",
-    "db:migrate": "dotenvx run -- drizzle-kit migrate",
     "db:pull": "dotenvx run -- drizzle-kit pull && node --experimental-strip-types ../../../../scripts/add-schema-env-comment.ts"
   },
   "dependencies": {
