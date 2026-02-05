@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
+    "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
@@ -16,11 +17,13 @@
     "eslint": "catalog:",
     "testcontainers": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zocker": "catalog:"
   },
   "exports": {
-    "./readmodel": "./src/readmodel.ts",
     "./eventstore": "./src/eventstore.ts",
-    "./kafka": "./src/testcontainers/kafka.ts"
+    "./kafka": "./src/testcontainers/kafka.ts",
+    "./readmodel": "./src/readmodel.ts",
+    "./utils": "./src/utilities/index.ts"
   }
 }
