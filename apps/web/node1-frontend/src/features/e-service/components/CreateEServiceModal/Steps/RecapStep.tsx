@@ -1,5 +1,5 @@
-import { Banner, Button, Chip, Divider } from "@knodia/ui-kit/ui";
-import { BookOpenTextIcon, CopyIcon } from "@phosphor-icons/react";
+import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
+import { BookOpenTextIcon } from "@phosphor-icons/react";
 import { Fragment } from "react/jsx-runtime";
 
 import { useStepsContext } from "@/contexts/steps";
@@ -138,15 +138,7 @@ export function RecapStep({ onPublish }: Props) {
                 <span className="body-md text-primary-light-high-contrast flex-1">
                   {md5Checksum}
                 </span>
-                <Button
-                  className="p-0"
-                  hierarchy="neutral"
-                  kind="ghost"
-                  onClick={() => navigator.clipboard.writeText(md5Checksum)}
-                  size="icon-md"
-                >
-                  <CopyIcon />
-                </Button>
+                <CopyButton className="p-1" textToCopy={md5Checksum} />
               </div>
             </div>
           ) : null}
