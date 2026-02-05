@@ -252,7 +252,7 @@ function SignalHubSection({ form }: { form: TechnicalStepForm }) {
         {(field) => (
           <Checkbox
             isRequired
-            isSelected={Boolean(field.state.value)}
+            isSelected={field.state.value}
             name={field.name}
             onBlur={field.handleBlur}
             onChange={field.handleChange}

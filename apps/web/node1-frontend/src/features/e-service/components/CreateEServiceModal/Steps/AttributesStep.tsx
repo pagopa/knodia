@@ -13,7 +13,7 @@ import { StepHeader } from "../StepsHeader";
 // TODO: use real data
 const MOCK_ATTRIBUTES = Array.from({ length: 10 }, (_, i) => ({
   label: `NUTS${i + 1}`,
-  value: i,
+  value: `NUTS${i + 1}`,
 }));
 
 export function AttributesStep() {
@@ -97,6 +97,7 @@ export function AttributesStep() {
                         errorMessage={groupField.state.meta.errors
                           .map((e) => e?.message)
                           .join(", ")}
+                        id="selectatttributes"
                         isInvalid={!groupField.state.meta.isValid}
                         isRequired
                         label="Attributes"
@@ -111,6 +112,9 @@ export function AttributesStep() {
                         }
                         placeholder="Select one or more attributes"
                         selectionMode="multiple"
+                        value={
+                          groupField.state.value?.map((attr) => attr.code) ?? []
+                        }
                       >
                         {MOCK_ATTRIBUTES.map(({ label, value }) => (
                           <SelectItem id={value} key={value}>
