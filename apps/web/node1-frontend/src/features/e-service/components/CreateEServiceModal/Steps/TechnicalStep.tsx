@@ -13,6 +13,7 @@ import {
   useEServiceWizardContext,
   useTechnicalStepForm,
 } from "@/features/e-service/contexts/useEServiceFormContext";
+import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
@@ -90,16 +91,9 @@ function AccessTokenSection({ form }: { form: TechnicalStepForm }) {
         {(field) => (
           <NumberField
             description="Max 1440 minutes (24 hours)"
-            errorMessage={field.state.meta.errors
-              .map((e) => {
-                const msg = e?.message;
-                // ignore "Received NaN" message
-                if (msg && RegExp(/nvalid|input/).test(msg)) {
-                  return "Must be at least 1.";
-                }
-                return msg;
-              })
-              .join(", ")}
+            errorMessage={getFieldErrorMessage(field.state.meta.errors, {
+              numberFallback: "Duration must be at least 1 minute.",
+            })}
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
             label="Duration (in minutes)"
@@ -115,9 +109,7 @@ function AccessTokenSection({ form }: { form: TechnicalStepForm }) {
       <form.Field name="accessTokenAudience">
         {(field) => (
           <TextField
-            errorMessage={field.state.meta.errors
-              .map((e) => e?.message)
-              .join(", ")}
+            errorMessage={getFieldErrorMessage(field.state.meta.errors)}
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
             label="Audience"
@@ -186,16 +178,9 @@ function MaxApiCallsSection({ form }: { form: TechnicalStepForm }) {
         {(field) => (
           <NumberField
             description="Max number of API calls for each Knode."
-            errorMessage={field.state.meta.errors
-              .map((e) => {
-                const msg = e?.message;
-                // ignore "Received NaN" message
-                if (msg && RegExp(/nvalid|input/).test(msg)) {
-                  return "Must be at least 1.";
-                }
-                return msg;
-              })
-              .join(", ")}
+            errorMessage={getFieldErrorMessage(field.state.meta.errors, {
+              numberFallback: "Must be at least 1.",
+            })}
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
             label="Per Knode"
@@ -211,16 +196,9 @@ function MaxApiCallsSection({ form }: { form: TechnicalStepForm }) {
         {(field) => (
           <NumberField
             description="Max number of API calls for a single organization. Consumers should declare that their number of API calls per day doesn't exceed this number."
-            errorMessage={field.state.meta.errors
-              .map((e) => {
-                const msg = e?.message;
-                // ignore "Received NaN" message
-                if (msg && RegExp(/nvalid|input/).test(msg)) {
-                  return "Must be at least 1.";
-                }
-                return msg;
-              })
-              .join(", ")}
+            errorMessage={getFieldErrorMessage(field.state.meta.errors, {
+              numberFallback: "Must be at least 1.",
+            })}
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
             label="Per consumer"

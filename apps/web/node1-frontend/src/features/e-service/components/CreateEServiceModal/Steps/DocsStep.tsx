@@ -5,6 +5,7 @@ import {
   useDocsStepForm,
   useEServiceWizardContext,
 } from "@/features/e-service/contexts/useEServiceFormContext";
+import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { DocumentRecap } from "../DocumentRecap";
 import { Footer } from "../Footer";
@@ -50,9 +51,7 @@ export function DocsStep() {
               {(field) => (
                 <FileUpload
                   description="Accepted format: YAML, JSON, XML (up to 1 MB)."
-                  errorMessage={field.state.meta.errors
-                    .map((e) => e?.message)
-                    .join(", ")}
+                  errorMessage={getFieldErrorMessage(field.state.meta.errors)}
                   onSelect={(files) => {
                     const file = files?.[0] ?? null;
                     field.handleChange(file);

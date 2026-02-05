@@ -6,6 +6,7 @@ import {
   useEServiceWizardContext,
   useGeneralStepForm,
 } from "@/features/e-service/contexts/useEServiceFormContext";
+import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
@@ -43,10 +44,7 @@ export function GeneralStep({ onCancel }: Props) {
             {(field) => (
               <TextField
                 description="Min 5 characters, max 60 characters"
-                // TODO: centralize this
-                errorMessage={field.state.meta.errors
-                  .map((e) => e?.message)
-                  .join(", ")}
+                errorMessage={getFieldErrorMessage(field.state.meta.errors)}
                 isInvalid={
                   field.state.meta.isTouched && !field.state.meta.isValid
                 }
@@ -64,10 +62,7 @@ export function GeneralStep({ onCancel }: Props) {
             {(field) => (
               <TextArea
                 description="Min 10 characters, max 250 characters"
-                // TODO: centralize this
-                errorMessage={field.state.meta.errors
-                  .map((e) => e?.message)
-                  .join(", ")}
+                errorMessage={getFieldErrorMessage(field.state.meta.errors)}
                 isInvalid={
                   field.state.meta.isTouched && !field.state.meta.isValid
                 }

@@ -6,6 +6,7 @@ import {
   useAttributesStepForm,
   useEServiceWizardContext,
 } from "@/features/e-service/contexts/useEServiceFormContext";
+import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
@@ -94,9 +95,9 @@ export function AttributesStep() {
                     {(groupField) => (
                       <Select
                         className="flex-1"
-                        errorMessage={groupField.state.meta.errors
-                          .map((e) => e?.message)
-                          .join(", ")}
+                        errorMessage={getFieldErrorMessage(
+                          groupField.state.meta.errors,
+                        )}
                         id="selectatttributes"
                         isInvalid={!groupField.state.meta.isValid}
                         isRequired
