@@ -11,6 +11,8 @@ import {
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import {
   API_CreatedResource,
+  API_EserviceDetails,
+  API_EserviceIdParams,
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
@@ -58,6 +60,41 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
+      const eservice = await eserviceProcessApi.getEserviceById({
+        client: eserviceProcessClient,
+        headers: {
+          [CORRELATION_ID_HEADER]: correlationId,
+        },
+        path: {
+          eserviceId: req.params.eserviceId,
+        },
+      });
+
+      if (!eservice.data) {
+        throw new Error("Unexpected empty response from eservice-process");
+      }
+      res.send(eservice.data);
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve the details of an E-service by its ID",
+      operationId: "getEserviceById",
+      params: API_EserviceIdParams,
+      response: {
+        200: API_EserviceDetails.describe(
+          "E-service details retrieved successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+        404: API_Problem.describe("E-service not found"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId",
   });
 
   fastify.route({

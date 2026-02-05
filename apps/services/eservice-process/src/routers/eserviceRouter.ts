@@ -11,11 +11,16 @@ import type { EserviceService } from "../services/eserviceService.ts";
 
 import {
   API_Eservice,
+  API_EserviceDetails,
+  API_EserviceIdParams,
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
 } from "../models/api.ts";
-import { toAPI_Eservice } from "../models/apiConverter.ts";
+import {
+  toAPI_Eservice,
+  toAPI_EserviceDetails,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
@@ -46,6 +51,31 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       tags: [apiTags.eservice],
     },
     url: "/eservices",
+  });
+
+  fastify.route({
+    handler: (req, res) => {
+      const eservice = eserviceService.getMockEserviceById(
+        req.params.eserviceId,
+      );
+      res.status(200).send(toAPI_EserviceDetails(eservice));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve the details of an E-service by its ID",
+      headers: processHeaders,
+      operationId: "getEserviceById",
+      params: API_EserviceIdParams,
+      response: {
+        200: API_EserviceDetails.describe(
+          "E-service details retrieved successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+        404: API_Problem.describe("E-service not found"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId",
   });
 
   fastify.route({

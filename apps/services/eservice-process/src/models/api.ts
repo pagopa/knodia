@@ -3,6 +3,7 @@ import {
   API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceVersion,
   API_LocalizedDescription,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
@@ -91,3 +92,13 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
+
+export const API_EserviceIdParams = z.strictObject({
+  eserviceId: z.uuid(),
+});
+export type API_EserviceIdParams = z.infer<typeof API_EserviceIdParams>;
+
+export const API_EserviceDetails = API_Eservice.extend({
+  versions: z.array(API_EserviceVersion),
+}).meta({ id: "EserviceDetails" });
+export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;

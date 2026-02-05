@@ -40,3 +40,40 @@ export const API_EserviceAttribute = z
   })
   .meta({ id: "EserviceAttribute" });
 export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
+
+export const API_EserviceVersionState = z
+  .enum(["Active", "Suspended", "Archived"])
+  .meta({ id: "EserviceVersionState" });
+export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
+
+export const API_EserviceInterface = z
+  .strictObject({
+    checksum: z.string(),
+    contentType: z.string(),
+    createdAt: z.iso.datetime(),
+    id: z.uuid(),
+    name: z.string(),
+    path: z.string(),
+    prettyName: LocalizedText,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "EserviceInterface" });
+export type API_EserviceInterface = z.infer<typeof API_EserviceInterface>;
+
+export const API_EserviceVersion = z
+  .strictObject({
+    accessTokenAudience: z.array(z.string()),
+    accessTokenDuration: z.number().meta({ format: "int32" }),
+    accessTokenType: API_AccessTokenType,
+    createdAt: z.iso.datetime(),
+    id: z.uuid(),
+    interfaceDocument: API_EserviceInterface,
+    maxDailyCallsPerConsumer: z.number().meta({ format: "int32" }),
+    maxDailyCallsPerKnode: z.number().meta({ format: "int32" }),
+    requiredAttributes: z.array(z.array(API_EserviceAttribute)),
+    state: API_EserviceVersionState,
+    updatedAt: z.iso.datetime(),
+    versionNumber: z.number().meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceVersion" });
+export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;

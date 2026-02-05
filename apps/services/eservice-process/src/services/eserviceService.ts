@@ -85,6 +85,59 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
+    getMockEserviceById(eserviceId: string): Eservice {
+      const now = new Date();
+      return {
+        categories: [
+          { code: "residence-place", scheme: "vocab-1" },
+          { code: "digital-domicile", scheme: "vocab-1" },
+        ],
+        createdAt: now,
+        description: {
+          en: "Confirmation of registration at the current address on the date.",
+        },
+        id: eserviceId as EserviceId,
+        isConsumerOperatorIdentificationRequired: true,
+        isSignalHubEnabled: true,
+        mode: "ProvideData" as const,
+        name: { en: "Requesting proof of residence" },
+        producerId: generateId<OrganizationId>(),
+        updatedAt: now,
+        versions: [
+          {
+            accessTokenAudience: ["www.rigel.orion/residence/v1"],
+            accessTokenDuration: 1800,
+            accessTokenType: "Bearer" as const,
+            createdAt: now,
+            id: generateId<EserviceVersionId>(),
+            interfaceDocument: {
+              checksum:
+                "3f653f35f8311c870e209cc672dfc3698081eefe84cc40f1af5bd61db2c54287",
+              contentType: "application/yaml",
+              createdAt: now,
+              id: generateId<EserviceInterfaceId>(),
+              name: "api-specs.yaml",
+              path: "/interfaces/api-specs.yaml",
+              prettyName: { en: "API Specs" },
+              updatedAt: now,
+            },
+            maxDailyCallsPerConsumer: 1000,
+            maxDailyCallsPerKnode: 10000,
+            requiredAttributes: [
+              [
+                { code: "NUTS1", scheme: "eu-nuts" },
+                { code: "NUTS2", scheme: "eu-nuts" },
+              ],
+              [{ code: "NUTS3", scheme: "eu-nuts" }],
+              [{ code: "NUTS0", scheme: "eu-nuts" }],
+            ],
+            state: "Active" as const,
+            updatedAt: now,
+            versionNumber: 1,
+          },
+        ],
+      };
+    },
     getMockEservices(
       offset: number,
       limit: number,
