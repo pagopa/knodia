@@ -9,6 +9,7 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
+import { match } from "ts-pattern";
 
 import type {
   API_EserviceSeed,
@@ -118,7 +119,7 @@ export function eserviceServiceBuilder(
       // TODO: get real data, producerId from auth context
       const producerId = generateId<OrganizationId>();
       const eservices = generateMockEservices(producerId);
-      const { limit, mode, offset, q, status } = params;
+      const { limit, mode, offset, q, sortBy, sortOrder, status } = params;
 
       // Enrich with random mock counts
       let items = eservices.map((eservice, idx) => ({
@@ -152,23 +153,25 @@ export function eserviceServiceBuilder(
       }
 
       // Sort
-      const sortBy = params.sortBy ?? "name";
-      const sortOrder = params.sortOrder ?? "asc";
       const direction = sortOrder === "asc" ? 1 : -1;
 
-      items.sort((a, b) => {
-        switch (sortBy) {
-          case "activeAgreements":
-            return (a.activeAgreements - b.activeAgreements) * direction;
-          case "activePurposes":
-            return (a.activePurposes - b.activePurposes) * direction;
-          case "name":
-          default:
-            return (
-              a.eservice.name.en.localeCompare(b.eservice.name.en) * direction
-            );
-        }
-      });
+      items.sort((a, b) =>
+        match(sortBy)
+          .with(
+            "activeAgreements",
+            () => (a.activeAgreements - b.activeAgreements) * direction,
+          )
+          .with(
+            "activePurposes",
+            () => (a.activePurposes - b.activePurposes) * direction,
+          )
+          .with(
+            "name",
+            () =>
+              a.eservice.name.en.localeCompare(b.eservice.name.en) * direction,
+          )
+          .exhaustive(),
+      );
 
       // Paginate (after filtering and sorting)
       const total = items.length;

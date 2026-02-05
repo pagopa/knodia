@@ -110,14 +110,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      res.send({
-        items: result.data?.items || [],
-        pagination: result.data?.pagination || {
-          limit,
-          offset,
-          total: 0,
-        },
-      });
+      if (!result.data) {
+        throw new Error("Unexpected empty response from eservice-process");
+      }
+      res.send(result.data);
     },
     method: "GET",
     schema: {
