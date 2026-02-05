@@ -7,11 +7,11 @@ import { FullPageModal } from "@/layouts/FullPageModal";
 
 import { useLeaveConfirmModal } from "../../hooks/useLeaveConfirmModal";
 import { CREATE_FORM_STEPS } from "../../types/eserviceCreateForm";
-import { AttributesStep } from "./Steps/AttributesStep";
-import { DocsStep } from "./Steps/DocsStep";
-import { GeneralStep } from "./Steps/GeneralStep";
-import { RecapStep } from "./Steps/RecapStep";
-import { TechnicalStep } from "./Steps/TechnicalStep";
+import { AttributesStep } from "./steps/AttributesStep";
+import { DocsStep } from "./steps/DocsStep";
+import { GeneralStep } from "./steps/GeneralStep";
+import { RecapStep } from "./steps/RecapStep";
+import { TechnicalStep } from "./steps/TechnicalStep";
 
 interface Props {
   onClose: () => void;

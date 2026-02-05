@@ -12,8 +12,8 @@ import { useStepsContext } from "@/contexts/steps";
 import { useTechnicalStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { Footer } from "../Footer";
-import { StepHeader } from "../StepsHeader";
+import { Footer } from "../components/Footer";
+import { StepHeader } from "../components/StepHeader";
 
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;
 

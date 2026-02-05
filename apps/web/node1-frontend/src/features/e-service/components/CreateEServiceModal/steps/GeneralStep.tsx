@@ -5,8 +5,8 @@ import { useStepsContext } from "@/contexts/steps";
 import { useGeneralStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { Footer } from "../Footer";
-import { StepHeader } from "../StepsHeader";
+import { Footer } from "../components/Footer";
+import { StepHeader } from "../components/StepHeader";
 
 interface Props {
   onCancel: () => void;

@@ -4,9 +4,9 @@ import { useStepsContext } from "@/contexts/steps";
 import { useDocsStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { DocumentRecap } from "../DocumentRecap";
-import { Footer } from "../Footer";
-import { StepHeader } from "../StepsHeader";
+import { DocumentRecap } from "../components/DocumentRecap";
+import { Footer } from "../components/Footer";
+import { StepHeader } from "../components/StepHeader";
 
 export function DocsStep() {
   const { nextStep, prevStep } = useStepsContext();

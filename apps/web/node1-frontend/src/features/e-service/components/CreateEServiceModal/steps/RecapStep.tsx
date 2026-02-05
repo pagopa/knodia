@@ -6,9 +6,9 @@ import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
 
-import { DocumentRecap } from "../DocumentRecap";
-import { Footer } from "../Footer";
-import { StepHeader } from "../StepsHeader";
+import { DocumentRecap } from "../components/DocumentRecap";
+import { Footer } from "../components/Footer";
+import { StepHeader } from "../components/StepHeader";
 
 // TODO: use real Knode name
 const KNODE_NAME = "Orion Knode";

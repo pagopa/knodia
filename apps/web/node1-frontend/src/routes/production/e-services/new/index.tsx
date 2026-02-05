@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { CreateEServiceModal } from "@/features/e-service/components/CreateEServiceModal/CreateEServiceModal";
+import { CreateEServiceModal } from "@/features/e-service/components/CreateEServiceModal";
 
 export const Route = createFileRoute("/production/e-services/new/")({
   component: RouteComponent,
