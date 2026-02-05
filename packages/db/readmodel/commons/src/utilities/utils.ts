@@ -111,7 +111,7 @@ export function aggregateByPKString<
   }
 }
 
-export function getTablePKString<T extends Record<string, unknown>>(
+function getTablePKString<T extends Record<string, unknown>>(
   modelSQL: T,
   table: AnyPgTable,
 ): string {
