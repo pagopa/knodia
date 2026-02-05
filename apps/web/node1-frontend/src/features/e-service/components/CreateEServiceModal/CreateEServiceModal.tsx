@@ -37,14 +37,7 @@ function ModalContent({ onClose }: Props) {
     .with(1, () => <TechnicalStep />)
     .with(2, () => <DocsStep />)
     .with(3, () => <AttributesStep />)
-    .with(4, () => (
-      <RecapStep
-        onPublish={() => {
-          // TODO: implement publish logic
-          console.log("Publishing e-service...");
-        }}
-      />
-    ))
+    .with(4, () => <RecapStep />)
     .otherwise(() => null);
 
   return (

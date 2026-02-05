@@ -10,17 +10,17 @@ import { DocumentRecap } from "../DocumentRecap";
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
-interface Props {
-  onPublish: () => void;
-}
-
 // TODO: use real Knode name
 const KNODE_NAME = "Orion Knode";
 
-export function RecapStep({ onPublish }: Props) {
+export function RecapStep() {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
   const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
+
+  const onPublish = () => {
+    console.log("Publishing form: ", data);
+  };
 
   return (
     <>
