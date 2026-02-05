@@ -1,6 +1,9 @@
-import { createClient } from "@hey-api/openapi-ts";
+import { createClient, type UserConfig } from "@hey-api/openapi-ts";
 
-export function generateApiClient(openapiPath: string): void {
+export function generateApiClient(
+  openapiPath: string,
+  customPlugins: UserConfig["plugins"] = [],
+): void {
   createClient({
     input: openapiPath,
     output: {
@@ -15,6 +18,7 @@ export function generateApiClient(openapiPath: string): void {
         name: "@hey-api/client-axios",
       },
       "@hey-api/sdk",
+      ...customPlugins,
     ],
   });
 }
