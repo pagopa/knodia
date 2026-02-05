@@ -22,6 +22,7 @@ import {
   toAPI_EserviceDetails,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { eserviceNotFound } from "../models/errors.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify,
@@ -58,6 +59,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const eservice = eserviceService.getMockEserviceById(
         req.params.eserviceId,
       );
+      if (!eservice) {
+        throw eserviceNotFound(req.params.eserviceId);
+      }
       res.status(200).send(toAPI_EserviceDetails(eservice));
     },
     method: "GET",

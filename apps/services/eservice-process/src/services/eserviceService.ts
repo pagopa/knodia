@@ -85,7 +85,7 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    getMockEserviceById(eserviceId: string): Eservice {
+    getMockEserviceById(eserviceId: string): Eservice | undefined {
       const now = new Date();
       return {
         categories: [
