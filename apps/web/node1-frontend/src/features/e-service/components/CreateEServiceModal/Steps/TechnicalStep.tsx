@@ -91,7 +91,14 @@ function AccessTokenSection({ form }: { form: TechnicalStepForm }) {
           <NumberField
             description="Max 1440 minutes (24 hours)"
             errorMessage={field.state.meta.errors
-              .map((e) => e?.message)
+              .map((e) => {
+                const msg = e?.message;
+                // ignore "Received NaN" message
+                if (msg && RegExp(/nvalid|input/).test(msg)) {
+                  return "Must be at least 1.";
+                }
+                return msg;
+              })
               .join(", ")}
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
@@ -180,7 +187,14 @@ function MaxApiCallsSection({ form }: { form: TechnicalStepForm }) {
           <NumberField
             description="Max number of API calls for each Knode."
             errorMessage={field.state.meta.errors
-              .map((e) => e?.message)
+              .map((e) => {
+                const msg = e?.message;
+                // ignore "Received NaN" message
+                if (msg && RegExp(/nvalid|input/).test(msg)) {
+                  return "Must be at least 1.";
+                }
+                return msg;
+              })
               .join(", ")}
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
@@ -198,7 +212,14 @@ function MaxApiCallsSection({ form }: { form: TechnicalStepForm }) {
           <NumberField
             description="Max number of API calls for a single organization. Consumers should declare that their number of API calls per day doesn't exceed this number."
             errorMessage={field.state.meta.errors
-              .map((e) => e?.message)
+              .map((e) => {
+                const msg = e?.message;
+                // ignore "Received NaN" message
+                if (msg && RegExp(/nvalid|input/).test(msg)) {
+                  return "Must be at least 1.";
+                }
+                return msg;
+              })
               .join(", ")}
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
             isRequired
