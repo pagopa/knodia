@@ -4,6 +4,7 @@ import { Fragment } from "react/jsx-runtime";
 
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
+import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
 
 import { DocumentRecap } from "../DocumentRecap";
 import { Footer } from "../Footer";
@@ -19,6 +20,8 @@ const KNODE_NAME = "Orion Knode";
 export function RecapStep({ onPublish }: Props) {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
+
+  const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
 
   return (
     <>
@@ -126,27 +129,27 @@ export function RecapStep({ onPublish }: Props) {
             Documents
           </h2>
           <DocumentRecap name={data.interfaceDocument?.name || "-"} />
-          {/* TODO: only show if checksum. */}
-          {/* TODO: use component */}
-          <div>
-            <div className="body-sm-em text-primary-light-high-contrast">
-              MD5 checksum
+          {md5Checksum ? (
+            <div>
+              <div className="body-sm-em text-primary-light-high-contrast">
+                MD5 checksum
+              </div>
+              <div className="flex gap-4 items-end">
+                <span className="body-md text-primary-light-high-contrast flex-1">
+                  {md5Checksum}
+                </span>
+                <Button
+                  className="p-0"
+                  hierarchy="neutral"
+                  kind="ghost"
+                  onClick={() => navigator.clipboard.writeText(md5Checksum)}
+                  size="icon-md"
+                >
+                  <CopyIcon />
+                </Button>
+              </div>
             </div>
-            <div className="flex gap-4 items-end">
-              <span className="body-md text-primary-light-high-contrast flex-1">
-                3f653f35f8311c870e209cc672dfc3698081eefe84cc40f1af5bd61db2c54287
-              </span>
-              {/* TODO: handle tooltip and click */}
-              <Button
-                className="p-0"
-                hierarchy="neutral"
-                kind="ghost"
-                size="icon-md"
-              >
-                <CopyIcon />
-              </Button>
-            </div>
-          </div>
+          ) : null}
         </div>
 
         <Divider />
