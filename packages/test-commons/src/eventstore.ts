@@ -30,7 +30,7 @@ export async function setupEventstoreTestContainer() {
     connectionString: startedContainer.connectionString,
     migrationFolders: [
       fileURLToPath(
-        new URL(`../../db/event-store/eservice/drizzle`, import.meta.url),
+        new URL(`../../../migration/event-store/eservice`, import.meta.url),
       ),
     ],
     templateName: EVENTSTORE_DB_TEMPLATE_NAME,

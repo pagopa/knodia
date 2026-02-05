@@ -30,7 +30,7 @@ export async function setupReadmodelTestContainer() {
     connectionString: startedContainer.connectionString,
     migrationFolders: [
       fileURLToPath(
-        new URL(`../../db/readmodel/eservice/drizzle`, import.meta.url),
+        new URL(`../../../migration/read-model/eservice`, import.meta.url),
       ),
     ],
     templateName: READMODEL_DB_TEMPLATE_NAME,

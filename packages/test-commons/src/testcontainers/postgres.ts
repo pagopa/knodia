@@ -1,9 +1,11 @@
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { GenericContainer } from "testcontainers";
 
 const TEST_POSTGRES_DB_PORT = 5432;
 const TEST_POSTGRES_IMAGE = "postgres:18";
+const TEST_NAMESPACE = "test";
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
@@ -81,11 +83,30 @@ export async function startTestPostgresContainer({
   };
 }
 
+/**
+ * Applies SQL migrations from Flyway-style migration folders.
+ * Reads .sql files, replaces ${namespace} placeholder, and executes them.
+ * Flyway convention: V* (versioned) files run before R* (repeatable) files.
+ */
 async function applyMigrations(migrationFolders: string[], db: NodePgDatabase) {
-  for (const migration of migrationFolders) {
-    await migrate(db, {
-      migrationsFolder: migration,
-    });
+  for (const folder of migrationFolders) {
+    const files = readdirSync(folder).filter((f) => f.endsWith(".sql"));
+
+    // Flyway order: V* (versioned) first, then R* (repeatable)
+    const versionedFiles = files.filter((f) => f.startsWith("V")).sort();
+    const repeatableFiles = files.filter((f) => f.startsWith("R")).sort();
+    const orderedFiles = [...versionedFiles, ...repeatableFiles];
+
+    for (const file of orderedFiles) {
+      const filePath = join(folder, file);
+      let sql = readFileSync(filePath, "utf-8");
+
+      // Replace Flyway placeholders with test values
+      sql = sql.replace(/\$\{namespace\}/g, TEST_NAMESPACE);
+      sql = sql.replace(/\$\{default_password\}/g, "test_password");
+
+      await db.execute(sql);
+    }
   }
 }
 
