@@ -4,7 +4,7 @@ import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
-import { createProcessMessage } from "../src/utilities/utils.js";
+import { createProcessMessage } from "../src/utilities/utils.ts";
 
 let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let producer: Awaited<ReturnType<typeof setupKafkaTestProducer>>["producer"];
