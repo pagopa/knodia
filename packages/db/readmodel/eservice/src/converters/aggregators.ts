@@ -93,10 +93,9 @@ const aggregateEservice = ({
   }, new Map<string, EserviceInterfaceSQL>());
   const requiredAttributesSQLByVersionId =
     eserviceVersionRequiredAttributesSQL.reduce((acc, a) => {
-      acc.set(a.eserviceVersionId, [
-        ...(acc.get(a.eserviceVersionId) || []),
-        a,
-      ]);
+      const attributes = acc.get(a.eserviceVersionId) || [];
+      attributes.push(a);
+      acc.set(a.eserviceVersionId, attributes);
       return acc;
     }, new Map<string, EserviceVersionRequiredAttributeSQL[]>());
   const eserviceVersions = eserviceVersionsSQL.map((versionSQL) => {
