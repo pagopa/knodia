@@ -53,7 +53,6 @@ const checkMetadataVersionByFilter = async (
 const getTablePKColumns = (
   tableConfig: ReturnType<typeof getTableConfig>,
 ): string[] => {
-  console.log(tableConfig.primaryKeys);
   const pk = tableConfig.primaryKeys[0];
   if (!pk) {
     throw genericInternalError(
