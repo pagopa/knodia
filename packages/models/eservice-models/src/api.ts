@@ -41,12 +41,12 @@ export const API_EserviceAttribute = z
   .meta({ id: "EserviceAttribute" });
 export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
 
-export const API_EserviceVersionState = z
+const API_EserviceVersionState = z
   .enum(["Active", "Suspended", "Archived"])
   .meta({ id: "EserviceVersionState" });
-export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
+type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
 
-export const API_EserviceInterface = z
+const API_EserviceInterface = z
   .strictObject({
     checksum: z.string(),
     contentType: z.string(),
@@ -58,7 +58,7 @@ export const API_EserviceInterface = z
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "EserviceInterface" });
-export type API_EserviceInterface = z.infer<typeof API_EserviceInterface>;
+type API_EserviceInterface = z.infer<typeof API_EserviceInterface>;
 
 export const API_EserviceVersion = z
   .strictObject({
