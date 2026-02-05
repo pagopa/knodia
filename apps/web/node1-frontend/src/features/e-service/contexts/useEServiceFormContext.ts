@@ -48,7 +48,10 @@ export function useAttributesStepForm(onSubmitSuccess: () => void) {
   const { data, updateAttributesStep } = useEServiceWizardContext();
 
   return useAppForm({
-    defaultValues: { ...ATTRIBUTES_STEP_DEFAULTS, ...data },
+    defaultValues: {
+      requiredAttributes:
+        data.requiredAttributes ?? ATTRIBUTES_STEP_DEFAULTS.requiredAttributes,
+    },
     onSubmit: ({ value }) => {
       updateAttributesStep(value);
       onSubmitSuccess();
@@ -61,7 +64,10 @@ export function useDocsStepForm(onSubmitSuccess: () => void) {
   const { data, updateDocsStep } = useEServiceWizardContext();
 
   return useAppForm({
-    defaultValues: { ...DOCS_STEP_DEFAULTS, ...data },
+    defaultValues: {
+      interfaceDocument:
+        data.interfaceDocument ?? DOCS_STEP_DEFAULTS.interfaceDocument,
+    },
     onSubmit: ({ value }) => {
       updateDocsStep(value);
       onSubmitSuccess();
@@ -84,7 +90,11 @@ export function useGeneralStepForm(onSubmitSuccess: () => void) {
   const { data, updateGeneralStep } = useEServiceWizardContext();
 
   return useAppForm({
-    defaultValues: { ...GENERAL_STEP_DEFAULTS, ...data },
+    defaultValues: {
+      categories: data.categories ?? GENERAL_STEP_DEFAULTS.categories,
+      description: data.description ?? GENERAL_STEP_DEFAULTS.description,
+      name: data.name ?? GENERAL_STEP_DEFAULTS.name,
+    },
     onSubmit: ({ value }) => {
       updateGeneralStep(value);
       onSubmitSuccess();
@@ -97,7 +107,23 @@ export function useTechnicalStepForm(onSubmitSuccess: () => void) {
   const { data, updateTechnicalStep } = useEServiceWizardContext();
 
   return useAppForm({
-    defaultValues: { ...TECHNICAL_STEP_DEFAULTS, ...data },
+    defaultValues: {
+      accessTokenAudience:
+        data.accessTokenAudience ?? TECHNICAL_STEP_DEFAULTS.accessTokenAudience,
+      accessTokenDuration:
+        data.accessTokenDuration ?? TECHNICAL_STEP_DEFAULTS.accessTokenDuration,
+      accessTokenType:
+        data.accessTokenType ?? TECHNICAL_STEP_DEFAULTS.accessTokenType,
+      isSignalHubEnabled:
+        data.isSignalHubEnabled ?? TECHNICAL_STEP_DEFAULTS.isSignalHubEnabled,
+      maxDailyCallsPerConsumer:
+        data.maxDailyCallsPerConsumer ??
+        TECHNICAL_STEP_DEFAULTS.maxDailyCallsPerConsumer,
+      maxDailyCallsPerKnode:
+        data.maxDailyCallsPerKnode ??
+        TECHNICAL_STEP_DEFAULTS.maxDailyCallsPerKnode,
+      mode: data.mode ?? TECHNICAL_STEP_DEFAULTS.mode,
+    },
     onSubmit: ({ value }) => {
       updateTechnicalStep(value);
       onSubmitSuccess();

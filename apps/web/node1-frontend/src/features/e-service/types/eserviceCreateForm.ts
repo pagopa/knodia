@@ -10,7 +10,8 @@ const eserviceFieldSchemas = {
     .min(1, "Duration must be at least 1 minute.")
     .max(1440, "Duration must be at most 1440 minutes (24 hours)."),
   accessTokenType: z.enum(["Bearer", "DPoP"]),
-  categories: z.array(z.string()).optional(),
+  // TODO: this will change when we have a proper category system
+  categories: z.array(z.string()),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters.")
