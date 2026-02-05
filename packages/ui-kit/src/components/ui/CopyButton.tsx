@@ -30,7 +30,7 @@ const copyButtonStyles = tv({
   },
 });
 
-export type CopyButtonProps = CopyButtonVariants &
+type CopyButtonProps = CopyButtonVariants &
   Omit<React.ComponentProps<typeof Button>, "children"> & {
     /** Tooltip text shown after copying (defaults to "Copied to clipboard") */
     copiedTooltipText?: string;

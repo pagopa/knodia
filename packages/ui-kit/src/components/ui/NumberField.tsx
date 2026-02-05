@@ -11,7 +11,7 @@ import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, FieldGroup, Input, Label } from "./Field";
 import { fieldBorderStyles } from "./styles";
 
-export interface NumberFieldProps extends AriaNumberFieldProps {
+interface NumberFieldProps extends AriaNumberFieldProps {
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
   label?: string;

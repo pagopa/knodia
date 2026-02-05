@@ -70,18 +70,15 @@ export const Required: Story = {
 };
 
 export const StickerSheet: Story = {
-  render: renderStickerSheet(
-    [["default", "disabled", "invalid"]],
-    (state) => [
-      <NumberField
-        defaultValue={5}
-        description="Helper text"
-        isDisabled={state === "disabled"}
-        isInvalid={state === "invalid"}
-        key={state}
-        label="Label"
-        {...(state === "invalid" && { errorMessage: "Error message" })}
-      />,
-    ],
-  ),
+  render: renderStickerSheet([["default", "disabled", "invalid"]], (state) => [
+    <NumberField
+      defaultValue={5}
+      description="Helper text"
+      isDisabled={state === "disabled"}
+      isInvalid={state === "invalid"}
+      key={state}
+      label="Label"
+      {...(state === "invalid" && { errorMessage: "Error message" })}
+    />,
+  ]),
 };

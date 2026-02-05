@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { StepConfig } from "@/contexts/steps";
 
 // Schema for form fields
-export const eserviceFieldSchemas = {
+const eserviceFieldSchemas = {
   accessTokenAudience: z.string().min(1, "Access token audience is required."),
   accessTokenDuration: z
     .number()
@@ -51,8 +51,8 @@ export const eserviceFieldSchemas = {
     .min(1, "At least one group is required."),
 };
 
-export const eserviceFormSchema = z.object(eserviceFieldSchemas);
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Object only used for type inference
+const eserviceFormSchema = z.object(eserviceFieldSchemas);
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
 // Step-specific validation schemas
