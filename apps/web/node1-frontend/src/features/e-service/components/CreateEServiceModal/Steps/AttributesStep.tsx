@@ -2,10 +2,7 @@ import { Banner, Button, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { TrashIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
-import {
-  useAttributesStepForm,
-  useEServiceWizardContext,
-} from "@/features/e-service/contexts/useEServiceFormContext";
+import { useAttributesStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { Footer } from "../Footer";
@@ -18,21 +15,8 @@ const MOCK_ATTRIBUTES = Array.from({ length: 10 }, (_, i) => ({
 }));
 
 export function AttributesStep() {
-  const { data, updateAttributesStep } = useEServiceWizardContext();
   const { nextStep, prevStep } = useStepsContext();
-
-  const form = useAttributesStepForm(
-    {
-      requiredAttributes:
-        data.requiredAttributes && data.requiredAttributes.length > 0
-          ? data.requiredAttributes
-          : [[]],
-    },
-    (stepData) => {
-      updateAttributesStep(stepData);
-      nextStep();
-    },
-  );
+  const form = useAttributesStepForm(nextStep);
 
   const handleAddGroup = () => {
     const currentGroups = form.getFieldValue("requiredAttributes") ?? [];

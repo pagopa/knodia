@@ -1,10 +1,7 @@
 import { Banner, FileUpload } from "@knodia/ui-kit/ui";
 
 import { useStepsContext } from "@/contexts/steps";
-import {
-  useDocsStepForm,
-  useEServiceWizardContext,
-} from "@/features/e-service/contexts/useEServiceFormContext";
+import { useDocsStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { DocumentRecap } from "../DocumentRecap";
@@ -12,18 +9,8 @@ import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
 export function DocsStep() {
-  const { data, updateDocsStep } = useEServiceWizardContext();
   const { nextStep, prevStep } = useStepsContext();
-
-  const form = useDocsStepForm(
-    {
-      interfaceDocument: data.interfaceDocument ?? null,
-    },
-    (stepData) => {
-      updateDocsStep(stepData);
-      nextStep();
-    },
-  );
+  const form = useDocsStepForm(nextStep);
 
   return (
     <>

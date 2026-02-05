@@ -2,10 +2,7 @@ import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
-import {
-  useEServiceWizardContext,
-  useGeneralStepForm,
-} from "@/features/e-service/contexts/useEServiceFormContext";
+import { useGeneralStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { Footer } from "../Footer";
@@ -16,20 +13,8 @@ interface Props {
 }
 
 export function GeneralStep({ onCancel }: Props) {
-  const { data, updateGeneralStep } = useEServiceWizardContext();
   const { nextStep } = useStepsContext();
-
-  const form = useGeneralStepForm(
-    {
-      categories: data.categories ?? [],
-      description: data.description ?? "",
-      name: data.name ?? "",
-    },
-    (stepData) => {
-      updateGeneralStep(stepData);
-      nextStep();
-    },
-  );
+  const form = useGeneralStepForm(nextStep);
 
   return (
     <>

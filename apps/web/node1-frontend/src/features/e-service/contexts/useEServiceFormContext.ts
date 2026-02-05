@@ -44,24 +44,28 @@ export const { useAppForm } = createFormHook({
 });
 
 // Step form hooks
-export function useAttributesStepForm(
-  defaultValues?: Partial<AttributesStepData>,
-  onSubmit?: (data: AttributesStepData) => void,
-) {
+export function useAttributesStepForm(onSubmitSuccess: () => void) {
+  const { data, updateAttributesStep } = useEServiceWizardContext();
+
   return useAppForm({
-    defaultValues: { ...ATTRIBUTES_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value),
+    defaultValues: { ...ATTRIBUTES_STEP_DEFAULTS, ...data },
+    onSubmit: ({ value }) => {
+      updateAttributesStep(value);
+      onSubmitSuccess();
+    },
     validators: { onChange: attributesStepSchema },
   });
 }
 
-export function useDocsStepForm(
-  defaultValues?: Partial<DocsStepData>,
-  onSubmit?: (data: DocsStepData) => void,
-) {
+export function useDocsStepForm(onSubmitSuccess: () => void) {
+  const { data, updateDocsStep } = useEServiceWizardContext();
+
   return useAppForm({
-    defaultValues: { ...DOCS_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value),
+    defaultValues: { ...DOCS_STEP_DEFAULTS, ...data },
+    onSubmit: ({ value }) => {
+      updateDocsStep(value);
+      onSubmitSuccess();
+    },
     validators: { onChange: docsStepSchema },
   });
 }
@@ -76,24 +80,28 @@ export function useEServiceWizardContext() {
   return context;
 }
 
-export function useGeneralStepForm(
-  defaultValues?: Partial<GeneralStepData>,
-  onSubmit?: (data: GeneralStepData) => void,
-) {
+export function useGeneralStepForm(onSubmitSuccess: () => void) {
+  const { data, updateGeneralStep } = useEServiceWizardContext();
+
   return useAppForm({
-    defaultValues: { ...GENERAL_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value),
+    defaultValues: { ...GENERAL_STEP_DEFAULTS, ...data },
+    onSubmit: ({ value }) => {
+      updateGeneralStep(value);
+      onSubmitSuccess();
+    },
     validators: { onChange: generalStepSchema },
   });
 }
 
-export function useTechnicalStepForm(
-  defaultValues?: Partial<TechnicalStepData>,
-  onSubmit?: (data: TechnicalStepData) => void,
-) {
+export function useTechnicalStepForm(onSubmitSuccess: () => void) {
+  const { data, updateTechnicalStep } = useEServiceWizardContext();
+
   return useAppForm({
-    defaultValues: { ...TECHNICAL_STEP_DEFAULTS, ...defaultValues },
-    onSubmit: ({ value }) => onSubmit?.(value),
+    defaultValues: { ...TECHNICAL_STEP_DEFAULTS, ...data },
+    onSubmit: ({ value }) => {
+      updateTechnicalStep(value);
+      onSubmitSuccess();
+    },
     validators: { onChange: technicalStepSchema },
   });
 }

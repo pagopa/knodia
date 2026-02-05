@@ -9,10 +9,7 @@ import {
 } from "@knodia/ui-kit/ui";
 
 import { useStepsContext } from "@/contexts/steps";
-import {
-  useEServiceWizardContext,
-  useTechnicalStepForm,
-} from "@/features/e-service/contexts/useEServiceFormContext";
+import { useTechnicalStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
 import { Footer } from "../Footer";
@@ -21,24 +18,8 @@ import { StepHeader } from "../StepsHeader";
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;
 
 export function TechnicalStep() {
-  const { data, updateTechnicalStep } = useEServiceWizardContext();
   const { nextStep, prevStep } = useStepsContext();
-
-  const form = useTechnicalStepForm(
-    {
-      accessTokenAudience: data.accessTokenAudience ?? "",
-      accessTokenDuration: data.accessTokenDuration ?? NaN,
-      accessTokenType: data.accessTokenType ?? "Bearer",
-      isSignalHubEnabled: data.isSignalHubEnabled ?? false,
-      maxDailyCallsPerConsumer: data.maxDailyCallsPerConsumer ?? NaN,
-      maxDailyCallsPerKnode: data.maxDailyCallsPerKnode ?? NaN,
-      mode: data.mode ?? "ProvideData",
-    },
-    (stepData) => {
-      updateTechnicalStep(stepData);
-      nextStep();
-    },
-  );
+  const form = useTechnicalStepForm(nextStep);
 
   return (
     <>

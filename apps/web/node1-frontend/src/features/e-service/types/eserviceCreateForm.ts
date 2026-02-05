@@ -108,7 +108,7 @@ export const DOCS_STEP_DEFAULTS: z.input<typeof docsStepSchema> = {
 };
 
 export const ATTRIBUTES_STEP_DEFAULTS: z.input<typeof attributesStepSchema> = {
-  requiredAttributes: [],
+  requiredAttributes: [[]],
 };
 
 // Full form defaults (for accumulated data)

@@ -1,6 +1,12 @@
 import { useCallback, useMemo, useState } from "react";
 
-import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
+import type {
+  AttributesStepData,
+  DocsStepData,
+  EServiceFormData,
+  GeneralStepData,
+  TechnicalStepData,
+} from "@/features/e-service/types/eserviceCreateForm";
 
 import {
   ESERVICE_FORM_DEFAULTS,
@@ -17,27 +23,19 @@ export function EServiceFormProvider({
     ESERVICE_FORM_DEFAULTS,
   );
 
-  const updateGeneralStep = useCallback<
-    EServiceWizardContextValue["updateGeneralStep"]
-  >((stepData) => {
+  const updateGeneralStep = useCallback((stepData: GeneralStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
   }, []);
 
-  const updateTechnicalStep = useCallback<
-    EServiceWizardContextValue["updateTechnicalStep"]
-  >((stepData) => {
+  const updateTechnicalStep = useCallback((stepData: TechnicalStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
   }, []);
 
-  const updateDocsStep = useCallback<
-    EServiceWizardContextValue["updateDocsStep"]
-  >((stepData) => {
+  const updateDocsStep = useCallback((stepData: DocsStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
   }, []);
 
-  const updateAttributesStep = useCallback<
-    EServiceWizardContextValue["updateAttributesStep"]
-  >((stepData) => {
+  const updateAttributesStep = useCallback((stepData: AttributesStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
   }, []);
 
