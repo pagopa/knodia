@@ -147,14 +147,6 @@ components:
         - Active
         - Suspended
         - Archived
-    LocalizedText:
-      type: object
-      properties:
-        en:
-          type: string
-      required:
-        - en
-      additionalProperties: false
     EserviceInterface:
       type: object
       properties:
@@ -175,7 +167,13 @@ components:
         path:
           type: string
         prettyName:
-          $ref: "#/components/schemas/LocalizedText"
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
         updatedAt:
           type: string
           format: date-time
