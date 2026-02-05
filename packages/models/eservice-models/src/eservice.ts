@@ -7,6 +7,16 @@ import {
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
+export const INT32_MAX = 2_147_483_647;
+
+export const minAccessTokenDuration = 1;
+export const maxAccessTokenDuration = 86400; // max 86400 seconds = 24 hours
+
+export const minDailyCalls = 1;
+export const maxDailyCalls = 1_000_000_000;
+
+export const minEserviceVersionNumber = 1;
+
 export const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;
 
@@ -38,17 +48,20 @@ export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
 
 const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),
-  accessTokenDuration: z.number().max(86400), // max 86400 seconds = 24 hours
+  accessTokenDuration: z
+    .int()
+    .min(minAccessTokenDuration)
+    .max(maxAccessTokenDuration),
   accessTokenType: EserviceAccessTokenType,
   createdAt: z.coerce.date(),
   id: EserviceVersionId,
   interfaceDocument: EserviceInterface,
-  maxDailyCallsPerConsumer: z.number(),
-  maxDailyCallsPerKnode: z.number(),
+  maxDailyCallsPerConsumer: z.int().min(minDailyCalls).max(maxDailyCalls),
+  maxDailyCallsPerKnode: z.int().min(minDailyCalls).max(maxDailyCalls),
   requiredAttributes: z.array(RequiredAttributeGroup),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),
-  versionNumber: z.int(),
+  versionNumber: z.int().min(minEserviceVersionNumber).max(INT32_MAX),
 });
 export type EserviceVersion = z.infer<typeof EserviceVersion>;
 
@@ -58,7 +71,7 @@ const EserviceCategory = z.strictObject({
 });
 export type EserviceCategory = z.infer<typeof EserviceCategory>;
 
-const Eservice = z.strictObject({
+export const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
   description: LocalizedText,
