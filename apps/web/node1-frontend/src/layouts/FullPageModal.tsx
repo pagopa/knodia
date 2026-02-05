@@ -14,9 +14,7 @@ export function FullPageModal({ children, onClose, title }: Props) {
   return (
     <div className="fixed inset-0 z-50 bg-white flex flex-col">
       <Navbar className="bg-brand-light">
-        <span className="text-brand-light-high-contrast headline-sm">
-          {title}
-        </span>
+        <h1 className="text-brand-light-high-contrast headline-sm">{title}</h1>
         <Button
           hierarchy="neutral"
           kind="ghost"

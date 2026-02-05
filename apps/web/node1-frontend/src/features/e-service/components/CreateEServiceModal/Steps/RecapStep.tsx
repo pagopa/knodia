@@ -207,15 +207,15 @@ function RecapField({
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="headline-sm-em text-primary-light-high-contrast">
+    <h3 className="headline-sm-em text-primary-light-high-contrast">
       {children}
-    </h2>
+    </h3>
   );
 }
 
 function SubsectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="title-sm-em text-primary-light-high-contrast">{children}</h3>
+    <h4 className="title-sm-em text-primary-light-high-contrast">{children}</h4>
   );
 }
 
