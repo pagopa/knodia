@@ -1,6 +1,7 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  getTablePKString,
+  aggregateById,
+  aggregateByPKString,
   type WithMetadata,
 } from "@knodia/db-readmodel-commons";
 import {
@@ -252,51 +253,21 @@ export const toEserviceAggregatorArray = (
   const requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[] = [];
 
   queryRes.forEach((row) => {
-    const eserviceSQL = row.eservice;
-    if (!eservicePKSet.has(eserviceSQL.id)) {
-      eservicePKSet.add(eserviceSQL.id);
-      eservicesSQL.push(eserviceSQL);
-    }
-
-    const categorySQL = row.category;
-    if (categorySQL) {
-      const categoryPK = getTablePKString(
-        categorySQL,
-        readmodelEserviceCategory,
-      );
-      if (!categoryPKSet.has(categoryPK)) {
-        categoryPKSet.add(categoryPK);
-        categoriesSQL.push(categorySQL);
-      }
-    }
-
-    const versionSQL = row.version;
-    if (versionSQL) {
-      if (!versionPKSet.has(versionSQL.id)) {
-        versionPKSet.add(versionSQL.id);
-        versionsSQL.push(versionSQL);
-      }
-
-      const interfaceSQL = row.interface;
-      if (interfaceSQL) {
-        if (!interfacePKSet.has(interfaceSQL.id)) {
-          interfacePKSet.add(interfaceSQL.id);
-          interfacesSQL.push(interfaceSQL);
-        }
-      }
-
-      const requiredAttributeSQL = row.requiredAttribute;
-      if (requiredAttributeSQL) {
-        const requiredAttributePK = getTablePKString(
-          requiredAttributeSQL,
-          readmodelEserviceVersionRequiredAttribute,
-        );
-        if (!requiredAttributePKSet.has(requiredAttributePK)) {
-          requiredAttributePKSet.add(requiredAttributePK);
-          requiredAttributesSQL.push(requiredAttributeSQL);
-        }
-      }
-    }
+    aggregateById(row.eservice, eservicePKSet, eservicesSQL);
+    aggregateByPKString(
+      row.category,
+      categoryPKSet,
+      categoriesSQL,
+      readmodelEserviceCategory,
+    );
+    aggregateById(row.version, versionPKSet, versionsSQL);
+    aggregateById(row.interface, interfacePKSet, interfacesSQL);
+    aggregateByPKString(
+      row.requiredAttribute,
+      requiredAttributePKSet,
+      requiredAttributesSQL,
+      readmodelEserviceVersionRequiredAttribute,
+    );
   });
 
   return {

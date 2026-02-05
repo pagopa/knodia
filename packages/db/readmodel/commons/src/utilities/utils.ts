@@ -1,7 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { genericInternalError } from "@knodia/common-models/errors";
-import { eq, SQL } from "drizzle-orm";
+import { eq, type InferSelectModel, SQL } from "drizzle-orm";
 import {
   type AnyPgColumn,
   type AnyPgTable,
@@ -62,23 +62,18 @@ const getTablePKColumns = (
   return pk.columns.map((col) => col.name);
 };
 
-export function getTablePKString<T extends Record<string, unknown>>(
-  modelSQL: T,
-  table: AnyPgTable,
-): string {
-  const tableConfig = getTableConfig(table);
-  return getTablePKColumns(tableConfig)
-    .map((col) => {
-      const key = snakeToCamel(col) as keyof T;
-      const value = modelSQL[key];
-      if (value === undefined || value === null) {
-        throw genericInternalError(
-          `Missing PK column '${col}' in ${tableConfig.name}`,
-        );
-      }
-      return String(value);
-    })
-    .join("|");
+export function aggregateById<T extends { id: string }>(
+  subRow: null | T,
+  pkSet: Set<string>,
+  subRows: T[],
+): void {
+  if (subRow !== null) {
+    const key = subRow.id;
+    if (!pkSet.has(key)) {
+      pkSet.add(key);
+      subRows.push(subRow);
+    }
+  }
 }
 
 // TODO: uncomment when needed
@@ -102,6 +97,38 @@ export function getTablePKString<T extends Record<string, unknown>>(
 //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 //   return items[0]!;
 // };
+
+export function aggregateByPKString<
+  Table extends AnyPgTable,
+  T extends InferSelectModel<Table> & Record<string, unknown>,
+>(subRow: null | T, pkSet: Set<string>, subRows: T[], table: Table): void {
+  if (subRow !== null) {
+    const key = getTablePKString(subRow, table);
+    if (!pkSet.has(key)) {
+      pkSet.add(key);
+      subRows.push(subRow);
+    }
+  }
+}
+
+export function getTablePKString<T extends Record<string, unknown>>(
+  modelSQL: T,
+  table: AnyPgTable,
+): string {
+  const tableConfig = getTableConfig(table);
+  return getTablePKColumns(tableConfig)
+    .map((col) => {
+      const key = snakeToCamel(col) as keyof T;
+      const value = modelSQL[key];
+      if (value === undefined || value === null) {
+        throw genericInternalError(
+          `Missing PK column '${col}' in ${tableConfig.name}`,
+        );
+      }
+      return String(value);
+    })
+    .join("|");
+}
 
 function snakeToCamel(str: string): string {
   return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
