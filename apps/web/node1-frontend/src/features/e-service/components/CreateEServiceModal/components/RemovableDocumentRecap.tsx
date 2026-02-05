@@ -1,5 +1,5 @@
 import { Button } from "@knodia/ui-kit/ui";
-import { FileTextIcon, TrashSimpleIcon } from "@phosphor-icons/react";
+import { FileTextIcon, TrashIcon } from "@phosphor-icons/react";
 
 interface Props {
   name: string;
@@ -15,8 +15,14 @@ export const RemovableDocumentRecap = ({ name, onRemove }: Props) => (
       </span>
     </div>
 
-    <Button hierarchy="danger" kind="tonal" onPress={onRemove} size="icon-md">
-      <TrashSimpleIcon />
+    <Button
+      aria-label={`Delete ${name} file`}
+      hierarchy="danger"
+      kind="tonal"
+      onPress={onRemove}
+      size="icon-md"
+    >
+      <TrashIcon />
     </Button>
   </div>
 );

@@ -82,7 +82,7 @@ export function AttributesStep() {
                         errorMessage={getFieldErrorMessage(
                           groupField.state.meta.errors,
                         )}
-                        id="selectatttributes"
+                        id={`${groupField.name}-${groupIndex}`}
                         isInvalid={!groupField.state.meta.isValid}
                         isRequired
                         label="Attributes"

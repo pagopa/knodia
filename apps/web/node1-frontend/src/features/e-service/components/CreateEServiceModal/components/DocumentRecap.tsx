@@ -22,6 +22,7 @@ export const DocumentRecap = ({
 
     {showDownloadButton && (
       <Button
+        aria-label={`Download document ${name}`}
         hierarchy="neutral"
         kind="tonal"
         {...(onDownload && { onPress: onDownload })}
