@@ -78,15 +78,10 @@ export function TechnicalStep() {
 function AccessTokenSection({ form }: { form: TechnicalStepForm }) {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <h3 className="headline-sm-em text-primary-light-high-contrast">
-          Access token settings
-        </h3>
-        <span className="body-md text-primary-light-high-contrast">
-          Define the characteristics of the token you will provide to access
-          your E-Service.
-        </span>
-      </div>
+      <SectionHeader
+        description="Define the characteristics of the token you will provide to access your E-Service."
+        title="Access token settings"
+      />
       <form.Field name="accessTokenDuration">
         {(field) => (
           <NumberField
@@ -166,14 +161,10 @@ function DataModeSection({ form }: { form: TechnicalStepForm }) {
 function MaxApiCallsSection({ form }: { form: TechnicalStepForm }) {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <h3 className="headline-sm-em text-primary-light-high-contrast">
-          Max API calls per day
-        </h3>
-        <span className="body-md text-primary-light-high-contrast">
-          Define the API calls limit your E-Service can manage in 1 day.
-        </span>
-      </div>
+      <SectionHeader
+        description="Define the API calls limit your E-Service can manage in 1 day."
+        title="Max API calls per day"
+      />
       <form.Field name="maxDailyCallsPerKnode">
         {(field) => (
           <NumberField
@@ -214,18 +205,30 @@ function MaxApiCallsSection({ form }: { form: TechnicalStepForm }) {
   );
 }
 
+function SectionHeader({
+  description,
+  title,
+}: {
+  description: string;
+  title: string;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <h3 className="headline-sm-em text-primary-light-high-contrast">
+        {title}
+      </h3>
+      <span className="body-md text-primary-dark">{description}</span>
+    </div>
+  );
+}
+
 function SignalHubSection({ form }: { form: TechnicalStepForm }) {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
-        <h3 className="headline-sm-em text-primary-light-high-contrast">
-          Signal Hub
-        </h3>
-        <span className="body-md text-primary-light-high-contrast">
-          Select whether you want to notify your consumers about E-Service's
-          changes through Signal Hub.
-        </span>
-      </div>
+      <SectionHeader
+        description="Select whether you want to notify your consumers about E-Service's changes through Signal Hub."
+        title="Signal Hub"
+      />
       <form.Field name="isSignalHubEnabled">
         {(field) => (
           <Checkbox
