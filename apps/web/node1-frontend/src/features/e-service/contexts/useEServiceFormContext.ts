@@ -1,4 +1,8 @@
-import { createFormHook, createFormHookContexts } from "@tanstack/react-form";
+import {
+  createFormHook,
+  createFormHookContexts,
+  revalidateLogic,
+} from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
 import type {
@@ -56,7 +60,10 @@ export function useAttributesStepForm(onSubmitSuccess: () => void) {
       updateAttributesStep(value);
       onSubmitSuccess();
     },
-    validators: { onChange: attributesStepSchema },
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: attributesStepSchema,
+    },
   });
 }
 
@@ -72,7 +79,10 @@ export function useDocsStepForm(onSubmitSuccess: () => void) {
       updateDocsStep(value);
       onSubmitSuccess();
     },
-    validators: { onChange: docsStepSchema },
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: docsStepSchema,
+    },
   });
 }
 
@@ -99,7 +109,10 @@ export function useGeneralStepForm(onSubmitSuccess: () => void) {
       updateGeneralStep(value);
       onSubmitSuccess();
     },
-    validators: { onChange: generalStepSchema },
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: generalStepSchema,
+    },
   });
 }
 
@@ -128,7 +141,10 @@ export function useTechnicalStepForm(onSubmitSuccess: () => void) {
       updateTechnicalStep(value);
       onSubmitSuccess();
     },
-    validators: { onChange: technicalStepSchema },
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: technicalStepSchema,
+    },
   });
 }
 
