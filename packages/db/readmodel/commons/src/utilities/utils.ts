@@ -39,7 +39,7 @@ const checkMetadataVersionByFilter = async (
     .select({
       metadataVersion: table.metadataVersion,
     })
-    .from(table as AnyPgTable)
+    .from(table)
     .where(filter);
 
   const existingMetadataVersion = row?.metadataVersion;
@@ -50,8 +50,10 @@ const checkMetadataVersionByFilter = async (
   return existingMetadataVersion <= metadataVersion;
 };
 
-const getTablePKColumns = (table: AnyPgTable): string[] => {
-  const tableConfig = getTableConfig(table);
+const getTablePKColumns = (
+  tableConfig: ReturnType<typeof getTableConfig>,
+): string[] => {
+  console.log(tableConfig.primaryKeys);
   const pk = tableConfig.primaryKeys[0];
   if (!pk) {
     throw genericInternalError(
@@ -65,13 +67,14 @@ export function getTablePKString<T extends Record<string, unknown>>(
   modelSQL: T,
   table: AnyPgTable,
 ): string {
-  return getTablePKColumns(table)
+  const tableConfig = getTableConfig(table);
+  return getTablePKColumns(tableConfig)
     .map((col) => {
       const key = snakeToCamel(col) as keyof T;
       const value = modelSQL[key];
       if (value === undefined || value === null) {
         throw genericInternalError(
-          `Missing PK column '${col}' in e-service category row`,
+          `Missing PK column '${col}' in ${tableConfig.name}`,
         );
       }
       return String(value);
