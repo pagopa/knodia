@@ -49,7 +49,7 @@ export function DocsStep() {
             <form.Field name="interfaceDocument">
               {(field) => (
                 <FileUpload
-                  description="Accepted format: YAML, JSON, XML"
+                  description="Accepted format: YAML, JSON, XML (up to 1 MB)."
                   errorMessage={field.state.meta.errors
                     .map((e) => e?.message)
                     .join(", ")}

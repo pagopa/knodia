@@ -21,6 +21,10 @@ export const eserviceFieldSchemas = {
     .refine((file) => file !== null, "API specs file is required.")
     .refine((file) => {
       if (!file) return true;
+      return file.size <= 1024 * 1024;
+    }, "File size must be at most 1 MB.")
+    .refine((file) => {
+      if (!file) return true;
       const validExtensions = [".yaml", ".yml", ".json", ".xml"];
       const fileName = file.name.toLowerCase();
       return validExtensions.some((ext) => fileName.endsWith(ext));
