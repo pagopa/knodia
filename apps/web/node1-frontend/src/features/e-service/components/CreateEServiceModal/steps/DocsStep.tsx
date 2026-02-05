@@ -23,7 +23,7 @@ export function DocsStep() {
 
         <div className="flex flex-col gap-6">
           <h3 className="title-sm-em text-secondary-light-low-contrast">
-            API specs *
+            API specs
           </h3>
 
           <div className="flex flex-col gap-4">
