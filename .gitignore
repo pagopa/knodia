@@ -6,3 +6,7 @@ node_modules/
 
 # General
 .DS_Store
+
+# Build outputs
+dist/
+generated/

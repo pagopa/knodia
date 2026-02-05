@@ -235,7 +235,7 @@ importers:
         version: link:../../../packages/models/eservice-models
       '@knodia/eservice-process-client':
         specifier: workspace:*
-        version: link:../../../packages/eservice-process-client
+        version: link:../../../packages/clients/eservice-process-client
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -416,6 +416,9 @@ importers:
 
   apps/web/node1-frontend:
     dependencies:
+      '@knodia/bff-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/bff-client
       '@phosphor-icons/react':
         specifier: 'catalog:'
         version: 2.1.10(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -495,6 +498,53 @@ importers:
       vite:
         specifier: 'catalog:'
         version: rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/clients/bff-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      '@tanstack/react-query':
+        specifier: 'catalog:'
+        version: 5.90.16(react@19.2.0)
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.2
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/eservice-process-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.2
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/db/event-store/config:
     dependencies:
@@ -650,28 +700,6 @@ importers:
       drizzle-kit:
         specifier: 'catalog:'
         version: 0.31.8
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
-  packages/eservice-process-client:
-    dependencies:
-      '@knodia/openapi-client-generator':
-        specifier: workspace:*
-        version: link:../openapi-client-generator
-      axios:
-        specifier: 'catalog:'
-        version: 1.13.2
-    devDependencies:
-      '@knodia/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@knodia/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -4626,11 +4654,13 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.1.0:
     resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@13.0.0:
@@ -4639,7 +4669,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
@@ -6308,8 +6338,8 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
-  undici@7.19.2:
-    resolution: {integrity: sha512-4VQSpGEGsWzk0VYxyB/wVX/Q7qf9t5znLRgs0dzszr9w9Fej/8RVNQ+S20vdXSAyra/bJ7ZQfGv6ZMj7UEbzSg==}
+  undici@7.20.0:
+    resolution: {integrity: sha512-MJZrkjyd7DeC+uPZh+5/YaMDxFiiEEaDgbUSVMXayofAkDWF1088CDo+2RPg7B1BuS1qf1vgNE7xqwPxE0DuSQ==}
     engines: {node: '>=20.18.1'}
 
   universalify@2.0.1:
@@ -12432,7 +12462,7 @@ snapshots:
       ssh-remote-port-forward: 1.0.4
       tar-fs: 3.1.1
       tmp: 0.2.5
-      undici: 7.19.2
+      undici: 7.20.0
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -12605,7 +12635,7 @@ snapshots:
 
   undici-types@7.16.0: {}
 
-  undici@7.19.2: {}
+  undici@7.20.0: {}
 
   universalify@2.0.1: {}
 
