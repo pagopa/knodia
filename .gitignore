@@ -4,6 +4,9 @@ node_modules/
 # Turbo
 .turbo/
 
+# Drizzle-kit generated files (use db:pull to regenerate)
+**/generated/
+
 # General
 .DS_Store
 .tanstack

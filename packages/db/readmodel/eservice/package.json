@@ -7,7 +7,8 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "db:generate": "dotenvx run -- drizzle-kit generate --name=readmodel-eservice",
-    "db:migrate": "../../../../scripts/add-deferrable-to-drizzle-sql.sh eservice && dotenvx run -- drizzle-kit migrate"
+    "db:migrate": "dotenvx run -- drizzle-kit migrate",
+    "db:pull": "dotenvx run -- drizzle-kit pull && node --experimental-strip-types ../../../../scripts/add-schema-env-comment.ts"
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",

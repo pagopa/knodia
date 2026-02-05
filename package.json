@@ -21,6 +21,7 @@
     "test": "turbo run generate-artifacts && vitest run"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "knip": "catalog:",
     "turbo": "catalog:",
     "vitest": "catalog:"

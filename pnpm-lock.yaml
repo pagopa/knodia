@@ -204,6 +204,9 @@ catalogs:
     ts-pattern:
       specifier: 5.9.0
       version: 5.9.0
+    tsx:
+      specifier: 4.21.0
+      version: 4.21.0
     turbo:
       specifier: 2.7.3
       version: 2.7.3
@@ -230,9 +233,15 @@ importers:
 
   .:
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
       knip:
         specifier: 'catalog:'
         version: 5.73.4(@types/node@25.0.0)(typescript@5.9.3)
+      tsx:
+        specifier: 'catalog:'
+        version: 4.21.0
       turbo:
         specifier: 'catalog:'
         version: 2.7.3
