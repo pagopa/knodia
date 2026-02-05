@@ -35,14 +35,16 @@ export const eserviceFieldSchemas = {
     .max(60, "Name must be at most 60 characters."),
   requiredAttributes: z
     .array(
-      z.object({
-        attributes: z
-          .array(z.string())
-          .min(1, "Group must have at least one attribute."),
-      }),
+      z
+        .array(
+          z.object({
+            code: z.string(),
+            scheme: z.string(),
+          }),
+        )
+        .min(1, "Group must have at least one attribute."),
     )
-    .min(1, "At least one attribute group is required.")
-    .optional(),
+    .min(1, "At least one group is required."),
 };
 
 export const eserviceFormSchema = z.object(eserviceFieldSchemas);

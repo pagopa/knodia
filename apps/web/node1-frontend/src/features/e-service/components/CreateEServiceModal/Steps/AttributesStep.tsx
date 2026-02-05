@@ -1,4 +1,5 @@
-import { Banner, Button, FieldError, Select } from "@knodia/ui-kit/ui";
+import { Banner, Button, Select, SelectItem } from "@knodia/ui-kit/ui";
+import { TrashIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
 import {
@@ -9,19 +10,41 @@ import {
 import { Footer } from "../Footer";
 import { StepHeader } from "../StepsHeader";
 
+// TODO: use real data
+const MOCK_ATTRIBUTES = Array.from({ length: 10 }, (_, i) => ({
+  label: `NUTS${i + 1}`,
+  value: i,
+}));
+
 export function AttributesStep() {
   const { data, updateAttributesStep } = useEServiceWizardContext();
   const { nextStep, prevStep } = useStepsContext();
 
   const form = useAttributesStepForm(
     {
-      requiredAttributes: data.requiredAttributes ?? [],
+      requiredAttributes:
+        data.requiredAttributes && data.requiredAttributes.length > 0
+          ? data.requiredAttributes
+          : [[]],
     },
     (stepData) => {
       updateAttributesStep(stepData);
       nextStep();
     },
   );
+
+  const handleAddGroup = () => {
+    const currentGroups = form.getFieldValue("requiredAttributes") ?? [];
+    form.setFieldValue("requiredAttributes", [...currentGroups, []]);
+  };
+
+  const handleRemoveGroup = (index: number) => {
+    const currentGroups = form.getFieldValue("requiredAttributes") ?? [];
+    form.setFieldValue(
+      "requiredAttributes",
+      currentGroups.filter((_, i) => i !== index),
+    );
+  };
 
   return (
     <>
@@ -40,37 +63,75 @@ export function AttributesStep() {
           </p>
         </StepHeader>
 
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-3">
-            <h3 className="headline-sm-em text-primary-light-high-contrast">
-              Group 1 *
-            </h3>
-            <span className="body-md text-primary-light-high-contrast">
-              Organizations must have at least one attribute inside this group.
-            </span>
-          </div>
-          <form.Field name="requiredAttributes">
-            {(field) => (
-              <div className="flex flex-col gap-2">
-                <Select
-                  children={undefined} // TODO: add attributes
-                  className="flex-1"
-                  isRequired
-                  label="Attributes"
-                  name={field.name}
-                  placeholder="Select one or more attributes"
-                />
-                {field.state.meta.isTouched && !field.state.meta.isValid && (
-                  <FieldError>
-                    {field.state.meta.errors.map((e) => e?.message).join(", ")}
-                  </FieldError>
-                )}
-              </div>
-            )}
-          </form.Field>
-        </div>
+        <form.Field mode="array" name="requiredAttributes">
+          {(field) => (
+            <div className="flex flex-col gap-10">
+              {field.state.value?.map((_, groupIndex) => (
+                <div className="flex flex-col gap-6" key={groupIndex}>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex gap-3 justify-between">
+                      <h3 className="headline-sm-em text-primary-light-high-contrast flex-1">
+                        Group {groupIndex + 1}
+                      </h3>
 
-        <Button className="self-start" hierarchy="neutral" kind="tonal">
+                      {groupIndex > 0 && (
+                        <Button
+                          hierarchy="danger"
+                          kind="tonal"
+                          onPress={() => handleRemoveGroup(groupIndex)}
+                          size="icon-sm"
+                        >
+                          <TrashIcon />
+                        </Button>
+                      )}
+                    </div>
+                    <span className="body-md text-primary-light-high-contrast">
+                      Organizations must have at least one attribute inside this
+                      group.
+                    </span>
+                  </div>
+                  <form.Field name={`requiredAttributes[${groupIndex}]`}>
+                    {(groupField) => (
+                      <Select
+                        className="flex-1"
+                        errorMessage={groupField.state.meta.errors
+                          .map((e) => e?.message)
+                          .join(", ")}
+                        isInvalid={!groupField.state.meta.isValid}
+                        isRequired
+                        label="Attributes"
+                        name={groupField.name}
+                        onChange={(values) =>
+                          groupField.handleChange(
+                            values.map((v) => ({
+                              code: String(v),
+                              scheme: String(v),
+                            })),
+                          )
+                        }
+                        placeholder="Select one or more attributes"
+                        selectionMode="multiple"
+                      >
+                        {MOCK_ATTRIBUTES.map(({ label, value }) => (
+                          <SelectItem id={value} key={value}>
+                            {label}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                    )}
+                  </form.Field>
+                </div>
+              ))}
+            </div>
+          )}
+        </form.Field>
+
+        <Button
+          className="self-start"
+          hierarchy="neutral"
+          kind="tonal"
+          onPress={handleAddGroup}
+        >
           Add group
         </Button>
       </div>
