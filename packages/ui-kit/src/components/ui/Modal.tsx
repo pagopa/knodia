@@ -12,7 +12,6 @@ import { tv } from "tailwind-variants";
 
 import { Button } from "./Button";
 import { Checkbox } from "./Checkbox";
-import { InteractiveIcon } from "./InteractiveIcon";
 
 const overlay = tv({
   base: "fixed left-0 top-0 isolate z-50 flex h-(--visual-viewport-height) w-full items-center justify-center bg-black/50 p-4",
@@ -41,7 +40,7 @@ const modal = tv({
 interface ModalProps extends AriaModalOverlayProps {
   actionLabel: string;
   cancelLabel?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   description?: string;
   kind: "default" | "destructive";
   onClose?: (e: PressEvent) => void;
@@ -88,18 +87,18 @@ export function Modal({
               <p className="title-md-em" id={titleId}>
                 {title}
               </p>
-              <InteractiveIcon
-                className="text-primary-light-low-contrast p-0"
+              <Button
+                className="p-0"
+                hierarchy="neutral"
+                kind="ghost"
+                size="icon-sm"
                 {...(onDismiss && { onPress: onDismiss })}
               >
-                <XIcon size={12} />
-              </InteractiveIcon>
+                <XIcon />
+              </Button>
             </div>
             {description && (
-              <span
-                className="text-primary-light-low-contrast body-md"
-                id={descriptionId}
-              >
+              <span className=" body-md" id={descriptionId}>
                 {description}
               </span>
             )}

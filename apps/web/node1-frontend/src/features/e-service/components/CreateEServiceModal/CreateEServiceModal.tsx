@@ -5,6 +5,7 @@ import { StepsProvider, useStepsContext } from "@/contexts/steps";
 import { EServiceFormProvider } from "@/features/e-service/contexts/EServiceFormProvider";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
+import { useLeaveConfirmModal } from "../../hooks/useLeaveConfirmModal";
 import { CREATE_FORM_STEPS } from "../../types/eserviceCreateForm";
 import { AttributesStep } from "./Steps/AttributesStep";
 import { DocsStep } from "./Steps/DocsStep";
@@ -17,23 +18,30 @@ interface Props {
 }
 
 export function CreateEServiceModal({ onClose }: Props) {
+  const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
+    useLeaveConfirmModal(onClose);
+
   return (
-    <FullPageModal onClose={onClose} title="Create E-Service">
-      <StepsProvider stepConfig={CREATE_FORM_STEPS}>
-        <EServiceFormProvider>
-          <ModalContent onClose={onClose} />
-        </EServiceFormProvider>
-      </StepsProvider>
-    </FullPageModal>
+    <>
+      <FullPageModal onClose={handleShowLeaveConfirm} title="Create E-Service">
+        <StepsProvider stepConfig={CREATE_FORM_STEPS}>
+          <EServiceFormProvider>
+            <ModalContent onCloseRequest={handleShowLeaveConfirm} />
+          </EServiceFormProvider>
+        </StepsProvider>
+      </FullPageModal>
+
+      {leaveConfirmModal}
+    </>
   );
 }
 
-function ModalContent({ onClose }: Props) {
+function ModalContent({ onCloseRequest }: { onCloseRequest: () => void }) {
   const { currentStepIndex, steps } = useStepsContext();
   const stepLabels = steps.map((s) => s.label);
 
   const currentStep = match(currentStepIndex)
-    .with(0, () => <GeneralStep onCancel={onClose} />)
+    .with(0, () => <GeneralStep onCancel={onCloseRequest} />)
     .with(1, () => <TechnicalStep />)
     .with(2, () => <DocsStep />)
     .with(3, () => <AttributesStep />)
