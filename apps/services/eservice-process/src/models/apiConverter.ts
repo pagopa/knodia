@@ -1,6 +1,7 @@
 import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
+import { API_ProducerEserviceListItem } from "@knodia/eservice-models/api";
 
-import { API_Eservice, API_ProducerEserviceListItem } from "./api.ts";
+import { API_Eservice } from "./api.ts";
 
 export const toAPI_ProducerEserviceListItem = (
   eservice: Eservice,

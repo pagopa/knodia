@@ -1,4 +1,5 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
+import type { API_ProducerEservicesQueryParams } from "@knodia/eservice-models/api";
 
 import { type RequestContextData } from "@fastify/request-context";
 import {
@@ -11,10 +12,7 @@ import {
 import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
 import { match } from "ts-pattern";
 
-import type {
-  API_EserviceSeed,
-  API_ProducerEservicesQueryParams,
-} from "../models/api.ts";
+import type { API_EserviceSeed } from "../models/api.ts";
 
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 import { mockEservices } from "./mockEservices.ts";

@@ -847,6 +847,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../fastify-zod-api-commons
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0

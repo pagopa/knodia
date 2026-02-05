@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
