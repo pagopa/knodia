@@ -391,6 +391,9 @@ importers:
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
+      zocker:
+        specifier: 'catalog:'
+        version: 3.0.0(zod@4.2.0)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -935,6 +938,9 @@ importers:
       '@confluentinc/kafka-javascript':
         specifier: 'catalog:'
         version: 1.7.0
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../models/eservice-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -962,6 +968,9 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
+      zocker:
+        specifier: 'catalog:'
+        version: 3.0.0(zod@4.2.0)
 
   packages/typescript-config:
     devDependencies:
