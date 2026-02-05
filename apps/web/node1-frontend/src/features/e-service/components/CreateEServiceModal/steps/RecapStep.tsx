@@ -5,6 +5,7 @@ import { Fragment } from "react";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
+import { useDownloadFile } from "@/hooks/useDownloadFile";
 
 import { DocumentRecap } from "../components/DocumentRecap";
 import { Footer } from "../components/Footer";
@@ -48,7 +49,7 @@ export function RecapStep() {
         <Divider />
 
         <DocumentsSection
-          documentName={data.interfaceDocument?.name}
+          document={data.interfaceDocument}
           md5Checksum={md5Checksum}
         />
 
@@ -124,16 +125,22 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
 }
 
 function DocumentsSection({
-  documentName,
+  document,
   md5Checksum,
 }: {
-  documentName: string | undefined;
+  document: File | null | undefined;
   md5Checksum: null | string;
 }) {
+  const { downloadFile } = useDownloadFile(document);
+
   return (
     <div className="flex flex-col gap-6">
       <SectionTitle>Documents</SectionTitle>
-      <DocumentRecap name={documentName || "-"} />
+      <DocumentRecap
+        name={document?.name || "-"}
+        onDownload={downloadFile}
+        showDownloadButton
+      />
       {md5Checksum && <ChecksumDisplay checksum={md5Checksum} />}
     </div>
   );
