@@ -1,6 +1,7 @@
 import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
+import { generateId } from "@knodia/common-models/ids";
 import { initKafka } from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
 
@@ -83,7 +84,7 @@ export async function sendTestEvent({
 }) {
   const message = {
     after: {
-      correlation_id: crypto.randomUUID(),
+      correlation_id: generateId(),
       data: Buffer.from(data).toString("hex"),
       log_date: new Date(),
       sequence_num: 1,
