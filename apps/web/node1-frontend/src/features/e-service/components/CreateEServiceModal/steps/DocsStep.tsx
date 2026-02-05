@@ -4,8 +4,8 @@ import { useStepsContext } from "@/contexts/steps";
 import { useDocsStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { DocumentRecap } from "../components/DocumentRecap";
 import { Footer } from "../components/Footer";
+import { RemovableDocumentRecap } from "../components/RemovableDocumentRecap";
 import { StepHeader } from "../components/StepHeader";
 
 export function DocsStep() {
@@ -30,7 +30,12 @@ export function DocsStep() {
             <form.Subscribe selector={(state) => state.values}>
               {(values) =>
                 values.interfaceDocument && (
-                  <DocumentRecap name={values.interfaceDocument.name} />
+                  <RemovableDocumentRecap
+                    name={values.interfaceDocument.name}
+                    onRemove={() =>
+                      form.setFieldValue("interfaceDocument", null)
+                    }
+                  />
                 )
               }
             </form.Subscribe>
