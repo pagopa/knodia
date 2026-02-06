@@ -1,25 +1,12 @@
 import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
-import {
-  Banner,
-  Breadcrumb,
-  Breadcrumbs,
-  Button,
-  Chip,
-  Divider,
-  Tab,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Tabs,
-} from "@knodia/ui-kit/ui";
+import { Breadcrumb, Breadcrumbs, Button, Chip } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { GenericInfoCard } from "@/components/GenericInfoCard";
+import { CopyableInfoField } from "@/components/CopyableInfoField";
 import { PageHeader } from "@/components/PageHeader";
-import { ResourceId } from "@/components/ResourceId";
-import { SettingsCard } from "@/components/SettingCard";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
+import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
 import { client } from "@/libs/axios";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,105 +22,6 @@ export const Route = createFileRoute("/production/e-services_/$id")({
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     (await queryClient.ensureQueryData(eserviceQuery(id))).items[0]!,
 });
-
-const tabItems = [
-  { content: <DetailsTab />, id: 1, title: "Details" },
-  { content: "Tab body 2", id: 2, title: "Consumption" },
-  { content: "Tab body 3", id: 3, title: "Keychains" },
-] as const;
-
-function AccessTokenSettingsSection() {
-  return (
-    <DetailsSection title="Access token settings">
-      <div className="grid grid-cols-3 gap-4">
-        <SettingsCard label="Duration">30 minutes</SettingsCard>
-        <SettingsCard label="Audience">
-          www.rigel.orion/residence/v1
-        </SettingsCard>
-        <SettingsCard label="Type">Bearer</SettingsCard>
-      </div>
-    </DetailsSection>
-  );
-}
-
-function ConsumptionRequirementsSection() {
-  return (
-    <DetailsSection title="Consumption requirements">
-      <div className="grid grid-cols-2 gap-10">
-        <div>
-          <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
-            Attributes
-          </h3>
-          <ul className="gap-2 flex flex-col" role="list">
-            <li>
-              <GenericInfoCard label="Attribute 1">-</GenericInfoCard>
-            </li>
-            <li>
-              <GenericInfoCard label="Attribute 2">-</GenericInfoCard>
-            </li>
-            <li>
-              <GenericInfoCard label="Attribute 3">-</GenericInfoCard>
-            </li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
-            Identification
-          </h3>
-          <Banner kind="informative">Identification required</Banner>
-        </div>
-      </div>
-    </DetailsSection>
-  );
-}
-
-function DetailsSection({
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  title: string;
-}) {
-  return (
-    <section>
-      <h2 className="headline-sm-em text-primary-light-high-contrast mb-6">
-        {title}
-      </h2>
-      {children}
-    </section>
-  );
-}
-
-function DetailsTab() {
-  return (
-    <>
-      <ConsumptionRequirementsSection />
-      <Divider className="my-10" />
-      <DocumentsSection />
-      <Divider className="my-10" />
-      <AccessTokenSettingsSection />
-      <Divider className="my-10" />
-      <MaxAPICallsPerDaySection />
-      <Divider className="my-10" />
-      <SignalHubSection />
-    </>
-  );
-}
-
-function DocumentsSection() {
-  return <DetailsSection title="Documents">-</DetailsSection>;
-}
-
-function MaxAPICallsPerDaySection() {
-  return (
-    <DetailsSection title="Max API calls per day">
-      <div className="grid grid-cols-2 gap-4">
-        <SettingsCard label="Per Knode">10.000</SettingsCard>
-        <SettingsCard label="Per Consumer">1.000</SettingsCard>
-      </div>
-    </DetailsSection>
-  );
-}
 
 function RouteComponent() {
   const eservice = Route.useLoaderData();
@@ -162,7 +50,7 @@ function RouteComponent() {
         resourceStatusChip={<EserviceStateChip state="Active" />}
         title={eservice.name.en}
       >
-        <ResourceId className="mt-3" id={eservice.id} />
+        <CopyableInfoField className="mt-3" id={eservice.id} label="ID" />
         <p className="mt-6 body-md text-primary-light-low-contrast">
           {eservice.description.en}
         </p>
@@ -180,32 +68,7 @@ function RouteComponent() {
         ))}
       </div>
 
-      <Tabs className="mt-10" kind="hug">
-        <TabList items={tabItems}>
-          {(item) => (
-            <Tab id={item.id} key={item.id}>
-              {item.title}
-            </Tab>
-          )}
-        </TabList>
-        <TabPanels items={tabItems}>
-          {(item) => (
-            <TabPanel id={item.id} key={item.id}>
-              {item.content}
-            </TabPanel>
-          )}
-        </TabPanels>
-      </Tabs>
+      <ProductionEServiceDetailsTabs eservice={eservice} />
     </>
-  );
-}
-
-function SignalHubSection() {
-  return (
-    <DetailsSection title="Signal hub">
-      <p className="body-lg text-primary-dark">
-        This E-Service is available on Signal Hub.
-      </p>
-    </DetailsSection>
   );
 }
