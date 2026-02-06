@@ -208,7 +208,7 @@ const createEserviceSQLPropertyMap = <
 //     interfacesSQL: interfacesSQL,
 //     requiredAttributesSQL: requiredAttributesSQL,
 //     versionsSQL: versionsSQL,
-//   } = toEserviceAggregatorArray(queryRes);
+//   } = toEservicesAggregator(queryRes);
 
 //   const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
 
@@ -221,7 +221,7 @@ const createEserviceSQLPropertyMap = <
 //   };
 // };
 
-export const toEserviceAggregatorArray = (
+export const toEservicesAggregator = (
   queryRes: {
     category: EserviceCategorySQL | null;
     eservice: EserviceSQL;

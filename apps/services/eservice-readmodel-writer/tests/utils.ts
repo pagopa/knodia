@@ -7,7 +7,7 @@ import {
 } from "@knodia/db-readmodel-eservice";
 import {
   aggregateEservices,
-  toEserviceAggregatorArray,
+  toEservicesAggregator,
 } from "@knodia/db-readmodel-eservice/converters";
 import { eq } from "drizzle-orm";
 
@@ -46,5 +46,5 @@ export async function getAllEservices() {
       ),
     );
 
-  return aggregateEservices(toEserviceAggregatorArray(queryRes));
+  return aggregateEservices(toEservicesAggregator(queryRes));
 }
