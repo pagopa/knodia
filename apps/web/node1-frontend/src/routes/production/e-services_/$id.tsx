@@ -5,6 +5,7 @@ import {
   Breadcrumbs,
   Button,
   Chip,
+  Divider,
   Tab,
   TabList,
   TabPanel,
@@ -16,6 +17,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { PageHeader } from "@/components/PageHeader";
 import { ResourceId } from "@/components/ResourceId";
+import { SettingsCard } from "@/components/SettingCard";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { client } from "@/libs/axios";
@@ -40,39 +42,96 @@ const tabItems = [
   { content: "Tab body 3", id: 3, title: "Keychains" },
 ] as const;
 
+function AccessTokenSettingsSection() {
+  return (
+    <DetailsSection title="Access token settings">
+      <div className="grid grid-cols-3 gap-4">
+        <SettingsCard label="Duration">30 minutes</SettingsCard>
+        <SettingsCard label="Audience">
+          www.rigel.orion/residence/v1
+        </SettingsCard>
+        <SettingsCard label="Type">Bearer</SettingsCard>
+      </div>
+    </DetailsSection>
+  );
+}
+
+function ConsumptionRequirementsSection() {
+  return (
+    <DetailsSection title="Consumption requirements">
+      <div className="grid grid-cols-2 gap-10">
+        <div>
+          <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
+            Attributes
+          </h3>
+          <ul className="gap-2 flex flex-col" role="list">
+            <li>
+              <GenericInfoCard label="Attribute 1">-</GenericInfoCard>
+            </li>
+            <li>
+              <GenericInfoCard label="Attribute 2">-</GenericInfoCard>
+            </li>
+            <li>
+              <GenericInfoCard label="Attribute 3">-</GenericInfoCard>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
+            Identification
+          </h3>
+          <Banner kind="informative">Identification required</Banner>
+        </div>
+      </div>
+    </DetailsSection>
+  );
+}
+
+function DetailsSection({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) {
+  return (
+    <section>
+      <h2 className="headline-sm-em text-primary-light-high-contrast mb-6">
+        {title}
+      </h2>
+      {children}
+    </section>
+  );
+}
+
 function DetailsTab() {
   return (
-    <div>
-      <section>
-        <h2 className="headline-sm-em text-primary-light-high-contrast mb-6">
-          Consumption requirements
-        </h2>
-        <div className="grid grid-cols-2 gap-10">
-          <div>
-            <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
-              Attributes
-            </h3>
-            <ul className="gap-2 flex flex-col" role="list">
-              <li>
-                <GenericInfoCard label="Attribute 1">-</GenericInfoCard>
-              </li>
-              <li>
-                <GenericInfoCard label="Attribute 2">-</GenericInfoCard>
-              </li>
-              <li>
-                <GenericInfoCard label="Attribute 3">-</GenericInfoCard>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
-              Identification
-            </h3>
-            <Banner kind="informative">Identification required</Banner>
-          </div>
-        </div>
-      </section>
-    </div>
+    <>
+      <ConsumptionRequirementsSection />
+      <Divider className="my-10" />
+      <DocumentsSection />
+      <Divider className="my-10" />
+      <AccessTokenSettingsSection />
+      <Divider className="my-10" />
+      <MaxAPICallsPerDaySection />
+      <Divider className="my-10" />
+      <SignalHubSection />
+    </>
+  );
+}
+
+function DocumentsSection() {
+  return <DetailsSection title="Documents">-</DetailsSection>;
+}
+
+function MaxAPICallsPerDaySection() {
+  return (
+    <DetailsSection title="Max API calls per day">
+      <div className="grid grid-cols-2 gap-4">
+        <SettingsCard label="Per Knode">10.000</SettingsCard>
+        <SettingsCard label="Per Consumer">1.000</SettingsCard>
+      </div>
+    </DetailsSection>
   );
 }
 
@@ -138,5 +197,15 @@ function RouteComponent() {
         </TabPanels>
       </Tabs>
     </>
+  );
+}
+
+function SignalHubSection() {
+  return (
+    <DetailsSection title="Signal hub">
+      <p className="body-lg text-primary-dark">
+        This E-Service is available on Signal Hub.
+      </p>
+    </DetailsSection>
   );
 }
