@@ -4,19 +4,19 @@ import { twMerge } from "tailwind-merge";
 
 interface PageHeaderProps extends React.ComponentProps<"header"> {
   actions?: React.ReactNode;
+  children?: React.ReactNode;
   overline?: string;
+  resourceStatusChip?: React.ReactNode;
   title: string;
-  titleAs?: PageHeaderTitleTag;
 }
-
-type PageHeaderTitleTag = "h1" | "h2" | "h3";
 
 export function PageHeader({
   actions,
+  children,
   className,
   overline,
+  resourceStatusChip,
   title,
-  titleAs: TitleTag = "h1",
   ...props
 }: PageHeaderProps) {
   return (
@@ -28,18 +28,22 @@ export function PageHeader({
       )}
     >
       <div className="min-w-0">
-        {overline ? (
+        {overline && (
           <p className="label-sm-em uppercase text-primary-light-low-contrast mb-2">
             {overline}
           </p>
-        ) : null}
-        <TitleTag className="headline-md text-primary-light-high-contrast">
+        )}
+        <h1 className="headline-md text-primary-light-high-contrast">
           {title}
-        </TitleTag>
+        </h1>
+        {children}
       </div>
-      {actions ? (
-        <div className="flex items-center gap-4 shrink-0">{actions}</div>
-      ) : null}
+      {(actions || resourceStatusChip) && (
+        <div className="flex items-center gap-4 shrink-0">
+          <div className={actions ? "mr-10" : ""}>{resourceStatusChip}</div>
+          {actions}
+        </div>
+      )}
     </header>
   );
 }
