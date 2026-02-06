@@ -32,6 +32,16 @@ const styles = tv({
   },
 });
 
+const selectValue = tv({
+  base: "flex-1 body-md truncate",
+  variants: {
+    isPlaceholder: {
+      true: "text-primary-light-low-contrast",
+      false: "text-primary-light-high-contrast",
+    },
+  },
+});
+
 export interface SelectProps<T extends object>
   extends Omit<AriaSelectProps<T>, "children">, SelectVariants {
   children: ((item: T) => React.ReactNode) | React.ReactNode;
@@ -77,12 +87,7 @@ export function Select<T extends object>({
       >
         <SelectValue
           className={(renderProps) =>
-            [
-              "flex-1 body-md truncate",
-              renderProps.isPlaceholder
-                ? "text-primary-light-low-contrast"
-                : "text-primary-light-high-contrast",
-            ].join(" ")
+            selectValue({ isPlaceholder: renderProps.isPlaceholder })
           }
         >
           {({ selectedText, defaultChildren }) =>

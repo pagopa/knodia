@@ -19,28 +19,24 @@ const router = createRouter({
     queryClient,
   },
   defaultErrorComponent: () => (
-    <div className="mt-10 flex items-center justify-center">
-      <Empty
-        description="Please try again later"
-        kind="error"
-        title="Something went wrong"
-      />
-    </div>
+    <Empty
+      className="mt-10"
+      description="Please try again later"
+      kind="error"
+      title="Something went wrong"
+    />
   ),
   defaultNotFoundComponent: () => (
-    <div className="mt-10 flex items-center justify-center">
-      <Empty
-        description="The page you're looking for doesn't exists or has been moved."
-        icon={<BracketsCurlyIcon />}
-        kind="neutral"
-        title="Page not found"
-      />
-    </div>
+    <Empty
+      className="mt-10"
+      description="The page you're looking for doesn't exists or has been moved."
+      icon={<BracketsCurlyIcon />}
+      kind="neutral"
+      title="Page not found"
+    />
   ),
   defaultPendingComponent: () => (
-    <div className="mt-20 flex items-center justify-center">
-      <Loader label="Loading..." />
-    </div>
+    <Loader className="mx-auto mt-20" label="Loading..." />
   ),
   defaultPendingMinMs: 0,
   defaultPendingMs: 0,
@@ -51,6 +47,7 @@ const router = createRouter({
   defaultPreloadStaleTime: 0,
   routeTree,
   scrollRestoration: true,
+  scrollToTopSelectors: [() => document.getElementById("main-content")],
 });
 
 /**

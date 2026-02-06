@@ -1,6 +1,6 @@
 import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
-import { Button, Empty, Pagination } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, SelectionPlusIcon } from "@phosphor-icons/react";
+import { Button, Pagination } from "@knodia/ui-kit/ui";
+import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
@@ -23,8 +23,9 @@ export const Route = createFileRoute("/production/e-services")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({ context: { queryClient }, deps: { offset } }) =>
-    await queryClient.ensureQueryData(eservicesQuery(offset)),
+  loader: ({ context: { queryClient }, deps: { offset } }) => {
+    queryClient.ensureQueryData(eservicesQuery(offset));
+  },
   search: {
     middlewares: [stripSearchParams(productionEserviceSearchDefaultValues)],
   },
@@ -39,7 +40,6 @@ function RouteComponent() {
 
   const { data } = useQuery({
     ...eservicesQuery(offset),
-    initialData: Route.useLoaderData(),
     placeholderData: keepPreviousData,
   });
 
@@ -74,29 +74,15 @@ function RouteComponent() {
         />
       )}
 
-      {data && data.items.length > 0 && (
-        <ProductionEserviceList eservices={data.items} />
-      )}
+      <ProductionEserviceList eservices={data?.items} />
 
-      {data && data.items.length === 0 && (
-        <div className="flex justify-center">
-          <Empty
-            description="Create your first one"
-            icon={<SelectionPlusIcon />}
-            title="You don't have any E-Services yet"
-          />
-        </div>
-      )}
-
-      <div className="flex">
-        <Pagination
-          className="mx-auto mt-6"
-          limit={data?.pagination.limit ?? 0}
-          offset={offset}
-          onOffsetChange={(offset) => handleSearchChange({ offset })}
-          totalItems={data?.pagination.total ?? 0}
-        />
-      </div>
+      <Pagination
+        className="mx-auto mt-6"
+        limit={data?.pagination.limit ?? 0}
+        offset={offset}
+        onOffsetChange={(offset) => handleSearchChange({ offset })}
+        totalItems={data?.pagination.total ?? 0}
+      />
     </>
   );
 }

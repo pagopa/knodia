@@ -8,7 +8,7 @@ type PaginationItem =
   | { type: "page"; value: number };
 
 const pagination = tv({
-  base: "flex items-center gap-2",
+  base: "flex items-center gap-2 w-fit",
 });
 
 interface PaginationButtonProps extends Omit<

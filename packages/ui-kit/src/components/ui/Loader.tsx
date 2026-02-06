@@ -1,6 +1,7 @@
 import type { ProgressBarProps } from "react-aria-components";
 
-import { Label, ProgressBar } from "react-aria-components";
+import { composeRenderProps, Label, ProgressBar } from "react-aria-components";
+import { twMerge } from "tailwind-merge";
 
 interface LoaderProps extends ProgressBarProps {
   label?: string;
@@ -19,9 +20,11 @@ export function Loader({
 
   return (
     <ProgressBar
-      className={"w-60 flex flex-col items-center justify-center"}
       isIndeterminate={isIndeterminate}
       {...props}
+      className={composeRenderProps(props.className, (className) =>
+        twMerge("w-60 flex flex-col items-center justify-center", className),
+      )}
     >
       {({ percentage, isIndeterminate }) => (
         <>

@@ -14,7 +14,7 @@ import { Button } from "./Button";
 import { ButtonLink } from "./ButtonLink";
 
 const empty = tv({
-  base: "flex flex-col items-center gap-8 text-center max-w-60",
+  base: "flex flex-col items-center justify-center gap-8 text-center max-w-60",
 });
 
 const emptyIconWrapper = tv({
@@ -74,31 +74,33 @@ export function Empty({
   ...props
 }: EmptyProps) {
   return (
-    <div {...props} className={empty({ className })}>
-      <div className="flex w-full flex-col items-center gap-4">
-        <div className={emptyIconWrapper({ kind })}>
-          <span aria-hidden className={emptyIcon({ kind })}>
-            {icon ?? <DefaultEmptyIcon kind={kind} />}
-          </span>
-        </div>
+    <div className="flex items-center justify-center">
+      <div {...props} className={empty({ className })}>
+        <div className="flex w-full flex-col items-center gap-4">
+          <div className={emptyIconWrapper({ kind })}>
+            <span aria-hidden className={emptyIcon({ kind })}>
+              {icon ?? <DefaultEmptyIcon kind={kind} />}
+            </span>
+          </div>
 
-        <div className="flex w-full flex-col gap-1">
-          <p className="title-md-em text-primary-light-high-contrast">
-            {title}
-          </p>
-          {description && (
-            <p className="body-md text-primary-light-mid-contrast">
-              {description}
+          <div className="flex w-full flex-col gap-1">
+            <p className="title-md-em text-primary-light-high-contrast">
+              {title}
             </p>
-          )}
+            {description && (
+              <p className="body-md text-primary-light-mid-contrast">
+                {description}
+              </p>
+            )}
+          </div>
         </div>
-      </div>
 
-      {action && (
-        <div className="flex justify-center">
-          <EmptyActionButton {...action} />
-        </div>
-      )}
+        {action && (
+          <div className="flex justify-center">
+            <EmptyActionButton {...action} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
