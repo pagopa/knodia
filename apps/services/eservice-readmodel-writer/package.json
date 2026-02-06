@@ -5,11 +5,14 @@
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/eservice-readmodel-writer",
+    "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "@types/pg": "catalog:",
@@ -19,6 +22,7 @@
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
+    "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",

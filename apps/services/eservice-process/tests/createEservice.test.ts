@@ -8,7 +8,7 @@ import {
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
-import { API_Eservice, API_EserviceSeed } from "../src/models/api.js";
+import { API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { getAllEserviceEvents, injectAppRequest } from "./utils.ts";
 

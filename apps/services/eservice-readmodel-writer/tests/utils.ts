@@ -1,0 +1,50 @@
+import {
+  readmodelEservice,
+  readmodelEserviceCategory,
+  readmodelEserviceInterface,
+  readmodelEserviceVersion,
+  readmodelEserviceVersionRequiredAttribute,
+} from "@knodia/db-readmodel-eservice";
+import {
+  aggregateEservices,
+  toEserviceAggregatorArray,
+} from "@knodia/db-readmodel-eservice/converters";
+import { eq } from "drizzle-orm";
+
+import { readmodelDb } from "./setup.ts";
+
+export async function getAllEservices() {
+  const queryRes = await readmodelDb
+    .select({
+      category: readmodelEserviceCategory,
+      eservice: readmodelEservice,
+      interface: readmodelEserviceInterface,
+      requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+      version: readmodelEserviceVersion,
+    })
+    .from(readmodelEservice)
+    .leftJoin(
+      readmodelEserviceCategory,
+      eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+    )
+    .leftJoin(
+      readmodelEserviceVersion,
+      eq(readmodelEservice.id, readmodelEserviceVersion.eserviceId),
+    )
+    .leftJoin(
+      readmodelEserviceInterface,
+      eq(
+        readmodelEserviceVersion.id,
+        readmodelEserviceInterface.eserviceVersionId,
+      ),
+    )
+    .leftJoin(
+      readmodelEserviceVersionRequiredAttribute,
+      eq(
+        readmodelEserviceVersion.id,
+        readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
+      ),
+    );
+
+  return aggregateEservices(toEserviceAggregatorArray(queryRes));
+}
