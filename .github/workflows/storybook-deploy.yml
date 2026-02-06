@@ -2,7 +2,7 @@ name: Deploy storybook static content to Pages
 
 on:
   push:
-    branches: [main, chore/KN-109_storybook-ci-setup]
+    branches: [main]
     paths:
       - packages/ui-kit/**/*
 
