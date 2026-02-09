@@ -141,7 +141,7 @@ components:
         - code
         - scheme
       additionalProperties: false
-    ProducerEserviceListItem:
+    ProducerEservice:
       type: object
       properties:
         activeAgreements:
@@ -189,7 +189,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/ProducerEserviceListItem"
+            $ref: "#/components/schemas/ProducerEservice"
         pagination:
           $ref: "#/components/schemas/Pagination"
       required:
@@ -364,6 +364,58 @@ paths:
           description: Pagination starting position
         - schema:
             allOf:
+              - $ref: "#/components/schemas/EserviceMode"
+          in: query
+          name: mode
+          required: false
+          description: Filter by E-service data mode
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: producerId
+          required: false
+          description: Filter by producer ID
+        - schema:
+            type: string
+          in: query
+          name: q
+          required: false
+          description: Search by name, description or categories
+        - schema:
+            default: name
+            type: string
+            enum:
+              - name
+              - activeAgreements
+              - activePurposes
+          in: query
+          name: sortBy
+          required: false
+          description: Field to sort by
+        - schema:
+            default: asc
+            type: string
+            enum:
+              - asc
+              - desc
+          in: query
+          name: sortOrder
+          required: false
+          description: Sort direction
+        - schema:
+            type: string
+            enum:
+              - Active
+              - Suspended
+              - Archived
+          in: query
+          name: status
+          required: false
+          description: Filter by E-service status
+        - schema:
+            allOf:
               - $ref: "#/components/schemas/CorrelationId"
           in: header
           name: x-correlation-id
@@ -377,7 +429,7 @@ paths:
               schema:
                 description: E-services retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Eservices"
+                  - $ref: "#/components/schemas/ProducerEservices"
         "400":
           description: Bad Request
           content:
@@ -414,107 +466,6 @@ paths:
                 description: E-service created successfully
                 allOf:
                   - $ref: "#/components/schemas/Eservice"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /producer/eservices:
-    get:
-      operationId: getProducerEservices
-      tags:
-        - eservice
-      description: Retrieve a paginated list of E-services produced by the logged-in
-        user's organization
-      parameters:
-        - schema:
-            format: int32
-            type: number
-            minimum: 1
-            maximum: 50
-          in: query
-          name: limit
-          required: true
-          description: Maximum number of items returned
-        - schema:
-            format: int32
-            type: number
-            minimum: 0
-          in: query
-          name: offset
-          required: true
-          description: Pagination starting position
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/EserviceMode"
-          in: query
-          name: mode
-          required: false
-          description: Filter by E-service data mode
-        - schema:
-            type: string
-          in: query
-          name: q
-          required: false
-          description: Search by name, description or categories
-        - schema:
-            default: name
-            type: string
-            enum:
-              - name
-              - activeAgreements
-              - activePurposes
-          in: query
-          name: sortBy
-          required: false
-          description: Field to sort by
-        - schema:
-            default: asc
-            type: string
-            enum:
-              - asc
-              - desc
-          in: query
-          name: sortOrder
-          required: false
-          description: Sort direction
-        - schema:
-            anyOf:
-              - type: array
-                items:
-                  type: string
-                  enum:
-                    - Active
-                    - Suspended
-                    - Archived
-              - type: string
-                enum:
-                  - Active
-                  - Suspended
-                  - Archived
-          in: query
-          name: status
-          required: false
-          description: Filter by E-service status
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "200":
-          description: Producer E-services retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Producer E-services retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/ProducerEservices"
         "400":
           description: Bad Request
           content:

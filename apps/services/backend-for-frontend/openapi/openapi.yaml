@@ -141,7 +141,7 @@ components:
         - code
         - scheme
       additionalProperties: false
-    ProducerEserviceListItem:
+    ProducerEservice:
       type: object
       properties:
         activeAgreements:
@@ -189,7 +189,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/ProducerEserviceListItem"
+            $ref: "#/components/schemas/ProducerEservice"
         pagination:
           $ref: "#/components/schemas/Pagination"
       required:
@@ -477,19 +477,11 @@ paths:
           required: false
           description: Sort direction
         - schema:
-            anyOf:
-              - type: array
-                items:
-                  type: string
-                  enum:
-                    - Active
-                    - Suspended
-                    - Archived
-              - type: string
-                enum:
-                  - Active
-                  - Suspended
-                  - Archived
+            type: string
+            enum:
+              - Active
+              - Suspended
+              - Archived
           in: query
           name: status
           required: false
