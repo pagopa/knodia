@@ -1,6 +1,6 @@
 import type { Eservice } from "@knodia/bff-client";
 
-import { Empty, Loader } from "@knodia/ui-kit/ui";
+import { Empty } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 
 import { ProductionEserviceCard } from "./EserviceCard";
@@ -8,12 +8,8 @@ import { ProductionEserviceCard } from "./EserviceCard";
 export function ProductionEserviceList({
   eservices,
 }: {
-  eservices: Eservice[] | undefined;
+  eservices: Eservice[];
 }) {
-  if (!eservices) {
-    return <Loader className="mx-auto mt-20" label="Loading..." />;
-  }
-
   if (eservices.length === 0) {
     return (
       <Empty
