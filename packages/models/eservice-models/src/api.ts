@@ -5,16 +5,22 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
-export const API_LocalizedName = LocalizedText.extend({
-  en: z.string().min(5).max(60),
-})
+import {
+  maxDescriptionLength,
+  maxNameLength,
+  minDescriptionLength,
+  minNameLength,
+} from "./eservice.ts";
+
+export const API_LocalizedName = LocalizedText(minNameLength, maxNameLength)
   .describe("Name of the E-service")
   .meta({ id: "LocalizedName" });
 export type API_LocalizedName = z.infer<typeof API_LocalizedName>;
 
-export const API_LocalizedDescription = LocalizedText.extend({
-  en: z.string().min(10).max(250),
-})
+export const API_LocalizedDescription = LocalizedText(
+  minDescriptionLength,
+  maxDescriptionLength,
+)
   .describe("Description of the E-service")
   .meta({ id: "LocalizedDescription" });
 export type API_LocalizedDescription = z.infer<typeof API_LocalizedDescription>;
