@@ -4,60 +4,30 @@ interface Category {
   scheme: string;
 }
 
-export const categories: Category[] = [
-  {
-    code: "citizen.residence.residence_place",
-    name: "Residence place",
-    scheme: "vc_example_eservice_categories",
+const categories: Record<string, Record<string, string>> = {
+  vc_example_eservice_categories: {
+    "citizen.identity.birth_date": "Birth date",
+    "citizen.identity.birth_place": "Birth place",
+    "citizen.identity.marital_status": "Marital status",
+    "citizen.residence.digital_domicile": "Citizen digital domicile",
+    "citizen.residence.residence_place": "Residence place",
+    "organization.private_company.address": "Company address",
+    "organization.private_company.digital_domicile": "Company digital domicile",
+    "organization.private_company.economic_activity": "Economic activity",
+    "organization.public_administration.address": "PA address",
+    "organization.public_administration.digital_domicile":
+      "PA digital domicile",
+    "organization.public_administration.typology": "PA typology",
   },
-  {
-    code: "citizen.residence.digital_domicile",
-    name: "Citizen digital domicile",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "citizen.identity.marital_status",
-    name: "Marital status",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "citizen.identity.birth_place",
-    name: "Birth place",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "citizen.identity.birth_date",
-    name: "Birth date",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "organization.public_administration.typology",
-    name: "PA typology",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "organization.public_administration.address",
-    name: "PA address",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "organization.public_administration.digital_domicile",
-    name: "PA digital domicile",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "organization.private_company.economic_activity",
-    name: "Economic activity",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "organization.private_company.address",
-    name: "Company address",
-    scheme: "vc_example_eservice_categories",
-  },
-  {
-    code: "organization.private_company.digital_domicile",
-    name: "Company digital domicile",
-    scheme: "vc_example_eservice_categories",
-  },
-];
+};
+
+export function getCategory(
+  scheme: string,
+  code: string,
+): Category | undefined {
+  const name = categories[scheme]?.[code];
+  if (name === undefined) {
+    return undefined;
+  }
+  return { code, name, scheme };
+}

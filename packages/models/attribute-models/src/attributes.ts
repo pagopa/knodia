@@ -4,20 +4,21 @@ interface Attribute {
   scheme: string;
 }
 
-export const attributes: Attribute[] = [
-  {
-    code: "nuts1",
-    name: "NUTS 1",
-    scheme: "vc_territorial_units",
+const attributes: Record<string, Record<string, string>> = {
+  vc_territorial_units: {
+    nuts1: "NUTS 1",
+    nuts2: "NUTS 2",
+    nuts3: "NUTS 3",
   },
-  {
-    code: "nuts2",
-    name: "NUTS 2",
-    scheme: "vc_territorial_units",
-  },
-  {
-    code: "nuts3",
-    name: "NUTS 3",
-    scheme: "vc_territorial_units",
-  },
-];
+};
+
+export function getAttribute(
+  scheme: string,
+  code: string,
+): Attribute | undefined {
+  const name = attributes[scheme]?.[code];
+  if (name === undefined) {
+    return undefined;
+  }
+  return { code, name, scheme };
+}
