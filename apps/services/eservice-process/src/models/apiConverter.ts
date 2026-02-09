@@ -1,20 +1,23 @@
 import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
 import { API_ProducerEservice } from "@knodia/eservice-models/api";
 
+import type { EserviceService } from "../services/eserviceService.ts";
+
 import { API_Eservice } from "./api.ts";
 
 export const toAPI_ProducerEservice = (
-  eservice: Eservice,
-  counts: { activeAgreements: number; activePurposes: number },
+  producerEservice: ReturnType<
+    EserviceService["getProducerEservices"]
+  >["items"][number],
 ): API_ProducerEservice => ({
-  activeAgreements: counts.activeAgreements,
-  activePurposes: counts.activePurposes,
-  categories: eservice.categories,
-  description: eservice.description,
-  id: eservice.id,
-  mode: eservice.mode,
-  name: eservice.name,
-  status: deriveEserviceStatus(eservice),
+  activeAgreements: producerEservice.activeAgreements,
+  activePurposes: producerEservice.activePurposes,
+  categories: producerEservice.eservice.categories,
+  description: producerEservice.eservice.description,
+  id: producerEservice.eservice.id,
+  mode: producerEservice.eservice.mode,
+  name: producerEservice.eservice.name,
+  status: deriveEserviceStatus(producerEservice.eservice),
 });
 
 export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({

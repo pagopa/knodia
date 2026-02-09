@@ -80,9 +80,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     handler: (req, res) => {
       const result = eserviceService.getProducerEservices(req.query);
       res.status(200).send({
-        items: result.items.map((item) =>
-          toAPI_ProducerEservice(item.eservice, item),
-        ),
+        items: result.items.map(toAPI_ProducerEservice),
         pagination: result.pagination,
       });
     },
