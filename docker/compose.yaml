@@ -72,7 +72,7 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
-    image: quay.io/debezium/connect:3.4.1.Final
+    image: quay.io/debezium/connect:3.4.1.Final@sha256:8116a4c77072abfa89978f3a346f67ad9737a9f95d7db17bc2cf354e80c57f9c
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
@@ -148,9 +148,30 @@ services:
       mc mb --ignore-existing local/knodia-eservice-interfaces;
       exit 0;
       "
+  # Web GUI for PostgreSQL
+  pgadmin:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-pgadmin
+    image: dpage/pgadmin4:9
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
+      - ./pgpass:/pgadmin4/pgpass:ro
+    depends_on:
+      - event-store
+      - readmodel
 
 volumes:
   event-store-data:
   readmodel-data:
   kafka-data:
   minio-data:
+  pgadmin-data:
