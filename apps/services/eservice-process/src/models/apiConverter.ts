@@ -13,7 +13,6 @@ export const toAPI_ProducerEservice = (
   activeAgreements: producerEservice.activeAgreements,
   activePurposes: producerEservice.activePurposes,
   categories: producerEservice.eservice.categories,
-  description: producerEservice.eservice.description,
   id: producerEservice.eservice.id,
   mode: producerEservice.eservice.mode,
   name: producerEservice.eservice.name,

@@ -65,7 +65,6 @@ export const API_ProducerEservice = z
       .describe("Number of active purposes")
       .meta({ format: "int32" }),
     categories: z.array(API_EserviceCategory),
-    description: API_LocalizedDescription,
     id: z.uuid(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
