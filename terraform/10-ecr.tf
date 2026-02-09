@@ -1,9 +1,17 @@
 locals {
-  repository_names = []
+  computed_repository_dir = "../apps/services/"
+  computed_repository_names = [
+    for d in distinct([
+      for f in flatten(fileset(path.root, "${local.computed_repository_dir}*/*")) :
+      dirname(f)
+    ]) :
+    "knodia-be-${replace(d, local.computed_repository_dir, "")}"
+  ]
+  custom_repository_names = ["knodia-frontend"]
 }
 
 resource "aws_ecr_repository" "app" {
-  for_each = toset(local.repository_names)
+  for_each = toset(concat(local.computed_repository_names, local.custom_repository_names))
 
   image_tag_mutability = contains(["test", "prod"], var.env) ? "IMMUTABLE" : "MUTABLE"
   name                 = each.key
