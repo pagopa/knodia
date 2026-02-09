@@ -13,7 +13,11 @@ import {
   TargetIcon,
   UsersThreeIcon,
 } from "@phosphor-icons/react";
-import { Link, type LinkProps, useLocation } from "@tanstack/react-router";
+import {
+  createLink,
+  type LinkProps,
+  useLocation,
+} from "@tanstack/react-router";
 
 interface SidebarItem {
   Icon: Icon;
@@ -65,6 +69,11 @@ const SIDEBAR_SECTIONS: SidebarSection[] = [
   },
 ];
 
+/**
+ * To make preloading work with SidebarNavItem.
+ */
+const SidebarNavItemLink = createLink(SidebarNavItem);
+
 export function Sidebar() {
   const location = useLocation();
 
@@ -74,15 +83,14 @@ export function Sidebar() {
       {SIDEBAR_SECTIONS.map((section, idx) => (
         <SidebarSection key={idx} title={section.title}>
           {section.items.map((item) => (
-            <SidebarNavItem
+            <SidebarNavItemLink
               isCurrent={location.pathname.startsWith(item.to)}
               key={`${item.to}-${item.label}`}
+              to={item.to}
             >
-              <Link to={item.to}>
-                <item.Icon />
-                {item.label}
-              </Link>
-            </SidebarNavItem>
+              <item.Icon />
+              {item.label}
+            </SidebarNavItemLink>
           ))}
         </SidebarSection>
       ))}

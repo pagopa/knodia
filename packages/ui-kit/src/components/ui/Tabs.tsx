@@ -46,7 +46,7 @@ const tab = tv({
     },
     isSelected: {
       true: "body-md-em bg-white border-primary-light-decorative border-b-transparent relative z-10 -mb-px",
-      false: "bg-neutral-100 border-primary-light-decorative border-b-0",
+      false: "bg-neutral-100 border-b-0",
     },
     isDisabled: {
       true: "cursor-not-allowed opacity-30",

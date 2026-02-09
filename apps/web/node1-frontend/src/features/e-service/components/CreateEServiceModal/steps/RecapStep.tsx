@@ -2,6 +2,7 @@ import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 import { Fragment } from "react";
 
+import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
@@ -195,21 +196,6 @@ function GeneralInfoSection({
   );
 }
 
-function RecapField({
-  label,
-  value,
-}: {
-  label: string;
-  value?: React.ReactNode;
-}) {
-  return (
-    <div className="flex justify-between py-3 px-4 bg-secondary-light rounded-lg">
-      <span className="text-secondary-light-mid-contrast body-md">{label}</span>
-      <span className="body-md-em">{value}</span>
-    </div>
-  );
-}
-
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <h3 className="headline-sm-em text-primary-light-high-contrast">
@@ -233,33 +219,35 @@ function TechnicalDetailsSection({
     <>
       <SectionTitle>Technical details</SectionTitle>
 
-      <RecapField
-        label="Mode"
-        value={data.mode === "ReceiveData" ? "Receive data" : "Provide data"}
-      />
+      <GenericInfoCard label="Mode">
+        {data.mode === "ReceiveData" ? "Receive data" : "Provide data"}
+      </GenericInfoCard>
 
       <FieldGroup title="Access token settings">
-        <RecapField label="Duration" value={data.accessTokenDuration || "-"} />
-        <RecapField label="Audience" value={data.accessTokenAudience || "-"} />
-        <RecapField label="Type" value={data.accessTokenType || "-"} />
+        <GenericInfoCard label="Duration">
+          {data.accessTokenDuration || "-"}
+        </GenericInfoCard>
+        <GenericInfoCard label="Audience">
+          {data.accessTokenAudience || "-"}
+        </GenericInfoCard>
+        <GenericInfoCard label="Type">
+          {data.accessTokenType || "-"}
+        </GenericInfoCard>
       </FieldGroup>
 
       <FieldGroup title="Max API calls per day">
-        <RecapField
-          label="Per Knode"
-          value={data.maxDailyCallsPerKnode || "-"}
-        />
-        <RecapField
-          label="Per consumer"
-          value={data.maxDailyCallsPerConsumer || "-"}
-        />
+        <GenericInfoCard label="Per Knode">
+          {data.maxDailyCallsPerKnode || "-"}
+        </GenericInfoCard>
+        <GenericInfoCard label="Per consumer">
+          {data.maxDailyCallsPerConsumer || "-"}
+        </GenericInfoCard>
       </FieldGroup>
 
       <FieldGroup title="Signal Hub">
-        <RecapField
-          label="Available on Signal Hub"
-          value={data.isSignalHubEnabled ? "Yes" : "No"}
-        />
+        <GenericInfoCard label="Available on Signal Hub">
+          {data.isSignalHubEnabled ? "Yes" : "No"}
+        </GenericInfoCard>
         {data.isSignalHubEnabled && (
           <DocumentRecap
             name={`Appoint ${KNODE_NAME} as the data processor`}

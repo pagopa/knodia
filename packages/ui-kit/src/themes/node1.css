@@ -149,10 +149,12 @@
   --font-family-headline: var(--font-sans);
   --line-height-headline: 1.2;
   --font-size-headline-sm: 24px;
+  --font-size-headline-md: 28px;
   --font-size-headline-lg: 32px;
   --font-weight-headline: 400;
   --font-weight-headline-em: 600;
   --letter-spacing-headline-sm: 0px;
+  --letter-spacing-headline-md: 0px;
   --letter-spacing-headline-lg: 0px;
 }
 
@@ -248,6 +250,14 @@
     font-size: var(--font-size-headline-sm);
     font-weight: var(--font-weight-headline-em);
     letter-spacing: var(--letter-spacing-headline-sm);
+    line-height: var(--line-height-headline);
+  }
+
+  .headline-md {
+    font-family: var(--font-family-headline);
+    font-size: var(--font-size-headline-md);
+    font-weight: var(--font-weight-headline);
+    letter-spacing: var(--letter-spacing-headline-md);
     line-height: var(--line-height-headline);
   }
 
