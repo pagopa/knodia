@@ -1,4 +1,7 @@
-import type { LocalizedText } from "@knodia/common-models/localization";
+import type {
+  LocalizedDescription,
+  LocalizedName,
+} from "@knodia/eservice-models";
 import type { InferSelectModel } from "drizzle-orm";
 
 import {
@@ -26,7 +29,7 @@ export const readmodelEservice = eserviceSchema.table(
     createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
       .defaultNow()
       .notNull(),
-    description: jsonb().$type<LocalizedText>().notNull(),
+    description: jsonb().$type<LocalizedDescription>().notNull(),
     id: uuid().primaryKey(),
     isConsumerOperatorIdentificationRequired: boolean(
       "is_consumer_operator_identification_required",
@@ -34,7 +37,7 @@ export const readmodelEservice = eserviceSchema.table(
     isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
     mode: text().notNull(),
-    name: jsonb().$type<LocalizedText>().notNull(),
+    name: jsonb().$type<LocalizedName>().notNull(),
     producerId: uuid("producer_id").notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
@@ -91,7 +94,7 @@ export const readmodelEserviceInterface = eserviceSchema.table(
     metadataVersion: integer("metadata_version").notNull(),
     name: text().notNull(),
     path: text().notNull(),
-    prettyName: jsonb("pretty_name").$type<LocalizedText>().notNull(),
+    prettyName: jsonb("pretty_name").$type<LocalizedName>().notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,

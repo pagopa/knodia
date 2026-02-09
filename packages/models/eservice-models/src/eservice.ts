@@ -17,6 +17,21 @@ export const maxDailyCalls = 1_000_000_000;
 
 const minEserviceVersionNumber = 1;
 
+export const maxDescriptionLength = 250;
+export const minDescriptionLength = 10;
+
+export const maxNameLength = 60;
+export const minNameLength = 5;
+
+export const LocalizedDescription = LocalizedText(
+  minDescriptionLength,
+  maxDescriptionLength,
+);
+export type LocalizedDescription = z.infer<typeof LocalizedDescription>;
+
+export const LocalizedName = LocalizedText(minNameLength, maxNameLength);
+export type LocalizedName = z.infer<typeof LocalizedName>;
+
 export const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;
 
@@ -74,12 +89,12 @@ export type EserviceCategory = z.infer<typeof EserviceCategory>;
 export const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
-  description: LocalizedText,
+  description: LocalizedDescription,
   id: EserviceId,
   isConsumerOperatorIdentificationRequired: z.boolean(),
   isSignalHubEnabled: z.boolean(),
   mode: EserviceMode,
-  name: LocalizedText,
+  name: LocalizedName,
   producerId: OrganizationId,
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),
