@@ -6,14 +6,14 @@ import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { createProcessMessage } from "../src/utilities/utils.ts";
 
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
+let readModelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let producer: Awaited<ReturnType<typeof setupKafkaTestProducer>>["producer"];
 let topicName: Awaited<ReturnType<typeof setupKafkaTestProducer>>["topicName"];
 let kafkaConfig: KafkaConsumerConfig;
 let processMessage: ReturnType<typeof createProcessMessage>;
 
 beforeAll(async () => {
-  readmodelDb = await setupReadmodelTestDatabase(
+  readModelDb = await setupReadmodelTestDatabase(
     inject("READMODEL_CONNECTION_STRING"),
   );
 
@@ -21,20 +21,20 @@ beforeAll(async () => {
     inject("KAFKA_BROKER"),
   ));
 
-  processMessage = createProcessMessage(readmodelDb);
+  processMessage = createProcessMessage(readModelDb);
 });
 
 beforeEach(async () => {
-  await readmodelDb.execute("BEGIN");
+  await readModelDb.execute("BEGIN");
 });
 
 afterEach(async () => {
-  await readmodelDb.execute("ROLLBACK");
+  await readModelDb.execute("ROLLBACK");
 });
 
 afterAll(async () => {
-  await readmodelDb.$client.end();
+  await readModelDb.$client.end();
   await producer.disconnect();
 });
 
-export { kafkaConfig, processMessage, producer, readmodelDb, topicName };
+export { kafkaConfig, processMessage, producer, readModelDb, topicName };
