@@ -1,3 +1,5 @@
+import { genericInternalError } from "@knodia/common-models/errors";
+
 import type { Eservice, EserviceVersion } from "./eservice.ts";
 
 export const getLatestVersion = (eservice: Eservice): EserviceVersion => {
@@ -5,7 +7,7 @@ export const getLatestVersion = (eservice: Eservice): EserviceVersion => {
     (a, b) => b.versionNumber - a.versionNumber,
   )[0];
   if (!latestVersion) {
-    throw new Error(`Eservice ${eservice.id} has no versions`);
+    throw genericInternalError(`Eservice ${eservice.id} has no versions`);
   }
   return latestVersion;
 };
