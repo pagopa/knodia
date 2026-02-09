@@ -1,5 +1,5 @@
 import type { CorrelationId, EserviceId } from "@knodia/common-models/ids";
-import type { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
+import type { eserviceTable } from "@knodia/db-event-store-eservice";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { EserviceEventV1 } from "@knodia/eservice-models";
@@ -11,7 +11,7 @@ export interface NewEventStoreEvent<
   TStreamId extends EventStoreStreamIds,
 > {
   correlationId: CorrelationId;
-  currentMetadataVersion: bigint | undefined;
+  currentMetadataVersion: number | undefined;
   event: TEvent;
   streamId: TStreamId;
 }
@@ -23,7 +23,7 @@ type EventStoreEvents = z.infer<typeof EventStoreEvents>;
 type EventStoreStreamIds = EserviceId; // | AgreementId | ...;
 
 type EventStoreTables =
-  typeof eventStoreEserviceEvents; /* | typeof eventStoreAgreementEvents | ... */
+  typeof eserviceTable; /* | typeof eventStoreAgreementEvents | ... */
 
 export const computeNextMetadataVersion = <
   TStreamId extends EventStoreStreamIds,
@@ -32,17 +32,17 @@ export const computeNextMetadataVersion = <
   latestVersion,
   streamId,
 }: {
-  currentVersion: bigint | undefined;
-  latestVersion: bigint | undefined;
+  currentVersion: number | undefined;
+  latestVersion: number | undefined;
   streamId: TStreamId;
-}): bigint => {
+}): number => {
   if (latestVersion !== currentVersion) {
     throw new Error(
       `Current metadata version ${currentVersion} is not the latest for stream ${streamId} (latest is ${latestVersion})`,
     );
   }
 
-  return currentVersion !== undefined ? currentVersion + BigInt(1) : BigInt(0);
+  return currentVersion !== undefined ? currentVersion + 1 : 0;
 };
 
 export function eventStoreWriterBuilder<
