@@ -5,6 +5,8 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
+import { EserviceVersionState } from "./eservice.ts";
+
 export const API_LocalizedName = LocalizedText.extend({
   en: z.string().min(5).max(60),
 })
@@ -23,11 +25,6 @@ export const API_EserviceMode = z
   .enum(["ProvideData", "ReceiveData"])
   .meta({ id: "EserviceMode" });
 export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
-
-export const API_EserviceStatus = z
-  .enum(["Available", "Unavailable", "Archived"])
-  .meta({ id: "EserviceStatus" });
-export type API_EserviceStatus = z.infer<typeof API_EserviceStatus>;
 
 export const API_EserviceCategory = z
   .strictObject({
@@ -68,7 +65,7 @@ export const API_ProducerEservice = z
     id: z.uuid(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    status: API_EserviceStatus,
+    status: EserviceVersionState,
   })
   .meta({ id: "ProducerEserviceListItem" });
 export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
@@ -92,8 +89,8 @@ export const API_ProducerEservicesQueryParams =
       .describe("Sort direction"),
     status: z
       .union([
-        z.array(API_EserviceStatus),
-        API_EserviceStatus.transform((v) => [v]),
+        z.array(EserviceVersionState),
+        EserviceVersionState.transform((v) => [v]),
       ])
       .optional()
       .describe("Filter by E-service status"),

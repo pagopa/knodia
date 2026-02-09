@@ -9,7 +9,7 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
+import { Eservice, getLatestVersion } from "@knodia/eservice-models";
 import { match } from "ts-pattern";
 
 import type { API_EserviceSeed } from "../models/api.ts";
@@ -142,7 +142,7 @@ export function eserviceServiceBuilder(
       // Filter by status
       if (status && status.length > 0) {
         items = items.filter((item) =>
-          status.includes(deriveEserviceStatus(item.eservice)),
+          status.includes(getLatestVersion(item.eservice).state),
         );
       }
 

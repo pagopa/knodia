@@ -114,12 +114,6 @@ components:
       enum:
         - ProvideData
         - ReceiveData
-    EserviceStatus:
-      type: string
-      enum:
-        - Available
-        - Unavailable
-        - Archived
     EserviceCategory:
       type: object
       properties:
@@ -175,7 +169,11 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedName"
         status:
-          $ref: "#/components/schemas/EserviceStatus"
+          type: string
+          enum:
+            - Active
+            - Suspended
+            - Archived
       required:
         - activeAgreements
         - activePurposes
@@ -487,9 +485,16 @@ paths:
             anyOf:
               - type: array
                 items:
-                  $ref: "#/components/schemas/EserviceStatus"
-              - allOf:
-                  - $ref: "#/components/schemas/EserviceStatus"
+                  type: string
+                  enum:
+                    - Active
+                    - Suspended
+                    - Archived
+              - type: string
+                enum:
+                  - Active
+                  - Suspended
+                  - Archived
           in: query
           name: status
           required: false
