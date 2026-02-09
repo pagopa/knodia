@@ -53,7 +53,6 @@ export function eserviceServiceBuilder(
             accessTokenType: seed.accessTokenType ?? "Bearer",
             createdAt: now,
             id: eserviceVersionId,
-            // TODO: implement interface document upload
             interfaceDocument: {
               checksum: seed.interfaceDocument.checksum,
               contentType: seed.interfaceDocument.contentType,
