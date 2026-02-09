@@ -23,12 +23,6 @@ detect_network_and_hosts() {
     ES_PORT="5432"
     RM_HOST="readmodel"
     RM_PORT="5432"
-  elif docker ps --format "{{.Names}}" | grep -q "pagopa-interop-event-store"; then
-    DOCKER_NETWORK="pagopa-interop_default"
-    ES_HOST="event-store"
-    ES_PORT="5432"
-    RM_HOST="readmodel-sql"
-    RM_PORT="5433"
   else
     echo "Error: No supported Postgres containers found. Start the infrastructure first." >&2
     exit 1
