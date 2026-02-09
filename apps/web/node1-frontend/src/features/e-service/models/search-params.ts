@@ -11,14 +11,24 @@ export const productionEserviceSearchDefaultValues = {
 export const productionEserviceSearchSchema = z.object({
   dataMode: z
     .enum(["consume", "provide", "all"])
+    .default(productionEserviceSearchDefaultValues.dataMode)
     .catch(productionEserviceSearchDefaultValues.dataMode),
-  offset: z.number().min(0).catch(productionEserviceSearchDefaultValues.offset),
+  offset: z
+    .number()
+    .min(0)
+    .default(productionEserviceSearchDefaultValues.offset)
+    .catch(productionEserviceSearchDefaultValues.offset),
   orderBy: z
     .enum(["name", "agreementsCount", "purposesCount"])
+    .default(productionEserviceSearchDefaultValues.orderBy)
     .catch(productionEserviceSearchDefaultValues.orderBy),
-  q: z.string().catch(productionEserviceSearchDefaultValues.q),
+  q: z
+    .string()
+    .default(productionEserviceSearchDefaultValues.q)
+    .catch(productionEserviceSearchDefaultValues.q),
   status: z
     .enum(["active", "inactive", "all"])
+    .default(productionEserviceSearchDefaultValues.status)
     .catch(productionEserviceSearchDefaultValues.status),
 });
 
