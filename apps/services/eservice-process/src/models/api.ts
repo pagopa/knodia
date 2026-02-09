@@ -5,6 +5,7 @@ import {
   API_EserviceCategory,
   API_EserviceMode,
   API_LocalizedDescription,
+  API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import {
@@ -45,23 +46,23 @@ const API_InterfaceDocumentSeed = z
     checksum: z
       .string()
       .describe(
-        "Base64-encoded SHA-256 checksum of the uploaded interface document",
+        "Base64-encoded SHA-256 checksum of the uploaded E-service interface document",
       ),
     contentType: z
       .string()
-      .describe("MIME type of the uploaded interface document"),
+      .describe("MIME type of the uploaded E-service interface document"),
     id: EserviceInterfaceId.describe(
-      "Unique identifier of the interface document",
+      "Unique identifier of the E-service interface document",
     ),
     name: z
       .string()
-      .describe("Name of the uploaded interface document, with extension"),
-    path: z.string().describe("Path where the interface document is stored"),
-    prettyName: z
-      .strictObject({
-        en: z.string().describe("English pretty name"),
-      })
-      .describe("Pretty name for the document in different languages"),
+      .describe(
+        "Name of the uploaded E-service interface document, with extension",
+      ),
+    path: z
+      .string()
+      .describe("Path where the E-service interface document is stored"),
+    prettyName: API_LocalizedInterfacePrettyName,
   })
   .meta({ id: "InterfaceDocumentSeed" });
 
