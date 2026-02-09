@@ -48,7 +48,7 @@ export const EserviceInterface = z.strictObject({
   id: EserviceInterfaceId,
   name: z.string(),
   path: z.string(),
-  prettyName: LocalizedText,
+  prettyName: LocalizedName,
   updatedAt: z.coerce.date(),
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
