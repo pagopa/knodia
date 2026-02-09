@@ -9,6 +9,8 @@
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
     "lint-openapi": "turbo run lint-openapi",
+    "dev:storybook": "turbo run dev:storybook",
+    "build:storybook": "turbo run build:storybook",
     "db:generate": "turbo run db:generate",
     "db:migrate": "turbo run db:migrate",
     "knip": "turbo run generate-artifacts && knip",
