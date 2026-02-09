@@ -76,7 +76,7 @@ export function SidebarSection({ children, title }: SidebarSectionProps) {
           {title}
         </p>
       )}
-      <ul className="space-y-1" role="list">
+      <ul className="flex flex-col gap-1" role="list">
         {children}
       </ul>
     </nav>

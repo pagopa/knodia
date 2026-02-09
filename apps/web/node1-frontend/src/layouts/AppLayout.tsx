@@ -9,7 +9,7 @@ export function AppLayout({ children }: { children?: React.ReactNode }) {
         <Sidebar />
         {/* !!! The id is used in TanstackRouter configuration to set the target for scroll restoration. */}
         {/* !!! @see https://tanstack.com/router/v1/docs/framework/react/guide/scroll-restoration#scroll-to-top--nested-scrollable-areas */}
-        <main className="p-10 flex-1 overflow-auto" id="main-content">
+        <main className="p-10 flex-1 overflow-auto relative" id="main-content">
           {children}
         </main>
       </div>

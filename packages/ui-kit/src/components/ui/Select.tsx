@@ -19,7 +19,7 @@ import { dropdownStyles, fieldInputStyle, listItemStyles } from "./styles";
 
 const styles = tv({
   extend: fieldInputStyle,
-  base: "bg-white flex items-center text-start gap-4 w-full",
+  base: "flex items-center text-start gap-4 w-full text-primary-light-high-contrast",
   variants: {
     size: {
       sm: "py-1.25",
@@ -32,24 +32,18 @@ const styles = tv({
   },
 });
 
-const selectValue = tv({
-  base: "flex-1 body-md truncate",
-  variants: {
-    isPlaceholder: {
-      true: "text-primary-light-low-contrast",
-      false: "text-primary-light-high-contrast",
-    },
-  },
-});
-
-export interface SelectProps<T extends object>
-  extends Omit<AriaSelectProps<T>, "children">, SelectVariants {
+export interface SelectProps<
+  T extends Iterable<unknown> = Iterable<unknown>,
+  M extends "multiple" | "single" = "single",
+>
+  extends Omit<AriaSelectProps<T, M>, "children">, SelectVariants {
   children: ((item: T) => React.ReactNode) | React.ReactNode;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
   items?: Iterable<T>;
   label?: string;
 }
+
 interface DropdownItemProps extends ListBoxItemProps {
   endIcon?: React.ReactNode;
   startIcon?: React.ReactNode;
@@ -57,22 +51,27 @@ interface DropdownItemProps extends ListBoxItemProps {
 
 type SelectVariants = VariantProps<typeof styles>;
 
-export function Select<T extends object>({
+export function Select<
+  T extends Iterable<unknown> = Iterable<unknown>,
+  M extends "multiple" | "single" = "single",
+>({
   label,
   description,
   errorMessage,
   children,
   items,
   size,
+  isInvalid = false,
   ...props
-}: SelectProps<T>) {
+}: SelectProps<T, M>) {
   return (
-    <AriaSelect
+    <AriaSelect<T, M>
       {...props}
       className={composeTailwindRenderProps(
         props.className,
         "group flex flex-col gap-1 relative font-sans",
       )}
+      isInvalid={isInvalid}
     >
       {label && <Label>{label}</Label>}
       <Button
@@ -80,16 +79,12 @@ export function Select<T extends object>({
           styles({
             ...renderProps,
             size,
-            isInvalid: props.isInvalid,
-            isFocused: renderProps.isFocused,
+            isInvalid,
+            isFocused: renderProps.isPressed,
           })
         }
       >
-        <SelectValue
-          className={(renderProps) =>
-            selectValue({ isPlaceholder: renderProps.isPlaceholder })
-          }
-        >
+        <SelectValue className="flex-1 body-md truncate data-placeholder:text-primary-light-low-contrast">
           {({ selectedText, defaultChildren }) =>
             selectedText || defaultChildren
           }
@@ -102,7 +97,7 @@ export function Select<T extends object>({
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
       <Popover className="min-w-(--trigger-width)">
-        <ListBox className={dropdownStyles} items={items as Iterable<T>}>
+        <ListBox className={dropdownStyles} {...(items && { items })}>
           {children}
         </ListBox>
       </Popover>

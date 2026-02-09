@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@knodia/ui-kit": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "@tanstack/devtools-vite": "catalog:",
@@ -26,6 +27,7 @@
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
     "tailwind-merge": "catalog:",
+    "spark-md5": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
@@ -37,6 +39,7 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/spark-md5": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
