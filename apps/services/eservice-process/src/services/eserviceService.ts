@@ -1,8 +1,5 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
-import type {
-  API_ProducerEservices,
-  API_ProducerEservicesQueryParams,
-} from "@knodia/eservice-models/api";
+import type { ListResult } from "@knodia/db-readmodel-commons";
 
 import { type RequestContextData } from "@fastify/request-context";
 import {
@@ -13,9 +10,11 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import { Eservice } from "@knodia/eservice-models";
-import { zocker } from "zocker";
 
-import type { API_EserviceSeed } from "../models/api.ts";
+import type {
+  API_EserviceSeed,
+  API_GetEservicesQueryParams,
+} from "../models/api.ts";
 import type { ReadModelService } from "./readModelService.ts";
 
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
@@ -92,41 +91,10 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    getMockEservices(
-      offset: number,
-      limit: number,
-    ): {
-      items: Eservice[];
-      pagination: { limit: number; offset: number; total: number };
-    } {
-      const eservices = zocker(Eservice).generateMany(100);
-
-      return {
-        items: eservices.slice(offset, offset + limit),
-        pagination: {
-          limit,
-          offset,
-          total: eservices.length,
-        },
-      };
-    },
-    async getProducerEservices(
-      params: API_ProducerEservicesQueryParams,
-    ): Promise<API_ProducerEservices> {
-      // TODO: get real data, producerId from auth context
-      const producerId = generateId<OrganizationId>();
-      const { limit, offset } = params;
-      const { results, totalCount } =
-        await readModelService.getProducerEservices(params, producerId);
-
-      return {
-        items: results,
-        pagination: {
-          limit,
-          offset,
-          total: totalCount,
-        },
-      };
+    async getEservices(
+      params: API_GetEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      return await readModelService.getEservices(params);
     },
   };
 }

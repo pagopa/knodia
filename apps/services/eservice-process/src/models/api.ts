@@ -1,4 +1,6 @@
+import { OrganizationId } from "@knodia/common-models/ids";
 import {
+  EserviceVersionState,
   maxAccessTokenDuration,
   maxDailyCalls,
   minAccessTokenDuration,
@@ -18,8 +20,30 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
-export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
-export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
+export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
+  mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
+  producerId: OrganizationId.optional().describe("Filter by producer ID"),
+  q: z
+    .string()
+    .optional()
+    .describe("Search by name, description or categories"),
+  sortBy: z
+    .enum(["name", "activeAgreements", "activePurposes"])
+    .optional()
+    .default("name")
+    .describe("Field to sort by"),
+  sortOrder: z
+    .enum(["asc", "desc"])
+    .optional()
+    .default("asc")
+    .describe("Sort direction"),
+  status: EserviceVersionState.optional().describe(
+    "Filter by E-service status",
+  ),
+});
+export type API_GetEservicesQueryParams = z.infer<
+  typeof API_GetEservicesQueryParams
+>;
 
 export const API_Eservice = z
   .strictObject({

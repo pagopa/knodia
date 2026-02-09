@@ -1,8 +1,3 @@
-import type { OrganizationId } from "@knodia/common-models/ids";
-import type {
-  API_ProducerEservice,
-  API_ProducerEservicesQueryParams,
-} from "@knodia/eservice-models/api";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -21,18 +16,20 @@ import {
   aggregateEservices,
   toEservicesAggregator,
 } from "@knodia/db-readmodel-eservice/converters";
-import { getLatestVersion } from "@knodia/eservice-models";
+import { Eservice, getLatestVersion } from "@knodia/eservice-models";
 import { and, eq, ilike, or } from "drizzle-orm";
+
+import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
 export type ReadModelService = ReturnType<typeof readModelServiceBuilder>;
 
 export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
   return {
-    async getProducerEservices(
-      params: API_ProducerEservicesQueryParams,
-      producerId: OrganizationId,
-    ): Promise<ListResult<API_ProducerEservice>> {
-      const { limit, mode, offset, q, sortBy, sortOrder, status } = params;
+    async getEservices(
+      params: API_GetEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      const { limit, mode, offset, producerId, q, sortBy, sortOrder, status } =
+        params;
 
       return await readModelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -55,7 +52,9 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
           )
           .where(
             and(
-              eq(readmodelEservice.producerId, producerId),
+              producerId
+                ? eq(readmodelEservice.producerId, producerId)
+                : undefined,
               mode ? eq(readmodelEservice.mode, mode) : undefined,
               status ? eq(readmodelEserviceVersion.state, status) : undefined,
               q
