@@ -6,6 +6,7 @@ node_modules/
 
 # General
 .DS_Store
+.tanstack
 
 # MinIO container data
 docker/minio-data
