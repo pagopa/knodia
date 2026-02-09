@@ -1,6 +1,5 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  aggregateById,
   aggregateByPKString,
   type WithMetadata,
 } from "@knodia/db-readmodel-commons";
@@ -22,7 +21,10 @@ import {
   type EserviceSQL,
   type EserviceVersionRequiredAttributeSQL,
   type EserviceVersionSQL,
+  readmodelEservice,
   readmodelEserviceCategory,
+  readmodelEserviceInterface,
+  readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
 
@@ -252,15 +254,30 @@ export const toEservicesAggregator = (
   const requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[] = [];
 
   queryRes.forEach((row) => {
-    aggregateById(row.eservice, eservicePKSet, eservicesSQL);
+    aggregateByPKString(
+      row.eservice,
+      eservicePKSet,
+      eservicesSQL,
+      readmodelEservice,
+    );
     aggregateByPKString(
       row.category,
       categoryPKSet,
       categoriesSQL,
       readmodelEserviceCategory,
     );
-    aggregateById(row.version, versionPKSet, versionsSQL);
-    aggregateById(row.interface, interfacePKSet, interfacesSQL);
+    aggregateByPKString(
+      row.version,
+      versionPKSet,
+      versionsSQL,
+      readmodelEserviceVersion,
+    );
+    aggregateByPKString(
+      row.interface,
+      interfacePKSet,
+      interfacesSQL,
+      readmodelEserviceInterface,
+    );
     aggregateByPKString(
       row.requiredAttribute,
       requiredAttributePKSet,

@@ -2,6 +2,8 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import { eq, type InferSelectModel, SQL } from "drizzle-orm";
+  getTableColumns,
+import { toCamelCase } from "drizzle-orm/casing";
 import {
   type AnyPgColumn,
   type AnyPgTable,
@@ -50,31 +52,30 @@ const checkMetadataVersionByFilter = async (
   return existingMetadataVersion <= metadataVersion;
 };
 
-const getTablePKColumns = (
-  tableConfig: ReturnType<typeof getTableConfig>,
-): string[] => {
+export const getTablePKColumns = (table: AnyPgTable): string[] => {
+  const tableConfig = getTableConfig(table);
   const pk = tableConfig.primaryKeys[0];
+  const pkColumns: string[] = [];
+  const tableColumns = getTableColumns(table);
+
   if (!pk) {
+    Object.entries(tableColumns).forEach(([name, column]) => {
+      if (column.primary) {
+        pkColumns.push(name);
+      }
+    });
+  } else {
+    pkColumns.push(...pk.columns.map((col) => toCamelCase(col.name)));
+  }
+
+  if (pkColumns.length === 0) {
     throw genericInternalError(
-      `Table ${tableConfig.name} primary key is not defined`,
+      `Table ${tableConfig.name} does not have a primary key`,
     );
   }
-  return pk.columns.map((col) => col.name);
-};
 
-export function aggregateById<T extends { id: string }>(
-  subRow: null | T,
-  pkSet: Set<string>,
-  subRows: T[],
-): void {
-  if (subRow !== null) {
-    const key = subRow.id;
-    if (!pkSet.has(key)) {
-      pkSet.add(key);
-      subRows.push(subRow);
-    }
-  }
-}
+  return pkColumns;
+};
 
 // TODO: uncomment when needed
 // export const throwIfMultipleOrEmpty = <T extends { id: string }>(
