@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 
 interface PageHeaderProps extends React.ComponentProps<"header"> {
   actions?: React.ReactNode;
-  subtitle?: string;
+  overline?: string;
   title: string;
   titleAs?: PageHeaderTitleTag;
 }
@@ -14,7 +14,7 @@ type PageHeaderTitleTag = "h1" | "h2" | "h3";
 export function PageHeader({
   actions,
   className,
-  subtitle,
+  overline,
   title,
   titleAs: TitleTag = "h1",
   ...props
@@ -28,9 +28,9 @@ export function PageHeader({
       )}
     >
       <div className="min-w-0">
-        {subtitle ? (
+        {overline ? (
           <p className="label-sm-em uppercase text-primary-light-low-contrast mb-2">
-            {subtitle}
+            {overline}
           </p>
         ) : null}
         <TitleTag className="headline-md text-primary-light-high-contrast">

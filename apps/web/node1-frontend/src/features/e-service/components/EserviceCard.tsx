@@ -68,7 +68,7 @@ function EserviceCardHeader({ title }: { title: string }) {
     <header className="flex items-center">
       <h3 className="flex-1 min-w-0 title-md-em truncate">{title}</h3>
       <ButtonLink
-        aria-label="Go to e-service"
+        aria-label={`Go to details of ${title} e-service`}
         hierarchy="neutral"
         href={{ to: "/" }}
         kind="outlined"

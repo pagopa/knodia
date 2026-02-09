@@ -38,8 +38,6 @@ const router = createRouter({
   defaultPendingComponent: () => (
     <Loader className="mx-auto mt-20" label="Loading..." />
   ),
-  defaultPendingMinMs: 0,
-  defaultPendingMs: 0,
   defaultPreload: "intent",
   // Since we're using React Query, we don't want loader calls to ever be stale
   // This will ensure that the loader is always called when the route is preloaded or visited
