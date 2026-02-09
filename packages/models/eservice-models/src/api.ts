@@ -50,7 +50,7 @@ export const API_EserviceAttribute = z
   .meta({ id: "EserviceAttribute" });
 export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
 
-export const API_ProducerEserviceListItem = z
+export const API_ProducerEservice = z
   .strictObject({
     activeAgreements: z
       .number()
@@ -72,9 +72,7 @@ export const API_ProducerEserviceListItem = z
     status: API_EserviceStatus,
   })
   .meta({ id: "ProducerEserviceListItem" });
-export type API_ProducerEserviceListItem = z.infer<
-  typeof API_ProducerEserviceListItem
->;
+export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
 export const API_ProducerEservicesQueryParams =
   API_PaginationQueryParams.extend({
@@ -107,7 +105,7 @@ export type API_ProducerEservicesQueryParams = z.infer<
 
 export const API_ProducerEservices = z
   .strictObject({
-    items: z.array(API_ProducerEserviceListItem),
+    items: z.array(API_ProducerEservice),
     pagination: API_Pagination,
   })
   .meta({ id: "ProducerEservices" });
