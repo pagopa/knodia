@@ -17,6 +17,7 @@ import {
   type AnyPgTable,
   getTableConfig,
   PgColumn,
+  PgJsonb,
   PgTable,
 } from "drizzle-orm/pg-core";
 import { match } from "ts-pattern";
@@ -64,23 +65,25 @@ const checkMetadataVersionByFilter = async (
   return existingMetadataVersion <= metadataVersion;
 };
 
-export const getTablePKColumns = (table: AnyPgTable): string[] => {
+export const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
   const tableConfig = getTableConfig(table);
   const pk = tableConfig.primaryKeys[0];
-  const pkColumns: string[] = [];
-  const tableColumns = getTableColumns(table);
+  const pkColumns = new Map<string, PgColumn>();
 
   if (!pk) {
+    const tableColumns = getTableColumns(table);
     Object.entries(tableColumns).forEach(([name, column]) => {
       if (column.primary) {
-        pkColumns.push(name);
+        pkColumns.set(name, column);
       }
     });
   } else {
-    pkColumns.push(...pk.columns.map((col) => toCamelCase(col.name)));
+    pk.columns.forEach((col) => {
+      pkColumns.set(toCamelCase(col.name), col);
+    });
   }
 
-  if (pkColumns.length === 0) {
+  if (pkColumns.size === 0) {
     throw genericInternalError(
       `Table ${tableConfig.name} does not have a primary key`,
     );
@@ -137,7 +140,7 @@ function getTablePKString<T extends Record<string, unknown>>(
   table: AnyPgTable,
 ): string {
   const tableConfig = getTableConfig(table);
-  return getTablePKColumns(table)
+  return Object.keys(getTablePKColumns(table))
     .map((col) => {
       const value = modelSQL[col];
       if (value === undefined || value === null) {
@@ -153,10 +156,22 @@ function getTablePKString<T extends Record<string, unknown>>(
 export const SortDirection = z.enum(["asc", "desc"]);
 export type SortDirection = z.infer<typeof SortDirection>;
 
+export const lowerCaseJsonb = (column: PgColumn, key: string): SQL<string> =>
+  sql<string>`LOWER(${column} ->> ${key})`;
 export const lowerCase = (column: PgColumn): SQL =>
-  sql<string>`LOWER(${column})`;
-export const ascLower = (column: PgColumn): SQL => asc(lowerCase(column));
-const descLower = (column: PgColumn): SQL => desc(lowerCase(column));
+  sql<string>`LOWER(${column}::text)`;
+export const ascLower = (column: PgColumn): SQL => {
+  if (column instanceof PgJsonb) {
+    return asc(lowerCaseJsonb(column, "en"));
+  }
+  return asc(lowerCase(column));
+};
+const descLower = (column: PgColumn): SQL => {
+  if (column instanceof PgJsonb) {
+    return desc(lowerCaseJsonb(column, "en"));
+  }
+  return desc(lowerCase(column));
+};
 
 export const createOrderByFilters = ({
   sortBy,
@@ -171,10 +186,9 @@ export const createOrderByFilters = ({
   const sortDirections: SortDirection[] = [SortDirection.parse(sortOrder)];
 
   const pkColumns = getTablePKColumns(table);
-  pkColumns.forEach((col) => {
-    const columnName = toCamelCase(col);
-    if (!sortColumns.includes(columnName)) {
-      sortColumns.push(columnName);
+  Object.entries(pkColumns).forEach(([colName]) => {
+    if (!sortColumns.includes(colName)) {
+      sortColumns.push(colName);
       sortDirections.push(SortDirection.enum.asc);
     }
   });
