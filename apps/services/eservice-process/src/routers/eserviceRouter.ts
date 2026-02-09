@@ -19,10 +19,7 @@ import {
   API_EserviceSeed,
   API_EservicesQueryParams,
 } from "../models/api.ts";
-import {
-  toAPI_Eservice,
-  toAPI_ProducerEserviceListItem,
-} from "../models/apiConverter.ts";
+import { toAPI_Eservice } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
@@ -77,14 +74,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const result = eserviceService.getProducerEservices(req.query);
-      res.status(200).send({
-        items: result.items.map((item) =>
-          toAPI_ProducerEserviceListItem(item.eservice, item),
-        ),
-        pagination: result.pagination,
-      });
+    handler: async (req, res) => {
+      const result = await eserviceService.getProducerEservices(req.query);
+
+      res.status(200).send(API_ProducerEservices.parse(result));
     },
     method: "GET",
     schema: {

@@ -17,6 +17,7 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
+import { readModelServiceBuilder } from "./services/readModelService.ts";
 
 export function buildApp({
   eventStoreDb,
@@ -51,7 +52,10 @@ export function buildApp({
   app.register(healthRouter);
   app.register(
     eserviceRouter,
-    eserviceServiceBuilder(eserviceEventStoreWriterBuilder(eventStoreDb)),
+    eserviceServiceBuilder(
+      eserviceEventStoreWriterBuilder(eventStoreDb),
+      readModelServiceBuilder(eventStoreDb),
+    ),
   );
 
   return app;

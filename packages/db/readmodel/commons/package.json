@@ -10,12 +10,14 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
-    "drizzle-orm": "catalog:"
+    "drizzle-orm": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
+    "ts-pattern": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {

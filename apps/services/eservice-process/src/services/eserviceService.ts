@@ -11,8 +11,10 @@ import {
 } from "@knodia/common-models/ids";
 import { deriveEserviceStatus, Eservice } from "@knodia/eservice-models";
 import { match } from "ts-pattern";
+import { Eservice } from "@knodia/eservice-models";
 
 import type { API_EserviceSeed } from "../models/api.ts";
+import type { ReadModelService } from "./readModelService.ts";
 
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 import { mockEservices } from "./mockEservices.ts";
@@ -21,6 +23,7 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
+  readModelService: ReadModelService,
 ) {
   return {
     async createEservice(
@@ -106,81 +109,21 @@ export function eserviceServiceBuilder(
         },
       };
     },
-    getProducerEservices(params: API_ProducerEservicesQueryParams): {
-      items: {
-        activeAgreements: number;
-        activePurposes: number;
-        eservice: Eservice;
-      }[];
-      pagination: { limit: number; offset: number; total: number };
-    } {
+    async getProducerEservices(
+      params: API_ProducerEservicesQueryParams,
+    ): Promise<API_ProducerEservices> {
       // TODO: get real data, producerId from auth context
       const producerId = generateId<OrganizationId>();
-      const eservices = generateMockEservices(producerId);
-      const { limit, mode, offset, q, sortBy, sortOrder, status } = params;
-
-      // Enrich with random mock counts
-      let items = eservices.map((eservice, idx) => ({
-        ...generateMockCounts(idx),
-        eservice,
-      }));
-
-      // Filter by search query (name, description, categories)
-      if (q) {
-        const query = q.toLowerCase();
-        items = items.filter(
-          (item) =>
-            item.eservice.name.en.toLowerCase().includes(query) ||
-            item.eservice.description.en.toLowerCase().includes(query) ||
-            item.eservice.categories.some((c) =>
-              c.code.toLowerCase().includes(query),
-            ),
-        );
-      }
-
-      // Filter by status
-      if (status && status.length > 0) {
-        items = items.filter((item) =>
-          status.includes(deriveEserviceStatus(item.eservice)),
-        );
-      }
-
-      // Filter by mode
-      if (mode) {
-        items = items.filter((item) => item.eservice.mode === mode);
-      }
-
-      // Sort
-      const direction = sortOrder === "asc" ? 1 : -1;
-
-      items.sort((a, b) =>
-        match(sortBy)
-          .with(
-            "activeAgreements",
-            () => (a.activeAgreements - b.activeAgreements) * direction,
-          )
-          .with(
-            "activePurposes",
-            () => (a.activePurposes - b.activePurposes) * direction,
-          )
-          .with(
-            "name",
-            () =>
-              a.eservice.name.en.localeCompare(b.eservice.name.en) * direction,
-          )
-          .exhaustive(),
-      );
-
-      // Paginate (after filtering and sorting)
-      const total = items.length;
-      const paginatedItems = items.slice(offset, offset + limit);
+      const { limit, offset } = params;
+      const { results, totalCount } =
+        await readModelService.getProducerEservices(params, producerId);
 
       return {
-        items: paginatedItems,
+        items: results,
         pagination: {
           limit,
           offset,
-          total,
+          total: totalCount,
         },
       };
     },
