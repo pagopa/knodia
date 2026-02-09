@@ -6,6 +6,7 @@ import {
 import z from "zod";
 
 import {
+  EserviceVersionState,
   maxDescriptionLength,
   maxNameLength,
   minDescriptionLength,
@@ -30,11 +31,6 @@ export const API_EserviceMode = z
   .meta({ id: "EserviceMode" });
 export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
 
-export const API_EserviceStatus = z
-  .enum(["Available", "Unavailable", "Archived"])
-  .meta({ id: "EserviceStatus" });
-export type API_EserviceStatus = z.infer<typeof API_EserviceStatus>;
-
 export const API_EserviceCategory = z
   .strictObject({
     code: z.string(),
@@ -56,7 +52,7 @@ export const API_EserviceAttribute = z
   .meta({ id: "EserviceAttribute" });
 export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
 
-export const API_ProducerEserviceListItem = z
+export const API_ProducerEservice = z
   .strictObject({
     activeAgreements: z
       .number()
@@ -71,16 +67,13 @@ export const API_ProducerEserviceListItem = z
       .describe("Number of active purposes")
       .meta({ format: "int32" }),
     categories: z.array(API_EserviceCategory),
-    description: API_LocalizedDescription,
     id: z.uuid(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    status: API_EserviceStatus,
+    status: EserviceVersionState,
   })
   .meta({ id: "ProducerEserviceListItem" });
-export type API_ProducerEserviceListItem = z.infer<
-  typeof API_ProducerEserviceListItem
->;
+export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
 export const API_ProducerEservicesQueryParams =
   API_PaginationQueryParams.extend({
@@ -99,7 +92,7 @@ export const API_ProducerEservicesQueryParams =
       .optional()
       .default("asc")
       .describe("Sort direction"),
-    status: API_EserviceStatus.optional().describe(
+    status: EserviceVersionState.optional().describe(
       "Filter by E-service status",
     ),
   });
@@ -109,7 +102,7 @@ export type API_ProducerEservicesQueryParams = z.infer<
 
 export const API_ProducerEservices = z
   .strictObject({
-    items: z.array(API_ProducerEserviceListItem),
+    items: z.array(API_ProducerEservice),
     pagination: API_Pagination,
   })
   .meta({ id: "ProducerEservices" });

@@ -10,6 +10,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   CORRELATION_ID_HEADER,
+  genericError,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
@@ -74,9 +75,16 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           [CORRELATION_ID_HEADER]: correlationId,
         },
       });
+
+      if (!createdEservice.data?.id) {
+        throw genericError(
+          "Unexpected empty response from eservice-process on createEservice",
+        );
+      }
+
       res
         .status(201)
-        .send(API_CreatedResource.parse({ id: createdEservice.data?.id }));
+        .send(API_CreatedResource.parse({ id: createdEservice.data.id }));
     },
     method: "POST",
     schema: {
@@ -112,10 +120,14 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      if (!result.data) {
-        throw new Error("Unexpected empty response from eservice-process");
-      }
-      res.send(result.data);
+      res.send({
+        items: result.data?.items ?? [],
+        pagination: result.data?.pagination ?? {
+          limit,
+          offset,
+          total: 0,
+        },
+      });
     },
     method: "GET",
     schema: {

@@ -5,7 +5,8 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "storybook": "storybook dev -p 6006"
+    "dev:storybook": "storybook dev -p 6006",
+    "build:storybook": "storybook build"
   },
   "exports": {
     "./themes/node1.css": "./src/themes/node1.css",
