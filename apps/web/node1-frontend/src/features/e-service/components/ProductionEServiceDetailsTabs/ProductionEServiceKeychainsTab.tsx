@@ -1,4 +1,5 @@
-import { Button } from "@knodia/ui-kit/ui";
+import { Banner, Button } from "@knodia/ui-kit/ui";
+import { SelectionPlusIcon } from "@phosphor-icons/react";
 
 import { Section } from "./Section";
 
@@ -11,6 +12,10 @@ export function ProductionEServiceKeychainsTab() {
         </Button>
       }
       title="Keychains"
-    ></Section>
+    >
+      <Banner icon={<SelectionPlusIcon />} kind="neutral">
+        Link a Production Keychain to sign responses from the E-Service.
+      </Banner>
+    </Section>
   );
 }
