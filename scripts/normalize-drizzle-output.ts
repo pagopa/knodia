@@ -26,6 +26,11 @@
  * 4. GENERATE TYPE EXPORTS FOR ALL TABLES
  *    Creates TypeScript type exports using $inferSelect and $inferInsert.
  *
+ * 5. DEDUPLICATE RELATION PROPERTIES (relations.ts)
+ *    Removes duplicate property keys in relations() object literals caused by
+ *    drizzle-kit generating one entry per FK when multiple FKs reference the
+ *    same table from the same column.
+ *
  * Usage: node --experimental-strip-types scripts/normalize-drizzle-output.ts [schema-file-path]
  *
  * If no path is provided, defaults to: generated/schema.ts
@@ -303,6 +308,78 @@ function transformGenerateTypeExports(content: string): string {
 }
 
 // =============================================================================
+// TRANSFORMATION 5: DEDUPLICATE RELATION PROPERTIES (relations.ts)
+// =============================================================================
+
+/**
+ * TRANSFORMATION 5: Deduplicate relation properties
+ *
+ * drizzle-kit generates duplicate property keys in relations() object literals
+ * when a table has multiple FKs referencing the same table from the same column
+ * (e.g., a direct FK with CASCADE and a composite FK with metadata_version).
+ *
+ * This transformation removes the second occurrence of each duplicate property,
+ * keeping only the first.
+ */
+function transformDeduplicateRelationProperties(content: string): string {
+  const lines = content.split("\n");
+  const result: string[] = [];
+  const seenKeys = new Set<string>();
+  let insideRelations = false;
+  let skipping = false;
+  let braceDepth = 0;
+
+  // Regex to match property keys like: `  propertyName: one(` or `  propertyName: many(`
+  const propertyKeyPattern = /^[\t ]+(\w+):\s*(?:one|many)\(/;
+
+  for (const line of lines) {
+    // Track entering a relations() block — reset seen keys
+    if (line.includes("=> ({")) {
+      insideRelations = true;
+      seenKeys.clear();
+    }
+
+    // Track exiting a relations() block
+    if (insideRelations && line.includes("}));")) {
+      insideRelations = false;
+    }
+
+    if (insideRelations && !skipping) {
+      const match = line.match(propertyKeyPattern);
+      if (match) {
+        const key = match[1];
+        if (seenKeys.has(key)) {
+          // Duplicate found — start skipping
+          skipping = true;
+          braceDepth = 0;
+          // Count opening braces on this line
+          for (const ch of line) {
+            if (ch === "{") braceDepth++;
+            if (ch === "}") braceDepth--;
+          }
+          if (braceDepth <= 0) skipping = false; // single-line property
+          continue;
+        }
+        seenKeys.add(key);
+      }
+    }
+
+    if (skipping) {
+      for (const ch of line) {
+        if (ch === "{") braceDepth++;
+        if (ch === "}") braceDepth--;
+      }
+      if (braceDepth <= 0) skipping = false;
+      continue;
+    }
+
+    result.push(line);
+  }
+
+  return result.join("\n");
+}
+
+// =============================================================================
 // MAIN PROCESSING
 // =============================================================================
 
@@ -349,6 +426,40 @@ function processSchemaFile(schemaFilePath: string, info: ConfigInfo): void {
   console.log("\n" + "=".repeat(80));
 }
 
+/**
+ * Applies transformation 5 to the relations file and overwrites it in place.
+ */
+function processRelationsFile(relationsFilePath: string): void {
+  const absolutePath = resolve(cwd(), relationsFilePath);
+
+  if (!existsSync(absolutePath)) {
+    console.log(`\nRelations file not found: ${relationsFilePath} — skipping.`);
+    return;
+  }
+
+  let content: string;
+  try {
+    content = readFileSync(absolutePath, "utf-8");
+  } catch {
+    console.log(
+      `\nCould not read relations file: ${relationsFilePath} — skipping.`,
+    );
+    return;
+  }
+
+  const original = content;
+  content = transformDeduplicateRelationProperties(content);
+
+  if (content !== original) {
+    writeFileSync(absolutePath, content, "utf-8");
+    console.log(`\n  [5] Relations deduplicated: ${relationsFilePath}`);
+  } else {
+    console.log(
+      `\n  [5] Relations: no duplicates found in ${relationsFilePath}`,
+    );
+  }
+}
+
 // =============================================================================
 // ENTRY POINT
 // =============================================================================
@@ -364,3 +475,6 @@ const configInfo = parseConfigFile();
 console.log(`Config detected: ${configInfo.envVarName}\n`);
 
 processSchemaFile(schemaFilePath, configInfo);
+
+const relationsFilePath = schemaFilePath.replace("schema.ts", "relations.ts");
+processRelationsFile(relationsFilePath);
