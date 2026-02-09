@@ -2,4 +2,4 @@
 .github/ @micdes-pagopa
 kubernetes/ @micdes-pagopa
 **/kubernetes @micdes-pagopa
-
+terraform/ @micdes-pagopa
