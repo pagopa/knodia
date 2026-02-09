@@ -36,7 +36,6 @@ export function eserviceServiceBuilder(
 
       const now = new Date();
       const eserviceVersionId = generateId<EserviceVersionId>();
-      const eserviceInterfaceId = generateId<EserviceInterfaceId>();
 
       const eservice: Eservice = {
         categories: seed.categories ?? [],
@@ -57,15 +56,14 @@ export function eserviceServiceBuilder(
             accessTokenType: seed.accessTokenType ?? "Bearer",
             createdAt: now,
             id: eserviceVersionId,
-            // TODO: implement interface document upload
             interfaceDocument: {
-              checksum: "checksum-1",
-              contentType: "application/json",
+              checksum: seed.interfaceDocument.checksum,
+              contentType: seed.interfaceDocument.contentType,
               createdAt: now,
-              id: eserviceInterfaceId,
-              name: "Interface 1",
-              path: "/interfaces/1.json",
-              prettyName: { en: "Interface 1" },
+              id: seed.interfaceDocument.id,
+              name: seed.interfaceDocument.name,
+              path: seed.interfaceDocument.path,
+              prettyName: seed.interfaceDocument.prettyName,
               updatedAt: now,
             },
             maxDailyCallsPerConsumer: seed.maxDailyCallsPerConsumer,

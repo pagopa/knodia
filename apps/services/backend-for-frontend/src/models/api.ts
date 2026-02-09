@@ -4,6 +4,7 @@ import {
   API_EserviceCategory,
   API_EserviceMode,
   API_LocalizedDescription,
+  API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import {
@@ -39,6 +40,26 @@ export const API_Eservices = z
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
+const API_InterfaceDocumentSeed = z
+  .strictObject({
+    checksum: z
+      .string()
+      .describe(
+        "Base64-encoded SHA-256 checksum of the uploaded E-service interface document",
+      ),
+    content: z.base64().describe("Base64-encoded file content"),
+    contentType: z
+      .string()
+      .describe("MIME type of the uploaded E-service interface document"),
+    name: z
+      .string()
+      .describe(
+        "Name of the uploaded E-service interface document, with extension",
+      ),
+    prettyName: API_LocalizedInterfacePrettyName,
+  })
+  .meta({ id: "InterfaceDocumentSeed" });
+
 export const API_EserviceSeed = z
   .strictObject({
     accessTokenAudience: z
@@ -61,6 +82,9 @@ export const API_EserviceSeed = z
       .optional()
       .describe("Categories of the E-service"),
     description: API_LocalizedDescription,
+    interfaceDocument: API_InterfaceDocumentSeed.describe(
+      "Interface document for the E-service",
+    ),
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()
