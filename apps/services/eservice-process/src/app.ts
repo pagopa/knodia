@@ -22,9 +22,11 @@ import { readModelServiceBuilder } from "./services/readModelService.ts";
 export function buildApp({
   eventStoreDb,
   loggerConfig,
+  readModelDb,
 }: {
   eventStoreDb: NodePgDatabase;
   loggerConfig: LoggerConfig;
+  readModelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
     fastifyOptions: {
@@ -54,7 +56,7 @@ export function buildApp({
     eserviceRouter,
     eserviceServiceBuilder(
       eserviceEventStoreWriterBuilder(eventStoreDb),
-      readModelServiceBuilder(eventStoreDb),
+      readModelServiceBuilder(readModelDb),
     ),
   );
 
@@ -62,7 +64,7 @@ export function buildApp({
 }
 
 export function buildAppFromConfig(config: EserviceProcessConfig) {
-  const pool = new Pool({
+  const eventStorePool = new Pool({
     database: config.eventStoreDbName,
     host: config.eventStoreDbHost,
     password: config.eventStoreDbPassword,
@@ -70,16 +72,27 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
     ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
     user: config.eventStoreDbUser,
   });
+  const eventStoreDb = drizzle(eventStorePool);
 
-  const eventStoreDb = drizzle(pool);
+  const readModelPool = new Pool({
+    database: config.readModelDbName,
+    host: config.readModelDbHost,
+    password: config.readModelDbPassword,
+    port: config.readModelDbPort,
+    ssl: config.readModelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.readModelDbUser,
+  });
+  const readModelDb = drizzle(readModelPool);
 
   const app = buildApp({
     eventStoreDb,
     loggerConfig: config,
+    readModelDb,
   });
 
   app.addHook("onClose", async () => {
-    await pool.end();
+    await eventStorePool.end();
+    await readModelPool.end();
   });
 
   return app;

@@ -15,9 +15,7 @@ import {
 import {
   readmodelEservice,
   readmodelEserviceCategory,
-  readmodelEserviceInterface,
   readmodelEserviceVersion,
-  readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
 import {
   aggregateEservices,
@@ -44,11 +42,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
         });
         const queryRes = await tx
           .select({
-            category: readmodelEserviceCategory,
             eservice: readmodelEservice,
-            interface: readmodelEserviceInterface,
-            requiredAttribute: readmodelEserviceVersionRequiredAttribute,
-            version: readmodelEserviceVersion,
           })
           .from(readmodelEservice)
           .leftJoin(
