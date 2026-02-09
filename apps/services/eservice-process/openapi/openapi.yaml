@@ -109,6 +109,17 @@ components:
       required:
         - en
       additionalProperties: false
+    LocalizedInterfacePrettyName:
+      description: Pretty name of the E-service interface document
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
     EserviceMode:
       type: string
       enum:
@@ -203,32 +214,25 @@ components:
       type: object
       properties:
         checksum:
-          description: Base64-encoded SHA-256 checksum of the uploaded interface document
+          description: Base64-encoded SHA-256 checksum of the uploaded E-service interface
+            document
           type: string
         contentType:
-          description: MIME type of the uploaded interface document
+          description: MIME type of the uploaded E-service interface document
           type: string
         id:
-          description: Unique identifier of the interface document
+          description: Unique identifier of the E-service interface document
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         name:
-          description: Name of the uploaded interface document, with extension
+          description: Name of the uploaded E-service interface document, with extension
           type: string
         path:
-          description: Path where the interface document is stored
+          description: Path where the E-service interface document is stored
           type: string
         prettyName:
-          description: Pretty name for the document in different languages
-          type: object
-          properties:
-            en:
-              description: English pretty name
-              type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
       required:
         - checksum
         - contentType

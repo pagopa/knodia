@@ -109,6 +109,17 @@ components:
       required:
         - en
       additionalProperties: false
+    LocalizedInterfacePrettyName:
+      description: Pretty name of the E-service interface document
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
     EserviceMode:
       type: string
       enum:
@@ -203,7 +214,8 @@ components:
       type: object
       properties:
         checksum:
-          description: Base64-encoded SHA-256 checksum of the uploaded interface document
+          description: Base64-encoded SHA-256 checksum of the uploaded E-service interface
+            document
           type: string
         content:
           description: Base64-encoded file content
@@ -211,21 +223,13 @@ components:
           format: base64
           pattern: ^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$
         contentType:
-          description: MIME type of the uploaded interface document
+          description: MIME type of the uploaded E-service interface document
           type: string
         name:
-          description: Name of the uploaded interface document, with extension
+          description: Name of the uploaded E-service interface document, with extension
           type: string
         prettyName:
-          description: Pretty name for the document in different languages
-          type: object
-          properties:
-            en:
-              description: English pretty name
-              type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
       required:
         - checksum
         - content
