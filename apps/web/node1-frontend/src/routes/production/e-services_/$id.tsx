@@ -51,7 +51,7 @@ function RouteComponent() {
         title={eservice.name.en}
       >
         <CopyableInfoField className="mt-3" id={eservice.id} label="ID" />
-        <p className="mt-6 body-md text-primary-light-low-contrast">
+        <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
           {eservice.description.en}
         </p>
       </PageHeader>
