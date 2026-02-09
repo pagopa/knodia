@@ -132,6 +132,7 @@ export function eserviceServiceBuilder(
           (item) =>
             item.eservice.name.en.toLowerCase().includes(query) ||
             item.eservice.description.en.toLowerCase().includes(query) ||
+            // TODO: filter by category name instead of code when using real data
             item.eservice.categories.some((c) =>
               c.code.toLowerCase().includes(query),
             ),
