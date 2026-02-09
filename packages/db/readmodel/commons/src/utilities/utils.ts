@@ -117,10 +117,9 @@ function getTablePKString<T extends Record<string, unknown>>(
   table: AnyPgTable,
 ): string {
   const tableConfig = getTableConfig(table);
-  return getTablePKColumns(tableConfig)
+  return getTablePKColumns(table)
     .map((col) => {
-      const key = snakeToCamel(col) as keyof T;
-      const value = modelSQL[key];
+      const value = modelSQL[col];
       if (value === undefined || value === null) {
         throw genericInternalError(
           `Missing PK column '${col}' in ${tableConfig.name}`,
