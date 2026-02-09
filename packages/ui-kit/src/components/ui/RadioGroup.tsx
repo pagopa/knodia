@@ -8,8 +8,9 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps, focusRing } from "../../libs/react-aria";
+import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
+import { focusRing } from "./styles";
 
 interface RadioGroupProps extends Omit<RACRadioGroupProps, "children"> {
   children?: React.ReactNode;
