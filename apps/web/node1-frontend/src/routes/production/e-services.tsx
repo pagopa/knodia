@@ -1,5 +1,5 @@
 import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
-import { Button, Loader, Pagination } from "@knodia/ui-kit/ui";
+import { Button, Pagination } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
@@ -74,11 +74,10 @@ function RouteComponent() {
         />
       )}
 
-      {isLoading || !data?.items ? (
-        <Loader className="mx-auto mt-20" label="Loading..." />
-      ) : (
-        <ProductionEserviceList eservices={data?.items} />
-      )}
+      <ProductionEserviceList
+        eservices={data?.items ?? []}
+        isLoading={isLoading}
+      />
 
       <Pagination
         className="mx-auto mt-6"
