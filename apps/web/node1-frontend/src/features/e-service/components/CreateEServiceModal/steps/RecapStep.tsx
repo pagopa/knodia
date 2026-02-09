@@ -1,6 +1,4 @@
 import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
-import { BookOpenTextIcon } from "@phosphor-icons/react";
-import { Fragment } from "react";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
@@ -8,7 +6,8 @@ import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServ
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
 import { downloadFile } from "@/utils/downloadFile";
 
-import { DocumentRecap } from "../components/DocumentRecap";
+import { AttributeGroupContainer } from "../../AttributeGroupContainer";
+import { DocumentRecap } from "../../DocumentRecap";
 import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
 
@@ -73,25 +72,6 @@ export function RecapStep() {
   );
 }
 
-function AttributeGroup({ attributes }: { attributes: { code: string }[] }) {
-  return (
-    <div className="flex items-center gap-4 py-3 px-4 bg-secondary-light rounded-lg text-secondary-light-mid-contrast body-md">
-      {attributes.map((attribute, index) => (
-        <Fragment key={attribute.code}>
-          {index > 0 && (
-            <span className="body-sm text-secondary-light-low-contrast">
-              or
-            </span>
-          )}
-          <span className="flex gap-1">
-            {attribute.code} <BookOpenTextIcon size={20} />
-          </span>
-        </Fragment>
-      ))}
-    </div>
-  );
-}
-
 function AttributesSection({
   requiredAttributes,
 }: {
@@ -102,7 +82,7 @@ function AttributesSection({
       <SectionTitle>Attributes</SectionTitle>
       <div className="flex flex-col gap-2">
         {requiredAttributes?.map((group, index) => (
-          <AttributeGroup attributes={group} key={index} />
+          <AttributeGroupContainer attributes={group} key={index} />
         ))}
       </div>
     </div>

@@ -2,7 +2,7 @@ import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
 import { Breadcrumb, Breadcrumbs, Button, Chip } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { CopyableInfoField } from "@/components/CopyableInfoField";
+import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
@@ -50,7 +50,7 @@ function RouteComponent() {
         resourceStatusChip={<EserviceStateChip state="Active" />}
         title={eservice.name.en}
       >
-        <CopyableInfoField className="mt-3" id={eservice.id} label="ID" />
+        <CopyableValueField className="mt-3" label="ID" value={eservice.id} />
         <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
           {eservice.description.en}
         </p>

@@ -1,6 +1,6 @@
 import type { Eservice } from "@knodia/bff-client";
 
-import { ProductionEserviceDetailsContext } from "./useProductionEserviceDetails";
+import { ProductionEserviceDetailsContext } from "./useProductionEserviceDetailsContext";
 
 export function ProductionEserviceDetailsProvider({
   children,

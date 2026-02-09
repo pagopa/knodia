@@ -1,0 +1,24 @@
+import { CopyButton } from "@knodia/ui-kit/ui";
+import { twMerge } from "tailwind-merge";
+
+interface CopyableValueFieldProps extends React.ComponentProps<"div"> {
+  label: string;
+  value: string;
+}
+
+export function CopyableValueField({
+  className,
+  label,
+  value,
+  ...props
+}: CopyableValueFieldProps) {
+  return (
+    <div className={twMerge("flex items-center gap-2", className)} {...props}>
+      <dl className="body-md flex items-center gap-2 text-primary-light-high-contrast">
+        <dt className="body-md-em">{label}</dt>
+        <dd className="body-md">{value}</dd>
+      </dl>
+      <CopyButton textToCopy={value} />
+    </div>
+  );
+}

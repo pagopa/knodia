@@ -9,11 +9,11 @@ interface ProductionEserviceDetailsContextValue {
 export const ProductionEserviceDetailsContext =
   createContext<null | ProductionEserviceDetailsContextValue>(null);
 
-export function useEserviceDetails() {
+export function useProductionEserviceDetailsContext() {
   const ctx = useContext(ProductionEserviceDetailsContext);
   if (!ctx) {
     throw new Error(
-      "useEserviceDetails must be used within ProductionEserviceDetailsProvider",
+      "useProductionEserviceDetailsContext must be used within ProductionEserviceDetailsProvider",
     );
   }
   return ctx;

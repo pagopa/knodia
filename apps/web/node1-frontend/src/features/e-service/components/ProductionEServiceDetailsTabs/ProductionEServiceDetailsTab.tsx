@@ -1,8 +1,10 @@
 import { Banner, Divider } from "@knodia/ui-kit/ui";
 
-import { GenericInfoCard } from "@/components/GenericInfoCard";
+import { CopyableValueField } from "@/components/CopyableValueField";
 import { SettingsCard } from "@/components/SettingCard";
 
+import { AttributeGroupContainer } from "../AttributeGroupContainer";
+import { DocumentRecap } from "../DocumentRecap";
 import { Section } from "./Section";
 
 export function ProductionEServiceDetailsTab() {
@@ -45,13 +47,15 @@ function ConsumptionRequirementsSection() {
           </h3>
           <ul className="gap-2 flex flex-col" role="list">
             <li>
-              <GenericInfoCard label="Attribute 1">-</GenericInfoCard>
+              <AttributeGroupContainer
+                attributes={[{ code: "NUTS1" }, { code: "NUTS2" }]}
+              />
             </li>
             <li>
-              <GenericInfoCard label="Attribute 2">-</GenericInfoCard>
+              <AttributeGroupContainer attributes={[{ code: "NUTS3" }]} />
             </li>
             <li>
-              <GenericInfoCard label="Attribute 3">-</GenericInfoCard>
+              <AttributeGroupContainer attributes={[{ code: "NUTS4" }]} />
             </li>
           </ul>
         </div>
@@ -67,7 +71,16 @@ function ConsumptionRequirementsSection() {
 }
 
 function DocumentsSection() {
-  return <Section title="Documents"></Section>;
+  return (
+    <Section title="Documents">
+      <DocumentRecap name="Api Specs" showDownloadButton />
+      <CopyableValueField
+        className="mt-4"
+        label="Checksum:"
+        value="3f653f35f8311c870e209cc672dfc3698081eefe84cc40f1af5bd61db2c54287D"
+      />
+    </Section>
+  );
 }
 
 function MaxAPICallsPerDaySection() {
