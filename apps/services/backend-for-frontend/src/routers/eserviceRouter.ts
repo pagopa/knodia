@@ -4,10 +4,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { generateId } from "@knodia/common-models/ids";
 import { EserviceInterfaceId } from "@knodia/common-models/ids";
-import {
-  eserviceProcessApi,
-  type eserviceProcessApiTypes,
-} from "@knodia/eservice-process-client";
+import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -90,7 +87,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         key: `${interfaceDocumentId}/${name}`,
       });
 
-      const seed: eserviceProcessApiTypes.EserviceSeed = {
+      const seed: eserviceProcessApi.EserviceSeed = {
         ...rest,
         interfaceDocument: {
           ...interfaceDocumentRest,

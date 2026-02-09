@@ -1,9 +1,2 @@
-import { createClient } from "./generated/client/client.gen.ts";
-import * as generatedEserviceProcessApi from "./generated/index.ts";
-
-export const eserviceProcessApi = {
-  ...generatedEserviceProcessApi,
-  createClient,
-};
-
-export type * as eserviceProcessApiTypes from "./generated/types.gen.ts";
+export { createClient as createEserviceProcessApiClient } from "./generated/client/client.gen.ts";
+export * as eserviceProcessApi from "./generated/index.ts";

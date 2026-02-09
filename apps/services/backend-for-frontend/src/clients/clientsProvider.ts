@@ -1,9 +1,9 @@
-import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import { createEserviceProcessApiClient } from "@knodia/eservice-process-client";
 
 import { config } from "../config/config.ts";
 
 export type EserviceProcessClient = ReturnType<
-  typeof eserviceProcessApi.createClient
+  typeof createEserviceProcessApiClient
 >;
 
 interface KnodiaClients {
@@ -12,7 +12,7 @@ interface KnodiaClients {
 
 export function getKnodiaClients(): KnodiaClients {
   return {
-    eserviceProcessClient: eserviceProcessApi.createClient({
+    eserviceProcessClient: createEserviceProcessApiClient({
       baseURL: config.eserviceProcessUrl,
       throwOnError: true,
     }),
