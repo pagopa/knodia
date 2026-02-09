@@ -225,11 +225,11 @@ const createEserviceSQLPropertyMap = <
 
 export const toEservicesAggregator = (
   queryRes: {
-    category: EserviceCategorySQL | null;
+    category?: EserviceCategorySQL | null;
     eservice: EserviceSQL;
-    interface: EserviceInterfaceSQL | null;
-    requiredAttribute: EserviceVersionRequiredAttributeSQL | null;
-    version: EserviceVersionSQL | null;
+    interface?: EserviceInterfaceSQL | null;
+    requiredAttribute?: EserviceVersionRequiredAttributeSQL | null;
+    version?: EserviceVersionSQL | null;
   }[],
 ): {
   categoriesSQL: EserviceCategorySQL[];
@@ -261,25 +261,25 @@ export const toEservicesAggregator = (
       readmodelEservice,
     );
     aggregateByPKString(
-      row.category,
+      row.category ?? null,
       categoryPKSet,
       categoriesSQL,
       readmodelEserviceCategory,
     );
     aggregateByPKString(
-      row.version,
+      row.version ?? null,
       versionPKSet,
       versionsSQL,
       readmodelEserviceVersion,
     );
     aggregateByPKString(
-      row.interface,
+      row.interface ?? null,
       interfacePKSet,
       interfacesSQL,
       readmodelEserviceInterface,
     );
     aggregateByPKString(
-      row.requiredAttribute,
+      row.requiredAttribute ?? null,
       requiredAttributePKSet,
       requiredAttributesSQL,
       readmodelEserviceVersionRequiredAttribute,
