@@ -25,8 +25,6 @@ import {
 import { deriveEserviceStatus } from "@knodia/eservice-models";
 import { and, eq } from "drizzle-orm";
 
-import { toEserviceVersionState } from "../models/apiConverter.ts";
-
 export type ReadModelService = ReturnType<typeof readModelServiceBuilder>;
 
 export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
@@ -60,12 +58,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
             and(
               eq(readmodelEservice.producerId, producerId),
               mode ? eq(readmodelEservice.mode, mode) : undefined,
-              status
-                ? eq(
-                    readmodelEserviceVersion.state,
-                    toEserviceVersionState(status),
-                  )
-                : undefined,
+              status ? eq(readmodelEserviceVersion.state, status) : undefined,
               q ? ilikeJsonB(readmodelEservice.name, q) : undefined,
             ),
           )
@@ -75,10 +68,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
 
         const eservices = aggregateEservices(toEservicesAggregator(queryRes));
 
-
-        const [
-          totalCount,
-        ] = await Promise.all([
+        const [totalCount] = await Promise.all([
           getTableTotalCount(tx, readmodelEservice),
         ]);
 
