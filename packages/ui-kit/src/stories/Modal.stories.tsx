@@ -12,6 +12,7 @@ const meta: Meta<typeof Modal> = {
     description: "This is a description that provides additional context.",
     actionLabel: "Action",
     kind: "default",
+    isDismissable: true,
   },
   title: "Components/ui/Modal",
   component: Modal,
@@ -24,9 +25,6 @@ export default meta;
 type Story = StoryObj<typeof Modal>;
 
 export const Default: Story = {
-  args: {
-    isDismissable: true,
-  },
   render: (args) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -87,6 +85,7 @@ export const NonDismissable: Story = {
         <Button>Open Modal</Button>
         <Modal
           {...args}
+          isKeyboardDismissDisabled
           onClose={() => setIsOpen(false)}
           onConfirm={() => setIsOpen(false)}
         >
