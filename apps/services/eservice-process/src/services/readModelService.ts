@@ -7,6 +7,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
   createOrderByFilters,
+  escapeRegExp,
   getTableTotalCount,
   ilikeJsonB,
   type ListResult,
@@ -23,7 +24,7 @@ import {
   toEservicesAggregator,
 } from "@knodia/db-readmodel-eservice/converters";
 import { deriveEserviceStatus } from "@knodia/eservice-models";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ilike, or } from "drizzle-orm";
 
 export type ReadModelService = ReturnType<typeof readModelServiceBuilder>;
 
@@ -50,6 +51,10 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
             version: readmodelEserviceVersion,
           })
           .from(readmodelEservice)
+          .leftJoin(
+            readmodelEserviceCategory,
+            eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+          )
           .innerJoin(
             readmodelEserviceVersion,
             eq(readmodelEservice.id, readmodelEserviceVersion.eserviceId),
@@ -59,7 +64,17 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
               eq(readmodelEservice.producerId, producerId),
               mode ? eq(readmodelEservice.mode, mode) : undefined,
               status ? eq(readmodelEserviceVersion.state, status) : undefined,
-              q ? ilikeJsonB(readmodelEservice.name, q) : undefined,
+              q
+                ? or(
+                    ilikeJsonB(readmodelEservice.name, q),
+                    ilikeJsonB(readmodelEservice.description, q),
+                    ilike(
+                      // TODO: filter by category name instead of code when using real data
+                      readmodelEserviceCategory.code,
+                      `%${escapeRegExp(q)}%`,
+                    ),
+                  )
+                : undefined,
             ),
           )
           .limit(limit)
