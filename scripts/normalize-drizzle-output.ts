@@ -432,17 +432,12 @@ function processSchemaFile(schemaFilePath: string, info: ConfigInfo): void {
 function processRelationsFile(relationsFilePath: string): void {
   const absolutePath = resolve(cwd(), relationsFilePath);
 
-  if (!existsSync(absolutePath)) {
-    console.log(`\nRelations file not found: ${relationsFilePath} — skipping.`);
-    return;
-  }
-
   let content: string;
   try {
     content = readFileSync(absolutePath, "utf-8");
   } catch {
     console.log(
-      `\nCould not read relations file: ${relationsFilePath} — skipping.`,
+      `\nRelations file not found: ${relationsFilePath} — skipping.`,
     );
     return;
   }
