@@ -34,102 +34,94 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
     ): Promise<ListResult<ProducerEservice>> {
       const { limit, mode, offset, q, sortBy, sortOrder, status } = params;
 
-      try {
-        return await readModelDb.transaction(async (tx) => {
-          const orderByFilters = createOrderByFilters({
-            sortBy,
-            sortOrder,
-            table: readmodelEservice,
-          });
+      return await readModelDb.transaction(async (tx) => {
+        const orderByFilters = createOrderByFilters({
+          sortBy,
+          sortOrder,
+          table: readmodelEservice,
+        });
 
-          const subquery = tx
+        const subquery = tx
+          .select({
+            eserviceId: readmodelEservice.id,
+          })
+          .from(readmodelEservice)
+          .leftJoin(
+            readmodelEserviceCategory,
+            eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+          )
+          .innerJoin(
+            readmodelEserviceVersion,
+            eq(readmodelEservice.id, readmodelEserviceVersion.eserviceId),
+          )
+          .where(
+            and(
+              producerId
+                ? eq(readmodelEservice.producerId, producerId)
+                : undefined,
+              mode ? eq(readmodelEservice.mode, mode) : undefined,
+              status ? eq(readmodelEserviceVersion.state, status) : undefined,
+              q
+                ? or(
+                    ilikeJsonB(readmodelEservice.name, q),
+                    ilikeJsonB(readmodelEservice.description, q),
+                    ilike(
+                      // TODO: filter by category name instead of code when using real data
+                      readmodelEserviceCategory.code,
+                      `%${escapeRegExp(q)}%`,
+                    ),
+                  )
+                : undefined,
+            ),
+          )
+          .groupBy(readmodelEservice.id)
+          .orderBy(...orderByFilters)
+          .limit(limit)
+          .offset(offset)
+          .as("subquery");
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
             .select({
-              eserviceId: readmodelEservice.id,
+              category: readmodelEserviceCategory,
+              eservice: readmodelEservice,
+              interface: readmodelEserviceInterface,
+              version: readmodelEserviceVersion,
             })
             .from(readmodelEservice)
-            .leftJoin(
-              readmodelEserviceCategory,
-              eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
-            )
+            .innerJoin(subquery, eq(readmodelEservice.id, subquery.eserviceId))
             .innerJoin(
               readmodelEserviceVersion,
               eq(readmodelEservice.id, readmodelEserviceVersion.eserviceId),
             )
-            .where(
-              and(
-                producerId
-                  ? eq(readmodelEservice.producerId, producerId)
-                  : undefined,
-                mode ? eq(readmodelEservice.mode, mode) : undefined,
-                status ? eq(readmodelEserviceVersion.state, status) : undefined,
-                q
-                  ? or(
-                      ilikeJsonB(readmodelEservice.name, q),
-                      ilikeJsonB(readmodelEservice.description, q),
-                      ilike(
-                        // TODO: filter by category name instead of code when using real data
-                        readmodelEserviceCategory.code,
-                        `%${escapeRegExp(q)}%`,
-                      ),
-                    )
-                  : undefined,
+            .leftJoin(
+              readmodelEserviceInterface,
+              eq(
+                readmodelEserviceVersion.id,
+                readmodelEserviceInterface.eserviceVersionId,
               ),
             )
-            .groupBy(readmodelEservice.id)
-            .orderBy(...orderByFilters)
-            .limit(limit)
-            .offset(offset)
-            .as("subquery");
+            .leftJoin(
+              readmodelEserviceCategory,
+              eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+            )
+            .orderBy(...orderByFilters),
+          getTableTotalCount(tx, readmodelEservice),
+        ]);
 
-          const [queryRes, totalCount] = await Promise.all([
-            tx
-              .select({
-                category: readmodelEserviceCategory,
-                eservice: readmodelEservice,
-                interface: readmodelEserviceInterface,
-                version: readmodelEserviceVersion,
-              })
-              .from(readmodelEservice)
-              .innerJoin(
-                subquery,
-                eq(readmodelEservice.id, subquery.eserviceId),
-              )
-              .innerJoin(
-                readmodelEserviceVersion,
-                eq(readmodelEservice.id, readmodelEserviceVersion.eserviceId),
-              )
-              .leftJoin(
-                readmodelEserviceInterface,
-                eq(
-                  readmodelEserviceVersion.id,
-                  readmodelEserviceInterface.eserviceVersionId,
-                ),
-              )
-              .leftJoin(
-                readmodelEserviceCategory,
-                eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
-              )
-              .orderBy(...orderByFilters),
-            getTableTotalCount(tx, readmodelEservice),
-          ]);
+        const eservices = aggregateEservices(toEservicesAggregator(queryRes));
 
-          const eservices = aggregateEservices(toEservicesAggregator(queryRes));
+        const results = eservices.map((e) => ({
+          // TODO: fix. this is not producereservice
+          ...e.data,
+          // TODO: add real data
+          activeAgreements: 0,
+          activePurposes: 0,
+          status: getLatestVersion(e.data).state,
+        }));
 
-          const results = eservices.map((e) => ({
-            // TODO: fix. this is not producereservice
-            ...e.data,
-            // TODO: add real data
-            activeAgreements: 0,
-            activePurposes: 0,
-            status: getLatestVersion(e.data).state,
-          }));
-
-          return { results, totalCount };
-        });
-      } catch (error) {
-        console.error("Error in getProducerEservices:", error);
-        throw error;
-      }
+        return { results, totalCount };
+      });
     },
   };
 }
