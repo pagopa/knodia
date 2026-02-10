@@ -1,8 +1,10 @@
 import { Banner, Divider } from "@knodia/ui-kit/ui";
+import { match } from "ts-pattern";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { SettingsCard } from "@/components/SettingCard";
 
+import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { AttributeGroupContainer } from "../AttributeGroupContainer";
 import { DocumentRecap } from "../DocumentRecap";
 import { Section } from "./Section";
@@ -95,10 +97,21 @@ function MaxAPICallsPerDaySection() {
 }
 
 function SignalHubSection() {
+  const { eservice } = useProductionEserviceDetailsContext();
+
   return (
     <Section className="mb-6" title="Signal hub">
       <p className="body-lg text-primary-dark">
-        This E-Service is available on Signal Hub.
+        {match(eservice)
+          .with(
+            { isSignalHubEnabled: true },
+            () => "This E-Service is available on Signal Hub.",
+          )
+          .with(
+            { isSignalHubEnabled: false },
+            () => "This E-Service is not available on Signal Hub.",
+          )
+          .exhaustive()}
       </p>
     </Section>
   );

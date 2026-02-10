@@ -23,7 +23,7 @@ export function PageHeader({
     <header
       {...props}
       className={twMerge(
-        "flex flex-wrap items-start justify-between gap-4 mb-10",
+        "flex items-start justify-between gap-10 mb-10",
         className,
       )}
     >
@@ -39,9 +39,9 @@ export function PageHeader({
         {children}
       </div>
       {(actions || resourceStatusChip) && (
-        <div className="flex items-center gap-4 shrink-0">
-          <div className={actions ? "mr-10" : ""}>{resourceStatusChip}</div>
-          {actions}
+        <div className="flex items-center gap-10 shrink-0">
+          <div>{resourceStatusChip}</div>
+          <div className="flex items-center gap-4">{actions}</div>
         </div>
       )}
     </header>

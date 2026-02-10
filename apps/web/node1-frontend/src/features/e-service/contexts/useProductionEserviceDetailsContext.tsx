@@ -9,9 +9,6 @@ interface ProductionEserviceDetailsContextValue {
 export const ProductionEserviceDetailsContext =
   createContext<null | ProductionEserviceDetailsContextValue>(null);
 
-/**
- * @beta not in use yet, will be used to share the Eservice details across the tabs in the details page
- */
 export function useProductionEserviceDetailsContext() {
   const ctx = useContext(ProductionEserviceDetailsContext);
   if (!ctx) {
