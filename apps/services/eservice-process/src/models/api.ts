@@ -1,4 +1,11 @@
-import { EserviceInterfaceId } from "@knodia/common-models/ids";
+import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
+import { EserviceVersionState } from "@knodia/eservice-models";
+import {
+  maxAccessTokenDuration,
+  maxDailyCalls,
+  minAccessTokenDuration,
+  minDailyCalls,
+} from "@knodia/eservice-models";
 import {
   EserviceVersionState,
   maxAccessTokenDuration,
@@ -21,7 +28,33 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
-export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
+export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
+  mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
+  producerId: OrganizationId.optional().describe(
+    "Filter by producer organization ID",
+  ),
+  q: z
+    .string()
+    .optional()
+    .describe("Search by name, description or categories"),
+  sortBy: z
+    .enum(["name"])
+    .optional()
+    .default("name")
+    .describe("Field to sort by"),
+  sortOrder: z
+    .enum(["asc", "desc"])
+    .optional()
+    .default("asc")
+    .describe("Sort direction"),
+  status: z
+    .union([
+      z.array(EserviceVersionState),
+      EserviceVersionState.transform((v) => [v]),
+    ])
+    .optional()
+    .describe("Filter by E-service status"),
+});
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
 export const API_GetProducerEservicesQueryParams =
@@ -60,6 +93,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    status: EserviceVersionState.describe("Status of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });

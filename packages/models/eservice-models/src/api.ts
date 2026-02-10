@@ -110,10 +110,8 @@ export type API_ProducerEservicesQueryParams = z.infer<
   typeof API_ProducerEservicesQueryParams
 >;
 
-export const API_ProducerEservices = z
-  .strictObject({
-    items: z.array(API_ProducerEservice),
-    pagination: API_Pagination,
-  })
-  .meta({ id: "ProducerEservices" });
+export const API_ProducerEservices = z.strictObject({
+  items: z.array(API_ProducerEservice),
+  pagination: API_Pagination,
+});
 export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;

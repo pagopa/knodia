@@ -33,13 +33,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 ) => {
   fastify.route({
     handler: (req, res) => {
-      const eservices = eserviceService.getMockEservices(
-        req.query.offset,
-        req.query.limit,
-      );
+      const result = eserviceService.getMockEservices(req.query);
       res.status(200).send({
-        items: eservices.items.map(toAPI_Eservice),
-        pagination: eservices.pagination,
+        items: result.items.map(toAPI_Eservice),
+        pagination: result.pagination,
       });
     },
     method: "GET",

@@ -74,6 +74,7 @@ export const EserviceVersion = z.strictObject({
   interfaceDocument: EserviceInterface,
   maxDailyCallsPerConsumer: z.int().min(minDailyCalls).max(maxDailyCalls),
   maxDailyCallsPerKnode: z.int().min(minDailyCalls).max(maxDailyCalls),
+  // TODO: check
   requiredAttributes: z.array(RequiredAttributeGroup).min(1),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),

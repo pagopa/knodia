@@ -12,8 +12,18 @@ import { API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { getAllEserviceEvents, injectAppRequest } from "./utils.ts";
 
+const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
+const validCategory = {
+  code: "citizen.residence.residence_place",
+  scheme: "vc_example_eservice_categories",
+};
+
 describe("POST /eservices (createEservice)", () => {
-  const body = zocker(API_EserviceSeed).setSeed(0).generate();
+  const body = {
+    ...zocker(API_EserviceSeed).setSeed(0).generate(),
+    categories: [validCategory],
+    requiredAttributes: [[validAttribute]],
+  };
 
   it("should correctly create eservice creation event", async () => {
     const response = await injectAppRequest().post("/eservices").body(body);
@@ -97,4 +107,28 @@ describe("POST /eservices (createEservice)", () => {
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return 400 if an attribute is invalid", async () => {
+    const response = await injectAppRequest()
+      .post("/eservices")
+      .body({
+        ...body,
+        requiredAttributes: [
+          [{ code: "nonexistent", scheme: "vc_territorial_units" }],
+        ],
+      });
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if a category is invalid", async () => {
+    const response = await injectAppRequest()
+      .post("/eservices")
+      .body({
+        ...body,
+        categories: [
+          { code: "nonexistent", scheme: "vc_example_eservice_categories" },
+        ],
+      });
+    expect(response.statusCode).toBe(400);
+  });
 });
