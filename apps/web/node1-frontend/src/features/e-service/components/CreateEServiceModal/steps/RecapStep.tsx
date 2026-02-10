@@ -1,4 +1,7 @@
+import { getCategory } from "@knodia/category-models";
 import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
+
+import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
@@ -145,7 +148,7 @@ function GeneralInfoSection({
   description,
   name,
 }: {
-  categories: string[] | undefined;
+  categories: SchemeRef[] | undefined;
   description: string | undefined;
   name: string | undefined;
 }) {
@@ -163,9 +166,12 @@ function GeneralInfoSection({
           <div className="flex gap-3">
             {categories.map((category) => (
               <Chip
-                key={category}
+                key={`${category.scheme}$${category.code}`}
                 kind="neutral"
-                label={category}
+                label={
+                  getCategory(category.scheme, category.code)?.name ??
+                  category.code
+                }
                 type="light"
               />
             ))}

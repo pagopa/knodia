@@ -1,4 +1,11 @@
-import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
+import { categories } from "@knodia/category-models";
+import {
+  Button,
+  Select,
+  SelectItem,
+  TextArea,
+  TextField,
+} from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
@@ -65,12 +72,35 @@ export function GeneralStep({ onCancel }: Props) {
             <form.Field name="categories">
               {(field) => (
                 <Select
-                  children={undefined} // TODO: add categories
                   className="flex-1"
                   label="Categories (optional)"
                   name={field.name}
+                  onChange={(keys) =>
+                    field.handleChange(
+                      keys.map((v) => {
+                        const key = String(v);
+                        const [scheme = "", code = ""] = key.split("$");
+                        return { code, scheme };
+                      }),
+                    )
+                  }
                   placeholder="Select categories"
-                />
+                  selectionMode="multiple"
+                  value={
+                    field.state.value?.map((c) => `${c.scheme}$${c.code}`) ?? []
+                  }
+                >
+                  {Object.entries(categories).flatMap(([scheme, codes]) =>
+                    Object.entries(codes).map(([code, name]) => (
+                      <SelectItem
+                        id={`${scheme}$${code}`}
+                        key={`${scheme}$${code}`}
+                      >
+                        {name}
+                      </SelectItem>
+                    )),
+                  )}
+                </Select>
               )}
             </form.Field>
 

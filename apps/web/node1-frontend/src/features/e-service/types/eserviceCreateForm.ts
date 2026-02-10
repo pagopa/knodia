@@ -2,6 +2,13 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
+const schemeRefSchema = z.object({
+  code: z.string(),
+  scheme: z.string(),
+});
+
+export type SchemeRef = z.infer<typeof schemeRefSchema>;
+
 // Schema for form fields
 const eserviceFieldSchemas = {
   accessTokenAudience: z.string().min(1, "Access token audience is required."),
@@ -10,8 +17,7 @@ const eserviceFieldSchemas = {
     .min(1, "Duration must be at least 1 minute.")
     .max(1440, "Duration must be at most 1440 minutes (24 hours)."),
   accessTokenType: z.enum(["Bearer", "DPoP"]),
-  // TODO: this will change when we have a proper category system
-  categories: z.array(z.string()),
+  categories: z.array(schemeRefSchema),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters.")
@@ -41,12 +47,7 @@ const eserviceFieldSchemas = {
   requiredAttributes: z
     .array(
       z
-        .array(
-          z.object({
-            code: z.string(),
-            scheme: z.string(),
-          }),
-        )
+        .array(schemeRefSchema)
         .min(1, "Group must have at least one attribute."),
     )
     .min(1, "At least one group is required."),
