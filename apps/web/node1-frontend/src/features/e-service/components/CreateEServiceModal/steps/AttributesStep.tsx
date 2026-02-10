@@ -1,10 +1,15 @@
 import { attributes } from "@knodia/attribute-models";
-import { Banner, Button, Select, SelectItem } from "@knodia/ui-kit/ui";
+import { Banner, Button, Select } from "@knodia/ui-kit/ui";
 import { TrashIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
 import { useAttributesStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
+import {
+  parseSchemeRefKeys,
+  renderSchemeRefItems,
+  toSchemeRefKey,
+} from "@/features/e-service/utils/schemeRef";
 
 import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
@@ -83,32 +88,15 @@ export function AttributesStep() {
                         label="Attributes"
                         name={groupField.name}
                         onChange={(keys) =>
-                          groupField.handleChange(
-                            keys.map((v) => {
-                              const key = String(v);
-                              const [scheme = "", code = ""] = key.split("$");
-                              return { code, scheme };
-                            }),
-                          )
+                          groupField.handleChange(parseSchemeRefKeys(keys))
                         }
                         placeholder="Select one or more attributes"
                         selectionMode="multiple"
                         value={
-                          groupField.state.value?.map(
-                            (attr) => `${attr.scheme}$${attr.code}`,
-                          ) ?? []
+                          groupField.state.value?.map(toSchemeRefKey) ?? []
                         }
                       >
-                        {Object.entries(attributes).flatMap(([scheme, codes]) =>
-                          Object.entries(codes).map(([code, name]) => (
-                            <SelectItem
-                              id={`${scheme}$${code}`}
-                              key={`${scheme}$${code}`}
-                            >
-                              {name}
-                            </SelectItem>
-                          )),
-                        )}
+                        {renderSchemeRefItems(attributes)}
                       </Select>
                     )}
                   </form.Field>
