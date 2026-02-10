@@ -94,7 +94,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     url: "/eservices/:eserviceId",
   });
 
-  // TODO: this endpoint should also return the interface document
   fastify.route({
     handler: (req, res) => {
       const version = eserviceService.getMockEserviceVersionById(
