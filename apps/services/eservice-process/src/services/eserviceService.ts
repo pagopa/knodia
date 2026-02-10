@@ -187,41 +187,43 @@ export function eserviceServiceBuilder(
 }
 
 function generateMockEservices(producerId?: OrganizationId): Eservice[] {
-  const now = new Date();
-
+  // TODO: remove when switching to real data — fixed to keep mock output deterministic across calls
+  const timestamp = new Date("2025-01-01T00:00:00.000Z");
   return mockEservices.map((mock, idx) => ({
     categories: mock.categories,
-    createdAt: now,
+    createdAt: timestamp,
     description: { en: mock.description },
     id: `00000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceId,
     isConsumerOperatorIdentificationRequired: false,
     isSignalHubEnabled: false,
     mode: mock.mode,
     name: { en: mock.name },
-    producerId: producerId ?? generateId<OrganizationId>(),
-    updatedAt: now,
+    producerId:
+      producerId ??
+      (`30000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as OrganizationId),
+    updatedAt: timestamp,
     versions: [
       {
         accessTokenAudience: ["audience-1"],
         accessTokenDuration: 3600,
         accessTokenType: "Bearer" as const,
-        createdAt: now,
+        createdAt: timestamp,
         id: `10000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceVersionId,
         interfaceDocument: {
           checksum: "checksum-1",
           contentType: "application/json",
-          createdAt: now,
+          createdAt: timestamp,
           id: `20000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceInterfaceId,
           name: "Interface 1",
           path: "/interfaces/1.json",
           prettyName: { en: "Interface 1" },
-          updatedAt: now,
+          updatedAt: timestamp,
         },
         maxDailyCallsPerConsumer: 100,
         maxDailyCallsPerKnode: 1000,
         requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
         state: mock.state,
-        updatedAt: now,
+        updatedAt: timestamp,
         versionNumber: 1,
       },
     ],
