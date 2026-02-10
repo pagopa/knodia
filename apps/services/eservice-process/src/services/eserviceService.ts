@@ -17,7 +17,11 @@ import type {
   API_EservicesQueryParams,
 } from "../models/api.ts";
 
-import { invalidAttribute, invalidCategory } from "../models/errors.ts";
+import {
+  eserviceNotFound,
+  invalidAttribute,
+  invalidCategory,
+} from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 import { mockEservices } from "./mockEservices.ts";
 
@@ -102,6 +106,16 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
+    getMockEserviceById(eserviceId: EserviceId): Eservice {
+      const eservices = generateMockEservices();
+      const eservice = eservices.find((e) => e.id === eserviceId);
+
+      if (!eservice) {
+        throw eserviceNotFound(eserviceId);
+      }
+
+      return eservice;
+    },
     getMockEservices(params: API_EservicesQueryParams): {
       items: Eservice[];
       pagination: { limit: number; offset: number; total: number };
@@ -158,6 +172,16 @@ export function eserviceServiceBuilder(
           total,
         },
       };
+    },
+    getMockEserviceVersionById(eserviceId: EserviceId) {
+      const eservices = generateMockEservices();
+      const eservice = eservices.find((e) => e.id === eserviceId);
+
+      if (!eservice) {
+        throw eserviceNotFound(eserviceId);
+      }
+
+      return getLatestVersion(eservice);
     },
   };
 }

@@ -1,4 +1,8 @@
-import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
+import {
+  EserviceId,
+  EserviceInterfaceId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
 import { EserviceVersionState } from "@knodia/eservice-models";
 import {
   maxAccessTokenDuration,
@@ -20,6 +24,11 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
+
+export const API_EserviceIdPathParam = z.strictObject({
+  eserviceId: EserviceId,
+});
+export type API_EserviceIdPathParam = z.infer<typeof API_EserviceIdPathParam>;
 
 export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
   mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
@@ -74,6 +83,59 @@ export const API_Eservices = z
   })
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
+
+export const API_EserviceInterfaceDocument = z
+  .strictObject({
+    checksum: z.string().describe("Base64-encoded SHA-256 checksum"),
+    contentType: z.string().describe("MIME type of the interface document"),
+    id: z.uuid().describe("Unique identifier of the interface document"),
+    name: z.string().describe("Name of the interface document, with extension"),
+    path: z.string().describe("Path where the interface document is stored"),
+    prettyName: API_LocalizedInterfacePrettyName,
+  })
+  .meta({ id: "EserviceInterfaceDocument" });
+export type API_EserviceInterfaceDocument = z.infer<
+  typeof API_EserviceInterfaceDocument
+>;
+
+export const API_EserviceVersion = z
+  .strictObject({
+    accessTokenAudience: z
+      .array(z.string())
+      .describe("Audience for the access token"),
+    accessTokenDuration: z
+      .number()
+      .int()
+      .describe("Duration of the access token in seconds")
+      .meta({ format: "int32" }),
+    accessTokenType: API_AccessTokenType.describe("Type of the access token"),
+    createdAt: z.iso.datetime(),
+    id: z.uuid().describe("Unique identifier of the E-service version"),
+    interfaceDocument:
+      API_EserviceInterfaceDocument.describe("Interface document"),
+    maxDailyCallsPerConsumer: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per consumer")
+      .meta({ format: "int32" }),
+    maxDailyCallsPerKnode: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per Knode")
+      .meta({ format: "int32" }),
+    requiredAttributes: z
+      .array(z.array(API_EserviceAttribute))
+      .describe("Required attributes for the E-service"),
+    state: EserviceVersionState.describe("State of the version"),
+    updatedAt: z.iso.datetime(),
+    versionNumber: z
+      .number()
+      .int()
+      .describe("Version number")
+      .meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceVersion" });
+export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
 
 const API_InterfaceDocumentSeed = z
   .strictObject({
