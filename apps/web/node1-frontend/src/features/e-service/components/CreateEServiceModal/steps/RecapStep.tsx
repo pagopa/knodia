@@ -23,7 +23,7 @@ export function RecapStep() {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
   const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
-  const { isPending, publish } = usePublishEService();
+  const { isError, isPending, publish } = usePublishEService();
 
   const onPublish = useCallback(() => {
     publish(data);
@@ -68,6 +68,17 @@ export function RecapStep() {
         Remember: once published, Technical details and Attributes cannot be
         modified.
       </Banner>
+
+      {isError && (
+        <Banner kind="error">
+          <div className="flex flex-col gap-2">
+            <div className="title-sm-em text-error-light-high-contrast">
+              Something went wrong
+            </div>
+            Please try again. Don't refresh the page to avoid data loss.
+          </div>
+        </Banner>
+      )}
 
       <Footer
         confirmLabel="Publish"

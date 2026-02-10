@@ -16,10 +16,10 @@ const CONTENT_TYPES: Record<string, string> = {
 export function usePublishEService() {
   const navigate = useNavigate();
 
-  const { isPending, mutate } = useMutation({
+  const { isError, isPending, mutate } = useMutation({
     ...createEserviceMutation({ client }),
-    onSuccess: () => {
-      navigate({ to: "/production/e-services" });
+    onSuccess: (response) => {
+      navigate({ to: "/production/e-services/" + response.id });
     },
   });
 
@@ -28,7 +28,7 @@ export function usePublishEService() {
     mutate({ body });
   };
 
-  return { isPending, publish };
+  return { isError, isPending, publish };
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
