@@ -38,6 +38,7 @@ catalog:
   "@tanstack/react-router": 1.144.0
   "@tanstack/react-router-devtools": 1.144.0
   "@tanstack/router-plugin": 1.145.2
+  "@testcontainers/kafka": 11.11.0
   "@tsconfig/node-ts": 23.6.2
   "@tsconfig/node24": 24.0.3
   "@tsconfig/strictest": 2.0.8

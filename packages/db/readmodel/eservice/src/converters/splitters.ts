@@ -98,6 +98,7 @@ const splitEserviceVersionIntoObjectsSQL = (
   eserviceInterfaceSQL: {
     ...eserviceVersion.interfaceDocument,
     eserviceId,
+    eserviceVersionId: eserviceVersion.id,
     metadataVersion,
   },
   eserviceVersionRequiredAttributesSQL:
@@ -143,7 +144,6 @@ const toEserviceVersionSQL = ({
 }): EserviceVersionSQL => ({
   ...eserviceVersion,
   eserviceId,
-  interfaceId: eserviceVersion.interfaceDocument.id,
   metadataVersion,
 });
 
