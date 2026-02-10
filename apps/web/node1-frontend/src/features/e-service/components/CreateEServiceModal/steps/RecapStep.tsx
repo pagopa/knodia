@@ -1,6 +1,5 @@
 import { getCategory } from "@knodia/category-models";
 import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
-import { useCallback } from "react";
 
 import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
 
@@ -25,9 +24,7 @@ export function RecapStep() {
   const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
   const { isError, isPending, publish } = usePublishEService();
 
-  const onPublish = useCallback(() => {
-    publish(data);
-  }, [data, publish]);
+  const onPublish = () => publish(data);
 
   return (
     <>
