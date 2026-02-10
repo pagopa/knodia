@@ -21,37 +21,21 @@ export const Default: Story = {
     <Sidebar {...args}>
       <SidebarHeader>Application Name</SidebarHeader>
       <SidebarSection>
-        <SidebarNavItem isCurrent>
-          <a href="#">Route</a>
+        <SidebarNavItem href="#" isCurrent>
+          Route
         </SidebarNavItem>
       </SidebarSection>
       <SidebarSection title="Section Title 1">
-        <SidebarNavItem>
-          <a href="#">Route 1</a>
-        </SidebarNavItem>
-        <SidebarNavItem>
-          <a href="#">Route 2</a>
-        </SidebarNavItem>
-        <SidebarNavItem>
-          <a href="#">Route 3</a>
-        </SidebarNavItem>
-        <SidebarNavItem>
-          <a href="#">Route 4</a>
-        </SidebarNavItem>
+        <SidebarNavItem href="#">Route 1</SidebarNavItem>
+        <SidebarNavItem href="#">Route 2</SidebarNavItem>
+        <SidebarNavItem href="#">Route 3</SidebarNavItem>
+        <SidebarNavItem href="#">Route 4</SidebarNavItem>
       </SidebarSection>
       <SidebarSection title="Section Title 2">
-        <SidebarNavItem>
-          <a href="#">Route 1</a>
-        </SidebarNavItem>
-        <SidebarNavItem>
-          <a href="#">Route 2</a>
-        </SidebarNavItem>
-        <SidebarNavItem>
-          <a href="#">Route 3</a>
-        </SidebarNavItem>
-        <SidebarNavItem>
-          <a href="#">Route 4</a>
-        </SidebarNavItem>
+        <SidebarNavItem href="#">Route 1</SidebarNavItem>
+        <SidebarNavItem href="#">Route 2</SidebarNavItem>
+        <SidebarNavItem href="#">Route 3</SidebarNavItem>
+        <SidebarNavItem href="#">Route 4</SidebarNavItem>
       </SidebarSection>
     </Sidebar>
   ),

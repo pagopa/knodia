@@ -6,6 +6,7 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import { serviceName } from "@knodia/fastify-zod-api-commons/models";
+import { initFileManager } from "@knodia/file-manager";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
@@ -23,7 +24,7 @@ export function buildAppFromConfig(config: BffProcessConfig) {
 
 function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
   const clients = getKnodiaClients();
-
+  const fileManager = initFileManager();
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -49,7 +50,10 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
   });
 
   app.register(healthRouter);
-  app.register(eserviceRouter, clients.eserviceProcessClient);
+  app.register(eserviceRouter, {
+    eserviceProcessClient: clients.eserviceProcessClient,
+    fileManager,
+  });
 
   return app;
 }

@@ -109,6 +109,17 @@ components:
       required:
         - en
       additionalProperties: false
+    LocalizedInterfacePrettyName:
+      description: Pretty name of the E-service interface document
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
     EserviceMode:
       type: string
       enum:
@@ -199,6 +210,37 @@ components:
         - items
         - pagination
       additionalProperties: false
+    InterfaceDocumentSeed:
+      type: object
+      properties:
+        checksum:
+          description: Base64-encoded SHA-256 checksum of the uploaded E-service interface
+            document
+          type: string
+        contentType:
+          description: MIME type of the uploaded E-service interface document
+          type: string
+        id:
+          description: Unique identifier of the E-service interface document
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          description: Name of the uploaded E-service interface document, with extension
+          type: string
+        path:
+          description: Path where the E-service interface document is stored
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
+      required:
+        - checksum
+        - contentType
+        - id
+        - name
+        - path
+        - prettyName
+      additionalProperties: false
     EserviceSeed:
       type: object
       properties:
@@ -226,6 +268,10 @@ components:
             $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
+        interfaceDocument:
+          description: Interface document
+          allOf:
+            - $ref: "#/components/schemas/InterfaceDocumentSeed"
         isConsumerOperatorIdentificationRequired:
           description: Whether consumer operator identification is required
           type: boolean
@@ -262,6 +308,7 @@ components:
         - accessTokenDuration
         - accessTokenType
         - description
+        - interfaceDocument
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - name

@@ -2,6 +2,8 @@ import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/ese
 import type { Eservice } from "@knodia/eservice-models";
 
 import { type RequestContextData } from "@fastify/request-context";
+import { getAttribute } from "@knodia/attribute-models";
+import { getCategory } from "@knodia/category-models";
 import {
   type EserviceId,
   type EserviceInterfaceId,
@@ -12,6 +14,7 @@ import {
 
 import type { API_EserviceSeed } from "../models/api.ts";
 
+import { invalidAttribute, invalidCategory } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
@@ -31,9 +34,20 @@ export function eserviceServiceBuilder(
         `Creating E-service ${eserviceId} for producer ${producerId} `,
       );
 
+      for (const attr of seed.requiredAttributes.flat()) {
+        if (getAttribute(attr.scheme, attr.code) === undefined) {
+          throw invalidAttribute(attr.scheme, attr.code);
+        }
+      }
+
+      for (const cat of seed.categories ?? []) {
+        if (getCategory(cat.scheme, cat.code) === undefined) {
+          throw invalidCategory(cat.scheme, cat.code);
+        }
+      }
+
       const now = new Date();
       const eserviceVersionId = generateId<EserviceVersionId>();
-      const eserviceInterfaceId = generateId<EserviceInterfaceId>();
 
       const eservice: Eservice = {
         categories: seed.categories ?? [],
@@ -54,15 +68,14 @@ export function eserviceServiceBuilder(
             accessTokenType: seed.accessTokenType ?? "Bearer",
             createdAt: now,
             id: eserviceVersionId,
-            // TODO: implement interface document upload
             interfaceDocument: {
-              checksum: "checksum-1",
-              contentType: "application/json",
+              checksum: seed.interfaceDocument.checksum,
+              contentType: seed.interfaceDocument.contentType,
               createdAt: now,
-              id: eserviceInterfaceId,
-              name: "Interface 1",
-              path: "/interfaces/1.json",
-              prettyName: { en: "Interface 1" },
+              id: seed.interfaceDocument.id,
+              name: seed.interfaceDocument.name,
+              path: seed.interfaceDocument.path,
+              prettyName: seed.interfaceDocument.prettyName,
               updatedAt: now,
             },
             maxDailyCallsPerConsumer: seed.maxDailyCallsPerConsumer,

@@ -1,4 +1,4 @@
-import { bffApi } from "@knodia/bff-client";
+import { createBffApiClient } from "@knodia/bff-client";
 import axios, { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
@@ -30,7 +30,7 @@ axios.interceptors.response.use(
   },
 );
 
-export const client = bffApi.createClient({
+export const client = createBffApiClient({
   axios,
   baseURL: config.bffUrl,
   headers: {
