@@ -10,10 +10,11 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import { Eservice, EserviceVersionState } from "@knodia/eservice-models";
+import { zocker } from "zocker";
 
 import type {
   API_EserviceSeed,
-  API_GetEservicesQueryParams,
+  API_GetProducerEservicesQueryParams,
 } from "../models/api.ts";
 import type { ReadModelService } from "./readModelService.ts";
 
@@ -91,7 +92,27 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    async getProducerEservices(params: API_GetEservicesQueryParams): Promise<
+    getMockEservices(
+      offset: number,
+      limit: number,
+    ): {
+      items: Eservice[];
+      pagination: { limit: number; offset: number; total: number };
+    } {
+      const eservices = zocker(Eservice).generateMany(100);
+
+      return {
+        items: eservices.slice(offset, offset + limit),
+        pagination: {
+          limit,
+          offset,
+          total: eservices.length,
+        },
+      };
+    },
+    async getProducerEservices(
+      params: API_GetProducerEservicesQueryParams,
+    ): Promise<
       ListResult<
         Eservice & {
           activeAgreements: number;

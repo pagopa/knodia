@@ -10,9 +10,7 @@ import {
 import {
   readmodelEservice,
   readmodelEserviceCategory,
-  readmodelEserviceInterface,
   readmodelEserviceVersion,
-  readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
 import {
   aggregateEservices,
@@ -25,13 +23,15 @@ import {
 } from "@knodia/eservice-models";
 import { and, eq, ilike, or } from "drizzle-orm";
 
-import type { API_GetEservicesQueryParams } from "../models/api.ts";
+import type { API_GetProducerEservicesQueryParams } from "../models/api.ts";
 
 export type ReadModelService = ReturnType<typeof readModelServiceBuilder>;
 
 export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
   return {
-    async getProducerEservices(params: API_GetEservicesQueryParams): Promise<
+    async getProducerEservices(
+      params: API_GetProducerEservicesQueryParams,
+    ): Promise<
       ListResult<
         Eservice & {
           activeAgreements: number;
