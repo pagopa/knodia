@@ -19,6 +19,7 @@ import {
   PgColumn,
   PgJsonb,
   PgTable,
+  PgText,
 } from "drizzle-orm/pg-core";
 import { match } from "ts-pattern";
 import z from "zod";
@@ -140,7 +141,7 @@ function getTablePKString<T extends Record<string, unknown>>(
   table: AnyPgTable,
 ): string {
   const tableConfig = getTableConfig(table);
-  return Object.keys(getTablePKColumns(table))
+  return Array.from(getTablePKColumns(table).keys())
     .map((col) => {
       const value = modelSQL[col];
       if (value === undefined || value === null) {
@@ -159,18 +160,22 @@ export type SortDirection = z.infer<typeof SortDirection>;
 export const lowerCaseJsonb = (column: PgColumn, key: string): SQL<string> =>
   sql<string>`LOWER(${column} ->> ${key})`;
 export const lowerCase = (column: PgColumn): SQL =>
-  sql<string>`LOWER(${column}::text)`;
+  sql<string>`LOWER(${column})`;
 export const ascLower = (column: PgColumn): SQL => {
   if (column instanceof PgJsonb) {
     return asc(lowerCaseJsonb(column, "en"));
+  } else if (column instanceof PgText) {
+    return asc(lowerCase(column));
   }
-  return asc(lowerCase(column));
+  return asc(column);
 };
 const descLower = (column: PgColumn): SQL => {
   if (column instanceof PgJsonb) {
     return desc(lowerCaseJsonb(column, "en"));
+  } else if (column instanceof PgText) {
+    return desc(lowerCase(column));
   }
-  return desc(lowerCase(column));
+  return desc(column);
 };
 
 export const createOrderByFilters = ({
@@ -235,5 +240,6 @@ export async function getTableTotalCount(
 }
 
 export function ilikeJsonB(column: PgColumn, value: string): SQL {
-  return sql`jsonb_path_exists(${column}, '$.** ? (@.type() == "string" && @ like_regex "${escapeRegExp(value)}" flag "i")')`;
+  const pattern = `%${escapeRegExp(value)}%`;
+  return sql`${column}::json->>'en' ilike ${pattern}`;
 }
