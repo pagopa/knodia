@@ -12,6 +12,7 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { eserviceDetailRouter } from "./routers/eserviceDetailRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
@@ -53,6 +54,9 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
+  });
+  app.register(eserviceDetailRouter, {
+    eserviceProcessClient: clients.eserviceProcessClient,
   });
 
   return app;

@@ -1,4 +1,5 @@
 import {
+  EserviceVersionState,
   maxAccessTokenDuration,
   maxDailyCalls,
   minAccessTokenDuration,
@@ -128,3 +129,94 @@ export const API_CreatedResource = z
   })
   .meta({ id: "CreatedResource" });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
+
+export const API_EserviceIdPathParam = z.strictObject({
+  eserviceId: z.uuid(),
+});
+export type API_EserviceIdPathParam = z.infer<typeof API_EserviceIdPathParam>;
+
+const API_EserviceInterfaceDocument = z
+  .strictObject({
+    checksum: z.string().describe("Base64-encoded SHA-256 checksum"),
+    contentType: z.string().describe("MIME type of the interface document"),
+    id: z.uuid().describe("Unique identifier of the interface document"),
+    name: z.string().describe("Name of the interface document, with extension"),
+    path: z.string().describe("Path where the interface document is stored"),
+    prettyName: API_LocalizedInterfacePrettyName,
+  })
+  .meta({ id: "EserviceInterfaceDocument" });
+
+const API_EserviceVersion = z
+  .strictObject({
+    accessTokenAudience: z
+      .array(z.string())
+      .describe("Audience for the access token"),
+    accessTokenDuration: z
+      .number()
+      .int()
+      .describe("Duration of the access token in seconds")
+      .meta({ format: "int32" }),
+    accessTokenType: API_AccessTokenType.describe("Type of the access token"),
+    createdAt: z.iso.datetime(),
+    id: z.uuid().describe("Unique identifier of the E-service version"),
+    interfaceDocument:
+      API_EserviceInterfaceDocument.describe("Interface document"),
+    maxDailyCallsPerConsumer: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per consumer")
+      .meta({ format: "int32" }),
+    maxDailyCallsPerKnode: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per Knode")
+      .meta({ format: "int32" }),
+    requiredAttributes: z
+      .array(z.array(API_EserviceAttribute))
+      .describe("Required attributes for the E-service"),
+    state: EserviceVersionState.describe("State of the version"),
+    updatedAt: z.iso.datetime(),
+    versionNumber: z
+      .number()
+      .int()
+      .describe("Version number")
+      .meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceVersion" });
+
+const API_EserviceDetailsCounters = z
+  .strictObject({
+    active: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Number of active items")
+      .meta({ format: "int32" }),
+    total: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Total number of items")
+      .meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceDetailsCounters" });
+
+export const API_EserviceDetails = z
+  .strictObject({
+    agreements: API_EserviceDetailsCounters.describe("Agreement counters"),
+    categories: z.array(API_EserviceCategory),
+    createdAt: z.iso.datetime(),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    isConsumerOperatorIdentificationRequired: z.boolean(),
+    isSignalHubEnabled: z.boolean(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producerId: z.uuid(),
+    purposes: API_EserviceDetailsCounters.describe("Purpose counters"),
+    status: EserviceVersionState.describe("Status of the latest version"),
+    updatedAt: z.iso.datetime(),
+    version: API_EserviceVersion.describe("Latest version details"),
+  })
+  .meta({ id: "EserviceDetails" });
+export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
