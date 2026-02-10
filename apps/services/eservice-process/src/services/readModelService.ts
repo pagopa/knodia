@@ -18,14 +18,11 @@ import {
   aggregateEservices,
   toEservicesAggregator,
 } from "@knodia/db-readmodel-eservice/converters";
-import {
-  Eservice,
-  EserviceVersionState,
-  getLatestVersion,
-} from "@knodia/eservice-models";
+import { getLatestVersion } from "@knodia/eservice-models";
 import { and, eq, ilike, or } from "drizzle-orm";
 
 import type { API_GetProducerEservicesQueryParams } from "../models/api.ts";
+import type { ProducerEservice } from "../models/types.ts";
 
 export type ReadModelService = ReturnType<typeof readModelServiceBuilder>;
 
@@ -34,15 +31,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
     async getProducerEservices(
       params: API_GetProducerEservicesQueryParams,
       producerId: OrganizationId,
-    ): Promise<
-      ListResult<
-        Eservice & {
-          activeAgreements: number;
-          activePurposes: number;
-          status: EserviceVersionState;
-        }
-      >
-    > {
+    ): Promise<ListResult<ProducerEservice>> {
       const { limit, mode, offset, q, sortBy, sortOrder, status } = params;
 
       try {

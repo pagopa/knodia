@@ -8,13 +8,14 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { Eservice, EserviceVersionState } from "@knodia/eservice-models";
+import { Eservice } from "@knodia/eservice-models";
 import { zocker } from "zocker";
 
 import type {
   API_EserviceSeed,
   API_GetProducerEservicesQueryParams,
 } from "../models/api.ts";
+import type { ProducerEservice } from "../models/types.ts";
 import type { ReadModelService } from "./readModelService.ts";
 
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
@@ -110,15 +111,7 @@ export function eserviceServiceBuilder(
     async getProducerEservices(
       params: API_GetProducerEservicesQueryParams,
       producerId: OrganizationId,
-    ): Promise<
-      ListResult<
-        Eservice & {
-          activeAgreements: number;
-          activePurposes: number;
-          status: EserviceVersionState;
-        }
-      >
-    > {
+    ): Promise<ListResult<ProducerEservice>> {
       return await readModelService.getProducerEservices(params, producerId);
     },
   };
