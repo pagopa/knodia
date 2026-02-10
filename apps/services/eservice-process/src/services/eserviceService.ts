@@ -4,7 +4,6 @@ import type { ListResult } from "@knodia/db-readmodel-commons";
 import { type RequestContextData } from "@fastify/request-context";
 import {
   EserviceId,
-  EserviceInterfaceId,
   EserviceVersionId,
   generateId,
   OrganizationId,
