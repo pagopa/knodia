@@ -84,7 +84,7 @@ export const API_Eservices = z
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
-export const API_EserviceInterfaceDocument = z
+const API_EserviceInterfaceDocument = z
   .strictObject({
     checksum: z.string().describe("Base64-encoded SHA-256 checksum"),
     contentType: z.string().describe("MIME type of the interface document"),
@@ -94,7 +94,7 @@ export const API_EserviceInterfaceDocument = z
     prettyName: API_LocalizedInterfacePrettyName,
   })
   .meta({ id: "EserviceInterfaceDocument" });
-export type API_EserviceInterfaceDocument = z.infer<
+type API_EserviceInterfaceDocument = z.infer<
   typeof API_EserviceInterfaceDocument
 >;
 
