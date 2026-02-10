@@ -171,6 +171,12 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
+      '@knodia/category-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/category-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -761,6 +767,42 @@ importers:
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/models/attribute-models:
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/models/category-models:
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
