@@ -135,6 +135,42 @@ const markRequestBodiesAsRequired = (
   return openapi;
 };
 
+export const removeUnusedComponents = (
+  openapi: Partial<OpenAPIV3.Document>,
+): Partial<OpenAPIV3.Document> => {
+  if (!openapi.components?.schemas || !openapi.paths) return openapi;
+
+  const refs = new Set<string>();
+
+  const collectRefs = (value: unknown) => {
+    if (Array.isArray(value)) return value.forEach(collectRefs);
+    if (!value || typeof value !== "object") return;
+
+    for (const [k, v] of Object.entries(value)) {
+      if (k === "$ref" && typeof v === "string") {
+        const match = v.match(/^#\/components\/schemas\/(.+)$/);
+        if (match && match[1] && !refs.has(match[1])) {
+          refs.add(match[1]);
+          // also follow this schema recursively
+          const component = openapi.components?.schemas?.[match[1]];
+          if (component) collectRefs(component);
+        }
+      } else {
+        collectRefs(v);
+      }
+    }
+  };
+
+  collectRefs(openapi.paths);
+
+  for (const key of Object.keys(openapi.components.schemas)) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    if (!refs.has(key)) delete openapi.components.schemas[key];
+  }
+
+  return openapi;
+};
+
 export const zodToJsonSchemaTransform = createJsonSchemaTransform({
   zodToJsonConfig: {
     target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
@@ -149,13 +185,13 @@ const applyOpenApiTransforms = (
 ): Partial<OpenAPIV3.Document> =>
   transforms.reduce((acc, transform) => transform(acc), openapi);
 
-export const zodToJsonSchemaTransformObjectWithoutInputSchemas: typeof zodToJsonSchemaTransformObject =
-  (openapi) =>
-    applyOpenApiTransforms(
-      zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
-      [
-        removeZodInputSchemasFromOpenapi,
-        updateErrorResponseContentsWithProblemJson,
-        markRequestBodiesAsRequired,
-      ],
-    );
+export const cleanOpenapi: typeof zodToJsonSchemaTransformObject = (openapi) =>
+  applyOpenApiTransforms(
+    zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
+    [
+      removeZodInputSchemasFromOpenapi,
+      updateErrorResponseContentsWithProblemJson,
+      markRequestBodiesAsRequired,
+      removeUnusedComponents,
+    ],
+  );
