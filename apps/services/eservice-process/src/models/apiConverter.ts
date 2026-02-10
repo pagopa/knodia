@@ -1,23 +1,6 @@
 import { Eservice, getLatestVersion } from "@knodia/eservice-models";
-import { API_ProducerEservice } from "@knodia/eservice-models/api";
-
-import type { EserviceService } from "../services/eserviceService.ts";
 
 import { API_Eservice } from "./api.ts";
-
-export const toAPI_ProducerEservice = (
-  producerEservice: ReturnType<
-    EserviceService["getProducerEservices"]
-  >["items"][number],
-): API_ProducerEservice => ({
-  activeAgreements: producerEservice.activeAgreements,
-  activePurposes: producerEservice.activePurposes,
-  categories: producerEservice.eservice.categories,
-  id: producerEservice.eservice.id,
-  mode: producerEservice.eservice.mode,
-  name: producerEservice.eservice.name,
-  status: getLatestVersion(producerEservice.eservice).state,
-});
 
 export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   categories: eservice.categories,
@@ -30,5 +13,6 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   mode: eservice.mode,
   name: eservice.name,
   producerId: eservice.producerId,
+  status: getLatestVersion(eservice).state,
   updatedAt: eservice.updatedAt.toISOString(),
 });

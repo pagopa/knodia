@@ -23,6 +23,7 @@ import {
   API_EserviceSeed,
   API_EservicesQueryParams,
 } from "../models/api.ts";
+import { toAPI_ProducerEservice } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -135,9 +136,20 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { limit, mode, offset, q, sortBy, sortOrder, status } = req.query;
+      const { limit, mode, offset, q, sortOrder, status } = req.query;
       const { correlationId } = getContextValues(requestContext);
-      const result = await eserviceProcessApi.getProducerEservices({
+
+      // TODO: get real producerId from auth context
+      const producerId = "00000000-0000-0000-0000-000000000000";
+
+      // TODO: Implement sorting by activeAgreements/activePurposes.
+      // Currently falls back to name sorting. Two options:
+      // 1. BFF-side: fetch ALL eservices (no process pagination), enrich, sort, paginate here.
+      //    Breaks process pagination; only viable if producer eservice count is bounded.
+      // 2. Process-side: get counts in eservice-process and handle sorting.
+      //    Breaks unified data model principle (process would include cross-domain data).
+
+      const result = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,
@@ -146,15 +158,21 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           limit,
           mode,
           offset,
+          producerId,
           q,
-          sortBy,
+          sortBy: "name",
           sortOrder,
           status,
         },
       });
 
+      // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
+      const items = (result.data?.items ?? []).map((eservice, idx) =>
+        toAPI_ProducerEservice(eservice, idx + 5, idx + 1),
+      );
+
       res.send({
-        items: result.data?.items ?? [],
+        items,
         pagination: result.data?.pagination ?? {
           limit,
           offset,

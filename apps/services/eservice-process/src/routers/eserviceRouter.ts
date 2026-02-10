@@ -1,10 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import {
-  API_ProducerEservices,
-  API_ProducerEservicesQueryParams,
-} from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -19,10 +15,7 @@ import {
   API_EserviceSeed,
   API_EservicesQueryParams,
 } from "../models/api.ts";
-import {
-  toAPI_Eservice,
-  toAPI_ProducerEservice,
-} from "../models/apiConverter.ts";
+import { toAPI_Eservice } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
@@ -31,13 +24,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 ) => {
   fastify.route({
     handler: (req, res) => {
-      const eservices = eserviceService.getMockEservices(
-        req.query.offset,
-        req.query.limit,
-      );
+      const result = eserviceService.getMockEservices(req.query);
       res.status(200).send({
-        items: eservices.items.map(toAPI_Eservice),
-        pagination: eservices.pagination,
+        items: result.items.map(toAPI_Eservice),
+        pagination: result.pagination,
       });
     },
     method: "GET",
@@ -74,31 +64,5 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       tags: [apiTags.eservice],
     },
     url: "/eservices",
-  });
-
-  fastify.route({
-    handler: (req, res) => {
-      const result = eserviceService.getProducerEservices(req.query);
-      res.status(200).send({
-        items: result.items.map(toAPI_ProducerEservice),
-        pagination: result.pagination,
-      });
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Retrieve a paginated list of E-services produced by the logged-in user's organization",
-      headers: processHeaders,
-      operationId: "getProducerEservices",
-      querystring: API_ProducerEservicesQueryParams,
-      response: {
-        200: API_ProducerEservices.describe(
-          "Producer E-services retrieved successfully",
-        ),
-        400: API_Problem.describe("Bad Request"),
-      },
-      tags: [apiTags.eservice],
-    },
-    url: "/producer/eservices",
   });
 };

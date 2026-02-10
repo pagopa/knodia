@@ -1,5 +1,4 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
-import type { API_ProducerEservicesQueryParams } from "@knodia/eservice-models/api";
 
 import { type RequestContextData } from "@fastify/request-context";
 import {
@@ -10,9 +9,11 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import { Eservice, getLatestVersion } from "@knodia/eservice-models";
-import { match } from "ts-pattern";
 
-import type { API_EserviceSeed } from "../models/api.ts";
+import type {
+  API_EserviceSeed,
+  API_EservicesQueryParams,
+} from "../models/api.ts";
 
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 import { mockEservices } from "./mockEservices.ts";
@@ -86,93 +87,53 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    getMockEservices(
-      offset: number,
-      limit: number,
-    ): {
+    getMockEservices(params: API_EservicesQueryParams): {
       items: Eservice[];
       pagination: { limit: number; offset: number; total: number };
     } {
-      const eservices = generateMockEservices();
+      const { limit, mode, offset, producerId, q, sortOrder, status } = params;
 
-      return {
-        items: eservices.slice(offset, offset + limit),
-        pagination: {
-          limit,
-          offset,
-          total: eservices.length,
-        },
-      };
-    },
-    getProducerEservices(params: API_ProducerEservicesQueryParams): {
-      items: {
-        activeAgreements: number;
-        activePurposes: number;
-        eservice: Eservice;
-      }[];
-      pagination: { limit: number; offset: number; total: number };
-    } {
-      // TODO: get real data, producerId from auth context
-      const producerId = generateId<OrganizationId>();
-      const eservices = generateMockEservices(producerId);
-      const { limit, mode, offset, q, sortBy, sortOrder, status } = params;
+      // TODO: replace mock data with real database queries (read model)
+      let eservices = generateMockEservices(producerId);
 
-      // Enrich with random mock counts
-      let items = eservices.map((eservice, idx) => ({
-        ...generateMockCounts(idx),
-        eservice,
-      }));
+      // Filter by producerId
+      if (producerId) {
+        eservices = eservices.filter((e) => e.producerId === producerId);
+      }
 
       // Filter by search query (name, description, categories)
+      // TODO: currently hardcoded to .en, should filter by the user's current language
       if (q) {
         const query = q.toLowerCase();
-        items = items.filter(
-          (item) =>
-            item.eservice.name.en.toLowerCase().includes(query) ||
-            item.eservice.description.en.toLowerCase().includes(query) ||
+        eservices = eservices.filter(
+          (e) =>
+            e.name.en.toLowerCase().includes(query) ||
+            e.description.en.toLowerCase().includes(query) ||
             // TODO: filter by category name instead of code when using real data
-            item.eservice.categories.some((c) =>
-              c.code.toLowerCase().includes(query),
-            ),
+            e.categories.some((c) => c.code.toLowerCase().includes(query)),
         );
       }
 
       // Filter by status
       if (status && status.length > 0) {
-        items = items.filter((item) =>
-          status.includes(getLatestVersion(item.eservice).state),
+        eservices = eservices.filter((e) =>
+          status.includes(getLatestVersion(e).state),
         );
       }
 
       // Filter by mode
       if (mode) {
-        items = items.filter((item) => item.eservice.mode === mode);
+        eservices = eservices.filter((e) => e.mode === mode);
       }
 
-      // Sort
+      // Sort by name (the only supported sort field)
+      // TODO: currently hardcoded to .en, should sort by the user's current language
       const direction = sortOrder === "asc" ? 1 : -1;
+      eservices.sort((a, b) => a.name.en.localeCompare(b.name.en) * direction);
 
-      items.sort((a, b) =>
-        match(sortBy)
-          .with(
-            "activeAgreements",
-            () => (a.activeAgreements - b.activeAgreements) * direction,
-          )
-          .with(
-            "activePurposes",
-            () => (a.activePurposes - b.activePurposes) * direction,
-          )
-          .with(
-            "name",
-            () =>
-              a.eservice.name.en.localeCompare(b.eservice.name.en) * direction,
-          )
-          .exhaustive(),
-      );
-
-      // Paginate (after filtering and sorting)
-      const total = items.length;
-      const paginatedItems = items.slice(offset, offset + limit);
+      // Paginate
+      const total = eservices.length;
+      const paginatedItems = eservices.slice(offset, offset + limit);
 
       return {
         items: paginatedItems,
@@ -186,17 +147,7 @@ export function eserviceServiceBuilder(
   };
 }
 
-function generateMockCounts(idx: number): {
-  activeAgreements: number;
-  activePurposes: number;
-} {
-  return {
-    activeAgreements: idx + 5,
-    activePurposes: idx + 1,
-  };
-}
-
-function generateMockEservices(sharedProducerId?: OrganizationId): Eservice[] {
+function generateMockEservices(producerId?: OrganizationId): Eservice[] {
   const now = new Date();
 
   return mockEservices.map((mock, idx) => ({
@@ -208,7 +159,7 @@ function generateMockEservices(sharedProducerId?: OrganizationId): Eservice[] {
     isSignalHubEnabled: false,
     mode: mock.mode,
     name: { en: mock.name },
-    producerId: sharedProducerId ?? generateId<OrganizationId>(),
+    producerId: producerId ?? generateId<OrganizationId>(),
     updatedAt: now,
     versions: [
       {
