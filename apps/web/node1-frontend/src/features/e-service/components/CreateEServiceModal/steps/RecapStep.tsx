@@ -1,5 +1,6 @@
 import { getCategory } from "@knodia/category-models";
 import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
+import { useCallback } from "react";
 
 import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
 
@@ -7,6 +8,7 @@ import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
+import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
 import { downloadFile } from "@/utils/downloadFile";
 
 import { AttributeGroupContainer } from "../../AttributeGroupContainer";
@@ -21,10 +23,11 @@ export function RecapStep() {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
   const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
+  const { isPending, publish } = usePublishEService();
 
-  const onPublish = () => {
-    console.log("Publishing form: ", data);
-  };
+  const onPublish = useCallback(() => {
+    publish(data);
+  }, [data, publish]);
 
   return (
     <>
@@ -68,6 +71,7 @@ export function RecapStep() {
 
       <Footer
         confirmLabel="Publish"
+        isDisabled={isPending}
         onCancel={prevStep}
         onConfirm={onPublish}
       />
