@@ -40,7 +40,6 @@
     "pg": "catalog:",
     "pino-pretty": "catalog:",
     "zocker": "catalog:",
-    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
