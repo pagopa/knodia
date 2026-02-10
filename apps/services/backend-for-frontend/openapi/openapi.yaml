@@ -109,6 +109,17 @@ components:
       required:
         - en
       additionalProperties: false
+    LocalizedInterfacePrettyName:
+      description: Pretty name of the E-service interface document
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
     EserviceMode:
       type: string
       enum:
@@ -303,6 +314,33 @@ components:
         - items
         - pagination
       additionalProperties: false
+    InterfaceDocumentSeed:
+      type: object
+      properties:
+        checksum:
+          description: Base64-encoded SHA-256 checksum of the uploaded E-service interface
+            document
+          type: string
+        content:
+          description: Base64-encoded file content
+          type: string
+          format: base64
+          pattern: ^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$
+        contentType:
+          description: MIME type of the uploaded E-service interface document
+          type: string
+        name:
+          description: Name of the uploaded E-service interface document, with extension
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
+      required:
+        - checksum
+        - content
+        - contentType
+        - name
+        - prettyName
+      additionalProperties: false
     EserviceSeed:
       type: object
       properties:
@@ -330,6 +368,10 @@ components:
             $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
+        interfaceDocument:
+          description: Interface document for the E-service
+          allOf:
+            - $ref: "#/components/schemas/InterfaceDocumentSeed"
         isConsumerOperatorIdentificationRequired:
           description: Whether consumer operator identification is required
           type: boolean
@@ -366,6 +408,7 @@ components:
         - accessTokenDuration
         - accessTokenType
         - description
+        - interfaceDocument
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - name

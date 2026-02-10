@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
@@ -29,6 +30,6 @@
   "exports": {
     ".": "./src/eservice.ts",
     "./config": "./config/config.ts",
-    "./splitters": "./src/services/splitters.ts"
+    "./converters": "./src/converters/index.ts"
   }
 }

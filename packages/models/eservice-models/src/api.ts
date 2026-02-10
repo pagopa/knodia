@@ -15,6 +15,15 @@ export const API_LocalizedDescription = LocalizedText.extend({
   .meta({ id: "LocalizedDescription" });
 export type API_LocalizedDescription = z.infer<typeof API_LocalizedDescription>;
 
+export const API_LocalizedInterfacePrettyName = LocalizedText.extend({
+  en: z.string().min(5).max(60),
+})
+  .describe("Pretty name of the E-service interface document")
+  .meta({ id: "LocalizedInterfacePrettyName" });
+export type API_LocalizedInterfacePrettyName = z.infer<
+  typeof API_LocalizedInterfacePrettyName
+>;
+
 export const API_EserviceMode = z
   .enum(["ProvideData", "ReceiveData"])
   .meta({ id: "EserviceMode" });

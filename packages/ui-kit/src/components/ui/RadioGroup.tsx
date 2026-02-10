@@ -8,27 +8,57 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { composeTailwindRenderProps, focusRing } from "../../libs/react-aria";
+import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
+import { focusRing } from "./styles";
 
-interface RadioGroupProps extends Omit<RACRadioGroupProps, "children"> {
+const radioGroupItems = tv({
+  base: "flex group-orientation-vertical:flex-col",
+  variants: {
+    orientation: {
+      horizontal: "flex-row gap-10 py-1",
+      vertical: "flex-col gap-4 py-2",
+    },
+  },
+  defaultVariants: {
+    orientation: "horizontal",
+  },
+});
+
+interface RadioGroupProps<T extends string = string> extends Omit<
+  RACRadioGroupProps,
+  "children" | "onChange" | "value"
+> {
   children?: React.ReactNode;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
   label?: string;
+  onChange?: (value: T) => void;
+  value?: T;
 }
 
-export function RadioGroup(props: RadioGroupProps) {
+/**
+ * Generic RadioGroup that preserves the type of `value` and `onChange`.
+ * This allows form libraries like TanStack Form to pass typed handlers directly.
+ */
+export function RadioGroup<T extends string = string>({
+  onChange,
+  value,
+  ...props
+}: RadioGroupProps<T>) {
   return (
     <RACRadioGroup
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "group flex flex-col gap-3 font-sans",
+        "group flex flex-col gap-1 font-sans",
       )}
+      // Conditionally spread to satisfy TS exactOptionalPropertyTypes
+      {...(onChange && { onChange: onChange as (value: string) => void })}
+      {...(value !== undefined && { value })}
     >
       <Label>{props.label}</Label>
-      <div className="flex group-orientation-vertical:flex-col gap-4">
+      <div className={radioGroupItems({ orientation: props.orientation })}>
         {props.children}
       </div>
       {props.description && <Description>{props.description}</Description>}

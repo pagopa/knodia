@@ -4,6 +4,14 @@ import { KafkaJS } from "@confluentinc/kafka-javascript";
 
 import { KafkaConfig, KafkaConsumerConfig } from "../config/config.ts";
 
+export async function initKafka(config: KafkaConfig): Promise<KafkaJS.Kafka> {
+  return new KafkaJS.Kafka({
+    "bootstrap.servers": config.kafkaBrokers,
+    "client.id": config.kafkaClientId,
+    log_level: config.kafkaLogLevel,
+  });
+}
+
 export async function runConsumer(
   topics: string[],
   consumerHandler: (messagePayload: EachMessagePayload) => Promise<void>,
@@ -21,13 +29,5 @@ export async function runConsumer(
 
   await consumer.run({
     eachMessage: consumerHandler,
-  });
-}
-
-async function initKafka(config: KafkaConfig): Promise<KafkaJS.Kafka> {
-  return new KafkaJS.Kafka({
-    "bootstrap.servers": config.kafkaBrokers,
-    "client.id": config.kafkaClientId,
-    log_level: config.kafkaLogLevel,
   });
 }

@@ -1,4 +1,4 @@
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { CorrelationId, EserviceId } from "@knodia/common-models/ids";
 import type { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -10,7 +10,7 @@ export interface NewEventStoreEvent<
   TEvent extends EventStoreEvents,
   TStreamId extends EventStoreStreamIds,
 > {
-  correlationId: string;
+  correlationId: CorrelationId;
   currentMetadataVersion: bigint | undefined;
   event: TEvent;
   streamId: TStreamId;

@@ -1,3 +1,10 @@
+import { EserviceInterfaceId } from "@knodia/common-models/ids";
+import {
+  maxAccessTokenDuration,
+  maxDailyCalls,
+  minAccessTokenDuration,
+  minDailyCalls,
+} from "@knodia/eservice-models";
 import {
   API_AccessTokenType,
   API_EserviceAttribute,
@@ -5,6 +12,7 @@ import {
   API_EserviceMode,
   API_EserviceVersion,
   API_LocalizedDescription,
+  API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import {
@@ -40,6 +48,31 @@ export const API_Eservices = z
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
+const API_InterfaceDocumentSeed = z
+  .strictObject({
+    checksum: z
+      .string()
+      .describe(
+        "Base64-encoded SHA-256 checksum of the uploaded E-service interface document",
+      ),
+    contentType: z
+      .string()
+      .describe("MIME type of the uploaded E-service interface document"),
+    id: EserviceInterfaceId.describe(
+      "Unique identifier of the E-service interface document",
+    ),
+    name: z
+      .string()
+      .describe(
+        "Name of the uploaded E-service interface document, with extension",
+      ),
+    path: z
+      .string()
+      .describe("Path where the E-service interface document is stored"),
+    prettyName: API_LocalizedInterfacePrettyName,
+  })
+  .meta({ id: "InterfaceDocumentSeed" });
+
 export const API_EserviceSeed = z
   .strictObject({
     accessTokenAudience: z
@@ -48,8 +81,8 @@ export const API_EserviceSeed = z
     accessTokenDuration: z
       .number()
       .int()
-      .min(1)
-      .max(86400)
+      .min(minAccessTokenDuration)
+      .max(maxAccessTokenDuration)
       .optional()
       .default(3600)
       .describe("Duration of the access token in seconds")
@@ -62,6 +95,7 @@ export const API_EserviceSeed = z
       .optional()
       .describe("Categories of the E-service"),
     description: API_LocalizedDescription,
+    interfaceDocument: API_InterfaceDocumentSeed.describe("Interface document"),
     isConsumerOperatorIdentificationRequired: z
       .boolean()
       .optional()
@@ -73,15 +107,15 @@ export const API_EserviceSeed = z
     maxDailyCallsPerConsumer: z
       .number()
       .int()
-      .min(1)
-      .max(1000000000)
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per consumer")
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
-      .min(1)
-      .max(1000000000)
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
