@@ -1,5 +1,8 @@
-import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
-
+import {
+  type Eservice,
+  type EserviceVersion,
+  getLatestVersion,
+} from "@knodia/eservice-models";
 import { expect } from "vitest";
 
 export function toExpectEservice(eservice: Eservice) {
@@ -12,14 +15,24 @@ export function toExpectEservice(eservice: Eservice) {
   };
 }
 
+export function toExpectProducerEservice(eservice: Eservice) {
+  return {
+    activeAgreements: 0,
+    activePurposes: 0,
+    categories: expect.arrayContaining(eservice.categories),
+    id: eservice.id,
+    mode: eservice.mode,
+    name: eservice.name,
+    status: getLatestVersion(eservice).state,
+  };
+}
+
 function toExpectEserviceVersion(eserviceVersion: EserviceVersion) {
   return expect.objectContaining({
     ...eserviceVersion,
-
     accessTokenAudience: expect.arrayContaining(
       eserviceVersion.accessTokenAudience,
     ),
-
     requiredAttributes: eserviceVersion.requiredAttributes.map((group) =>
       expect.arrayContaining(group),
     ),

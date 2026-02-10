@@ -1,8 +1,10 @@
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
-import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
+import { upsertEservice } from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, beforeEach, inject, vi } from "vitest";
 
 import { buildApp } from "../src/app.ts";
+import { mockEservices } from "./mockEservices.ts";
 
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
 let readModelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
@@ -26,6 +28,13 @@ beforeAll(async () => {
     },
     readModelDb,
   });
+
+  await Promise.all(
+    mockEservices.map((eservice) => upsertEservice(eservice, 0, readModelDb)),
+  );
+
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date());
 });
 
 beforeEach(async () => {
@@ -44,6 +53,8 @@ afterEach(async () => {
 
 afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readModelDb.$client.end()]);
+
+  vi.useRealTimers();
 });
 
 export { app, eventStoreDb, readModelDb };
