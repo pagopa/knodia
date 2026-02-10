@@ -55,6 +55,7 @@ export const readmodelEserviceInterface = eserviceSchema.table(
       withTimezone: true,
     }).notNull(),
     eserviceId: uuid("eservice_id").notNull(),
+    eserviceVersionId: uuid("eservice_version_id").notNull(),
     id: uuid().primaryKey().notNull(),
     metadataVersion: integer("metadata_version").notNull(),
     name: text().notNull(),
@@ -70,6 +71,11 @@ export const readmodelEserviceInterface = eserviceSchema.table(
       columns: [table.eserviceId],
       foreignColumns: [readmodelEservice.id],
       name: "eservice_interface_eservice_id_eservice_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.eserviceVersionId],
+      foreignColumns: [readmodelEserviceVersion.id],
+      name: "eservice_interface_eservice_v_id_eservice_v_id_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
@@ -91,7 +97,6 @@ export const readmodelEserviceVersion = eserviceSchema.table(
     }).notNull(),
     eserviceId: uuid("eservice_id").notNull(),
     id: uuid().primaryKey().notNull(),
-    interfaceId: uuid("interface_id").notNull(),
     maxDailyCallsPerConsumer: integer("max_daily_calls_per_consumer").notNull(),
     maxDailyCallsPerKnode: integer("max_daily_calls_per_knode").notNull(),
     metadataVersion: integer("metadata_version").notNull(),
@@ -107,11 +112,6 @@ export const readmodelEserviceVersion = eserviceSchema.table(
       columns: [table.eserviceId],
       foreignColumns: [readmodelEservice.id],
       name: "eservice_v_eservice_id_eservice_id_fk",
-    }).onDelete("cascade"),
-    foreignKey({
-      columns: [table.interfaceId],
-      foreignColumns: [readmodelEserviceInterface.id],
-      name: "eservice_v_interface_id_eservice_interface_id_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
