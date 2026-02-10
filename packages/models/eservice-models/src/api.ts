@@ -76,7 +76,7 @@ export const API_ProducerEservice = z
     name: API_LocalizedName,
     status: EserviceVersionState,
   })
-  .meta({ id: "ProducerEserviceListItem" });
+  .meta({ id: "ProducerEservice" });
 export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
 export const API_ProducerEservicesQueryParams =
