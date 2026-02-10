@@ -2,6 +2,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import { eq, type InferSelectModel, SQL } from "drizzle-orm";
+import { toCamelCase } from "drizzle-orm/casing";
 import {
   type AnyPgColumn,
   type AnyPgTable,
@@ -118,7 +119,7 @@ function getTablePKString<T extends Record<string, unknown>>(
   const tableConfig = getTableConfig(table);
   return getTablePKColumns(tableConfig)
     .map((col) => {
-      const key = snakeToCamel(col) as keyof T;
+      const key = toCamelCase(col) as keyof T;
       const value = modelSQL[key];
       if (value === undefined || value === null) {
         throw genericInternalError(
@@ -128,8 +129,4 @@ function getTablePKString<T extends Record<string, unknown>>(
       return String(value);
     })
     .join("|");
-}
-
-function snakeToCamel(str: string): string {
-  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 }
