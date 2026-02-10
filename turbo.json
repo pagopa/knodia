@@ -31,7 +31,7 @@
     "lint-openapi": {
       "dependsOn": ["generate-openapi"]
     },
-        "generate-artifacts": {
+    "generate-artifacts": {
       "dependsOn": ["generate-api-client", "generate-protobuf"]
     },
     "dev:storybook": {},
