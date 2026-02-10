@@ -152,55 +152,53 @@ components:
         - code
         - scheme
       additionalProperties: false
-    ProducerEservice:
-      type: object
-      properties:
-        activeAgreements:
-          description: Number of active agreements
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 9007199254740991
-        activePurposes:
-          description: Number of active purposes
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 9007199254740991
-        categories:
-          type: array
-          items:
-            $ref: "#/components/schemas/EserviceCategory"
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        mode:
-          $ref: "#/components/schemas/EserviceMode"
-        name:
-          $ref: "#/components/schemas/LocalizedName"
-        status:
-          type: string
-          enum:
-            - Active
-            - Suspended
-            - Archived
-      required:
-        - activeAgreements
-        - activePurposes
-        - categories
-        - id
-        - mode
-        - name
-        - status
-      additionalProperties: false
     ProducerEservices:
       type: object
       properties:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/ProducerEservice"
+            type: object
+            properties:
+              activeAgreements:
+                description: Number of active agreements
+                format: int32
+                type: integer
+                minimum: 0
+                maximum: 9007199254740991
+              activePurposes:
+                description: Number of active purposes
+                format: int32
+                type: integer
+                minimum: 0
+                maximum: 9007199254740991
+              categories:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EserviceCategory"
+              id:
+                type: string
+                format: uuid
+                pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+              mode:
+                $ref: "#/components/schemas/EserviceMode"
+              name:
+                $ref: "#/components/schemas/LocalizedName"
+              status:
+                type: string
+                enum:
+                  - Active
+                  - Suspended
+                  - Archived
+            required:
+              - activeAgreements
+              - activePurposes
+              - categories
+              - id
+              - mode
+              - name
+              - status
+            additionalProperties: false
         pagination:
           $ref: "#/components/schemas/Pagination"
       required:

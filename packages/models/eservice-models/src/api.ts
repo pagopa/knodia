@@ -56,27 +56,25 @@ export const API_EserviceAttribute = z
   .meta({ id: "EserviceAttribute" });
 export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
 
-export const API_ProducerEservice = z
-  .strictObject({
-    activeAgreements: z
-      .number()
-      .int()
-      .min(0)
-      .describe("Number of active agreements")
-      .meta({ format: "int32" }),
-    activePurposes: z
-      .number()
-      .int()
-      .min(0)
-      .describe("Number of active purposes")
-      .meta({ format: "int32" }),
-    categories: z.array(API_EserviceCategory),
-    id: z.uuid(),
-    mode: API_EserviceMode,
-    name: API_LocalizedName,
-    status: EserviceVersionState,
-  })
-  .meta({ id: "ProducerEservice" });
+export const API_ProducerEservice = z.strictObject({
+  activeAgreements: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Number of active agreements")
+    .meta({ format: "int32" }),
+  activePurposes: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Number of active purposes")
+    .meta({ format: "int32" }),
+  categories: z.array(API_EserviceCategory),
+  id: z.uuid(),
+  mode: API_EserviceMode,
+  name: API_LocalizedName,
+  status: EserviceVersionState,
+});
 export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
 export const API_ProducerEservicesQueryParams =
