@@ -1,0 +1,14 @@
+meta {
+  name: Get Eservice Version By Id
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/{{eserviceId}}/version
+  body: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+}
