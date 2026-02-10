@@ -34,7 +34,10 @@ export async function getAllEservices() {
     )
     .leftJoin(
       readmodelEserviceInterface,
-      eq(readmodelEserviceVersion.interfaceId, readmodelEserviceInterface.id),
+      eq(
+        readmodelEserviceInterface.eserviceVersionId,
+        readmodelEserviceVersion.id,
+      ),
     )
     .leftJoin(
       readmodelEserviceVersionRequiredAttribute,
