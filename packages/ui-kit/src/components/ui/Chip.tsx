@@ -116,9 +116,7 @@ const chip = tv({
 });
 
 export interface ChipProps
-  extends
-    ChipVariants,
-    Omit<React.HTMLAttributes<HTMLSpanElement>, "children"> {
+  extends ChipVariants, Omit<React.ComponentProps<"span">, "children"> {
   icon?: React.ReactNode;
   label: string;
 }

@@ -1,4 +1,5 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
@@ -45,6 +46,7 @@ function RootLayout() {
             name: "TanStack Router",
             render: <TanStackRouterDevtoolsPanel />,
           },
+          formDevtoolsPlugin(),
         ]}
       />
     </RouterProvider>
