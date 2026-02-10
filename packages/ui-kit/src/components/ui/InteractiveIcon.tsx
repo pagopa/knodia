@@ -9,7 +9,7 @@ import { focusRing } from "./styles";
 
 const interactiveIconStyles = tv({
   extend: focusRing,
-  base: "body-md-em relative inline-flex items-center justify-center rounded-full transition p-2 [&>svg]:size-5",
+  base: "body-md-em relative inline-flex items-center justify-center rounded-full transition p-2 -m-2 shrink-0 [&>svg]:size-5",
   variants: {
     hierarchy: {
       brand: "text-brand-700 hover:bg-brand-700/10 pressed:bg-brand-700/10",

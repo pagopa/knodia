@@ -13,7 +13,7 @@ export function CopyableValueField({
   ...props
 }: CopyableValueFieldProps) {
   return (
-    <div className={twMerge("flex items-center gap-2", className)} {...props}>
+    <div className={twMerge("flex items-center gap-4", className)} {...props}>
       <dl className="body-md flex items-center gap-2 text-primary-light-high-contrast">
         <dt className="body-md-em">{label}</dt>
         <dd className="body-md">{value}</dd>

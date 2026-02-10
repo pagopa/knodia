@@ -77,7 +77,7 @@ function DocumentsSection() {
     <Section title="Documents">
       <DocumentRecap name="Api Specs" showDownloadButton />
       <CopyableValueField
-        className="mt-4"
+        className="mt-6"
         label="Checksum:"
         value="3f653f35f8311c870e209cc672dfc3698081eefe84cc40f1af5bd61db2c54287D"
       />

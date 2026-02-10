@@ -99,7 +99,7 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
         <span className="body-md text-primary-light-high-contrast flex-1">
           {checksum}
         </span>
-        <CopyButton className="p-1" textToCopy={checksum} />
+        <CopyButton textToCopy={checksum} />
       </div>
     </div>
   );
