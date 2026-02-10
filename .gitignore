@@ -16,5 +16,4 @@ docker/minio-data
 
 # Build outputs
 dist/
-generated/
 storybook-static/
