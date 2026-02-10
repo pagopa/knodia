@@ -3,7 +3,6 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
-    "test": "vitest",
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
