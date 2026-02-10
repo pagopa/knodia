@@ -100,7 +100,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       querystring: API_GetProducerEservicesQueryParams,
       response: {
         200: API_ProducerEservices.describe(
-          "E-services retrieved successfully",
+          "Producer E-services retrieved successfully",
         ),
         400: API_Problem.describe("Bad Request"),
       },

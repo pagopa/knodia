@@ -547,11 +547,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: E-services retrieved successfully
+          description: Producer E-services retrieved successfully
           content:
             application/json:
               schema:
-                description: E-services retrieved successfully
+                description: Producer E-services retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEservices"
         "400":
