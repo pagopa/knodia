@@ -115,8 +115,8 @@ catalogs:
       specifier: 5.1.1
       version: 5.1.1
     axios:
-      specifier: 1.13.2
-      version: 1.13.2
+      specifier: 1.13.5
+      version: 1.13.5
     babel-plugin-react-compiler:
       specifier: 1.0.0
       version: 1.0.0
@@ -490,7 +490,7 @@ importers:
         version: 1.144.0(@tanstack/react-router@1.144.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@tanstack/router-core@1.144.0)(csstype@3.2.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(solid-js@1.9.10)
       axios:
         specifier: 'catalog:'
-        version: 1.13.2
+        version: 1.13.5
       react:
         specifier: 'catalog:'
         version: 19.2.0
@@ -560,7 +560,7 @@ importers:
         version: 5.90.16(react@19.2.0)
       axios:
         specifier: 'catalog:'
-        version: 1.13.2
+        version: 1.13.5
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -582,7 +582,7 @@ importers:
         version: link:../../openapi-client-generator
       axios:
         specifier: 'catalog:'
-        version: 1.13.2
+        version: 1.13.5
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -823,7 +823,7 @@ importers:
         version: link:../logger
       axios:
         specifier: 'catalog:'
-        version: 1.13.2
+        version: 1.13.5
       fastify:
         specifier: 'catalog:'
         version: 5.7.3
@@ -4316,8 +4316,8 @@ packages:
   avvio@9.1.0:
     resolution: {integrity: sha512-fYASnYi600CsH/j9EQov7lECAniYiBFiiAtBNuZYLA2leLe9qOvZzqYHFjtIj6gD2VMoMLP14834LFWvr4IfDw==}
 
-  axios@1.13.2:
-    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
+  axios@1.13.5:
+    resolution: {integrity: sha512-cz4ur7Vb0xS4/KUN0tPWe44eqxrIu31me+fbang3ijiNscE129POzipJJA6zniq2C/Z6sJCjMimjS8Lc/GAs8Q==}
 
   b4a@1.7.3:
     resolution: {integrity: sha512-5Q2mfq2WfGuFp3uS//0s6baOJLMoVduPYVeNmDYxu5OUA1/cBfvr2RIS7vi62LdNj/urk1hfmj867I3qt6uZ7Q==}
@@ -11300,7 +11300,7 @@ snapshots:
       '@fastify/error': 4.2.0
       fastq: 1.19.1
 
-  axios@1.13.2:
+  axios@1.13.5:
     dependencies:
       follow-redirects: 1.15.11
       form-data: 4.0.5
