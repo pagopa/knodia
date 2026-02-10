@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_ProducerEservices } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -11,11 +12,13 @@ import type { EserviceService } from "../services/eserviceService.ts";
 
 import {
   API_Eservice,
-  API_Eservices,
   API_EserviceSeed,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
-import { toAPI_Eservice } from "../models/apiConverter.ts";
+import {
+  toAPI_Eservice,
+  toAPI_ProducerEservice,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
@@ -24,11 +27,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const { results, totalCount } = await eserviceService.getEservices(
-        req.query,
-      );
+      const { results, totalCount } =
+        await eserviceService.getProducerEservices(req.query);
       res.status(200).send({
-        items: results.map(toAPI_Eservice),
+        items: results.map(toAPI_ProducerEservice),
         pagination: {
           limit: req.query.limit,
           offset: req.query.offset,
@@ -38,17 +40,20 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     },
     method: "GET",
     schema: {
-      description: "Retrieve a list of E-services",
+      description:
+        "Retrieve a list of E-services produced by the logged-in tenant",
       headers: processHeaders,
-      operationId: "getEservices",
+      operationId: "getProducerEservices",
       querystring: API_GetEservicesQueryParams,
       response: {
-        200: API_Eservices.describe("E-services retrieved successfully"),
+        200: API_ProducerEservices.describe(
+          "E-services retrieved successfully",
+        ),
         400: API_Problem.describe("Bad Request"),
       },
       tags: [apiTags.eservice],
     },
-    url: "/eservices",
+    url: "/producer/eservices",
   });
 
   fastify.route({

@@ -9,7 +9,7 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { Eservice } from "@knodia/eservice-models";
+import { Eservice, EserviceVersionState } from "@knodia/eservice-models";
 
 import type {
   API_EserviceSeed,
@@ -91,10 +91,16 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    async getEservices(
-      params: API_GetEservicesQueryParams,
-    ): Promise<ListResult<Eservice>> {
-      return await readModelService.getEservices(params);
+    async getProducerEservices(params: API_GetEservicesQueryParams): Promise<
+      ListResult<
+        Eservice & {
+          activeAgreements: number;
+          activePurposes: number;
+          status: EserviceVersionState;
+        }
+      >
+    > {
+      return await readModelService.getProducerEservices(params);
     },
   };
 }
