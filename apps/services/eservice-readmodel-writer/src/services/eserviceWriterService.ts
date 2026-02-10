@@ -48,14 +48,14 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
 
         await tx.insert(readmodelEservice).values(eserviceSQL);
 
-        if (eserviceVersionsSQL.length > 0) {
-          await tx.insert(readmodelEserviceVersion).values(eserviceVersionsSQL);
-        }
-
         if (eserviceInterfacesSQL.length > 0) {
           await tx
             .insert(readmodelEserviceInterface)
             .values(eserviceInterfacesSQL);
+        }
+
+        if (eserviceVersionsSQL.length > 0) {
+          await tx.insert(readmodelEserviceVersion).values(eserviceVersionsSQL);
         }
 
         if (eserviceCategoriesSQL.length > 0) {
