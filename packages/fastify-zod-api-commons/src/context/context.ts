@@ -2,6 +2,7 @@ import type {
   RequestContext,
   RequestContextData,
 } from "@fastify/request-context";
+import type { CorrelationId } from "@knodia/common-models/ids";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import Fastify from "fastify";
@@ -9,7 +10,7 @@ import Fastify from "fastify";
 // Documentation: https://github.com/fastify/fastify-request-context#typescript
 declare module "@fastify/request-context" {
   interface RequestContextData {
-    correlationId: string;
+    correlationId: CorrelationId;
     logger: Fastify.FastifyBaseLogger;
     serviceName: string;
   }
