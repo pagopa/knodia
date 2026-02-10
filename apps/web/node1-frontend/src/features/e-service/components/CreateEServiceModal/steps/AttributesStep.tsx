@@ -1,3 +1,4 @@
+import { attributes } from "@knodia/attribute-models";
 import { Banner, Button, Select, SelectItem } from "@knodia/ui-kit/ui";
 import { TrashIcon } from "@phosphor-icons/react";
 
@@ -7,12 +8,6 @@ import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMe
 
 import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
-
-// TODO: use real data
-const MOCK_ATTRIBUTES = Array.from({ length: 10 }, (_, i) => ({
-  label: `NUTS${i + 1}`,
-  value: `NUTS${i + 1}`,
-}));
 
 export function AttributesStep() {
   const { nextStep, prevStep } = useStepsContext();
@@ -87,25 +82,33 @@ export function AttributesStep() {
                         isRequired
                         label="Attributes"
                         name={groupField.name}
-                        onChange={(values) =>
+                        onChange={(keys) =>
                           groupField.handleChange(
-                            values.map((v) => ({
-                              code: String(v),
-                              scheme: String(v),
-                            })),
+                            keys.map((v) => {
+                              const key = String(v);
+                              const [scheme = "", code = ""] = key.split("$");
+                              return { code, scheme };
+                            }),
                           )
                         }
                         placeholder="Select one or more attributes"
                         selectionMode="multiple"
                         value={
-                          groupField.state.value?.map((attr) => attr.code) ?? []
+                          groupField.state.value?.map(
+                            (attr) => `${attr.scheme}$${attr.code}`,
+                          ) ?? []
                         }
                       >
-                        {MOCK_ATTRIBUTES.map(({ label, value }) => (
-                          <SelectItem id={value} key={value}>
-                            {label}
-                          </SelectItem>
-                        ))}
+                        {Object.entries(attributes).flatMap(([scheme, codes]) =>
+                          Object.entries(codes).map(([code, name]) => (
+                            <SelectItem
+                              id={`${scheme}$${code}`}
+                              key={`${scheme}$${code}`}
+                            >
+                              {name}
+                            </SelectItem>
+                          )),
+                        )}
                       </Select>
                     )}
                   </form.Field>

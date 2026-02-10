@@ -455,6 +455,9 @@ importers:
 
   apps/web/node1-frontend:
     dependencies:
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/bff-client':
         specifier: workspace:*
         version: link:../../../packages/clients/bff-client

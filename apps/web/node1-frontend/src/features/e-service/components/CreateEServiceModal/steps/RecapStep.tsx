@@ -78,7 +78,7 @@ export function RecapStep() {
 function AttributesSection({
   requiredAttributes,
 }: {
-  requiredAttributes: undefined | { code: string }[][];
+  requiredAttributes: SchemeRef[][] | undefined;
 }) {
   return (
     <div className="flex flex-col gap-6">
