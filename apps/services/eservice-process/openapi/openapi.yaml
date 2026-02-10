@@ -338,12 +338,12 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eservices:
+  /producer/eservices:
     get:
-      operationId: getEservices
+      operationId: getProducerEservices
       tags:
         - eservice
-      description: Retrieve a list of E-services
+      description: Retrieve a list of E-services produced by the logged-in tenant
       parameters:
         - schema:
             format: int32
@@ -438,6 +438,7 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /eservices:
     post:
       operationId: createEservice
       tags:
