@@ -1,3 +1,4 @@
+import { EserviceId } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
 import {
   API_Pagination,
@@ -6,6 +7,11 @@ import {
 import z from "zod";
 
 import { EserviceVersionState } from "./eservice.ts";
+
+export const API_EserviceIdPathParam = z.strictObject({
+  eserviceId: EserviceId,
+});
+export type API_EserviceIdPathParam = z.infer<typeof API_EserviceIdPathParam>;
 
 export const API_LocalizedName = LocalizedText.extend({
   en: z.string().min(5).max(60),

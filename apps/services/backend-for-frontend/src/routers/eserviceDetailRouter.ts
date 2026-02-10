@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -10,7 +11,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
-import { API_EserviceDetails, API_EserviceIdPathParam } from "../models/api.ts";
+import { API_EserviceDetails } from "../models/api.ts";
 import { toAPI_EserviceDetails } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 

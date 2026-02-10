@@ -130,11 +130,6 @@ export const API_CreatedResource = z
   .meta({ id: "CreatedResource" });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
 
-export const API_EserviceIdPathParam = z.strictObject({
-  eserviceId: z.uuid(),
-});
-export type API_EserviceIdPathParam = z.infer<typeof API_EserviceIdPathParam>;
-
 const API_EserviceInterfaceDocument = z
   .strictObject({
     checksum: z.string().describe("Base64-encoded SHA-256 checksum"),

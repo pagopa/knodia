@@ -1,8 +1,4 @@
-import {
-  EserviceId,
-  EserviceInterfaceId,
-  OrganizationId,
-} from "@knodia/common-models/ids";
+import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
 import { EserviceVersionState } from "@knodia/eservice-models";
 import {
   maxAccessTokenDuration,
@@ -24,11 +20,6 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
-
-export const API_EserviceIdPathParam = z.strictObject({
-  eserviceId: EserviceId,
-});
-export type API_EserviceIdPathParam = z.infer<typeof API_EserviceIdPathParam>;
 
 export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
   mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
