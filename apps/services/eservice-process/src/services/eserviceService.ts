@@ -112,6 +112,7 @@ export function eserviceServiceBuilder(
     },
     async getProducerEservices(
       params: API_GetProducerEservicesQueryParams,
+      producerId: OrganizationId,
     ): Promise<
       ListResult<
         Eservice & {
@@ -121,7 +122,7 @@ export function eserviceServiceBuilder(
         }
       >
     > {
-      return await readModelService.getProducerEservices(params);
+      return await readModelService.getProducerEservices(params, producerId);
     },
   };
 }

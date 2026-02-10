@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { generateId, OrganizationId } from "@knodia/common-models/ids";
 import { API_ProducerEservices } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -22,6 +23,9 @@ import {
   toAPI_ProducerEservice,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
+
+// TODO: remove after implementing auth data
+export const producerId = generateId<OrganizationId>();
 
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify,
@@ -77,7 +81,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const { results, totalCount } =
-        await eserviceService.getProducerEservices(req.query);
+        await eserviceService.getProducerEservices(req.query, producerId);
       res.status(200).send({
         items: results.map(toAPI_ProducerEservice),
         pagination: {

@@ -19,10 +19,10 @@ describe("GET /producer/eservices (getProducerEservices)", () => {
   it.each([
     {
       expectedResult: [
-        mockEservices[0],
         mockEservices[1],
         mockEservices[2],
         mockEservices[3],
+        mockEservices[4],
       ] as Eservice[],
       name: "pagination only",
       query: {
@@ -30,17 +30,12 @@ describe("GET /producer/eservices (getProducerEservices)", () => {
       },
     },
     {
-      expectedResult: [
-        mockEservices[0],
-        mockEservices[1],
-        mockEservices[3],
-      ] as Eservice[],
+      expectedResult: [mockEservices[1], mockEservices[3]] as Eservice[],
       name: "search query",
       query: { ...defaultQuery, q: "KNODIA" },
     },
     {
       expectedResult: [
-        mockEservices[0],
         mockEservices[1],
         mockEservices[4],
         mockEservices[7],
@@ -86,7 +81,7 @@ describe("GET /producer/eservices (getProducerEservices)", () => {
       },
     },
     {
-      expectedResult: [mockEservices[1], mockEservices[0]] as Eservice[],
+      expectedResult: [mockEservices[1]] as Eservice[],
       name: "full query",
       query: {
         ...defaultQuery,

@@ -1,4 +1,3 @@
-import { OrganizationId } from "@knodia/common-models/ids";
 import {
   EserviceVersionState,
   maxAccessTokenDuration,
@@ -26,7 +25,6 @@ export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 export const API_GetProducerEservicesQueryParams =
   API_PaginationQueryParams.extend({
     mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
-    producerId: OrganizationId.optional().describe("Filter by producer ID"),
     q: z
       .string()
       .optional()
