@@ -23,7 +23,6 @@
     "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "ts-pattern": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
@@ -44,7 +43,6 @@
     "pg": "catalog:",
     "pino-pretty": "catalog:",
     "zocker": "catalog:",
-    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }

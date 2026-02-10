@@ -57,4 +57,4 @@ afterAll(async () => {
   vi.useRealTimers();
 });
 
-export { app, eventStoreDb, readModelDb };
+export { app, eventStoreDb };

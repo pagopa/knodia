@@ -66,7 +66,7 @@ const checkMetadataVersionByFilter = async (
   return existingMetadataVersion <= metadataVersion;
 };
 
-export const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
+const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
   const tableConfig = getTableConfig(table);
   const pk = tableConfig.primaryKeys[0];
   const pkColumns = new Map<string, PgColumn>();
@@ -128,14 +128,6 @@ export function aggregateByPKString<
   }
 }
 
-export function assertSQLFilterIsDefined(
-  filter: SQL | undefined,
-): asserts filter is SQL {
-  if (filter === undefined) {
-    throw genericInternalError("Filter cannot be undefined");
-  }
-}
-
 function getTablePKString<T extends Record<string, unknown>>(
   modelSQL: T,
   table: AnyPgTable,
@@ -157,11 +149,10 @@ function getTablePKString<T extends Record<string, unknown>>(
 export const SortDirection = z.enum(["asc", "desc"]);
 export type SortDirection = z.infer<typeof SortDirection>;
 
-export const lowerCaseJsonb = (column: PgColumn, key: string): SQL<string> =>
+const lowerCaseJsonb = (column: PgColumn, key: string): SQL<string> =>
   sql<string>`LOWER(${column} ->> ${key})`;
-export const lowerCase = (column: PgColumn): SQL =>
-  sql<string>`LOWER(${column})`;
-export const ascLower = (column: PgColumn): SQL => {
+const lowerCase = (column: PgColumn): SQL => sql<string>`LOWER(${column})`;
+const ascLower = (column: PgColumn): SQL => {
   if (column instanceof PgJsonb) {
     return asc(lowerCaseJsonb(column, "en"));
   } else if (column instanceof PgText) {
