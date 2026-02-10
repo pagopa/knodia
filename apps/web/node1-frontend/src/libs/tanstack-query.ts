@@ -5,5 +5,8 @@ export const queryClient = new QueryClient({
     mutations: {
       throwOnError: false,
     },
+    queries: {
+      throwOnError: true,
+    },
   },
 });

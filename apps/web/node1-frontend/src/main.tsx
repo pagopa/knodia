@@ -1,3 +1,5 @@
+import { Empty, Loader } from "@knodia/ui-kit/ui";
+import { BracketsCurlyIcon } from "@phosphor-icons/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import {
   createRouter,
@@ -5,17 +7,37 @@ import {
   RouterProvider,
   type ToOptions,
 } from "@tanstack/react-router";
+import { StrictMode } from "react";
+import "@knodia/ui-kit/themes/node1.css";
 import ReactDOM from "react-dom/client";
 
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 
-import "@knodia/ui-kit/themes/node1.css";
-
 const router = createRouter({
   context: {
     queryClient,
   },
+  defaultErrorComponent: () => (
+    <Empty
+      className="mt-10"
+      description="Please try again later"
+      kind="error"
+      title="Something went wrong"
+    />
+  ),
+  defaultNotFoundComponent: () => (
+    <Empty
+      className="mt-10"
+      description="The page you're looking for doesn't exists or has been moved."
+      icon={<BracketsCurlyIcon />}
+      kind="neutral"
+      title="Page not found"
+    />
+  ),
+  defaultPendingComponent: () => (
+    <Loader className="mx-auto mt-20" label="Loading..." />
+  ),
   defaultPreload: "intent",
   // Since we're using React Query, we don't want loader calls to ever be stale
   // This will ensure that the loader is always called when the route is preloaded or visited
@@ -23,6 +45,7 @@ const router = createRouter({
   defaultPreloadStaleTime: 0,
   routeTree,
   scrollRestoration: true,
+  scrollToTopSelectors: [() => document.getElementById("main-content")],
 });
 
 /**
@@ -52,8 +75,10 @@ const rootElement = document.getElementById("root");
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>,
+    <StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </StrictMode>,
   );
 }
