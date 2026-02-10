@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS "eservice"."eservice_interface" (
 	"content_type" text NOT NULL,
 	"created_at" timestamp with time zone NOT NULL,
 	"eservice_id" uuid NOT NULL,
+	"eservice_version_id" uuid NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
 	"metadata_version" integer NOT NULL,
 	"name" text NOT NULL,
@@ -42,7 +43,6 @@ CREATE TABLE IF NOT EXISTS "eservice"."eservice_version" (
 	"created_at" timestamp with time zone NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
-	"interface_id" uuid NOT NULL,
 	"max_daily_calls_per_consumer" integer NOT NULL,
 	"max_daily_calls_per_knode" integer NOT NULL,
 	"metadata_version" integer NOT NULL,
@@ -67,12 +67,12 @@ ALTER TABLE "eservice"."eservice_category" DROP CONSTRAINT IF EXISTS "eservice_c
 ALTER TABLE "eservice"."eservice_category" ADD CONSTRAINT "eservice_category_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_interface" DROP CONSTRAINT IF EXISTS "eservice_interface_eservice_id_eservice_id_fk"; --added --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
+ALTER TABLE "eservice"."eservice_interface" DROP CONSTRAINT IF EXISTS "eservice_interface_eservice_version_id_eservice_version_id_fk"; --added --> statement-breakpoint
+ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_version_id_eservice_version_id_fk" FOREIGN KEY ("eservice_version_id") REFERENCES "eservice"."eservice_version"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_interface" DROP CONSTRAINT IF EXISTS "eservice_interface_eservice_id_metadata_version_fkey"; --added --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version" DROP CONSTRAINT IF EXISTS "eservice_version_eservice_id_eservice_id_fk"; --added --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES "eservice"."eservice"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
-ALTER TABLE "eservice"."eservice_version" DROP CONSTRAINT IF EXISTS "eservice_version_interface_id_eservice_interface_id_fk"; --added --> statement-breakpoint
-ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_interface_id_eservice_interface_id_fk" FOREIGN KEY ("interface_id") REFERENCES "eservice"."eservice_interface"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version" DROP CONSTRAINT IF EXISTS "eservice_version_eservice_id_metadata_version_fkey"; --added --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version" ADD CONSTRAINT "eservice_version_eservice_id_metadata_version_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES "eservice"."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
 ALTER TABLE "eservice"."eservice_version_required_attribute" DROP CONSTRAINT IF EXISTS "eservice_version_required_attribute_eservice_id_eservice_id_fk"; --added --> statement-breakpoint

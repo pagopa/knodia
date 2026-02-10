@@ -1,5 +1,5 @@
 {
-  "id": "eb640d1e-6396-4c74-b7b6-160eb63721b8",
+  "id": "22360176-a9e4-44f9-a9e0-6452bd08a70c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -193,6 +193,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "eservice_version_id": {
+          "name": "eservice_version_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "id": {
           "name": "id",
           "type": "uuid",
@@ -239,6 +245,20 @@
           "schemaTo": "eservice",
           "columnsFrom": [
             "eservice_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "eservice_interface_eservice_version_id_eservice_version_id_fk": {
+          "name": "eservice_interface_eservice_version_id_eservice_version_id_fk",
+          "tableFrom": "eservice_interface",
+          "tableTo": "eservice_version",
+          "schemaTo": "eservice",
+          "columnsFrom": [
+            "eservice_version_id"
           ],
           "columnsTo": [
             "id"
@@ -309,12 +329,6 @@
           "primaryKey": true,
           "notNull": true
         },
-        "interface_id": {
-          "name": "interface_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
         "max_daily_calls_per_consumer": {
           "name": "max_daily_calls_per_consumer",
           "type": "integer",
@@ -361,20 +375,6 @@
           "schemaTo": "eservice",
           "columnsFrom": [
             "eservice_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "eservice_version_interface_id_eservice_interface_id_fk": {
-          "name": "eservice_version_interface_id_eservice_interface_id_fk",
-          "tableFrom": "eservice_version",
-          "tableTo": "eservice_interface",
-          "schemaTo": "eservice",
-          "columnsFrom": [
-            "interface_id"
           ],
           "columnsTo": [
             "id"

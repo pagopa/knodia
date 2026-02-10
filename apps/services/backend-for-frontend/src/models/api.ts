@@ -1,4 +1,10 @@
 import {
+  maxAccessTokenDuration,
+  maxDailyCalls,
+  minAccessTokenDuration,
+  minDailyCalls,
+} from "@knodia/eservice-models";
+import {
   API_AccessTokenType,
   API_EserviceAttribute,
   API_EserviceCategory,
@@ -68,8 +74,8 @@ export const API_EserviceSeed = z
     accessTokenDuration: z
       .number()
       .int()
-      .min(1)
-      .max(86400)
+      .min(minAccessTokenDuration)
+      .max(maxAccessTokenDuration)
       .optional()
       .default(3600)
       .describe("Duration of the access token in seconds")
@@ -96,15 +102,15 @@ export const API_EserviceSeed = z
     maxDailyCallsPerConsumer: z
       .number()
       .int()
-      .min(1)
-      .max(1000000000)
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per consumer")
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
-      .min(1)
-      .max(1000000000)
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     mode: API_EserviceMode.describe("Mode of the E-service").optional(),
