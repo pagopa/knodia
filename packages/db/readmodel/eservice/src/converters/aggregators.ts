@@ -1,4 +1,5 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import { LocalizedText } from "@knodia/common-models/localization";
 import {
   aggregateById,
   aggregateByPKString,
@@ -76,7 +77,7 @@ const toEserviceVersionInterface = (
   id: unsafeBrandId(interfaceSQL.id),
   name: interfaceSQL.name,
   path: interfaceSQL.path,
-  prettyName: interfaceSQL.prettyName,
+  prettyName: LocalizedText.parse(interfaceSQL.prettyName),
   updatedAt: new Date(interfaceSQL.updatedAt),
 });
 
@@ -122,13 +123,13 @@ const aggregateEservice = ({
   const eservice: Eservice = {
     categories,
     createdAt: new Date(eserviceSQL.createdAt),
-    description: eserviceSQL.description,
+    description: LocalizedText.parse(eserviceSQL.description),
     id: unsafeBrandId(eserviceSQL.id),
     isConsumerOperatorIdentificationRequired:
       eserviceSQL.isConsumerOperatorIdentificationRequired,
     isSignalHubEnabled: eserviceSQL.isSignalHubEnabled,
     mode: EserviceMode.parse(eserviceSQL.mode),
-    name: eserviceSQL.name,
+    name: LocalizedText.parse(eserviceSQL.name),
     producerId: unsafeBrandId(eserviceSQL.producerId),
     updatedAt: new Date(eserviceSQL.updatedAt),
     versions: eserviceVersions,
