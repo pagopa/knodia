@@ -10,7 +10,6 @@ import { zocker } from "zocker";
 
 import { producerId } from "../src/routers/eserviceRouter.ts";
 
-// TODO: replace with auth data
 const zockerEservices = zocker(Eservice).setSeed(0).generateMany(10);
 
 const now = new Date();

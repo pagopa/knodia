@@ -112,7 +112,6 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
         const eservices = aggregateEservices(toEservicesAggregator(queryRes));
 
         const results = eservices.map((e) => ({
-          // TODO: fix. this is not producereservice
           ...e.data,
           // TODO: add real data
           activeAgreements: 0,
