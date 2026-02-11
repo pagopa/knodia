@@ -32,9 +32,6 @@ beforeAll(async () => {
   await Promise.all(
     mockEservices.map((eservice) => upsertEservice(eservice, 0, readModelDb)),
   );
-
-  vi.useFakeTimers();
-  vi.setSystemTime(new Date());
 });
 
 beforeEach(async () => {
