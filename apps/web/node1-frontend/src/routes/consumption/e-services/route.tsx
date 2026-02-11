@@ -2,6 +2,7 @@ import { Button } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
+import { ConsumptionEserviceList } from "@/features/e-service/components/ConsumptionEserviceList";
 
 export const Route = createFileRoute("/consumption/e-services")({
   component: RouteComponent,
@@ -9,10 +10,13 @@ export const Route = createFileRoute("/consumption/e-services")({
 
 function RouteComponent() {
   return (
-    <PageHeader
-      actions={<Button hierarchy="brand">Search new E-Services</Button>}
-      overline="Consumption"
-      title="E-Services"
-    />
+    <>
+      <PageHeader
+        actions={<Button hierarchy="brand">Search new E-Services</Button>}
+        overline="Consumption"
+        title="E-Services"
+      />
+      <ConsumptionEserviceList />
+    </>
   );
 }
