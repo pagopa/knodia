@@ -118,7 +118,7 @@ describe("GET /eservices (getEservices)", () => {
     name: string;
     query: unknown;
   }[])(
-    "should return mock e-services correctly: $name (seed #%#)",
+    "should return e-services with correct shape and pagination: $name (seed #%#)",
     async ({ expectedResult, query }) => {
       const response = await injectAppRequest()
         .get("/eservices")
