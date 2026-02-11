@@ -1,3 +1,7 @@
+import {
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
 import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
 import {
   EserviceVersionState,
@@ -15,10 +19,6 @@ import {
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
-import {
-  API_Pagination,
-  API_PaginationQueryParams,
-} from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
@@ -40,13 +40,13 @@ export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
     .optional()
     .default("asc")
     .describe("Sort direction"),
-  status: z
+  state: z
     .union([
       z.array(EserviceVersionState),
       EserviceVersionState.transform((v) => [v]),
     ])
     .optional()
-    .describe("Filter by E-service status"),
+    .describe("Filter by E-service state"),
 });
 export type API_GetEservicesQueryParams = z.infer<
   typeof API_GetEservicesQueryParams
