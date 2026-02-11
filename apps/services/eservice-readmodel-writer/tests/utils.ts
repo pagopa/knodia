@@ -11,11 +11,11 @@ import {
 } from "@knodia/db-readmodel-eservice/converters";
 import { eq } from "drizzle-orm";
 
-import { readmodelDb } from "./setup.ts";
+import { readModelDb } from "./setup.ts";
 
 // TODO: move to a shared location for tests
 export async function getAllEservices() {
-  const queryRes = await readmodelDb
+  const queryRes = await readModelDb
     .select({
       category: readmodelEserviceCategory,
       eservice: readmodelEservice,
