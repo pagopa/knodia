@@ -1,4 +1,10 @@
 import {
+  EserviceId,
+  EserviceInterfaceId,
+  EserviceVersionId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
+import {
   EserviceVersionState,
   maxAccessTokenDuration,
   maxDailyCalls,
@@ -28,12 +34,12 @@ const API_Eservice = z
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
-    id: z.uuid(),
+    id: EserviceId,
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producerId: z.uuid(),
+    producerId: OrganizationId,
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
@@ -125,7 +131,7 @@ export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 
 export const API_CreatedResource = z
   .strictObject({
-    id: z.uuid(),
+    id: EserviceId,
   })
   .meta({ id: "CreatedResource" });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
@@ -134,7 +140,9 @@ const API_EserviceInterfaceDocument = z
   .strictObject({
     checksum: z.string().describe("Base64-encoded SHA-256 checksum"),
     contentType: z.string().describe("MIME type of the interface document"),
-    id: z.uuid().describe("Unique identifier of the interface document"),
+    id: EserviceInterfaceId.describe(
+      "Unique identifier of the interface document",
+    ),
     name: z.string().describe("Name of the interface document, with extension"),
     path: z.string().describe("Path where the interface document is stored"),
     prettyName: API_LocalizedInterfacePrettyName,
@@ -153,7 +161,9 @@ const API_EserviceVersion = z
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.describe("Type of the access token"),
     createdAt: z.iso.datetime(),
-    id: z.uuid().describe("Unique identifier of the E-service version"),
+    id: EserviceVersionId.describe(
+      "Unique identifier of the E-service version",
+    ),
     interfaceDocument:
       API_EserviceInterfaceDocument.describe("Interface document"),
     maxDailyCallsPerConsumer: z
@@ -202,12 +212,12 @@ export const API_EserviceDetails = z
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
-    id: z.uuid(),
+    id: EserviceId,
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producerId: z.uuid(),
+    producerId: OrganizationId,
     purposes: API_EserviceDetailsCounters.describe("Purpose counters"),
     status: EserviceVersionState.describe("Status of the latest version"),
     updatedAt: z.iso.datetime(),
