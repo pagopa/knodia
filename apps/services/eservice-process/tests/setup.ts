@@ -50,8 +50,6 @@ afterEach(async () => {
 
 afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readModelDb.$client.end()]);
-
-  vi.useRealTimers();
 });
 
 export { app, eventStoreDb };
