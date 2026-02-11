@@ -5,12 +5,14 @@ import z from "zod";
 const BffProcessConfig = LoggerConfig.and(HTTPServerConfig).and(
   z
     .object({
+      ESERVICE_INTERFACES_S3_BUCKET: z.string(),
       ESERVICE_PROCESS_URL: z.url(),
     })
     .transform((c) => ({
+      eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
       eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
     })),
 );
-type BffProcessConfig = z.infer<typeof BffProcessConfig>;
+export type BffProcessConfig = z.infer<typeof BffProcessConfig>;
 
 export const config = BffProcessConfig.parse(process.env);

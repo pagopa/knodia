@@ -1,15 +1,12 @@
-import { QueryClient, type QueryClientConfig } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 
-const queryClientConfig: QueryClientConfig = {
+export const queryClient = new QueryClient({
   defaultOptions: {
     mutations: {
       throwOnError: false,
     },
     queries: {
-      retry: 3,
       throwOnError: true,
     },
   },
-};
-
-export const queryClient = new QueryClient(queryClientConfig);
+});

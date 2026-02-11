@@ -1,5 +1,8 @@
 import z from "zod";
 
+export const CorrelationId = z.uuid().brand<"CorrelationId">();
+export type CorrelationId = z.infer<typeof CorrelationId>;
+
 export const EserviceId = z.uuid().brand<"EserviceId">();
 export type EserviceId = z.infer<typeof EserviceId>;
 
@@ -13,6 +16,7 @@ export const OrganizationId = z.uuid().brand<"OrganizationId">();
 export type OrganizationId = z.infer<typeof OrganizationId>;
 
 type IDS =
+  | CorrelationId
   | EserviceId
   | EserviceInterfaceId
   | EserviceVersionId
@@ -20,4 +24,8 @@ type IDS =
 
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
+}
+
+export function unsafeBrandId<T extends IDS>(id: string): T {
+  return z.uuid().parse(id) as T;
 }

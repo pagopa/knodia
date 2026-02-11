@@ -1,8 +1,11 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 
 import fastifyRequestContext from "@fastify/request-context";
+import { generateId, unsafeBrandId } from "@knodia/common-models/ids";
 import { createLoggerOptions } from "@knodia/logger";
 import Fastify, { type FastifyRegisterOptions } from "fastify";
+
+import type { ServiceName } from "../models/index.ts";
 
 import { missingHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";
@@ -27,7 +30,7 @@ export const createFastifyApp = ({
   loggerConfig: LoggerConfig;
   makeApiProblem: MakeApiProblemFn;
   readCorrelationIdFromHeader?: boolean;
-  serviceName: string;
+  serviceName: ServiceName;
 }) => {
   const app = Fastify({
     logger: createLoggerOptions(loggerConfig, serviceName),
@@ -38,9 +41,9 @@ export const createFastifyApp = ({
 
   app.register(fastifyRequestContext, {
     defaultStoreValues: (request) => ({
-      correlationId:
-        request.headers[CORRELATION_ID_HEADER]?.toString() ||
-        crypto.randomUUID(),
+      correlationId: request.headers[CORRELATION_ID_HEADER]
+        ? unsafeBrandId(request.headers[CORRELATION_ID_HEADER].toString())
+        : generateId(),
       logger: request.log,
       serviceName,
     }),

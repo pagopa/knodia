@@ -7,6 +7,7 @@ meta {
 post {
   url: {{host-backend-for-frontend}}/eservices
   body: json
+  auth: none
 }
 
 body:json {
@@ -20,7 +21,16 @@ body:json {
     "accessTokenAudience": ["https://api.example.com"],
     "maxDailyCallsPerConsumer": 1000,
     "maxDailyCallsPerKnode": 10000,
-    "requiredAttributes": []
+    "requiredAttributes": [],
+    "interfaceDocument": {
+      "checksum": "+71LiSCxtYGCJWBg0pGHY/ki3Qn3oidBGNjJkN3PCAA=",
+      "content": "b3BlbmFwaTogIjMuMC4wIgppbmZvOgogIHRpdGxlOiBUZXN0CiAgdmVyc2lvbjogIjEuMCIKcGF0aHM6IHt9Cg==",
+      "contentType": "application/x-yaml",
+      "name": "openapi.yaml",
+      "prettyName": {
+        "en": "Test Interface"
+      }
+    }
   }
 }
 

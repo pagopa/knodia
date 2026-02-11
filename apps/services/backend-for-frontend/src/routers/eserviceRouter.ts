@@ -1,6 +1,9 @@
+import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { generateId } from "@knodia/common-models/ids";
+import { EserviceInterfaceId } from "@knodia/common-models/ids";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -9,6 +12,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
+import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
   API_Eservices,
@@ -17,10 +21,15 @@ import {
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
+interface EserviceRouterOptions {
+  eserviceProcessClient: EserviceProcessClient;
+  fileManager: FileManager;
+}
+
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceRouter: FastifyPluginAsyncZod<
-  EserviceProcessClient
-> = async (fastify, eserviceProcessClient) => {
+  EserviceRouterOptions
+> = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
@@ -63,8 +72,33 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
+      const {
+        interfaceDocument: { content, name, ...interfaceDocumentRest },
+        ...rest
+      } = req.body;
+
+      const interfaceDocumentId = generateId<EserviceInterfaceId>();
+
+      const s3Key = await fileManager.storeBytes({
+        bucket: config.eserviceInterfacesS3Bucket,
+        checksum: interfaceDocumentRest.checksum,
+        content: Buffer.from(content, "base64"),
+        contentType: interfaceDocumentRest.contentType,
+        key: `${interfaceDocumentId}/${name}`,
+      });
+
+      const seed: eserviceProcessApi.EserviceSeed = {
+        ...rest,
+        interfaceDocument: {
+          ...interfaceDocumentRest,
+          id: interfaceDocumentId,
+          name,
+          path: s3Key,
+        },
+      };
+
       const createdEservice = await eserviceProcessApi.createEservice({
-        body: req.body,
+        body: seed,
         client: eserviceProcessClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,

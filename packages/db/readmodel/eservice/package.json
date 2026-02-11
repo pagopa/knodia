@@ -7,10 +7,11 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "db:generate": "dotenvx run -- drizzle-kit generate --name=readmodel-eservice",
-    "db:migrate": "dotenvx run -- drizzle-kit migrate"
+    "db:migrate": "../../../../scripts/add-deferrable-to-drizzle-sql.sh eservice && dotenvx run -- drizzle-kit migrate"
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/pg": "catalog:",
@@ -27,6 +29,7 @@
   },
   "exports": {
     ".": "./src/eservice.ts",
-    "./config": "./config/config.ts"
+    "./config": "./config/config.ts",
+    "./converters": "./src/converters/index.ts"
   }
 }

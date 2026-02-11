@@ -9,6 +9,7 @@ import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Input, Label } from "./Field";
 
 const textField = tv({
+  base: "placeholder:text-primary-light-low-contrast",
   variants: {
     size: {
       sm: "py-1.25",
