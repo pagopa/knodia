@@ -3,6 +3,7 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import {
+  EserviceVersionState,
   maxAccessTokenDuration,
   maxDailyCalls,
   minAccessTokenDuration,
@@ -33,6 +34,7 @@ const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    status: EserviceVersionState.describe("Status of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
