@@ -1,3 +1,4 @@
 export const apiTags = {
-  eservice: "eservice",
+  operations: "operations",
+  resources: "resources",
 } as const;

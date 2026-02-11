@@ -14,8 +14,23 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
-export function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
-  const clients = getKnodiaClients();
+export function buildAppFromConfig(config: ApiGatewayConfig) {
+  const app = buildApp({
+    eserviceProcessUrl: config.eserviceProcessUrl,
+    loggerConfig: config,
+  });
+
+  return app;
+}
+
+function buildApp({
+  eserviceProcessUrl,
+  loggerConfig,
+}: {
+  eserviceProcessUrl: string;
+  loggerConfig: LoggerConfig;
+}) {
+  const clients = getKnodiaClients({ eserviceProcessUrl });
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -24,32 +39,30 @@ export function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
           title: "Knodia Api Gateway API",
           version: "1.0.0",
         },
-        servers: [{ description: "Api Gateway API", url: "/" }],
+        servers: [{ description: "Api Gateway", url: "/" }],
         tags: [
           healthRouterTag,
           {
-            description: "E-services routes",
-            name: apiTags.eservice,
+            description:
+              "Routes to access resources following RESTful conventions",
+            name: apiTags.resources,
+          },
+          {
+            description: "Ad-hoc routes to simplify frequent use cases",
+            name: apiTags.operations,
           },
         ],
       },
     },
     loggerConfig,
     makeApiProblem,
-    serviceName: serviceName.ESERVICE_PROCESS,
+    readCorrelationIdFromHeader: false,
+    serviceName: serviceName.API_GATEWAY,
   });
 
   app.register(healthRouter);
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
-  });
-
-  return app;
-}
-
-export function buildAppFromConfig(config: ApiGatewayConfig) {
-  const app = buildApp({
-    loggerConfig: config,
   });
 
   return app;

@@ -15,28 +15,21 @@
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
-    "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
+    "typescript": "catalog:"
   },
   "dependencies": {
-    "@fastify/request-context": "catalog:",
-    "@knodia/common-models": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
-    "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
-    "pg": "catalog:",
     "pino-pretty": "catalog:",
-    "zocker": "catalog:",
     "zod": "catalog:"
   }
 }
