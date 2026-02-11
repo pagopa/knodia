@@ -22,15 +22,6 @@ interface WrapperOptions {
   routes?: RouteConfig[] | undefined;
 }
 
-export function createTestQueryClient() {
-  return new QueryClient({
-    defaultOptions: {
-      mutations: { retry: false, throwOnError: false },
-      queries: { gcTime: 0, retry: false, throwOnError: false },
-    },
-  });
-}
-
 export function renderWithProviders(
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper"> & WrapperOptions,
@@ -50,6 +41,15 @@ export function renderWithProviders(
     router,
     user,
   };
+}
+
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      mutations: { retry: false, throwOnError: false },
+      queries: { gcTime: 0, retry: false, throwOnError: false },
+    },
+  });
 }
 
 function createTestWrapper(options: WrapperOptions = {}) {
@@ -96,4 +96,4 @@ function createTestWrapper(options: WrapperOptions = {}) {
   return { queryClient, router, TestWrapper };
 }
 
-export { screen, waitFor, within } from "@testing-library/react";
+export { screen, waitFor } from "@testing-library/react";
