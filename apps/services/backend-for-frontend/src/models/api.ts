@@ -14,6 +14,7 @@ import {
   API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
@@ -34,7 +35,6 @@ const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    state: EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
@@ -148,7 +148,7 @@ export const API_ProducerEservice = z.strictObject({
   id: z.uuid(),
   mode: API_EserviceMode,
   name: API_LocalizedName,
-  state: EserviceVersionState,
+  state: API_EserviceVersionState,
 });
 export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
@@ -160,7 +160,7 @@ export const API_ProducerEservicesQueryParams =
       .optional()
       .describe("Search by name, description or categories"),
     sortBy: z
-      .enum(["name", "activeAgreements", "activePurposes"])
+      .enum(["name"])
       .optional()
       .default("name")
       .describe("Field to sort by"),

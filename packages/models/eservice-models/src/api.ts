@@ -56,3 +56,8 @@ export const API_EserviceAttribute = z
   })
   .meta({ id: "EserviceAttribute" });
 export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
+
+export const API_EserviceVersionState = z
+  .enum(["Active", "Suspended", "Archived"])
+  .meta({ id: "EserviceVersionState" });
+export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;

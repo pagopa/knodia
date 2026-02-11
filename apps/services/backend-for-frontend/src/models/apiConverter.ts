@@ -6,6 +6,7 @@ export const toAPI_ProducerEservice = (
   eservice: eserviceProcessApi.Eservice,
   activeAgreements: number,
   activePurposes: number,
+  state: eserviceProcessApi.EserviceVersionState,
 ): API_ProducerEservice => ({
   activeAgreements: activeAgreements,
   activePurposes: activePurposes,
@@ -13,5 +14,5 @@ export const toAPI_ProducerEservice = (
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,
-  state: eservice.state,
+  state,
 });
