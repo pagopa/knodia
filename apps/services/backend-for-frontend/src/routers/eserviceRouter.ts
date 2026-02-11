@@ -51,16 +51,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      res.send({
-        // TODO move this defaulting logic to the service, keep routers only for routing
-        // and API models conversion, no logic
-        items: data.items || [],
-        pagination: data.pagination || {
-          limit: req.query.limit,
-          offset: req.query.offset,
-          total: 0,
-        },
-      });
+      res.send(data);
     },
     method: "GET",
     schema: {
