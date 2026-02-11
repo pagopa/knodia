@@ -152,11 +152,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
-      const items = (data.items ?? []).map((eservice, idx) =>
+      const items = data.items.map((eservice, idx) =>
         toAPI_ProducerEservice(
           eservice,
           idx + 5,
           idx + 1,
+          // TODO: the BFF should request the eservice state by calling the process
           API_EserviceVersionState.enum.Active,
         ),
       );

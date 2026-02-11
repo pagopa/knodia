@@ -12,7 +12,7 @@ import {
 import { splitEserviceIntoObjectsSQL } from "@knodia/db-readmodel-eservice/converters";
 import { eq } from "drizzle-orm";
 
-// TODO: maybe move the writer service to a shared location and block it with eslint
+// TODO: maybe move the writer service to a shared location instead of having this duplicate function
 export async function upsertEservice(
   eservice: Eservice,
   metadataVersion: number,
