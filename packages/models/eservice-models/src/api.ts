@@ -2,7 +2,6 @@ import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
 import {
-  EserviceVersionState,
   maxDescriptionLength,
   maxNameLength,
   minDescriptionLength,
