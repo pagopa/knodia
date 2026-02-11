@@ -1,7 +1,7 @@
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { upsertEservice } from "@knodia/test-commons/utils";
-import { afterAll, afterEach, beforeAll, beforeEach, inject, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 import { mockEservices } from "./mockEservices.ts";
