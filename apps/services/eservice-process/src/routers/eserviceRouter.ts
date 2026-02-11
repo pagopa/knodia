@@ -116,6 +116,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       },
       tags: [apiTags.eservice],
     },
-    url: "/eservices/:eserviceId/version",
+    url: "/eservices/:eserviceId/version/latest",
   });
 };
