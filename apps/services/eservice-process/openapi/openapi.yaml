@@ -152,6 +152,12 @@ components:
         - code
         - scheme
       additionalProperties: false
+    EserviceVersionState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     Eservice:
       type: object
       properties:
