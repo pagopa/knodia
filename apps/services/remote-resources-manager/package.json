@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:",
+    "@knodia/api-gateway-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "zod": "catalog:"
