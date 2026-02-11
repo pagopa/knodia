@@ -136,8 +136,9 @@ describe("GET /eservices (getEservices)", () => {
 
   it.each([
     { limit: "abc", offset: "0" },
-    { limit: "abc", offset: "abc" },
-    { limit: "10", offset: "abc" },
+    { limit: "0", offset: "0" },
+    { limit: "51", offset: "0" },
+    { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
     {
