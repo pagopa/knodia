@@ -2,7 +2,7 @@ import type { EserviceId } from "@knodia/common-models/ids";
 import type { EserviceEventV1 } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { eserviceTable } from "@knodia/db-event-store-eservice";
+import { eserviceEvents } from "@knodia/db-event-store-eservice";
 
 import {
   eventStoreWriterBuilder,
@@ -20,5 +20,5 @@ export type NewEventStoreEserviceEvent = NewEventStoreEvent<
 export const eserviceEventStoreWriterBuilder = (db: NodePgDatabase) =>
   eventStoreWriterBuilder({
     db,
-    eventsTable: eserviceTable,
+    eventsTable: eserviceEvents,
   });

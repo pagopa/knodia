@@ -15,7 +15,7 @@ export const eserviceSchema = pgSchema(
   eventStoreEserviceConfig.eventStoreDbEserviceSchema,
 );
 
-export const eserviceTable = eserviceSchema.table(
+export const eserviceEvents = eserviceSchema.table(
   "events",
   {
     correlationId: text("correlation_id").notNull(),
@@ -38,5 +38,5 @@ export const eserviceTable = eserviceSchema.table(
 // =============================================================================
 // Type exports (auto-generated)
 // =============================================================================
-export type EventsInLocalEservice = typeof eserviceTable.$inferSelect;
-export type NewEventsInLocalEservice = typeof eserviceTable.$inferInsert;
+export type EventsInLocalEservice = typeof eserviceEvents.$inferSelect;
+export type NewEventsInLocalEservice = typeof eserviceEvents.$inferInsert;
