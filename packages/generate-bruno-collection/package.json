@@ -1,16 +1,10 @@
 {
   "name": "@knodia/generate-bruno-collection",
   "type": "module",
-  "bin": {
-    "generate-bruno-collection": "./src/cli.ts"
-  },
   "scripts": {
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
-  },
-  "exports": {
-    ".": "./src/generateBrunoCollection.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
