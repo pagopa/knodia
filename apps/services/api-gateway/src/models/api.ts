@@ -1,4 +1,3 @@
-import { API_EserviceCategory } from "@knodia/eservice-models/api";
 import {
   API_Pagination,
   API_PaginationQueryParams,
@@ -10,7 +9,10 @@ const API_EserviceSearchByKeywords = z.strictObject({
 });
 
 const API_EserviceSearchByCategory = z.strictObject({
-  category: API_EserviceCategory,
+  category: z.strictObject({
+    code: z.string(),
+    scheme: z.string(),
+  }),
 });
 
 export const API_EserviceSearchParams = z

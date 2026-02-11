@@ -87,71 +87,6 @@ components:
         - status
         - title
       additionalProperties: false
-    LocalizedName:
-      description: Name of the E-service
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 5
-          maxLength: 60
-      required:
-        - en
-      additionalProperties: false
-    LocalizedDescription:
-      description: Description of the E-service
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
-      additionalProperties: false
-    LocalizedInterfacePrettyName:
-      description: Pretty name of the E-service interface document
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 5
-          maxLength: 60
-      required:
-        - en
-      additionalProperties: false
-    EserviceMode:
-      type: string
-      enum:
-        - ProvideData
-        - ReceiveData
-    EserviceCategory:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    AccessTokenType:
-      type: string
-      enum:
-        - Bearer
-        - DPoP
-    EserviceAttribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     EserviceSearchParams:
       anyOf:
         - type: object
@@ -165,7 +100,16 @@ components:
         - type: object
           properties:
             category:
-              $ref: "#/components/schemas/EserviceCategory"
+              type: object
+              properties:
+                code:
+                  type: string
+                scheme:
+                  type: string
+              required:
+                - code
+                - scheme
+              additionalProperties: false
           required:
             - category
           additionalProperties: false
