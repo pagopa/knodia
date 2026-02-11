@@ -230,7 +230,15 @@ export async function getTableTotalCount(
   return totalCountResult[0]?.count ?? 0;
 }
 
-export function ilikeJsonB(column: PgColumn, value: string): SQL {
+export function ilikeJsonB({
+  column,
+  language = "en",
+  value,
+}: {
+  column: PgColumn;
+  language?: string;
+  value: string;
+}): SQL {
   const pattern = `%${escapeRegExp(value)}%`;
-  return sql`${column}::json->>'en' ilike ${pattern}`;
+  return sql`${column}::json->>${language} ilike ${pattern}`;
 }

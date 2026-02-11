@@ -62,8 +62,11 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
                 : undefined,
               q
                 ? or(
-                    ilikeJsonB(readmodelEservice.name, q),
-                    ilikeJsonB(readmodelEservice.description, q),
+                    ilikeJsonB({ column: readmodelEservice.name, value: q }),
+                    ilikeJsonB({
+                      column: readmodelEservice.description,
+                      value: q,
+                    }),
                     ilike(
                       // TODO: filter by category name instead of code when using real data
                       readmodelEserviceCategory.code,
