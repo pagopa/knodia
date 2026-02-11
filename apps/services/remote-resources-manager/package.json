@@ -1,0 +1,29 @@
+{
+  "name": "@knodia/remote-resources-manager",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
+    "typecheck": "tsc",
+    "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@knodia/spectral-config": "workspace:*",
+    "@stoplight/spectral-cli": "catalog:",
+    "@types/node": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "openapi-types": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/logger": "workspace:*",
+    "zod": "catalog:"
+  }
+}
