@@ -401,12 +401,9 @@ paths:
           required: false
           description: Sort direction
         - schema:
-            anyOf:
-              - type: array
-                items:
-                  $ref: "#/components/schemas/EserviceVersionState"
-              - allOf:
-                  - $ref: "#/components/schemas/EserviceVersionState"
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceVersionState"
           in: query
           name: state
           required: false

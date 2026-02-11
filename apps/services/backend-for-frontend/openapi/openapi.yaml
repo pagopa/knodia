@@ -469,19 +469,9 @@ paths:
           required: false
           description: Sort direction
         - schema:
-            anyOf:
-              - type: array
-                items:
-                  type: string
-                  enum:
-                    - Active
-                    - Suspended
-                    - Archived
-              - type: string
-                enum:
-                  - Active
-                  - Suspended
-                  - Archived
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceVersionState"
           in: query
           name: state
           required: false

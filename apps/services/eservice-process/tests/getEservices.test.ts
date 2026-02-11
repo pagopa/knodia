@@ -1,9 +1,6 @@
 import { SortDirection } from "@knodia/db-readmodel-commons";
-import {
-  Eservice,
-  EserviceMode,
-  EserviceVersionState,
-} from "@knodia/eservice-models";
+import { Eservice, EserviceMode } from "@knodia/eservice-models";
+import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -80,8 +77,8 @@ describe("GET /eservices (getEservices)", () => {
         ...defaultQuery,
         producerId,
         state: [
-          EserviceVersionState.enum.Active,
-          EserviceVersionState.enum.Suspended,
+          API_EserviceVersionState.enum.Active,
+          API_EserviceVersionState.enum.Suspended,
         ],
       },
     },
@@ -107,10 +104,10 @@ describe("GET /eservices (getEservices)", () => {
         ...defaultQuery,
         mode: EserviceMode.enum.ProvideData,
         producerId,
-        q: "knodia",
+        q: "KNODIA",
         sortBy: "name",
         sortOrder: SortDirection.enum.desc,
-        state: EserviceVersionState.enum.Suspended,
+        state: [API_EserviceVersionState.enum.Suspended],
       },
     },
   ] satisfies {
@@ -145,7 +142,7 @@ describe("GET /eservices (getEservices)", () => {
     { limit: 9999999, offset: 9999999 },
     {
       ...defaultQuery,
-      state: "InvalidState",
+      state: ["InvalidState"],
     },
     { ...defaultQuery, mode: "InvalidMode" },
     {
@@ -155,9 +152,8 @@ describe("GET /eservices (getEservices)", () => {
     {
       ...defaultQuery,
       sortOrder: "InvalidSortOrder",
-      state: ["InvalidState"],
     },
-    // { ...defaultQuery, q: false },
+    { ...defaultQuery, q: [1, 2, 3] },
     {
       ...defaultQuery,
       invalidParam: "invalid",

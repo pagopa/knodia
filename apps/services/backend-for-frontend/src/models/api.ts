@@ -3,7 +3,6 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import {
-  EserviceVersionState,
   maxAccessTokenDuration,
   maxDailyCalls,
   minAccessTokenDuration,
@@ -170,10 +169,10 @@ export const API_ProducerEservicesQueryParams =
       .default("asc")
       .describe("Sort direction"),
     state: z
-      .union([
-        z.array(EserviceVersionState),
-        EserviceVersionState.transform((v) => [v]),
-      ])
+      .preprocess((value) => {
+        if (value === undefined) return undefined;
+        return Array.isArray(value) ? value : [value];
+      }, z.array(API_EserviceVersionState).optional())
       .optional()
       .describe("Filter by E-service state"),
   });

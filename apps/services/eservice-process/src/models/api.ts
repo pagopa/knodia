@@ -41,10 +41,10 @@ export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
     .default("asc")
     .describe("Sort direction"),
   state: z
-    .union([
-      z.array(API_EserviceVersionState),
-      API_EserviceVersionState.transform((v) => [v]),
-    ])
+    .preprocess((value) => {
+      if (value === undefined) return undefined;
+      return Array.isArray(value) ? value : [value];
+    }, z.array(API_EserviceVersionState).optional())
     .optional()
     .describe("Filter by E-service state"),
 });
