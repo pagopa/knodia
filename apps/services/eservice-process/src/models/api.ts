@@ -1,3 +1,7 @@
+import {
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
 import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
 import { EserviceVersionState } from "@knodia/eservice-models";
 import {
@@ -15,10 +19,6 @@ import {
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
-import {
-  API_Pagination,
-  API_PaginationQueryParams,
-} from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams.extend({

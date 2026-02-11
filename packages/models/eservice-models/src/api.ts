@@ -1,8 +1,8 @@
-import { LocalizedText } from "@knodia/common-models/localization";
 import {
   API_Pagination,
   API_PaginationQueryParams,
-} from "@knodia/fastify-zod-api-commons/models";
+} from "@knodia/common-models/api";
+import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
 import { EserviceVersionState } from "./eservice.ts";

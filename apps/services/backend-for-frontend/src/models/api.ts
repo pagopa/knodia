@@ -1,4 +1,8 @@
 import {
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
+import {
   maxAccessTokenDuration,
   maxDailyCalls,
   minAccessTokenDuration,
@@ -13,10 +17,6 @@ import {
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
-import {
-  API_Pagination,
-  API_PaginationQueryParams,
-} from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
