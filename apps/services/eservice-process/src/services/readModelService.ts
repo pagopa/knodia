@@ -1,4 +1,3 @@
-import type { OrganizationId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -11,28 +10,26 @@ import {
 import {
   readmodelEservice,
   readmodelEserviceCategory,
-  readmodelEserviceInterface,
   readmodelEserviceVersion,
 } from "@knodia/db-readmodel-eservice";
 import {
   aggregateEservices,
   toEservicesAggregator,
 } from "@knodia/db-readmodel-eservice/converters";
-import { getLatestVersion } from "@knodia/eservice-models";
-import { and, eq, ilike, or } from "drizzle-orm";
+import { Eservice } from "@knodia/eservice-models";
+import { and, eq, ilike, inArray, or } from "drizzle-orm";
 
-import type { API_GetProducerEservicesQueryParams } from "../models/api.ts";
-import type { ProducerEservice } from "../models/types.ts";
+import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
 export type ReadModelService = ReturnType<typeof readModelServiceBuilder>;
 
 export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
   return {
-    async getProducerEservices(
-      params: API_GetProducerEservicesQueryParams,
-      producerId: OrganizationId,
-    ): Promise<ListResult<ProducerEservice>> {
-      const { limit, mode, offset, q, sortBy, sortOrder, status } = params;
+    async getEservices(
+      params: API_GetEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      const { limit, mode, offset, producerId, q, sortBy, sortOrder, status } =
+        params;
 
       return await readModelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -60,7 +57,9 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
                 ? eq(readmodelEservice.producerId, producerId)
                 : undefined,
               mode ? eq(readmodelEservice.mode, mode) : undefined,
-              status ? eq(readmodelEserviceVersion.state, status) : undefined,
+              status && status.length > 0
+                ? inArray(readmodelEserviceVersion.state, status)
+                : undefined,
               q
                 ? or(
                     ilikeJsonB(readmodelEservice.name, q),
@@ -85,22 +84,9 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
             .select({
               category: readmodelEserviceCategory,
               eservice: readmodelEservice,
-              interface: readmodelEserviceInterface,
-              version: readmodelEserviceVersion,
             })
             .from(readmodelEservice)
             .innerJoin(subquery, eq(readmodelEservice.id, subquery.eserviceId))
-            .innerJoin(
-              readmodelEserviceVersion,
-              eq(readmodelEservice.id, readmodelEserviceVersion.eserviceId),
-            )
-            .leftJoin(
-              readmodelEserviceInterface,
-              eq(
-                readmodelEserviceVersion.id,
-                readmodelEserviceInterface.eserviceVersionId,
-              ),
-            )
             .leftJoin(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
@@ -113,10 +99,9 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
 
         const results = eservices.map((e) => ({
           ...e.data,
-          // TODO: add real data
+          // TODO: add real data, also update the return type
           activeAgreements: 0,
           activePurposes: 0,
-          status: getLatestVersion(e.data).state,
         }));
 
         return { results, totalCount };

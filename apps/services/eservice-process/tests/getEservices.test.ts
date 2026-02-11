@@ -1,189 +1,176 @@
+import { SortDirection } from "@knodia/db-readmodel-commons";
+import {
+  Eservice,
+  EserviceMode,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
+import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_Eservices } from "../src/models/api.ts";
-
+import { producerId } from "../src/routers/eserviceRouter.ts";
+import { mockEservices } from "./mockEservices.ts";
 import { injectAppRequest } from "./utils.ts";
 
-const getEservices = (query: Record<string, string | string[]>) =>
-  injectAppRequest().get("/eservices").query(query);
-
-// TODO: These tests rely on mock data. Update assertions when switching to real data.
 describe("GET /eservices (getEservices)", () => {
-  it("should return e-services with correct shape and pagination", async () => {
-    const response = await getEservices({
-      limit: "10",
-      offset: "0",
-    });
+  const defaultQuery = {
+    limit: "4",
+    offset: "0",
+  };
 
-    expect(response.statusCode).toBe(200);
+  it.each([
+    {
+      expectedResult: [
+        mockEservices[0],
+        mockEservices[1],
+        mockEservices[2],
+        mockEservices[3],
+      ] as Eservice[],
+      name: "pagination only (1st page), sort by name asc by default",
+      query: { ...defaultQuery },
+    },
+    {
+      expectedResult: [
+        mockEservices[1],
+        mockEservices[2],
+        mockEservices[3],
+        mockEservices[4],
+      ] as Eservice[],
+      name: "pagination only (1st page), sort by name asc by default",
+      query: { ...defaultQuery, producerId },
+    },
+    {
+      expectedResult: [
+        mockEservices[4],
+        mockEservices[5],
+        mockEservices[6],
+        mockEservices[7],
+      ] as Eservice[],
+      name: "pagination only (2nd page), sort by name asc by default",
+      query: {
+        limit: "4",
+        offset: "4",
+      },
+    },
+    {
+      expectedResult: [mockEservices[1], mockEservices[3]] as Eservice[],
+      name: "search query",
+      query: { ...defaultQuery, producerId, q: "KNODIA" },
+    },
+    {
+      expectedResult: [
+        mockEservices[1],
+        mockEservices[4],
+        mockEservices[7],
+      ] as Eservice[],
+      name: "filter by mode",
+      query: {
+        ...defaultQuery,
+        mode: EserviceMode.enum.ProvideData,
+        producerId,
+      },
+    },
+    {
+      expectedResult: [
+        mockEservices[1],
+        mockEservices[2],
+        mockEservices[4],
+        mockEservices[5],
+      ] as Eservice[],
+      name: "filter by status",
+      query: {
+        ...defaultQuery,
+        producerId,
+        status: [
+          EserviceVersionState.enum.Active,
+          EserviceVersionState.enum.Suspended,
+        ],
+      },
+    },
+    {
+      expectedResult: [
+        mockEservices[9],
+        mockEservices[8],
+        mockEservices[7],
+        mockEservices[6],
+      ] as Eservice[],
+      name: "sort by name desc",
+      query: {
+        ...defaultQuery,
+        producerId,
+        sortBy: "name",
+        sortOrder: SortDirection.enum.desc,
+      },
+    },
+    {
+      expectedResult: [mockEservices[1]] as Eservice[],
+      name: "full query",
+      query: {
+        ...defaultQuery,
+        mode: EserviceMode.enum.ProvideData,
+        producerId,
+        q: "knodia",
+        sortBy: "name",
+        sortOrder: SortDirection.enum.desc,
+        status: EserviceVersionState.enum.Suspended,
+      },
+    },
+  ] satisfies {
+    expectedResult: Eservice[];
+    name: string;
+    query: unknown;
+  }[])(
+    "should return mock e-services correctly",
+    async ({ expectedResult, query }) => {
+      const response = await injectAppRequest()
+        .get("/eservices")
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .query(query as any);
 
-    const body = response.json<API_Eservices>();
-    expect(body.items.length).toBeGreaterThan(0);
-    expect(body.items.length).toBeLessThanOrEqual(10);
-    expect(body.pagination).toEqual({
-      limit: 10,
-      offset: 0,
-      total: expect.any(Number),
-    });
-
-    const item = body.items[0];
-    expect(item).toEqual(
-      expect.objectContaining({
-        categories: expect.any(Array),
-        createdAt: expect.any(String),
-        description: expect.objectContaining({ en: expect.any(String) }),
-        id: expect.any(String),
-        isConsumerOperatorIdentificationRequired: expect.any(Boolean),
-        isSignalHubEnabled: expect.any(Boolean),
-        mode: expect.stringMatching(/^(ProvideData|ReceiveData)$/),
-        name: expect.objectContaining({ en: expect.any(String) }),
-        producerId: expect.any(String),
-        status: expect.stringMatching(/^(Active|Suspended|Archived)$/),
-        updatedAt: expect.any(String),
-      }),
-    );
-  });
-
-  it("should paginate results correctly", async () => {
-    const firstPage = await getEservices({
-      limit: "3",
-      offset: "0",
-    });
-    const secondPage = await getEservices({
-      limit: "3",
-      offset: "3",
-    });
-
-    const firstBody = firstPage.json<API_Eservices>();
-    const secondBody = secondPage.json<API_Eservices>();
-
-    expect(firstBody.items).toHaveLength(3);
-    expect(secondBody.items).toHaveLength(3);
-    expect(firstBody.pagination.total).toBe(secondBody.pagination.total);
-
-    const firstIds = firstBody.items.map((i) => i.id);
-    const secondIds = secondBody.items.map((i) => i.id);
-    expect(firstIds).not.toEqual(secondIds);
-  });
-
-  it("should filter by search query", async () => {
-    const response = await getEservices({
-      limit: "50",
-      offset: "0",
-      q: "VAT",
-    });
-
-    const body = response.json<API_Eservices>();
-    expect(body.items.length).toBeGreaterThan(0);
-    expect(
-      body.items.every(
-        (item) =>
-          item.name.en.toLowerCase().includes("vat") ||
-          item.description.en.toLowerCase().includes("vat") ||
-          item.categories.some((c) => c.code.toLowerCase().includes("vat")),
-      ),
-    ).toBe(true);
-  });
-
-  it("should filter by status", async () => {
-    const response = await getEservices({
-      limit: "50",
-      offset: "0",
-      status: ["Active", "Suspended"],
-    });
-
-    const body = response.json<API_Eservices>();
-    expect(body.items.length).toBeGreaterThan(0);
-    expect(
-      body.items.every(
-        (item) => item.status === "Active" || item.status === "Suspended",
-      ),
-    ).toBe(true);
-  });
-
-  it("should filter by mode", async () => {
-    const response = await getEservices({
-      limit: "50",
-      mode: "ReceiveData",
-      offset: "0",
-    });
-
-    const body = response.json<API_Eservices>();
-    expect(body.items.length).toBeGreaterThan(0);
-    expect(body.items.every((item) => item.mode === "ReceiveData")).toBe(true);
-  });
-
-  it("should sort by name ascending by default", async () => {
-    const response = await getEservices({
-      limit: "50",
-      offset: "0",
-    });
-
-    const body = response.json<API_Eservices>();
-    const names = body.items.map((i) => i.name.en);
-    const sorted = [...names].sort((a, b) => a.localeCompare(b));
-    expect(names).toEqual(sorted);
-  });
-
-  it("should sort by name descending", async () => {
-    const response = await getEservices({
-      limit: "50",
-      offset: "0",
-      sortBy: "name",
-      sortOrder: "desc",
-    });
-
-    const body = response.json<API_Eservices>();
-    const names = body.items.map((i) => i.name.en);
-    const sorted = [...names].sort((a, b) => b.localeCompare(a));
-    expect(names).toEqual(sorted);
-  });
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toEqual({
+        items: expectedResult.map((e) => toExpectAPI_Eservice(e)),
+        pagination: {
+          limit: Number(query.limit),
+          offset: Number(query.offset),
+          total: mockEservices.length,
+        },
+      });
+    },
+  );
 
   it.each([
     { limit: "abc", offset: "0" },
-    { limit: "0", offset: "0" },
-    { limit: "51", offset: "0" },
-    { limit: "10", offset: "-1" },
+    { limit: "abc", offset: "abc" },
+    { limit: "10", offset: "abc" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-  ])("should return 400 for invalid pagination params (%o)", async (query) => {
-    const response = await getEservices(query as never);
-    expect(response.statusCode).toBe(400);
-  });
-
-  it("should return 400 for invalid mode value", async () => {
-    const response = await getEservices({
-      limit: "10",
-      mode: "InvalidMode",
-      offset: "0",
-    });
-    expect(response.statusCode).toBe(400);
-  });
-
-  it("should return 400 for invalid sortBy value", async () => {
-    const response = await getEservices({
-      limit: "10",
-      offset: "0",
-      sortBy: "invalidField",
-    });
-    expect(response.statusCode).toBe(400);
-  });
-
-  it("should return 400 for invalid sortOrder value", async () => {
-    const response = await getEservices({
-      limit: "10",
-      offset: "0",
-      sortOrder: "invalidOrder",
-    });
-    expect(response.statusCode).toBe(400);
-  });
-
-  it("should return 400 for invalid status value", async () => {
-    const response = await getEservices({
-      limit: "10",
-      offset: "0",
+    {
+      ...defaultQuery,
       status: "InvalidStatus",
-    });
-    expect(response.statusCode).toBe(400);
-  });
+    },
+    { ...defaultQuery, mode: "InvalidMode", status: "InvalidStatus" },
+    {
+      ...defaultQuery,
+      sortBy: "InvalidSortBy",
+      status: "InvalidStatus",
+    },
+    {
+      ...defaultQuery,
+      sortOrder: "InvalidSortOrder",
+      status: ["InvalidStatus"],
+    },
+    { ...defaultQuery, q: 123, status: "InvalidStatus" },
+    {
+      ...defaultQuery,
+      invalidParam: "invalid",
+    },
+  ])(
+    "should return 400 if query parameters are formatted incorrectly (%o)",
+    async (query) => {
+      const response = await injectAppRequest()
+        .get("/eservices")
+        .query(query as never);
+      expect(response.statusCode).toBe(400);
+    },
+  );
 });

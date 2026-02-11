@@ -11,13 +11,11 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import { Eservice } from "@knodia/eservice-models";
-import { zocker } from "zocker";
 
 import type {
   API_EserviceSeed,
-  API_GetProducerEservicesQueryParams,
+  API_GetEservicesQueryParams,
 } from "../models/api.ts";
-import type { ProducerEservice } from "../models/types.ts";
 import type { ReadModelService } from "./readModelService.ts";
 
 import { invalidAttribute, invalidCategory } from "../models/errors.ts";
@@ -105,26 +103,10 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    getMockEservices(params: API_EservicesQueryParams): {
-      items: Eservice[];
-      pagination: { limit: number; offset: number; total: number };
-    } {
-      const eservices = zocker(Eservice).generateMany(100);
-
-      return {
-        items: eservices.slice(offset, offset + limit),
-        pagination: {
-          limit,
-          offset,
-          total: eservices.length,
-        },
-      };
-    },
-    async getProducerEservices(
-      params: API_GetProducerEservicesQueryParams,
-      producerId: OrganizationId,
-    ): Promise<ListResult<ProducerEservice>> {
-      return await readModelService.getProducerEservices(params, producerId);
+    async getEservices(
+      params: API_GetEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      return await readModelService.getEservices(params);
     },
   };
 }

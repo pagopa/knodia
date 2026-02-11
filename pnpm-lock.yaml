@@ -321,6 +321,15 @@ importers:
       '@knodia/db-event-store-writer':
         specifier: workspace:*
         version: link:../../../packages/db/event-store/writer
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
+      '@knodia/db-readmodel-config':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/config
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/eservice
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
@@ -701,6 +710,9 @@ importers:
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -711,6 +723,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1069,6 +1084,12 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../db/readmodel/commons
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../db/readmodel/eservice
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../models/eservice-models
