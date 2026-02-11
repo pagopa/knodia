@@ -28,7 +28,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {
-      const { limit, mode, offset, producerId, q, sortBy, sortOrder, status } =
+      const { limit, mode, offset, producerId, q, sortBy, sortOrder, state } =
         params;
 
       return await readModelDb.transaction(async (tx) => {
@@ -57,8 +57,8 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
                 ? eq(readmodelEservice.producerId, producerId)
                 : undefined,
               mode ? eq(readmodelEservice.mode, mode) : undefined,
-              status && status.length > 0
-                ? inArray(readmodelEserviceVersion.state, status)
+              state && state.length > 0
+                ? inArray(readmodelEserviceVersion.state, state)
                 : undefined,
               q
                 ? or(

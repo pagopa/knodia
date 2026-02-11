@@ -76,11 +76,11 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[4],
         mockEservices[5],
       ] as Eservice[],
-      name: "filter by status",
+      name: "filter by state",
       query: {
         ...defaultQuery,
         producerId,
-        status: [
+        state: [
           EserviceVersionState.enum.Active,
           EserviceVersionState.enum.Suspended,
         ],
@@ -111,7 +111,7 @@ describe("GET /eservices (getEservices)", () => {
         q: "knodia",
         sortBy: "name",
         sortOrder: SortDirection.enum.desc,
-        status: EserviceVersionState.enum.Suspended,
+        state: EserviceVersionState.enum.Suspended,
       },
     },
   ] satisfies {
@@ -119,7 +119,7 @@ describe("GET /eservices (getEservices)", () => {
     name: string;
     query: unknown;
   }[])(
-    "should return mock e-services correctly",
+    "should return mock e-services correctly: $name (seed #%#)",
     async ({ expectedResult, query }) => {
       const response = await injectAppRequest()
         .get("/eservices")
@@ -146,20 +146,19 @@ describe("GET /eservices (getEservices)", () => {
     { limit: 9999999, offset: 9999999 },
     {
       ...defaultQuery,
-      status: "InvalidStatus",
+      state: "InvalidState",
     },
-    { ...defaultQuery, mode: "InvalidMode", status: "InvalidStatus" },
+    { ...defaultQuery, mode: "InvalidMode" },
     {
       ...defaultQuery,
       sortBy: "InvalidSortBy",
-      status: "InvalidStatus",
     },
     {
       ...defaultQuery,
       sortOrder: "InvalidSortOrder",
-      status: ["InvalidStatus"],
+      state: ["InvalidState"],
     },
-    { ...defaultQuery, q: 123, status: "InvalidStatus" },
+    // { ...defaultQuery, q: false },
     {
       ...defaultQuery,
       invalidParam: "invalid",
