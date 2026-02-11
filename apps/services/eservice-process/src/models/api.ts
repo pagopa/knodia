@@ -4,7 +4,6 @@ import {
 } from "@knodia/common-models/api";
 import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
 import {
-  EserviceVersionState,
   maxAccessTokenDuration,
   maxDailyCalls,
   minAccessTokenDuration,
@@ -15,6 +14,7 @@ import {
   API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
@@ -42,8 +42,8 @@ export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
     .describe("Sort direction"),
   state: z
     .union([
-      z.array(EserviceVersionState),
-      EserviceVersionState.transform((v) => [v]),
+      z.array(API_EserviceVersionState),
+      API_EserviceVersionState.transform((v) => [v]),
     ])
     .optional()
     .describe("Filter by E-service state"),
