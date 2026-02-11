@@ -181,8 +181,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        status:
-          description: Status of the latest version
+        state:
+          description: State of the latest version
           type: string
           enum:
             - Active
@@ -202,7 +202,7 @@ components:
         - mode
         - name
         - producerId
-        - status
+        - state
         - updatedAt
       additionalProperties: false
     Eservices:
@@ -487,9 +487,9 @@ paths:
                   - Suspended
                   - Archived
           in: query
-          name: status
+          name: state
           required: false
-          description: Filter by E-service status
+          description: Filter by E-service state
       responses:
         "200":
           description: Producer E-services retrieved successfully
@@ -528,7 +528,7 @@ paths:
                           $ref: "#/components/schemas/EserviceMode"
                         name:
                           $ref: "#/components/schemas/LocalizedName"
-                        status:
+                        state:
                           type: string
                           enum:
                             - Active
@@ -541,7 +541,7 @@ paths:
                         - id
                         - mode
                         - name
-                        - status
+                        - state
                       additionalProperties: false
                   pagination:
                     $ref: "#/components/schemas/Pagination"

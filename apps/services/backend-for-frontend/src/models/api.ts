@@ -34,7 +34,7 @@ const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    status: EserviceVersionState.describe("Status of the latest version"),
+    state: EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });

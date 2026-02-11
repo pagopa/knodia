@@ -136,7 +136,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { limit, mode, offset, q, sortOrder, status } = req.query;
+      const { limit, mode, offset, q, sortOrder, state } = req.query;
       const { correlationId } = getContextValues(requestContext);
 
       // TODO: get real producerId from auth context
@@ -162,7 +162,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           q,
           sortBy: "name",
           sortOrder,
-          status,
+          state,
         },
       });
 

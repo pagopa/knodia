@@ -40,13 +40,13 @@ export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
     .optional()
     .default("asc")
     .describe("Sort direction"),
-  status: z
+  state: z
     .union([
       z.array(EserviceVersionState),
       EserviceVersionState.transform((v) => [v]),
     ])
     .optional()
-    .describe("Filter by E-service status"),
+    .describe("Filter by E-service state"),
 });
 export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
 
@@ -61,7 +61,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    status: EserviceVersionState.describe("Status of the latest version"),
+    state: EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });

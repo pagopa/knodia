@@ -89,14 +89,14 @@ describe("GET /eservices (getEservices)", () => {
     const response = await getEservices({
       limit: "50",
       offset: "0",
-      status: ["Active", "Suspended"],
+      state: ["Active", "Suspended"],
     });
 
     const body = response.json<API_Eservices>();
     expect(body.items.length).toBeGreaterThan(0);
     expect(
       body.items.every(
-        (item) => item.status === "Active" || item.status === "Suspended",
+        (item) => item.state === "Active" || item.state === "Suspended",
       ),
     ).toBe(true);
   });

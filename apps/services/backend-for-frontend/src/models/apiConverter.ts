@@ -12,5 +12,5 @@ export const toAPI_ProducerEservice = (
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,
-  status: eservice.status,
+  state: eservice.state,
 });

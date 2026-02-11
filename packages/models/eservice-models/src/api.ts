@@ -73,7 +73,7 @@ export const API_ProducerEservice = z.strictObject({
   id: z.uuid(),
   mode: API_EserviceMode,
   name: API_LocalizedName,
-  status: EserviceVersionState,
+  state: EserviceVersionState,
 });
 export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
@@ -94,13 +94,13 @@ export const API_ProducerEservicesQueryParams =
       .optional()
       .default("asc")
       .describe("Sort direction"),
-    status: z
+    state: z
       .union([
         z.array(EserviceVersionState),
         EserviceVersionState.transform((v) => [v]),
       ])
       .optional()
-      .describe("Filter by E-service status"),
+      .describe("Filter by E-service state"),
   });
 export type API_ProducerEservicesQueryParams = z.infer<
   typeof API_ProducerEservicesQueryParams
