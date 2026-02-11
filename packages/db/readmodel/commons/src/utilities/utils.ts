@@ -86,7 +86,7 @@ const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
 
   if (pkColumns.size === 0) {
     throw genericInternalError(
-      `Table ${tableConfig.name} does not have a primary key`,
+      `Table ${tableConfig.name} primary keynot found`,
     );
   }
 
