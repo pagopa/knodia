@@ -135,7 +135,7 @@ const markRequestBodiesAsRequired = (
   return openapi;
 };
 
-export const removeUnusedComponents = (
+const removeUnusedComponents = (
   openapi: Partial<OpenAPIV3.Document>,
 ): Partial<OpenAPIV3.Document> => {
   if (!openapi.components?.schemas || !openapi.paths) return openapi;
