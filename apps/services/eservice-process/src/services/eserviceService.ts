@@ -108,7 +108,7 @@ export function eserviceServiceBuilder(
     } {
       const { limit, mode, offset, producerId, q, sortOrder, status } = params;
 
-      // TODO: replace mock data with real database queries (read model)
+      // TODO: replace mock data, filtering, and sorting with real database queries (read model)
       let eservices = generateMockEservices(producerId);
 
       // Filter by producerId
