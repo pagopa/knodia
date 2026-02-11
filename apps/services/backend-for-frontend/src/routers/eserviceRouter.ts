@@ -4,6 +4,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import {
+  API_EserviceIdPathParam,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
 } from "@knodia/eservice-models/api";
@@ -19,11 +20,15 @@ import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
+  API_EserviceDetails,
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
 } from "../models/api.ts";
-import { toAPI_ProducerEservice } from "../models/apiConverter.ts";
+import {
+  toAPI_EserviceDetails,
+  toAPI_ProducerEservice,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -34,6 +39,7 @@ interface EserviceRouterOptions {
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({
     handler: async (req, res) => {
@@ -195,5 +201,56 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
+
+      const headers = { [CORRELATION_ID_HEADER]: correlationId };
+      const path = { eserviceId: req.params.eserviceId };
+
+      const [eserviceResult, versionResult] = await Promise.all([
+        eserviceProcessApi.getEserviceById({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceVersion({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+      ]);
+
+      if (!eserviceResult.data || !versionResult.data) {
+        throw genericError(
+          "Unexpected empty response from eservice-process on getEserviceDetails",
+        );
+      }
+
+      // TODO: fetch real counts from agreement-process and purpose-process
+      res.send(
+        toAPI_EserviceDetails(eserviceResult.data, versionResult.data, {
+          agreements: { active: 3, total: 5 },
+          purposes: { active: 1, total: 2 },
+        }),
+      );
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an E-service with all its details",
+      operationId: "getEserviceDetails",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_EserviceDetails.describe(
+          "E-service details retrieved successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+        404: API_Problem.describe("E-service not found"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId",
   });
 };
