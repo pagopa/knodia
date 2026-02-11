@@ -8,7 +8,6 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   CORRELATION_ID_HEADER,
-  genericError,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
@@ -36,7 +35,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
-      const eservices = await eserviceProcessApi.getEservices({
+      const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,
@@ -50,8 +49,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       res.send({
         // TODO move this defaulting logic to the service, keep routers only for routing
         // and API models conversion, no logic
-        items: eservices.data?.items || [],
-        pagination: eservices.data?.pagination || {
+        items: data.items || [],
+        pagination: data.pagination || {
           limit: req.query.limit,
           offset: req.query.offset,
           total: 0,
@@ -100,7 +99,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       };
 
-      const createdEservice = await eserviceProcessApi.createEservice({
+      const { data } = await eserviceProcessApi.createEservice({
         body: seed,
         client: eserviceProcessClient,
         headers: {
@@ -108,15 +107,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      if (!createdEservice.data?.id) {
-        throw genericError(
-          "Unexpected empty response from eservice-process on createEservice",
-        );
-      }
-
-      res
-        .status(201)
-        .send(API_CreatedResource.parse({ id: createdEservice.data.id }));
+      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
     },
     method: "POST",
     schema: {
@@ -147,7 +138,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       // 2. Process-side: get counts in eservice-process and handle sorting.
       //    Breaks unified data model principle (process would include cross-domain data).
 
-      const result = await eserviceProcessApi.getEservices({
+      const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,
@@ -165,13 +156,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
-      const items = (result.data?.items ?? []).map((eservice, idx) =>
+      const items = (data.items ?? []).map((eservice, idx) =>
         toAPI_ProducerEservice(eservice, idx + 5, idx + 1),
       );
 
       res.send({
         items,
-        pagination: result.data?.pagination ?? {
+        pagination: data.pagination ?? {
           limit,
           offset,
           total: 0,
