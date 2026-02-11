@@ -404,16 +404,9 @@ paths:
             anyOf:
               - type: array
                 items:
-                  type: string
-                  enum:
-                    - Active
-                    - Suspended
-                    - Archived
-              - type: string
-                enum:
-                  - Active
-                  - Suspended
-                  - Archived
+                  $ref: "#/components/schemas/EserviceVersionState"
+              - allOf:
+                  - $ref: "#/components/schemas/EserviceVersionState"
           in: query
           name: state
           required: false
