@@ -7,8 +7,7 @@ import {
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { producerId } from "../src/routers/eserviceRouter.ts";
-import { mockEservices } from "./mockEservices.ts";
+import { mockEservices, producerId } from "./mockEservices.ts";
 import { injectAppRequest } from "./utils.ts";
 
 describe("GET /eservices (getEservices)", () => {

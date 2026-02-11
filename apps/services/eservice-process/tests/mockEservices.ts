@@ -1,4 +1,4 @@
-import { generateId } from "@knodia/common-models/ids";
+import { generateId, OrganizationId } from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceCategory,
@@ -8,7 +8,7 @@ import {
 } from "@knodia/eservice-models";
 import { zocker } from "zocker";
 
-import { producerId } from "../src/routers/eserviceRouter.ts";
+export const producerId = generateId<OrganizationId>();
 
 const zockerEservices = zocker(Eservice).setSeed(0).generateMany(10);
 
