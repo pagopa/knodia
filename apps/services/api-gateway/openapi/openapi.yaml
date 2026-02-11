@@ -87,6 +87,19 @@ components:
         - status
         - title
       additionalProperties: false
+    EserviceCategory:
+      description: Identifies a category of data, standardized within Knodia, which
+        the E-Service provides or receives
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     EserviceSearchParams:
       anyOf:
         - type: object
@@ -100,19 +113,96 @@ components:
         - type: object
           properties:
             category:
-              type: object
-              properties:
-                code:
-                  type: string
-                scheme:
-                  type: string
-              required:
-                - code
-                - scheme
-              additionalProperties: false
+              $ref: "#/components/schemas/EserviceCategory"
           required:
             - category
           additionalProperties: false
+    EserviceVersionState:
+      type: string
+      enum:
+        - ACTIVE
+        - SUSPENDED
+        - ARCHIVED
+    EserviceMode:
+      description: Indicates if the E-Service is intended to provide or receive data
+      type: string
+      enum:
+        - PROVIDE_DATA
+        - RECEIVE_DATA
+    Attribute:
+      description: Identifies an Attribute standardized within Knodia
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        scheme:
+          type: string
+          minLength: 1
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    RequiredAttributeGroup:
+      description: Described a group of required Attributes (consumers must possess at
+        least one Attribute among them in order to satisfy the requirement)
+      type: array
+      items:
+        $ref: "#/components/schemas/Attribute"
+    RequiredAttributes:
+      description: Describes the Attributes which a consumer must possess to request
+        an Agreement for the E-Service (at least one Attribute for each
+        Attribute Group)
+      type: array
+      items:
+        $ref: "#/components/schemas/RequiredAttributeGroup"
+    EserviceSearchResult:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        latestVersionRequiredAttributes:
+          $ref: "#/components/schemas/RequiredAttributes"
+        latestVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - categories
+        - description
+        - id
+        - latestVersionRequiredAttributes
+        - latestVersionState
+        - mode
+        - name
+        - producerId
+      additionalProperties: false
     EserviceSearchResults:
       type: object
       properties:
@@ -120,7 +210,8 @@ components:
           $ref: "#/components/schemas/Pagination"
         results:
           type: array
-          items: {}
+          items:
+            $ref: "#/components/schemas/EserviceSearchResult"
       required:
         - pagination
         - results
