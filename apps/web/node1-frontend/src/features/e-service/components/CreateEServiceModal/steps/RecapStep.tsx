@@ -6,7 +6,7 @@ import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
-import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
+import { useCalculateMD5 } from "@/features/e-service/hooks/useCalculateMD5";
 import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
 import { downloadFile } from "@/utils/downloadFile";
 
@@ -21,7 +21,7 @@ const KNODE_NAME = "Orion Knode";
 export function RecapStep() {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
-  const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
+  const { md5Checksum } = useCalculateMD5(data.interfaceDocument);
   const { isError, isPending, publish } = usePublishEService();
 
   const onPublish = () => publish(data);

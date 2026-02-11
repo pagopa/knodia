@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import SparkMD5 from "spark-md5";
 
-export const useCalculateChecksum = (document: File | null | undefined) => {
+export const useCalculateMD5 = (document: File | null | undefined) => {
   const [md5Checksum, setMd5Checksum] = useState<null | string>(null);
 
   useEffect(() => {
