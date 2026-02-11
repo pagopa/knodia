@@ -130,3 +130,59 @@ export const API_CreatedResource = z
   })
   .meta({ id: "CreatedResource" });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
+
+export const API_ProducerEservice = z.strictObject({
+  activeAgreements: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Number of active agreements")
+    .meta({ format: "int32" }),
+  activePurposes: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Number of active purposes")
+    .meta({ format: "int32" }),
+  categories: z.array(API_EserviceCategory),
+  id: z.uuid(),
+  mode: API_EserviceMode,
+  name: API_LocalizedName,
+  state: EserviceVersionState,
+});
+export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
+
+export const API_ProducerEservicesQueryParams =
+  API_PaginationQueryParams.extend({
+    mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
+    q: z
+      .string()
+      .optional()
+      .describe("Search by name, description or categories"),
+    sortBy: z
+      .enum(["name", "activeAgreements", "activePurposes"])
+      .optional()
+      .default("name")
+      .describe("Field to sort by"),
+    sortOrder: z
+      .enum(["asc", "desc"])
+      .optional()
+      .default("asc")
+      .describe("Sort direction"),
+    state: z
+      .union([
+        z.array(EserviceVersionState),
+        EserviceVersionState.transform((v) => [v]),
+      ])
+      .optional()
+      .describe("Filter by E-service state"),
+  });
+export type API_ProducerEservicesQueryParams = z.infer<
+  typeof API_ProducerEservicesQueryParams
+>;
+
+export const API_ProducerEservices = z.strictObject({
+  items: z.array(API_ProducerEservice),
+  pagination: API_Pagination,
+});
+export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;

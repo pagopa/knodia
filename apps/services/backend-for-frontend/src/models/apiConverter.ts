@@ -1,5 +1,6 @@
-import type { API_ProducerEservice } from "@knodia/eservice-models/api";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
+
+import type { API_ProducerEservice } from "./api.ts";
 
 export const toAPI_ProducerEservice = (
   eservice: eserviceProcessApi.Eservice,
