@@ -19,14 +19,17 @@ const LocalizedText = z.strictObject({
 });
 
 export const API_EserviceSearchParams = z
-  .union([
-    z.strictObject({
-      keywords: z.string().min(1),
-    }),
-    z.strictObject({
-      category: API_EserviceCategory,
-    }),
-  ])
+  .intersection(
+    z.strictObject({ url: z.string().min(1) }),
+    z.union([
+      z.strictObject({
+        keywords: z.string().min(1),
+      }),
+      z.strictObject({
+        category: API_EserviceCategory,
+      }),
+    ]),
+  )
   .meta({ id: "EserviceSearchParams" });
 
 const API_EserviceVersionState = z
