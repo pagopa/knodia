@@ -1,12 +1,12 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import z from "zod";
-
 import {
   API_Pagination,
   API_PaginationQueryParams,
-  API_Problem,
-} from "../../src/models/api.ts";
+} from "@knodia/common-models/api";
+import z from "zod";
+
+import { API_Problem } from "../../src/models/api.ts";
 import { processHeaders } from "../../src/models/index.ts";
 
 export const testTags = {

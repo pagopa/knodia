@@ -9,6 +9,7 @@
     "test": "vitest"
   },
   "exports": {
+    "./api": "./src/api.ts",
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
     "./event": "./src/events.ts",

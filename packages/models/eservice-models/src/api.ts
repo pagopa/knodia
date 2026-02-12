@@ -1,6 +1,11 @@
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
+export const API_EserviceVersionState = z
+  .enum(["Active", "Suspended", "Archived"])
+  .meta({ id: "EserviceVersionState" });
+export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
+
 export const API_LocalizedName = LocalizedText.extend({
   en: z.string().min(5).max(60),
 })
