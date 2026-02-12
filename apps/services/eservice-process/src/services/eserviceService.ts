@@ -10,7 +10,7 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { Eservice, getLatestVersion } from "@knodia/eservice-models";
+import { Eservice } from "@knodia/eservice-models";
 
 import type {
   API_EserviceSeed,
@@ -23,6 +23,7 @@ import {
   invalidCategory,
 } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
+import { getLatestVersion } from "../utils/eserviceUtils.ts";
 import { mockEservices } from "./mockEservices.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;

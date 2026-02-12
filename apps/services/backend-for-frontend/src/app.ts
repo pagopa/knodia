@@ -13,6 +13,7 @@ import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { producerEserviceRouter } from "./routers/producerEserviceRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   const app = buildApp({
@@ -54,5 +55,9 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
   });
+  app.register(producerEserviceRouter, {
+    eserviceProcessClient: clients.eserviceProcessClient,
+  });
+
   return app;
 }
