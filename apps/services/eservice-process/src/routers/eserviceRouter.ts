@@ -73,9 +73,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: (req, res) => {
-      const eservice = eserviceService.getMockEservice(
-        req.params.eserviceId,
-      );
+      const eservice = eserviceService.getMockEservice(req.params.eserviceId);
       res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "GET",
