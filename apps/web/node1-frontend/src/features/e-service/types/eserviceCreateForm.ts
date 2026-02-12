@@ -53,8 +53,7 @@ const eserviceFieldSchemas = {
     .min(1, "At least one group is required."),
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Object only used for type inference
-const eserviceFormSchema = z.object(eserviceFieldSchemas);
+export const eserviceFormSchema = z.object(eserviceFieldSchemas);
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
 // Step-specific validation schemas

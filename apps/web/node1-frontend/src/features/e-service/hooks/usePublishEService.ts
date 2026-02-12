@@ -5,6 +5,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
 import { buildRequestBody } from "@/features/e-service/services/eserviceRequestBody";
+import { eserviceFormSchema } from "@/features/e-service/types/eserviceCreateForm";
 import { client } from "@/libs/axios";
 
 export function usePublishEService() {
@@ -18,7 +19,9 @@ export function usePublishEService() {
   });
 
   const publish = async (data: Partial<EServiceFormData>) => {
-    const body = await buildRequestBody(data as EServiceFormData);
+    const result = eserviceFormSchema.safeParse(data);
+    if (!result.success) return;
+    const body = await buildRequestBody(result.data);
     mutate({ body });
   };
 
