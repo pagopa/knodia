@@ -184,17 +184,6 @@ export const API_ProducerEservices = z.strictObject({
 });
 export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;
 
-const API_EserviceInterfaceDocument = z
-  .strictObject({
-    checksum: z.string().describe("Base64-encoded SHA-256 checksum"),
-    contentType: z.string().describe("MIME type of the interface document"),
-    id: z.uuid().describe("Unique identifier of the interface document"),
-    name: z.string().describe("Name of the interface document, with extension"),
-    path: z.string().describe("Path where the interface document is stored"),
-    prettyName: API_LocalizedInterfacePrettyName,
-  })
-  .meta({ id: "EserviceInterfaceDocument" });
-
 const API_EserviceVersion = z
   .strictObject({
     accessTokenAudience: z
@@ -208,8 +197,6 @@ const API_EserviceVersion = z
     accessTokenType: API_AccessTokenType.describe("Type of the access token"),
     createdAt: z.iso.datetime(),
     id: z.uuid().describe("Unique identifier of the E-service version"),
-    interfaceDocument:
-      API_EserviceInterfaceDocument.describe("Interface document"),
     maxDailyCallsPerConsumer: z
       .number()
       .int()

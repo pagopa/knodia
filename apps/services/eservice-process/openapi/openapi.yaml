@@ -221,36 +221,6 @@ components:
         - items
         - pagination
       additionalProperties: false
-    EserviceInterfaceDocument:
-      type: object
-      properties:
-        checksum:
-          description: Base64-encoded SHA-256 checksum
-          type: string
-        contentType:
-          description: MIME type of the interface document
-          type: string
-        id:
-          description: Unique identifier of the interface document
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          description: Name of the interface document, with extension
-          type: string
-        path:
-          description: Path where the interface document is stored
-          type: string
-        prettyName:
-          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
-      required:
-        - checksum
-        - contentType
-        - id
-        - name
-        - path
-        - prettyName
-      additionalProperties: false
     EserviceVersion:
       type: object
       properties:
@@ -278,10 +248,6 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        interfaceDocument:
-          description: Interface document
-          allOf:
-            - $ref: "#/components/schemas/EserviceInterfaceDocument"
         maxDailyCallsPerConsumer:
           description: Maximum daily calls per consumer
           format: int32
@@ -321,7 +287,6 @@ components:
         - accessTokenType
         - createdAt
         - id
-        - interfaceDocument
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - requiredAttributes

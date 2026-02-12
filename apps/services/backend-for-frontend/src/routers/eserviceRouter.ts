@@ -206,6 +206,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       }
 
       // TODO: fetch real counts from agreement-process and purpose-process
+      // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
       res.send(
         toAPI_EserviceDetails(eserviceResult.data, versionResult.data, {
           agreements: { active: 3, total: 5 },

@@ -44,7 +44,6 @@ export const toAPI_EserviceDetails = (
     accessTokenType: version.accessTokenType,
     createdAt: version.createdAt,
     id: version.id,
-    interfaceDocument: version.interfaceDocument,
     maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
     maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
     requiredAttributes: version.requiredAttributes,
