@@ -8,10 +8,10 @@ const VALID_ESERVICE_ID = "00000000-0000-4000-a000-000000000000";
 const NON_EXISTENT_ESERVICE_ID = "00000000-0000-4000-a000-ffffffffffff";
 
 const getEserviceLatestVersion = (eserviceId: string) =>
-  injectAppRequest().get(`/eservices/${eserviceId}/version/latest`);
+  injectAppRequest().get(`/eservices/${eserviceId}/versions/latest`);
 
 // TODO: These tests rely on mock data. Update assertions when switching to real data.
-describe("GET /eservices/:eserviceId/version/latest (getEserviceLatestVersion)", () => {
+describe("GET /eservices/:eserviceId/versions/latest (getEserviceLatestVersion)", () => {
   it("should return the latest version with correct shape", async () => {
     const response = await getEserviceLatestVersion(VALID_ESERVICE_ID);
 

@@ -627,7 +627,7 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eservices/{eserviceId}/version/latest:
+  /eservices/{eserviceId}/versions/latest:
     get:
       operationId: getEserviceLatestVersion
       tags:
