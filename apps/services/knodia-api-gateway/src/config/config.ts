@@ -2,7 +2,7 @@ import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
-const ApiGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
+const KnodiaApiGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
   z
     .object({
       ESERVICE_PROCESS_URL: z.url(),
@@ -12,6 +12,6 @@ const ApiGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
     })),
 );
 
-export type ApiGatewayConfig = z.infer<typeof ApiGatewayConfig>;
+export type KnodiaApiGatewayConfig = z.infer<typeof KnodiaApiGatewayConfig>;
 
-export const config = ApiGatewayConfig.parse(process.env);
+export const config = KnodiaApiGatewayConfig.parse(process.env);
