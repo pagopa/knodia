@@ -20,11 +20,8 @@ import { Route as ProductionAgreementsRouteImport } from './routes/production/ag
 import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/purposes'
 import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
 import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
-<<<<<<< HEAD
 import { Route as ConsumptionEServicesRouteRouteImport } from './routes/consumption/e-services/route'
-=======
 import { Route as ProductionEServicesIdRouteImport } from './routes/production/e-services_/$id'
->>>>>>> main
 import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
 
 const OperatorsRoute = OperatorsRouteImport.update({
@@ -83,20 +80,17 @@ const ProductionEServicesRouteRoute =
     path: '/production/e-services',
     getParentRoute: () => rootRouteImport,
   } as any)
-<<<<<<< HEAD
 const ConsumptionEServicesRouteRoute =
   ConsumptionEServicesRouteRouteImport.update({
     id: '/consumption/e-services',
     path: '/consumption/e-services',
     getParentRoute: () => rootRouteImport,
   } as any)
-=======
 const ProductionEServicesIdRoute = ProductionEServicesIdRouteImport.update({
   id: '/production/e-services_/$id',
   path: '/production/e-services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
->>>>>>> main
 const ProductionEServicesNewIndexRoute =
   ProductionEServicesNewIndexRouteImport.update({
     id: '/new/',
@@ -299,19 +293,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionEServicesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-<<<<<<< HEAD
     '/consumption/e-services': {
       id: '/consumption/e-services'
       path: '/consumption/e-services'
       fullPath: '/consumption/e-services'
       preLoaderRoute: typeof ConsumptionEServicesRouteRouteImport
-=======
+      parentRoute: typeof rootRouteImport
+    }
     '/production/e-services_/$id': {
       id: '/production/e-services_/$id'
       path: '/production/e-services/$id'
       fullPath: '/production/e-services/$id'
       preLoaderRoute: typeof ProductionEServicesIdRouteImport
->>>>>>> main
       parentRoute: typeof rootRouteImport
     }
     '/production/e-services/new/': {
