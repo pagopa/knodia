@@ -1,0 +1,27 @@
+meta {
+  name: Search Eservices
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host-remote-resources-manager}}/searchEservices?offset=0&limit=50
+  body: json
+  auth: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+body:json {
+  {
+    "keywords": "test"
+  }
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  eservices: res.body.results
+}
