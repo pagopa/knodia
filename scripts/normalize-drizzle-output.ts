@@ -315,8 +315,6 @@ function transformGenerateTypeExports(content: string): string {
  *
  * drizzle-kit generates a relations.ts file with duplicate property keys
  * when a table has multiple FKs referencing the same table from the same column.
- * Since relations are maintained manually in src/relations.ts, the generated
- * file is not needed and is deleted to avoid confusion.
  */
 function removeRelationsFile(relationsFilePath: string): void {
   const absolutePath = resolve(cwd(), relationsFilePath);
