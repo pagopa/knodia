@@ -1,10 +1,10 @@
-import type { EserviceVersion } from "@knodia/eservice-models";
+import {
+  Eservice,
+  EserviceVersion,
+  getLatestVersion,
+} from "@knodia/eservice-models";
 
-import { Eservice, getLatestVersion } from "@knodia/eservice-models";
-
-import type { API_EserviceVersion } from "./api.ts";
-
-import { API_Eservice } from "./api.ts";
+import { API_Eservice, API_EserviceVersion } from "./api.ts";
 
 export const toAPI_EserviceVersion = (
   version: EserviceVersion,
