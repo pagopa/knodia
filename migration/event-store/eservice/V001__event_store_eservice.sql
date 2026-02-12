@@ -1,10 +1,10 @@
 -- Flyway versioned migration: V001__event_store_eservice.sql
 -- Creates the event store schema and events table
--- Placeholders: ${namespace} - environment prefix resolved by Flyway at runtime
+-- Placeholders: ${NAMESPACE} - environment prefix resolved by Flyway at runtime
 
-CREATE SCHEMA IF NOT EXISTS ${namespace}_eservice;
+CREATE SCHEMA IF NOT EXISTS ${NAMESPACE}_eservice;
 
-CREATE TABLE IF NOT EXISTS ${namespace}_eservice."events" (
+CREATE TABLE IF NOT EXISTS ${NAMESPACE}_eservice."events" (
 	"correlation_id" text NOT NULL,
 	"data" "bytea" NOT NULL,
 	"log_date" timestamp with time zone DEFAULT now() NOT NULL,

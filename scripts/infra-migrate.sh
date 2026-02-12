@@ -10,7 +10,7 @@ DB_NAMESPACE="${DB_NAMESPACE:-local}"
 DB_NAME="${DB_NAME:-root}"
 DB_USER="${DB_USER:-root}"
 DB_PASSWORD="${DB_PASSWORD:-root}"
-# DB_DEFAULT_PASSWORD is used by R__grants.sql migrations via the ${default_password} placeholder
+# DB_DEFAULT_PASSWORD is used by R__grants.sql migrations via the ${DEFAULT_PASSWORD} placeholder
 # to set passwords for database roles (readonly_user, admin_user, service users)
 DB_DEFAULT_PASSWORD="${DB_DEFAULT_PASSWORD:-root}"
 
@@ -73,8 +73,8 @@ run_flyway() {
     -schemas="${DB_NAMESPACE}_${schema_name}" \
     -defaultSchema="${DB_NAMESPACE}_${schema_name}" \
     -connectRetries=5 \
-    -placeholders.namespace="${DB_NAMESPACE}" \
-    -placeholders.default_password="${DB_DEFAULT_PASSWORD}" \
+    -placeholders.NAMESPACE="${DB_NAMESPACE}" \
+    -placeholders.DEFAULT_PASSWORD="${DB_DEFAULT_PASSWORD}" \
     migrate
 
   echo "Flyway migrations applied for ${db_type}/${schema_name}."

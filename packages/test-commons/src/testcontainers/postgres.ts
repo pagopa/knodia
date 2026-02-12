@@ -85,7 +85,7 @@ export async function startTestPostgresContainer({
 
 /**
  * Applies SQL migrations from Flyway-style migration folders.
- * Reads .sql files, replaces ${namespace} placeholder, and executes them.
+ * Reads .sql files, replaces ${NAMESPACE} placeholder, and executes them.
  * Flyway convention: V* (versioned) files run before R* (repeatable) files.
  */
 async function applyMigrations(migrationFolders: string[], db: NodePgDatabase) {
@@ -102,8 +102,8 @@ async function applyMigrations(migrationFolders: string[], db: NodePgDatabase) {
       let sql = readFileSync(filePath, "utf-8");
 
       // Replace Flyway placeholders with test values
-      sql = sql.replace(/\$\{namespace\}/g, TEST_NAMESPACE);
-      sql = sql.replace(/\$\{default_password\}/g, "test_password");
+      sql = sql.replace(/\$\{NAMESPACE\}/g, TEST_NAMESPACE);
+      sql = sql.replace(/\$\{DEFAULT_PASSWORD\}/g, "test_password");
 
       await db.execute(sql);
     }
