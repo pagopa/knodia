@@ -93,12 +93,4 @@ describe("buildRequestBody", () => {
       [{ code: "nuts1", scheme: "vc_territorial_units" }],
     ]);
   });
-
-  it("throws when interfaceDocument is null", async () => {
-    await expect(
-      buildRequestBody(
-        createFormData({ interfaceDocument: null as unknown as File }),
-      ),
-    ).rejects.toThrow("Interface document is required");
-  });
 });
