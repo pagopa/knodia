@@ -15,12 +15,10 @@ import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
+  API_EserviceDetails,
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
-} from "../models/api.ts";
-import {
-  API_EserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
