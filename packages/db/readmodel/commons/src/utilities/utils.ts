@@ -86,7 +86,7 @@ const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
 
   if (pkColumns.size === 0) {
     throw genericInternalError(
-      `Table ${tableConfig.name} primary keynot found`,
+      `Table ${tableConfig.name} primary key not found`,
     );
   }
 
@@ -232,13 +232,18 @@ export async function getTableTotalCount(
 
 export function ilikeJsonB({
   column,
-  language = "en",
   value,
 }: {
   column: PgColumn;
-  language?: string;
   value: string;
 }): SQL {
   const pattern = `%${escapeRegExp(value)}%`;
-  return sql`${column}::json->>${language} ilike ${pattern}`;
+
+  return sql`
+    exists (
+      select 1
+      from jsonb_each_text(${column}) as t(key, value)
+      where t.value ilike ${pattern}
+    )
+  `;
 }
