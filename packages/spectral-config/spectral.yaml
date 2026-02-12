@@ -7,6 +7,7 @@ rules:
   # Errors
   has-x-summary: off # we don't use the x-summary custom field, unsupported in our setup
   servers-use-https: off # we use http in local/dev environments
+  paths-kebab-case: off # not compatible with our naming conventions (e.g. x-correlation-id)
 
   # Warnings
   paths-status-problem-schema:
