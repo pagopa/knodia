@@ -1,10 +1,8 @@
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
-import { upsertEservice } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
-import { mockEservices } from "./mockEservices.ts";
 
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
 let readModelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
@@ -28,10 +26,6 @@ beforeAll(async () => {
     },
     readModelDb,
   });
-
-  await Promise.all(
-    mockEservices.map((eservice) => upsertEservice(eservice, 0, readModelDb)),
-  );
 });
 
 beforeEach(async () => {
@@ -52,4 +46,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readModelDb.$client.end()]);
 });
 
-export { app, eventStoreDb };
+export { app, eventStoreDb, readModelDb };
