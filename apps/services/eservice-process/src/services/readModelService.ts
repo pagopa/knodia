@@ -17,7 +17,7 @@ import {
   toEservicesAggregator,
 } from "@knodia/db-readmodel-eservice/converters";
 import { Eservice } from "@knodia/eservice-models";
-import { and, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
@@ -38,18 +38,28 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
           table: readmodelEservice,
         });
 
-        const subquery = tx
-          .select({
-            eserviceId: readmodelEservice.id,
+        const latestEserviceVersion = tx
+          .selectDistinctOn([readmodelEserviceVersion.eserviceId], {
+            eserviceId: readmodelEserviceVersion.eserviceId,
+            state: readmodelEserviceVersion.state,
           })
+          .from(readmodelEserviceVersion)
+          .orderBy(
+            readmodelEserviceVersion.eserviceId,
+            desc(readmodelEserviceVersion.updatedAt),
+          )
+          .as("latestEserviceVersion");
+
+        const filterSubquery = tx
+          .select({ eserviceId: readmodelEservice.id })
           .from(readmodelEservice)
           .leftJoin(
             readmodelEserviceCategory,
             eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
           )
           .innerJoin(
-            readmodelEserviceVersion,
-            eq(readmodelEservice.id, readmodelEserviceVersion.eserviceId),
+            latestEserviceVersion,
+            eq(readmodelEservice.id, latestEserviceVersion.eserviceId),
           )
           .where(
             and(
@@ -58,7 +68,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
                 : undefined,
               mode ? eq(readmodelEservice.mode, mode) : undefined,
               state && state.length > 0
-                ? inArray(readmodelEserviceVersion.state, state)
+                ? inArray(latestEserviceVersion.state, state)
                 : undefined,
               q
                 ? or(
@@ -80,7 +90,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
           .orderBy(...orderByFilters)
           .limit(limit)
           .offset(offset)
-          .as("subquery");
+          .as("filterSubquery");
 
         const [queryRes, totalCount] = await Promise.all([
           tx
@@ -89,7 +99,10 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
               eservice: readmodelEservice,
             })
             .from(readmodelEservice)
-            .innerJoin(subquery, eq(readmodelEservice.id, subquery.eserviceId))
+            .innerJoin(
+              filterSubquery,
+              eq(readmodelEservice.id, filterSubquery.eserviceId),
+            )
             .leftJoin(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
