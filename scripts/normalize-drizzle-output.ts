@@ -6,7 +6,7 @@
  *
  * WORKFLOW:
  * 1. Run `pnpm db:pull` (runs drizzle-kit pull + this script automatically)
- * 2. Copy the content of generated/schema.ts to src/eservice.ts
+ * 2. Copy the content of generated/schema.ts to your folder destination
  * 3. Replace the hardcoded schema name with the config-based value (see comment in file)
  * 4. Remove the instruction comment block
  *
@@ -367,7 +367,7 @@ function processSchemaFile(schemaFilePath: string, info: ConfigInfo): void {
   console.log("\n" + "-".repeat(80));
   console.log("NEXT STEPS:");
   console.log("-".repeat(80));
-  console.log(`\n1. Copy the content of ${schemaFilePath} to src/eservice.ts`);
+  console.log(`\n1. Copy the content of ${schemaFilePath} to your folder destination`);
   console.log(`\n2. Replace the hardcoded schema name with the config import`);
   console.log(`   (follow the TODO comment in the file)`);
   console.log(`\n3. Delete the TODO comment block`);
