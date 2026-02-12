@@ -47,12 +47,12 @@ describe("GET /eservices/:eserviceId/version/latest (getEserviceVersion)", () =>
     const eserviceResponse = await injectAppRequest().get(
       `/eservices/${VALID_ESERVICE_ID}`,
     );
-    const eservice = eserviceResponse.json<{ status: string }>();
+    const eservice = eserviceResponse.json<{ state: string }>();
 
     const versionResponse = await getEserviceVersion(VALID_ESERVICE_ID);
     const version = versionResponse.json<API_EserviceVersion>();
 
-    expect(version.state).toBe(eservice.status);
+    expect(version.state).toBe(eservice.state);
   });
 
   it("should return 404 for non-existent e-service id", async () => {

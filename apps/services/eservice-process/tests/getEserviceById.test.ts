@@ -29,7 +29,7 @@ describe("GET /eservices/:eserviceId (getEserviceById)", () => {
         mode: expect.stringMatching(/^(ProvideData|ReceiveData)$/),
         name: expect.objectContaining({ en: expect.any(String) }),
         producerId: expect.any(String),
-        status: expect.stringMatching(/^(Active|Suspended|Archived)$/),
+        state: expect.stringMatching(/^(Active|Suspended|Archived)$/),
         updatedAt: expect.any(String),
       }),
     );
