@@ -31,6 +31,9 @@ detect_network_and_hosts() {
 
 detect_network_and_hosts
 
+# Include repeatable migrations by default; override with INCLUDE_REPEATABLE=false
+INCLUDE_REPEATABLE="${INCLUDE_REPEATABLE:-true}"
+
 # Map database folder to Docker container hostname and port
 db_host_for() {
   case "$1" in
@@ -61,17 +64,27 @@ run_flyway() {
     return 0
   fi
 
-  echo "Applying Flyway migrations for ${db_type}/${schema_name} (network: $DOCKER_NETWORK, host: $db_host:$db_port)..."
+  local repeatable_dir="${migration_dir}/repeatable"
+  local volume_args=(-v "${migration_dir}:/flyway/sql:ro")
+  local locations="filesystem:/flyway/sql"
+
+  if [ "$INCLUDE_REPEATABLE" != "true" ] && [ -d "$repeatable_dir" ]; then
+    # Shadow repeatable directory with an empty tmpdir to hide it from Flyway
+    volume_args+=(-v "$(mktemp -d):/flyway/sql/repeatable:ro")
+  fi
+
+  echo "Applying Flyway migrations for ${db_type}/${schema_name} (network: $DOCKER_NETWORK, host: $db_host:$db_port, repeatable: $INCLUDE_REPEATABLE)..."
 
   docker run --rm \
     --network "$DOCKER_NETWORK" \
-    -v "${migration_dir}:/flyway/sql:ro" \
+    "${volume_args[@]}" \
     "$FLYWAY_IMAGE" \
     -url="jdbc:postgresql://${db_host}:${db_port}/${DB_NAME}" \
     -user="$DB_USER" \
     -password="$DB_PASSWORD" \
     -schemas="${DB_NAMESPACE}_${schema_name}" \
     -defaultSchema="${DB_NAMESPACE}_${schema_name}" \
+    -locations="${locations}" \
     -connectRetries=5 \
     -placeholders.NAMESPACE="${DB_NAMESPACE}" \
     -placeholders.DEFAULT_PASSWORD="${DB_DEFAULT_PASSWORD}" \
