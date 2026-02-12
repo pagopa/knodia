@@ -324,9 +324,6 @@ importers:
       '@knodia/db-readmodel-commons':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/commons
-      '@knodia/db-readmodel-config':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/config
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
