@@ -6,7 +6,7 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "db:pull": "dotenvx run -- drizzle-kit pull && node --experimental-strip-types ../../../../scripts/normalize-drizzle-output.ts"
+    "db:pull": "dotenvx run -- drizzle-kit pull && node ../../../../scripts/normalize-drizzle-output.ts"
   },
   "dependencies": {
     "@knodia/db-event-store-config": "workspace:*",

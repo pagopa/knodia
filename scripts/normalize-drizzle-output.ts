@@ -30,7 +30,7 @@
  *    Deletes the generated relations.ts file, which contains duplicate property
  *    keys caused by drizzle-kit and is not used (relations are maintained manually).
  *
- * Usage: node --experimental-strip-types scripts/normalize-drizzle-output.ts [schema-file-path]
+ * Usage: node scripts/normalize-drizzle-output.ts [schema-file-path]
  *
  * If no path is provided, defaults to: generated/schema.ts
  */
