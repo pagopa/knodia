@@ -116,6 +116,16 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
+    getMockEserviceLatestVersion(eserviceId: EserviceId) {
+      const eservices = generateMockEservices();
+      const eservice = eservices.find((e) => e.id === eserviceId);
+
+      if (!eservice) {
+        throw eserviceNotFound(eserviceId);
+      }
+
+      return getLatestVersion(eservice);
+    },
     getMockEservices(params: API_EservicesQueryParams): {
       items: Eservice[];
       pagination: { limit: number; offset: number; total: number };
@@ -172,16 +182,6 @@ export function eserviceServiceBuilder(
           total,
         },
       };
-    },
-    getMockEserviceLatestVersion(eserviceId: EserviceId) {
-      const eservices = generateMockEservices();
-      const eservice = eservices.find((e) => e.id === eserviceId);
-
-      if (!eservice) {
-        throw eserviceNotFound(eserviceId);
-      }
-
-      return getLatestVersion(eservice);
     },
   };
 }
