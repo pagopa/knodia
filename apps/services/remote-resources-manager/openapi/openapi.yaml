@@ -8,6 +8,27 @@ info:
   version: 1.0.0
 components:
   schemas:
+    Pagination:
+      type: object
+      properties:
+        limit:
+          format: int32
+          type: number
+          minimum: 1
+          maximum: 50
+        offset:
+          format: int32
+          type: number
+          minimum: 0
+        total:
+          format: int32
+          type: number
+          minimum: 0
+      required:
+        - limit
+        - offset
+        - total
+      additionalProperties: false
     ProblemError:
       type: object
       properties:
@@ -66,6 +87,144 @@ components:
         - status
         - title
       additionalProperties: false
+    EserviceCategory:
+      description: Identifies a category of data, standardized within Knodia, which
+        the E-Service provides or receives
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    EserviceSearchParams:
+      allOf:
+        - type: object
+          properties:
+            url:
+              type: string
+              minLength: 1
+          required:
+            - url
+          additionalProperties: false
+        - anyOf:
+            - type: object
+              properties:
+                keywords:
+                  type: string
+                  minLength: 1
+              required:
+                - keywords
+              additionalProperties: false
+            - type: object
+              properties:
+                category:
+                  $ref: "#/components/schemas/EserviceCategory"
+              required:
+                - category
+              additionalProperties: false
+    EserviceVersionState:
+      type: string
+      enum:
+        - ACTIVE
+        - SUSPENDED
+        - ARCHIVED
+    EserviceMode:
+      description: Indicates if the E-Service is intended to provide or receive data
+      type: string
+      enum:
+        - PROVIDE_DATA
+        - RECEIVE_DATA
+    Attribute:
+      description: Identifies an Attribute standardized within Knodia
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        scheme:
+          type: string
+          minLength: 1
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    RequiredAttributeGroup:
+      description: Described a group of required Attributes (consumers must possess at
+        least one Attribute among them in order to satisfy the requirement)
+      type: array
+      items:
+        $ref: "#/components/schemas/Attribute"
+    RequiredAttributes:
+      description: Describes the Attributes which a consumer must possess to request
+        an Agreement for the E-Service (at least one Attribute for each
+        Attribute Group)
+      type: array
+      items:
+        $ref: "#/components/schemas/RequiredAttributeGroup"
+    EserviceSearchResult:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        latestVersionRequiredAttributes:
+          $ref: "#/components/schemas/RequiredAttributes"
+        latestVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - categories
+        - description
+        - id
+        - latestVersionRequiredAttributes
+        - latestVersionState
+        - mode
+        - name
+        - producerId
+      additionalProperties: false
+    EserviceSearchResults:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceSearchResult"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -82,11 +241,62 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /searchEservices:
+    post:
+      operationId: searchEservices
+      summary: Search for E-Services
+      tags:
+        - api-gateway
+      description: Search for E-Services according to search criteria and considering
+        only E-Services with an active or suspended Version
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EserviceSearchParams"
+        required: true
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: E-Service search results retrieved (sorted by most recently updated
+            first)
+          content:
+            application/json:
+              schema:
+                description: E-Service search results retrieved (sorted by most recently updated
+                  first)
+                allOf:
+                  - $ref: "#/components/schemas/EserviceSearchResults"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Remote Resources Manager API
     url: /
 tags:
   - description: Health check routes
     name: health
-  - description: Remote resources manager routes
-    name: remote-resources-manager
+  - description: API Gateway routes
+    name: api-gateway

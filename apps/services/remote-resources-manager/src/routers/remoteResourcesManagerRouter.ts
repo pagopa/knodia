@@ -1,0 +1,53 @@
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+
+import { requestContext } from "@fastify/request-context";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+
+import type { RemoteResourcesManagerService } from "../services/remoteResourcesManagerService.ts";
+
+import {
+  API_EserviceSearchParams,
+  API_EserviceSearchResults,
+  API_SearchEservicesQueryParams,
+} from "../models/api.ts";
+import { apiGatewayTag } from "../models/apiTags.ts";
+
+interface RemoteResourcesManagerRouterOptions {
+  remoteResourcesManagerService: RemoteResourcesManagerService;
+}
+
+export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
+  RemoteResourcesManagerRouterOptions
+> = async (fastify, { remoteResourcesManagerService }) => {
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
+
+      const eservices = await remoteResourcesManagerService.searchEservices({
+        correlationId,
+        reqBody: req.body,
+        reqQuery: req.query,
+      });
+
+      res.send(eservices);
+    },
+    method: "POST",
+    schema: {
+      body: API_EserviceSearchParams,
+      description:
+        "Search for E-Services according to search criteria and considering only E-Services with an active or suspended Version",
+      operationId: "searchEservices",
+      querystring: API_SearchEservicesQueryParams,
+      response: {
+        200: API_EserviceSearchResults.describe(
+          "E-Service search results retrieved (sorted by most recently updated first)",
+        ),
+        400: API_Problem.describe("Bad Request"),
+      },
+      summary: "Search for E-Services",
+      tags: [apiGatewayTag.name],
+    },
+    url: "/searchEservices",
+  });
+};
