@@ -101,31 +101,22 @@ components:
         - scheme
       additionalProperties: false
     EserviceSearchParams:
-      allOf:
+      anyOf:
         - type: object
           properties:
-            url:
+            keywords:
               type: string
               minLength: 1
           required:
-            - url
+            - keywords
           additionalProperties: false
-        - anyOf:
-            - type: object
-              properties:
-                keywords:
-                  type: string
-                  minLength: 1
-              required:
-                - keywords
-              additionalProperties: false
-            - type: object
-              properties:
-                category:
-                  $ref: "#/components/schemas/EserviceCategory"
-              required:
-                - category
-              additionalProperties: false
+        - type: object
+          properties:
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+          required:
+            - category
+          additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
