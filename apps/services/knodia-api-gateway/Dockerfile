@@ -1,6 +1,6 @@
 ARG NODE_REGISTRY="docker.io"
-ARG SERVICE_NAME="api-gateway"
-ARG SERVICE_PATH="apps/services/api-gateway"
+ARG SERVICE_NAME="knodia-api-gateway"
+ARG SERVICE_PATH="apps/services/knodia-api-gateway"
 
 FROM ${NODE_REGISTRY}/node:24-slim@sha256:bf22df20270b654c4e9da59d8d4a3516cce6ba2852e159b27288d645b7a7eedc AS pruner
 ARG SERVICE_NAME

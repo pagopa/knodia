@@ -39,7 +39,7 @@ function buildApp({
           title: "Knodia Api Gateway API",
           version: "1.0.0",
         },
-        servers: [{ description: "Api Gateway", url: "/" }],
+        servers: [{ description: "Knodia Api Gateway", url: "/" }],
         tags: [
           healthRouterTag,
           {
@@ -57,7 +57,7 @@ function buildApp({
     loggerConfig,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
-    serviceName: serviceName.API_GATEWAY,
+    serviceName: serviceName.KNODIA_API_GATEWAY,
   });
 
   app.register(healthRouter);

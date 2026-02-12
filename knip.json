@@ -15,7 +15,7 @@
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
-    "apps/services/api-gateway": {
+    "apps/services/knodia-api-gateway": {
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
