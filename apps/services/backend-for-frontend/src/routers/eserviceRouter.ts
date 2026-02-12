@@ -187,12 +187,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const path = { eserviceId: req.params.eserviceId };
 
       const [eserviceResult, versionResult] = await Promise.all([
-        eserviceProcessApi.getEserviceById({
+        eserviceProcessApi.getEservice({
           client: eserviceProcessClient,
           headers,
           path,
         }),
-        eserviceProcessApi.getEserviceVersion({
+        eserviceProcessApi.getEserviceLatestVersion({
           client: eserviceProcessClient,
           headers,
           path,

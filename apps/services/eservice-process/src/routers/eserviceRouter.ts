@@ -73,7 +73,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: (req, res) => {
-      const eservice = eserviceService.getMockEserviceById(
+      const eservice = eserviceService.getMockEservice(
         req.params.eserviceId,
       );
       res.status(200).send(toAPI_Eservice(eservice));
@@ -82,7 +82,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     schema: {
       description: "Retrieve an E-service by its ID",
       headers: processHeaders,
-      operationId: "getEserviceById",
+      operationId: "getEservice",
       params: API_EserviceIdPathParam,
       response: {
         200: API_Eservice.describe("E-service retrieved successfully"),
@@ -96,7 +96,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: (req, res) => {
-      const version = eserviceService.getMockEserviceVersionById(
+      const version = eserviceService.getMockEserviceLatestVersion(
         req.params.eserviceId,
       );
       res.status(200).send(toAPI_EserviceVersion(version));
@@ -105,7 +105,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     schema: {
       description: "Retrieve the latest version of an E-service",
       headers: processHeaders,
-      operationId: "getEserviceVersion",
+      operationId: "getEserviceLatestVersion",
       params: API_EserviceIdPathParam,
       response: {
         200: API_EserviceVersion.describe(

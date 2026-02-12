@@ -106,7 +106,7 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    getMockEserviceById(eserviceId: EserviceId): Eservice {
+    getMockEservice(eserviceId: EserviceId): Eservice {
       const eservices = generateMockEservices();
       const eservice = eservices.find((e) => e.id === eserviceId);
 
@@ -173,7 +173,7 @@ export function eserviceServiceBuilder(
         },
       };
     },
-    getMockEserviceVersionById(eserviceId: EserviceId) {
+    getMockEserviceLatestVersion(eserviceId: EserviceId) {
       const eservices = generateMockEservices();
       const eservice = eservices.find((e) => e.id === eserviceId);
 

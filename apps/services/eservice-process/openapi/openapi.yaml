@@ -583,7 +583,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}:
     get:
-      operationId: getEserviceById
+      operationId: getEservice
       tags:
         - eservice
       description: Retrieve an E-service by its ID
@@ -629,7 +629,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/version/latest:
     get:
-      operationId: getEserviceVersion
+      operationId: getEserviceLatestVersion
       tags:
         - eservice
       description: Retrieve the latest version of an E-service
