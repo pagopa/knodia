@@ -455,6 +455,9 @@ importers:
 
   apps/services/knodia-api-gateway:
     dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/eservice-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/eservice-process-client
