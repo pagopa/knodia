@@ -8,7 +8,7 @@ import {
 import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
 import { type RemoteResourcesManagerConfig } from "./config/config.ts";
-import { remoteResourcesManagerRouterTag } from "./models/apiTag.ts";
+import { apiGatewayTag } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
@@ -29,7 +29,7 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
           version: "1.0.0",
         },
         servers: [{ description: "Remote Resources Manager API", url: "/" }],
-        tags: [healthRouterTag, remoteResourcesManagerRouterTag],
+        tags: [healthRouterTag, apiGatewayTag],
       },
     },
     loggerConfig: loggerConfig,
