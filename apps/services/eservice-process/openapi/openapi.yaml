@@ -87,6 +87,12 @@ components:
         - offset
         - total
       additionalProperties: false
+    EserviceVersionState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     LocalizedName:
       description: Name of the E-service
       type: object
@@ -183,11 +189,8 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         state:
           description: State of the latest version
-          type: string
-          enum:
-            - Active
-            - Suspended
-            - Archived
+          allOf:
+            - $ref: "#/components/schemas/EserviceVersionState"
         updatedAt:
           type: string
           format: date-time
@@ -403,19 +406,9 @@ paths:
           required: false
           description: Sort direction
         - schema:
-            anyOf:
-              - type: array
-                items:
-                  type: string
-                  enum:
-                    - Active
-                    - Suspended
-                    - Archived
-              - type: string
-                enum:
-                  - Active
-                  - Suspended
-                  - Archived
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceVersionState"
           in: query
           name: state
           required: false

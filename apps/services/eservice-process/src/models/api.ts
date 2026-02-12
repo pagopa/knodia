@@ -3,7 +3,6 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { EserviceInterfaceId, OrganizationId } from "@knodia/common-models/ids";
-import { EserviceVersionState } from "@knodia/eservice-models";
 import {
   maxAccessTokenDuration,
   maxDailyCalls,
@@ -15,10 +14,12 @@ import {
   API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
@@ -40,11 +41,7 @@ export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
     .optional()
     .default("asc")
     .describe("Sort direction"),
-  state: z
-    .union([
-      z.array(EserviceVersionState),
-      EserviceVersionState.transform((v) => [v]),
-    ])
+  state: arrayQueryParam(API_EserviceVersionState)
     .optional()
     .describe("Filter by E-service state"),
 });
@@ -61,7 +58,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    state: EserviceVersionState.describe("State of the latest version"),
+    state: API_EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
