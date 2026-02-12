@@ -18,9 +18,9 @@ import { Route as ConsumptionIndexRouteImport } from './routes/consumption/index
 import { Route as ProductionPurposesRouteImport } from './routes/production/purposes'
 import { Route as ProductionAgreementsRouteImport } from './routes/production/agreements'
 import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/purposes'
-import { Route as ConsumptionEServicesRouteImport } from './routes/consumption/e-services'
 import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
 import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
+import { Route as ConsumptionEServicesRouteRouteImport } from './routes/consumption/e-services/route'
 import { Route as ProductionEServicesIdRouteImport } from './routes/production/e-services_/$id'
 import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
 
@@ -69,11 +69,6 @@ const ConsumptionPurposesRoute = ConsumptionPurposesRouteImport.update({
   path: '/consumption/purposes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConsumptionEServicesRoute = ConsumptionEServicesRouteImport.update({
-  id: '/consumption/e-services',
-  path: '/consumption/e-services',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ConsumptionAgreementsRoute = ConsumptionAgreementsRouteImport.update({
   id: '/consumption/agreements',
   path: '/consumption/agreements',
@@ -83,6 +78,12 @@ const ProductionEServicesRouteRoute =
   ProductionEServicesRouteRouteImport.update({
     id: '/production/e-services',
     path: '/production/e-services',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ConsumptionEServicesRouteRoute =
+  ConsumptionEServicesRouteRouteImport.update({
+    id: '/consumption/e-services',
+    path: '/consumption/e-services',
     getParentRoute: () => rootRouteImport,
   } as any)
 const ProductionEServicesIdRoute = ProductionEServicesIdRouteImport.update({
@@ -102,9 +103,9 @@ export interface FileRoutesByFullPath {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
   '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
@@ -118,9 +119,9 @@ export interface FileRoutesByTo {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
   '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
@@ -135,9 +136,9 @@ export interface FileRoutesById {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
   '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
@@ -153,9 +154,9 @@ export interface FileRouteTypes {
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
-    | '/consumption/e-services'
     | '/consumption/purposes'
     | '/production/agreements'
     | '/production/purposes'
@@ -169,9 +170,9 @@ export interface FileRouteTypes {
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
-    | '/consumption/e-services'
     | '/consumption/purposes'
     | '/production/agreements'
     | '/production/purposes'
@@ -185,9 +186,9 @@ export interface FileRouteTypes {
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
-    | '/consumption/e-services'
     | '/consumption/purposes'
     | '/production/agreements'
     | '/production/purposes'
@@ -202,9 +203,9 @@ export interface RootRouteChildren {
   DetailsAndAttributesRoute: typeof DetailsAndAttributesRoute
   KeychainsRoute: typeof KeychainsRoute
   OperatorsRoute: typeof OperatorsRoute
+  ConsumptionEServicesRouteRoute: typeof ConsumptionEServicesRouteRoute
   ProductionEServicesRouteRoute: typeof ProductionEServicesRouteRouteWithChildren
   ConsumptionAgreementsRoute: typeof ConsumptionAgreementsRoute
-  ConsumptionEServicesRoute: typeof ConsumptionEServicesRoute
   ConsumptionPurposesRoute: typeof ConsumptionPurposesRoute
   ProductionAgreementsRoute: typeof ProductionAgreementsRoute
   ProductionPurposesRoute: typeof ProductionPurposesRoute
@@ -278,13 +279,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsumptionPurposesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/consumption/e-services': {
-      id: '/consumption/e-services'
-      path: '/consumption/e-services'
-      fullPath: '/consumption/e-services'
-      preLoaderRoute: typeof ConsumptionEServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/consumption/agreements': {
       id: '/consumption/agreements'
       path: '/consumption/agreements'
@@ -297,6 +291,13 @@ declare module '@tanstack/react-router' {
       path: '/production/e-services'
       fullPath: '/production/e-services'
       preLoaderRoute: typeof ProductionEServicesRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumption/e-services': {
+      id: '/consumption/e-services'
+      path: '/consumption/e-services'
+      fullPath: '/consumption/e-services'
+      preLoaderRoute: typeof ConsumptionEServicesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/production/e-services_/$id': {
@@ -335,9 +336,9 @@ const rootRouteChildren: RootRouteChildren = {
   DetailsAndAttributesRoute: DetailsAndAttributesRoute,
   KeychainsRoute: KeychainsRoute,
   OperatorsRoute: OperatorsRoute,
+  ConsumptionEServicesRouteRoute: ConsumptionEServicesRouteRoute,
   ProductionEServicesRouteRoute: ProductionEServicesRouteRouteWithChildren,
   ConsumptionAgreementsRoute: ConsumptionAgreementsRoute,
-  ConsumptionEServicesRoute: ConsumptionEServicesRoute,
   ConsumptionPurposesRoute: ConsumptionPurposesRoute,
   ProductionAgreementsRoute: ProductionAgreementsRoute,
   ProductionPurposesRoute: ProductionPurposesRoute,
