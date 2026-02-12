@@ -9,7 +9,6 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   CORRELATION_ID_HEADER,
-  genericError,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
@@ -188,7 +187,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const headers = { [CORRELATION_ID_HEADER]: correlationId };
       const path = { eserviceId: req.params.eserviceId };
 
-      const [eserviceResult, versionResult] = await Promise.all([
+      const [{ data: eservice }, { data: latestVersion }] = await Promise.all([
         eserviceProcessApi.getEservice({
           client: eserviceProcessClient,
           headers,
@@ -201,16 +200,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         }),
       ]);
 
-      if (!eserviceResult.data || !versionResult.data) {
-        throw genericError(
-          "Unexpected empty response from eservice-process on getEserviceDetails",
-        );
-      }
-
       // TODO: fetch real counts from agreement-process and purpose-process
       // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
       res.send(
-        toAPI_EserviceDetails(eserviceResult.data, versionResult.data, {
+        toAPI_EserviceDetails(eservice, latestVersion, {
           agreements: { active: 3, total: 5 },
           purposes: { active: 1, total: 2 },
         }),
