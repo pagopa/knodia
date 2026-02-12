@@ -1,5 +1,3 @@
--- Flyway versioned migration: V001__readmodel_eservice.sql
--- Creates the read model schema, tables, and foreign key constraints
 -- Placeholders: ${NAMESPACE} - environment prefix resolved by Flyway at runtime
 
 CREATE SCHEMA IF NOT EXISTS ${NAMESPACE}_eservice;

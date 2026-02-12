@@ -1,5 +1,3 @@
--- Flyway versioned migration: V001__event_store_eservice.sql
--- Creates the event store schema and events table
 -- Placeholders: ${NAMESPACE} - environment prefix resolved by Flyway at runtime
 
 CREATE SCHEMA IF NOT EXISTS ${NAMESPACE}_eservice;
