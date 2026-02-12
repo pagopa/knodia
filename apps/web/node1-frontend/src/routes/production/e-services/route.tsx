@@ -28,7 +28,7 @@ export const Route = createFileRoute("/production/e-services")({
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps: { offset } }) => {
-    queryClient.ensureQueryData(eservicesQuery(offset));
+    queryClient.prefetchQuery(eservicesQuery(offset));
   },
   search: {
     middlewares: [stripSearchParams(productionEserviceSearchDefaultValues)],
