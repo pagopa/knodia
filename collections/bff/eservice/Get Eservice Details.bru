@@ -5,6 +5,10 @@ meta {
 }
 
 get {
-  url: {{host-bff}}/eservices/{{eserviceId}}
+  url: {{host-bff}}/eservices/:eserviceId
   body: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
 }

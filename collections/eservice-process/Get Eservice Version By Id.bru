@@ -5,8 +5,12 @@ meta {
 }
 
 get {
-  url: {{host-eservice-process}}/eservices/{{eserviceId}}/version/latest
+  url: {{host-eservice-process}}/eservices/:eserviceId/version/latest
   body: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
 }
 
 headers {
