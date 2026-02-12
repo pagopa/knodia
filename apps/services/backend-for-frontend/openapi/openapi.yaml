@@ -66,6 +66,12 @@ components:
         - status
         - title
       additionalProperties: false
+    EserviceVersionState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     LocalizedName:
       description: Name of the E-service
       type: object
@@ -131,12 +137,6 @@ components:
         - code
         - scheme
       additionalProperties: false
-    EserviceVersionState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
     Pagination:
       type: object
       properties:
