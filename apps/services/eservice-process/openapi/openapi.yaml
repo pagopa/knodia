@@ -66,27 +66,6 @@ components:
         - status
         - title
       additionalProperties: false
-    Pagination:
-      type: object
-      properties:
-        limit:
-          format: int32
-          type: number
-          minimum: 1
-          maximum: 50
-        offset:
-          format: int32
-          type: number
-          minimum: 0
-        total:
-          format: int32
-          type: number
-          minimum: 0
-      required:
-        - limit
-        - offset
-        - total
-      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
@@ -157,6 +136,27 @@ components:
       required:
         - code
         - scheme
+      additionalProperties: false
+    Pagination:
+      type: object
+      properties:
+        limit:
+          format: int32
+          type: number
+          minimum: 1
+          maximum: 50
+        offset:
+          format: int32
+          type: number
+          minimum: 0
+        total:
+          format: int32
+          type: number
+          minimum: 0
+      required:
+        - limit
+        - offset
+        - total
       additionalProperties: false
     Eservice:
       type: object
@@ -303,11 +303,8 @@ components:
               $ref: "#/components/schemas/EserviceAttribute"
         state:
           description: State of the version
-          type: string
-          enum:
-            - Active
-            - Suspended
-            - Archived
+          allOf:
+            - $ref: "#/components/schemas/EserviceVersionState"
         updatedAt:
           type: string
           format: date-time
