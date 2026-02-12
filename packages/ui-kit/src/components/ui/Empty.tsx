@@ -59,7 +59,7 @@ export interface EmptyProps
   );
   description?: string;
   icon?: ReactNode;
-  title: string;
+  title?: string;
 }
 
 type EmptyVariants = VariantProps<typeof emptyIconWrapper>;
@@ -84,9 +84,11 @@ export function Empty({
           </div>
 
           <div className="flex w-full flex-col gap-1">
-            <p className="title-md-em text-primary-light-high-contrast">
-              {title}
-            </p>
+            {title && (
+              <p className="title-md-em text-primary-light-high-contrast">
+                {title}
+              </p>
+            )}
             {description && (
               <p className="body-md text-primary-light-mid-contrast">
                 {description}
