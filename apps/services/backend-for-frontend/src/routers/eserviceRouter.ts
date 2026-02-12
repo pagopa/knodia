@@ -2,8 +2,7 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { generateId } from "@knodia/common-models/ids";
-import { EserviceInterfaceId } from "@knodia/common-models/ids";
+import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -18,7 +17,10 @@ import {
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
+  API_ProducerEservices,
+  API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
+import { toAPI_ProducerEservice } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -33,7 +35,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
-      const eservices = await eserviceProcessApi.getEservices({
+      const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,
@@ -44,16 +46,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      res.send({
-        // TODO move this defaulting logic to the service, keep routers only for routing
-        // and API models conversion, no logic
-        items: eservices.data?.items || [],
-        pagination: eservices.data?.pagination || {
-          limit: req.query.limit,
-          offset: req.query.offset,
-          total: 0,
-        },
-      });
+      res.send(data);
     },
     method: "GET",
     schema: {
@@ -97,16 +90,15 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       };
 
-      const createdEservice = await eserviceProcessApi.createEservice({
+      const { data } = await eserviceProcessApi.createEservice({
         body: seed,
         client: eserviceProcessClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,
         },
       });
-      res
-        .status(201)
-        .send(API_CreatedResource.parse({ id: createdEservice.data?.id }));
+
+      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
     },
     method: "POST",
     schema: {
@@ -120,5 +112,64 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { limit, mode, offset, q, sortOrder, state } = req.query;
+      const { correlationId } = getContextValues(requestContext);
+
+      // TODO: get real producerId from auth context
+      const producerId = "00000000-0000-0000-0000-000000000000";
+
+      // TODO: Implement sorting by activeAgreements/activePurposes.
+      // Currently falls back to name sorting. Two options:
+      // 1. BFF-side: fetch ALL eservices (no process pagination), enrich, sort, paginate here.
+      //    Breaks process pagination; only viable if producer eservice count is bounded.
+      // 2. Process-side: get counts in eservice-process and handle sorting.
+      //    Breaks unified data model principle (process would include cross-domain data).
+
+      const { data } = await eserviceProcessApi.getEservices({
+        client: eserviceProcessClient,
+        headers: {
+          [CORRELATION_ID_HEADER]: correlationId,
+        },
+        query: {
+          limit,
+          mode,
+          offset,
+          producerId,
+          q,
+          sortBy: "name",
+          sortOrder,
+          state,
+        },
+      });
+
+      // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
+      const items = data.items.map((eservice, idx) =>
+        toAPI_ProducerEservice(eservice, idx + 5, idx + 1),
+      );
+
+      res.send({
+        items,
+        pagination: data.pagination,
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a paginated list of E-services produced by the logged-in user's organization",
+      operationId: "getProducerEservices",
+      querystring: API_ProducerEservicesQueryParams,
+      response: {
+        200: API_ProducerEservices.describe(
+          "Producer E-services retrieved successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices",
   });
 };

@@ -54,6 +54,5 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
   });
-
   return app;
 }
