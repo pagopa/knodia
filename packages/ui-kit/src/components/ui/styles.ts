@@ -113,7 +113,7 @@ export const buttonStyles = tv({
   variants: {
     kind: {
       filled: "border-transparent",
-      outlined: "bg-white",
+      outlined: "bg-transparent",
       tonal: "border-transparent",
       ghost: "border-transparent bg-transparent",
       elevated: "border border-neutral-100 bg-white elevation-1",
