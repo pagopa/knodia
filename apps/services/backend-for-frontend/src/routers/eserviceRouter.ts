@@ -46,16 +46,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      res.send({
-        // TODO move this defaulting logic to the service, keep routers only for routing
-        // and API models conversion, no logic
-        items: data.items || [],
-        pagination: data.pagination || {
-          limit: req.query.limit,
-          offset: req.query.offset,
-          total: 0,
-        },
-      });
+      res.send(data);
     },
     method: "GET",
     schema: {
@@ -156,17 +147,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
-      const items = (data.items ?? []).map((eservice, idx) =>
+      const items = data.items.map((eservice, idx) =>
         toAPI_ProducerEservice(eservice, idx + 5, idx + 1),
       );
 
       res.send({
         items,
-        pagination: data.pagination ?? {
-          limit,
-          offset,
-          total: 0,
-        },
+        pagination: data.pagination,
       });
     },
     method: "GET",
