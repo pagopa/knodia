@@ -18,6 +18,9 @@
     }
   ],
   "prConcurrentLimit": 2,
+  "minimumReleaseAge": "14 days",
+  "internalChecksFilter": "strict",
+  "prCreation": "not-pending",
   "lockFileMaintenance": {
     "enabled": true
   },
