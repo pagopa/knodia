@@ -18,6 +18,7 @@ import {
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
@@ -168,11 +169,7 @@ export const API_ProducerEservicesQueryParams =
       .optional()
       .default("asc")
       .describe("Sort direction"),
-    state: z
-      .preprocess((value) => {
-        if (value === undefined) return undefined;
-        return Array.isArray(value) ? value : [value];
-      }, z.array(API_EserviceVersionState).optional())
+    state: arrayQueryParam(API_EserviceVersionState)
       .optional()
       .describe("Filter by E-service state"),
   });

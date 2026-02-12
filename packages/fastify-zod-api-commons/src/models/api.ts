@@ -1,5 +1,17 @@
 import z from "zod";
 
+/**
+ * Wraps a Zod schema in an optional array query param that accepts both
+ * a single value and an array. This is needed because query strings like
+ * `?state=Active` send a string, while `?state=Active&state=Suspended`
+ * send an array. See: https://github.com/turkerdev/fastify-type-provider-zod/issues/151
+ */
+export const arrayQueryParam = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((value) => {
+    if (value === undefined) return undefined;
+    return Array.isArray(value) ? value : [value];
+  }, z.array(schema));
+
 const API_ProblemError = z
   .strictObject({
     code: z
