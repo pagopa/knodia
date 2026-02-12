@@ -1,6 +1,6 @@
-import { genericInternalError } from "@knodia/common-models/errors";
+import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
 
-import type { Eservice, EserviceVersion } from "./eservice.ts";
+import { genericInternalError } from "@knodia/common-models/errors";
 
 export const getLatestVersion = (eservice: Eservice): EserviceVersion => {
   const latestVersion = eservice.versions.toSorted(
