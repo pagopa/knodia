@@ -1,8 +1,12 @@
+import type z from "zod";
+
 import { SortDirection } from "@knodia/db-readmodel-commons";
 import { Eservice, EserviceMode } from "@knodia/eservice-models";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
+
+import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
 
 import { mockEservices, producerId } from "./mockEservices.ts";
 import { injectAppRequest } from "./utils.ts";
@@ -21,8 +25,8 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[2],
         mockEservices[3],
       ] as Eservice[],
-      name: "pagination only (1st page), sort by name asc by default",
       query: { ...defaultQuery },
+      testCase: "pagination only (1st page), sort by name asc by default",
     },
     {
       expectedResult: [
@@ -31,8 +35,8 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[3],
         mockEservices[4],
       ] as Eservice[],
-      name: "pagination only (1st page), sort by name asc by default",
       query: { ...defaultQuery, producerId },
+      testCase: "pagination only (1st page), sort by name asc by default",
     },
     {
       expectedResult: [
@@ -41,16 +45,16 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[6],
         mockEservices[7],
       ] as Eservice[],
-      name: "pagination only (2nd page), sort by name asc by default",
       query: {
         limit: "4",
         offset: "4",
       },
+      testCase: "pagination only (2nd page), sort by name asc by default",
     },
     {
       expectedResult: [mockEservices[1], mockEservices[3]] as Eservice[],
-      name: "search query",
       query: { ...defaultQuery, producerId, q: "KNODIA" },
+      testCase: "search query",
     },
     {
       expectedResult: [
@@ -58,12 +62,12 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[4],
         mockEservices[7],
       ] as Eservice[],
-      name: "filter by mode",
       query: {
         ...defaultQuery,
         mode: EserviceMode.enum.ProvideData,
         producerId,
       },
+      testCase: "filter by mode",
     },
     {
       expectedResult: [
@@ -72,7 +76,6 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[4],
         mockEservices[5],
       ] as Eservice[],
-      name: "filter by state",
       query: {
         ...defaultQuery,
         producerId,
@@ -81,6 +84,7 @@ describe("GET /eservices (getEservices)", () => {
           API_EserviceVersionState.enum.Suspended,
         ],
       },
+      testCase: "filter by state",
     },
     {
       expectedResult: [
@@ -89,17 +93,16 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[7],
         mockEservices[6],
       ] as Eservice[],
-      name: "sort by name desc",
       query: {
         ...defaultQuery,
         producerId,
         sortBy: "name",
         sortOrder: SortDirection.enum.desc,
       },
+      testCase: "sort by name desc",
     },
     {
       expectedResult: [mockEservices[1]] as Eservice[],
-      name: "full query",
       query: {
         ...defaultQuery,
         mode: EserviceMode.enum.ProvideData,
@@ -109,18 +112,19 @@ describe("GET /eservices (getEservices)", () => {
         sortOrder: SortDirection.enum.desc,
         state: [API_EserviceVersionState.enum.Suspended],
       },
+      testCase: "full query",
     },
   ] satisfies {
     expectedResult: Eservice[];
-    name: string;
-    query: unknown;
+    query: z.input<typeof API_GetEservicesQueryParams>;
+    testCase: string;
   }[])(
-    "should return e-services with correct shape and pagination: $name (seed #%#)",
+    "should return e-services with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query }) => {
       const response = await injectAppRequest()
         .get("/eservices")
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .query(query as any);
+
+        .query(query);
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
