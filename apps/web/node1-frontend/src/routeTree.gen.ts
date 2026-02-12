@@ -21,6 +21,7 @@ import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/pu
 import { Route as ConsumptionEServicesRouteImport } from './routes/consumption/e-services'
 import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
 import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
+import { Route as ProductionEServicesIdRouteImport } from './routes/production/e-services_/$id'
 import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
 
 const OperatorsRoute = OperatorsRouteImport.update({
@@ -84,6 +85,11 @@ const ProductionEServicesRouteRoute =
     path: '/production/e-services',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProductionEServicesIdRoute = ProductionEServicesIdRouteImport.update({
+  id: '/production/e-services_/$id',
+  path: '/production/e-services/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductionEServicesNewIndexRoute =
   ProductionEServicesNewIndexRouteImport.update({
     id: '/new/',
@@ -104,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/production/e-services/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRoutesByTo {
@@ -119,6 +126,7 @@ export interface FileRoutesByTo {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/production/e-services/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRoutesById {
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption/': typeof ConsumptionIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/production/e-services_/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new/': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRouteTypes {
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/production/e-services/$id'
     | '/production/e-services/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/production/e-services/$id'
     | '/production/e-services/new'
   id:
     | '__root__'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption/'
     | '/production/'
+    | '/production/e-services_/$id'
     | '/production/e-services/new/'
   fileRoutesById: FileRoutesById
 }
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   ProductionPurposesRoute: typeof ProductionPurposesRoute
   ConsumptionIndexRoute: typeof ConsumptionIndexRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
+  ProductionEServicesIdRoute: typeof ProductionEServicesIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionEServicesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/production/e-services_/$id': {
+      id: '/production/e-services_/$id'
+      path: '/production/e-services/$id'
+      fullPath: '/production/e-services/$id'
+      preLoaderRoute: typeof ProductionEServicesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/production/e-services/new/': {
       id: '/production/e-services/new/'
       path: '/new'
@@ -323,6 +343,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductionPurposesRoute: ProductionPurposesRoute,
   ConsumptionIndexRoute: ConsumptionIndexRoute,
   ProductionIndexRoute: ProductionIndexRoute,
+  ProductionEServicesIdRoute: ProductionEServicesIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
