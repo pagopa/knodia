@@ -137,6 +137,6 @@ export const producerEserviceRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.eservice],
     },
-    url: "/eservices/:eserviceId",
+    url: "/producer/eservices/:eserviceId",
   });
 };

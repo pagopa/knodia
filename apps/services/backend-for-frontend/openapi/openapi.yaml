@@ -703,7 +703,7 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eservices/{eserviceId}:
+  /producer/eservices/{eserviceId}:
     get:
       operationId: getEserviceDetails
       tags:
