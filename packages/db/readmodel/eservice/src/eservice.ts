@@ -20,7 +20,7 @@ import {
 import { readModelEserviceConfig } from "../config/config.ts";
 
 export const eserviceSchema = pgSchema(
-  readModelEserviceConfig.readModelDbEserviceSchema,
+  readModelEserviceConfig.readmodelDbEserviceSchema,
 );
 
 export const readmodelEservice = eserviceSchema.table(

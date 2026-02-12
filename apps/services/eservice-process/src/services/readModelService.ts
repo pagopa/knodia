@@ -21,9 +21,9 @@ import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
-export type ReadModelService = ReturnType<typeof readModelServiceBuilder>;
+export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
-export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
+export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async getEservices(
       params: API_GetEservicesQueryParams,
@@ -31,7 +31,7 @@ export function readModelServiceBuilder(readModelDb: NodePgDatabase) {
       const { limit, mode, offset, producerId, q, sortBy, sortOrder, state } =
         params;
 
-      return await readModelDb.transaction(async (tx) => {
+      return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
           sortBy,
           sortOrder,

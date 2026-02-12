@@ -4,23 +4,23 @@ import { ReadModelConfig } from "../config/config.ts";
 
 export const drizzleKitConfig = (
   {
-    readModelDbHost,
-    readModelDbName,
-    readModelDbPassword,
-    readModelDbPort,
-    readModelDbUser,
-    readModelDbUseSsl,
+    readmodelDbHost,
+    readmodelDbName,
+    readmodelDbPassword,
+    readmodelDbPort,
+    readmodelDbUser,
+    readmodelDbUseSsl,
   }: ReadModelConfig,
   schemaPath = "./src/*.ts",
 ) =>
   defineConfig({
     dbCredentials: {
-      database: readModelDbName,
-      host: readModelDbHost,
-      password: readModelDbPassword,
-      port: readModelDbPort,
-      ssl: readModelDbUseSsl,
-      user: readModelDbUser,
+      database: readmodelDbName,
+      host: readmodelDbHost,
+      password: readmodelDbPassword,
+      port: readmodelDbPort,
+      ssl: readmodelDbUseSsl,
+      user: readmodelDbUser,
     },
     dialect: "postgresql",
     schema: schemaPath,

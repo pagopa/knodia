@@ -16,7 +16,7 @@ import type {
   API_EserviceSeed,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
-import type { ReadModelService } from "./readModelService.ts";
+import type { ReadmodelService } from "./readModelService.ts";
 
 import { invalidAttribute, invalidCategory } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
@@ -25,7 +25,7 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
-  readModelService: ReadModelService,
+  readModelService: ReadmodelService,
 ) {
   return {
     async createEservice(

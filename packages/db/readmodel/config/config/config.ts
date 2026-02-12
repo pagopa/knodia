@@ -15,11 +15,11 @@ export const ReadModelConfig = z
     READMODEL_DB_USER: z.string().default("root"),
   })
   .transform((c) => ({
-    readModelDbHost: c.READMODEL_DB_HOST,
-    readModelDbName: c.READMODEL_DB_NAME,
-    readModelDbPassword: c.READMODEL_DB_PASSWORD,
-    readModelDbPort: c.READMODEL_DB_PORT,
-    readModelDbUser: c.READMODEL_DB_USER,
-    readModelDbUseSsl: c.READMODEL_DB_USE_SSL,
+    readmodelDbHost: c.READMODEL_DB_HOST,
+    readmodelDbName: c.READMODEL_DB_NAME,
+    readmodelDbPassword: c.READMODEL_DB_PASSWORD,
+    readmodelDbPort: c.READMODEL_DB_PORT,
+    readmodelDbUser: c.READMODEL_DB_USER,
+    readmodelDbUseSsl: c.READMODEL_DB_USE_SSL,
   }));
 export type ReadModelConfig = z.infer<typeof ReadModelConfig>;

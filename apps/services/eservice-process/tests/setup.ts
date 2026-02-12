@@ -5,7 +5,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 import { buildApp } from "../src/app.ts";
 
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
-let readModelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
+let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
 
 beforeAll(async () => {
@@ -13,7 +13,7 @@ beforeAll(async () => {
     inject("EVENTSTORE_CONNECTION_STRING"),
   );
 
-  readModelDb = await setupReadmodelTestDatabase(
+  readmodelDb = await setupReadmodelTestDatabase(
     inject("READMODEL_CONNECTION_STRING"),
   );
 
@@ -24,26 +24,26 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
     },
-    readModelDb,
+    readmodelDb,
   });
 });
 
 beforeEach(async () => {
   await Promise.all([
     eventStoreDb.execute("BEGIN"),
-    readModelDb.execute("BEGIN"),
+    readmodelDb.execute("BEGIN"),
   ]);
 });
 
 afterEach(async () => {
   await Promise.all([
     eventStoreDb.execute("ROLLBACK"),
-    readModelDb.execute("ROLLBACK"),
+    readmodelDb.execute("ROLLBACK"),
   ]);
 });
 
 afterAll(async () => {
-  await Promise.all([eventStoreDb.$client.end(), readModelDb.$client.end()]);
+  await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eventStoreDb, readModelDb };
+export { app, eventStoreDb, readmodelDb };

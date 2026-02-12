@@ -8,7 +8,7 @@ export const ReadModelEserviceConfig = ReadModelConfig.and(
       READMODEL_DB_ESERVICE_SCHEMA: z.string().default("eservice"),
     })
     .transform((c) => ({
-      readModelDbEserviceSchema: c.READMODEL_DB_ESERVICE_SCHEMA,
+      readmodelDbEserviceSchema: c.READMODEL_DB_ESERVICE_SCHEMA,
     })),
 );
 export type ReadModelEserviceConfig = z.infer<typeof ReadModelEserviceConfig>;

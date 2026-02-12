@@ -17,16 +17,16 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
-import { readModelServiceBuilder } from "./services/readModelService.ts";
+import { readmodelServiceBuilder } from "./services/readModelService.ts";
 
 export function buildApp({
   eventStoreDb,
   loggerConfig,
-  readModelDb,
+  readmodelDb,
 }: {
   eventStoreDb: NodePgDatabase;
   loggerConfig: LoggerConfig;
-  readModelDb: NodePgDatabase;
+  readmodelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
     fastifyOptions: {
@@ -56,7 +56,7 @@ export function buildApp({
     eserviceRouter,
     eserviceServiceBuilder(
       eserviceEventStoreWriterBuilder(eventStoreDb),
-      readModelServiceBuilder(readModelDb),
+      readmodelServiceBuilder(readmodelDb),
     ),
   );
 
@@ -75,19 +75,19 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
   const eventStoreDb = drizzle(eventStorePool);
 
   const readModelPool = new Pool({
-    database: config.readModelDbName,
-    host: config.readModelDbHost,
-    password: config.readModelDbPassword,
-    port: config.readModelDbPort,
-    ssl: config.readModelDbUseSsl ? { rejectUnauthorized: false } : undefined,
-    user: config.readModelDbUser,
+    database: config.readmodelDbName,
+    host: config.readmodelDbHost,
+    password: config.readmodelDbPassword,
+    port: config.readmodelDbPort,
+    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.readmodelDbUser,
   });
-  const readModelDb = drizzle(readModelPool);
+  const readmodelDb = drizzle(readModelPool);
 
   const app = buildApp({
     eventStoreDb,
     loggerConfig: config,
-    readModelDb,
+    readmodelDb,
   });
 
   app.addHook("onClose", async () => {

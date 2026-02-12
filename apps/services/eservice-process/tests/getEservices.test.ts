@@ -12,7 +12,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
 
 import { mockEservices, producerId } from "./mockEservices.ts";
-import { readModelDb } from "./setup.ts";
+import { readmodelDb } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
 describe("GET /eservices (getEservices)", () => {
@@ -23,7 +23,7 @@ describe("GET /eservices (getEservices)", () => {
 
   beforeAll(async () => {
     await Promise.all(
-      mockEservices.map((eservice) => upsertEservice(eservice, 0, readModelDb)),
+      mockEservices.map((eservice) => upsertEservice(eservice, 0, readmodelDb)),
     );
   });
 
