@@ -292,7 +292,6 @@ function transformGenerateTypeExports(content: string): string {
   ];
 
   for (const tableName of tableNames) {
-    // Convert to PascalCase: eserviceInLocalEservice → EserviceInLocalEservice
     const typeName = tableName.charAt(0).toUpperCase() + tableName.slice(1);
 
     typeExportsLines.push(
