@@ -44,6 +44,12 @@
     },
     "//#infra:destroy": {
       "cache": false
+    },
+    "db:pull": {
+      "cache": false
+    },
+    "db:migrate": {
+      "cache": false
     }
   }
 }
