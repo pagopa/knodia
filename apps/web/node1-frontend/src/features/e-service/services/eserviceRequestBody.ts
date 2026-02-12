@@ -7,8 +7,6 @@ import {
 
 export async function buildRequestBody(data: EServiceFormData) {
   const { interfaceDocument } = data;
-  if (!interfaceDocument) throw new Error("Interface document is required");
-
   const arrayBuffer = await interfaceDocument.arrayBuffer();
   const content = arrayBufferToBase64(arrayBuffer);
 

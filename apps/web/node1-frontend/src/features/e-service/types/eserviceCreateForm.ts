@@ -35,7 +35,8 @@ const eserviceFieldSchemas = {
       const validExtensions = [".yaml", ".yml", ".json", ".xml"];
       const fileName = file.name.toLowerCase();
       return validExtensions.some((ext) => fileName.endsWith(ext));
-    }, "File must be YAML, JSON, or XML format."),
+    }, "File must be YAML, JSON, or XML format.")
+    .pipe(z.instanceof(File)),
   isSignalHubEnabled: z.boolean(),
   maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),
   maxDailyCallsPerKnode: z.number().min(1, "Must be at least 1."),
