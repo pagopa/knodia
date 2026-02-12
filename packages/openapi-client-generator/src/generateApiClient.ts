@@ -16,6 +16,7 @@ export function generateApiClient(
     plugins: [
       {
         name: "@hey-api/client-axios",
+        throwOnError: true,
       },
       "@hey-api/sdk",
       ...customPlugins,
