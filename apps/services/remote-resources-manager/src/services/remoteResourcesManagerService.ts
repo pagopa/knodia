@@ -34,10 +34,7 @@ export function remoteResourcesManagerServiceBuilder(
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,
         },
-        query: {
-          limit: reqQuery.limit,
-          offset: reqQuery.offset,
-        },
+        query: reqQuery,
       });
 
       return data;

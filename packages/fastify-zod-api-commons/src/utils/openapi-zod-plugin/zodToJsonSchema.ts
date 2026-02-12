@@ -151,7 +151,6 @@ const removeUnusedComponents = (
         const match = v.match(/^#\/components\/schemas\/(.+)$/);
         if (match && match[1] && !refs.has(match[1])) {
           refs.add(match[1]);
-          // also follow this schema recursively
           const component = openapi.components?.schemas?.[match[1]];
           if (component) collectRefs(component);
         }
