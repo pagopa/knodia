@@ -120,9 +120,9 @@ export function eserviceServiceBuilder(
       items: Eservice[];
       pagination: { limit: number; offset: number; total: number };
     } {
-      const { limit, mode, offset, producerId, q, sortOrder, status } = params;
+      const { limit, mode, offset, producerId, q, sortOrder, state } = params;
 
-      // TODO: replace mock data with real database queries (read model)
+      // TODO: replace mock data, filtering, and sorting with real database queries (read model)
       let eservices = generateMockEservices(producerId);
 
       // Filter by producerId
@@ -143,10 +143,10 @@ export function eserviceServiceBuilder(
         );
       }
 
-      // Filter by status
-      if (status && status.length > 0) {
+      // Filter by state
+      if (state && state.length > 0) {
         eservices = eservices.filter((e) =>
-          status.includes(getLatestVersion(e).state),
+          state.includes(getLatestVersion(e).state),
         );
       }
 

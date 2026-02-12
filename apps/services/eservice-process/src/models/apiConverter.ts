@@ -41,6 +41,6 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   mode: eservice.mode,
   name: eservice.name,
   producerId: eservice.producerId,
-  status: getLatestVersion(eservice).state,
+  state: getLatestVersion(eservice).state,
   updatedAt: eservice.updatedAt.toISOString(),
 });

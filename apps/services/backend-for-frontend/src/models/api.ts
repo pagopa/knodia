@@ -1,4 +1,8 @@
 import {
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
+import {
   EserviceVersionState,
   maxAccessTokenDuration,
   maxDailyCalls,
@@ -10,14 +14,12 @@ import {
   API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
+  API_EserviceVersionState,
   API_LocalizedDescription,
   API_LocalizedInterfacePrettyName,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
-import {
-  API_Pagination,
-  API_PaginationQueryParams,
-} from "@knodia/fastify-zod-api-commons/models";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
@@ -34,6 +36,7 @@ const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    state: API_EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
@@ -130,6 +133,58 @@ export const API_CreatedResource = z
   .meta({ id: "CreatedResource" });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
 
+export const API_ProducerEservice = z.strictObject({
+  activeAgreements: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Number of active agreements")
+    .meta({ format: "int32" }),
+  activePurposes: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Number of active purposes")
+    .meta({ format: "int32" }),
+  categories: z.array(API_EserviceCategory),
+  id: z.uuid(),
+  mode: API_EserviceMode,
+  name: API_LocalizedName,
+  state: API_EserviceVersionState,
+});
+export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
+
+export const API_ProducerEservicesQueryParams =
+  API_PaginationQueryParams.extend({
+    mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
+    q: z
+      .string()
+      .optional()
+      .describe("Search by name, description or categories"),
+    sortBy: z
+      .enum(["name", "activeAgreements", "activePurposes"])
+      .optional()
+      .default("name")
+      .describe("Field to sort by"),
+    sortOrder: z
+      .enum(["asc", "desc"])
+      .optional()
+      .default("asc")
+      .describe("Sort direction"),
+    state: arrayQueryParam(API_EserviceVersionState)
+      .optional()
+      .describe("Filter by E-service state"),
+  });
+export type API_ProducerEservicesQueryParams = z.infer<
+  typeof API_ProducerEservicesQueryParams
+>;
+
+export const API_ProducerEservices = z.strictObject({
+  items: z.array(API_ProducerEservice),
+  pagination: API_Pagination,
+});
+export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;
+
 const API_EserviceInterfaceDocument = z
   .strictObject({
     checksum: z.string().describe("Base64-encoded SHA-256 checksum"),
@@ -209,7 +264,7 @@ export const API_EserviceDetails = z
     name: API_LocalizedName,
     producerId: z.uuid(),
     purposes: API_EserviceDetailsCounters.describe("Purpose counters"),
-    status: EserviceVersionState.describe("Status of the latest version"),
+    state: EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion.describe("Latest version details"),
   })

@@ -38,7 +38,7 @@ describe("GET /eservices (getEservices)", () => {
         mode: expect.stringMatching(/^(ProvideData|ReceiveData)$/),
         name: expect.objectContaining({ en: expect.any(String) }),
         producerId: expect.any(String),
-        status: expect.stringMatching(/^(Active|Suspended|Archived)$/),
+        state: expect.stringMatching(/^(Active|Suspended|Archived)$/),
         updatedAt: expect.any(String),
       }),
     );
@@ -89,14 +89,14 @@ describe("GET /eservices (getEservices)", () => {
     const response = await getEservices({
       limit: "50",
       offset: "0",
-      status: ["Active", "Suspended"],
+      state: ["Active", "Suspended"],
     });
 
     const body = response.json<API_Eservices>();
     expect(body.items.length).toBeGreaterThan(0);
     expect(
       body.items.every(
-        (item) => item.status === "Active" || item.status === "Suspended",
+        (item) => item.state === "Active" || item.state === "Suspended",
       ),
     ).toBe(true);
   });
