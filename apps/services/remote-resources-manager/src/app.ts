@@ -7,9 +7,9 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
-import { getApiGatewayClient } from "./clients/clientsProvider.ts";
+import { getKnodiaApiGatewayClient } from "./clients/clientsProvider.ts";
 import { type RemoteResourcesManagerConfig } from "./config/config.ts";
-import { apiGatewayTag } from "./models/apiTags.ts";
+import { knodiaApiGatewayTag } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
 import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
@@ -23,7 +23,7 @@ export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
 }
 
 function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
-  const apiGatewayClient = getApiGatewayClient();
+  const knodiaApiGatewayClient = getKnodiaApiGatewayClient();
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -33,7 +33,7 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
           version: "1.0.0",
         },
         servers: [{ description: "Remote Resources Manager API", url: "/" }],
-        tags: [healthRouterTag, apiGatewayTag],
+        tags: [healthRouterTag, knodiaApiGatewayTag],
       },
     },
     loggerConfig: loggerConfig,
@@ -44,8 +44,9 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
 
   app.register(healthRouter);
   app.register(remoteResourcesManagerRouter, {
-    remoteResourcesManagerService:
-      remoteResourcesManagerServiceBuilder(apiGatewayClient),
+    remoteResourcesManagerService: remoteResourcesManagerServiceBuilder(
+      knodiaApiGatewayClient,
+    ),
   });
 
   return app;

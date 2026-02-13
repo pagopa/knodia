@@ -8,27 +8,6 @@ info:
   version: 1.0.0
 components:
   schemas:
-    Pagination:
-      type: object
-      properties:
-        limit:
-          format: int32
-          type: number
-          minimum: 1
-          maximum: 50
-        offset:
-          format: int32
-          type: number
-          minimum: 0
-        total:
-          format: int32
-          type: number
-          minimum: 0
-      required:
-        - limit
-        - offset
-        - total
-      additionalProperties: false
     ProblemError:
       type: object
       properties:
@@ -87,6 +66,27 @@ components:
         - status
         - title
       additionalProperties: false
+    Pagination:
+      type: object
+      properties:
+        limit:
+          format: int32
+          type: number
+          minimum: 1
+          maximum: 50
+        offset:
+          format: int32
+          type: number
+          minimum: 0
+        total:
+          format: int32
+          type: number
+          minimum: 0
+      required:
+        - limit
+        - offset
+        - total
+      additionalProperties: false
     EserviceCategory:
       description: Identifies a category of data, standardized within Knodia, which
         the E-Service provides or receives
@@ -115,6 +115,17 @@ components:
             category:
               $ref: "#/components/schemas/EserviceCategory"
           required:
+            - category
+          additionalProperties: false
+        - type: object
+          properties:
+            keywords:
+              type: string
+              minLength: 1
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+          required:
+            - keywords
             - category
           additionalProperties: false
     EserviceVersionState:
@@ -237,7 +248,7 @@ paths:
       operationId: searchEservices
       summary: Search for E-Services
       tags:
-        - api-gateway
+        - knodia-api-gateway
       description: Search for E-Services according to search criteria and considering
         only E-Services with an active or suspended Version
       requestBody:
@@ -289,5 +300,5 @@ servers:
 tags:
   - description: Health check routes
     name: health
-  - description: API Gateway routes
-    name: api-gateway
+  - description: Knodia API Gateway routes
+    name: knodia-api-gateway

@@ -516,15 +516,15 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
-      '@knodia/api-gateway-client':
-        specifier: workspace:*
-        version: link:../../../packages/clients/api-gateway
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/knodia-api-gateway-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/knodia-api-gateway
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
@@ -669,28 +669,6 @@ importers:
         specifier: 'catalog:'
         version: rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/clients/api-gateway:
-    dependencies:
-      '@knodia/openapi-client-generator':
-        specifier: workspace:*
-        version: link:../../openapi-client-generator
-      axios:
-        specifier: 'catalog:'
-        version: 1.13.5
-    devDependencies:
-      '@knodia/eslint-config':
-        specifier: workspace:*
-        version: link:../../eslint-config
-      '@knodia/typescript-config':
-        specifier: workspace:*
-        version: link:../../typescript-config
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
-
   packages/clients/bff-client:
     dependencies:
       '@knodia/openapi-client-generator':
@@ -717,6 +695,28 @@ importers:
         version: 5.9.3
 
   packages/clients/eservice-process-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/knodia-api-gateway:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*

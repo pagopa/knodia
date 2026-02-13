@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/api-gateway-client",
+  "name": "@knodia/knodia-api-gateway-client",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",

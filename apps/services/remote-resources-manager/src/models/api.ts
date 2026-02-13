@@ -1,7 +1,7 @@
 import {
   API_Pagination,
   API_PaginationQueryParams,
-} from "@knodia/fastify-zod-api-commons/models";
+} from "@knodia/common-models/api";
 import { z } from "zod";
 
 const API_EserviceCategory = z
@@ -18,14 +18,22 @@ const LocalizedText = z.strictObject({
   en: z.string(),
 });
 
+const API_EserviceSearchByKeywords = z.strictObject({
+  keywords: z.string().min(1),
+});
+
+const API_EserviceSearchByCategory = z.strictObject({
+  category: API_EserviceCategory,
+});
+
+const API_EserviceSearchByKeywordsAndCategory =
+  API_EserviceSearchByKeywords.merge(API_EserviceSearchByCategory);
+
 export const API_EserviceSearchParams = z
   .union([
-    z.strictObject({
-      keywords: z.string().min(1),
-    }),
-    z.strictObject({
-      category: API_EserviceCategory,
-    }),
+    API_EserviceSearchByKeywords,
+    API_EserviceSearchByCategory,
+    API_EserviceSearchByKeywordsAndCategory,
   ])
   .meta({ id: "EserviceSearchParams" });
 export type API_EserviceSearchParams = z.infer<typeof API_EserviceSearchParams>;
