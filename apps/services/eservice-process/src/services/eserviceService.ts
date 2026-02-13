@@ -6,6 +6,7 @@ import { getAttribute } from "@knodia/attribute-models";
 import { getCategory } from "@knodia/category-models";
 import {
   EserviceId,
+  EserviceInterfaceId,
   EserviceVersionId,
   generateId,
   OrganizationId,
@@ -18,8 +19,14 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readModelService.ts";
 
-import { invalidAttribute, invalidCategory } from "../models/errors.ts";
+import {
+  eserviceNotFound,
+  invalidAttribute,
+  invalidCategory,
+} from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
+import { getLatestVersion } from "../utils/eserviceUtils.ts";
+import { mockEservices } from "./mockEservices.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -108,5 +115,69 @@ export function eserviceServiceBuilder(
     ): Promise<ListResult<Eservice>> {
       return await readModelService.getEservices(params);
     },
+    getMockEservice(eserviceId: EserviceId): Eservice {
+      const eservices = generateMockEservices();
+      const eservice = eservices.find((e) => e.id === eserviceId);
+
+      if (!eservice) {
+        throw eserviceNotFound(eserviceId);
+      }
+
+      return eservice;
+    },
+    getMockEserviceLatestVersion(eserviceId: EserviceId) {
+      const eservices = generateMockEservices();
+      const eservice = eservices.find((e) => e.id === eserviceId);
+
+      if (!eservice) {
+        throw eserviceNotFound(eserviceId);
+      }
+
+      return getLatestVersion(eservice);
+    },
   };
+}
+
+function generateMockEservices(producerId?: OrganizationId): Eservice[] {
+  // TODO: remove when switching to real data — fixed to keep mock output deterministic across calls
+  const timestamp = new Date("2025-01-01T00:00:00.000Z");
+  return mockEservices.map((mock, idx) => ({
+    categories: mock.categories,
+    createdAt: timestamp,
+    description: { en: mock.description },
+    id: `00000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceId,
+    isConsumerOperatorIdentificationRequired: false,
+    isSignalHubEnabled: false,
+    mode: mock.mode,
+    name: { en: mock.name },
+    producerId:
+      producerId ??
+      (`30000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as OrganizationId),
+    updatedAt: timestamp,
+    versions: [
+      {
+        accessTokenAudience: ["audience-1"],
+        accessTokenDuration: 3600,
+        accessTokenType: "Bearer" as const,
+        createdAt: timestamp,
+        id: `10000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceVersionId,
+        interfaceDocument: {
+          checksum: "checksum-1",
+          contentType: "application/json",
+          createdAt: timestamp,
+          id: `20000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceInterfaceId,
+          name: "Interface 1",
+          path: "/interfaces/1.json",
+          prettyName: { en: "Interface 1" },
+          updatedAt: timestamp,
+        },
+        maxDailyCallsPerConsumer: 100,
+        maxDailyCallsPerKnode: 1000,
+        requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
+        state: mock.state,
+        updatedAt: timestamp,
+        versionNumber: 1,
+      },
+    ],
+  }));
 }
