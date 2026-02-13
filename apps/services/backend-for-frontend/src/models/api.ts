@@ -183,3 +183,76 @@ export const API_ProducerEservices = z.strictObject({
   pagination: API_Pagination,
 });
 export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;
+
+const API_EserviceVersion = z
+  .strictObject({
+    accessTokenAudience: z
+      .array(z.string())
+      .describe("Audience for the access token"),
+    accessTokenDuration: z
+      .number()
+      .int()
+      .describe("Duration of the access token in seconds")
+      .meta({ format: "int32" }),
+    accessTokenType: API_AccessTokenType.describe("Type of the access token"),
+    createdAt: z.iso.datetime(),
+    id: z.uuid().describe("Unique identifier of the E-service version"),
+    maxDailyCallsPerConsumer: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per consumer")
+      .meta({ format: "int32" }),
+    maxDailyCallsPerKnode: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per Knode")
+      .meta({ format: "int32" }),
+    requiredAttributes: z
+      .array(z.array(API_EserviceAttribute))
+      .describe("Required attributes for the E-service"),
+    state: API_EserviceVersionState.describe("State of the version"),
+    updatedAt: z.iso.datetime(),
+    versionNumber: z
+      .number()
+      .int()
+      .describe("Version number")
+      .meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceVersion" });
+
+const API_EserviceDetailsCounters = z
+  .strictObject({
+    active: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Number of active items")
+      .meta({ format: "int32" }),
+    total: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Total number of items")
+      .meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceDetailsCounters" });
+
+export const API_EserviceDetails = z
+  .strictObject({
+    agreements: API_EserviceDetailsCounters.describe("Agreement counters"),
+    categories: z.array(API_EserviceCategory),
+    createdAt: z.iso.datetime(),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    isConsumerOperatorIdentificationRequired: z.boolean(),
+    isSignalHubEnabled: z.boolean(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producerId: z.uuid(),
+    purposes: API_EserviceDetailsCounters.describe("Purpose counters"),
+    state: API_EserviceVersionState.describe("State of the latest version"),
+    updatedAt: z.iso.datetime(),
+    version: API_EserviceVersion.describe("Latest version details"),
+  })
+  .meta({ id: "EserviceDetails" });
+export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;

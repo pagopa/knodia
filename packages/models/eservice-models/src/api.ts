@@ -1,5 +1,11 @@
+import { EserviceId } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
+
+export const API_EserviceIdPathParam = z.strictObject({
+  eserviceId: EserviceId,
+});
+export type API_EserviceIdPathParam = z.infer<typeof API_EserviceIdPathParam>;
 
 export const API_LocalizedName = LocalizedText.extend({
   en: z.string().min(5).max(60),

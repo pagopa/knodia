@@ -1,11 +1,28 @@
-import { Eservice } from "@knodia/eservice-models";
+import { Eservice, EserviceVersion } from "@knodia/eservice-models";
 import {
+  toAPI_AccessTokenType,
   toAPI_EserviceMode,
   toAPI_EserviceVersionState,
 } from "@knodia/eservice-models/apiConverters";
 
 import { getLatestVersion } from "../utils/eserviceUtils.ts";
-import { API_Eservice } from "./api.ts";
+import { API_Eservice, API_EserviceVersion } from "./api.ts";
+
+export const toAPI_EserviceVersion = (
+  version: EserviceVersion,
+): API_EserviceVersion => ({
+  accessTokenAudience: version.accessTokenAudience,
+  accessTokenDuration: version.accessTokenDuration,
+  accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
+  createdAt: version.createdAt.toISOString(),
+  id: version.id,
+  maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
+  maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
+  requiredAttributes: version.requiredAttributes,
+  state: toAPI_EserviceVersionState(version.state),
+  updatedAt: version.updatedAt.toISOString(),
+  versionNumber: version.versionNumber,
+});
 
 export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   categories: eservice.categories,

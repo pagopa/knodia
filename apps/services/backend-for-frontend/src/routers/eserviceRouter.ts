@@ -3,6 +3,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
+import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -14,13 +15,17 @@ import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
+  API_EserviceDetails,
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
-import { toAPI_ProducerEservice } from "../models/apiConverter.ts";
+import {
+  toAPI_EserviceDetails,
+  toAPI_ProducerEservice,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -171,5 +176,51 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
+
+      const headers = { [CORRELATION_ID_HEADER]: correlationId };
+      const path = { eserviceId: req.params.eserviceId };
+
+      const [{ data: eservice }, { data: latestVersion }] = await Promise.all([
+        eserviceProcessApi.getEservice({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceLatestVersion({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+      ]);
+
+      // TODO: fetch real counts from agreement-process and purpose-process
+      // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
+      res.send(
+        toAPI_EserviceDetails(eservice, latestVersion, {
+          agreements: { active: 3, total: 5 },
+          purposes: { active: 1, total: 2 },
+        }),
+      );
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an E-service with all its details",
+      operationId: "getEserviceDetails",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_EserviceDetails.describe(
+          "E-service details retrieved successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+        404: API_Problem.describe("E-service not found"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/:eserviceId",
   });
 };

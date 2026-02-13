@@ -72,6 +72,43 @@ export const API_Eservices = z
   .meta({ id: "Eservices" });
 export type API_Eservices = z.infer<typeof API_Eservices>;
 
+export const API_EserviceVersion = z
+  .strictObject({
+    accessTokenAudience: z
+      .array(z.string())
+      .describe("Audience for the access token"),
+    accessTokenDuration: z
+      .number()
+      .int()
+      .describe("Duration of the access token in seconds")
+      .meta({ format: "int32" }),
+    accessTokenType: API_AccessTokenType.describe("Type of the access token"),
+    createdAt: z.iso.datetime(),
+    id: z.uuid().describe("Unique identifier of the E-service version"),
+    maxDailyCallsPerConsumer: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per consumer")
+      .meta({ format: "int32" }),
+    maxDailyCallsPerKnode: z
+      .number()
+      .int()
+      .describe("Maximum daily calls per Knode")
+      .meta({ format: "int32" }),
+    requiredAttributes: z
+      .array(z.array(API_EserviceAttribute))
+      .describe("Required attributes for the E-service"),
+    state: API_EserviceVersionState.describe("State of the version"),
+    updatedAt: z.iso.datetime(),
+    versionNumber: z
+      .number()
+      .int()
+      .describe("Version number")
+      .meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceVersion" });
+export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
+
 const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z
