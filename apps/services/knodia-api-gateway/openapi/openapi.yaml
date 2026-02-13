@@ -191,17 +191,22 @@ components:
           required:
             - category
           additionalProperties: false
-        - type: object
-          properties:
-            keywords:
-              type: string
-              minLength: 1
-            category:
-              $ref: "#/components/schemas/EserviceCategory"
-          required:
-            - keywords
-            - category
-          additionalProperties: false
+        - allOf:
+            - type: object
+              properties:
+                keywords:
+                  type: string
+                  minLength: 1
+              required:
+                - keywords
+              additionalProperties: false
+            - type: object
+              properties:
+                category:
+                  $ref: "#/components/schemas/EserviceCategory"
+              required:
+                - category
+              additionalProperties: false
     EserviceSearchResult:
       type: object
       properties:
