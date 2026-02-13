@@ -1,4 +1,4 @@
-import config from "./eslint.node.js";
+import config, { blockTestCommonsImports } from "./eslint.node.js";
 import path from "path";
 
 const cwd = process.cwd();
@@ -17,12 +17,12 @@ export default [
         "error",
         {
           patterns: [
+            blockTestCommonsImports,
             {
-              group: ["@knodia/test-commons/*"],
-              message: "@knodia/test-commons imports are restricted",
-            },
-            {
-              group: ["@knodia/db-readmodel-*/writer", `!${allowedReadmodelWriter}`],
+              group: [
+                "@knodia/db-readmodel-*/writer",
+                `!${allowedReadmodelWriter}`,
+              ],
               message: `Only ${allowedReadmodelWriter} are allowed`,
             },
           ],
