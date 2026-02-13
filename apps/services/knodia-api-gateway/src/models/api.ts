@@ -21,7 +21,7 @@ const API_EserviceSearchByCategory = z.strictObject({
 });
 
 const API_EserviceSearchByKeywordsAndCategory =
-  API_EserviceSearchByKeywords.merge(API_EserviceSearchByCategory);
+  API_EserviceSearchByKeywords.extend(API_EserviceSearchByCategory);
 
 export const API_EserviceSearchParams = z
   .union([
