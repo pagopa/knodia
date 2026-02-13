@@ -208,6 +208,59 @@ describe("CreateEServiceModal — file upload", () => {
     // File name should be gone
     expect(screen.queryByText("spec.json")).not.toBeInTheDocument();
   });
+
+  it("rejects files that are not YAML or JSON", async () => {
+    const { user } = renderWizard();
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+
+    const xmlFile = new File(["<root/>"], "spec.xml", {
+      type: "application/xml",
+    });
+    const fileInput = document.querySelector("input[type='file']");
+    expect(fileInput).toBeTruthy();
+
+    // The file input accept attribute restricts to .yaml/.yml/.json,
+    // so uploading .xml is silently ignored by the browser
+    await user.upload(fileInput as HTMLInputElement, xmlFile);
+
+    // File should NOT appear — the accept filter blocked it
+    expect(screen.queryByText("spec.xml")).not.toBeInTheDocument();
+
+    // Trying to advance still fails because no valid file was set
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    expect(
+      screen.getByRole("heading", { name: "Documents" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Attributes" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("accepts YAML files", async () => {
+    const { user } = renderWizard();
+
+    await fillGeneralStep(user);
+    await fillTechnicalStep(user);
+
+    const yamlFile = new File(["openapi: 3.0.0"], "spec.yaml", {
+      type: "application/x-yaml",
+    });
+    const fileInput = document.querySelector("input[type='file']");
+    expect(fileInput).toBeTruthy();
+    await user.upload(fileInput as HTMLInputElement, yamlFile);
+
+    expect(screen.getByText("spec.yaml")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    await waitFor(() => {
+      expect(
+        screen.getByRole("heading", { name: "Attributes" }),
+      ).toBeInTheDocument();
+    });
+  });
 });
 
 describe("CreateEServiceModal — publish flow", () => {
