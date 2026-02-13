@@ -32,7 +32,7 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
-  readModelService: ReadmodelService,
+  readmodelService: ReadmodelService,
 ) {
   return {
     async createEservice(
@@ -113,7 +113,7 @@ export function eserviceServiceBuilder(
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {
-      return await readModelService.getEservices(params);
+      return await readmodelService.getEservices(params);
     },
     getMockEservice(eserviceId: EserviceId): Eservice {
       const eservices = generateMockEservices();

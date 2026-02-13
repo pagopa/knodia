@@ -74,7 +74,7 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
   });
   const eventStoreDb = drizzle(eventStorePool);
 
-  const readModelPool = new Pool({
+  const readmodelPool = new Pool({
     database: config.readmodelDbName,
     host: config.readmodelDbHost,
     password: config.readmodelDbPassword,
@@ -82,7 +82,7 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
     ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
     user: config.readmodelDbUser,
   });
-  const readmodelDb = drizzle(readModelPool);
+  const readmodelDb = drizzle(readmodelPool);
 
   const app = buildApp({
     eventStoreDb,
@@ -92,7 +92,7 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
 
   app.addHook("onClose", async () => {
     await eventStorePool.end();
-    await readModelPool.end();
+    await readmodelPool.end();
   });
 
   return app;

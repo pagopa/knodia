@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ReadModelConfig = z
+export const ReadmodelConfig = z
   .object({
     READMODEL_DB_HOST: z.string().default("localhost"),
     READMODEL_DB_NAME: z.string().default("root"),
@@ -22,4 +22,4 @@ export const ReadModelConfig = z
     readmodelDbUser: c.READMODEL_DB_USER,
     readmodelDbUseSsl: c.READMODEL_DB_USE_SSL,
   }));
-export type ReadModelConfig = z.infer<typeof ReadModelConfig>;
+export type ReadmodelConfig = z.infer<typeof ReadmodelConfig>;

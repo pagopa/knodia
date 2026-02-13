@@ -1,6 +1,6 @@
 import { defineConfig } from "drizzle-kit";
 
-import { ReadModelConfig } from "../config/config.ts";
+import { ReadmodelConfig } from "../config/config.ts";
 
 export const drizzleKitConfig = (
   {
@@ -10,7 +10,7 @@ export const drizzleKitConfig = (
     readmodelDbPort,
     readmodelDbUser,
     readmodelDbUseSsl,
-  }: ReadModelConfig,
+  }: ReadmodelConfig,
   schemaPath = "./src/*.ts",
 ) =>
   defineConfig({
