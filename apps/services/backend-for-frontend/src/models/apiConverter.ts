@@ -37,7 +37,6 @@ export const toAPI_EserviceDetails = (
   name: eservice.name,
   producerId: eservice.producerId,
   purposes: counters.purposes,
-  state: eservice.state,
   updatedAt: eservice.updatedAt,
   version: {
     accessTokenAudience: version.accessTokenAudience,
