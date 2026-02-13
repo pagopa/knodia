@@ -182,12 +182,12 @@ export const createOrderByFilters = ({
   const sortDirections: SortDirection[] = [SortDirection.parse(sortOrder)];
 
   const pkColumns = getTablePKColumns(table);
-  Object.entries(pkColumns).forEach(([colName]) => {
+  for (const [colName] of pkColumns) {
     if (!sortColumns.includes(colName)) {
       sortColumns.push(colName);
       sortDirections.push(SortDirection.enum.asc);
     }
-  });
+  }
 
   function getExistingColumn(
     sortColumn: string,
