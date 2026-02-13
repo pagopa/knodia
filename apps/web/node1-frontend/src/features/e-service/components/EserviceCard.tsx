@@ -2,6 +2,7 @@ import type { Eservice } from "@knodia/bff-client";
 
 import { ButtonLink, Chip, Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
+import { createLink } from "@tanstack/react-router";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 
@@ -13,7 +14,7 @@ import { EserviceStateChip } from "./EserviceStateChip";
 export function ProductionEserviceCard({ eservice }: { eservice: Eservice }) {
   return (
     <EserviceCard>
-      <EserviceCardHeader title={eservice.name.en} />
+      <EserviceCardHeader id={eservice.id} title={eservice.name.en} />
       <EserviceCardInfoGrid>
         <GenericInfoCard label="Active Agreements">-</GenericInfoCard>
         <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
@@ -63,19 +64,22 @@ function EserviceCardFooter({
   );
 }
 
-function EserviceCardHeader({ title }: { title: string }) {
+const ButtonLinkWithPreload = createLink(ButtonLink);
+
+function EserviceCardHeader({ id, title }: { id: string; title: string }) {
   return (
     <header className="flex items-center">
       <h3 className="flex-1 min-w-0 title-md-em truncate">{title}</h3>
-      <ButtonLink
-        aria-label={`Go to details of ${title} e-service`}
+      <ButtonLinkWithPreload
+        aria-label="Go to e-service"
         hierarchy="neutral"
-        href={{ to: "/" }}
         kind="outlined"
+        params={{ id }}
         size="icon-md"
+        to="/production/e-services/$id"
       >
         <ArrowRightIcon />
-      </ButtonLink>
+      </ButtonLinkWithPreload>
     </header>
   );
 }

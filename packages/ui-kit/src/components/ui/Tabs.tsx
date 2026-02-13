@@ -6,10 +6,13 @@ import {
   type TabListProps as RACTabListProps,
   TabPanel as RACTabPanel,
   type TabPanelProps as RACTabPanelProps,
+  TabPanels as RACTabPanels,
   type TabProps as RACTabProps,
   Tabs as RACTabs,
   type TabsProps as RACTabsProps,
+  type TabPanelsProps,
 } from "react-aria-components";
+import { twMerge } from "tailwind-merge";
 import { tv, type VariantProps } from "tailwind-variants";
 
 import { focusRing } from "./styles";
@@ -111,7 +114,18 @@ export function TabList<T extends object = object>({
 }
 
 export function TabPanel(props: TabPanelProps) {
-  return <RACTabPanel {...props} />;
+  return (
+    <RACTabPanel
+      className={composeRenderProps(props.className, (className) =>
+        twMerge(className, "pt-10"),
+      )}
+      {...props}
+    />
+  );
+}
+
+export function TabPanels<T extends object = object>(props: TabPanelsProps<T>) {
+  return <RACTabPanels {...props} />;
 }
 
 export function Tabs({ kind = "hug", ...props }: TabsProps) {

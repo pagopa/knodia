@@ -18,9 +18,10 @@ import { Route as ConsumptionIndexRouteImport } from './routes/consumption/index
 import { Route as ProductionPurposesRouteImport } from './routes/production/purposes'
 import { Route as ProductionAgreementsRouteImport } from './routes/production/agreements'
 import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/purposes'
-import { Route as ConsumptionEServicesRouteImport } from './routes/consumption/e-services'
 import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
 import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
+import { Route as ConsumptionEServicesRouteRouteImport } from './routes/consumption/e-services/route'
+import { Route as ProductionEServicesIdRouteImport } from './routes/production/e-services_/$id'
 import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
 
 const OperatorsRoute = OperatorsRouteImport.update({
@@ -68,11 +69,6 @@ const ConsumptionPurposesRoute = ConsumptionPurposesRouteImport.update({
   path: '/consumption/purposes',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ConsumptionEServicesRoute = ConsumptionEServicesRouteImport.update({
-  id: '/consumption/e-services',
-  path: '/consumption/e-services',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ConsumptionAgreementsRoute = ConsumptionAgreementsRouteImport.update({
   id: '/consumption/agreements',
   path: '/consumption/agreements',
@@ -84,6 +80,17 @@ const ProductionEServicesRouteRoute =
     path: '/production/e-services',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ConsumptionEServicesRouteRoute =
+  ConsumptionEServicesRouteRouteImport.update({
+    id: '/consumption/e-services',
+    path: '/consumption/e-services',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ProductionEServicesIdRoute = ProductionEServicesIdRouteImport.update({
+  id: '/production/e-services_/$id',
+  path: '/production/e-services/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductionEServicesNewIndexRoute =
   ProductionEServicesNewIndexRouteImport.update({
     id: '/new/',
@@ -96,14 +103,15 @@ export interface FileRoutesByFullPath {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
   '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/production/e-services/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRoutesByTo {
@@ -111,14 +119,15 @@ export interface FileRoutesByTo {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
   '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/production/e-services/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRoutesById {
@@ -127,14 +136,15 @@ export interface FileRoutesById {
   '/details-and-attributes': typeof DetailsAndAttributesRoute
   '/keychains': typeof KeychainsRoute
   '/operators': typeof OperatorsRoute
+  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
   '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
   '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRoute
   '/consumption/purposes': typeof ConsumptionPurposesRoute
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption/': typeof ConsumptionIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/production/e-services_/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new/': typeof ProductionEServicesNewIndexRoute
 }
 export interface FileRouteTypes {
@@ -144,14 +154,15 @@ export interface FileRouteTypes {
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
-    | '/consumption/e-services'
     | '/consumption/purposes'
     | '/production/agreements'
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/production/e-services/$id'
     | '/production/e-services/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -159,14 +170,15 @@ export interface FileRouteTypes {
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
-    | '/consumption/e-services'
     | '/consumption/purposes'
     | '/production/agreements'
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/production/e-services/$id'
     | '/production/e-services/new'
   id:
     | '__root__'
@@ -174,14 +186,15 @@ export interface FileRouteTypes {
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
-    | '/consumption/e-services'
     | '/consumption/purposes'
     | '/production/agreements'
     | '/production/purposes'
     | '/consumption/'
     | '/production/'
+    | '/production/e-services_/$id'
     | '/production/e-services/new/'
   fileRoutesById: FileRoutesById
 }
@@ -190,14 +203,15 @@ export interface RootRouteChildren {
   DetailsAndAttributesRoute: typeof DetailsAndAttributesRoute
   KeychainsRoute: typeof KeychainsRoute
   OperatorsRoute: typeof OperatorsRoute
+  ConsumptionEServicesRouteRoute: typeof ConsumptionEServicesRouteRoute
   ProductionEServicesRouteRoute: typeof ProductionEServicesRouteRouteWithChildren
   ConsumptionAgreementsRoute: typeof ConsumptionAgreementsRoute
-  ConsumptionEServicesRoute: typeof ConsumptionEServicesRoute
   ConsumptionPurposesRoute: typeof ConsumptionPurposesRoute
   ProductionAgreementsRoute: typeof ProductionAgreementsRoute
   ProductionPurposesRoute: typeof ProductionPurposesRoute
   ConsumptionIndexRoute: typeof ConsumptionIndexRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
+  ProductionEServicesIdRoute: typeof ProductionEServicesIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -265,13 +279,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsumptionPurposesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/consumption/e-services': {
-      id: '/consumption/e-services'
-      path: '/consumption/e-services'
-      fullPath: '/consumption/e-services'
-      preLoaderRoute: typeof ConsumptionEServicesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/consumption/agreements': {
       id: '/consumption/agreements'
       path: '/consumption/agreements'
@@ -284,6 +291,20 @@ declare module '@tanstack/react-router' {
       path: '/production/e-services'
       fullPath: '/production/e-services'
       preLoaderRoute: typeof ProductionEServicesRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumption/e-services': {
+      id: '/consumption/e-services'
+      path: '/consumption/e-services'
+      fullPath: '/consumption/e-services'
+      preLoaderRoute: typeof ConsumptionEServicesRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/production/e-services_/$id': {
+      id: '/production/e-services_/$id'
+      path: '/production/e-services/$id'
+      fullPath: '/production/e-services/$id'
+      preLoaderRoute: typeof ProductionEServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/production/e-services/new/': {
@@ -315,14 +336,15 @@ const rootRouteChildren: RootRouteChildren = {
   DetailsAndAttributesRoute: DetailsAndAttributesRoute,
   KeychainsRoute: KeychainsRoute,
   OperatorsRoute: OperatorsRoute,
+  ConsumptionEServicesRouteRoute: ConsumptionEServicesRouteRoute,
   ProductionEServicesRouteRoute: ProductionEServicesRouteRouteWithChildren,
   ConsumptionAgreementsRoute: ConsumptionAgreementsRoute,
-  ConsumptionEServicesRoute: ConsumptionEServicesRoute,
   ConsumptionPurposesRoute: ConsumptionPurposesRoute,
   ProductionAgreementsRoute: ProductionAgreementsRoute,
   ProductionPurposesRoute: ProductionPurposesRoute,
   ConsumptionIndexRoute: ConsumptionIndexRoute,
   ProductionIndexRoute: ProductionIndexRoute,
+  ProductionEServicesIdRoute: ProductionEServicesIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
