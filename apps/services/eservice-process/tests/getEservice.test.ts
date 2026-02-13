@@ -1,3 +1,7 @@
+import {
+  API_EserviceMode,
+  API_EserviceVersionState,
+} from "@knodia/eservice-models/api";
 import { describe, expect, it } from "vitest";
 
 import type { API_Eservice } from "../src/models/api.ts";
@@ -26,10 +30,10 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
         id: VALID_ESERVICE_ID,
         isConsumerOperatorIdentificationRequired: expect.any(Boolean),
         isSignalHubEnabled: expect.any(Boolean),
-        mode: expect.stringMatching(/^(ProvideData|ReceiveData)$/),
+        mode: expect.schemaMatching(API_EserviceMode),
         name: expect.objectContaining({ en: expect.any(String) }),
         producerId: expect.any(String),
-        state: expect.stringMatching(/^(Active|Suspended|Archived)$/),
+        state: expect.schemaMatching(API_EserviceVersionState),
         updatedAt: expect.any(String),
       }),
     );

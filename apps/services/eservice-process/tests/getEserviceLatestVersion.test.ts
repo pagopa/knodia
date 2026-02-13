@@ -1,3 +1,7 @@
+import {
+  API_AccessTokenType,
+  API_EserviceVersionState,
+} from "@knodia/eservice-models/api";
 import { describe, expect, it } from "vitest";
 
 import type { API_EserviceVersion } from "../src/models/api.ts";
@@ -22,13 +26,13 @@ describe("GET /eservices/:eserviceId/versions/latest (getEserviceLatestVersion)"
       expect.objectContaining({
         accessTokenAudience: expect.any(Array),
         accessTokenDuration: expect.any(Number),
-        accessTokenType: expect.stringMatching(/^(Bearer|DPoP)$/),
+        accessTokenType: expect.schemaMatching(API_AccessTokenType),
         createdAt: expect.any(String),
         id: expect.any(String),
         maxDailyCallsPerConsumer: expect.any(Number),
         maxDailyCallsPerKnode: expect.any(Number),
         requiredAttributes: expect.any(Array),
-        state: expect.stringMatching(/^(Active|Suspended|Archived)$/),
+        state: expect.schemaMatching(API_EserviceVersionState),
         updatedAt: expect.any(String),
         versionNumber: expect.any(Number),
       }),
