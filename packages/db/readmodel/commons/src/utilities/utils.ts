@@ -178,14 +178,22 @@ export const createOrderByFilters = ({
   sortOrder: string;
   table: PgTable;
 }): SQL[] => {
-  const sortColumns = [sortBy];
-  const sortDirections: SortDirection[] = [SortDirection.parse(sortOrder)];
-
+  const sorts: {
+    column: string;
+    direction: SortDirection;
+  }[] = [
+    {
+      column: sortBy,
+      direction: SortDirection.parse(sortOrder),
+    },
+  ];
   const pkColumns = getTablePKColumns(table);
   for (const [colName] of pkColumns) {
-    if (!sortColumns.includes(colName)) {
-      sortColumns.push(colName);
-      sortDirections.push(SortDirection.enum.asc);
+    if (!sorts.some((s) => s.column === colName)) {
+      sorts.push({
+        column: colName,
+        direction: SortDirection.enum.asc,
+      });
     }
   }
 
@@ -202,10 +210,10 @@ export const createOrderByFilters = ({
 
   const tableColumns = getTableColumns(table);
 
-  return sortColumns.map((sortColumn, i) => {
+  return sorts.map(({ column: sortColumn, direction }) => {
     const column = getExistingColumn(sortColumn, tableColumns);
 
-    return match(SortDirection.parse(sortDirections[i]))
+    return match(direction)
       .with(SortDirection.enum.asc, () => ascLower(column))
       .with(SortDirection.enum.desc, () => descLower(column))
       .exhaustive();
