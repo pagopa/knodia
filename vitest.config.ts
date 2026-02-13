@@ -4,10 +4,5 @@ export default defineConfig({
   test: {
     globalSetup: ["./globalTestSetup.ts"],
     projects: ["apps/services/*", "apps/web/*", "packages/*"],
-    expect: {
-      poll: {
-        timeout: 5000,
-      }
-    }
   },
 });
