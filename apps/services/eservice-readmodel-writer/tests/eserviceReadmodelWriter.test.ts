@@ -9,11 +9,20 @@ import {
 } from "@knodia/eservice-models";
 import { runConsumer } from "@knodia/kafka-commons";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
-import { getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
+import {
+  getAllEservices,
+  getMockEservice,
+  toExpectEservice,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { kafkaConfig, processMessage, producer, topicName } from "./setup.ts";
-import { getAllEservices } from "./utils.ts";
+import {
+  kafkaConfig,
+  processMessage,
+  producer,
+  readmodelDb,
+  topicName,
+} from "./setup.ts";
 
 describe("E-service read model writer tests", async () => {
   it("EserviceVersionActivatedV1", async () => {
@@ -41,7 +50,7 @@ describe("E-service read model writer tests", async () => {
     let retrievedEservices: WithMetadata<Eservice>[] = [];
     await expect
       .poll(async () => {
-        retrievedEservices = await getAllEservices();
+        retrievedEservices = await getAllEservices(readmodelDb);
         return retrievedEservices.length;
       })
       .toBe(1);

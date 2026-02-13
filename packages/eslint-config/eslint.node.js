@@ -8,7 +8,7 @@ export default [
       "no-restricted-imports": [
         "error",
         {
-          patterns: ["@knodia/test-commons/*"],
+          patterns: ["@knodia/test-commons/*", "@knodia/db-readmodel-*/writer"],
         },
       ],
     },

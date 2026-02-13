@@ -3,16 +3,13 @@ import type z from "zod";
 import { SortDirection } from "@knodia/db-readmodel-commons";
 import { Eservice, EserviceMode } from "@knodia/eservice-models";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
-import {
-  toExpectAPI_Eservice,
-  upsertEservice,
-} from "@knodia/test-commons/utils";
+import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
 
 import { mockEservices, producerId } from "./mockEservices.ts";
-import { readmodelDb } from "./setup.ts";
+import { eserviceWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
 describe("GET /eservices (getEservices)", () => {
@@ -23,7 +20,9 @@ describe("GET /eservices (getEservices)", () => {
 
   beforeAll(async () => {
     await Promise.all(
-      mockEservices.map((eservice) => upsertEservice(eservice, 0, readmodelDb)),
+      mockEservices.map((eservice) =>
+        eserviceWriterService.upsertEservice(eservice, 0),
+      ),
     );
   });
 
