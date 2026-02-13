@@ -32,10 +32,10 @@ const eserviceFieldSchemas = {
     }, "File size must be at most 1 MB.")
     .refine((file) => {
       if (!file) return true;
-      const validExtensions = [".yaml", ".yml", ".json", ".xml"];
+      const validExtensions = [".yaml", ".yml", ".json"];
       const fileName = file.name.toLowerCase();
       return validExtensions.some((ext) => fileName.endsWith(ext));
-    }, "File must be YAML, JSON, or XML format.")
+    }, "File must be YAML or JSON format.")
     .pipe(z.instanceof(File)),
   isSignalHubEnabled: z.boolean(),
   maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),

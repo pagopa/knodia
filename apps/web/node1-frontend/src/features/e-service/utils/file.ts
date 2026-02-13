@@ -1,6 +1,5 @@
 const CONTENT_TYPES: Record<string, string> = {
   json: "application/json",
-  xml: "application/xml",
   yaml: "application/x-yaml",
   yml: "application/x-yaml",
 };
