@@ -18,6 +18,7 @@ import {
   getTableConfig,
   PgColumn,
   PgJsonb,
+  type PgSelect,
   PgTable,
   PgText,
 } from "drizzle-orm/pg-core";
@@ -226,13 +227,13 @@ export function escapeRegExp(str: string): string {
 
 export async function getTableTotalCount(
   db: NodePgDatabase,
-  table: AnyPgTable,
+  query: PgSelect,
 ): Promise<number> {
   const totalCountResult = await db
     .select({
       count: count(),
     })
-    .from(table)
+    .from(query.as("filterQuery"))
     .limit(1);
 
   return totalCountResult[0]?.count ?? 0;

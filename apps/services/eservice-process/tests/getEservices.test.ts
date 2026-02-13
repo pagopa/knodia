@@ -37,6 +37,7 @@ describe("GET /eservices (getEservices)", () => {
       ] as Eservice[],
       query: { ...defaultQuery },
       testCase: "pagination only (1st page), sort by name asc by default",
+      totalCount: mockEservices.length,
     },
     {
       expectedResult: [
@@ -47,6 +48,7 @@ describe("GET /eservices (getEservices)", () => {
       ] as Eservice[],
       query: { ...defaultQuery, producerId },
       testCase: "pagination only (1st page), sort by name asc by default",
+      totalCount: 9,
     },
     {
       expectedResult: [
@@ -60,11 +62,13 @@ describe("GET /eservices (getEservices)", () => {
         offset: "4",
       },
       testCase: "pagination only (2nd page), sort by name asc by default",
+      totalCount: mockEservices.length,
     },
     {
       expectedResult: [mockEservices[1], mockEservices[3]] as Eservice[],
       query: { ...defaultQuery, producerId, q: "KNODIA" },
       testCase: "search query",
+      totalCount: 2,
     },
     {
       expectedResult: [
@@ -78,6 +82,7 @@ describe("GET /eservices (getEservices)", () => {
         producerId,
       },
       testCase: "filter by mode",
+      totalCount: 3,
     },
     {
       expectedResult: [
@@ -95,6 +100,7 @@ describe("GET /eservices (getEservices)", () => {
         ],
       },
       testCase: "filter by state",
+      totalCount: 7,
     },
     {
       expectedResult: [
@@ -110,6 +116,7 @@ describe("GET /eservices (getEservices)", () => {
         sortOrder: SortDirection.enum.desc,
       },
       testCase: "sort by name desc",
+      totalCount: 9,
     },
     {
       expectedResult: [mockEservices[1]] as Eservice[],
@@ -123,14 +130,16 @@ describe("GET /eservices (getEservices)", () => {
         state: [API_EserviceVersionState.enum.Suspended],
       },
       testCase: "full query",
+      totalCount: 1,
     },
   ] satisfies {
     expectedResult: Eservice[];
     query: z.input<typeof API_GetEservicesQueryParams>;
     testCase: string;
+    totalCount: number;
   }[])(
     "should return e-services with correct shape and pagination: $testCase (seed #%#)",
-    async ({ expectedResult, query }) => {
+    async ({ expectedResult, query, totalCount }) => {
       const response = await injectAppRequest()
         .get("/eservices")
 
@@ -142,7 +151,7 @@ describe("GET /eservices (getEservices)", () => {
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
-          total: mockEservices.length,
+          total: totalCount,
         },
       });
     },

@@ -50,47 +50,51 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           )
           .as("latestEserviceVersion");
 
-        const filterSubquery = tx
-          .select({ eserviceId: readmodelEservice.id })
-          .from(readmodelEservice)
-          .leftJoin(
-            readmodelEserviceCategory,
-            eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
-          )
-          .innerJoin(
-            latestEserviceVersion,
-            eq(readmodelEservice.id, latestEserviceVersion.eserviceId),
-          )
-          .where(
-            and(
-              producerId
-                ? eq(readmodelEservice.producerId, producerId)
-                : undefined,
-              mode ? eq(readmodelEservice.mode, mode) : undefined,
-              state && state.length > 0
-                ? inArray(latestEserviceVersion.state, state)
-                : undefined,
-              q
-                ? or(
-                    ilikeJsonB({ column: readmodelEservice.name, value: q }),
-                    ilikeJsonB({
-                      column: readmodelEservice.description,
-                      value: q,
-                    }),
-                    ilike(
-                      // TODO: filter by category name instead of code when using real data
-                      readmodelEserviceCategory.code,
-                      `%${escapeRegExp(q)}%`,
-                    ),
-                  )
-                : undefined,
-            ),
-          )
-          .groupBy(readmodelEservice.id)
+        const createFilterQuery = () =>
+          tx
+            .select({ eserviceId: readmodelEservice.id })
+            .from(readmodelEservice)
+            .leftJoin(
+              readmodelEserviceCategory,
+              eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+            )
+            .innerJoin(
+              latestEserviceVersion,
+              eq(readmodelEservice.id, latestEserviceVersion.eserviceId),
+            )
+            .where(
+              and(
+                producerId
+                  ? eq(readmodelEservice.producerId, producerId)
+                  : undefined,
+                mode ? eq(readmodelEservice.mode, mode) : undefined,
+                state && state.length > 0
+                  ? inArray(latestEserviceVersion.state, state)
+                  : undefined,
+                q
+                  ? or(
+                      ilikeJsonB({ column: readmodelEservice.name, value: q }),
+                      ilikeJsonB({
+                        column: readmodelEservice.description,
+                        value: q,
+                      }),
+                      ilike(
+                        // TODO: filter by category name instead of code when using real data
+                        readmodelEserviceCategory.code,
+                        `%${escapeRegExp(q)}%`,
+                      ),
+                    )
+                  : undefined,
+              ),
+            )
+            .groupBy(readmodelEservice.id)
+            .$dynamic();
+
+        const paginatedIds = createFilterQuery()
           .orderBy(...orderByFilters)
           .limit(limit)
           .offset(offset)
-          .as("filterSubquery");
+          .as("paginatedIds");
 
         const [queryRes, totalCount] = await Promise.all([
           tx
@@ -100,15 +104,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             })
             .from(readmodelEservice)
             .innerJoin(
-              filterSubquery,
-              eq(readmodelEservice.id, filterSubquery.eserviceId),
+              paginatedIds,
+              eq(readmodelEservice.id, paginatedIds.eserviceId),
             )
             .leftJoin(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
             )
             .orderBy(...orderByFilters),
-          getTableTotalCount(tx, readmodelEservice),
+          getTableTotalCount(tx, createFilterQuery()),
         ]);
 
         const eservices = aggregateEservices(toEservicesAggregator(queryRes));
