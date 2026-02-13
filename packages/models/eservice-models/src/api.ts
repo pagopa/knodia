@@ -60,7 +60,7 @@ export const API_EserviceAttribute = z
   .meta({ id: "EserviceAttribute" });
 export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
 
-export const API_EServiceRequiredAttributeGroup = z
+const API_EServiceRequiredAttributeGroup = z
   .array(API_EserviceAttribute)
   .describe(
     "Described a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
@@ -68,7 +68,7 @@ export const API_EServiceRequiredAttributeGroup = z
   .meta({
     id: "EServiceRequiredAttributeGroup",
   });
-export type API_EServiceRequiredAttributeGroup = z.infer<
+type API_EServiceRequiredAttributeGroup = z.infer<
   typeof API_EServiceRequiredAttributeGroup
 >;
 
