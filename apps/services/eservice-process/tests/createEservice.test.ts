@@ -5,6 +5,10 @@ import {
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
+import {
+  fromAPI_AccessTokenType,
+  fromAPI_EserviceMode,
+} from "@knodia/eservice-models/apiConverters";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
@@ -39,7 +43,7 @@ describe("POST /eservices (createEservice)", () => {
       isConsumerOperatorIdentificationRequired:
         body.isConsumerOperatorIdentificationRequired ?? false,
       isSignalHubEnabled: body.isSignalHubEnabled ?? false,
-      mode: body.mode ?? "ProvideData",
+      mode: body.mode ? fromAPI_EserviceMode(body.mode) : "ProvideData",
       name: body.name,
       producerId: expect.any(String), // TODO: It's random for now
       updatedAt: new Date(responseBody.createdAt),
@@ -47,7 +51,9 @@ describe("POST /eservices (createEservice)", () => {
         {
           accessTokenAudience: body.accessTokenAudience,
           accessTokenDuration: body.accessTokenDuration ?? 3600,
-          accessTokenType: body.accessTokenType ?? "Bearer",
+          accessTokenType: body.accessTokenType
+            ? fromAPI_AccessTokenType(body.accessTokenType)
+            : "Bearer",
           createdAt: new Date(responseBody.createdAt),
           id: expect.any(String),
           interfaceDocument: {

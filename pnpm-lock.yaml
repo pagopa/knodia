@@ -455,9 +455,15 @@ importers:
 
   apps/services/knodia-api-gateway:
     dependencies:
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-models
       '@knodia/eservice-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/eservice-process-client

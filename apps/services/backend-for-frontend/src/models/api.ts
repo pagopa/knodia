@@ -84,7 +84,7 @@ export const API_EserviceSeed = z
       .describe("Duration of the access token in seconds")
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.optional()
-      .default("Bearer")
+      .default("BEARER")
       .describe("Type of the access token"),
     categories: z
       .array(API_EserviceCategory)

@@ -1,14 +1,13 @@
-import type { EserviceVersionState } from "@knodia/eservice-models";
-
-import {
-  API_EserviceCategory,
-  API_EserviceMode,
-} from "@knodia/eservice-models/api";
+import type {
+  EserviceCategory,
+  EserviceMode,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 
 export const mockEservices: {
-  categories: API_EserviceCategory[];
+  categories: EserviceCategory[];
   description: string;
-  mode: API_EserviceMode;
+  mode: EserviceMode;
   name: string;
   state: EserviceVersionState;
 }[] = [

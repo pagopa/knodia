@@ -23,7 +23,9 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",

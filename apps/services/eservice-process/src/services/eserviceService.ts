@@ -11,6 +11,11 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import { Eservice } from "@knodia/eservice-models";
+import {
+  fromAPI_AccessTokenType,
+  fromAPI_EserviceMode,
+  fromAPI_EserviceVersionState,
+} from "@knodia/eservice-models/apiConverters";
 
 import type {
   API_EserviceSeed,
@@ -62,7 +67,7 @@ export function eserviceServiceBuilder(
         isConsumerOperatorIdentificationRequired:
           seed.isConsumerOperatorIdentificationRequired ?? false,
         isSignalHubEnabled: seed.isSignalHubEnabled ?? false,
-        mode: seed.mode ?? "ProvideData",
+        mode: seed.mode ? fromAPI_EserviceMode(seed.mode) : "ProvideData",
         name: seed.name,
         producerId,
         updatedAt: now,
@@ -70,7 +75,9 @@ export function eserviceServiceBuilder(
           {
             accessTokenAudience: seed.accessTokenAudience,
             accessTokenDuration: seed.accessTokenDuration ?? 3600,
-            accessTokenType: seed.accessTokenType ?? "Bearer",
+            accessTokenType: seed.accessTokenType
+              ? fromAPI_AccessTokenType(seed.accessTokenType)
+              : "Bearer",
             createdAt: now,
             id: eserviceVersionId,
             interfaceDocument: {
@@ -133,13 +140,17 @@ export function eserviceServiceBuilder(
       // Filter by state
       if (state && state.length > 0) {
         eservices = eservices.filter((e) =>
-          state.includes(getLatestVersion(e).state),
+          state
+            .map(fromAPI_EserviceVersionState)
+            .includes(getLatestVersion(e).state),
         );
       }
 
       // Filter by mode
       if (mode) {
-        eservices = eservices.filter((e) => e.mode === mode);
+        eservices = eservices.filter(
+          (e) => e.mode === fromAPI_EserviceMode(mode),
+        );
       }
 
       // Sort by name (the only supported sort field)
