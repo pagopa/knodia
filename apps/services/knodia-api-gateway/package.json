@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/api-gateway",
+  "name": "@knodia/knodia-api-gateway",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
-    "test": "pnpm -w test --project @knodia/api-gateway",
+    "test": "pnpm -w test --project @knodia/knodia-api-gateway",
     "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
@@ -23,6 +23,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",

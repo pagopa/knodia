@@ -7,14 +7,14 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
-import type { ApiGatewayConfig } from "./config/config.ts";
+import type { KnodiaApiGatewayConfig } from "./config/config.ts";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
-export function buildAppFromConfig(config: ApiGatewayConfig) {
+export function buildAppFromConfig(config: KnodiaApiGatewayConfig) {
   const app = buildApp({
     eserviceProcessUrl: config.eserviceProcessUrl,
     loggerConfig: config,
@@ -39,7 +39,7 @@ function buildApp({
           title: "Knodia Api Gateway API",
           version: "1.0.0",
         },
-        servers: [{ description: "Api Gateway", url: "/" }],
+        servers: [{ description: "Knodia Api Gateway", url: "/" }],
         tags: [
           healthRouterTag,
           {
@@ -57,7 +57,7 @@ function buildApp({
     loggerConfig,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
-    serviceName: serviceName.API_GATEWAY,
+    serviceName: serviceName.KNODIA_API_GATEWAY,
   });
 
   app.register(healthRouter);

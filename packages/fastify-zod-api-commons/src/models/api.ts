@@ -1,30 +1,16 @@
 import z from "zod";
 
-export const API_Pagination = z
-  .strictObject({
-    limit: z.number().min(1).max(50).meta({ format: "int32" }),
-    offset: z.number().min(0).meta({ format: "int32" }),
-    total: z.number().min(0).meta({ format: "int32" }),
-  })
-  .meta({ id: "Pagination" });
-export type API_Pagination = z.infer<typeof API_Pagination>;
-
-export const API_PaginationQueryParams = z.strictObject({
-  limit: z.coerce
-    .number()
-    .min(1)
-    .max(50)
-    .describe("Maximum number of items returned")
-    .meta({ format: "int32" }),
-  offset: z.coerce
-    .number()
-    .min(0)
-    .describe("Pagination starting position")
-    .meta({ format: "int32" }),
-});
-export type API_PaginationQueryParams = z.infer<
-  typeof API_PaginationQueryParams
->;
+/**
+ * Wraps a Zod schema in an optional array query param that accepts both
+ * a single value and an array. This is needed because query strings like
+ * `?state=Active` send a string, while `?state=Active&state=Suspended`
+ * send an array. See: https://github.com/turkerdev/fastify-type-provider-zod/issues/151
+ */
+export const arrayQueryParam = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((value) => {
+    if (value === undefined) return undefined;
+    return Array.isArray(value) ? value : [value];
+  }, z.array(schema));
 
 const API_ProblemError = z
   .strictObject({

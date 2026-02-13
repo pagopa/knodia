@@ -11,11 +11,11 @@
       "entry": ["src/generated/**/*.ts"],
       "ignore": ["src/generated/**/*.ts"]
     },
-    "apps/services/api-gateway": {
+    "apps/services/backend-for-frontend": {
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
-    "apps/services/backend-for-frontend": {
+    "apps/services/knodia-api-gateway": {
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
