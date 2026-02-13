@@ -6,6 +6,7 @@ packages:
   - packages/db/event-store/*
   - packages/db/readmodel/*
   - packages/clients/*
+  - tools/*
 
 allowBuilds:
   "@bufbuild/buf": true
