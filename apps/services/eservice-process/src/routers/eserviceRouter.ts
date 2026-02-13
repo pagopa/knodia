@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -14,8 +15,12 @@ import {
   API_Eservices,
   API_EserviceSeed,
   API_EservicesQueryParams,
+  API_EserviceVersion,
 } from "../models/api.ts";
-import { toAPI_Eservice } from "../models/apiConverter.ts";
+import {
+  toAPI_Eservice,
+  toAPI_EserviceVersion,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
@@ -64,5 +69,51 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       tags: [apiTags.eservice],
     },
     url: "/eservices",
+  });
+
+  fastify.route({
+    handler: (req, res) => {
+      const eservice = eserviceService.getMockEservice(req.params.eserviceId);
+      res.status(200).send(toAPI_Eservice(eservice));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an E-service by its ID",
+      headers: processHeaders,
+      operationId: "getEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_Eservice.describe("E-service retrieved successfully"),
+        400: API_Problem.describe("Bad Request"),
+        404: API_Problem.describe("E-service not found"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: (req, res) => {
+      const version = eserviceService.getMockEserviceLatestVersion(
+        req.params.eserviceId,
+      );
+      res.status(200).send(toAPI_EserviceVersion(version));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve the latest version of an E-service",
+      headers: processHeaders,
+      operationId: "getEserviceLatestVersion",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_EserviceVersion.describe(
+          "E-service version retrieved successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+        404: API_Problem.describe("E-service not found"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/versions/latest",
   });
 };

@@ -46,7 +46,7 @@ export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
 const RequiredAttributeGroup = z.array(RequiredAttribute);
 export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
 
-const EserviceVersion = z.strictObject({
+export const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),
   accessTokenDuration: z
     .int()
