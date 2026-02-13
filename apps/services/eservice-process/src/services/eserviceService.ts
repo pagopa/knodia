@@ -17,7 +17,7 @@ import type {
   API_EserviceSeed,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
-import type { ReadmodelService } from "./readModelService.ts";
+import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   eserviceNotFound,

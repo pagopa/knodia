@@ -17,7 +17,7 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
-import { readmodelServiceBuilder } from "./services/readModelService.ts";
+import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
   eventStoreDb,
