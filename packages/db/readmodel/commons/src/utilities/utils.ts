@@ -23,7 +23,8 @@ import {
   PgText,
 } from "drizzle-orm/pg-core";
 import { match } from "ts-pattern";
-import z from "zod";
+
+import { SortDirection } from "../models/models.ts";
 
 export const checkMetadataVersion = async (
   tx: NodePgDatabase,
@@ -145,9 +146,6 @@ function getTablePKString<T extends Record<string, unknown>>(
     })
     .join("|");
 }
-
-export const SortDirection = z.enum(["asc", "desc"]);
-export type SortDirection = z.infer<typeof SortDirection>;
 
 const lowerCaseJsonb = (column: PgColumn, key: string): SQL<string> =>
   sql<string>`LOWER(${column} ->> ${key})`;
