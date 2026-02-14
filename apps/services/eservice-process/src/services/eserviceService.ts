@@ -1,5 +1,5 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
-import type { ListResult } from "@knodia/db-readmodel-commons";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
 
 import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";

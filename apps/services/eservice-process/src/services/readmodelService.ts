@@ -1,3 +1,4 @@
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -5,8 +6,7 @@ import {
   escapeRegExp,
   getTableTotalCount,
   ilikeJsonB,
-  type ListResult,
-} from "@knodia/db-readmodel-commons";
+} from "@knodia/db-readmodel-commons/utils";
 import {
   readmodelEservice,
   readmodelEserviceCategory,
