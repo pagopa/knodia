@@ -6,6 +6,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   processHeaders,
+  setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import type { EserviceService } from "../services/eserviceService.ts";
@@ -79,9 +80,14 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const eservice = eserviceService.getMockEservice(req.params.eserviceId);
-      res.status(200).send(toAPI_Eservice(eservice));
+    handler: async (req, res) => {
+      const { data, metadata } = await eserviceService.getEservice(
+        req.params.eserviceId,
+      );
+
+      setMetadataVersionHeader(res, metadata);
+
+      res.status(200).send(toAPI_Eservice(data));
     },
     method: "GET",
     schema: {

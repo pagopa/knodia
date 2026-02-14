@@ -1,4 +1,9 @@
-import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type { EserviceId } from "@knodia/common-models/ids";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
+import type { EserviceReadmodelService } from "@knodia/db-readmodel-eservice/services";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -21,10 +26,25 @@ import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
+import { eserviceNotFound } from "../models/errors.ts";
+
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
-export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+export function readmodelServiceBuilder(
+  readmodelDb: NodePgDatabase,
+  eserviceReadmodelService: EserviceReadmodelService,
+) {
   return {
+    async getEservice(eserviceId: EserviceId): Promise<WithMetadata<Eservice>> {
+      const eservice =
+        await eserviceReadmodelService.getEServiceById(eserviceId);
+
+      if (!eservice) {
+        throw eserviceNotFound(eserviceId);
+      }
+
+      return eservice;
+    },
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {

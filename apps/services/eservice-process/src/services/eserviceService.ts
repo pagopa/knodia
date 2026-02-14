@@ -1,5 +1,8 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
-import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 
 import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";
@@ -110,20 +113,13 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
+    async getEservice(eserviceId: EserviceId): Promise<WithMetadata<Eservice>> {
+      return await readmodelService.getEservice(eserviceId);
+    },
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {
       return await readmodelService.getEservices(params);
-    },
-    getMockEservice(eserviceId: EserviceId): Eservice {
-      const eservices = generateMockEservices();
-      const eservice = eservices.find((e) => e.id === eserviceId);
-
-      if (!eservice) {
-        throw eserviceNotFound(eserviceId);
-      }
-
-      return eservice;
     },
     getMockEserviceLatestVersion(eserviceId: EserviceId) {
       const eservices = generateMockEservices();
