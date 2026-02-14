@@ -22,11 +22,11 @@ import {
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
 
-export type EserviceReadModelService = ReturnType<
-  typeof eserviceReadModelServiceBuilder
+export type EserviceReadmodelService = ReturnType<
+  typeof eserviceReadmodelServiceBuilder
 >;
 
-export function eserviceReadModelServiceBuilder(readmodelDb: NodePgDatabase) {
+export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async getEServiceByFilter(
       filter: SQL | undefined,
