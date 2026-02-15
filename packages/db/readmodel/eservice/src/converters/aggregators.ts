@@ -199,28 +199,6 @@ const createEserviceSQLPropertyMap = <
     return acc;
   }, new Map<EserviceId, T[]>());
 
-// const toEserviceAggregator = (
-//   queryRes: EserviceAggregatorInput,
-// ): EserviceItemsSQL => {
-//   const {
-//     categoriesSQL: categoriesSQL,
-//     eservicesSQL: eservicesSQL,
-//     interfacesSQL: interfacesSQL,
-//     requiredAttributesSQL: requiredAttributesSQL,
-//     versionsSQL: versionsSQL,
-//   } = toEservicesAggregator(queryRes);
-
-//   const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
-
-//   return {
-//     eserviceCategoriesSQL: categoriesSQL,
-//     eserviceInterfacesSQL: interfacesSQL,
-//     eserviceSQL,
-//     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
-//     eserviceVersionsSQL: versionsSQL,
-//   };
-// };
-
 export const toEservicesAggregator = (
   queryRes: EserviceAggregatorInput,
 ): {
