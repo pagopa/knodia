@@ -148,22 +148,6 @@ const buildEservice = ({
   };
 };
 
-// TODO: remove if not needed
-// const aggregateEservice = (
-//   queryRes: EserviceAggregatorInput,
-// ): WithMetadata<Eservice> => {
-//   const aggregatedEservice = toEserviceAggregator(queryRes);
-
-//   return buildEservice({
-//     eserviceCategoriesSQL: aggregatedEservice.eserviceCategoriesSQL,
-//     eserviceInterfacesSQL: aggregatedEservice.eserviceInterfacesSQL,
-//     eserviceSQL: aggregatedEservice.eserviceSQL,
-//     eserviceVersionRequiredAttributesSQL:
-//       aggregatedEservice.eserviceVersionRequiredAttributesSQL,
-//     eserviceVersionsSQL: aggregatedEservice.eserviceVersionsSQL,
-//   });
-// };
-
 export const aggregateEservices = (
   queryRes: EserviceAggregatorInput,
 ): WithMetadata<Eservice>[] => {
