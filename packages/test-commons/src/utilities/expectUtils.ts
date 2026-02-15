@@ -1,5 +1,6 @@
 import {
   type CompactEservice,
+  type CompactEserviceVersion,
   type Eservice,
   type EserviceVersion,
 } from "@knodia/eservice-models";
@@ -18,6 +19,25 @@ export function toExpectAPI_Eservice(eservice: CompactEservice) {
     producerId: eservice.producerId,
     updatedAt: eservice.updatedAt.toISOString(),
   };
+}
+
+export function toExpectAPI_EserviceVersion(
+  eserviceVersion: CompactEserviceVersion,
+) {
+  return expect.objectContaining({
+    accessTokenAudience: expect.arrayContaining(
+      eserviceVersion.accessTokenAudience,
+    ),
+    accessTokenDuration: eserviceVersion.accessTokenDuration,
+    accessTokenType: eserviceVersion.accessTokenType,
+    createdAt: eserviceVersion.createdAt.toISOString(),
+    id: eserviceVersion.id,
+    maxDailyCallsPerConsumer: eserviceVersion.maxDailyCallsPerConsumer,
+    maxDailyCallsPerKnode: eserviceVersion.maxDailyCallsPerKnode,
+    state: eserviceVersion.state,
+    updatedAt: eserviceVersion.updatedAt.toISOString(),
+    versionNumber: eserviceVersion.versionNumber,
+  });
 }
 
 export function toExpectEservice(eservice: Eservice) {
