@@ -8,10 +8,7 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import {
-  API_EserviceIdPathParam,
-  API_EserviceVersionState,
-} from "@knodia/eservice-models/api";
+import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -167,13 +164,24 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
-      const items = data.items.map((eservice, idx) =>
-        toAPI_ProducerEservice({
-          activeAgreements: idx + 5,
-          activePurposes: idx + 1,
-          categories: [], // TODO: placeholder. Need to fetch categories with another process endpoint
-          eservice,
-          state: API_EserviceVersionState.enum.Active, // TODO: the BFF should request the eservice state by calling the process
+      const items = await Promise.all(
+        data.items.map(async (eservice, idx) => {
+          const { data: latestEserviceVersion } =
+            await eserviceProcessApi.getEserviceLatestVersion({
+              client: eserviceProcessClient,
+              headers: {
+                [CORRELATION_ID_HEADER]: correlationId,
+              },
+              path: { eserviceId: eservice.id },
+            });
+
+          return toAPI_ProducerEservice({
+            activeAgreements: idx + 5,
+            activePurposes: idx + 1,
+            categories: [], // TODO: placeholder. Need to fetch categories with another process endpoint
+            eservice,
+            state: latestEserviceVersion.state,
+          });
         }),
       );
 
