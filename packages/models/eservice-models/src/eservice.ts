@@ -59,7 +59,7 @@ const RequiredAttribute = z.strictObject({
 });
 export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
 
-const RequiredAttributeGroup = z.array(RequiredAttribute);
+const RequiredAttributeGroup = z.array(RequiredAttribute).min(1);
 export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
 
 export const EserviceVersion = z.strictObject({
@@ -74,12 +74,18 @@ export const EserviceVersion = z.strictObject({
   interfaceDocument: EserviceInterface,
   maxDailyCallsPerConsumer: z.int().min(minDailyCalls).max(maxDailyCalls),
   maxDailyCallsPerKnode: z.int().min(minDailyCalls).max(maxDailyCalls),
-  requiredAttributes: z.array(RequiredAttributeGroup),
+  requiredAttributes: z.array(RequiredAttributeGroup).min(1),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),
   versionNumber: z.int().min(minEserviceVersionNumber).max(INT32_MAX),
 });
 export type EserviceVersion = z.infer<typeof EserviceVersion>;
+
+const CompactEserviceVersion = EserviceVersion.omit({
+  interfaceDocument: true,
+  requiredAttributes: true,
+});
+export type CompactEserviceVersion = z.infer<typeof CompactEserviceVersion>;
 
 export const EserviceCategory = z.strictObject({
   code: z.string(),
@@ -101,3 +107,9 @@ export const Eservice = z.strictObject({
   versions: z.array(EserviceVersion),
 });
 export type Eservice = z.infer<typeof Eservice>;
+
+const CompactEservice = Eservice.omit({
+  categories: true,
+  versions: true,
+});
+export type CompactEservice = z.infer<typeof CompactEservice>;

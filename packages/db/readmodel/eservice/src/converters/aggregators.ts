@@ -1,16 +1,13 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import { EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import { aggregateByPKString } from "@knodia/db-readmodel-commons/utils";
 import {
-  aggregateByPKString,
-  throwIfMultipleOrEmpty,
-} from "@knodia/db-readmodel-commons/utils";
-import {
-  type Eservice,
+  Eservice,
   EserviceAccessTokenType,
   EserviceInterface,
   EserviceMode,
-  type EserviceVersion,
+  EserviceVersion,
   EserviceVersionState,
   type RequiredAttribute,
   type RequiredAttributeGroup,
@@ -29,6 +26,14 @@ import {
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
+
+type EserviceAggregatorInput = {
+  category?: EserviceCategorySQL | null;
+  eservice: EserviceSQL;
+  interface?: EserviceInterfaceSQL | null;
+  requiredAttribute?: EserviceVersionRequiredAttributeSQL | null;
+  version?: EserviceVersionSQL | null;
+}[];
 
 const aggregateEserviceVersion = ({
   interfaceSQL,
@@ -84,7 +89,7 @@ const toEserviceVersionInterface = (
   updatedAt: new Date(interfaceSQL.updatedAt),
 });
 
-export const aggregateEservice = ({
+const buildEservice = ({
   eserviceCategoriesSQL,
   eserviceInterfacesSQL,
   eserviceSQL,
@@ -143,19 +148,33 @@ export const aggregateEservice = ({
   };
 };
 
-export const aggregateEservices = ({
-  categoriesSQL,
-  eservicesSQL,
-  interfacesSQL,
-  requiredAttributesSQL,
-  versionsSQL,
-}: {
-  categoriesSQL: EserviceCategorySQL[];
-  eservicesSQL: EserviceSQL[];
-  interfacesSQL: EserviceInterfaceSQL[];
-  requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[];
-  versionsSQL: EserviceVersionSQL[];
-}): WithMetadata<Eservice>[] => {
+// TODO: remove if not needed
+// const aggregateEservice = (
+//   queryRes: EserviceAggregatorInput,
+// ): WithMetadata<Eservice> => {
+//   const aggregatedEservice = toEserviceAggregator(queryRes);
+
+//   return buildEservice({
+//     eserviceCategoriesSQL: aggregatedEservice.eserviceCategoriesSQL,
+//     eserviceInterfacesSQL: aggregatedEservice.eserviceInterfacesSQL,
+//     eserviceSQL: aggregatedEservice.eserviceSQL,
+//     eserviceVersionRequiredAttributesSQL:
+//       aggregatedEservice.eserviceVersionRequiredAttributesSQL,
+//     eserviceVersionsSQL: aggregatedEservice.eserviceVersionsSQL,
+//   });
+// };
+
+export const aggregateEservices = (
+  queryRes: EserviceAggregatorInput,
+): WithMetadata<Eservice>[] => {
+  const {
+    categoriesSQL,
+    eservicesSQL,
+    interfacesSQL,
+    requiredAttributesSQL,
+    versionsSQL,
+  } = toEservicesAggregator(queryRes);
+
   const eserviceVersionsSQLByEserviceId =
     createEserviceSQLPropertyMap(versionsSQL);
   const interfacesSQLByEserviceId = createEserviceSQLPropertyMap(interfacesSQL);
@@ -166,7 +185,7 @@ export const aggregateEservices = ({
 
   return eservicesSQL.map((eserviceSQL) => {
     const eserviceId = unsafeBrandId<EserviceId>(eserviceSQL.id);
-    return aggregateEservice({
+    return buildEservice({
       eserviceCategoriesSQL: categoriesSQLByEserviceId.get(eserviceId) || [],
       eserviceInterfacesSQL: interfacesSQLByEserviceId.get(eserviceId) || [],
       eserviceSQL,
@@ -196,42 +215,30 @@ const createEserviceSQLPropertyMap = <
     return acc;
   }, new Map<EserviceId, T[]>());
 
-export const toEserviceAggregator = (
-  queryRes: {
-    category: EserviceCategorySQL | null;
-    eservice: EserviceSQL;
-    interface: EserviceInterfaceSQL | null;
-    requiredAttribute: EserviceVersionRequiredAttributeSQL | null;
-    version: EserviceVersionSQL | null;
-  }[],
-): EserviceItemsSQL => {
-  const {
-    categoriesSQL: categoriesSQL,
-    eservicesSQL: eservicesSQL,
-    interfacesSQL: interfacesSQL,
-    requiredAttributesSQL: requiredAttributesSQL,
-    versionsSQL: versionsSQL,
-  } = toEservicesAggregator(queryRes);
+// const toEserviceAggregator = (
+//   queryRes: EserviceAggregatorInput,
+// ): EserviceItemsSQL => {
+//   const {
+//     categoriesSQL: categoriesSQL,
+//     eservicesSQL: eservicesSQL,
+//     interfacesSQL: interfacesSQL,
+//     requiredAttributesSQL: requiredAttributesSQL,
+//     versionsSQL: versionsSQL,
+//   } = toEservicesAggregator(queryRes);
 
-  const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
+//   const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
 
-  return {
-    eserviceCategoriesSQL: categoriesSQL,
-    eserviceInterfacesSQL: interfacesSQL,
-    eserviceSQL,
-    eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
-    eserviceVersionsSQL: versionsSQL,
-  };
-};
+//   return {
+//     eserviceCategoriesSQL: categoriesSQL,
+//     eserviceInterfacesSQL: interfacesSQL,
+//     eserviceSQL,
+//     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
+//     eserviceVersionsSQL: versionsSQL,
+//   };
+// };
 
 export const toEservicesAggregator = (
-  queryRes: {
-    category?: EserviceCategorySQL | null;
-    eservice: EserviceSQL;
-    interface?: EserviceInterfaceSQL | null;
-    requiredAttribute?: EserviceVersionRequiredAttributeSQL | null;
-    version?: EserviceVersionSQL | null;
-  }[],
+  queryRes: EserviceAggregatorInput,
 ): {
   categoriesSQL: EserviceCategorySQL[];
   eservicesSQL: EserviceSQL[];
@@ -288,10 +295,10 @@ export const toEservicesAggregator = (
   });
 
   return {
-    categoriesSQL: categoriesSQL,
-    eservicesSQL: eservicesSQL,
-    interfacesSQL: interfacesSQL,
-    requiredAttributesSQL: requiredAttributesSQL,
-    versionsSQL: versionsSQL,
+    categoriesSQL,
+    eservicesSQL,
+    interfacesSQL,
+    requiredAttributesSQL,
+    versionsSQL,
   };
 };

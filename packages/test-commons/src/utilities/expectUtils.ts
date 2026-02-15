@@ -1,9 +1,12 @@
-import { type Eservice, type EserviceVersion } from "@knodia/eservice-models";
+import {
+  type CompactEservice,
+  type Eservice,
+  type EserviceVersion,
+} from "@knodia/eservice-models";
 import { expect } from "vitest";
 
-export function toExpectAPI_Eservice(eservice: Omit<Eservice, "versions">) {
+export function toExpectAPI_Eservice(eservice: CompactEservice) {
   return {
-    categories: expect.arrayContaining(eservice.categories),
     createdAt: eservice.createdAt.toISOString(),
     description: eservice.description,
     id: eservice.id,

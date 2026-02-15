@@ -1,6 +1,6 @@
 import type { EserviceId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-import type { Eservice } from "@knodia/eservice-models";
+import type { CompactEservice } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { PgSelect } from "drizzle-orm/pg-core";
 
@@ -8,12 +8,9 @@ import {
   assertSQLFilterIsDefined,
   createOrderByFilters,
 } from "@knodia/db-readmodel-commons/utils";
-import { eq, type SQL } from "drizzle-orm";
+import { eq, getTableColumns, type SQL } from "drizzle-orm";
 
-import {
-  aggregateEservice,
-  toEserviceAggregator,
-} from "../converters/aggregators.ts";
+import { toCompactEservice } from "../converters/converters.ts";
 import {
   readmodelEservice,
   readmodelEserviceCategory,
@@ -30,7 +27,7 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async getEServiceByFilter(
       filter: SQL | undefined,
-    ): Promise<undefined | WithMetadata<Eservice>> {
+    ): Promise<undefined | WithMetadata<CompactEservice>> {
       assertSQLFilterIsDefined(filter);
 
       const queryResult = await getEServicesQueryResult({
@@ -38,15 +35,16 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         readmodelDb,
       });
 
-      if (queryResult.length === 0) {
+      const eserviceSQL = queryResult[0];
+      if (!eserviceSQL) {
         return undefined;
       }
 
-      return aggregateEservice(toEserviceAggregator(queryResult));
+      return toCompactEservice(eserviceSQL);
     },
     async getEServiceById(
       eserviceId: EserviceId,
-    ): Promise<undefined | WithMetadata<Eservice>> {
+    ): Promise<undefined | WithMetadata<CompactEservice>> {
       return await this.getEServiceByFilter(
         eq(readmodelEservice.id, eserviceId),
       );
@@ -101,13 +99,7 @@ function getEServicesQueryResult({
 
   const query = addEserviceLeftJoinsToQuery(
     readmodelDb
-      .select({
-        category: readmodelEserviceCategory,
-        eservice: readmodelEservice,
-        interface: readmodelEserviceInterface,
-        requiredAttribute: readmodelEserviceVersionRequiredAttribute,
-        version: readmodelEserviceVersion,
-      })
+      .select(getTableColumns(readmodelEservice))
       .from(readmodelEservice)
       .where(dataFilters)
       .orderBy(...orderByFilters)

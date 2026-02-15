@@ -5,7 +5,7 @@ import z from "zod";
 import { API_CorrelationId } from "./api.ts";
 
 export const CORRELATION_ID_HEADER = "x-correlation-id";
-export const METADATA_VERSION_HEADER = "x-metadata-version";
+const METADATA_VERSION_HEADER = "x-metadata-version";
 
 export const processHeaders = z.looseObject({
   [CORRELATION_ID_HEADER]: API_CorrelationId.describe(
