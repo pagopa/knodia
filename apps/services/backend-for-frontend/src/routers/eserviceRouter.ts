@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
@@ -30,6 +31,7 @@ import {
   API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
 import {
+  toAPI_Eservice,
   toAPI_EserviceDetails,
   toAPI_ProducerEservice,
 } from "../models/apiConverter.ts";
@@ -58,7 +60,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      res.send(data);
+      res.send({
+        items: data.items.map((e) =>
+          // TODO: fetch categories with another process endpoint and pass them to the converter
+          toAPI_Eservice({ categories: [], eservice: e }),
+        ),
+        pagination: data.pagination,
+      });
     },
     method: "GET",
     schema: {
@@ -160,13 +168,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
       const items = data.items.map((eservice, idx) =>
-        toAPI_ProducerEservice(
+        toAPI_ProducerEservice({
+          activeAgreements: idx + 5,
+          activePurposes: idx + 1,
+          categories: [], // TODO: placeholder. Need to fetch categories with another process endpoint
           eservice,
-          idx + 5,
-          idx + 1,
-          // TODO: the BFF should request the eservice state by calling the process
-          API_EserviceVersionState.enum.Active,
-        ),
+          state: API_EserviceVersionState.enum.Active, // TODO: the BFF should request the eservice state by calling the process
+        }),
       );
 
       res.send({
@@ -214,9 +222,15 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       // TODO: fetch real counts from agreement-process and purpose-process
       // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
       res.send(
-        toAPI_EserviceDetails(eservice, latestVersion, {
-          agreements: { active: 3, total: 5 },
-          purposes: { active: 1, total: 2 },
+        toAPI_EserviceDetails({
+          categories: [], // TODO: placeholder. Need to fetch categories with another process endpoint
+          counters: {
+            agreements: { active: 3, total: 5 },
+            purposes: { active: 1, total: 2 },
+          },
+          eservice,
+          requiredAttributes: [], // TODO: placeholder. Need to fetch required attributes with another process endpoint
+          version: latestVersion,
         }),
       );
     },
