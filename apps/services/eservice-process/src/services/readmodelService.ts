@@ -34,7 +34,7 @@ import {
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
-import { eserviceNotFound } from "../models/errors.ts";
+import { eserviceNotFound, eserviceVersionNotFound } from "../models/errors.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
@@ -65,8 +65,7 @@ export function readmodelServiceBuilder(
 
       const eserviceVersionSQL = queryResult[0];
       if (!eserviceVersionSQL) {
-        // TODO: create and throw specific error
-        throw eserviceNotFound(eserviceId);
+        throw eserviceVersionNotFound(eserviceId);
       }
       return toCompactEserviceVersion(eserviceVersionSQL);
     },
