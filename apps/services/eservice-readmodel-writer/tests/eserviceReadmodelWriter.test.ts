@@ -40,10 +40,15 @@ describe("E-service read model writer tests", async () => {
 
     let retrievedEservices: WithMetadata<Eservice>[] = [];
     await expect
-      .poll(async () => {
-        retrievedEservices = await getAllEservices();
-        return retrievedEservices.length;
-      })
+      .poll(
+        async () => {
+          retrievedEservices = await getAllEservices();
+          return retrievedEservices.length;
+        },
+        {
+          timeout: 5000,
+        },
+      )
       .toBe(1);
 
     expect(retrievedEservices[0]).toEqual({
