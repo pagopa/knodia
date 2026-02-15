@@ -30,11 +30,13 @@ export const mockEservices: Eservice[] = [
         ...zocker(EserviceVersion).generate(),
         state: EserviceVersionState.enum.Archived,
         updatedAt: oldDate,
+        versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
         state: EserviceVersionState.enum.Suspended,
         updatedAt: now,
+        versionNumber: 2,
       },
     ],
   },
