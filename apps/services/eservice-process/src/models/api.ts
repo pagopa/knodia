@@ -51,7 +51,6 @@ export type API_GetEservicesQueryParams = z.infer<
 
 export const API_Eservice = z
   .strictObject({
-    categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
     id: z.uuid(),
@@ -96,9 +95,6 @@ export const API_EserviceVersion = z
       .int()
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
-    requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
-      .describe("Required attributes for the E-service"),
     state: API_EserviceVersionState.describe("State of the version"),
     updatedAt: z.iso.datetime(),
     versionNumber: z

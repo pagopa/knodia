@@ -85,6 +85,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
         req.params.eserviceId,
       );
 
+      // TODO: check if the generated openapi has them
       setMetadataVersionHeader(res, metadata);
 
       res.status(200).send(toAPI_Eservice(data));
@@ -106,11 +107,14 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const version = eserviceService.getMockEserviceLatestVersion(
+    handler: async (req, res) => {
+      const { data, metadata } = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
       );
-      res.status(200).send(toAPI_EserviceVersion(version));
+
+      setMetadataVersionHeader(res, metadata);
+
+      res.status(200).send(toAPI_EserviceVersion(data));
     },
     method: "GET",
     schema: {

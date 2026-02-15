@@ -18,11 +18,19 @@ import {
   readmodelEserviceVersion,
 } from "@knodia/db-readmodel-eservice";
 import {
-  aggregateEservices,
-  toEservicesAggregator,
+  toCompactEservices,
+  toCompactEserviceVersion,
 } from "@knodia/db-readmodel-eservice/converters";
-import { Eservice } from "@knodia/eservice-models";
-import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { type CompactEservice } from "@knodia/eservice-models";
+import {
+  and,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  inArray,
+  or,
+} from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
@@ -35,7 +43,9 @@ export function readmodelServiceBuilder(
   eserviceReadmodelService: EserviceReadmodelService,
 ) {
   return {
-    async getEservice(eserviceId: EserviceId): Promise<WithMetadata<Eservice>> {
+    async getEservice(
+      eserviceId: EserviceId,
+    ): Promise<WithMetadata<CompactEservice>> {
       const eservice =
         await eserviceReadmodelService.getEServiceById(eserviceId);
 
@@ -45,9 +55,24 @@ export function readmodelServiceBuilder(
 
       return eservice;
     },
+    async getEserviceLatestVersion(eserviceId: EserviceId) {
+      const queryResult = await readmodelDb
+        .select(getTableColumns(readmodelEserviceVersion))
+        .from(readmodelEserviceVersion)
+        .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
+        .orderBy(desc(readmodelEserviceVersion.versionNumber))
+        .limit(1);
+
+      const eserviceVersionSQL = queryResult[0];
+      if (!eserviceVersionSQL) {
+        // TODO: create and throw specific error
+        throw eserviceNotFound(eserviceId);
+      }
+      return toCompactEserviceVersion(eserviceVersionSQL);
+    },
     async getEservices(
       params: API_GetEservicesQueryParams,
-    ): Promise<ListResult<Eservice>> {
+    ): Promise<ListResult<CompactEservice>> {
       const { limit, mode, offset, producerId, q, sortBy, sortOrder, state } =
         params;
 
@@ -118,10 +143,7 @@ export function readmodelServiceBuilder(
 
         const [queryRes, totalCount] = await Promise.all([
           tx
-            .select({
-              category: readmodelEserviceCategory,
-              eservice: readmodelEservice,
-            })
+            .select(getTableColumns(readmodelEservice))
             .from(readmodelEservice)
             .innerJoin(
               paginatedIds,
@@ -135,7 +157,7 @@ export function readmodelServiceBuilder(
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const eservices = aggregateEservices(toEservicesAggregator(queryRes));
+        const eservices = toCompactEservices(queryRes);
 
         const results = eservices.map((e) => ({
           ...e.data,

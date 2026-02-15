@@ -1,9 +1,12 @@
-import { Eservice, EserviceVersion } from "@knodia/eservice-models";
+import {
+  type CompactEservice,
+  type CompactEserviceVersion,
+} from "@knodia/eservice-models";
 
 import { API_Eservice, API_EserviceVersion } from "./api.ts";
 
 export const toAPI_EserviceVersion = (
-  version: EserviceVersion,
+  version: CompactEserviceVersion,
 ): API_EserviceVersion => ({
   accessTokenAudience: version.accessTokenAudience,
   accessTokenDuration: version.accessTokenDuration,
@@ -12,14 +15,12 @@ export const toAPI_EserviceVersion = (
   id: version.id,
   maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
   maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
-  requiredAttributes: version.requiredAttributes,
   state: version.state,
   updatedAt: version.updatedAt.toISOString(),
   versionNumber: version.versionNumber,
 });
 
-export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
-  categories: eservice.categories,
+export const toAPI_Eservice = (eservice: CompactEservice): API_Eservice => ({
   createdAt: eservice.createdAt.toISOString(),
   description: eservice.description,
   id: eservice.id,
