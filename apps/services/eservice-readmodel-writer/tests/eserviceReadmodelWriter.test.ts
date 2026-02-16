@@ -8,7 +8,7 @@ import {
   toEserviceV1,
 } from "@knodia/eservice-models";
 import { runConsumer } from "@knodia/kafka-commons";
-import { sendTestEvent } from "@knodia/test-commons/kafka";
+import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
 import { getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -17,8 +17,6 @@ import { getAllEservices } from "./utils.ts";
 
 describe("E-service read model writer tests", async () => {
   it("EserviceVersionActivatedV1", async () => {
-    await runConsumer([topicName], processMessage, kafkaConfig);
-
     const eservice = getMockEservice();
 
     const eventData = protobufBinaryCodec(
@@ -37,6 +35,8 @@ describe("E-service read model writer tests", async () => {
       streamId: eservice.id,
       topicName,
     });
+
+    await runTestConsumer(topicName, processMessage, kafkaConfig);
 
     let retrievedEservices: WithMetadata<Eservice>[] = [];
     await expect
