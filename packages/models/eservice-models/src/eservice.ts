@@ -81,11 +81,6 @@ export const EserviceVersion = z.strictObject({
 });
 export type EserviceVersion = z.infer<typeof EserviceVersion>;
 
-const CompactEserviceVersion = EserviceVersion.omit({
-  interfaceDocument: true,
-});
-export type CompactEserviceVersion = z.infer<typeof CompactEserviceVersion>;
-
 export const EserviceCategory = z.strictObject({
   code: z.string(),
   scheme: z.string(),
@@ -106,8 +101,3 @@ export const Eservice = z.strictObject({
   versions: z.array(EserviceVersion),
 });
 export type Eservice = z.infer<typeof Eservice>;
-
-export const CompactEservice = Eservice.omit({
-  versions: true,
-});
-export type CompactEservice = z.infer<typeof CompactEservice>;

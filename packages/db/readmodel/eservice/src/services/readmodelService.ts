@@ -1,6 +1,6 @@
 import type { EserviceId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-import type { CompactEservice } from "@knodia/eservice-models";
+import type { Eservice } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eq } from "drizzle-orm";
@@ -16,7 +16,7 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async getEServiceById(
       eserviceId: EserviceId,
-    ): Promise<undefined | WithMetadata<CompactEservice>> {
+    ): Promise<undefined | WithMetadata<Eservice>> {
       const queryRes = await readmodelDb
         .select({
           category: readmodelEserviceCategory,

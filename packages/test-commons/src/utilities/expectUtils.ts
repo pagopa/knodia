@@ -1,16 +1,11 @@
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import {
-  CompactEservice,
-  type CompactEserviceVersion,
-  type Eservice,
-  type EserviceVersion,
-} from "@knodia/eservice-models";
+import { type Eservice, type EserviceVersion } from "@knodia/eservice-models";
 import { expect } from "vitest";
 
 export function toExpectAPI_Eservice(
   eservice: Omit<
-    CompactEservice,
-    "createdAt" | "id" | "producerId" | "updatedAt"
+    Eservice,
+    "createdAt" | "id" | "producerId" | "updatedAt" | "versions"
   > & {
     createdAt: Date | string;
     id: string;
@@ -36,9 +31,7 @@ export function toExpectAPI_Eservice(
   };
 }
 
-export function toExpectAPI_EserviceVersion(
-  eserviceVersion: CompactEserviceVersion,
-) {
+export function toExpectAPI_EserviceVersion(eserviceVersion: EserviceVersion) {
   return expect.objectContaining({
     accessTokenAudience: expect.arrayContaining(
       eserviceVersion.accessTokenAudience,

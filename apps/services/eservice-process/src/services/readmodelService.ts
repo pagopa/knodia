@@ -22,7 +22,7 @@ import {
   aggregateEservices,
   aggregateEserviceVersion,
 } from "@knodia/db-readmodel-eservice/converters";
-import { type CompactEservice } from "@knodia/eservice-models";
+import { type Eservice } from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
@@ -36,7 +36,7 @@ export function readmodelServiceBuilder(
   return {
     async getEservice(
       eserviceId: EserviceId,
-    ): Promise<undefined | WithMetadata<CompactEservice>> {
+    ): Promise<undefined | WithMetadata<Eservice>> {
       return await eserviceReadmodelService.getEServiceById(eserviceId);
     },
     async getEserviceLatestVersion(eserviceId: EserviceId) {
@@ -76,7 +76,7 @@ export function readmodelServiceBuilder(
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
-    ): Promise<ListResult<CompactEservice>> {
+    ): Promise<ListResult<Eservice>> {
       const { limit, mode, offset, producerId, q, sortBy, sortOrder, state } =
         params;
 

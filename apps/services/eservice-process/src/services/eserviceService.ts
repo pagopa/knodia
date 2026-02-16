@@ -13,7 +13,7 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { type CompactEservice, Eservice } from "@knodia/eservice-models";
+import { type Eservice } from "@knodia/eservice-models";
 
 import type {
   API_EserviceSeed,
@@ -111,9 +111,7 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    async getEservice(
-      eserviceId: EserviceId,
-    ): Promise<WithMetadata<CompactEservice>> {
+    async getEservice(eserviceId: EserviceId): Promise<WithMetadata<Eservice>> {
       const eservice = await readmodelService.getEservice(eserviceId);
 
       if (!eservice) {
@@ -134,7 +132,7 @@ export function eserviceServiceBuilder(
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
-    ): Promise<ListResult<CompactEservice>> {
+    ): Promise<ListResult<Eservice>> {
       return await readmodelService.getEservices(params);
     },
   };
