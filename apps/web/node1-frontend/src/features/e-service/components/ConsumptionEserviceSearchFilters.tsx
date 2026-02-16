@@ -18,8 +18,10 @@ const categoryOptions = [
 
 export function ConsumptionEserviceSearchFilters({
   onSubmit,
+  onValidationError,
 }: {
   onSubmit: (values: ConsumptionEserviceSearchParams) => void;
+  onValidationError: () => void;
 }) {
   const form = useForm({
     defaultValues: {
@@ -29,7 +31,13 @@ export function ConsumptionEserviceSearchFilters({
       offset: 0,
     },
     onSubmit: ({ value }) => {
-      onSubmit?.(value);
+      // Knode is required AND (category OR keywords) is required
+      if (!value.knode || (!value.category && !value.keywords)) {
+        onValidationError();
+        return;
+      }
+
+      onSubmit(value);
     },
   });
 
