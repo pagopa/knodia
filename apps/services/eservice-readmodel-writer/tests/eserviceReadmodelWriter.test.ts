@@ -37,14 +37,9 @@ describe("E-service read model writer tests", async () => {
 
     await runTestConsumer(topicName, processMessage, kafkaConfig);
 
-    let retrievedEservices: WithMetadata<Eservice>[] = [];
-    await expect
-      .poll(async () => {
-        retrievedEservices = await getAllEservices();
-        return retrievedEservices.length;
-      })
-      .toBe(1);
+    const retrievedEservices = await getAllEservices();
 
+    expect(retrievedEservices.length).toBe(1);
     expect(retrievedEservices[0]).toEqual({
       data: toExpectEservice(eservice),
       metadata: { version: metadataVersion },

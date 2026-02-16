@@ -10,7 +10,6 @@ export async function handleEserviceEvent(
   message: EserviceEventEnvelopeV1,
   writerService: EserviceWriterService,
 ): Promise<void> {
-  console.log(`Handling event: ${message}`);
   assertDataExistsInEvent(message, "eservice");
 
   return match(message)

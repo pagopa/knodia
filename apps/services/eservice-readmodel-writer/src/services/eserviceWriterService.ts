@@ -22,7 +22,6 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
       eservice: Eservice,
       metadataVersion: number,
     ): Promise<void> {
-      console.log(`Upserting e-service ${eservice.id}`);
       return db.transaction(async (tx) => {
         const shouldUpsert = await checkMetadataVersion(
           tx,
@@ -70,8 +69,6 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
             .insert(readmodelEserviceVersionRequiredAttribute)
             .values(eserviceVersionRequiredAttributesSQL);
         }
-
-        console.log(`Finished upserting e-service ${eservice.id}`);
       });
     },
   };
