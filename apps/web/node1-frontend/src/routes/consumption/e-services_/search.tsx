@@ -1,4 +1,5 @@
-import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
+import { Breadcrumb, Breadcrumbs, Empty } from "@knodia/ui-kit/ui";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -19,7 +20,11 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader title="Search New E-Services" />
-      <p>todo: implement</p>
+
+      <Empty
+        description="Search the E-Services in a Knode that match a category or a keyword"
+        icon={<MagnifyingGlassIcon />}
+      />
     </>
   );
 }
