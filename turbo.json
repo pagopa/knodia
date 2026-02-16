@@ -7,8 +7,7 @@
       "dependsOn": [
         "generate-openapi",
         "generate-api-client",
-        "generate-protobuf",
-        "db:migrate"
+        "generate-protobuf"
       ]
     },
     "typecheck": {
@@ -46,9 +45,6 @@
       "cache": false
     },
     "db:pull": {
-      "cache": false
-    },
-    "db:migrate": {
       "cache": false
     }
   }

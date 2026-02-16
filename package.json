@@ -11,7 +11,6 @@
     "lint-openapi": "turbo run lint-openapi",
     "dev:storybook": "turbo run dev:storybook",
     "build:storybook": "turbo run build:storybook",
-    "db:migrate": "./scripts/infra-migrate.sh",
     "db:pull": "turbo run db:pull",
     "knip": "turbo run generate-artifacts && knip",
     "infra:start": "./scripts/infra-start.sh",
