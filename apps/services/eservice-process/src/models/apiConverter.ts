@@ -1,6 +1,5 @@
 import { Eservice, EserviceVersion } from "@knodia/eservice-models";
 
-import { getLatestVersion } from "../utils/eserviceUtils.ts";
 import { API_Eservice, API_EserviceVersion } from "./api.ts";
 
 export const toAPI_EserviceVersion = (
@@ -30,6 +29,5 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   mode: eservice.mode,
   name: eservice.name,
   producerId: eservice.producerId,
-  state: getLatestVersion(eservice).state,
   updatedAt: eservice.updatedAt.toISOString(),
 });
