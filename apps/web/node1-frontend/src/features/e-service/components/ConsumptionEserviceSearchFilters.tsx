@@ -35,14 +35,14 @@ export function ConsumptionEserviceSearchFilters({
 
   return (
     <form
-      className="flex items-end gap-24 mb-6"
+      className="flex items-end gap-12 mb-10"
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
         form.handleSubmit();
       }}
     >
-      <div className="grid flex-1 min-w-0 grid-cols-4 gap-2">
+      <div className="grid flex-1 min-w-0 grid-cols-3 gap-2">
         {/* TODO: Make Knode select searchable */}
         <form.Field
           children={(field) => (
@@ -92,7 +92,6 @@ export function ConsumptionEserviceSearchFilters({
         <form.Field
           children={(field) => (
             <TextField
-              className="col-span-2"
               id={field.name}
               label="Keywords"
               name={field.name}
