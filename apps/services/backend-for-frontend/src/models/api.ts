@@ -244,6 +244,15 @@ const API_EserviceDetailsCounters = z
   })
   .meta({ id: "EserviceDetailsCounters" });
 
+const API_EserviceDetailsPurposeCounters = API_EserviceDetailsCounters.extend({
+  totalApiCallsPerDay: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Total API calls per day across all purposes")
+    .meta({ format: "int32" }),
+}).meta({ id: "EserviceDetailsPurposeCounters" });
+
 export const API_EserviceDetails = z
   .strictObject({
     agreements: API_EserviceDetailsCounters.describe("Agreement counters"),
@@ -256,7 +265,7 @@ export const API_EserviceDetails = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    purposes: API_EserviceDetailsCounters.describe("Purpose counters"),
+    purposes: API_EserviceDetailsPurposeCounters.describe("Purpose counters"),
     state: API_EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion.describe("Latest version details"),

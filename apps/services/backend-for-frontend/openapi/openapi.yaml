@@ -423,6 +423,32 @@ components:
         - active
         - total
       additionalProperties: false
+    EserviceDetailsPurposeCounters:
+      type: object
+      properties:
+        active:
+          description: Number of active items
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        total:
+          description: Total number of items
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        totalApiCallsPerDay:
+          description: Total API calls per day across all purposes
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+      required:
+        - active
+        - total
+        - totalApiCallsPerDay
+      additionalProperties: false
     EserviceDetails:
       type: object
       properties:
@@ -459,7 +485,7 @@ components:
         purposes:
           description: Purpose counters
           allOf:
-            - $ref: "#/components/schemas/EserviceDetailsCounters"
+            - $ref: "#/components/schemas/EserviceDetailsPurposeCounters"
         state:
           description: State of the latest version
           allOf:
