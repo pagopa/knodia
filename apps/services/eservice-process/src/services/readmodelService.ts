@@ -43,7 +43,7 @@ export function readmodelServiceBuilder(
       return await readmodelDb.transaction(async (tx) => {
         const subquery = tx
           .select({
-            versionNumber: readmodelEserviceVersion.versionNumber,
+            id: readmodelEserviceVersion.id,
           })
           .from(readmodelEserviceVersion)
           .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
@@ -57,10 +57,7 @@ export function readmodelServiceBuilder(
             version: readmodelEserviceVersion,
           })
           .from(readmodelEserviceVersion)
-          .innerJoin(
-            subquery,
-            eq(readmodelEserviceVersion.versionNumber, subquery.versionNumber),
-          )
+          .innerJoin(subquery, eq(readmodelEserviceVersion.id, subquery.id))
           .leftJoin(
             readmodelEserviceVersionRequiredAttribute,
             eq(
