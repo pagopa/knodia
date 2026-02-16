@@ -5,11 +5,19 @@ import {
   type CompactEservice,
   type CompactEserviceVersion,
   EserviceAccessTokenType,
+  EserviceInterface,
   EserviceMode,
   EserviceVersionState,
+  type RequiredAttribute,
+  type RequiredAttributeGroup,
 } from "@knodia/eservice-models";
 
-import type { EserviceSQL, EserviceVersionSQL } from "../eservice.ts";
+import type {
+  EserviceInterfaceSQL,
+  EserviceSQL,
+  EserviceVersionRequiredAttributeSQL,
+  EserviceVersionSQL,
+} from "../eservice.ts";
 
 import { toEservicesAggregator } from "./aggregators.ts";
 
@@ -61,3 +69,34 @@ export const toCompactEservices = (
   );
   return aggregatedEserviceSQL.eservicesSQL.map(toCompactEservice);
 };
+
+export const toGroupedRequiredAttributes = (
+  requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[],
+): RequiredAttributeGroup[] => {
+  const groupsMap = new Map<number, RequiredAttribute[]>();
+
+  for (const attribute of requiredAttributesSQL) {
+    const group = groupsMap.get(attribute.groupId) ?? [];
+    group.push({ code: attribute.code, scheme: attribute.scheme });
+    groupsMap.set(attribute.groupId, group);
+  }
+
+  const sortedGroups = Array.from(groupsMap.entries())
+    .sort(([groupId1], [groupId2]) => groupId1 - groupId2)
+    .map(([, attributes]) => attributes);
+
+  return sortedGroups;
+};
+
+export const toEserviceVersionInterface = (
+  interfaceSQL: EserviceInterfaceSQL,
+): EserviceInterface => ({
+  checksum: interfaceSQL.checksum,
+  contentType: interfaceSQL.contentType,
+  createdAt: new Date(interfaceSQL.createdAt),
+  id: unsafeBrandId(interfaceSQL.id),
+  name: interfaceSQL.name,
+  path: interfaceSQL.path,
+  prettyName: interfaceSQL.prettyName,
+  updatedAt: new Date(interfaceSQL.updatedAt),
+});

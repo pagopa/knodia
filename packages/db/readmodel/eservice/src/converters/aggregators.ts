@@ -5,12 +5,9 @@ import { aggregateByPKString } from "@knodia/db-readmodel-commons/utils";
 import {
   Eservice,
   EserviceAccessTokenType,
-  EserviceInterface,
   EserviceMode,
   EserviceVersion,
   EserviceVersionState,
-  type RequiredAttribute,
-  type RequiredAttributeGroup,
 } from "@knodia/eservice-models";
 
 import {
@@ -26,6 +23,10 @@ import {
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
+import {
+  toEserviceVersionInterface,
+  toGroupedRequiredAttributes,
+} from "./converters.ts";
 
 type EserviceAggregatorInput = {
   category?: EserviceCategorySQL | null;
@@ -56,37 +57,6 @@ const aggregateEserviceVersion = ({
   state: EserviceVersionState.parse(versionSQL.state),
   updatedAt: new Date(versionSQL.updatedAt),
   versionNumber: versionSQL.versionNumber,
-});
-
-const toGroupedRequiredAttributes = (
-  requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[],
-): RequiredAttributeGroup[] => {
-  const groupsMap = new Map<number, RequiredAttribute[]>();
-
-  for (const attribute of requiredAttributesSQL) {
-    const group = groupsMap.get(attribute.groupId) ?? [];
-    group.push({ code: attribute.code, scheme: attribute.scheme });
-    groupsMap.set(attribute.groupId, group);
-  }
-
-  const sortedGroups = Array.from(groupsMap.entries())
-    .sort(([groupId1], [groupId2]) => groupId1 - groupId2)
-    .map(([, attributes]) => attributes);
-
-  return sortedGroups;
-};
-
-const toEserviceVersionInterface = (
-  interfaceSQL: EserviceInterfaceSQL,
-): EserviceInterface => ({
-  checksum: interfaceSQL.checksum,
-  contentType: interfaceSQL.contentType,
-  createdAt: new Date(interfaceSQL.createdAt),
-  id: unsafeBrandId(interfaceSQL.id),
-  name: interfaceSQL.name,
-  path: interfaceSQL.path,
-  prettyName: interfaceSQL.prettyName,
-  updatedAt: new Date(interfaceSQL.updatedAt),
 });
 
 const buildEservice = ({
