@@ -17,6 +17,8 @@ import { getAllEservices } from "./utils.ts";
 
 describe("E-service read model writer tests", async () => {
   it("EserviceVersionActivatedV1", async () => {
+    await runConsumer([topicName], processMessage, kafkaConfig);
+
     const eservice = getMockEservice();
 
     const eventData = protobufBinaryCodec(
@@ -35,8 +37,6 @@ describe("E-service read model writer tests", async () => {
       streamId: eservice.id,
       topicName,
     });
-
-    await runConsumer([topicName], processMessage, kafkaConfig);
 
     let retrievedEservices: WithMetadata<Eservice>[] = [];
     await expect
