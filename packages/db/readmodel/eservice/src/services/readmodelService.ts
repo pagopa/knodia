@@ -8,10 +8,6 @@ import { eq } from "drizzle-orm";
 import { aggregateEservice } from "../converters/aggregators.ts";
 import { readmodelEservice, readmodelEserviceCategory } from "../eservice.ts";
 
-export type EserviceReadmodelService = ReturnType<
-  typeof eserviceReadmodelServiceBuilder
->;
-
 export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async getEServiceById(
