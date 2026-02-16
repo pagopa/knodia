@@ -5,14 +5,12 @@ import { type ConsumptionEserviceSearchParams } from "../models/search-params";
 
 // TODO: Replace with real data
 const knodeOptions = [
-  { id: "sll", label: "All Knodes" },
   { id: "knode-1", label: "Knode 1" },
   { id: "knode-2", label: "Knode 2" },
   { id: "knode-3", label: "Knode 3" },
 ];
 
 const categoryOptions = [
-  { id: "all", label: "All Categories" },
   { id: "cat1", label: "Category 1" },
   { id: "cat2", label: "Category 2" },
   { id: "cat3", label: "Category 3" },
@@ -50,7 +48,6 @@ export function ConsumptionEserviceSearchFilters({
           children={(field) => (
             <Select
               id={field.name}
-              items={knodeOptions}
               label="Knode"
               name={field.name}
               onBlur={field.handleBlur}
@@ -58,11 +55,11 @@ export function ConsumptionEserviceSearchFilters({
               placeholder="Select a Knode"
               value={field.state.value}
             >
-              {(option) => (
+              {knodeOptions.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
-              )}
+              ))}
             </Select>
           )}
           name="knode"
@@ -73,7 +70,6 @@ export function ConsumptionEserviceSearchFilters({
           children={(field) => (
             <Select
               id={field.name}
-              items={categoryOptions}
               label="Category"
               name={field.name}
               onBlur={field.handleBlur}
@@ -81,11 +77,11 @@ export function ConsumptionEserviceSearchFilters({
               placeholder="Select a Category"
               value={field.state.value}
             >
-              {(option) => (
+              {categoryOptions.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
-              )}
+              ))}
             </Select>
           )}
           name="category"
