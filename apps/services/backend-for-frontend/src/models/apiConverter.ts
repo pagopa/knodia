@@ -22,7 +22,7 @@ export const toAPI_EserviceDetails = (
   version: eserviceProcessApi.EserviceVersion,
   counters: {
     agreements: { active: number; total: number };
-    purposes: { active: number; total: number };
+    purposes: { active: number; total: number; totalApiCallsPerDay: number };
   },
 ): API_EserviceDetails => ({
   agreements: counters.agreements,

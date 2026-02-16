@@ -1081,6 +1081,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../db/readmodel/commons
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../db/readmodel/eservice
