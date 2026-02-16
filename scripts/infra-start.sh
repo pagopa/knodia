@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Pre-create bind mount directory so it's owned by the host user
+mkdir -p docker/keys
+
 docker compose -f docker/compose.yaml up -d --wait
 
 CONNECTORS_URL="localhost:8083/connectors"

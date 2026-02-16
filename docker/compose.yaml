@@ -263,6 +263,34 @@ services:
       - event-store
       - readmodel
 
+  # Local KMS - generates RSA key pairs (cognito + session) and JWKS files for local development
+  kms-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    container_name: knodia-kms-setup
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./keys:/keys
+      - ../scripts/local-kms/kms-setup.mjs:/kms-setup.mjs:ro
+    entrypoint: ["node", "/kms-setup.mjs"]
+
+  # Serves JWKS endpoints for local token validation
+  # - http://localhost:4500/cognito/.well-known/jwks.json
+  # - http://localhost:4500/session/.well-known/jwks.json
+  local-kms:
+    security_opt:
+      - no-new-privileges:true
+    image: nginx:1.28-alpine@sha256:15e96e59aa3b0aada3a121296e3bce117721f42d88f5f64217ef4b18f458c6ab
+    container_name: knodia-local-kms
+    ports:
+      - 4500:80
+    volumes:
+      - ./keys/jwks:/usr/share/nginx/html:ro
+    depends_on:
+      kms-setup:
+        condition: service_completed_successfully
+
 volumes:
   event-store-data:
   readmodel-data:
