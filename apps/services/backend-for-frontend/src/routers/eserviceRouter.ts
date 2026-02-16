@@ -192,7 +192,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         toAPI_ProducerEserviceDetails({
           counters: {
             agreements: { active: 3, total: 5 },
-            purposes: { active: 1, total: 2 },
+            purposes: { active: 1, total: 2, totalApiCallsPerDay: 15000 },
           },
           eservice,
           latestVersion,

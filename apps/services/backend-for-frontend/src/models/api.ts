@@ -168,6 +168,8 @@ const API_EserviceVersion = z
     accessTokenDuration: z
       .number()
       .int()
+      .min(minAccessTokenDuration)
+      .max(maxAccessTokenDuration)
       .describe("Duration of the access token in seconds")
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.describe("Type of the access token"),
@@ -176,11 +178,15 @@ const API_EserviceVersion = z
     maxDailyCallsPerConsumer: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per consumer")
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     requiredAttributes: z
@@ -191,6 +197,7 @@ const API_EserviceVersion = z
     versionNumber: z
       .number()
       .int()
+      .min(1)
       .describe("Version number")
       .meta({ format: "int32" }),
   })
@@ -213,6 +220,16 @@ const API_ProducerEserviceDetailsCounters = z
   })
   .meta({ id: "ProducerEserviceDetailsCounters" });
 
+const API_ProducerEserviceDetailsPurposeCounters =
+  API_ProducerEserviceDetailsCounters.extend({
+    totalApiCallsPerDay: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Total API calls per day across all purposes")
+      .meta({ format: "int32" }),
+  }).meta({ id: "ProducerEserviceDetailsPurposeCounters" });
+
 export const API_ProducerEserviceDetails = z
   .strictObject({
     agreements:
@@ -226,7 +243,8 @@ export const API_ProducerEserviceDetails = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    purposes: API_ProducerEserviceDetailsCounters.describe("Purpose counters"),
+    purposes:
+      API_ProducerEserviceDetailsPurposeCounters.describe("Purpose counters"),
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion.describe("Latest version details"),
   })
