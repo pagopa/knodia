@@ -1,4 +1,4 @@
-import { Button } from "@knodia/ui-kit/ui";
+import { ButtonLink } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
@@ -12,7 +12,14 @@ function RouteComponent() {
   return (
     <>
       <PageHeader
-        actions={<Button hierarchy="brand">Search new E-Services</Button>}
+        actions={
+          <ButtonLink
+            hierarchy="brand"
+            href={{ to: "/consumption/e-services/search" }}
+          >
+            Search new E-Services
+          </ButtonLink>
+        }
         overline="Consumption"
         title="E-Services"
       />
