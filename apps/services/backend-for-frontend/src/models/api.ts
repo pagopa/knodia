@@ -38,7 +38,7 @@ const API_Eservice = z
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
-export type API_Eservice = z.infer<typeof API_Eservice>;
+type API_Eservice = z.infer<typeof API_Eservice>;
 
 export const API_Eservices = z
   .strictObject({

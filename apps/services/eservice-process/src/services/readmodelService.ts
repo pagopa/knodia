@@ -18,7 +18,7 @@ import {
   readmodelEserviceVersion,
 } from "@knodia/db-readmodel-eservice";
 import {
-  toCompactEservices,
+  aggregateEservices,
   toCompactEserviceVersion,
 } from "@knodia/db-readmodel-eservice/converters";
 import { type CompactEservice } from "@knodia/eservice-models";
@@ -139,7 +139,10 @@ export function readmodelServiceBuilder(
 
         const [queryRes, totalCount] = await Promise.all([
           tx
-            .select(getTableColumns(readmodelEservice))
+            .select({
+              category: readmodelEserviceCategory,
+              eservice: readmodelEservice,
+            })
             .from(readmodelEservice)
             .innerJoin(
               paginatedIds,
@@ -153,7 +156,7 @@ export function readmodelServiceBuilder(
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const eservices = toCompactEservices(queryRes);
+        const eservices = aggregateEservices(queryRes);
 
         const results = eservices.map((e) => ({
           ...e.data,

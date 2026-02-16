@@ -108,8 +108,7 @@ export const Eservice = z.strictObject({
 });
 export type Eservice = z.infer<typeof Eservice>;
 
-const CompactEservice = Eservice.omit({
-  categories: true,
+export const CompactEservice = Eservice.omit({
   versions: true,
 });
 export type CompactEservice = z.infer<typeof CompactEservice>;

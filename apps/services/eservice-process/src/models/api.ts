@@ -51,6 +51,7 @@ export type API_GetEservicesQueryParams = z.infer<
 
 export const API_Eservice = z
   .strictObject({
+    categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
     id: z.uuid(),

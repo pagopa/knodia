@@ -45,7 +45,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const response = await getEservice(VALID_ESERVICE_ID);
     const body = response.json<API_Eservice>();
 
-    expect(body).toEqual(expectedItem);
+    expect(body).toEqual(toExpectAPI_Eservice(expectedItem!));
   });
 
   it("should return 404 for non-existent e-service id", async () => {

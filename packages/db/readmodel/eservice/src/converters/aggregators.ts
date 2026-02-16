@@ -1,7 +1,10 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
-import { aggregateByPKString } from "@knodia/db-readmodel-commons/utils";
+import {
+  aggregateByPKString,
+  throwIfMultipleOrEmpty,
+} from "@knodia/db-readmodel-commons/utils";
 import {
   Eservice,
   EserviceAccessTokenType,
@@ -118,6 +121,21 @@ const buildEservice = ({
   };
 };
 
+export const aggregateEservice = (
+  queryRes: EserviceAggregatorInput,
+): WithMetadata<Eservice> => {
+  const aggregatedEservice = toEserviceAggregator(queryRes);
+
+  return buildEservice({
+    eserviceCategoriesSQL: aggregatedEservice.eserviceCategoriesSQL,
+    eserviceInterfacesSQL: aggregatedEservice.eserviceInterfacesSQL,
+    eserviceSQL: aggregatedEservice.eserviceSQL,
+    eserviceVersionRequiredAttributesSQL:
+      aggregatedEservice.eserviceVersionRequiredAttributesSQL,
+    eserviceVersionsSQL: aggregatedEservice.eserviceVersionsSQL,
+  });
+};
+
 export const aggregateEservices = (
   queryRes: EserviceAggregatorInput,
 ): WithMetadata<Eservice>[] => {
@@ -169,7 +187,29 @@ const createEserviceSQLPropertyMap = <
     return acc;
   }, new Map<EserviceId, T[]>());
 
-export const toEservicesAggregator = (
+const toEserviceAggregator = (
+  queryRes: EserviceAggregatorInput,
+): EserviceItemsSQL => {
+  const {
+    categoriesSQL: categoriesSQL,
+    eservicesSQL: eservicesSQL,
+    interfacesSQL: interfacesSQL,
+    requiredAttributesSQL: requiredAttributesSQL,
+    versionsSQL: versionsSQL,
+  } = toEservicesAggregator(queryRes);
+
+  const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
+
+  return {
+    eserviceCategoriesSQL: categoriesSQL,
+    eserviceInterfacesSQL: interfacesSQL,
+    eserviceSQL,
+    eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
+    eserviceVersionsSQL: versionsSQL,
+  };
+};
+
+const toEservicesAggregator = (
   queryRes: EserviceAggregatorInput,
 ): {
   categoriesSQL: EserviceCategorySQL[];

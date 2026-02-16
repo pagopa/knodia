@@ -2,11 +2,9 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  type CompactEservice,
   type CompactEserviceVersion,
   EserviceAccessTokenType,
   EserviceInterface,
-  EserviceMode,
   EserviceVersionState,
   type RequiredAttribute,
   type RequiredAttributeGroup,
@@ -14,12 +12,9 @@ import {
 
 import type {
   EserviceInterfaceSQL,
-  EserviceSQL,
   EserviceVersionRequiredAttributeSQL,
   EserviceVersionSQL,
 } from "../eservice.ts";
-
-import { toEservicesAggregator } from "./aggregators.ts";
 
 export const toCompactEserviceVersion = (
   eserviceVersionSQL: EserviceVersionSQL,
@@ -40,35 +35,6 @@ export const toCompactEserviceVersion = (
   },
   metadata: { version: eserviceVersionSQL.metadataVersion },
 });
-
-export const toCompactEservice = (
-  eserviceSQL: EserviceSQL,
-): WithMetadata<CompactEservice> => ({
-  data: {
-    createdAt: new Date(eserviceSQL.createdAt),
-    description: eserviceSQL.description,
-    id: unsafeBrandId(eserviceSQL.id),
-    isConsumerOperatorIdentificationRequired:
-      eserviceSQL.isConsumerOperatorIdentificationRequired,
-    isSignalHubEnabled: eserviceSQL.isSignalHubEnabled,
-    mode: EserviceMode.parse(eserviceSQL.mode),
-    name: eserviceSQL.name,
-    producerId: unsafeBrandId(eserviceSQL.producerId),
-    updatedAt: new Date(eserviceSQL.updatedAt),
-  },
-  metadata: { version: eserviceSQL.metadataVersion },
-});
-
-export const toCompactEservices = (
-  eservicesSQL: EserviceSQL[],
-): WithMetadata<CompactEservice>[] => {
-  const aggregatedEserviceSQL = toEservicesAggregator(
-    eservicesSQL.map((eservice) => ({
-      eservice,
-    })),
-  );
-  return aggregatedEserviceSQL.eservicesSQL.map(toCompactEservice);
-};
 
 export const toGroupedRequiredAttributes = (
   requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[],

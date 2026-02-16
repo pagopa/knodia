@@ -1,27 +1,21 @@
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 
-import type {
-  API_Eservice,
-  API_EserviceDetails,
-  API_ProducerEservice,
-} from "./api.ts";
+import type { API_EserviceDetails, API_ProducerEservice } from "./api.ts";
 
 export const toAPI_ProducerEservice = ({
   activeAgreements,
   activePurposes,
-  categories,
   eservice,
   state,
 }: {
   activeAgreements: number;
   activePurposes: number;
-  categories: eserviceProcessApi.EserviceCategory[];
   eservice: eserviceProcessApi.Eservice;
   state: eserviceProcessApi.EserviceVersionState;
 }): API_ProducerEservice => ({
   activeAgreements: activeAgreements,
   activePurposes: activePurposes,
-  categories: categories,
+  categories: eservice.categories,
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,
@@ -70,24 +64,4 @@ export const toAPI_EserviceDetails = ({
     updatedAt: version.updatedAt,
     versionNumber: version.versionNumber,
   },
-});
-
-export const toAPI_Eservice = ({
-  categories,
-  eservice,
-}: {
-  categories: eserviceProcessApi.EserviceCategory[];
-  eservice: eserviceProcessApi.Eservice;
-}): API_Eservice => ({
-  categories,
-  createdAt: eservice.createdAt,
-  description: eservice.description,
-  id: eservice.id,
-  isConsumerOperatorIdentificationRequired:
-    eservice.isConsumerOperatorIdentificationRequired,
-  isSignalHubEnabled: eservice.isSignalHubEnabled,
-  mode: eservice.mode,
-  name: eservice.name,
-  producerId: eservice.producerId,
-  updatedAt: eservice.updatedAt,
 });

@@ -95,6 +95,27 @@ const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
   return pkColumns;
 };
 
+export const throwIfMultipleOrEmpty = <T extends { id: string }>(
+  items: T[],
+  entityName: string,
+): T => {
+  if (items.length === 0) {
+    throw genericInternalError(
+      `No ${entityName} found for the given unique filter`,
+    );
+  }
+
+  if (items.length > 1) {
+    const ids = items.map((item) => item.id).join(", ");
+    throw genericInternalError(
+      `Found more than one ${entityName} for a unique filter: ${ids}`,
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return items[0]!;
+};
+
 export function aggregateByPKString<
   Table extends AnyPgTable,
   T extends InferSelectModel<Table> & Record<string, unknown>,

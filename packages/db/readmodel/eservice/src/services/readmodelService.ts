@@ -3,10 +3,10 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { CompactEservice } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { eq, getTableColumns } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
-import { toCompactEservice } from "../converters/converters.ts";
-import { readmodelEservice } from "../eservice.ts";
+import { aggregateEservice } from "../converters/aggregators.ts";
+import { readmodelEservice, readmodelEserviceCategory } from "../eservice.ts";
 
 export type EserviceReadmodelService = ReturnType<
   typeof eserviceReadmodelServiceBuilder
@@ -17,17 +17,23 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getEServiceById(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<CompactEservice>> {
-      const queryResult = await readmodelDb
-        .select(getTableColumns(readmodelEservice))
+      const queryRes = await readmodelDb
+        .select({
+          category: readmodelEserviceCategory,
+          eservice: readmodelEservice,
+        })
         .from(readmodelEservice)
+        .leftJoin(
+          readmodelEserviceCategory,
+          eq(readmodelEserviceCategory.eserviceId, readmodelEservice.id),
+        )
         .where(eq(readmodelEservice.id, eserviceId));
 
-      const eserviceSQL = queryResult[0];
-      if (!eserviceSQL) {
+      if (queryRes.length === 0) {
         return undefined;
       }
 
-      return toCompactEservice(eserviceSQL);
+      return aggregateEservice(queryRes);
     },
   };
 }

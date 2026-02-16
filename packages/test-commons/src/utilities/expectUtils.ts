@@ -1,23 +1,38 @@
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  type CompactEservice,
+  CompactEservice,
   type CompactEserviceVersion,
   type Eservice,
   type EserviceVersion,
 } from "@knodia/eservice-models";
 import { expect } from "vitest";
 
-export function toExpectAPI_Eservice(eservice: CompactEservice) {
+export function toExpectAPI_Eservice(
+  eservice: Omit<
+    CompactEservice,
+    "createdAt" | "id" | "producerId" | "updatedAt"
+  > & {
+    createdAt: Date | string;
+    id: string;
+    producerId: string;
+    updatedAt: Date | string;
+  },
+) {
+  const toISOString = (value: Date | string) =>
+    value instanceof Date ? value.toISOString() : value;
+
   return {
-    createdAt: eservice.createdAt.toISOString(),
+    categories: expect.arrayContaining(eservice.categories),
+    createdAt: toISOString(eservice.createdAt),
     description: eservice.description,
-    id: eservice.id,
+    id: unsafeBrandId(eservice.id),
     isConsumerOperatorIdentificationRequired:
       eservice.isConsumerOperatorIdentificationRequired,
     isSignalHubEnabled: eservice.isSignalHubEnabled,
     mode: eservice.mode,
     name: eservice.name,
-    producerId: eservice.producerId,
-    updatedAt: eservice.updatedAt.toISOString(),
+    producerId: unsafeBrandId(eservice.producerId),
+    updatedAt: toISOString(eservice.updatedAt),
   };
 }
 

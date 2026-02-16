@@ -28,7 +28,6 @@ import {
   API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
 import {
-  toAPI_Eservice,
   toAPI_EserviceDetails,
   toAPI_ProducerEservice,
 } from "../models/apiConverter.ts";
@@ -57,13 +56,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         },
       });
 
-      res.send({
-        items: data.items.map((e) =>
-          // TODO: fetch categories with another process endpoint and pass them to the converter
-          toAPI_Eservice({ categories: [], eservice: e }),
-        ),
-        pagination: data.pagination,
-      });
+      res.send(data);
     },
     method: "GET",
     schema: {
@@ -178,7 +171,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           return toAPI_ProducerEservice({
             activeAgreements: idx + 5,
             activePurposes: idx + 1,
-            categories: [], // TODO: placeholder. Need to fetch categories with another process endpoint
             eservice,
             state: latestEserviceVersion.state,
           });

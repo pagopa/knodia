@@ -21,6 +21,7 @@ export const toAPI_EserviceVersion = (
 });
 
 export const toAPI_Eservice = (eservice: CompactEservice): API_Eservice => ({
+  categories: eservice.categories,
   createdAt: eservice.createdAt.toISOString(),
   description: eservice.description,
   id: eservice.id,
