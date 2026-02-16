@@ -30,6 +30,7 @@ import {
   ilike,
   inArray,
   or,
+  sql,
 } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
@@ -83,15 +84,14 @@ export function readmodelServiceBuilder(
         });
 
         const latestEserviceVersion = tx
-          .selectDistinctOn([readmodelEserviceVersion.eserviceId], {
-            eserviceId: readmodelEserviceVersion.eserviceId,
+          .select({
             state: readmodelEserviceVersion.state,
+            versionNumber: readmodelEserviceVersion.versionNumber,
           })
           .from(readmodelEserviceVersion)
-          .orderBy(
-            readmodelEserviceVersion.eserviceId,
-            desc(readmodelEserviceVersion.updatedAt),
-          )
+          .where(eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id))
+          .orderBy(desc(readmodelEserviceVersion.versionNumber))
+          .limit(1)
           .as("latestEserviceVersion");
 
         const createFilterQuery = () =>
@@ -102,10 +102,7 @@ export function readmodelServiceBuilder(
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
             )
-            .innerJoin(
-              latestEserviceVersion,
-              eq(readmodelEservice.id, latestEserviceVersion.eserviceId),
-            )
+            .innerJoinLateral(latestEserviceVersion, sql`true`)
             .where(
               and(
                 producerId
