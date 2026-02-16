@@ -80,6 +80,8 @@ export const API_EserviceVersion = z
     accessTokenDuration: z
       .number()
       .int()
+      .min(minAccessTokenDuration)
+      .max(maxAccessTokenDuration)
       .describe("Duration of the access token in seconds")
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.describe("Type of the access token"),
@@ -88,11 +90,15 @@ export const API_EserviceVersion = z
     maxDailyCallsPerConsumer: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per consumer")
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     requiredAttributes: z
@@ -103,6 +109,7 @@ export const API_EserviceVersion = z
     versionNumber: z
       .number()
       .int()
+      .min(1)
       .describe("Version number")
       .meta({ format: "int32" }),
   })
