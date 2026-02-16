@@ -15,6 +15,11 @@ services:
     command: -c 'max_connections=512' -c 'wal_level=logical'
     volumes:
       - event-store-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   readmodel:
     security_opt:
@@ -29,6 +34,53 @@ services:
       POSTGRES_DB: root
     volumes:
       - readmodel-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flyway-event-store:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-event-store
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
+    volumes:
+      - ../migration/event-store:/flyway/schemas:ro
+      - ../scripts/flyway:/flyway/scripts:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://event-store:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+      FLYWAY_PLACEHOLDERS_DEFAULT_PASSWORD: root
+    depends_on:
+      event-store:
+        condition: service_healthy
+
+  flyway-readmodel:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-readmodel
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
+    volumes:
+      - ../migration/read-model:/flyway/schemas:ro
+      - ../scripts/flyway:/flyway/scripts:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+      FLYWAY_PLACEHOLDERS_DEFAULT_PASSWORD: root
+    depends_on:
+      readmodel:
+        condition: service_healthy
 
   kafka:
     security_opt:
