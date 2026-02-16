@@ -28,11 +28,12 @@ export async function setupReadmodelTestContainer() {
 
   await createPostgresTemplateFromMigrations({
     connectionString: startedContainer.connectionString,
-    migrationFolders: [
-      fileURLToPath(
-        new URL(`../../../migration/read-model/eservice`, import.meta.url),
-      ),
-    ],
+    migrationsRoot: fileURLToPath(
+      new URL(`../../../migration/read-model`, import.meta.url),
+    ),
+    rolesMigrationFolder: fileURLToPath(
+      new URL(`../../../migration/local`, import.meta.url),
+    ),
     templateName: READMODEL_DB_TEMPLATE_NAME,
   });
 

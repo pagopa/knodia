@@ -1,5 +1,5 @@
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { GenericContainer } from "testcontainers";
 
@@ -21,14 +21,18 @@ export async function createPostgresDatabaseFromTemplate(
 
 export async function createPostgresTemplateFromMigrations({
   connectionString,
-  migrationFolders,
+  migrationsRoot,
+  rolesMigrationFolder,
   templateName,
 }: {
   connectionString: string;
-  migrationFolders: string[];
+  migrationsRoot: string;
+  rolesMigrationFolder: string;
   templateName: string;
 }) {
   await withAdminDb(connectionString, async (adminDb) => {
+    await applyMigrations(rolesMigrationFolder, adminDb);
+
     const existsResult = await adminDb.execute(
       `SELECT 1 FROM pg_database WHERE datname = '${templateName}'`,
     );
@@ -45,7 +49,7 @@ export async function createPostgresTemplateFromMigrations({
     const templateDb = drizzle(connectionString + `/${templateName}`);
 
     try {
-      await applyMigrations(migrationFolders, templateDb);
+      await applyMigrations(migrationsRoot, templateDb);
     } finally {
       await templateDb.$client.end();
     }
@@ -84,29 +88,29 @@ export async function startTestPostgresContainer({
 }
 
 /**
- * Applies SQL migrations from Flyway-style migration folders.
- * Reads .sql files, replaces ${NAMESPACE} placeholder, and executes them.
- * Flyway convention: V* (versioned) files run before R* (repeatable) files.
+ * Applies SQL migrations from a folder: executes .sql files in the folder itself,
+ * then iterates subfolders (one per domain schema) if exist and executes their .sql files.
  */
-async function applyMigrations(migrationFolders: string[], db: NodePgDatabase) {
-  for (const folder of migrationFolders) {
-    const files = readdirSync(folder).filter((f) => f.endsWith(".sql"));
+async function applyMigrations(folder: string, db: NodePgDatabase) {
+  const entries = readdirSync(folder);
 
-    // Flyway order: V* (versioned) first, then R* (repeatable)
-    const versionedFiles = files.filter((f) => f.startsWith("V")).sort();
-    const repeatableFiles = files.filter((f) => f.startsWith("R")).sort();
-    const orderedFiles = [...versionedFiles, ...repeatableFiles];
+  const sqlFiles = entries.filter((f) => f.endsWith(".sql")).sort();
+  for (const file of sqlFiles) {
+    const filePath = join(folder, file);
+    let sql = readFileSync(filePath, "utf-8");
 
-    for (const file of orderedFiles) {
-      const filePath = join(folder, file);
-      let sql = readFileSync(filePath, "utf-8");
+    sql = sql.replace(/\$\{NAMESPACE\}/g, TEST_NAMESPACE);
+    sql = sql.replace(/\$\{DEFAULT_PASSWORD\}/g, "test_password");
 
-      // Replace Flyway placeholders with test values
-      sql = sql.replace(/\$\{NAMESPACE\}/g, TEST_NAMESPACE);
-      sql = sql.replace(/\$\{DEFAULT_PASSWORD\}/g, "test_password");
+    await db.execute(sql);
+  }
 
-      await db.execute(sql);
-    }
+  const subfolders = entries
+    .filter((entry) => statSync(join(folder, entry)).isDirectory())
+    .sort();
+
+  for (const subfolder of subfolders) {
+    await applyMigrations(join(folder, subfolder), db);
   }
 }
 

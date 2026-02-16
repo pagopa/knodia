@@ -28,11 +28,12 @@ export async function setupEventstoreTestContainer() {
 
   await createPostgresTemplateFromMigrations({
     connectionString: startedContainer.connectionString,
-    migrationFolders: [
-      fileURLToPath(
-        new URL(`../../../migration/event-store/eservice`, import.meta.url),
-      ),
-    ],
+    migrationsRoot: fileURLToPath(
+      new URL(`../../../migration/event-store`, import.meta.url),
+    ),
+    rolesMigrationFolder: fileURLToPath(
+      new URL(`../../../migration/local`, import.meta.url),
+    ),
     templateName: EVENTSTORE_DB_TEMPLATE_NAME,
   });
 
