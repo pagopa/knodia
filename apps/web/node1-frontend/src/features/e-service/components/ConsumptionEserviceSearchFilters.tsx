@@ -48,6 +48,7 @@ export function ConsumptionEserviceSearchFilters({
           children={(field) => (
             <Select
               id={field.name}
+              isClearable
               label="Knode"
               name={field.name}
               onBlur={field.handleBlur}
@@ -70,6 +71,7 @@ export function ConsumptionEserviceSearchFilters({
           children={(field) => (
             <Select
               id={field.name}
+              isClearable
               label="Category"
               name={field.name}
               onBlur={field.handleBlur}
