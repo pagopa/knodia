@@ -326,6 +326,57 @@ components:
       required:
         - id
       additionalProperties: false
+    ProducerEservice:
+      type: object
+      properties:
+        activeAgreements:
+          description: Number of active agreements
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        activePurposes:
+          description: Number of active purposes
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - activeAgreements
+        - activePurposes
+        - categories
+        - id
+        - mode
+        - name
+        - state
+      additionalProperties: false
+    ProducerEservices:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProducerEservice"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - items
+        - pagination
+      additionalProperties: false
     EserviceVersion:
       type: object
       properties:
@@ -635,54 +686,8 @@ paths:
             application/json:
               schema:
                 description: Producer E-services retrieved successfully
-                type: object
-                properties:
-                  items:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        activeAgreements:
-                          description: Number of active agreements
-                          format: int32
-                          type: integer
-                          minimum: 0
-                          maximum: 9007199254740991
-                        activePurposes:
-                          description: Number of active purposes
-                          format: int32
-                          type: integer
-                          minimum: 0
-                          maximum: 9007199254740991
-                        categories:
-                          type: array
-                          items:
-                            $ref: "#/components/schemas/EserviceCategory"
-                        id:
-                          type: string
-                          format: uuid
-                          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-                        mode:
-                          $ref: "#/components/schemas/EserviceMode"
-                        name:
-                          $ref: "#/components/schemas/LocalizedName"
-                        state:
-                          $ref: "#/components/schemas/EserviceVersionState"
-                      required:
-                        - activeAgreements
-                        - activePurposes
-                        - categories
-                        - id
-                        - mode
-                        - name
-                        - state
-                      additionalProperties: false
-                  pagination:
-                    $ref: "#/components/schemas/Pagination"
-                required:
-                  - items
-                  - pagination
-                additionalProperties: false
+                allOf:
+                  - $ref: "#/components/schemas/ProducerEservices"
         "400":
           description: Bad Request
           content:

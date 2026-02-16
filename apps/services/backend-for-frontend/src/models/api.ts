@@ -131,25 +131,27 @@ export const API_CreatedResource = z
   .meta({ id: "CreatedResource" });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
 
-export const API_ProducerEservice = z.strictObject({
-  activeAgreements: z
-    .number()
-    .int()
-    .min(0)
-    .describe("Number of active agreements")
-    .meta({ format: "int32" }),
-  activePurposes: z
-    .number()
-    .int()
-    .min(0)
-    .describe("Number of active purposes")
-    .meta({ format: "int32" }),
-  categories: z.array(API_EserviceCategory),
-  id: z.uuid(),
-  mode: API_EserviceMode,
-  name: API_LocalizedName,
-  state: API_EserviceVersionState,
-});
+export const API_ProducerEservice = z
+  .strictObject({
+    activeAgreements: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Number of active agreements")
+      .meta({ format: "int32" }),
+    activePurposes: z
+      .number()
+      .int()
+      .min(0)
+      .describe("Number of active purposes")
+      .meta({ format: "int32" }),
+    categories: z.array(API_EserviceCategory),
+    id: z.uuid(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "ProducerEservice" });
 export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
 export const API_ProducerEservicesQueryParams =
@@ -177,10 +179,12 @@ export type API_ProducerEservicesQueryParams = z.infer<
   typeof API_ProducerEservicesQueryParams
 >;
 
-export const API_ProducerEservices = z.strictObject({
-  items: z.array(API_ProducerEservice),
-  pagination: API_Pagination,
-});
+export const API_ProducerEservices = z
+  .strictObject({
+    items: z.array(API_ProducerEservice),
+    pagination: API_Pagination,
+  })
+  .meta({ id: "ProducerEservices" });
 export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;
 
 const API_EserviceVersion = z
