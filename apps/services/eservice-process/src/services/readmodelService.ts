@@ -3,7 +3,6 @@ import type {
   ListResult,
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
-import type { EserviceReadmodelService } from "@knodia/db-readmodel-eservice/services";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -22,6 +21,7 @@ import {
   aggregateEservices,
   aggregateEserviceVersion,
 } from "@knodia/db-readmodel-eservice/converters";
+import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { type Eservice } from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
@@ -29,10 +29,9 @@ import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
-export function readmodelServiceBuilder(
-  readmodelDb: NodePgDatabase,
-  eserviceReadmodelService: EserviceReadmodelService,
-) {
+export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+  const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
+
   return {
     async getEservice(
       eserviceId: EserviceId,
