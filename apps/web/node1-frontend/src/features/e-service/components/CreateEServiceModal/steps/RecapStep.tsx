@@ -1,8 +1,9 @@
 import { getCategory } from "@knodia/category-models";
-import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
+import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
 import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
 
+import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
@@ -110,12 +111,13 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
       <div className="body-sm-em text-primary-light-high-contrast">
         MD5 checksum
       </div>
-      <div className="flex gap-4 items-end">
+      <CopyableValueField value={checksum} />
+      {/* <div className="flex gap-4 items-end">
         <span className="body-md text-primary-light-high-contrast flex-1">
           {checksum}
         </span>
         <CopyButton textToCopy={checksum} />
-      </div>
+      </div> */}
     </div>
   );
 }
