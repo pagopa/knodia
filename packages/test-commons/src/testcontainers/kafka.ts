@@ -44,6 +44,14 @@ export async function setupKafkaTestProducer(broker: string) {
     kafkaClientId: `test-client-${randomId}`,
     kafkaLogLevel: logLevel.INFO,
   });
+
+  const admin = kafka.admin();
+  await admin.connect();
+  await admin.createTopics({
+    topics: [{ topic: topicName }],
+  });
+  await admin.disconnect();
+
   const producer = kafka.producer({
     "allow.auto.create.topics": true,
   });
