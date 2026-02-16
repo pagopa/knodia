@@ -84,6 +84,9 @@ catalogs:
     '@testcontainers/kafka':
       specifier: 11.11.0
       version: 11.11.0
+    '@testcontainers/postgresql':
+      specifier: 11.11.0
+      version: 11.11.0
     '@tsconfig/node-ts':
       specifier: 23.6.2
       version: 23.6.2
@@ -1100,6 +1103,9 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
       '@testcontainers/kafka':
+        specifier: 'catalog:'
+        version: 11.11.0
+      '@testcontainers/postgresql':
         specifier: 'catalog:'
         version: 11.11.0
       drizzle-orm:
@@ -3920,6 +3926,9 @@ packages:
 
   '@testcontainers/kafka@11.11.0':
     resolution: {integrity: sha512-DGGoQL0wELifn1GHrfe4tW7ejYDIXNFHisx6wlgFzQ1xqaN8ppYlO658Fgg8B9+rcl0wY2rZF0oF0QFADKgqEg==}
+
+  '@testcontainers/postgresql@11.11.0':
+    resolution: {integrity: sha512-Og64I/h5LKLVvUTkAcLeTXfFcMhh3dCHCypN3Uzd+tQMd70SpCfQ0LCP9v/U+MS7JBRzU9EmqhUFkTOm4hyZWw==}
 
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
@@ -10791,6 +10800,15 @@ snapshots:
   '@testcontainers/kafka@11.11.0':
     dependencies:
       compare-versions: 6.1.1
+      testcontainers: 11.11.0
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+      - supports-color
+
+  '@testcontainers/postgresql@11.11.0':
+    dependencies:
       testcontainers: 11.11.0
     transitivePeerDependencies:
       - bare-abort-controller
