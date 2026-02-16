@@ -265,7 +265,6 @@ export const API_EserviceDetails = z
     name: API_LocalizedName,
     producerId: z.uuid(),
     purposes: API_EserviceDetailsPurposeCounters.describe("Purpose counters"),
-    state: API_EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion.describe("Latest version details"),
   })

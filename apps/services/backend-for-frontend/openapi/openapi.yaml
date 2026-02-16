@@ -481,10 +481,6 @@ components:
           description: Purpose counters
           allOf:
             - $ref: "#/components/schemas/EserviceDetailsPurposeCounters"
-        state:
-          description: State of the latest version
-          allOf:
-            - $ref: "#/components/schemas/EserviceVersionState"
         updatedAt:
           type: string
           format: date-time
@@ -505,7 +501,6 @@ components:
         - name
         - producerId
         - purposes
-        - state
         - updatedAt
         - version
       additionalProperties: false
