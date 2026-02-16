@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
@@ -21,9 +20,7 @@ import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
   API_EserviceDetails,
-  API_Eservices,
   API_EserviceSeed,
-  API_EservicesQueryParams,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
@@ -42,36 +39,6 @@ interface EserviceRouterOptions {
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
-  fastify.route({
-    handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
-      const { data } = await eserviceProcessApi.getEservices({
-        client: eserviceProcessClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
-        query: {
-          limit: req.query.limit,
-          offset: req.query.offset,
-        },
-      });
-
-      res.send(data);
-    },
-    method: "GET",
-    schema: {
-      description: "Retrieve a list of E-services",
-      operationId: "getEservices",
-      querystring: API_EservicesQueryParams,
-      response: {
-        200: API_Eservices.describe("E-services retrieved successfully"),
-        400: API_Problem.describe("Bad Request"),
-      },
-      tags: [apiTags.eservice],
-    },
-    url: "/eservices",
-  });
-
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);

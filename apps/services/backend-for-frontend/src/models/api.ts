@@ -21,33 +21,6 @@ import {
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
-export const API_EservicesQueryParams = API_PaginationQueryParams; // TODO extend with filters
-export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
-
-const API_Eservice = z
-  .strictObject({
-    categories: z.array(API_EserviceCategory),
-    createdAt: z.iso.datetime(),
-    description: API_LocalizedDescription,
-    id: z.uuid(),
-    isConsumerOperatorIdentificationRequired: z.boolean(),
-    isSignalHubEnabled: z.boolean(),
-    mode: API_EserviceMode,
-    name: API_LocalizedName,
-    producerId: z.uuid(),
-    updatedAt: z.iso.datetime(),
-  })
-  .meta({ id: "Eservice" });
-type API_Eservice = z.infer<typeof API_Eservice>;
-
-export const API_Eservices = z
-  .strictObject({
-    items: z.array(API_Eservice),
-    pagination: API_Pagination,
-  })
-  .meta({ id: "Eservices" });
-export type API_Eservices = z.infer<typeof API_Eservices>;
-
 const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z
