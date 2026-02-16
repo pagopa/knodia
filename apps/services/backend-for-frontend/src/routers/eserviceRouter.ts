@@ -216,7 +216,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       res.send(
         toAPI_EserviceDetails(eservice, latestVersion, {
           agreements: { active: 3, total: 5 },
-          purposes: { active: 1, total: 2 },
+          purposes: { active: 1, total: 2, totalApiCallsPerDay: 15000 },
         }),
       );
     },
