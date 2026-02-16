@@ -102,11 +102,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const { data } = await eserviceService.getEserviceLatestVersion(
+      const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
       );
 
-      res.status(200).send(toAPI_EserviceVersion(data));
+      res.status(200).send(toAPI_EserviceVersion(eserviceVersion));
     },
     method: "GET",
     schema: {

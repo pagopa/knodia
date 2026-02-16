@@ -26,23 +26,19 @@ export const toAPI_ProducerEservice = ({
 });
 
 export const toAPI_ProducerEserviceDetails = ({
-  categories,
   counters,
   eservice,
-  requiredAttributes,
-  version,
+  latestVersion,
 }: {
-  categories: eserviceProcessApi.EserviceCategory[];
   counters: {
     agreements: { active: number; total: number };
     purposes: { active: number; total: number };
   };
   eservice: eserviceProcessApi.Eservice;
-  requiredAttributes: eserviceProcessApi.EserviceAttribute[][];
-  version: eserviceProcessApi.EserviceVersion;
+  latestVersion: eserviceProcessApi.EserviceVersion;
 }): API_ProducerEserviceDetails => ({
   agreements: counters.agreements,
-  categories: categories,
+  categories: eservice.categories,
   createdAt: eservice.createdAt,
   description: eservice.description,
   id: eservice.id,
@@ -55,16 +51,16 @@ export const toAPI_ProducerEserviceDetails = ({
   purposes: counters.purposes,
   updatedAt: eservice.updatedAt,
   version: {
-    accessTokenAudience: version.accessTokenAudience,
-    accessTokenDuration: version.accessTokenDuration,
-    accessTokenType: version.accessTokenType,
-    createdAt: version.createdAt,
-    id: version.id,
-    maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
-    maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
-    requiredAttributes: requiredAttributes,
-    state: version.state,
-    updatedAt: version.updatedAt,
-    versionNumber: version.versionNumber,
+    accessTokenAudience: latestVersion.accessTokenAudience,
+    accessTokenDuration: latestVersion.accessTokenDuration,
+    accessTokenType: latestVersion.accessTokenType,
+    createdAt: latestVersion.createdAt,
+    id: latestVersion.id,
+    maxDailyCallsPerConsumer: latestVersion.maxDailyCallsPerConsumer,
+    maxDailyCallsPerKnode: latestVersion.maxDailyCallsPerKnode,
+    requiredAttributes: latestVersion.requiredAttributes,
+    state: latestVersion.state,
+    updatedAt: latestVersion.updatedAt,
+    versionNumber: latestVersion.versionNumber,
   },
 });

@@ -1,11 +1,6 @@
-import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  type CompactEserviceVersion,
-  EserviceAccessTokenType,
   EserviceInterface,
-  EserviceVersionState,
   type RequiredAttribute,
   type RequiredAttributeGroup,
 } from "@knodia/eservice-models";
@@ -13,28 +8,7 @@ import {
 import type {
   EserviceInterfaceSQL,
   EserviceVersionRequiredAttributeSQL,
-  EserviceVersionSQL,
 } from "../eservice.ts";
-
-export const toCompactEserviceVersion = (
-  eserviceVersionSQL: EserviceVersionSQL,
-): WithMetadata<CompactEserviceVersion> => ({
-  data: {
-    accessTokenAudience: eserviceVersionSQL.accessTokenAudience,
-    accessTokenDuration: eserviceVersionSQL.accessTokenDuration,
-    accessTokenType: EserviceAccessTokenType.parse(
-      eserviceVersionSQL.accessTokenType,
-    ),
-    createdAt: new Date(eserviceVersionSQL.createdAt),
-    id: unsafeBrandId(eserviceVersionSQL.id),
-    maxDailyCallsPerConsumer: eserviceVersionSQL.maxDailyCallsPerConsumer,
-    maxDailyCallsPerKnode: eserviceVersionSQL.maxDailyCallsPerKnode,
-    state: EserviceVersionState.parse(eserviceVersionSQL.state),
-    updatedAt: new Date(eserviceVersionSQL.updatedAt),
-    versionNumber: eserviceVersionSQL.versionNumber,
-  },
-  metadata: { version: eserviceVersionSQL.metadataVersion },
-});
 
 export const toGroupedRequiredAttributes = (
   requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[],

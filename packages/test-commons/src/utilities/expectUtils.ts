@@ -49,6 +49,9 @@ export function toExpectAPI_EserviceVersion(
     id: eserviceVersion.id,
     maxDailyCallsPerConsumer: eserviceVersion.maxDailyCallsPerConsumer,
     maxDailyCallsPerKnode: eserviceVersion.maxDailyCallsPerKnode,
+    requiredAttributes: eserviceVersion.requiredAttributes.map((group) =>
+      expect.arrayContaining(group),
+    ),
     state: eserviceVersion.state,
     updatedAt: eserviceVersion.updatedAt.toISOString(),
     versionNumber: eserviceVersion.versionNumber,

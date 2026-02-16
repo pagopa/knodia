@@ -15,6 +15,7 @@ export const toAPI_EserviceVersion = (
   id: version.id,
   maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
   maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
+  requiredAttributes: version.requiredAttributes,
   state: version.state,
   updatedAt: version.updatedAt.toISOString(),
   versionNumber: version.versionNumber,

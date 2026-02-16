@@ -16,26 +16,16 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceVersion,
+  readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
 import {
   aggregateEservices,
-  toCompactEserviceVersion,
+  aggregateEserviceVersion,
 } from "@knodia/db-readmodel-eservice/converters";
 import { type CompactEservice } from "@knodia/eservice-models";
-import {
-  and,
-  desc,
-  eq,
-  getTableColumns,
-  ilike,
-  inArray,
-  or,
-  sql,
-} from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
-
-import { eserviceNotFound, eserviceVersionNotFound } from "../models/errors.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
@@ -46,29 +36,43 @@ export function readmodelServiceBuilder(
   return {
     async getEservice(
       eserviceId: EserviceId,
-    ): Promise<WithMetadata<CompactEservice>> {
-      const eservice =
-        await eserviceReadmodelService.getEServiceById(eserviceId);
-
-      if (!eservice) {
-        throw eserviceNotFound(eserviceId);
-      }
-
-      return eservice;
+    ): Promise<undefined | WithMetadata<CompactEservice>> {
+      return await eserviceReadmodelService.getEServiceById(eserviceId);
     },
     async getEserviceLatestVersion(eserviceId: EserviceId) {
-      const queryResult = await readmodelDb
-        .select(getTableColumns(readmodelEserviceVersion))
-        .from(readmodelEserviceVersion)
-        .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
-        .orderBy(desc(readmodelEserviceVersion.versionNumber))
-        .limit(1);
+      return await readmodelDb.transaction(async (tx) => {
+        const subquery = tx
+          .select({
+            versionNumber: readmodelEserviceVersion.versionNumber,
+          })
+          .from(readmodelEserviceVersion)
+          .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
+          .orderBy(desc(readmodelEserviceVersion.versionNumber))
+          .limit(1)
+          .as("latestVersion");
 
-      const eserviceVersionSQL = queryResult[0];
-      if (!eserviceVersionSQL) {
-        throw eserviceVersionNotFound(eserviceId);
-      }
-      return toCompactEserviceVersion(eserviceVersionSQL);
+        const queryRes = await tx
+          .select({
+            requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+            version: readmodelEserviceVersion,
+          })
+          .from(readmodelEserviceVersion)
+          .innerJoin(
+            subquery,
+            eq(readmodelEserviceVersion.versionNumber, subquery.versionNumber),
+          )
+          .leftJoin(
+            readmodelEserviceVersionRequiredAttribute,
+            eq(
+              readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
+              readmodelEserviceVersion.id,
+            ),
+          )
+          .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
+          .orderBy(desc(readmodelEserviceVersion.versionNumber));
+
+        return aggregateEserviceVersion(queryRes);
+      });
     },
     async getEservices(
       params: API_GetEservicesQueryParams,

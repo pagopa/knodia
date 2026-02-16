@@ -190,14 +190,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
       res.send(
         toAPI_ProducerEserviceDetails({
-          categories: [], // TODO: placeholder. Need to fetch categories with another process endpoint
           counters: {
             agreements: { active: 3, total: 5 },
             purposes: { active: 1, total: 2 },
           },
           eservice,
-          requiredAttributes: [], // TODO: placeholder. Need to fetch required attributes with another process endpoint
-          version: latestVersion,
+          latestVersion,
         }),
       );
     },

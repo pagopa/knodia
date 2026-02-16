@@ -83,7 +83,6 @@ export type EserviceVersion = z.infer<typeof EserviceVersion>;
 
 const CompactEserviceVersion = EserviceVersion.omit({
   interfaceDocument: true,
-  requiredAttributes: true,
 });
 export type CompactEserviceVersion = z.infer<typeof CompactEserviceVersion>;
 

@@ -21,7 +21,12 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { invalidAttribute, invalidCategory } from "../models/errors.ts";
+import {
+  eserviceNotFound,
+  eserviceVersionNotFound,
+  invalidAttribute,
+  invalidCategory,
+} from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
@@ -109,10 +114,23 @@ export function eserviceServiceBuilder(
     async getEservice(
       eserviceId: EserviceId,
     ): Promise<WithMetadata<CompactEservice>> {
-      return await readmodelService.getEservice(eserviceId);
+      const eservice = await readmodelService.getEservice(eserviceId);
+
+      if (!eservice) {
+        throw eserviceNotFound(eserviceId);
+      }
+
+      return eservice;
     },
     async getEserviceLatestVersion(eserviceId: EserviceId) {
-      return await readmodelService.getEserviceLatestVersion(eserviceId);
+      const eserviceVersion =
+        await readmodelService.getEserviceLatestVersion(eserviceId);
+
+      if (!eserviceVersion) {
+        throw eserviceVersionNotFound(eserviceId);
+      }
+
+      return eserviceVersion;
     },
     async getEservices(
       params: API_GetEservicesQueryParams,

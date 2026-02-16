@@ -255,6 +255,13 @@ components:
           type: integer
           minimum: -9007199254740991
           maximum: 9007199254740991
+        requiredAttributes:
+          description: Required attributes for the E-service
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
         state:
           description: State of the version
           allOf:
@@ -277,6 +284,7 @@ components:
         - id
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
+        - requiredAttributes
         - state
         - updatedAt
         - versionNumber

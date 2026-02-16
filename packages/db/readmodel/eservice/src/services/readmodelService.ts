@@ -29,10 +29,6 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         )
         .where(eq(readmodelEservice.id, eserviceId));
 
-      if (queryRes.length === 0) {
-        return undefined;
-      }
-
       return aggregateEservice(queryRes);
     },
   };
