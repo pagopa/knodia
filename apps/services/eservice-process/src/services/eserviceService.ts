@@ -1,4 +1,5 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
+import type { ListResult } from "@knodia/db-readmodel-commons";
 
 import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";
@@ -14,8 +15,9 @@ import { Eservice } from "@knodia/eservice-models";
 
 import type {
   API_EserviceSeed,
-  API_EservicesQueryParams,
+  API_GetEservicesQueryParams,
 } from "../models/api.ts";
+import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   eserviceNotFound,
@@ -30,6 +32,7 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
+  readmodelService: ReadmodelService,
 ) {
   return {
     async createEservice(
@@ -107,6 +110,11 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
+    async getEservices(
+      params: API_GetEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      return await readmodelService.getEservices(params);
+    },
     getMockEservice(eserviceId: EserviceId): Eservice {
       const eservices = generateMockEservices();
       const eservice = eservices.find((e) => e.id === eserviceId);
@@ -126,63 +134,6 @@ export function eserviceServiceBuilder(
       }
 
       return getLatestVersion(eservice);
-    },
-    getMockEservices(params: API_EservicesQueryParams): {
-      items: Eservice[];
-      pagination: { limit: number; offset: number; total: number };
-    } {
-      const { limit, mode, offset, producerId, q, sortOrder, state } = params;
-
-      // TODO: replace mock data, filtering, and sorting with real database queries (read model)
-      let eservices = generateMockEservices(producerId);
-
-      // Filter by producerId
-      if (producerId) {
-        eservices = eservices.filter((e) => e.producerId === producerId);
-      }
-
-      // Filter by search query (name, description, categories)
-      // TODO: currently hardcoded to .en, should filter by the user's current language
-      if (q) {
-        const query = q.toLowerCase();
-        eservices = eservices.filter(
-          (e) =>
-            e.name.en.toLowerCase().includes(query) ||
-            e.description.en.toLowerCase().includes(query) ||
-            // TODO: filter by category name instead of code when using real data
-            e.categories.some((c) => c.code.toLowerCase().includes(query)),
-        );
-      }
-
-      // Filter by state
-      if (state && state.length > 0) {
-        eservices = eservices.filter((e) =>
-          state.includes(getLatestVersion(e).state),
-        );
-      }
-
-      // Filter by mode
-      if (mode) {
-        eservices = eservices.filter((e) => e.mode === mode);
-      }
-
-      // Sort by name (the only supported sort field)
-      // TODO: currently hardcoded to .en, should sort by the user's current language
-      const direction = sortOrder === "asc" ? 1 : -1;
-      eservices.sort((a, b) => a.name.en.localeCompare(b.name.en) * direction);
-
-      // Paginate
-      const total = eservices.length;
-      const paginatedItems = eservices.slice(offset, offset + limit);
-
-      return {
-        items: paginatedItems,
-        pagination: {
-          limit,
-          offset,
-          total,
-        },
-      };
     },
   };
 }
