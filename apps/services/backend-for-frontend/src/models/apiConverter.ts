@@ -1,6 +1,9 @@
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 
-import type { API_EserviceDetails, API_ProducerEservice } from "./api.ts";
+import type {
+  API_ProducerEservice,
+  API_ProducerEserviceDetails,
+} from "./api.ts";
 
 export const toAPI_ProducerEservice = ({
   activeAgreements,
@@ -22,7 +25,7 @@ export const toAPI_ProducerEservice = ({
   state,
 });
 
-export const toAPI_EserviceDetails = ({
+export const toAPI_ProducerEserviceDetails = ({
   categories,
   counters,
   eservice,
@@ -37,7 +40,7 @@ export const toAPI_EserviceDetails = ({
   eservice: eserviceProcessApi.Eservice;
   requiredAttributes: eserviceProcessApi.EserviceAttribute[][];
   version: eserviceProcessApi.EserviceVersion;
-}): API_EserviceDetails => ({
+}): API_ProducerEserviceDetails => ({
   agreements: counters.agreements,
   categories: categories,
   createdAt: eservice.createdAt,

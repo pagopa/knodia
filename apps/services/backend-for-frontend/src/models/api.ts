@@ -196,7 +196,7 @@ const API_EserviceVersion = z
   })
   .meta({ id: "EserviceVersion" });
 
-const API_EserviceDetailsCounters = z
+const API_ProducerEserviceDetailsCounters = z
   .strictObject({
     active: z
       .number()
@@ -211,11 +211,12 @@ const API_EserviceDetailsCounters = z
       .describe("Total number of items")
       .meta({ format: "int32" }),
   })
-  .meta({ id: "EserviceDetailsCounters" });
+  .meta({ id: "ProducerEserviceDetailsCounters" });
 
-export const API_EserviceDetails = z
+export const API_ProducerEserviceDetails = z
   .strictObject({
-    agreements: API_EserviceDetailsCounters.describe("Agreement counters"),
+    agreements:
+      API_ProducerEserviceDetailsCounters.describe("Agreement counters"),
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
@@ -225,9 +226,11 @@ export const API_EserviceDetails = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    purposes: API_EserviceDetailsCounters.describe("Purpose counters"),
+    purposes: API_ProducerEserviceDetailsCounters.describe("Purpose counters"),
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion.describe("Latest version details"),
   })
-  .meta({ id: "EserviceDetails" });
-export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
+  .meta({ id: "ProducerEserviceDetails" });
+export type API_ProducerEserviceDetails = z.infer<
+  typeof API_ProducerEserviceDetails
+>;

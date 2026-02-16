@@ -19,14 +19,14 @@ import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
-  API_EserviceDetails,
   API_EserviceSeed,
+  API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
 import {
-  toAPI_EserviceDetails,
   toAPI_ProducerEservice,
+  toAPI_ProducerEserviceDetails,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -189,7 +189,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       // TODO: fetch real counts from agreement-process and purpose-process
       // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
       res.send(
-        toAPI_EserviceDetails({
+        toAPI_ProducerEserviceDetails({
           categories: [], // TODO: placeholder. Need to fetch categories with another process endpoint
           counters: {
             agreements: { active: 3, total: 5 },
@@ -204,10 +204,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description: "Retrieve an E-service with all its details",
-      operationId: "getEserviceDetails",
+      operationId: "getProducerEserviceDetails",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_EserviceDetails.describe(
+        200: API_ProducerEserviceDetails.describe(
           "E-service details retrieved successfully",
         ),
         400: API_Problem.describe("Bad Request"),
