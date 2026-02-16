@@ -117,14 +117,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
         const eservices = aggregateEservices(toEservicesAggregator(queryRes));
 
-        const results = eservices.map((e) => ({
-          ...e.data,
-          // TODO: add real data, also update the return type
-          activeAgreements: 0,
-          activePurposes: 0,
-        }));
-
-        return { results, totalCount };
+        return {
+          results: eservices.map((e) => e.data),
+          totalCount,
+        };
       });
     },
   };
