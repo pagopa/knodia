@@ -1,4 +1,4 @@
-import type { Eservice } from "@knodia/bff-client";
+import type { EserviceDetails } from "@knodia/bff-client";
 
 import { ProductionEserviceDetailsContext } from "./useProductionEserviceDetailsContext";
 
@@ -7,10 +7,10 @@ export function ProductionEserviceDetailsProvider({
   eservice,
 }: {
   children: React.ReactNode;
-  eservice: Eservice;
+  eservice: EserviceDetails;
 }) {
   return (
-    <ProductionEserviceDetailsContext.Provider value={{ eservice }}>
+    <ProductionEserviceDetailsContext.Provider value={eservice}>
       {children}
     </ProductionEserviceDetailsContext.Provider>
   );

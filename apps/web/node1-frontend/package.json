@@ -24,6 +24,7 @@
     "@tanstack/react-router-devtools": "catalog:",
     "axios": "catalog:",
     "react": "catalog:",
+    "react-aria": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
     "spark-md5": "catalog:",
