@@ -40,6 +40,50 @@ services:
       timeout: 5s
       retries: 5
 
+  flyway-roles-event-store:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-roles-event-store
+    command: migrate
+    volumes:
+      - ../migration/local/event_store_eservice_roles.sql:/flyway/sql/R__event_store_eservice_roles.sql:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://event-store:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_SCHEMAS: public
+      FLYWAY_DEFAULT_SCHEMA: public
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+      FLYWAY_PLACEHOLDERS_DEFAULT_PASSWORD: root
+    depends_on:
+      event-store:
+        condition: service_healthy
+
+  flyway-roles-readmodel:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-roles-readmodel
+    command: migrate
+    volumes:
+      - ../migration/local/read_model_eservice_roles.sql:/flyway/sql/R__read_model_eservice_roles.sql:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_SCHEMAS: public
+      FLYWAY_DEFAULT_SCHEMA: public
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+      FLYWAY_PLACEHOLDERS_DEFAULT_PASSWORD: root
+    depends_on:
+      readmodel:
+        condition: service_healthy
+
   flyway-event-store:
     security_opt:
       - no-new-privileges:true
@@ -58,8 +102,8 @@ services:
       FLYWAY_PLACEHOLDERS_NAMESPACE: local
       FLYWAY_PLACEHOLDERS_DEFAULT_PASSWORD: root
     depends_on:
-      event-store:
-        condition: service_healthy
+      flyway-roles-event-store:
+        condition: service_completed_successfully
 
   flyway-readmodel:
     security_opt:
@@ -79,8 +123,8 @@ services:
       FLYWAY_PLACEHOLDERS_NAMESPACE: local
       FLYWAY_PLACEHOLDERS_DEFAULT_PASSWORD: root
     depends_on:
-      readmodel:
-        condition: service_healthy
+      flyway-roles-readmodel:
+        condition: service_completed_successfully
 
   kafka:
     security_opt:
