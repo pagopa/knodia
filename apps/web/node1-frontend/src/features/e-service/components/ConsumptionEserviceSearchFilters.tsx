@@ -1,4 +1,11 @@
-import { Button, Select, SelectItem, TextField } from "@knodia/ui-kit/ui";
+import {
+  Button,
+  ComboBox,
+  ComboBoxItem,
+  Select,
+  SelectItem,
+  TextField,
+} from "@knodia/ui-kit/ui";
 import { useForm } from "@tanstack/react-form";
 
 import { type ConsumptionEserviceSearchParams } from "../models/search-params";
@@ -51,12 +58,10 @@ export function ConsumptionEserviceSearchFilters({
       }}
     >
       <div className="grid flex-1 min-w-0 grid-cols-3 gap-2">
-        {/* TODO: Make Knode select searchable */}
         <form.Field
           children={(field) => (
             <Select
               id={field.name}
-              isClearable
               label="Knode"
               name={field.name}
               onBlur={field.handleBlur}
@@ -74,25 +79,25 @@ export function ConsumptionEserviceSearchFilters({
           name="knode"
         />
 
-        {/* TODO: Make Category select searchable */}
         <form.Field
           children={(field) => (
-            <Select
+            <ComboBox
+              defaultItems={categoryOptions}
               id={field.name}
               isClearable
               label="Category"
               name={field.name}
               onBlur={field.handleBlur}
-              onChange={(key) => field.handleChange((key as string) ?? "")}
-              placeholder="Select a Category"
-              value={field.state.value}
+              onSelectionChange={(key) =>
+                field.handleChange((key as string) ?? "")
+              }
+              placeholder="Search categories..."
+              selectedKey={field.state.value || null}
             >
-              {categoryOptions.map((option) => (
-                <SelectItem id={option.id} key={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </Select>
+              {(option) => (
+                <ComboBoxItem id={option.id}>{option.label}</ComboBoxItem>
+              )}
+            </ComboBox>
           )}
           name="category"
         />

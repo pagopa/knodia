@@ -1,4 +1,4 @@
-import { CaretDownIcon, XIcon } from "@phosphor-icons/react";
+import { CaretDownIcon } from "@phosphor-icons/react";
 import {
   Select as AriaSelect,
   type SelectProps as AriaSelectProps,
@@ -40,8 +40,6 @@ export interface SelectProps<
   children: ((item: T) => React.ReactNode) | React.ReactNode;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
-  isClearable?: boolean;
-  items?: Iterable<T>;
   label?: string;
 }
 
@@ -62,18 +60,8 @@ export function Select<
   children,
   size,
   isInvalid = false,
-  isClearable = false,
   ...props
 }: SelectProps<T, M>) {
-  const hasValue = props.value != null && props.value !== "";
-
-  const handleClear = (e: React.MouseEvent | React.PointerEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    // @ts-expect-error - Clearing the select by passing null/empty value
-    props.onChange?.(null);
-  };
-
   return (
     <AriaSelect<T, M>
       {...props}
@@ -99,29 +87,10 @@ export function Select<
             selectedText || defaultChildren
           }
         </SelectValue>
-        {isClearable && hasValue ? (
-          <span
-            aria-label="Clear selection"
-            className="w-5 h-5 text-primary-light-low-contrast hover:text-primary-light-high-contrast transition-colors cursor-pointer flex items-center justify-center"
-            onClick={handleClear}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handleClear(e as unknown as React.MouseEvent);
-              }
-            }}
-            onPointerDown={handleClear}
-            role="button"
-            tabIndex={0}
-          >
-            <XIcon aria-hidden className="w-5 h-5" />
-          </span>
-        ) : (
-          <CaretDownIcon
-            aria-hidden
-            className="w-5 h-5 text-primary-light-low-contrast"
-          />
-        )}
+        <CaretDownIcon
+          aria-hidden
+          className="w-5 h-5 text-primary-light-low-contrast"
+        />
       </Button>
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>

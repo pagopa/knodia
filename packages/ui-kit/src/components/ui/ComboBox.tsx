@@ -70,7 +70,8 @@ export function ComboBox<T extends object>({
   ...props
 }: ComboBoxProps<T>) {
   const hasValue =
-    props.inputValue != null && props.inputValue !== "" && props.inputValue;
+    (props.inputValue != null && props.inputValue !== "" && props.inputValue) ||
+    (props.selectedKey != null && props.selectedKey !== "");
 
   const handleClear = (e: React.MouseEvent | React.PointerEvent) => {
     e.preventDefault();
