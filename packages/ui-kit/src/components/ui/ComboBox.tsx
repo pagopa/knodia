@@ -51,11 +51,6 @@ export interface ComboBoxProps<T extends object> extends Omit<
   size?: ComboBoxVariants["size"];
 }
 
-interface ComboBoxItemProps extends ListBoxItemProps {
-  endIcon?: React.ReactNode;
-  startIcon?: React.ReactNode;
-}
-
 type ComboBoxVariants = VariantProps<typeof styles>;
 
 export function ComboBox<T extends object>({
@@ -137,11 +132,7 @@ export function ComboBox<T extends object>({
   );
 }
 
-export function ComboBoxItem({
-  endIcon,
-  startIcon,
-  ...props
-}: ComboBoxItemProps) {
+export function ComboBoxItem(props: ListBoxItemProps) {
   const textValue =
     props.textValue ||
     (typeof props.children === "string" ? props.children : "");
@@ -149,17 +140,7 @@ export function ComboBoxItem({
   return (
     <ListBoxItem {...props} className={listItemStyles} textValue={textValue}>
       {composeRenderProps(props.children, (children) => (
-        <>
-          {startIcon && <span aria-hidden="true">{startIcon}</span>}
-
-          <span className="min-w-0 flex-1 truncate">{children}</span>
-
-          {endIcon && (
-            <span aria-hidden="true" className="ml-auto">
-              {endIcon}
-            </span>
-          )}
-        </>
+        <span className="min-w-0 flex-1 truncate">{children}</span>
       ))}
     </ListBoxItem>
   );
