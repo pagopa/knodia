@@ -266,6 +266,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/remote-resources-manager-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/remote-resources-manager
       fastify:
         specifier: 'catalog:'
         version: 5.7.3
@@ -717,6 +720,28 @@ importers:
         version: 5.9.3
 
   packages/clients/knodia-api-gateway:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/remote-resources-manager:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
