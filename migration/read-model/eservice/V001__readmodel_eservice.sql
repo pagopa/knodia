@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_eservice."eservice" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"is_consumer_operator_identification_required" boolean NOT NULL,
 	"is_signal_hub_enabled" boolean NOT NULL,
-	"metadata_version" integer NOT NULL,
+	"metadata_version" bigint NOT NULL,
 	"mode" text NOT NULL,
 	"name" jsonb NOT NULL,
 	"producer_id" uuid NOT NULL,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_eservice."eservice" (
 CREATE TABLE IF NOT EXISTS ${NAMESPACE}_eservice."eservice_category" (
 	"code" text NOT NULL,
 	"eservice_id" uuid NOT NULL,
-	"metadata_version" integer NOT NULL,
+	"metadata_version" bigint NOT NULL,
 	"scheme" text NOT NULL,
 	CONSTRAINT "eservice_category_pk" PRIMARY KEY("eservice_id","metadata_version","scheme","code")
 );
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_eservice."eservice_interface" (
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
-	"metadata_version" integer NOT NULL,
+	"metadata_version" bigint NOT NULL,
 	"name" text NOT NULL,
 	"path" text NOT NULL,
 	"pretty_name" jsonb NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_eservice."eservice_version" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"max_daily_calls_per_consumer" integer NOT NULL,
 	"max_daily_calls_per_knode" integer NOT NULL,
-	"metadata_version" integer NOT NULL,
+	"metadata_version" bigint NOT NULL,
 	"state" text NOT NULL,
 	"updated_at" timestamp with time zone NOT NULL,
 	"version_number" integer NOT NULL
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_eservice."eservice_version_required_attr
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,
 	"group_id" integer NOT NULL,
-	"metadata_version" integer NOT NULL,
+	"metadata_version" bigint NOT NULL,
 	"scheme" text NOT NULL,
 	CONSTRAINT "eservice_v_req_attribute_pk" PRIMARY KEY("eservice_version_id","group_id","scheme","code")
 );

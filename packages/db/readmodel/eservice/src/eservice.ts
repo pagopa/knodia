@@ -1,6 +1,7 @@
 import type { InferSelectModel } from "drizzle-orm";
 
 import {
+  bigint,
   boolean,
   foreignKey,
   integer,
@@ -31,7 +32,7 @@ export const readmodelEservice = eserviceSchema.table(
       "is_consumer_operator_identification_required",
     ).notNull(),
     isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     mode: text().notNull(),
     name: jsonb().notNull(),
     producerId: uuid("producer_id").notNull(),
@@ -57,7 +58,7 @@ export const readmodelEserviceInterface = eserviceSchema.table(
     eserviceId: uuid("eservice_id").notNull(),
     eserviceVersionId: uuid("eservice_version_id").notNull(),
     id: uuid().primaryKey().notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: text().notNull(),
     path: text().notNull(),
     prettyName: jsonb("pretty_name").notNull(),
@@ -99,7 +100,7 @@ export const readmodelEserviceVersion = eserviceSchema.table(
     id: uuid().primaryKey().notNull(),
     maxDailyCallsPerConsumer: integer("max_daily_calls_per_consumer").notNull(),
     maxDailyCallsPerKnode: integer("max_daily_calls_per_knode").notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     state: text().notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
@@ -126,7 +127,7 @@ export const readmodelEserviceCategory = eserviceSchema.table(
   {
     code: text().notNull(),
     eserviceId: uuid("eservice_id").notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     scheme: text().notNull(),
   },
   (table) => [
@@ -159,7 +160,7 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
     eserviceId: uuid("eservice_id").notNull(),
     eserviceVersionId: uuid("eservice_version_id").notNull(),
     groupId: integer("group_id").notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     scheme: text().notNull(),
   },
   (table) => [
