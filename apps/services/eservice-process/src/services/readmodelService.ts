@@ -1,4 +1,8 @@
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  EserviceId,
+  EserviceInterfaceId,
+  EserviceVersionId,
+} from "@knodia/common-models/ids";
 import type {
   ListResult,
   WithMetadata,
@@ -178,6 +182,13 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await eserviceReadmodelService.getEserviceVersionInterface(
         eserviceId,
         eserviceVersionId,
+      );
+    },
+    async getEserviceVersionInterfaceById(
+      interfaceId: EserviceInterfaceId,
+    ): Promise<EserviceInterface | undefined> {
+      return await eserviceReadmodelService.getEserviceVersionInterfaceById(
+        interfaceId,
       );
     },
   };

@@ -1,4 +1,8 @@
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  EserviceId,
+  EserviceInterfaceId,
+  EserviceVersionId,
+} from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { Eservice, EserviceInterface } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -45,6 +49,21 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             eq(readmodelEserviceInterface.eserviceVersionId, eserviceVersionId),
           ),
         )
+        .limit(1);
+
+      const versionInterface = queryRes.at(0);
+
+      return versionInterface
+        ? toEserviceVersionInterface(versionInterface)
+        : undefined;
+    },
+    async getEserviceVersionInterfaceById(
+      interfaceId: EserviceInterfaceId,
+    ): Promise<EserviceInterface | undefined> {
+      const queryRes = await readmodelDb
+        .select()
+        .from(readmodelEserviceInterface)
+        .where(eq(readmodelEserviceInterface.id, interfaceId))
         .limit(1);
 
       const versionInterface = queryRes.at(0);

@@ -79,6 +79,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-service created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.eservice],
     },

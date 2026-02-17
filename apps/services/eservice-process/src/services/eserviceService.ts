@@ -23,6 +23,7 @@ import type {
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
+  duplicateInterfaceId,
   eserviceNotFound,
   eserviceVersionNotFound,
   interfaceNotFound,
@@ -94,6 +95,14 @@ export function eserviceServiceBuilder(
         if (getCategory(cat.scheme, cat.code) === undefined) {
           throw invalidCategory(cat.scheme, cat.code);
         }
+      }
+
+      const existingInterface =
+        await readmodelService.getEserviceVersionInterfaceById(
+          seed.interfaceDocument.id,
+        );
+      if (existingInterface) {
+        throw duplicateInterfaceId(seed.interfaceDocument.id);
       }
 
       const now = new Date();

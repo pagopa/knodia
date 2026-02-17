@@ -1,10 +1,15 @@
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  EserviceId,
+  EserviceInterfaceId,
+  EserviceVersionId,
+} from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_NOT_FOUND } = constants;
+const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -13,12 +18,22 @@ const errorCodes = {
   INVALID_CATEGORY: "0003",
   ESERVICE_VERSION_NOT_FOUND: "0004",
   INTERFACE_NOT_FOUND: "0005",
+  DUPLICATE_INTERFACE_ID: "0006",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes);
+
+export function duplicateInterfaceId(interfaceId: EserviceInterfaceId) {
+  return createApiError<ErrorCodes>({
+    code: "DUPLICATE_INTERFACE_ID",
+    detail: `An interface document with id ${interfaceId} already exists`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Duplicate Interface Document",
+  });
+}
 
 export function eserviceNotFound(id: EserviceId) {
   return createApiError<ErrorCodes>({
