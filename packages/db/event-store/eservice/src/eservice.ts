@@ -35,8 +35,5 @@ export const eserviceEvents = eserviceSchema.table(
   ],
 );
 
-// =============================================================================
-// Type exports (auto-generated)
-// =============================================================================
 export type EventsInLocalEservice = typeof eserviceEvents.$inferSelect;
 export type NewEventsInLocalEservice = typeof eserviceEvents.$inferInsert;
