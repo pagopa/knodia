@@ -62,11 +62,13 @@ export function eserviceVersionNotFound(
 
 export function interfaceNotFound(
   eserviceId: EserviceId,
-  versionId: EserviceVersionId,
+  versionId?: EserviceVersionId,
 ) {
   return createApiError<ErrorCodes>({
     code: "INTERFACE_NOT_FOUND",
-    detail: `Interface document not found for E-service ${eserviceId}, version ${versionId}`,
+    detail: versionId
+      ? `Interface document not found for E-service ${eserviceId} and version ${versionId}`
+      : `No interface document found for E-service ${eserviceId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Interface Document Not Found",
   });

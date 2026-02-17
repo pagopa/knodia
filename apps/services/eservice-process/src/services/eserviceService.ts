@@ -59,15 +59,14 @@ export function eserviceServiceBuilder(
     return eserviceVersion;
   };
 
-  const retrieveEserviceVersionInterface = async (
+  const retrieveEserviceLatestVersionInterface = async (
     eserviceId: EserviceId,
-    versionId: EserviceVersionId,
   ) => {
     const eserviceVersionInterface =
-      await readmodelService.getEserviceVersionInterface(eserviceId, versionId);
+      await readmodelService.getEserviceLatestVersionInterface(eserviceId);
 
     if (!eserviceVersionInterface) {
-      throw interfaceNotFound(eserviceId, versionId);
+      throw interfaceNotFound(eserviceId);
     }
 
     return eserviceVersionInterface;
@@ -168,12 +167,7 @@ export function eserviceServiceBuilder(
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
     ): Promise<EserviceInterface> {
-      const latestVersion = await retrieveEserviceLatestVersion(eserviceId);
-
-      return await retrieveEserviceVersionInterface(
-        eserviceId,
-        latestVersion.id,
-      );
+      return await retrieveEserviceLatestVersionInterface(eserviceId);
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
