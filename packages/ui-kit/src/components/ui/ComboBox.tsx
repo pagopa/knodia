@@ -125,22 +125,15 @@ export function ComboBox<T extends object>({
           placeholder={placeholder ?? "Search..."}
         />
         {isClearable && hasValue ? (
-          <span
+          <button
             aria-label="Clear selection"
-            className="w-5 h-5 text-primary-light-low-contrast hover:text-primary-light-high-contrast transition-colors cursor-pointer flex items-center justify-center"
+            className="w-5 h-5 text-primary-light-low-contrast hover:text-primary-light-high-contrast transition-colors cursor-pointer flex items-center justify-center outline-none bg-transparent border-none p-0"
             onClick={handleClear}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                handleClear(e as unknown as React.MouseEvent);
-              }
-            }}
             onPointerDown={handleClear}
-            role="button"
-            tabIndex={0}
+            type="button"
           >
             <XIcon aria-hidden className="w-5 h-5" />
-          </span>
+          </button>
         ) : (
           <Button className="outline-none">
             <CaretDownIcon
