@@ -152,11 +152,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_EserviceVersionInterfaceDocument.describe(
-          "E-service version interface document retrieved successfully",
-        ),
-        400: API_Problem.describe("Bad Request"),
-        404: API_Problem.describe("Not Found"),
+        200: API_EserviceVersionInterfaceDocument.meta({
+          description:
+            "E-service version interface document retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
       },
       tags: [apiTags.eservice],
     },

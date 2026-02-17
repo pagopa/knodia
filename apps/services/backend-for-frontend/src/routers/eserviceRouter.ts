@@ -261,11 +261,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
       response: {
-        200: API_FileDownload.describe(
-          "E-service interface document downloaded successfully",
-        ),
-        400: API_Problem.describe("Bad Request"),
-        404: API_Problem.describe("Not Found"),
+        200: API_FileDownload.meta({
+          description: "E-service interface document downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
       },
       tags: [apiTags.eservice],
     },
