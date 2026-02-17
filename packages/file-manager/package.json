@@ -4,17 +4,22 @@
   "scripts": {
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/file-manager",
+    "test:watch": "pnpm test --watch"
   },
   "exports": {
     ".": "./src/fileManager.ts"
   },
   "devDependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "catalog:"

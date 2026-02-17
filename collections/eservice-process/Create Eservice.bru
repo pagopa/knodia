@@ -7,6 +7,7 @@ meta {
 post {
   url: {{host-eservice-process}}/eservices
   body: json
+  auth: none
 }
 
 headers {
@@ -44,9 +45,9 @@ body:json {
     "isConsumerOperatorIdentificationRequired": false,
     "isSignalHubEnabled": false,
     "interfaceDocument": {
-      "checksum": "checksum-1",
+      "checksum": "fbbd4b8920b1b58182256060d2918763f922dd09f7a2274118d8c990ddcf0800",
       "contentType": "application/x-yaml",
-      "id": "c5f2d4c3-9d3e-4f18-9b78-6c33d4a8e4f1",
+      "id": "{{$randomUUID}}",
       "name": "openapi.yaml",
       "path": "/interfaces/openapi.yaml",
       "prettyName": {

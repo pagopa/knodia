@@ -51,6 +51,32 @@ export type API_GetEservicesQueryParams = z.infer<
   typeof API_GetEservicesQueryParams
 >;
 
+export const API_EserviceVersionInterfaceDocument = z
+  .strictObject({
+    checksum: z
+      .string()
+      .meta({ description: "SHA-256 checksum of the interface document" }),
+    contentType: z
+      .string()
+      .meta({ description: "MIME type of the interface document" }),
+    createdAt: z.iso.datetime(),
+    id: EserviceInterfaceId.meta({
+      description: "Unique identifier of the interface document",
+    }),
+    name: z
+      .string()
+      .meta({ description: "Name of the interface document, with extension" }),
+    path: z.string().meta({
+      description: "Path where the interface document is stored in the bucket",
+    }),
+    prettyName: API_LocalizedInterfacePrettyName,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "EserviceVersionInterfaceDocument" });
+export type API_EserviceVersionInterfaceDocument = z.infer<
+  typeof API_EserviceVersionInterfaceDocument
+>;
+
 export const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -131,7 +157,7 @@ const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z.string().meta({
       description:
-        "Base64-encoded SHA-256 checksum of the uploaded E-service interface document",
+        "SHA-256 checksum of the uploaded E-service interface document",
     }),
     contentType: z.string().meta({
       description: "MIME type of the uploaded E-service interface document",
