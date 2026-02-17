@@ -6,6 +6,7 @@ export const toAPI_ProducerEservice = (
   eservice: eserviceProcessApi.Eservice,
   activeAgreements: number,
   activePurposes: number,
+  state: eserviceProcessApi.EserviceVersionState,
 ): API_ProducerEservice => ({
   activeAgreements: activeAgreements,
   activePurposes: activePurposes,
@@ -13,7 +14,7 @@ export const toAPI_ProducerEservice = (
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,
-  state: eservice.state,
+  state,
 });
 
 export const toAPI_EserviceDetails = (
@@ -21,7 +22,7 @@ export const toAPI_EserviceDetails = (
   version: eserviceProcessApi.EserviceVersion,
   counters: {
     agreements: { active: number; total: number };
-    purposes: { active: number; total: number };
+    purposes: { active: number; total: number; totalApiCallsPerDay: number };
   },
 ): API_EserviceDetails => ({
   agreements: counters.agreements,
@@ -36,7 +37,6 @@ export const toAPI_EserviceDetails = (
   name: eservice.name,
   producerId: eservice.producerId,
   purposes: counters.purposes,
-  state: eservice.state,
   updatedAt: eservice.updatedAt,
   version: {
     accessTokenAudience: version.accessTokenAudience,

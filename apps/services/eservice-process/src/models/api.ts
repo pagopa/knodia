@@ -22,7 +22,7 @@ import {
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
-export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
+export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
   mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
   producerId: OrganizationId.optional().describe(
     "Filter by producer organization ID",
@@ -45,7 +45,9 @@ export const API_EservicesQueryParams = API_PaginationQueryParams.extend({
     .optional()
     .describe("Filter by E-service state"),
 });
-export type API_EservicesQueryParams = z.infer<typeof API_EservicesQueryParams>;
+export type API_GetEservicesQueryParams = z.infer<
+  typeof API_GetEservicesQueryParams
+>;
 
 export const API_Eservice = z
   .strictObject({
@@ -58,7 +60,6 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    state: API_EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
@@ -80,6 +81,8 @@ export const API_EserviceVersion = z
     accessTokenDuration: z
       .number()
       .int()
+      .min(minAccessTokenDuration)
+      .max(maxAccessTokenDuration)
       .describe("Duration of the access token in seconds")
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.describe("Type of the access token"),
@@ -88,11 +91,15 @@ export const API_EserviceVersion = z
     maxDailyCallsPerConsumer: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per consumer")
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     requiredAttributes: z
@@ -103,6 +110,7 @@ export const API_EserviceVersion = z
     versionNumber: z
       .number()
       .int()
+      .min(1)
       .describe("Version number")
       .meta({ format: "int32" }),
   })

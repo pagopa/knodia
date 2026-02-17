@@ -35,7 +35,6 @@ const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    state: API_EserviceVersionState.describe("State of the latest version"),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Eservice" });
@@ -161,7 +160,7 @@ export const API_ProducerEservicesQueryParams =
       .optional()
       .describe("Search by name, description or categories"),
     sortBy: z
-      .enum(["name", "activeAgreements", "activePurposes"])
+      .enum(["name"])
       .optional()
       .default("name")
       .describe("Field to sort by"),
@@ -192,6 +191,8 @@ const API_EserviceVersion = z
     accessTokenDuration: z
       .number()
       .int()
+      .min(minAccessTokenDuration)
+      .max(maxAccessTokenDuration)
       .describe("Duration of the access token in seconds")
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.describe("Type of the access token"),
@@ -200,11 +201,15 @@ const API_EserviceVersion = z
     maxDailyCallsPerConsumer: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per consumer")
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
       .describe("Maximum daily calls per Knode")
       .meta({ format: "int32" }),
     requiredAttributes: z
@@ -215,6 +220,7 @@ const API_EserviceVersion = z
     versionNumber: z
       .number()
       .int()
+      .min(1)
       .describe("Version number")
       .meta({ format: "int32" }),
   })
@@ -237,6 +243,15 @@ const API_EserviceDetailsCounters = z
   })
   .meta({ id: "EserviceDetailsCounters" });
 
+const API_EserviceDetailsPurposeCounters = API_EserviceDetailsCounters.extend({
+  totalApiCallsPerDay: z
+    .number()
+    .int()
+    .min(0)
+    .describe("Total API calls per day across all purposes")
+    .meta({ format: "int32" }),
+}).meta({ id: "EserviceDetailsPurposeCounters" });
+
 export const API_EserviceDetails = z
   .strictObject({
     agreements: API_EserviceDetailsCounters.describe("Agreement counters"),
@@ -249,8 +264,7 @@ export const API_EserviceDetails = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    purposes: API_EserviceDetailsCounters.describe("Purpose counters"),
-    state: API_EserviceVersionState.describe("State of the latest version"),
+    purposes: API_EserviceDetailsPurposeCounters.describe("Purpose counters"),
     updatedAt: z.iso.datetime(),
     version: API_EserviceVersion.describe("Latest version details"),
   })

@@ -2,8 +2,15 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
-import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
+import {
+  EserviceInterfaceId,
+  generateId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
+import {
+  API_EserviceIdPathParam,
+  API_EserviceVersionState,
+} from "@knodia/eservice-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -121,11 +128,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { limit, mode, offset, q, sortOrder, state } = req.query;
+      const { limit, mode, offset, q, sortBy, sortOrder, state } = req.query;
       const { correlationId } = getContextValues(requestContext);
 
       // TODO: get real producerId from auth context
-      const producerId = "00000000-0000-0000-0000-000000000000";
+      const producerId = generateId<OrganizationId>();
 
       // TODO: Implement sorting by activeAgreements/activePurposes.
       // Currently falls back to name sorting. Two options:
@@ -145,7 +152,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           offset,
           producerId,
           q,
-          sortBy: "name",
+          sortBy,
           sortOrder,
           state,
         },
@@ -153,7 +160,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
       const items = data.items.map((eservice, idx) =>
-        toAPI_ProducerEservice(eservice, idx + 5, idx + 1),
+        toAPI_ProducerEservice(
+          eservice,
+          idx + 5,
+          idx + 1,
+          // TODO: the BFF should request the eservice state by calling the process
+          API_EserviceVersionState.enum.Active,
+        ),
       );
 
       res.send({
@@ -203,7 +216,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       res.send(
         toAPI_EserviceDetails(eservice, latestVersion, {
           agreements: { active: 3, total: 5 },
-          purposes: { active: 1, total: 2 },
+          purposes: { active: 1, total: 2, totalApiCallsPerDay: 15000 },
         }),
       );
     },

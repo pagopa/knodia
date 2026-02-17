@@ -14,8 +14,8 @@ import {
   API_Eservice,
   API_Eservices,
   API_EserviceSeed,
-  API_EservicesQueryParams,
   API_EserviceVersion,
+  API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import {
   toAPI_Eservice,
@@ -28,11 +28,18 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   eserviceService,
 ) => {
   fastify.route({
-    handler: (req, res) => {
-      const result = eserviceService.getMockEservices(req.query);
+    handler: async (req, res) => {
+      const { results, totalCount } = await eserviceService.getEservices(
+        req.query,
+      );
+
       res.status(200).send({
-        items: result.items.map(toAPI_Eservice),
-        pagination: result.pagination,
+        items: results.map(toAPI_Eservice),
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
       });
     },
     method: "GET",
@@ -40,7 +47,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       description: "Retrieve a list of E-services",
       headers: processHeaders,
       operationId: "getEservices",
-      querystring: API_EservicesQueryParams,
+      querystring: API_GetEservicesQueryParams,
       response: {
         200: API_Eservices.describe("E-services retrieved successfully"),
         400: API_Problem.describe("Bad Request"),

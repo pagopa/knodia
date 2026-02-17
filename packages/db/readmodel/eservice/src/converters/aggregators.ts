@@ -1,6 +1,5 @@
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
-  aggregateById,
   aggregateByPKString,
   type WithMetadata,
 } from "@knodia/db-readmodel-commons";
@@ -22,7 +21,10 @@ import {
   type EserviceSQL,
   type EserviceVersionRequiredAttributeSQL,
   type EserviceVersionSQL,
+  readmodelEservice,
   readmodelEserviceCategory,
+  readmodelEserviceInterface,
+  readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "../eservice.ts";
 
@@ -223,11 +225,11 @@ const createEserviceSQLPropertyMap = <
 
 export const toEservicesAggregator = (
   queryRes: {
-    category: EserviceCategorySQL | null;
+    category?: EserviceCategorySQL | null;
     eservice: EserviceSQL;
-    interface: EserviceInterfaceSQL | null;
-    requiredAttribute: EserviceVersionRequiredAttributeSQL | null;
-    version: EserviceVersionSQL | null;
+    interface?: EserviceInterfaceSQL | null;
+    requiredAttribute?: EserviceVersionRequiredAttributeSQL | null;
+    version?: EserviceVersionSQL | null;
   }[],
 ): {
   categoriesSQL: EserviceCategorySQL[];
@@ -252,17 +254,32 @@ export const toEservicesAggregator = (
   const requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[] = [];
 
   queryRes.forEach((row) => {
-    aggregateById(row.eservice, eservicePKSet, eservicesSQL);
     aggregateByPKString(
-      row.category,
+      row.eservice,
+      eservicePKSet,
+      eservicesSQL,
+      readmodelEservice,
+    );
+    aggregateByPKString(
+      row.category ?? null,
       categoryPKSet,
       categoriesSQL,
       readmodelEserviceCategory,
     );
-    aggregateById(row.version, versionPKSet, versionsSQL);
-    aggregateById(row.interface, interfacePKSet, interfacesSQL);
     aggregateByPKString(
-      row.requiredAttribute,
+      row.version ?? null,
+      versionPKSet,
+      versionsSQL,
+      readmodelEserviceVersion,
+    );
+    aggregateByPKString(
+      row.interface ?? null,
+      interfacePKSet,
+      interfacesSQL,
+      readmodelEserviceInterface,
+    );
+    aggregateByPKString(
+      row.requiredAttribute ?? null,
       requiredAttributePKSet,
       requiredAttributesSQL,
       readmodelEserviceVersionRequiredAttribute,
