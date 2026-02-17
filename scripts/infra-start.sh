@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Pre-create bind mount directory so it's owned by the host user
-mkdir -p docker/keys
+# Generate RSA key pairs and JWKS files for local development
+node scripts/local-kms/kms-setup.mjs
 
 docker compose -f docker/compose.yaml up -d --wait
 

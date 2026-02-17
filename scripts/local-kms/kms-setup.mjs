@@ -1,7 +1,10 @@
 import { generateKeyPairSync, createPublicKey } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const KEYS_DIR = "/keys";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const KEYS_DIR = resolve(__dirname, "../../docker/keys");
 
 const keysets = ["cognito", "session"];
 
