@@ -6,7 +6,6 @@ import { join } from "node:path";
 const TEST_POSTGRES_DB_PORT = 5432;
 const TEST_POSTGRES_IMAGE = "postgres:18";
 const TEST_NAMESPACE = "test";
-const TEST_DEFAULT_PASSWORD = "test_password";
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
@@ -98,7 +97,6 @@ async function applyMigrations(folder: string, db: NodePgDatabase) {
     let sql = readFileSync(filePath, "utf-8");
 
     sql = sql.replace(/\$\{NAMESPACE\}/g, TEST_NAMESPACE);
-    sql = sql.replace(/\$\{DEFAULT_PASSWORD\}/g, TEST_DEFAULT_PASSWORD);
 
     await db.execute(sql);
   }
