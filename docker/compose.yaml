@@ -47,7 +47,7 @@ services:
     container_name: knodia-flyway-roles-event-store
     command: migrate
     volumes:
-      - ../migration/local/event_store_eservice_roles.sql:/flyway/sql/R__event_store_eservice_roles.sql:ro
+      - ../migration/local/event_store_roles.sql:/flyway/sql/R__event_store_roles.sql:ro
     environment:
       FLYWAY_URL: jdbc:postgresql://event-store:5432/root
       FLYWAY_USER: root
@@ -69,7 +69,7 @@ services:
     container_name: knodia-flyway-roles-readmodel
     command: migrate
     volumes:
-      - ../migration/local/read_model_eservice_roles.sql:/flyway/sql/R__read_model_eservice_roles.sql:ro
+      - ../migration/local/read_model_roles.sql:/flyway/sql/R__read_model_roles.sql:ro
     environment:
       FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
       FLYWAY_USER: root
