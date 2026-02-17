@@ -3,7 +3,8 @@
   "type": "module",
   "exports": {
     "./node": "./eslint.node.js",
-    "./react": "./eslint.react.js"
+    "./react": "./eslint.react.js",
+    "./readmodel": "./eslint.readmodel.js"
   },
   "devDependencies": {
     "@pagopa/eslint-config": "catalog:",

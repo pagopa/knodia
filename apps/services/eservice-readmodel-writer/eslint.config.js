@@ -1,3 +1,3 @@
-import config from "@knodia/eslint-config/node";
+import config from "@knodia/eslint-config/readmodel";
 
 export default config;
