@@ -50,14 +50,21 @@ function ConsumptionRequirementsSection() {
           <ul className="gap-2 flex flex-col" role="list">
             <li>
               <AttributeGroupContainer
-                attributes={[{ code: "NUTS1" }, { code: "NUTS2" }]}
+                attributes={[
+                  { code: "NUTS1", scheme: "vc_territorial_units" },
+                  { code: "NUTS2", scheme: "vc_territorial_units" },
+                ]}
               />
             </li>
             <li>
-              <AttributeGroupContainer attributes={[{ code: "NUTS3" }]} />
+              <AttributeGroupContainer
+                attributes={[{ code: "NUTS3", scheme: "vc_territorial_units" }]}
+              />
             </li>
             <li>
-              <AttributeGroupContainer attributes={[{ code: "NUTS4" }]} />
+              <AttributeGroupContainer
+                attributes={[{ code: "NUTS4", scheme: "vc_territorial_units" }]}
+              />
             </li>
           </ul>
         </div>

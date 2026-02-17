@@ -2,7 +2,7 @@ import { CopyButton } from "@knodia/ui-kit/ui";
 import { twMerge } from "tailwind-merge";
 
 interface CopyableValueFieldProps extends React.ComponentProps<"div"> {
-  label: string;
+  label?: string;
   value: string;
 }
 
@@ -15,7 +15,7 @@ export function CopyableValueField({
   return (
     <div className={twMerge("flex items-center gap-4", className)} {...props}>
       <dl className="body-md flex items-center gap-2 text-primary-light-high-contrast">
-        <dt className="body-md-em">{label}</dt>
+        {label && <dt className="body-md-em">{label}</dt>}
         <dd className="body-md">{value}</dd>
       </dl>
       <CopyButton textToCopy={value} />
