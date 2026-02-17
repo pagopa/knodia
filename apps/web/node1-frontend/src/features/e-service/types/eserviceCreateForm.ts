@@ -51,7 +51,8 @@ const eserviceFieldSchemas = {
 export const eserviceFormSchema = z.object(eserviceFieldSchemas);
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
-export const eserviceValidationFormSchema = z.object({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used for zod typing
+const eserviceValidationFormSchema = z.object({
   ...eserviceFieldSchemas,
   interfaceDocument: eserviceFieldSchemas.interfaceDocument.nullable(),
 });
