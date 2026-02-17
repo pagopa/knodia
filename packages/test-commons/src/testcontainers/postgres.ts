@@ -1,7 +1,7 @@
+import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { GenericContainer } from "testcontainers";
 
 const TEST_POSTGRES_DB_PORT = 5432;
 const TEST_POSTGRES_IMAGE = "postgres:18";
@@ -67,14 +67,11 @@ export async function startTestPostgresContainer({
   testContainerName: string;
   user: string;
 }) {
-  const container = await new GenericContainer(TEST_POSTGRES_IMAGE)
+  const container = await new PostgreSqlContainer(TEST_POSTGRES_IMAGE)
     .withName(testContainerName)
-    .withExposedPorts(TEST_POSTGRES_DB_PORT)
     .withReuse()
-    .withEnvironment({
-      POSTGRES_PASSWORD: password,
-      POSTGRES_USER: user,
-    })
+    .withPassword(password)
+    .withUsername(user)
     .start();
 
   const port = container.getMappedPort(TEST_POSTGRES_DB_PORT);

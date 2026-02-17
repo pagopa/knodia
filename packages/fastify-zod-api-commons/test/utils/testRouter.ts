@@ -1,12 +1,12 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import z from "zod";
-
 import {
   API_Pagination,
   API_PaginationQueryParams,
-  API_Problem,
-} from "../../src/models/api.ts";
+} from "@knodia/common-models/api";
+import z from "zod";
+
+import { API_Problem } from "../../src/models/api.ts";
 import { processHeaders } from "../../src/models/index.ts";
 
 export const testTags = {
@@ -43,12 +43,12 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
       operationId: "getTest",
       querystring: z
         .strictObject({
-          query: z.string().describe("A string filter"),
+          query: z.string().meta({ description: "A string filter" }),
         })
         .and(API_PaginationQueryParams),
       response: {
-        200: API_Tests.describe("Results retrieved successfully"),
-        400: API_Problem.describe("Bad Request"),
+        200: API_Tests.meta({ description: "Results retrieved successfully" }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [testTags.test],
     },
@@ -68,8 +68,8 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
       headers: processHeaders,
       operationId: "createTest",
       response: {
-        201: API_Test.describe("Resource created successfully"),
-        400: API_Problem.describe("Bad Request"),
+        201: API_Test.meta({ description: "Resource created successfully" }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [testTags.test],
     },

@@ -2,6 +2,13 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
+const schemeRefSchema = z.object({
+  code: z.string(),
+  scheme: z.string(),
+});
+
+export type SchemeRef = z.infer<typeof schemeRefSchema>;
+
 // Schema for form fields
 const eserviceFieldSchemas = {
   accessTokenAudience: z.string().min(1, "Access token audience is required."),
@@ -10,8 +17,7 @@ const eserviceFieldSchemas = {
     .min(1, "Duration must be at least 1 minute.")
     .max(1440, "Duration must be at most 1440 minutes (24 hours)."),
   accessTokenType: z.enum(["Bearer", "DPoP"]),
-  // TODO: this will change when we have a proper category system
-  categories: z.array(z.string()),
+  categories: z.array(schemeRefSchema),
   description: z
     .string()
     .min(10, "Description must be at least 10 characters.")
@@ -26,10 +32,11 @@ const eserviceFieldSchemas = {
     }, "File size must be at most 1 MB.")
     .refine((file) => {
       if (!file) return true;
-      const validExtensions = [".yaml", ".yml", ".json", ".xml"];
+      const validExtensions = [".yaml", ".yml", ".json"];
       const fileName = file.name.toLowerCase();
       return validExtensions.some((ext) => fileName.endsWith(ext));
-    }, "File must be YAML, JSON, or XML format."),
+    }, "File must be YAML or JSON format.")
+    .pipe(z.instanceof(File)),
   isSignalHubEnabled: z.boolean(),
   maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),
   maxDailyCallsPerKnode: z.number().min(1, "Must be at least 1."),
@@ -41,19 +48,13 @@ const eserviceFieldSchemas = {
   requiredAttributes: z
     .array(
       z
-        .array(
-          z.object({
-            code: z.string(),
-            scheme: z.string(),
-          }),
-        )
+        .array(schemeRefSchema)
         .min(1, "Group must have at least one attribute."),
     )
     .min(1, "At least one group is required."),
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- Object only used for type inference
-const eserviceFormSchema = z.object(eserviceFieldSchemas);
+export const eserviceFormSchema = z.object(eserviceFieldSchemas);
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
 // Step-specific validation schemas

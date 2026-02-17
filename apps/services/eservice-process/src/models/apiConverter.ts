@@ -1,6 +1,30 @@
-import type { Eservice } from "@knodia/eservice-models";
+import {
+  type Eservice,
+  EserviceInterface,
+  EserviceVersion,
+} from "@knodia/eservice-models";
 
-import type { API_Eservice } from "./api.ts";
+import {
+  API_Eservice,
+  API_EserviceVersion,
+  API_EserviceVersionInterfaceDocument,
+} from "./api.ts";
+
+export const toAPI_EserviceVersion = (
+  version: Omit<EserviceVersion, "interfaceDocument">,
+): API_EserviceVersion => ({
+  accessTokenAudience: version.accessTokenAudience,
+  accessTokenDuration: version.accessTokenDuration,
+  accessTokenType: version.accessTokenType,
+  createdAt: version.createdAt.toISOString(),
+  id: version.id,
+  maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
+  maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
+  requiredAttributes: version.requiredAttributes,
+  state: version.state,
+  updatedAt: version.updatedAt.toISOString(),
+  versionNumber: version.versionNumber,
+});
 
 export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   categories: eservice.categories,
@@ -14,4 +38,17 @@ export const toAPI_Eservice = (eservice: Eservice): API_Eservice => ({
   name: eservice.name,
   producerId: eservice.producerId,
   updatedAt: eservice.updatedAt.toISOString(),
+});
+
+export const toAPI_EserviceVersionInterfaceDocument = (
+  doc: EserviceInterface,
+): API_EserviceVersionInterfaceDocument => ({
+  checksum: doc.checksum,
+  contentType: doc.contentType,
+  createdAt: doc.createdAt.toISOString(),
+  id: doc.id,
+  name: doc.name,
+  path: doc.path,
+  prettyName: doc.prettyName,
+  updatedAt: doc.updatedAt.toISOString(),
 });

@@ -13,10 +13,10 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { readModelEserviceConfig } from "../config/config.ts";
+import { readmodelEserviceConfig } from "../config/config.ts";
 
 export const eserviceSchema = pgSchema(
-  readModelEserviceConfig.readModelDbEserviceSchema,
+  readmodelEserviceConfig.readmodelDbEserviceSchema,
 );
 
 export const readmodelEservice = eserviceSchema.table(

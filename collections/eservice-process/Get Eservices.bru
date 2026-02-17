@@ -1,21 +1,28 @@
 meta {
   name: Get Eservices
   type: http
-  seq: 1
+  seq: 2
 }
 
 get {
   url: {{host-eservice-process}}/eservices?offset=0&limit=50
   body: none
-}
-
-headers {
-  X-Correlation-Id: {{correlation-id}}
+  auth: none
 }
 
 params:query {
   offset: 0
   limit: 50
+  ~q:
+  ~state: Active
+  ~mode: ProvideData
+  ~producerId:
+  ~sortBy: name
+  ~sortOrder: asc
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
 }
 
 vars:post-response {

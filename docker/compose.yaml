@@ -4,7 +4,7 @@ services:
   event-store:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:5773fe724c49c42a7a9ca70202e11e1dff21fb7235b335a73f39297d200b73a2
+    image: postgres:18@sha256:1090bc3a8ccfb0b55f78a494d76f8d603434f7e4553543d6e807bc7bd6bbd17f
     container_name: knodia-event-store
     ports:
       - 6001:5432
@@ -24,7 +24,7 @@ services:
   readmodel:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:5773fe724c49c42a7a9ca70202e11e1dff21fb7235b335a73f39297d200b73a2
+    image: postgres:18@sha256:1090bc3a8ccfb0b55f78a494d76f8d603434f7e4553543d6e807bc7bd6bbd17f
     container_name: knodia-readmodel
     ports:
       - 6002:5432
@@ -212,7 +212,8 @@ services:
   minio:
     security_opt:
       - no-new-privileges:true
-    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: knodia-minio
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
     entrypoint: >
       /usr/bin/minio server /data --console-address ':9001'
     ports:
@@ -234,7 +235,8 @@ services:
   minio-setup:
     security_opt:
       - no-new-privileges:true
-    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    container_name: knodia-minio-setup
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
     depends_on:
       minio:
         condition: service_healthy

@@ -1,27 +1,77 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
-import type { Eservice } from "@knodia/eservice-models";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  Eservice,
+  EserviceInterface,
+  EserviceVersion,
+} from "@knodia/eservice-models";
 
 import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";
 import { getCategory } from "@knodia/category-models";
 import {
-  type EserviceId,
-  type EserviceInterfaceId,
-  type EserviceVersionId,
+  EserviceId,
+  EserviceVersionId,
   generateId,
-  type OrganizationId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
 
-import type { API_EserviceSeed } from "../models/api.ts";
+import type {
+  API_EserviceSeed,
+  API_GetEservicesQueryParams,
+} from "../models/api.ts";
+import type { ReadmodelService } from "./readmodelService.ts";
 
-import { invalidAttribute, invalidCategory } from "../models/errors.ts";
+import {
+  duplicateInterfaceId,
+  eserviceNotFound,
+  eserviceVersionNotFound,
+  interfaceNotFound,
+  invalidAttribute,
+  invalidCategory,
+} from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
+  readmodelService: ReadmodelService,
 ) {
+  const retrieveEservice = async (eserviceId: EserviceId) => {
+    const eservice = await readmodelService.getEservice(eserviceId);
+
+    if (!eservice) {
+      throw eserviceNotFound(eserviceId);
+    }
+
+    return eservice.data;
+  };
+
+  const retrieveEserviceLatestVersion = async (eserviceId: EserviceId) => {
+    const eserviceVersion =
+      await readmodelService.getEserviceLatestVersion(eserviceId);
+
+    if (!eserviceVersion) {
+      throw eserviceVersionNotFound(eserviceId);
+    }
+
+    return eserviceVersion;
+  };
+
+  const retrieveEserviceLatestVersionInterface = async (
+    eserviceId: EserviceId,
+  ) => {
+    const eserviceVersionInterface =
+      await readmodelService.getEserviceLatestVersionInterface(eserviceId);
+
+    if (!eserviceVersionInterface) {
+      throw interfaceNotFound(eserviceId);
+    }
+
+    return eserviceVersionInterface;
+  };
+
   return {
     async createEservice(
       seed: API_EserviceSeed,
@@ -44,6 +94,14 @@ export function eserviceServiceBuilder(
         if (getCategory(cat.scheme, cat.code) === undefined) {
           throw invalidCategory(cat.scheme, cat.code);
         }
+      }
+
+      const existingInterface =
+        await readmodelService.getEserviceVersionInterfaceById(
+          seed.interfaceDocument.id,
+        );
+      if (existingInterface) {
+        throw duplicateInterfaceId(seed.interfaceDocument.id);
       }
 
       const now = new Date();
@@ -98,61 +156,23 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    getMockEservices(
-      offset: number,
-      limit: number,
-    ): {
-      items: Eservice[];
-      pagination: { limit: number; offset: number; total: number };
-    } {
-      // Mock data: 100 e-services with ids 0 to 99, with pagination support
-      const now = new Date();
-      const eservices: Eservice[] = new Array(100).fill(null).map((_, idx) => ({
-        categories: [{ code: "category-1", scheme: "vocab-1" }],
-        createdAt: now,
-        description: { en: `Description for E-service ${idx}` },
-        id: generateId<EserviceId>(),
-        isConsumerOperatorIdentificationRequired: false,
-        isSignalHubEnabled: false,
-        mode: "ProvideData" as const,
-        name: { en: `E-service ${idx}` },
-        producerId: generateId<OrganizationId>(),
-        updatedAt: now,
-        versions: [
-          {
-            accessTokenAudience: ["audience-1"],
-            accessTokenDuration: 3600,
-            accessTokenType: "Bearer" as const,
-            createdAt: now,
-            id: generateId<EserviceVersionId>(),
-            interfaceDocument: {
-              checksum: "checksum-1",
-              contentType: "application/json",
-              createdAt: now,
-              id: generateId<EserviceInterfaceId>(),
-              name: "Interface 1",
-              path: "/interfaces/1.json",
-              prettyName: { en: "Interface 1" },
-              updatedAt: now,
-            },
-            maxDailyCallsPerConsumer: 100,
-            maxDailyCallsPerKnode: 1000,
-            requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
-            state: "Active" as const,
-            updatedAt: now,
-            versionNumber: 1,
-          },
-        ],
-      }));
-
-      return {
-        items: eservices.slice(offset, offset + limit),
-        pagination: {
-          limit,
-          offset,
-          total: eservices.length,
-        },
-      };
+    async getEservice(eserviceId: EserviceId): Promise<Eservice> {
+      return await retrieveEservice(eserviceId);
+    },
+    async getEserviceLatestVersion(
+      eserviceId: EserviceId,
+    ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
+      return await retrieveEserviceLatestVersion(eserviceId);
+    },
+    async getEserviceLatestVersionInterface(
+      eserviceId: EserviceId,
+    ): Promise<EserviceInterface> {
+      return await retrieveEserviceLatestVersionInterface(eserviceId);
+    },
+    async getEservices(
+      params: API_GetEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      return await readmodelService.getEservices(params);
     },
   };
 }

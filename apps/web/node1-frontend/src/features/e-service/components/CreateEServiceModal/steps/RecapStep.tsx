@@ -1,14 +1,20 @@
-import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
-import { BookOpenTextIcon } from "@phosphor-icons/react";
-import { Fragment } from "react";
+import { getCategory } from "@knodia/category-models";
+import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
+import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
-import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
+import { useCalculateMD5 } from "@/features/e-service/hooks/useCalculateMD5";
+import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
+import {
+  eserviceFormSchema,
+  type SchemeRef,
+} from "@/features/e-service/types/eserviceCreateForm";
 import { downloadFile } from "@/utils/downloadFile";
 
-import { DocumentRecap } from "../components/DocumentRecap";
+import { AttributeGroupContainer } from "../../AttributeGroupContainer";
+import { DocumentRecap } from "../../DocumentRecap";
 import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
 
@@ -18,11 +24,10 @@ const KNODE_NAME = "Orion Knode";
 export function RecapStep() {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
-  const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
+  const { md5Checksum } = useCalculateMD5(data.interfaceDocument);
+  const { isError, isPending, publish } = usePublishEService();
 
-  const onPublish = () => {
-    console.log("Publishing form: ", data);
-  };
+  const onPublish = () => publish(eserviceFormSchema.parse(data));
 
   return (
     <>
@@ -64,8 +69,20 @@ export function RecapStep() {
         modified.
       </Banner>
 
+      {isError && (
+        <Banner kind="error">
+          <div className="flex flex-col gap-2">
+            <div className="title-sm-em text-error-light-high-contrast">
+              Something went wrong
+            </div>
+            Please try again. Don't refresh the page to avoid data loss.
+          </div>
+        </Banner>
+      )}
+
       <Footer
         confirmLabel="Publish"
+        isDisabled={isPending}
         onCancel={prevStep}
         onConfirm={onPublish}
       />
@@ -73,36 +90,17 @@ export function RecapStep() {
   );
 }
 
-function AttributeGroup({ attributes }: { attributes: { code: string }[] }) {
-  return (
-    <div className="flex items-center gap-4 py-3 px-4 bg-secondary-light rounded-lg text-secondary-light-mid-contrast body-md">
-      {attributes.map((attribute, index) => (
-        <Fragment key={attribute.code}>
-          {index > 0 && (
-            <span className="body-sm text-secondary-light-low-contrast">
-              or
-            </span>
-          )}
-          <span className="flex gap-1">
-            {attribute.code} <BookOpenTextIcon size={20} />
-          </span>
-        </Fragment>
-      ))}
-    </div>
-  );
-}
-
 function AttributesSection({
   requiredAttributes,
 }: {
-  requiredAttributes: undefined | { code: string }[][];
+  requiredAttributes: SchemeRef[][] | undefined;
 }) {
   return (
     <div className="flex flex-col gap-6">
       <SectionTitle>Attributes</SectionTitle>
       <div className="flex flex-col gap-2">
         {requiredAttributes?.map((group, index) => (
-          <AttributeGroup attributes={group} key={index} />
+          <AttributeGroupContainer attributes={group} key={index} />
         ))}
       </div>
     </div>
@@ -115,12 +113,7 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
       <div className="body-sm-em text-primary-light-high-contrast">
         MD5 checksum
       </div>
-      <div className="flex gap-4 items-end">
-        <span className="body-md text-primary-light-high-contrast flex-1">
-          {checksum}
-        </span>
-        <CopyButton className="p-1" textToCopy={checksum} />
-      </div>
+      <CopyableValueField value={checksum} />
     </div>
   );
 }
@@ -165,7 +158,7 @@ function GeneralInfoSection({
   description,
   name,
 }: {
-  categories: string[] | undefined;
+  categories: SchemeRef[] | undefined;
   description: string | undefined;
   name: string | undefined;
 }) {
@@ -183,9 +176,12 @@ function GeneralInfoSection({
           <div className="flex gap-3">
             {categories.map((category) => (
               <Chip
-                key={category}
+                key={`${category.scheme}$${category.code}`}
                 kind="neutral"
-                label={category}
+                label={
+                  getCategory(category.scheme, category.code)?.name ??
+                  category.code
+                }
                 type="light"
               />
             ))}
