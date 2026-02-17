@@ -35,10 +35,10 @@ describe("GET /eservices (getEservices)", () => {
         id: expect.any(String),
         isConsumerOperatorIdentificationRequired: expect.any(Boolean),
         isSignalHubEnabled: expect.any(Boolean),
-        mode: expect.stringMatching(/^(ProvideData|ReceiveData)$/),
+        mode: expect.stringMatching(/^(PROVIDE_DATA|RECEIVE_DATA)$/),
         name: expect.objectContaining({ en: expect.any(String) }),
         producerId: expect.any(String),
-        state: expect.stringMatching(/^(Active|Suspended|Archived)$/),
+        state: expect.stringMatching(/^(ACTIVE|SUSPENDED|ARCHIVED)$/),
         updatedAt: expect.any(String),
       }),
     );
@@ -89,7 +89,7 @@ describe("GET /eservices (getEservices)", () => {
     const response = await getEservices({
       limit: "50",
       offset: "0",
-      state: ["Active", "Suspended"],
+      state: ["ACTIVE", "SUSPENDED"],
     });
 
     const body = response.json<API_Eservices>();
@@ -104,7 +104,7 @@ describe("GET /eservices (getEservices)", () => {
   it("should filter by mode", async () => {
     const response = await getEservices({
       limit: "50",
-      mode: "ReceiveData",
+      mode: "RECEIVE_DATA",
       offset: "0",
     });
 
