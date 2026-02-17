@@ -95,13 +95,14 @@ const updateErrorResponseContentsWithProblemJson = (
         if ("$ref" in response) continue;
 
         const content = response.content;
+
         if (!content) continue;
 
-        const schema = content["application/json"] ?? Object.values(content)[0];
-        if (!schema) continue;
+        const responseSchema = Object.values(content).at(0);
+        if (!responseSchema) continue;
 
         response.content = {
-          "application/problem+json": schema,
+          "application/problem+json": responseSchema,
         };
       }
     }
