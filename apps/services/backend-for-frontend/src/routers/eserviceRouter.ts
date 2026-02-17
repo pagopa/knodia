@@ -7,10 +7,7 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import {
-  API_EserviceIdPathParam,
-  API_EserviceVersionState,
-} from "@knodia/eservice-models/api";
+import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -22,16 +19,14 @@ import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
-  API_EserviceDetails,
-  API_Eservices,
   API_EserviceSeed,
-  API_EservicesQueryParams,
+  API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
 } from "../models/api.ts";
 import {
-  toAPI_EserviceDetails,
   toAPI_ProducerEservice,
+  toAPI_ProducerEserviceDetails,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -44,38 +39,6 @@ interface EserviceRouterOptions {
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
-  fastify.route({
-    handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
-      const { data } = await eserviceProcessApi.getEservices({
-        client: eserviceProcessClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
-        query: {
-          limit: req.query.limit,
-          offset: req.query.offset,
-        },
-      });
-
-      res.send(data);
-    },
-    method: "GET",
-    schema: {
-      description: "Retrieve a list of E-services",
-      operationId: "getEservices",
-      querystring: API_EservicesQueryParams,
-      response: {
-        200: API_Eservices.meta({
-          description: "E-services retrieved successfully",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-      },
-      tags: [apiTags.eservice],
-    },
-    url: "/eservices",
-  });
-
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
@@ -163,14 +126,24 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       });
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
-      const items = data.items.map((eservice, idx) =>
-        toAPI_ProducerEservice(
-          eservice,
-          idx + 5,
-          idx + 1,
-          // TODO: the BFF should request the eservice state by calling the process
-          API_EserviceVersionState.enum.Active,
-        ),
+      const items = await Promise.all(
+        data.items.map(async (eservice, idx) => {
+          const { data: latestEserviceVersion } =
+            await eserviceProcessApi.getEserviceLatestVersion({
+              client: eserviceProcessClient,
+              headers: {
+                [CORRELATION_ID_HEADER]: correlationId,
+              },
+              path: { eserviceId: eservice.id },
+            });
+
+          return toAPI_ProducerEservice({
+            activeAgreements: idx + 5,
+            activePurposes: idx + 1,
+            eservice,
+            state: latestEserviceVersion.state,
+          });
+        }),
       );
 
       res.send({
@@ -218,19 +191,23 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       // TODO: fetch real counts from agreement-process and purpose-process
       // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
       res.send(
-        toAPI_EserviceDetails(eservice, latestVersion, {
-          agreements: { active: 3, total: 5 },
-          purposes: { active: 1, total: 2, totalApiCallsPerDay: 15000 },
+        toAPI_ProducerEserviceDetails({
+          counters: {
+            agreements: { active: 3, total: 5 },
+            purposes: { active: 1, total: 2, totalApiCallsPerDay: 15000 },
+          },
+          eservice,
+          latestVersion,
         }),
       );
     },
     method: "GET",
     schema: {
       description: "Retrieve an E-service with all its details",
-      operationId: "getEserviceDetails",
+      operationId: "getProducerEserviceDetails",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_EserviceDetails.meta({
+        200: API_ProducerEserviceDetails.meta({
           description: "E-service details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
