@@ -3,6 +3,7 @@ import { match } from "ts-pattern";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { SettingsCard } from "@/components/SettingCard";
+import { formatNumber } from "@/utils/formatters";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { AttributeGroupContainer } from "../AttributeGroupContainer";
@@ -97,10 +98,10 @@ function MaxAPICallsPerDaySection() {
     <Section title="Max API calls per day">
       <div className="grid grid-cols-2 gap-4">
         <SettingsCard label="Per Knode">
-          {version.maxDailyCallsPerKnode}
+          {formatNumber(version.maxDailyCallsPerKnode)}
         </SettingsCard>
         <SettingsCard label="Per Consumer">
-          {version.maxDailyCallsPerConsumer}
+          {formatNumber(version.maxDailyCallsPerConsumer)}
         </SettingsCard>
       </div>
     </Section>

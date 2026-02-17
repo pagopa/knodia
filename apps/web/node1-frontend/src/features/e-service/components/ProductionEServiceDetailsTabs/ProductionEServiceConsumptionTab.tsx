@@ -4,6 +4,7 @@ import { TooltipTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
+import { formatNumber } from "@/utils/formatters";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { Section } from "./Section";
@@ -72,10 +73,10 @@ function ProductionEserviceAgreements() {
           <>
             <div className="grid grid-cols-2 gap-4">
               <GenericInfoCard label="Total">
-                {agreements.total}
+                {formatNumber(agreements.total)}
               </GenericInfoCard>
               <GenericInfoCard label="Active">
-                {agreements.active}
+                {formatNumber(agreements.active)}
               </GenericInfoCard>
             </div>
             <NewAgreementsTable />
@@ -102,9 +103,11 @@ function ProductionEservicePurposes() {
         .otherwise(() => (
           <>
             <div className="grid grid-cols-3 gap-4">
-              <GenericInfoCard label="Total">{purposes.total}</GenericInfoCard>
+              <GenericInfoCard label="Total">
+                {formatNumber(purposes.total)}
+              </GenericInfoCard>
               <GenericInfoCard label="Active">
-                {purposes.active}
+                {formatNumber(purposes.active)}
               </GenericInfoCard>
               <GenericInfoCard
                 label={
