@@ -53,8 +53,10 @@ export const API_EserviceSeed = z
       .max(maxAccessTokenDuration)
       .optional()
       .default(3600)
-      .meta({ description: "Duration of the access token in seconds" })
-      .meta({ format: "int32" }),
+      .meta({
+        description: "Duration of the access token in seconds",
+        format: "int32",
+      }),
     accessTokenType: API_AccessTokenType.optional()
       .default("Bearer")
       .meta({ description: "Type of the access token" }),
@@ -78,15 +80,19 @@ export const API_EserviceSeed = z
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .meta({ description: "Maximum daily calls per consumer" })
-      .meta({ format: "int32" }),
+      .meta({
+        description: "Maximum daily calls per consumer",
+        format: "int32",
+      }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .meta({ description: "Maximum daily calls per Knode" })
-      .meta({ format: "int32" }),
+      .meta({
+        description: "Maximum daily calls per Knode",
+        format: "int32",
+      }),
     mode: API_EserviceMode.meta({
       description: "Mode of the E-service",
     }).optional(),
@@ -171,8 +177,10 @@ const API_EserviceVersion = z
       .int()
       .min(minAccessTokenDuration)
       .max(maxAccessTokenDuration)
-      .meta({ description: "Duration of the access token in seconds" })
-      .meta({ format: "int32" }),
+      .meta({
+        description: "Duration of the access token in seconds",
+        format: "int32",
+      }),
     accessTokenType: API_AccessTokenType.meta({
       description: "Type of the access token",
     }),
@@ -185,15 +193,19 @@ const API_EserviceVersion = z
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .meta({ description: "Maximum daily calls per consumer" })
-      .meta({ format: "int32" }),
+      .meta({
+        description: "Maximum daily calls per consumer",
+        format: "int32",
+      }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .meta({ description: "Maximum daily calls per Knode" })
-      .meta({ format: "int32" }),
+      .meta({
+        description: "Maximum daily calls per Knode",
+        format: "int32",
+      }),
     requiredAttributes: z
       .array(z.array(API_EserviceAttribute))
       .meta({ description: "Required attributes for the E-service" }),
@@ -201,12 +213,10 @@ const API_EserviceVersion = z
       description: "State of the version",
     }),
     updatedAt: z.iso.datetime(),
-    versionNumber: z
-      .number()
-      .int()
-      .min(1)
-      .meta({ description: "Version number" })
-      .meta({ format: "int32" }),
+    versionNumber: z.number().int().min(1).meta({
+      description: "Version number",
+      format: "int32",
+    }),
   })
   .meta({ id: "EserviceVersion" });
 
@@ -216,14 +226,12 @@ const API_ProducerEserviceDetailsCounters = z
       .number()
       .int()
       .min(0)
-      .meta({ description: "Number of active items" })
-      .meta({ format: "int32" }),
+      .meta({ description: "Number of active items", format: "int32" }),
     total: z
       .number()
       .int()
       .min(0)
-      .meta({ description: "Total number of items" })
-      .meta({ format: "int32" }),
+      .meta({ description: "Total number of items", format: "int32" }),
   })
   .meta({ id: "ProducerEserviceDetailsCounters" });
 

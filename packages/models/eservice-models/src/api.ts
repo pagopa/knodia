@@ -19,25 +19,28 @@ export const API_EserviceIdPathParam = z.strictObject({
 });
 export type API_EserviceIdPathParam = z.infer<typeof API_EserviceIdPathParam>;
 
-export const API_LocalizedName = LocalizedText(minNameLength, maxNameLength)
-  .meta({ description: "Name of the E-service" })
-  .meta({ id: "LocalizedName" });
+export const API_LocalizedName = LocalizedText(
+  minNameLength,
+  maxNameLength,
+).meta({ description: "Name of the E-service", id: "LocalizedName" });
 export type API_LocalizedName = z.infer<typeof API_LocalizedName>;
 
 export const API_LocalizedDescription = LocalizedText(
   minDescriptionLength,
   maxDescriptionLength,
-)
-  .meta({ description: "Description of the E-service" })
-  .meta({ id: "LocalizedDescription" });
+).meta({
+  description: "Description of the E-service",
+  id: "LocalizedDescription",
+});
 export type API_LocalizedDescription = z.infer<typeof API_LocalizedDescription>;
 
 export const API_LocalizedInterfacePrettyName = LocalizedText(
   minNameLength,
   maxNameLength,
-)
-  .meta({ description: "Pretty name of the E-service interface document" })
-  .meta({ id: "LocalizedInterfacePrettyName" });
+).meta({
+  description: "Pretty name of the E-service interface document",
+  id: "LocalizedInterfacePrettyName",
+});
 export type API_LocalizedInterfacePrettyName = z.infer<
   typeof API_LocalizedInterfacePrettyName
 >;
