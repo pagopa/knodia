@@ -1,7 +1,10 @@
 import { Button, ComboBox, ComboBoxItem, TextField } from "@knodia/ui-kit/ui";
 import { useForm } from "@tanstack/react-form";
 
-import { type ConsumptionEserviceSearchParams } from "../models/search-params";
+import {
+  consumptionEserviceSearchDefaultValues,
+  type ConsumptionEserviceSearchParams,
+} from "../models/search-params";
 
 // TODO: Replace with real data
 const knodeOptions = [
@@ -24,12 +27,7 @@ export function ConsumptionEserviceSearchFilters({
   onValidationError: () => void;
 }) {
   const form = useForm({
-    defaultValues: {
-      category: "",
-      keywords: "",
-      knode: "",
-      offset: 0,
-    },
+    defaultValues: consumptionEserviceSearchDefaultValues,
     onSubmit: ({ value }) => {
       // Knode is required AND (category OR keywords) is required
       if (!value.knode || (!value.category && !value.keywords)) {
