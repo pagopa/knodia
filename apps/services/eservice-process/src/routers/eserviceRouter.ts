@@ -79,9 +79,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const eservice = eserviceService.getMockEservice(req.params.eserviceId);
-      res.status(200).send(toAPI_Eservice(eservice));
+    handler: async (req, res) => {
+      const { data } = await eserviceService.getEservice(req.params.eserviceId);
+
+      res.status(200).send(toAPI_Eservice(data));
     },
     method: "GET",
     schema: {
@@ -100,11 +101,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const version = eserviceService.getMockEserviceLatestVersion(
+    handler: async (req, res) => {
+      const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
       );
-      res.status(200).send(toAPI_EserviceVersion(version));
+
+      res.status(200).send(toAPI_EserviceVersion(eserviceVersion));
     },
     method: "GET",
     schema: {
