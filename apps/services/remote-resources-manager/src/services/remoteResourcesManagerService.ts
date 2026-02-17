@@ -1,4 +1,4 @@
-import type { CorrelationId } from "@knodia/common-models/ids";
+import type { RequestContextData } from "@fastify/request-context";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { knodiaApiGatewayApi } from "@knodia/knodia-api-gateway-client";
@@ -20,14 +20,16 @@ export function remoteResourcesManagerServiceBuilder(
 ) {
   return {
     async searchEservices({
-      correlationId,
+      ctx,
       reqBody,
       reqQuery,
     }: {
-      correlationId: CorrelationId;
+      ctx: RequestContextData;
       reqBody: API_EserviceSearchParams;
       reqQuery: API_SearchEservicesQueryParams;
     }): Promise<API_EserviceSearchResults> {
+      const { correlationId } = ctx;
+
       const { data } = await knodiaApiGatewayApi.searchEservices({
         body: reqBody,
         client: knodiaApiGatewayClient,

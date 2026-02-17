@@ -38,7 +38,6 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
     },
     loggerConfig: loggerConfig,
     makeApiProblem,
-    readCorrelationIdFromHeader: false,
     serviceName: serviceName.REMOTE_RESOURCES_MANAGER,
   });
 

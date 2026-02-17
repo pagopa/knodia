@@ -22,10 +22,8 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
 > = async (fastify, { remoteResourcesManagerService }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
-
       const eservices = await remoteResourcesManagerService.searchEservices({
-        correlationId,
+        ctx: getContextValues(requestContext),
         reqBody: req.body,
         reqQuery: req.query,
       });
