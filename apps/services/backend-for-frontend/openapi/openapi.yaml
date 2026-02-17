@@ -677,12 +677,12 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /producer/eservices/{eserviceId}/interface:
+  /eservices/{eserviceId}/interface:
     get:
       operationId: getEserviceVersionInterface
       tags:
         - eservice
-      description: Download the interface document for an E-service version
+      description: Download the interface document for the latest version of an E-service
       parameters:
         - schema:
             type: string

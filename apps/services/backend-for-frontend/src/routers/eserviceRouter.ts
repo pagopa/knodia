@@ -256,7 +256,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Download the interface document for an E-service version",
+      description:
+        "Download the interface document for the latest version of an E-service",
       operationId: "getEserviceVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
@@ -269,6 +270,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.eservice],
     },
-    url: "/producer/eservices/:eserviceId/interface",
+    url: "/eservices/:eserviceId/interface",
   });
 };
