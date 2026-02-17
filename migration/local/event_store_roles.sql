@@ -1,4 +1,4 @@
--- Idempotent migration: create roles for event-store eservice (local development only)
+-- Idempotent migration: create roles for event-store (local development only)
 -- Placeholders: ${NAMESPACE} - environment prefix, ${DEFAULT_PASSWORD} - password for service users
 
 DO $$

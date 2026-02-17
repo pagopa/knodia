@@ -1,4 +1,4 @@
--- Idempotent migration: create roles for read-model eservice (local development only)
+-- Idempotent migration: create roles for read-model (local development only)
 -- Placeholders: ${NAMESPACE} - environment prefix, ${DEFAULT_PASSWORD} - password for service users
 
 DO $$
