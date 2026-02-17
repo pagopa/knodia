@@ -4,8 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
-import { buildRequestBody } from "@/features/e-service/services/eserviceRequestBody";
-import { eserviceFormSchema } from "@/features/e-service/types/eserviceCreateForm";
+import { toEserviceSeed } from "@/features/e-service/services/api-converters";
 import { client } from "@/libs/axios";
 
 export function usePublishEService() {
@@ -14,14 +13,15 @@ export function usePublishEService() {
   const { isError, isPending, mutate } = useMutation({
     ...createEserviceMutation({ client }),
     onSuccess: (response) => {
-      navigate({ to: "/production/e-services/" + response.id });
+      navigate({
+        params: { id: response.id },
+        to: "/production/e-services/$id",
+      });
     },
   });
 
-  const publish = async (data: Partial<EServiceFormData>) => {
-    const result = eserviceFormSchema.safeParse(data);
-    if (!result.success) return;
-    const body = await buildRequestBody(result.data);
+  const publish = async (data: EServiceFormData) => {
+    const body = await toEserviceSeed(data);
     mutate({ body });
   };
 

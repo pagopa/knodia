@@ -1,14 +1,16 @@
 import { getCategory } from "@knodia/category-models";
 import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
-import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
-
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateMD5 } from "@/features/e-service/hooks/useCalculateMD5";
 import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
+import {
+  eserviceFormSchema,
+  type SchemeRef,
+} from "@/features/e-service/types/eserviceCreateForm";
 import { downloadFile } from "@/utils/downloadFile";
 
 import { AttributeGroupContainer } from "../../AttributeGroupContainer";
@@ -25,7 +27,7 @@ export function RecapStep() {
   const { md5Checksum } = useCalculateMD5(data.interfaceDocument);
   const { isError, isPending, publish } = usePublishEService();
 
-  const onPublish = () => publish(data);
+  const onPublish = () => publish(eserviceFormSchema.parse(data));
 
   return (
     <>
@@ -112,12 +114,6 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
         MD5 checksum
       </div>
       <CopyableValueField value={checksum} />
-      {/* <div className="flex gap-4 items-end">
-        <span className="body-md text-primary-light-high-contrast flex-1">
-          {checksum}
-        </span>
-        <CopyButton textToCopy={checksum} />
-      </div> */}
     </div>
   );
 }

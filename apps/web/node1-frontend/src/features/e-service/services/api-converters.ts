@@ -1,3 +1,5 @@
+import type { EserviceSeed } from "@knodia/bff-client";
+
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
 import {
@@ -5,7 +7,9 @@ import {
   getContentType,
 } from "@/features/e-service/utils/file";
 
-export async function buildRequestBody(data: EServiceFormData) {
+export async function toEserviceSeed(
+  data: EServiceFormData,
+): Promise<EserviceSeed> {
   const { interfaceDocument } = data;
   const arrayBuffer = await interfaceDocument.arrayBuffer();
   const content = arrayBufferToBase64(arrayBuffer);
