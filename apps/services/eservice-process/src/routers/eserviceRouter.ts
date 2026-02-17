@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -15,11 +16,13 @@ import {
   API_Eservices,
   API_EserviceSeed,
   API_EserviceVersion,
+  API_EserviceVersionInterfaceDocument,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import {
   toAPI_Eservice,
   toAPI_EserviceVersion,
+  toAPI_EserviceVersionInterfaceDocument,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -76,6 +79,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-service created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.eservice],
     },
@@ -84,9 +88,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const { data } = await eserviceService.getEservice(req.params.eserviceId);
+      const eservice = await eserviceService.getEservice(req.params.eserviceId);
 
-      res.status(200).send(toAPI_Eservice(data));
+      res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "GET",
     schema: {
@@ -130,5 +134,34 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest",
+  });
+  fastify.route({
+    handler: async (req, res) => {
+      const eserviceVersionInterface =
+        await eserviceService.getEserviceLatestVersionInterface(
+          unsafeBrandId(req.params.eserviceId),
+        );
+      res
+        .status(200)
+        .send(toAPI_EserviceVersionInterfaceDocument(eserviceVersionInterface));
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the interface document of the latest E-service version",
+      headers: processHeaders,
+      operationId: "getEserviceLatestVersionInterface",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_EserviceVersionInterfaceDocument.meta({
+          description:
+            "E-service version interface document retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/versions/latest/interface",
   });
 };

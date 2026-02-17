@@ -158,6 +158,46 @@ components:
         - offset
         - total
       additionalProperties: false
+    EserviceVersionInterfaceDocument:
+      type: object
+      properties:
+        checksum:
+          description: SHA-256 checksum of the interface document
+          type: string
+        contentType:
+          description: MIME type of the interface document
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        id:
+          description: Unique identifier of the interface document
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          description: Name of the interface document, with extension
+          type: string
+        path:
+          description: Path where the interface document is stored in the bucket
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedInterfacePrettyName"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - checksum
+        - contentType
+        - createdAt
+        - id
+        - name
+        - path
+        - prettyName
+        - updatedAt
+      additionalProperties: false
     Eservice:
       type: object
       properties:
@@ -293,8 +333,7 @@ components:
       type: object
       properties:
         checksum:
-          description: Base64-encoded SHA-256 checksum of the uploaded E-service interface
-            document
+          description: SHA-256 checksum of the uploaded E-service interface document
           type: string
         contentType:
           description: MIME type of the uploaded E-service interface document
@@ -541,6 +580,14 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}:
     get:
       operationId: getEservice
@@ -631,6 +678,52 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/versions/latest/interface:
+    get:
+      operationId: getEserviceLatestVersionInterface
+      tags:
+        - eservice
+      description: Retrieve the interface document of the latest E-service version
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: E-service version interface document retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service version interface document retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceVersionInterfaceDocument"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

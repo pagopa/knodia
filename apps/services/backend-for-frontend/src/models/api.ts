@@ -25,7 +25,7 @@ const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z.string().meta({
       description:
-        "Base64-encoded SHA-256 checksum of the uploaded E-service interface document",
+        "SHA-256 checksum of the uploaded E-service interface document",
     }),
     content: z.base64().meta({
       description: "Base64-encoded file content",
@@ -167,7 +167,7 @@ export const API_ProducerEservices = z
   .meta({ id: "ProducerEservices" });
 export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;
 
-const API_EserviceVersion = z
+const API_ProducerEserviceVersionDetails = z
   .strictObject({
     accessTokenAudience: z
       .array(z.string())
@@ -188,6 +188,16 @@ const API_EserviceVersion = z
     id: z
       .uuid()
       .meta({ description: "Unique identifier of the E-service version" }),
+    interfaceDocument: z
+      .strictObject({
+        checksum: z.string().meta({
+          description: "SHA-256 checksum of the E-service interface document",
+        }),
+        prettyName: API_LocalizedInterfacePrettyName.meta({
+          description: "Localized pretty name of the E-service interface",
+        }),
+      })
+      .meta({ description: "Interface document details" }),
     maxDailyCallsPerConsumer: z
       .number()
       .int()
@@ -261,7 +271,7 @@ export const API_ProducerEserviceDetails = z
       description: "Purpose counters",
     }),
     updatedAt: z.iso.datetime(),
-    version: API_EserviceVersion.meta({
+    version: API_ProducerEserviceVersionDetails.meta({
       description: "Latest version details",
     }),
   })
@@ -269,3 +279,5 @@ export const API_ProducerEserviceDetails = z
 export type API_ProducerEserviceDetails = z.infer<
   typeof API_ProducerEserviceDetails
 >;
+
+export const API_FileDownload = z.string().meta({ format: "binary" });

@@ -1,15 +1,19 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { EserviceId } from "@knodia/common-models/ids";
 
 import {
-  type Eservice,
+  Eservice,
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
+import { upsertEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
 import { API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
+import { mockEservices } from "./mockEservices.ts";
+import { readmodelDb } from "./setup.ts";
 import { getAllEserviceEvents, injectAppRequest } from "./utils.ts";
 
 const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
@@ -130,5 +134,20 @@ describe("POST /eservices (createEservice)", () => {
         ],
       });
     expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 409 if an interface with the same ID already exists", async () => {
+    await upsertEservice(mockEservices[0]!, 0, readmodelDb);
+
+    const response = await injectAppRequest()
+      .post("/eservices")
+      .body({
+        ...body,
+        interfaceDocument: {
+          ...body.interfaceDocument,
+          id: mockEservices[0]!.versions[0]!.interfaceDocument.id,
+        },
+      });
+    expect(response.statusCode).toBe(409);
   });
 });
