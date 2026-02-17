@@ -20,6 +20,7 @@ import { config } from "../config/config.ts";
 import {
   API_CreatedResource,
   API_EserviceSeed,
+  API_FileDownload,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
@@ -38,6 +39,7 @@ interface EserviceRouterOptions {
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({
     handler: async (req, res) => {
@@ -51,7 +53,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const s3Key = await fileManager.storeBytes({
         bucket: config.eserviceInterfacesS3Bucket,
-        checksum: interfaceDocumentRest.checksum,
+        checksumSHA256Hex: interfaceDocumentRest.checksum,
         content: Buffer.from(content, "base64"),
         contentType: interfaceDocumentRest.contentType,
         key: `${interfaceDocumentId}/${name}`,
@@ -74,7 +76,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           [CORRELATION_ID_HEADER]: correlationId,
         },
       });
-
       res.status(201).send(API_CreatedResource.parse({ id: data.id }));
     },
     method: "POST",
@@ -88,7 +89,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.eservice],
     },
-    url: "/eservices",
+    url: "/producer/eservices",
   });
 
   fastify.route({
@@ -173,7 +174,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const headers = { [CORRELATION_ID_HEADER]: correlationId };
       const path = { eserviceId: req.params.eserviceId };
 
-      const [{ data: eservice }, { data: latestVersion }] = await Promise.all([
+      const [
+        { data: eservice },
+        { data: latestVersion },
+        { data: latestVersionInterface },
+      ] = await Promise.all([
         eserviceProcessApi.getEservice({
           client: eserviceProcessClient,
           headers,
@@ -184,10 +189,14 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           headers,
           path,
         }),
+        eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
       ]);
 
       // TODO: fetch real counts from agreement-process and purpose-process
-      // TODO: fetch interfaceDocument from eservice-process GET /eservices/:id/versions/:versionId/interface and add it to the response
       res.send(
         toAPI_ProducerEserviceDetails({
           counters: {
@@ -196,6 +205,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           },
           eservice,
           latestVersion,
+          latestVersionInterface,
         }),
       );
     },
@@ -214,5 +224,49 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId } = getContextValues(requestContext);
+
+      const { data } =
+        await eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers: {
+            [CORRELATION_ID_HEADER]: correlationId,
+          },
+          path: {
+            eserviceId: req.params.eserviceId,
+          },
+        });
+
+      const { content } = await fileManager.getBytes({
+        bucket: config.eserviceInterfacesS3Bucket,
+        key: data.path,
+      });
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="${data.name}"`,
+        "Content-Type": data.contentType,
+      });
+      res.raw.end(content);
+    },
+    method: "GET",
+    schema: {
+      description: "Download the interface document for an E-service version",
+      operationId: "getEserviceVersionInterface",
+      params: API_EserviceIdPathParam,
+      produces: ["application/octet-stream"],
+      response: {
+        200: API_FileDownload.describe(
+          "E-service interface document downloaded successfully",
+        ),
+        400: API_Problem.describe("Bad Request"),
+        404: API_Problem.describe("Not Found"),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/:eserviceId/interface",
   });
 };

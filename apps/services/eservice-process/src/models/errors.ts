@@ -12,8 +12,10 @@ const errorCodes = {
   INVALID_ATTRIBUTE: "0002",
   INVALID_CATEGORY: "0003",
   ESERVICE_VERSION_NOT_FOUND: "0004",
+  INTERFACE_NOT_FOUND: "0005",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
+
 type ErrorCodes = keyof typeof errorCodes;
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes);
@@ -40,6 +42,18 @@ export function eserviceVersionNotFound(
     detail,
     status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Version Not Found",
+  });
+}
+
+export function interfaceNotFound(
+  eserviceId: EserviceId,
+  versionId: EserviceVersionId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "INTERFACE_NOT_FOUND",
+    detail: `Interface document not found for E-service ${eserviceId}, version ${versionId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Interface Document Not Found",
   });
 }
 

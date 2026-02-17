@@ -1,5 +1,9 @@
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { type Eservice, type EserviceVersion } from "@knodia/eservice-models";
+import {
+  type Eservice,
+  type EserviceInterface,
+  type EserviceVersion,
+} from "@knodia/eservice-models";
 import { expect } from "vitest";
 
 export function toExpectAPI_Eservice(
@@ -49,6 +53,21 @@ export function toExpectAPI_EserviceVersion(eserviceVersion: EserviceVersion) {
     updatedAt: eserviceVersion.updatedAt.toISOString(),
     versionNumber: eserviceVersion.versionNumber,
   });
+}
+
+export function toExpectAPI_EserviceVersionInterfaceDocument(
+  doc: EserviceInterface,
+) {
+  return {
+    checksum: doc.checksum,
+    contentType: doc.contentType,
+    createdAt: doc.createdAt.toISOString(),
+    id: doc.id,
+    name: doc.name,
+    path: doc.path,
+    prettyName: doc.prettyName,
+    updatedAt: doc.updatedAt.toISOString(),
+  };
 }
 
 export function toExpectEservice(eservice: Eservice) {

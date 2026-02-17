@@ -1,4 +1,4 @@
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
 import type {
   ListResult,
   WithMetadata,
@@ -22,7 +22,7 @@ import {
   aggregateEserviceVersion,
 } from "@knodia/db-readmodel-eservice/converters";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
-import { type Eservice } from "@knodia/eservice-models";
+import { type Eservice, EserviceInterface } from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
@@ -170,6 +170,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
         return { results, totalCount };
       });
+    },
+    async getEserviceVersionInterface(
+      eserviceId: EserviceId,
+      eserviceVersionId: EserviceVersionId,
+    ): Promise<EserviceInterface | undefined> {
+      return await eserviceReadmodelService.getEserviceVersionInterface(
+        eserviceId,
+        eserviceVersionId,
+      );
     },
   };
 }

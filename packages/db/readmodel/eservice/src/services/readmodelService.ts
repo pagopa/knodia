@@ -1,12 +1,17 @@
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-import type { Eservice } from "@knodia/eservice-models";
+import type { Eservice, EserviceInterface } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { aggregateEservice } from "../converters/aggregators.ts";
-import { readmodelEservice, readmodelEserviceCategory } from "../eservice.ts";
+import { toEserviceVersionInterface } from "../converters/index.ts";
+import {
+  readmodelEservice,
+  readmodelEserviceCategory,
+  readmodelEserviceInterface,
+} from "../eservice.ts";
 
 export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
@@ -26,6 +31,27 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         .where(eq(readmodelEservice.id, eserviceId));
 
       return aggregateEservice(queryRes);
+    },
+    async getEserviceVersionInterface(
+      eserviceId: EserviceId,
+      eserviceVersionId: EserviceVersionId,
+    ): Promise<EserviceInterface | undefined> {
+      const queryRes = await readmodelDb
+        .select()
+        .from(readmodelEserviceInterface)
+        .where(
+          and(
+            eq(readmodelEserviceInterface.eserviceId, eserviceId),
+            eq(readmodelEserviceInterface.eserviceVersionId, eserviceVersionId),
+          ),
+        )
+        .limit(1);
+
+      const versionInterface = queryRes.at(0);
+
+      return versionInterface
+        ? toEserviceVersionInterface(versionInterface)
+        : undefined;
     },
   };
 }

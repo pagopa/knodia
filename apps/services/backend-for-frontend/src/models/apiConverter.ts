@@ -29,6 +29,7 @@ export const toAPI_ProducerEserviceDetails = ({
   counters,
   eservice,
   latestVersion,
+  latestVersionInterface,
 }: {
   counters: {
     agreements: { active: number; total: number };
@@ -36,6 +37,7 @@ export const toAPI_ProducerEserviceDetails = ({
   };
   eservice: eserviceProcessApi.Eservice;
   latestVersion: eserviceProcessApi.EserviceVersion;
+  latestVersionInterface: eserviceProcessApi.EserviceVersionInterfaceDocument;
 }): API_ProducerEserviceDetails => ({
   agreements: counters.agreements,
   categories: eservice.categories,
@@ -56,6 +58,10 @@ export const toAPI_ProducerEserviceDetails = ({
     accessTokenType: latestVersion.accessTokenType,
     createdAt: latestVersion.createdAt,
     id: latestVersion.id,
+    interfaceDocument: {
+      checksum: latestVersionInterface.checksum,
+      prettyName: latestVersionInterface.prettyName,
+    },
     maxDailyCallsPerConsumer: latestVersion.maxDailyCallsPerConsumer,
     maxDailyCallsPerKnode: latestVersion.maxDailyCallsPerKnode,
     requiredAttributes: latestVersion.requiredAttributes,

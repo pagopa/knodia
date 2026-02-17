@@ -1,8 +1,10 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
-  ListResult,
-  WithMetadata,
-} from "@knodia/db-readmodel-commons/models";
+  Eservice,
+  EserviceInterface,
+  EserviceVersion,
+} from "@knodia/eservice-models";
 
 import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";
@@ -13,7 +15,6 @@ import {
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { type Eservice } from "@knodia/eservice-models";
 
 import type {
   API_EserviceSeed,
@@ -24,6 +25,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   eserviceNotFound,
   eserviceVersionNotFound,
+  interfaceNotFound,
   invalidAttribute,
   invalidCategory,
 } from "../models/errors.ts";
@@ -35,6 +37,41 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
 ) {
+  const retrieveEservice = async (eserviceId: EserviceId) => {
+    const eservice = await readmodelService.getEservice(eserviceId);
+
+    if (!eservice) {
+      throw eserviceNotFound(eserviceId);
+    }
+
+    return eservice.data;
+  };
+
+  const retrieveEserviceLatestVersion = async (eserviceId: EserviceId) => {
+    const eserviceVersion =
+      await readmodelService.getEserviceLatestVersion(eserviceId);
+
+    if (!eserviceVersion) {
+      throw eserviceVersionNotFound(eserviceId);
+    }
+
+    return eserviceVersion;
+  };
+
+  const retrieveEserviceVersionInterface = async (
+    eserviceId: EserviceId,
+    versionId: EserviceVersionId,
+  ) => {
+    const eserviceVersionInterface =
+      await readmodelService.getEserviceVersionInterface(eserviceId, versionId);
+
+    if (!eserviceVersionInterface) {
+      throw interfaceNotFound(eserviceId, versionId);
+    }
+
+    return eserviceVersionInterface;
+  };
+
   return {
     async createEservice(
       seed: API_EserviceSeed,
@@ -111,24 +148,24 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    async getEservice(eserviceId: EserviceId): Promise<WithMetadata<Eservice>> {
-      const eservice = await readmodelService.getEservice(eserviceId);
-
-      if (!eservice) {
-        throw eserviceNotFound(eserviceId);
-      }
-
-      return eservice;
+    async getEservice(eserviceId: EserviceId): Promise<Eservice> {
+      return await retrieveEservice(eserviceId);
     },
-    async getEserviceLatestVersion(eserviceId: EserviceId) {
-      const eserviceVersion =
-        await readmodelService.getEserviceLatestVersion(eserviceId);
+    async getEserviceLatestVersion(
+      eserviceId: EserviceId,
+    ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
+      return await retrieveEserviceLatestVersion(eserviceId);
+    },
+    async getEserviceLatestVersionInterface(
+      eserviceId: EserviceId,
+    ): Promise<EserviceInterface> {
+      const latestVersion = await retrieveEserviceLatestVersion(eserviceId);
 
-      if (!eserviceVersion) {
-        throw eserviceVersionNotFound(eserviceId);
-      }
-
-      return eserviceVersion;
+      // TODO move latest version retrieval to DB readmodel to avoid this second call
+      return await retrieveEserviceVersionInterface(
+        eserviceId,
+        latestVersion.id,
+      );
     },
     async getEservices(
       params: API_GetEservicesQueryParams,

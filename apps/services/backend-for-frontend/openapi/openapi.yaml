@@ -162,8 +162,7 @@ components:
       type: object
       properties:
         checksum:
-          description: Base64-encoded SHA-256 checksum of the uploaded E-service interface
-            document
+          description: SHA-256 checksum of the uploaded E-service interface document
           type: string
         content:
           description: Base64-encoded file content
@@ -346,6 +345,21 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        interfaceDocument:
+          description: Interface document details
+          type: object
+          properties:
+            checksum:
+              description: SHA-256 checksum of the E-service interface document
+              type: string
+            prettyName:
+              description: Localized pretty name of the E-service interface
+              allOf:
+                - $ref: "#/components/schemas/LocalizedInterfacePrettyName"
+          required:
+            - checksum
+            - prettyName
+          additionalProperties: false
         maxDailyCallsPerConsumer:
           description: Maximum daily calls per consumer
           format: int32
@@ -385,6 +399,7 @@ components:
         - accessTokenType
         - createdAt
         - id
+        - interfaceDocument
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - requiredAttributes
@@ -513,7 +528,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eservices:
+  /producer/eservices:
     post:
       operationId: createEservice
       tags:
@@ -542,7 +557,6 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /producer/eservices:
     get:
       operationId: getProducerEservices
       tags:
@@ -661,6 +675,45 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/eservices/{eserviceId}/interface:
+    get:
+      operationId: getEserviceVersionInterface
+      tags:
+        - eservice
+      description: Download the interface document for an E-service version
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service interface document downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                description: E-service interface document downloaded successfully
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
