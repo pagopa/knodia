@@ -40,7 +40,6 @@ export interface SelectProps<
   children: ((item: T) => React.ReactNode) | React.ReactNode;
   description?: string;
   errorMessage?: ((validation: ValidationResult) => string) | string;
-  items?: Iterable<T>;
   label?: string;
 }
 
@@ -59,7 +58,6 @@ export function Select<
   description,
   errorMessage,
   children,
-  items,
   size,
   isInvalid = false,
   ...props
@@ -69,7 +67,7 @@ export function Select<
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "group flex flex-col gap-1 relative font-sans",
+        "group flex flex-col gap-1 w-full min-w-0 relative font-sans",
       )}
       isInvalid={isInvalid}
     >
@@ -84,7 +82,7 @@ export function Select<
           })
         }
       >
-        <SelectValue className="flex-1 body-md truncate data-placeholder:text-primary-light-low-contrast">
+        <SelectValue className="flex-1 min-w-0 body-md truncate data-placeholder:text-primary-light-low-contrast">
           {({ selectedText, defaultChildren }) =>
             selectedText || defaultChildren
           }
@@ -97,9 +95,7 @@ export function Select<
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
       <Popover className="min-w-(--trigger-width)">
-        <ListBox className={dropdownStyles} {...(items && { items })}>
-          {children}
-        </ListBox>
+        <ListBox className={dropdownStyles}>{children}</ListBox>
       </Popover>
     </AriaSelect>
   );
