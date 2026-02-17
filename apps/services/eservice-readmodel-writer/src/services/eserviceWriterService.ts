@@ -1,6 +1,6 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { checkMetadataVersion } from "@knodia/db-readmodel-commons";
+import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
 import {
   readmodelEservice,
   readmodelEserviceCategory,

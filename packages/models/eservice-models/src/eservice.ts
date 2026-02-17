@@ -59,7 +59,7 @@ const RequiredAttribute = z.strictObject({
 });
 export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
 
-const RequiredAttributeGroup = z.array(RequiredAttribute);
+const RequiredAttributeGroup = z.array(RequiredAttribute).min(1);
 export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
 
 export const EserviceVersion = z.strictObject({
@@ -74,7 +74,7 @@ export const EserviceVersion = z.strictObject({
   interfaceDocument: EserviceInterface,
   maxDailyCallsPerConsumer: z.int().min(minDailyCalls).max(maxDailyCalls),
   maxDailyCallsPerKnode: z.int().min(minDailyCalls).max(maxDailyCalls),
-  requiredAttributes: z.array(RequiredAttributeGroup),
+  requiredAttributes: z.array(RequiredAttributeGroup).min(1),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),
   versionNumber: z.int().min(minEserviceVersionNumber).max(INT32_MAX),

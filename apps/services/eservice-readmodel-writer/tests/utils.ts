@@ -5,10 +5,7 @@ import {
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
-import {
-  aggregateEservices,
-  toEservicesAggregator,
-} from "@knodia/db-readmodel-eservice/converters";
+import { aggregateEservices } from "@knodia/db-readmodel-eservice/converters";
 import { eq } from "drizzle-orm";
 
 import { readmodelDb } from "./setup.ts";
@@ -47,5 +44,5 @@ export async function getAllEservices() {
       ),
     );
 
-  return aggregateEservices(toEservicesAggregator(queryRes));
+  return aggregateEservices(queryRes);
 }

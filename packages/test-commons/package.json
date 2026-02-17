@@ -16,9 +16,9 @@
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@testcontainers/kafka": "catalog:",
+    "@testcontainers/postgresql": "catalog:",
     "drizzle-orm": "catalog:",
     "eslint": "catalog:",
-    "testcontainers": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "zocker": "catalog:"

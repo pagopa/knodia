@@ -1,3 +1,8 @@
+import type { EserviceId } from "@knodia/common-models/ids";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -5,26 +10,69 @@ import {
   escapeRegExp,
   getTableTotalCount,
   ilikeJsonB,
-  type ListResult,
-} from "@knodia/db-readmodel-commons";
+} from "@knodia/db-readmodel-commons/utils";
 import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceVersion,
+  readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
 import {
   aggregateEservices,
-  toEservicesAggregator,
+  aggregateEserviceVersion,
 } from "@knodia/db-readmodel-eservice/converters";
-import { Eservice } from "@knodia/eservice-models";
-import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
+import { type Eservice } from "@knodia/eservice-models";
+import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
 import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+  const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
+
   return {
+    async getEservice(
+      eserviceId: EserviceId,
+    ): Promise<undefined | WithMetadata<Eservice>> {
+      return await eserviceReadmodelService.getEServiceById(eserviceId);
+    },
+    async getEserviceLatestVersion(eserviceId: EserviceId) {
+      return await readmodelDb.transaction(async (tx) => {
+        const latestVersion = tx
+          .select({
+            id: readmodelEserviceVersion.id,
+          })
+          .from(readmodelEserviceVersion)
+          .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
+          .orderBy(desc(readmodelEserviceVersion.versionNumber))
+          .limit(1)
+          .as("latestVersion");
+
+        const queryRes = await tx
+          .select({
+            requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+            version: readmodelEserviceVersion,
+          })
+          .from(readmodelEserviceVersion)
+          .innerJoin(
+            latestVersion,
+            eq(readmodelEserviceVersion.id, latestVersion.id),
+          )
+          .leftJoin(
+            readmodelEserviceVersionRequiredAttribute,
+            eq(
+              readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
+              readmodelEserviceVersion.id,
+            ),
+          )
+          .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
+          .orderBy(desc(readmodelEserviceVersion.versionNumber));
+
+        return aggregateEserviceVersion(queryRes);
+      });
+    },
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {
@@ -39,15 +87,14 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         });
 
         const latestEserviceVersion = tx
-          .selectDistinctOn([readmodelEserviceVersion.eserviceId], {
-            eserviceId: readmodelEserviceVersion.eserviceId,
+          .select({
             state: readmodelEserviceVersion.state,
+            versionNumber: readmodelEserviceVersion.versionNumber,
           })
           .from(readmodelEserviceVersion)
-          .orderBy(
-            readmodelEserviceVersion.eserviceId,
-            desc(readmodelEserviceVersion.updatedAt),
-          )
+          .where(eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id))
+          .orderBy(desc(readmodelEserviceVersion.versionNumber))
+          .limit(1)
           .as("latestEserviceVersion");
 
         const createFilterQuery = () =>
@@ -58,10 +105,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
             )
-            .innerJoin(
-              latestEserviceVersion,
-              eq(readmodelEservice.id, latestEserviceVersion.eserviceId),
-            )
+            .innerJoinLateral(latestEserviceVersion, sql`true`)
             .where(
               and(
                 producerId
@@ -115,7 +159,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const eservices = aggregateEservices(toEservicesAggregator(queryRes));
+        const eservices = aggregateEservices(queryRes);
 
         const results = eservices.map((e) => ({
           ...e.data,

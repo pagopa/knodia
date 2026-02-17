@@ -1,9 +1,9 @@
-import { Eservice, EserviceVersion } from "@knodia/eservice-models";
+import { type Eservice, EserviceVersion } from "@knodia/eservice-models";
 
 import { API_Eservice, API_EserviceVersion } from "./api.ts";
 
 export const toAPI_EserviceVersion = (
-  version: EserviceVersion,
+  version: Omit<EserviceVersion, "interfaceDocument">,
 ): API_EserviceVersion => ({
   accessTokenAudience: version.accessTokenAudience,
   accessTokenDuration: version.accessTokenDuration,

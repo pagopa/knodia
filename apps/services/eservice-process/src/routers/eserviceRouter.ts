@@ -49,8 +49,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEservices",
       querystring: API_GetEservicesQueryParams,
       response: {
-        200: API_Eservices.describe("E-services retrieved successfully"),
-        400: API_Problem.describe("Bad Request"),
+        200: API_Eservices.meta({
+          description: "E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [apiTags.eservice],
     },
@@ -70,8 +72,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       headers: processHeaders,
       operationId: "createEservice",
       response: {
-        201: API_Eservice.describe("E-service created successfully"),
-        400: API_Problem.describe("Bad Request"),
+        201: API_Eservice.meta({
+          description: "E-service created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [apiTags.eservice],
     },
@@ -79,9 +83,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const eservice = eserviceService.getMockEservice(req.params.eserviceId);
-      res.status(200).send(toAPI_Eservice(eservice));
+    handler: async (req, res) => {
+      const { data } = await eserviceService.getEservice(req.params.eserviceId);
+
+      res.status(200).send(toAPI_Eservice(data));
     },
     method: "GET",
     schema: {
@@ -90,9 +95,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEservice",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_Eservice.describe("E-service retrieved successfully"),
-        400: API_Problem.describe("Bad Request"),
-        404: API_Problem.describe("E-service not found"),
+        200: API_Eservice.meta({
+          description: "E-service retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
       },
       tags: [apiTags.eservice],
     },
@@ -100,11 +107,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const version = eserviceService.getMockEserviceLatestVersion(
+    handler: async (req, res) => {
+      const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
       );
-      res.status(200).send(toAPI_EserviceVersion(version));
+
+      res.status(200).send(toAPI_EserviceVersion(eserviceVersion));
     },
     method: "GET",
     schema: {
@@ -113,11 +121,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEserviceLatestVersion",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_EserviceVersion.describe(
-          "E-service version retrieved successfully",
-        ),
-        400: API_Problem.describe("Bad Request"),
-        404: API_Problem.describe("E-service not found"),
+        200: API_EserviceVersion.meta({
+          description: "E-service version retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
       },
       tags: [apiTags.eservice],
     },
