@@ -91,7 +91,7 @@ export function ConsumptionEserviceSearchFilters({
               onSelectionChange={(key) =>
                 field.handleChange((key as string) ?? "")
               }
-              placeholder="Search categories..."
+              placeholder="Select a Category"
               selectedKey={field.state.value || null}
             >
               {(option) => (
