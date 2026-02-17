@@ -580,6 +580,14 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}:
     get:
       operationId: getEservice

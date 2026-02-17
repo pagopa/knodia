@@ -679,7 +679,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/interface:
     get:
-      operationId: getEserviceVersionInterface
+      operationId: getEserviceLatestVersionInterface
       tags:
         - eservice
       description: Download the interface document for the latest version of an E-service
