@@ -3,7 +3,7 @@ import { FileTrigger, type FileTriggerProps } from "react-aria-components";
 import { Button } from "./Button";
 import { Description } from "./Field";
 
-const DEFAULT_ACCEPTED_FILE_TYPES = [".yaml", ".yml", ".json", ".xml"];
+const DEFAULT_ACCEPTED_FILE_TYPES = [".yaml", ".yml", ".json"];
 
 interface FileUploadProps extends Pick<
   FileTriggerProps,
@@ -11,7 +11,7 @@ interface FileUploadProps extends Pick<
 > {
   /** Text shown on the file trigger button */
   buttonLabel?: string;
-  /** Description text (e.g., "Accepted format: YAML, JSON, XML") */
+  /** Description text (e.g., "Accepted format: YAML, JSON") */
   description?: string;
   /** Error message to display */
   errorMessage?: string;
@@ -23,7 +23,7 @@ export function FileUpload({
   acceptedFileTypes = DEFAULT_ACCEPTED_FILE_TYPES,
   allowsMultiple = false,
   buttonLabel = "Choose file",
-  description = "Accepted format: YAML, JSON, XML",
+  description = "Accepted format: YAML, JSON",
   errorMessage,
   isDisabled = false,
   onSelect,
