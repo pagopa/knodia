@@ -7,8 +7,7 @@ import {
   eserviceEvents,
   toEserviceV1,
 } from "@knodia/eservice-models";
-import { runConsumer } from "@knodia/kafka-commons";
-import { sendTestEvent } from "@knodia/test-commons/kafka";
+import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
 import { getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -36,16 +35,11 @@ describe("E-service read model writer tests", async () => {
       topicName,
     });
 
-    await runConsumer([topicName], processMessage, kafkaConfig);
+    await runTestConsumer(topicName, processMessage, kafkaConfig);
 
-    let retrievedEservices: WithMetadata<Eservice>[] = [];
-    await expect
-      .poll(async () => {
-        retrievedEservices = await getAllEservices();
-        return retrievedEservices.length;
-      })
-      .toBe(1);
+    const retrievedEservices = await getAllEservices();
 
+    expect(retrievedEservices.length).toBe(1);
     expect(retrievedEservices[0]).toEqual({
       data: toExpectEservice(eservice),
       metadata: { version: metadataVersion },
