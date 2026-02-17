@@ -8,7 +8,11 @@ import {
   toEserviceV1,
 } from "@knodia/eservice-models";
 import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
-import { getAllEservices, getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
+import {
+  getAllEservices,
+  getMockEservice,
+  toExpectEservice,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
