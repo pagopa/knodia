@@ -90,9 +90,9 @@ components:
     EserviceVersionState:
       type: string
       enum:
-        - Active
-        - Suspended
-        - Archived
+        - ACTIVE
+        - SUSPENDED
+        - ARCHIVED
     LocalizedName:
       description: Name of the E-service
       type: object
@@ -129,8 +129,8 @@ components:
     EserviceMode:
       type: string
       enum:
-        - ProvideData
-        - ReceiveData
+        - PROVIDE_DATA
+        - RECEIVE_DATA
     EserviceCategory:
       type: object
       properties:
@@ -330,6 +330,99 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - id
+      additionalProperties: false
+    EserviceSearchParams:
+      anyOf:
+        - type: object
+          properties:
+            keywords:
+              type: string
+              minLength: 1
+          required:
+            - keywords
+          additionalProperties: false
+        - type: object
+          properties:
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+          required:
+            - category
+          additionalProperties: false
+        - type: object
+          properties:
+            keywords:
+              type: string
+              minLength: 1
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+          required:
+            - keywords
+            - category
+          additionalProperties: false
+    EserviceSearchResult:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        latestVersionRequiredAttributes:
+          description: Required attributes for the E-service
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
+        latestVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - categories
+        - description
+        - id
+        - latestVersionRequiredAttributes
+        - latestVersionState
+        - mode
+        - name
+        - producerId
+      additionalProperties: false
+    EserviceSearchResults:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceSearchResult"
+      required:
+        - pagination
+        - results
       additionalProperties: false
 paths:
   /status:
@@ -546,6 +639,57 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /searchEservices:
+    post:
+      operationId: searchEservices
+      summary: Search for E-Services
+      tags:
+        - remote-resources-manager
+      description: Search for E-Services according to search criteria and considering
+        only E-Services with an active or suspended Version
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EserviceSearchParams"
+        required: true
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: E-Service search results retrieved (sorted by most recently updated
+            first)
+          content:
+            application/json:
+              schema:
+                description: E-Service search results retrieved (sorted by most recently updated
+                  first)
+                allOf:
+                  - $ref: "#/components/schemas/EserviceSearchResults"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -554,3 +698,5 @@ tags:
     name: health
   - description: E-services routes
     name: eservice
+  - description: Remote Resources Manager routes
+    name: remote-resources-manager

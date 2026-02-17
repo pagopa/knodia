@@ -2,7 +2,7 @@ import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
 export const API_EserviceVersionState = z
-  .enum(["Active", "Suspended", "Archived"])
+  .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
   .meta({ id: "EserviceVersionState" });
 export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
 
@@ -30,7 +30,7 @@ export type API_LocalizedInterfacePrettyName = z.infer<
 >;
 
 export const API_EserviceMode = z
-  .enum(["ProvideData", "ReceiveData"])
+  .enum(["PROVIDE_DATA", "RECEIVE_DATA"])
   .meta({ id: "EserviceMode" });
 export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
 

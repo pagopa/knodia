@@ -17,13 +17,13 @@ export const maxDailyCalls = 1_000_000_000;
 
 const minEserviceVersionNumber = 1;
 
-export const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
+export const EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;
 
 export const EserviceAccessTokenType = z.enum(["Bearer", "DPoP"]);
 export type EserviceAccessTokenType = z.infer<typeof EserviceAccessTokenType>;
 
-export const EserviceVersionState = z.enum(["Active", "Suspended", "Archived"]);
+export const EserviceVersionState = z.enum(["ACTIVE", "SUSPENDED", "ARCHIVED"]);
 export type EserviceVersionState = z.infer<typeof EserviceVersionState>;
 
 export const EserviceInterface = z.strictObject({

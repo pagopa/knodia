@@ -22,8 +22,8 @@ import {
 
 const toEserviceModeV1 = (mode: EserviceMode): EserviceModeV1 =>
   match(mode)
-    .with("ProvideData", () => EserviceModeV1.PROVIDE_DATA)
-    .with("ReceiveData", () => EserviceModeV1.RECEIVE_DATA)
+    .with("PROVIDE_DATA", () => EserviceModeV1.PROVIDE_DATA)
+    .with("RECEIVE_DATA", () => EserviceModeV1.RECEIVE_DATA)
     .exhaustive();
 
 const toEserviceAccessTokenTypeV1 = (
@@ -38,9 +38,9 @@ const toEserviceVersionStateV1 = (
   state: EserviceVersionState,
 ): EserviceVersionStateV1 =>
   match(state)
-    .with("Active", () => EserviceVersionStateV1.ACTIVE)
-    .with("Suspended", () => EserviceVersionStateV1.SUSPENDED)
-    .with("Archived", () => EserviceVersionStateV1.ARCHIVED)
+    .with("ACTIVE", () => EserviceVersionStateV1.ACTIVE)
+    .with("SUSPENDED", () => EserviceVersionStateV1.SUSPENDED)
+    .with("ARCHIVED", () => EserviceVersionStateV1.ARCHIVED)
     .exhaustive();
 
 const toEserviceVersionRequiredAttributeGroupV1 = (

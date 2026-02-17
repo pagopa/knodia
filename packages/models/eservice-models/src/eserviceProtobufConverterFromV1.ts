@@ -55,8 +55,8 @@ export const fromEserviceV1 = (input: EserviceV1): Eservice => ({
 
 const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
   match(input)
-    .with(EserviceModeV1.PROVIDE_DATA, () => EserviceMode.enum.ProvideData)
-    .with(EserviceModeV1.RECEIVE_DATA, () => EserviceMode.enum.ReceiveData)
+    .with(EserviceModeV1.PROVIDE_DATA, () => EserviceMode.enum.PROVIDE_DATA)
+    .with(EserviceModeV1.RECEIVE_DATA, () => EserviceMode.enum.RECEIVE_DATA)
     .with(EserviceModeV1.UNRECOGNIZED, () => {
       throw new Error("Unrecognized EserviceModeV1 value");
     })
@@ -104,14 +104,14 @@ const fromEserviceVersionStateV1 = (
   input: EserviceVersionStateV1,
 ): EserviceVersionState =>
   match(input)
-    .with(EserviceVersionStateV1.ACTIVE, () => EserviceVersionState.enum.Active)
+    .with(EserviceVersionStateV1.ACTIVE, () => EserviceVersionState.enum.ACTIVE)
     .with(
       EserviceVersionStateV1.SUSPENDED,
-      () => EserviceVersionState.enum.Suspended,
+      () => EserviceVersionState.enum.SUSPENDED,
     )
     .with(
       EserviceVersionStateV1.ARCHIVED,
-      () => EserviceVersionState.enum.Archived,
+      () => EserviceVersionState.enum.ARCHIVED,
     )
     .with(EserviceVersionStateV1.UNRECOGNIZED, () => {
       throw new Error("Unrecognized EserviceVersionStateV1 value");
