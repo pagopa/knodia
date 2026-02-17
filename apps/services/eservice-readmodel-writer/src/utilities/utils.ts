@@ -1,11 +1,11 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { eserviceWriterServiceBuilder } from "@knodia/db-readmodel-eservice/writer";
 import { EserviceEventV1 } from "@knodia/eservice-models";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 
 import { handleEserviceEvent } from "../services/consumerService.ts";
-import { eserviceWriterServiceBuilder } from "../services/eserviceWriterService.ts";
 
 export const createProcessMessage = (readmodelDb: NodePgDatabase) => {
   const eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
