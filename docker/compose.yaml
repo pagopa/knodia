@@ -266,11 +266,11 @@ services:
   # Serves JWKS endpoints for local token validation
   # - http://localhost:4500/cognito/.well-known/jwks.json
   # - http://localhost:4500/session/.well-known/jwks.json
-  local-kms:
+  local-jwks:
     security_opt:
       - no-new-privileges:true
     image: nginx:1.28-alpine@sha256:15e96e59aa3b0aada3a121296e3bce117721f42d88f5f64217ef4b18f458c6ab
-    container_name: knodia-local-kms
+    container_name: knodia-local-jwks
     ports:
       - 4500:80
     volumes:
