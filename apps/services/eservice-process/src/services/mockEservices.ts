@@ -16,9 +16,9 @@ export const mockEservices: {
     categories: [{ code: "main-address", scheme: "knodia-categories" }],
     description:
       "Service for requesting and validating company VAT registration status across EU member states",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Requesting company VAT registration status",
-    state: "Active",
+    state: "ACTIVE",
   },
   {
     categories: [
@@ -27,88 +27,88 @@ export const mockEservices: {
     ],
     description:
       "Service for validating pension contribution history records for citizens",
-    mode: "ReceiveData",
+    mode: "RECEIVE_DATA",
     name: "Validating pension contribution history",
-    state: "Suspended",
+    state: "SUSPENDED",
   },
   {
     categories: [{ code: "main-address", scheme: "knodia-categories" }],
     description:
       "Service for requesting official birth certificate details from civil registries",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Requesting birth certificate details",
-    state: "Archived",
+    state: "ARCHIVED",
   },
   {
     categories: [{ code: "main-address", scheme: "knodia-categories" }],
     description:
       "Service for retrieving driver licence information and validity status",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Retrieving driver licence information",
-    state: "Active",
+    state: "ACTIVE",
   },
   {
     categories: [{ code: "main-address", scheme: "knodia-categories" }],
     description:
       "Service for verifying healthcare insurance entitlement and coverage details",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Verifying healthcare insurance entitlement",
-    state: "Archived",
+    state: "ARCHIVED",
   },
   {
     categories: [{ code: "tax-records", scheme: "knodia-categories" }],
     description:
       "Service for accessing and verifying individual tax declaration records",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Accessing tax declaration records",
-    state: "Active",
+    state: "ACTIVE",
   },
   {
     categories: [{ code: "education", scheme: "knodia-categories" }],
     description:
       "Service for retrieving academic qualification and degree certification data",
-    mode: "ReceiveData",
+    mode: "RECEIVE_DATA",
     name: "Retrieving academic qualifications",
-    state: "Suspended",
+    state: "SUSPENDED",
   },
   {
     categories: [{ code: "main-address", scheme: "knodia-categories" }],
     description:
       "Service for verifying residential address and domicile registration",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Verifying residential address registration",
-    state: "Archived",
+    state: "ARCHIVED",
   },
   {
     categories: [{ code: "employment", scheme: "knodia-categories" }],
     description:
       "Service for checking current employment status and contract details",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Checking employment status",
-    state: "Active",
+    state: "ACTIVE",
   },
   {
     categories: [{ code: "civil-status", scheme: "knodia-categories" }],
     description:
       "Service for retrieving civil status records including marriage and family data",
-    mode: "ReceiveData",
+    mode: "RECEIVE_DATA",
     name: "Retrieving civil status records",
-    state: "Active",
+    state: "ACTIVE",
   },
   {
     categories: [{ code: "vehicles", scheme: "knodia-categories" }],
     description:
       "Service for querying vehicle registration and ownership records",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Querying vehicle registration records",
-    state: "Active",
+    state: "ACTIVE",
   },
   {
     categories: [{ code: "social-security", scheme: "knodia-categories" }],
     description:
       "Service for validating social security number and benefit eligibility",
-    mode: "ProvideData",
+    mode: "PROVIDE_DATA",
     name: "Validating social security benefits",
-    state: "Suspended",
+    state: "SUSPENDED",
   },
 ];

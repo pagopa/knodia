@@ -39,7 +39,7 @@ describe("POST /eservices (createEservice)", () => {
       isConsumerOperatorIdentificationRequired:
         body.isConsumerOperatorIdentificationRequired ?? false,
       isSignalHubEnabled: body.isSignalHubEnabled ?? false,
-      mode: body.mode ?? "ProvideData",
+      mode: body.mode ?? "PROVIDE_DATA",
       name: body.name,
       producerId: expect.any(String), // TODO: It's random for now
       updatedAt: new Date(responseBody.createdAt),
@@ -63,7 +63,7 @@ describe("POST /eservices (createEservice)", () => {
           maxDailyCallsPerConsumer: body.maxDailyCallsPerConsumer,
           maxDailyCallsPerKnode: body.maxDailyCallsPerKnode,
           requiredAttributes: body.requiredAttributes,
-          state: "Active",
+          state: "ACTIVE",
           updatedAt: new Date(responseBody.createdAt),
           versionNumber: 1,
         },

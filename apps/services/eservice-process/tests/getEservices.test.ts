@@ -96,7 +96,7 @@ describe("GET /eservices (getEservices)", () => {
     expect(body.items.length).toBeGreaterThan(0);
     expect(
       body.items.every(
-        (item) => item.state === "Active" || item.state === "Suspended",
+        (item) => item.state === "ACTIVE" || item.state === "SUSPENDED",
       ),
     ).toBe(true);
   });
@@ -110,7 +110,7 @@ describe("GET /eservices (getEservices)", () => {
 
     const body = response.json<API_Eservices>();
     expect(body.items.length).toBeGreaterThan(0);
-    expect(body.items.every((item) => item.mode === "ReceiveData")).toBe(true);
+    expect(body.items.every((item) => item.mode === "RECEIVE_DATA")).toBe(true);
   });
 
   it("should sort by name ascending by default", async () => {
