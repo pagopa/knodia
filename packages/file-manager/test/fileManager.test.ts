@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { describe, expect, it } from "vitest";
 
-import { fileManager, TEST_BUCKET } from "./setup.ts";
+import { fileManager, testBucket } from "./setup.ts";
 
 describe("fileManager", () => {
   it("storeBytes and getBytes successfully store and retrieve content", async () => {
@@ -9,7 +9,7 @@ describe("fileManager", () => {
     const key = "test-folder/data.json";
 
     const returnedKey = await fileManager.storeBytes({
-      bucket: TEST_BUCKET,
+      bucket: testBucket,
       checksumSHA256Hex: crypto
         .createHash("sha256")
         .update(content)
@@ -21,7 +21,7 @@ describe("fileManager", () => {
 
     expect(returnedKey).toBe(key);
     const result = await fileManager.getBytes({
-      bucket: TEST_BUCKET,
+      bucket: testBucket,
       key,
     });
 
@@ -39,7 +39,7 @@ describe("fileManager", () => {
 
     await expect(
       fileManager.storeBytes({
-        bucket: TEST_BUCKET,
+        bucket: testBucket,
         checksumSHA256Hex: wrongChecksum,
         content,
         contentType: "text/plain",
@@ -54,7 +54,7 @@ describe("fileManager", () => {
 
     await expect(
       fileManager.storeBytes({
-        bucket: TEST_BUCKET,
+        bucket: testBucket,
         checksumSHA256Hex: "some-invalid-hex",
         content,
         contentType: "text/plain",

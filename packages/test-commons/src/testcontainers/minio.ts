@@ -13,49 +13,23 @@ const TEST_MINIO_IMAGE = "minio/minio:RELEASE.2025-09-07T16-13-09Z";
 const TEST_MINIO_USERNAME = "minio_testuser";
 const TEST_MINIO_PASSWORD = "minio_testpassword";
 
-export async function createTestBucket(
-  client: S3Client,
-  bucket: string,
-): Promise<void> {
-  await client.send(new CreateBucketCommand({ Bucket: bucket }));
-}
+/**
+ * Creates a dedicated S3 bucket for a single test file by using the test container connection string.
+ * It returns the S3 client, bucket name, and utility functions to
+ * clean up the bucket after each test and to delete it after all tests.
+ *
+ * Intended to be called in beforeAll of each package test setup.
+ */
+export async function setupMinioTestBucket(connectionString: string) {
+  const bucket = `test-bucket-${crypto.randomUUID()}`;
+  const s3Client = createTestS3Client(connectionString);
 
-export function createTestS3Client(connectionString: string): S3Client {
-  return new S3Client({
-    credentials: {
-      accessKeyId: TEST_MINIO_USERNAME,
-      secretAccessKey: TEST_MINIO_PASSWORD,
-    },
-    endpoint: connectionString,
-    region: "eu-south-1",
-  });
-}
+  await createTestBucket(s3Client, bucket);
 
-export async function deleteAllObjectsInBucket(
-  client: S3Client,
-  bucket: string,
-): Promise<void> {
-  const listed = await client.send(
-    new ListObjectsV2Command({ Bucket: bucket }),
-  );
-  const objects =
-    listed.Contents?.flatMap((o) => (o.Key ? [{ Key: o.Key }] : [])) ?? [];
-  if (objects.length > 0) {
-    await client.send(
-      new DeleteObjectsCommand({
-        Bucket: bucket,
-        Delete: { Objects: objects },
-      }),
-    );
-  }
-}
+  const cleanAfterEach = async () => deleteAllObjectsInBucket(s3Client, bucket);
+  const cleanupAfterAll = async () => deleteTestBucket(s3Client, bucket);
 
-export async function deleteTestBucket(
-  client: S3Client,
-  bucket: string,
-): Promise<void> {
-  await deleteAllObjectsInBucket(client, bucket);
-  await client.send(new DeleteBucketCommand({ Bucket: bucket }));
+  return { bucket, cleanAfterEach, cleanupAfterAll, s3Client };
 }
 
 /**
@@ -81,6 +55,51 @@ export async function setupMinioTestContainer() {
   const connectionString = `http://${host}:${mappedPort}`;
 
   return { connectionString, container };
+}
+
+async function createTestBucket(
+  client: S3Client,
+  bucket: string,
+): Promise<void> {
+  await client.send(new CreateBucketCommand({ Bucket: bucket }));
+}
+
+function createTestS3Client(connectionString: string): S3Client {
+  return new S3Client({
+    credentials: {
+      accessKeyId: TEST_MINIO_USERNAME,
+      secretAccessKey: TEST_MINIO_PASSWORD,
+    },
+    endpoint: connectionString,
+    region: "eu-south-1",
+  });
+}
+
+async function deleteAllObjectsInBucket(
+  client: S3Client,
+  bucket: string,
+): Promise<void> {
+  const listed = await client.send(
+    new ListObjectsV2Command({ Bucket: bucket }),
+  );
+  const objects =
+    listed.Contents?.flatMap((o) => (o.Key ? [{ Key: o.Key }] : [])) ?? [];
+  if (objects.length > 0) {
+    await client.send(
+      new DeleteObjectsCommand({
+        Bucket: bucket,
+        Delete: { Objects: objects },
+      }),
+    );
+  }
+}
+
+async function deleteTestBucket(
+  client: S3Client,
+  bucket: string,
+): Promise<void> {
+  await deleteAllObjectsInBucket(client, bucket);
+  await client.send(new DeleteBucketCommand({ Bucket: bucket }));
 }
 
 declare module "vitest" {
