@@ -100,6 +100,6 @@ ALTER TABLE ${NAMESPACE}_eservice."eservice_version_required_attribute" ADD CONS
 GRANT USAGE ON SCHEMA ${NAMESPACE}_eservice TO readonly_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_eservice TO readonly_user;
 
--- Grant privileges to _eservice_readmodel_writer_user
-GRANT USAGE ON SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_eservice_readmodel_writer_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_eservice_readmodel_writer_user;
+-- Grant privileges to _eservice_rmw_user
+GRANT USAGE ON SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_eservice_rmw_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_eservice_rmw_user;
