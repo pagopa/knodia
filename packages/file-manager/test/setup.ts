@@ -4,7 +4,7 @@ import {
   deleteAllObjectsInBucket,
   deleteTestBucket,
 } from "@knodia/test-commons/minio";
-import { afterEach } from "node:test";
+import { afterEach } from "vitest";
 import { afterAll, beforeAll, inject } from "vitest";
 
 import { type FileManager, initFileManager } from "../src/fileManager.ts";
