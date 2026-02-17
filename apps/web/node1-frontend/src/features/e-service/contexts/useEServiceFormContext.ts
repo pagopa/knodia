@@ -17,9 +17,8 @@ import {
   attributesStepSchema,
   DOCS_STEP_DEFAULTS,
   docsStepSchema,
-  docsStepValidationSchema,
   ESERVICE_FORM_DEFAULTS,
-  type EServiceValidationFormData,
+  type EServiceFormDraftData,
   GENERAL_STEP_DEFAULTS,
   generalStepSchema,
   TECHNICAL_STEP_DEFAULTS,
@@ -28,7 +27,7 @@ import {
 
 // Wizard context for accumulated data
 export interface EServiceWizardContextValue {
-  data: EServiceValidationFormData;
+  data: EServiceFormDraftData;
   updateAttributesStep: (data: AttributesStepData) => void;
   updateDocsStep: (data: DocsStepData) => void;
   updateGeneralStep: (data: GeneralStepData) => void;
@@ -83,7 +82,7 @@ export function useDocsStepForm(onSubmitSuccess: () => void) {
     },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: docsStepValidationSchema,
+      onDynamic: docsStepSchema,
     },
   });
 }

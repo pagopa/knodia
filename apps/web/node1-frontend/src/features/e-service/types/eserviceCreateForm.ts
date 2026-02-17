@@ -2,7 +2,13 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
-import { FILE_CONTENT_TYPES } from "../utils/file";
+const ACCEPTED_MIME_TYPES = [
+  "application/json",
+  "application/yaml",
+  "application/x-yaml",
+  "text/yaml",
+  "text/x-yaml",
+];
 
 const schemeRefSchema = z.object({
   code: z.string(),
@@ -27,10 +33,7 @@ const eserviceFieldSchemas = {
   interfaceDocument: z
     .file("API specs file is required.")
     .max(1024 * 1024, "File size must be at most 1 MB.")
-    .mime(
-      Object.values(FILE_CONTENT_TYPES),
-      "File must be YAML or JSON format.",
-    ),
+    .mime(ACCEPTED_MIME_TYPES, "File must be YAML or JSON format."),
   isSignalHubEnabled: z.boolean(),
   maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),
   maxDailyCallsPerKnode: z.number().min(1, "Must be at least 1."),
@@ -51,14 +54,8 @@ const eserviceFieldSchemas = {
 export const eserviceFormSchema = z.object(eserviceFieldSchemas);
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used for zod typing
-const eserviceValidationFormSchema = z.object({
-  ...eserviceFieldSchemas,
-  interfaceDocument: eserviceFieldSchemas.interfaceDocument.nullable(),
-});
-export type EServiceValidationFormData = z.infer<
-  typeof eserviceValidationFormSchema
->;
+export type EServiceFormDraftData = DocsStepDraftData &
+  Omit<EServiceFormData, "interfaceDocument">;
 
 // Step-specific validation schemas
 export const generalStepSchema = z.object({
@@ -81,10 +78,6 @@ export const docsStepSchema = z.object({
   interfaceDocument: eserviceFieldSchemas.interfaceDocument,
 });
 
-export const docsStepValidationSchema = z.object({
-  interfaceDocument: eserviceFieldSchemas.interfaceDocument.nullable(),
-});
-
 export const attributesStepSchema = z.object({
   requiredAttributes: eserviceFieldSchemas.requiredAttributes,
 });
@@ -94,6 +87,9 @@ export type AttributesStepData = z.infer<typeof attributesStepSchema>;
 export type DocsStepData = z.infer<typeof docsStepSchema>;
 export type GeneralStepData = z.infer<typeof generalStepSchema>;
 export type TechnicalStepData = z.infer<typeof technicalStepSchema>;
+type DocsStepDraftData = Omit<DocsStepData, "interfaceDocument"> & {
+  interfaceDocument: File | null;
+};
 
 // Step defaults
 export const GENERAL_STEP_DEFAULTS: z.input<typeof generalStepSchema> = {
@@ -112,7 +108,7 @@ export const TECHNICAL_STEP_DEFAULTS: z.input<typeof technicalStepSchema> = {
   mode: "ProvideData",
 };
 
-export const DOCS_STEP_DEFAULTS: z.input<typeof docsStepValidationSchema> = {
+export const DOCS_STEP_DEFAULTS: DocsStepDraftData = {
   interfaceDocument: null,
 };
 
@@ -121,9 +117,7 @@ export const ATTRIBUTES_STEP_DEFAULTS: z.input<typeof attributesStepSchema> = {
 };
 
 // Full form defaults (for accumulated data)
-export const ESERVICE_FORM_DEFAULTS: z.input<
-  typeof eserviceValidationFormSchema
-> = {
+export const ESERVICE_FORM_DEFAULTS: EServiceFormDraftData = {
   ...GENERAL_STEP_DEFAULTS,
   ...TECHNICAL_STEP_DEFAULTS,
   ...DOCS_STEP_DEFAULTS,
