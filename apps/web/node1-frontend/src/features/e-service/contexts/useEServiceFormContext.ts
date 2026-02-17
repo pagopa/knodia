@@ -76,6 +76,7 @@ export function useDocsStepForm(onSubmitSuccess: () => void) {
         data.interfaceDocument ?? DOCS_STEP_DEFAULTS.interfaceDocument,
     },
     onSubmit: ({ value }) => {
+      // Already validated by onDynamic, re-parse only to narrow File | null → File
       const parsedValue = docsStepSchema.parse(value);
       updateDocsStep(parsedValue);
       onSubmitSuccess();
