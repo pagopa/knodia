@@ -36,7 +36,7 @@ export type ProductionEserviceSearchParams = z.infer<
   typeof productionEserviceSearchSchema
 >;
 
-export const consumptionEserviceSearchDefaultValues = {
+const consumptionEserviceSearchDefaultValues = {
   category: "",
   keywords: "",
   knode: "",

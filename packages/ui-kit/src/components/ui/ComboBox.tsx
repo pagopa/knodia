@@ -37,7 +37,7 @@ const inputStyles = tv({
   base: "flex-1 min-w-0 body-md outline-none bg-transparent placeholder:text-primary-light-low-contrast",
 });
 
-export interface ComboBoxProps<T extends object> extends Omit<
+interface ComboBoxProps<T extends object> extends Omit<
   AriaComboBoxProps<T>,
   "children"
 > {
