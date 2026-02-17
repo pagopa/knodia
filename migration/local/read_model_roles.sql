@@ -7,10 +7,6 @@ BEGIN
         CREATE ROLE readonly_user WITH LOGIN PASSWORD '${DEFAULT_PASSWORD}';
     END IF;
 
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${NAMESPACE}_backend_for_frontend_user') THEN
-        CREATE ROLE ${NAMESPACE}_backend_for_frontend_user WITH LOGIN PASSWORD '${DEFAULT_PASSWORD}';
-    END IF;
-
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${NAMESPACE}_eservice_rmw_user') THEN
         CREATE ROLE ${NAMESPACE}_eservice_rmw_user WITH LOGIN PASSWORD '${DEFAULT_PASSWORD}';
     END IF;
