@@ -1,8 +1,11 @@
+import { bffApi } from "@knodia/bff-client";
 import { Banner, Divider } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { SettingsCard } from "@/components/SettingCard";
+import { client } from "@/libs/axios";
+import { downloadFile } from "@/utils/downloadFile";
 import { formatNumber } from "@/utils/formatters";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
@@ -79,13 +82,35 @@ function ConsumptionRequirementsSection() {
 }
 
 function DocumentsSection() {
+  const {
+    id,
+    version: { interfaceDocument },
+  } = useProductionEserviceDetailsContext();
+
+  async function downloadInterfaceDocument() {
+    const response = await bffApi.getEserviceLatestVersionInterface({
+      client,
+      path: { eserviceId: id },
+    });
+
+    const file = new File([response.data], interfaceDocument.prettyName.en, {
+      type: response.headers["content-type"],
+    });
+
+    downloadFile(file);
+  }
+
   return (
     <Section title="Documents">
-      <DocumentRecap name="Api Specs" showDownloadButton />
+      <DocumentRecap
+        name={interfaceDocument.prettyName.en}
+        onDownload={downloadInterfaceDocument}
+        showDownloadButton
+      />
       <CopyableValueField
         className="mt-6"
         label="Checksum:"
-        value="3f653f35f8311c870e209cc672dfc3698081eefe84cc40f1af5bd61db2c54287D"
+        value={interfaceDocument.checksum}
       />
     </Section>
   );
