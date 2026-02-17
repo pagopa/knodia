@@ -84,8 +84,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       description: "Create a new E-service",
       operationId: "createEservice",
       response: {
-        201: API_CreatedResource.describe("E-service created successfully"),
-        400: API_Problem.describe("Bad Request"),
+        201: API_CreatedResource.meta({
+          description: "E-service created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [apiTags.eservice],
     },
@@ -157,10 +159,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       operationId: "getProducerEservices",
       querystring: API_ProducerEservicesQueryParams,
       response: {
-        200: API_ProducerEservices.describe(
-          "Producer E-services retrieved successfully",
-        ),
-        400: API_Problem.describe("Bad Request"),
+        200: API_ProducerEservices.meta({
+          description: "Producer E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [apiTags.eservice],
     },
@@ -215,11 +217,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       operationId: "getProducerEserviceDetails",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_ProducerEserviceDetails.describe(
-          "E-service details retrieved successfully",
-        ),
-        400: API_Problem.describe("Bad Request"),
-        404: API_Problem.describe("E-service not found"),
+        200: API_ProducerEserviceDetails.meta({
+          description: "E-service details retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
       },
       tags: [apiTags.eservice],
     },
