@@ -1,8 +1,8 @@
-import type { EserviceDetails } from "@knodia/bff-client";
+import type { ProducerEserviceDetails } from "@knodia/bff-client";
 
 import { createContext, useContext } from "react";
 
-type ProductionEserviceDetailsContextValue = EserviceDetails;
+type ProductionEserviceDetailsContextValue = ProducerEserviceDetails;
 
 export const ProductionEserviceDetailsContext =
   createContext<null | ProductionEserviceDetailsContextValue>(null);
