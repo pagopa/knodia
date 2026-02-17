@@ -1,4 +1,5 @@
 import { CaretDownIcon, XIcon } from "@phosphor-icons/react";
+import { useLayoutEffect, useRef, useState } from "react";
 import {
   ComboBox as AriaComboBox,
   type ComboBoxProps as AriaComboBoxProps,
@@ -64,6 +65,27 @@ export function ComboBox<T extends object>({
   placeholder,
   ...props
 }: ComboBoxProps<T>) {
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const [triggerWidth, setTriggerWidth] = useState<number | undefined>();
+
+  // Popover width fix: React Aria's --trigger-width CSS variable doesn't work
+  // correctly when the trigger is a Group (Input + Button) instead of a simple Button.
+  // Solution: manually measure the Group width with ResizeObserver and apply it
+  // as an inline style to the Popover.
+  useLayoutEffect(() => {
+    if (!triggerRef.current) return;
+
+    const updateWidth = () => {
+      setTriggerWidth(triggerRef.current?.offsetWidth);
+    };
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(triggerRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   const hasValue =
     (props.inputValue != null && props.inputValue !== "" && props.inputValue) ||
     (props.selectedKey != null && props.selectedKey !== "");
@@ -92,6 +114,7 @@ export function ComboBox<T extends object>({
           size,
         })}
         data-slot="trigger"
+        ref={triggerRef}
       >
         <Input
           className={inputStyles()}
@@ -125,7 +148,7 @@ export function ComboBox<T extends object>({
       </Group>
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
-      <Popover className="min-w-[var(--trigger-width)] mt-2">
+      <Popover style={{ width: triggerWidth }} triggerRef={triggerRef}>
         <ListBox className={dropdownStyles}>{children}</ListBox>
       </Popover>
     </AriaComboBox>
