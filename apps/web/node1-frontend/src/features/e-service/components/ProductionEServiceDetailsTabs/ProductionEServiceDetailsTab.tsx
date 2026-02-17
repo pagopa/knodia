@@ -98,7 +98,7 @@ function DocumentsSection() {
 
 function MaxAPICallsPerDaySection() {
   const { version } = useProductionEserviceDetailsContext();
-  const numberFormatter = useNumberFormatter();
+  const numberFormatter = useNumberFormatter({ useGrouping: true });
 
   return (
     <Section title="Max API calls per day">

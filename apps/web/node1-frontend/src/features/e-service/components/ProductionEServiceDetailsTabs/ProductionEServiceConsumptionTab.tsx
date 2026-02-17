@@ -1,4 +1,4 @@
-import { Banner, InteractiveIcon, Tooltip } from "@knodia/ui-kit/ui";
+import { Banner, Empty, InteractiveIcon, Tooltip } from "@knodia/ui-kit/ui";
 import { QuestionIcon, SelectionIcon } from "@phosphor-icons/react";
 import { useNumberFormatter } from "react-aria";
 import { TooltipTrigger } from "react-aria-components";
@@ -18,9 +18,47 @@ export function ProductionEServiceConsumptionTab() {
   );
 }
 
+function NewAgreementsTable() {
+  return (
+    <Empty
+      action={{
+        as: "link",
+        hierarchy: "brand",
+        href: { to: "/production/agreements" },
+        kind: "tonal",
+        label: "View all",
+      }}
+      className="mt-12"
+      description="You can view old Agreements in the Agreements page."
+      icon={null}
+      kind="neutral"
+      title="There are no new Agreements"
+    />
+  );
+}
+
+function NewPurposesTable() {
+  return (
+    <Empty
+      action={{
+        as: "link",
+        hierarchy: "brand",
+        href: { to: "/production/purposes" },
+        kind: "tonal",
+        label: "View all",
+      }}
+      className="mt-12"
+      description="You can view old Purposes in the Purposes page."
+      icon={null}
+      kind="brand"
+      title="There are no new Purposes"
+    />
+  );
+}
+
 function ProductionEserviceAgreements() {
   const { agreements } = useProductionEserviceDetailsContext();
-  const numberFormatter = useNumberFormatter();
+  const numberFormatter = useNumberFormatter({ useGrouping: true });
 
   return (
     <div>
@@ -34,14 +72,17 @@ function ProductionEserviceAgreements() {
           </Banner>
         ))
         .otherwise(() => (
-          <div className="grid grid-cols-2 gap-4">
-            <GenericInfoCard label="Total">
-              {numberFormatter.format(agreements.total)}
-            </GenericInfoCard>
-            <GenericInfoCard label="Active">
-              {numberFormatter.format(agreements.active)}
-            </GenericInfoCard>
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <GenericInfoCard label="Total">
+                {numberFormatter.format(agreements.total)}
+              </GenericInfoCard>
+              <GenericInfoCard label="Active">
+                {numberFormatter.format(agreements.active)}
+              </GenericInfoCard>
+            </div>
+            <NewAgreementsTable />
+          </>
         ))}
     </div>
   );
@@ -49,7 +90,7 @@ function ProductionEserviceAgreements() {
 
 function ProductionEservicePurposes() {
   const { purposes } = useProductionEserviceDetailsContext();
-  const numberFormatter = useNumberFormatter();
+  const numberFormatter = useNumberFormatter({ useGrouping: true });
 
   return (
     <div>
@@ -63,31 +104,34 @@ function ProductionEservicePurposes() {
           </Banner>
         ))
         .otherwise(() => (
-          <div className="grid grid-cols-3 gap-4">
-            <GenericInfoCard label="Total">
-              {numberFormatter.format(purposes.total)}
-            </GenericInfoCard>
-            <GenericInfoCard label="Active">
-              {numberFormatter.format(purposes.active)}
-            </GenericInfoCard>
-            <GenericInfoCard
-              label={
-                <>
-                  Total API calls per day
-                  <TooltipTrigger>
-                    <InteractiveIcon>
-                      <QuestionIcon />
-                    </InteractiveIcon>
-                    <Tooltip>
-                      Sum of all API calls per day declared by Active Purposes
-                    </Tooltip>
-                  </TooltipTrigger>
-                </>
-              }
-            >
-              {numberFormatter.format(purposes.totalApiCallsPerDay)}
-            </GenericInfoCard>
-          </div>
+          <>
+            <div className="grid grid-cols-3 gap-4">
+              <GenericInfoCard label="Total">
+                {numberFormatter.format(purposes.total)}
+              </GenericInfoCard>
+              <GenericInfoCard label="Active">
+                {numberFormatter.format(purposes.active)}
+              </GenericInfoCard>
+              <GenericInfoCard
+                label={
+                  <div className="flex items-center gap-2">
+                    Total API calls per day
+                    <TooltipTrigger>
+                      <InteractiveIcon>
+                        <QuestionIcon />
+                      </InteractiveIcon>
+                      <Tooltip>
+                        Sum of all API calls per day declared by Active Purposes
+                      </Tooltip>
+                    </TooltipTrigger>
+                  </div>
+                }
+              >
+                {numberFormatter.format(purposes.totalApiCallsPerDay)}
+              </GenericInfoCard>
+            </div>
+            <NewPurposesTable />
+          </>
         ))}
     </div>
   );

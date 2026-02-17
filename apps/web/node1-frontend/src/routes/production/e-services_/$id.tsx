@@ -1,4 +1,6 @@
-import { getEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
+import type { ProducerEserviceDetails } from "@knodia/bff-client";
+
+import { getProducerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Breadcrumb,
   Breadcrumbs,
@@ -17,7 +19,7 @@ import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/P
 import { client } from "@/libs/axios";
 
 const eserviceQuery = (eserviceId: string) =>
-  getEserviceDetailsOptions({
+  getProducerEserviceDetailsOptions({
     client,
     path: { eserviceId },
   });
@@ -25,7 +27,52 @@ const eserviceQuery = (eserviceId: string) =>
 export const Route = createFileRoute("/production/e-services_/$id")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
-    await queryClient.ensureQueryData(eserviceQuery(id)),
+    await Promise.resolve({
+      agreements: {
+        active: 3,
+        total: 5,
+      },
+      categories: [
+        {
+          code: "citizen.residence.residence_place",
+          scheme: "vc_example_eservice_categories",
+        },
+      ],
+      createdAt: "2026-02-17T10:00:00.000Z",
+      description: {
+        en: "Service for validating company VAT registration status.",
+      },
+      id: "00000000-0000-4000-a000-000000000123",
+      isConsumerOperatorIdentificationRequired: false,
+      isSignalHubEnabled: true,
+      mode: "ProvideData",
+      name: {
+        en: "Company VAT Validation Service",
+      },
+      producerId: "30000000-0000-4000-a000-000000000001",
+      purposes: {
+        active: 1,
+        total: 2,
+        totalApiCallsPerDay: 15000,
+      },
+      updatedAt: "2026-02-17T10:00:00.000Z",
+      version: {
+        accessTokenAudience: ["api://knodia/eservice/vat-validation"],
+        accessTokenDuration: 3600,
+        accessTokenType: "Bearer",
+        createdAt: "2026-02-17T10:00:00.000Z",
+        id: "10000000-0000-4000-a000-000000000001",
+        maxDailyCallsPerConsumer: 100,
+        maxDailyCallsPerKnode: 1000,
+        requiredAttributes: [
+          [{ code: "nuts1", scheme: "vc_territorial_units" }],
+        ],
+        state: "Active",
+        updatedAt: "2026-02-17T10:00:00.000Z",
+        versionNumber: 1,
+      },
+    } satisfies ProducerEserviceDetails),
+  // await queryClient.ensureQueryData(eserviceQuery(id)),
 });
 
 function EServiceActions() {
