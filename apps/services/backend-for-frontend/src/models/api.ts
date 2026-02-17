@@ -50,20 +50,20 @@ export type API_Eservices = z.infer<typeof API_Eservices>;
 
 const API_InterfaceDocumentSeed = z
   .strictObject({
-    checksum: z
-      .string()
-      .describe(
+    checksum: z.string().meta({
+      description:
         "Base64-encoded SHA-256 checksum of the uploaded E-service interface document",
-      ),
-    content: z.base64().describe("Base64-encoded file content"),
-    contentType: z
-      .string()
-      .describe("MIME type of the uploaded E-service interface document"),
-    name: z
-      .string()
-      .describe(
+    }),
+    content: z.base64().meta({
+      description: "Base64-encoded file content",
+    }),
+    contentType: z.string().meta({
+      description: "MIME type of the uploaded E-service interface document",
+    }),
+    name: z.string().meta({
+      description:
         "Name of the uploaded E-service interface document, with extension",
-      ),
+    }),
     prettyName: API_LocalizedInterfacePrettyName,
   })
   .meta({ id: "InterfaceDocumentSeed" });
@@ -72,7 +72,7 @@ export const API_EserviceSeed = z
   .strictObject({
     accessTokenAudience: z
       .array(z.string())
-      .describe("Audience for the access token"),
+      .meta({ description: "Audience for the access token" }),
     accessTokenDuration: z
       .number()
       .int()
@@ -80,46 +80,47 @@ export const API_EserviceSeed = z
       .max(maxAccessTokenDuration)
       .optional()
       .default(3600)
-      .describe("Duration of the access token in seconds")
+      .meta({ description: "Duration of the access token in seconds" })
       .meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType.optional()
       .default("Bearer")
-      .describe("Type of the access token"),
+      .meta({ description: "Type of the access token" }),
     categories: z
       .array(API_EserviceCategory)
       .optional()
-      .describe("Categories of the E-service"),
+      .meta({ description: "Categories of the E-service" }),
     description: API_LocalizedDescription,
-    interfaceDocument: API_InterfaceDocumentSeed.describe(
-      "Interface document for the E-service",
-    ),
-    isConsumerOperatorIdentificationRequired: z
-      .boolean()
-      .optional()
-      .describe("Whether consumer operator identification is required"),
+    interfaceDocument: API_InterfaceDocumentSeed.meta({
+      description: "Interface document for the E-service",
+    }),
+    isConsumerOperatorIdentificationRequired: z.boolean().optional().meta({
+      description: "Whether consumer operator identification is required",
+    }),
     isSignalHubEnabled: z
       .boolean()
       .optional()
-      .describe("Whether SignalHub is enabled for the E-service"),
+      .meta({ description: "Whether SignalHub is enabled for the E-service" }),
     maxDailyCallsPerConsumer: z
       .number()
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .describe("Maximum daily calls per consumer")
+      .meta({ description: "Maximum daily calls per consumer" })
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .describe("Maximum daily calls per Knode")
+      .meta({ description: "Maximum daily calls per Knode" })
       .meta({ format: "int32" }),
-    mode: API_EserviceMode.describe("Mode of the E-service").optional(),
+    mode: API_EserviceMode.meta({
+      description: "Mode of the E-service",
+    }).optional(),
     name: API_LocalizedName,
     requiredAttributes: z
       .array(z.array(API_EserviceAttribute))
-      .describe("Required attributes for the E-service"),
+      .meta({ description: "Required attributes for the E-service" }),
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
@@ -136,13 +137,13 @@ export const API_ProducerEservice = z.strictObject({
     .number()
     .int()
     .min(0)
-    .describe("Number of active agreements")
+    .meta({ description: "Number of active agreements" })
     .meta({ format: "int32" }),
   activePurposes: z
     .number()
     .int()
     .min(0)
-    .describe("Number of active purposes")
+    .meta({ description: "Number of active purposes" })
     .meta({ format: "int32" }),
   categories: z.array(API_EserviceCategory),
   id: z.uuid(),
@@ -154,24 +155,26 @@ export type API_ProducerEservice = z.infer<typeof API_ProducerEservice>;
 
 export const API_ProducerEservicesQueryParams =
   API_PaginationQueryParams.extend({
-    mode: API_EserviceMode.optional().describe("Filter by E-service data mode"),
+    mode: API_EserviceMode.optional().meta({
+      description: "Filter by E-service data mode",
+    }),
     q: z
       .string()
       .optional()
-      .describe("Search by name, description or categories"),
+      .meta({ description: "Search by name, description or categories" }),
     sortBy: z
       .enum(["name"])
       .optional()
       .default("name")
-      .describe("Field to sort by"),
+      .meta({ description: "Field to sort by" }),
     sortOrder: z
       .enum(["asc", "desc"])
       .optional()
       .default("asc")
-      .describe("Sort direction"),
+      .meta({ description: "Sort direction" }),
     state: arrayQueryParam(API_EserviceVersionState)
       .optional()
-      .describe("Filter by E-service state"),
+      .meta({ description: "Filter by E-service state" }),
   });
 export type API_ProducerEservicesQueryParams = z.infer<
   typeof API_ProducerEservicesQueryParams
@@ -187,41 +190,47 @@ const API_EserviceVersion = z
   .strictObject({
     accessTokenAudience: z
       .array(z.string())
-      .describe("Audience for the access token"),
+      .meta({ description: "Audience for the access token" }),
     accessTokenDuration: z
       .number()
       .int()
       .min(minAccessTokenDuration)
       .max(maxAccessTokenDuration)
-      .describe("Duration of the access token in seconds")
+      .meta({ description: "Duration of the access token in seconds" })
       .meta({ format: "int32" }),
-    accessTokenType: API_AccessTokenType.describe("Type of the access token"),
+    accessTokenType: API_AccessTokenType.meta({
+      description: "Type of the access token",
+    }),
     createdAt: z.iso.datetime(),
-    id: z.uuid().describe("Unique identifier of the E-service version"),
+    id: z
+      .uuid()
+      .meta({ description: "Unique identifier of the E-service version" }),
     maxDailyCallsPerConsumer: z
       .number()
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .describe("Maximum daily calls per consumer")
+      .meta({ description: "Maximum daily calls per consumer" })
       .meta({ format: "int32" }),
     maxDailyCallsPerKnode: z
       .number()
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .describe("Maximum daily calls per Knode")
+      .meta({ description: "Maximum daily calls per Knode" })
       .meta({ format: "int32" }),
     requiredAttributes: z
       .array(z.array(API_EserviceAttribute))
-      .describe("Required attributes for the E-service"),
-    state: API_EserviceVersionState.describe("State of the version"),
+      .meta({ description: "Required attributes for the E-service" }),
+    state: API_EserviceVersionState.meta({
+      description: "State of the version",
+    }),
     updatedAt: z.iso.datetime(),
     versionNumber: z
       .number()
       .int()
       .min(1)
-      .describe("Version number")
+      .meta({ description: "Version number" })
       .meta({ format: "int32" }),
   })
   .meta({ id: "EserviceVersion" });
@@ -232,13 +241,13 @@ const API_EserviceDetailsCounters = z
       .number()
       .int()
       .min(0)
-      .describe("Number of active items")
+      .meta({ description: "Number of active items" })
       .meta({ format: "int32" }),
     total: z
       .number()
       .int()
       .min(0)
-      .describe("Total number of items")
+      .meta({ description: "Total number of items" })
       .meta({ format: "int32" }),
   })
   .meta({ id: "EserviceDetailsCounters" });
@@ -248,13 +257,15 @@ const API_EserviceDetailsPurposeCounters = API_EserviceDetailsCounters.extend({
     .number()
     .int()
     .min(0)
-    .describe("Total API calls per day across all purposes")
+    .meta({ description: "Total API calls per day across all purposes" })
     .meta({ format: "int32" }),
 }).meta({ id: "EserviceDetailsPurposeCounters" });
 
 export const API_EserviceDetails = z
   .strictObject({
-    agreements: API_EserviceDetailsCounters.describe("Agreement counters"),
+    agreements: API_EserviceDetailsCounters.meta({
+      description: "Agreement counters",
+    }),
     categories: z.array(API_EserviceCategory),
     createdAt: z.iso.datetime(),
     description: API_LocalizedDescription,
@@ -264,9 +275,13 @@ export const API_EserviceDetails = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
-    purposes: API_EserviceDetailsPurposeCounters.describe("Purpose counters"),
+    purposes: API_EserviceDetailsPurposeCounters.meta({
+      description: "Purpose counters",
+    }),
     updatedAt: z.iso.datetime(),
-    version: API_EserviceVersion.describe("Latest version details"),
+    version: API_EserviceVersion.meta({
+      description: "Latest version details",
+    }),
   })
   .meta({ id: "EserviceDetails" });
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
