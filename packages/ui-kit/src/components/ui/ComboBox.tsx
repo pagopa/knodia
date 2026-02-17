@@ -17,16 +17,15 @@ import { tv, type VariantProps } from "tailwind-variants";
 
 import { composeTailwindRenderProps } from "../../libs/react-aria";
 import { Description, FieldError, Label } from "./Field";
-import { dropdownStyles, fieldInputStyle, listItemStyles } from "./styles";
+import { dropdownStyles, fieldGroupStyles, listItemStyles } from "./styles";
 
-const styles = tv({
-  extend: fieldInputStyle,
-  base: "flex items-center text-start gap-4 w-full text-primary-light-high-contrast",
+const sizeStyles = tv({
+  base: "px-3",
   variants: {
     size: {
-      sm: "py-1.25",
-      md: "py-1.75",
-      lg: "py-2.25",
+      sm: "h-8",
+      md: "h-10",
+      lg: "h-12",
     },
   },
   defaultVariants: {
@@ -52,7 +51,7 @@ export interface ComboBoxProps<T extends object> extends Omit<
   size?: ComboBoxVariants["size"];
 }
 
-type ComboBoxVariants = VariantProps<typeof styles>;
+type ComboBoxVariants = VariantProps<typeof sizeStyles>;
 
 export function ComboBox<T extends object>({
   label,
@@ -65,23 +64,25 @@ export function ComboBox<T extends object>({
   placeholder,
   ...props
 }: ComboBoxProps<T>) {
-  const triggerRef = useRef<HTMLDivElement>(null);
-  const [triggerWidth, setTriggerWidth] = useState<number | undefined>();
+  const groupRef = useRef<HTMLDivElement>(null);
+  const [popoverWidth, setPopoverWidth] = useState<number | undefined>();
 
-  // Popover width fix: React Aria's --trigger-width CSS variable doesn't work
-  // correctly when the trigger is a Group (Input + Button) instead of a simple Button.
-  // Solution: manually measure the Group width with ResizeObserver and apply it
-  // as an inline style to the Popover.
+  // Popover width fix: React Aria's --trigger-width CSS variable doesn't correctly
+  // reflect the Group width when using Group as the trigger. We manually measure
+  // the Group with ResizeObserver and apply it as an inline style to the Popover.
   useLayoutEffect(() => {
-    if (!triggerRef.current) return;
+    if (!groupRef.current) return;
 
     const updateWidth = () => {
-      setTriggerWidth(triggerRef.current?.offsetWidth);
+      if (groupRef.current) {
+        setPopoverWidth(groupRef.current.offsetWidth);
+      }
     };
+
     updateWidth();
 
     const observer = new ResizeObserver(updateWidth);
-    observer.observe(triggerRef.current);
+    observer.observe(groupRef.current);
 
     return () => observer.disconnect();
   }, []);
@@ -108,13 +109,16 @@ export function ComboBox<T extends object>({
     >
       {label && <Label>{label}</Label>}
       <Group
-        className={styles({
-          isInvalid,
-          isFocused: false,
-          size,
-        })}
-        data-slot="trigger"
-        ref={triggerRef}
+        className={composeRenderProps(
+          sizeStyles({ size }),
+          (className, renderProps) =>
+            fieldGroupStyles({
+              ...renderProps,
+              isInvalid,
+              className,
+            }),
+        )}
+        ref={groupRef}
       >
         <Input
           className={inputStyles()}
@@ -148,7 +152,12 @@ export function ComboBox<T extends object>({
       </Group>
       {description && <Description>{description}</Description>}
       <FieldError>{errorMessage}</FieldError>
-      <Popover style={{ width: triggerWidth }} triggerRef={triggerRef}>
+      <Popover
+        className="mt-2"
+        offset={0}
+        style={{ width: popoverWidth }}
+        triggerRef={groupRef}
+      >
         <ListBox className={dropdownStyles}>{children}</ListBox>
       </Popover>
     </AriaComboBox>
