@@ -161,7 +161,6 @@ export function eserviceServiceBuilder(
     ): Promise<EserviceInterface> {
       const latestVersion = await retrieveEserviceLatestVersion(eserviceId);
 
-      // TODO move latest version retrieval to DB readmodel to avoid this second call
       return await retrieveEserviceVersionInterface(
         eserviceId,
         latestVersion.id,
