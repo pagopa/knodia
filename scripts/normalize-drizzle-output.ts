@@ -5,7 +5,7 @@
  * folder, applies transformations, and overwrites the file in place.
  *
  * WORKFLOW:
- * 1. Run `pnpm db:pull` (runs drizzle-kit pull + this script automatically)
+ * 1. Run `pnpm db:generate-schema` (runs drizzle-kit pull + this script automatically)
  * 2. Copy the content of generated/schema.ts to your folder destination
  * 3. Replace the hardcoded schema name with the config-based value (see comment in file)
  * 4. Remove the instruction comment block
