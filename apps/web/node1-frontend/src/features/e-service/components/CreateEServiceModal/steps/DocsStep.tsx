@@ -42,7 +42,7 @@ export function DocsStep() {
             <form.Field name="interfaceDocument">
               {(field) => (
                 <FileUpload
-                  description="Accepted format: YAML, JSON, XML (up to 1 MB)."
+                  description="Accepted format: YAML, JSON (up to 1 MB)."
                   errorMessage={getFieldErrorMessage(field.state.meta.errors)}
                   onSelect={(files) => {
                     const file = files?.[0] ?? null;

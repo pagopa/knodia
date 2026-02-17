@@ -1,4 +1,4 @@
-import type { WithMetadata } from "@knodia/db-readmodel-commons";
+import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
@@ -7,13 +7,8 @@ import {
   eserviceEvents,
   toEserviceV1,
 } from "@knodia/eservice-models";
-import { runConsumer } from "@knodia/kafka-commons";
-import { sendTestEvent } from "@knodia/test-commons/kafka";
-import {
-  getAllEservices,
-  getMockEservice,
-  toExpectEservice,
-} from "@knodia/test-commons/utils";
+import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
+import { getAllEservices, getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -45,16 +40,11 @@ describe("E-service read model writer tests", async () => {
       topicName,
     });
 
-    await runConsumer([topicName], processMessage, kafkaConfig);
+    await runTestConsumer(topicName, processMessage, kafkaConfig);
 
-    let retrievedEservices: WithMetadata<Eservice>[] = [];
-    await expect
-      .poll(async () => {
-        retrievedEservices = await getAllEservices(readmodelDb);
-        return retrievedEservices.length;
-      })
-      .toBe(1);
+    const retrievedEservices = await getAllEservices(readmodelDb);
 
+    expect(retrievedEservices.length).toBe(1);
     expect(retrievedEservices[0]).toEqual({
       data: toExpectEservice(eservice),
       metadata: { version: metadataVersion },

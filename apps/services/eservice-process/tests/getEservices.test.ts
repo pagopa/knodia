@@ -1,6 +1,6 @@
 import type z from "zod";
 
-import { SortDirection } from "@knodia/db-readmodel-commons";
+import { SortDirection } from "@knodia/db-readmodel-commons/models";
 import { Eservice, EserviceMode } from "@knodia/eservice-models";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";

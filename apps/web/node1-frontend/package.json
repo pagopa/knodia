@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/bff-client": "workspace:*",
+    "@knodia/category-models": "workspace:*",
     "@knodia/ui-kit": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "@tailwindcss/vite": "catalog:",

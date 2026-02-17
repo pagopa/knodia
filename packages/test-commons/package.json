@@ -7,6 +7,7 @@
     "lint:autofix": "eslint . --fix"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "catalog:",
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-readmodel-eservice": "workspace:*",
@@ -15,9 +16,10 @@
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@testcontainers/kafka": "catalog:",
+    "@testcontainers/minio": "catalog:",
+    "@testcontainers/postgresql": "catalog:",
     "drizzle-orm": "catalog:",
     "eslint": "catalog:",
-    "testcontainers": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "zocker": "catalog:"
@@ -25,6 +27,7 @@
   "exports": {
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
+    "./minio": "./src/testcontainers/minio.ts",
     "./readmodel": "./src/readmodel.ts",
     "./utils": "./src/utilities/index.ts"
   }
