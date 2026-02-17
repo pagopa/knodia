@@ -13,6 +13,7 @@ import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   const app = buildApp({
@@ -40,6 +41,10 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
             description: "E-services routes",
             name: apiTags.eservice,
           },
+          {
+            description: "Remote Resources Manager routes",
+            name: apiTags.remoteResourcesManager,
+          },
         ],
       },
     },
@@ -54,5 +59,9 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
   });
+  app.register(remoteResourcesManagerRouter, {
+    remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+  });
+
   return app;
 }
