@@ -1,11 +1,4 @@
-import {
-  Button,
-  ComboBox,
-  ComboBoxItem,
-  Select,
-  SelectItem,
-  TextField,
-} from "@knodia/ui-kit/ui";
+import { Button, ComboBox, ComboBoxItem, TextField } from "@knodia/ui-kit/ui";
 import { useForm } from "@tanstack/react-form";
 
 import { type ConsumptionEserviceSearchParams } from "../models/search-params";
@@ -60,21 +53,22 @@ export function ConsumptionEserviceSearchFilters({
       <div className="grid flex-1 min-w-0 grid-cols-3 gap-2">
         <form.Field
           children={(field) => (
-            <Select
+            <ComboBox
+              defaultItems={knodeOptions}
               id={field.name}
               label="Knode"
               name={field.name}
               onBlur={field.handleBlur}
-              onChange={(key) => field.handleChange((key as string) ?? "")}
+              onSelectionChange={(key) =>
+                field.handleChange((key as string) ?? "")
+              }
               placeholder="Select a Knode"
-              value={field.state.value}
+              selectedKey={field.state.value || null}
             >
-              {knodeOptions.map((option) => (
-                <SelectItem id={option.id} key={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </Select>
+              {(option) => (
+                <ComboBoxItem id={option.id}>{option.label}</ComboBoxItem>
+              )}
+            </ComboBox>
           )}
           name="knode"
         />
