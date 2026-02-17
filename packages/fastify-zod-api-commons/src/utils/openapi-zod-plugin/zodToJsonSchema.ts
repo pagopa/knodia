@@ -97,8 +97,7 @@ const updateErrorResponseContentsWithProblemJson = (
         const content = response.content;
         if (!content) continue;
 
-        const schema =
-          content["application/json"] ?? Object.values(content)[0];
+        const schema = content["application/json"] ?? Object.values(content)[0];
         if (!schema) continue;
 
         response.content = {
