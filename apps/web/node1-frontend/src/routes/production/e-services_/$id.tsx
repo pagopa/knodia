@@ -1,4 +1,6 @@
-import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
+import type { ProducerEserviceDetails } from "@knodia/bff-client";
+
+import { getProducerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Breadcrumb,
   Breadcrumbs,
@@ -16,18 +18,60 @@ import { EserviceStateChip } from "@/features/e-service/components/EserviceState
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
 import { client } from "@/libs/axios";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const eserviceQuery = (_id: string) =>
-  getEservicesOptions({
+const eserviceQuery = (eserviceId: string) =>
+  getProducerEserviceDetailsOptions({
     client,
-    query: { limit: 1, offset: 0 },
+    path: { eserviceId },
   });
 
 export const Route = createFileRoute("/production/e-services_/$id")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    (await queryClient.ensureQueryData(eserviceQuery(id))).items[0]!,
+    await Promise.resolve({
+      agreements: {
+        active: 3,
+        total: 5,
+      },
+      categories: [
+        {
+          code: "citizen.residence.residence_place",
+          scheme: "vc_example_eservice_categories",
+        },
+      ],
+      createdAt: "2026-02-17T10:00:00.000Z",
+      description: {
+        en: "Service for validating company VAT registration status.",
+      },
+      id: "00000000-0000-4000-a000-000000000123",
+      isConsumerOperatorIdentificationRequired: false,
+      isSignalHubEnabled: true,
+      mode: "ProvideData",
+      name: {
+        en: "Company VAT Validation Service",
+      },
+      producerId: "30000000-0000-4000-a000-000000000001",
+      purposes: {
+        active: 1,
+        total: 2,
+        totalApiCallsPerDay: 15000,
+      },
+      updatedAt: "2026-02-17T10:00:00.000Z",
+      version: {
+        accessTokenAudience: ["api://knodia/eservice/vat-validation"],
+        accessTokenDuration: 3600,
+        accessTokenType: "Bearer",
+        createdAt: "2026-02-17T10:00:00.000Z",
+        id: "10000000-0000-4000-a000-000000000001",
+        maxDailyCallsPerConsumer: 100,
+        maxDailyCallsPerKnode: 1000,
+        requiredAttributes: [
+          [{ code: "nuts1", scheme: "vc_territorial_units" }],
+        ],
+        state: "Active",
+        updatedAt: "2026-02-17T10:00:00.000Z",
+        versionNumber: 1,
+      },
+    } satisfies ProducerEserviceDetails),
 });
 
 function EServiceActions() {
@@ -72,7 +116,9 @@ function RouteComponent() {
 
       <PageHeader
         actions={<EServiceActions />}
-        resourceStatusChip={<EserviceStateChip state="Active" />}
+        resourceStatusChip={
+          <EserviceStateChip state={eservice.version.state} />
+        }
         title={eservice.name.en}
       >
         <CopyableValueField className="mt-3" label="ID" value={eservice.id} />

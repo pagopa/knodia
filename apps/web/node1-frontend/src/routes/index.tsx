@@ -1,4 +1,4 @@
-import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
+import { getProducerEservicesOptions } from "@knodia/bff-client/tanstack-query";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { data } = useQuery(
-    getEservicesOptions({ client, query: { limit: 10, offset: 0 } }),
+    getProducerEservicesOptions({ client, query: { limit: 10, offset: 0 } }),
   );
 
   return <pre>{JSON.stringify(data, null, 2)}</pre>;

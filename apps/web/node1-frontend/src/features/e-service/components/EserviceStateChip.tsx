@@ -1,8 +1,8 @@
+import type { EserviceVersionState } from "@knodia/bff-client";
+
 import { Chip } from "@knodia/ui-kit/ui";
 import { ArchiveIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
-
-import type { EserviceVersionState } from "../types";
 
 export function EserviceStateChip({ state }: { state: EserviceVersionState }) {
   return match(state)

@@ -1,8 +1,8 @@
+import type { EserviceMode } from "@knodia/bff-client";
+
 import { Chip } from "@knodia/ui-kit/ui";
 import { ArrowsInIcon, ArrowsOutIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
-
-import type { EserviceMode } from "../types";
 
 export function EserviceModeChip({ mode }: { mode: EserviceMode }) {
   return match(mode)

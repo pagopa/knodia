@@ -10,7 +10,7 @@ import {
 import { WarningIcon } from "@phosphor-icons/react/dist/ssr";
 import { tv, type VariantProps } from "tailwind-variants";
 
-import { Button } from "./Button";
+import { Button, type ButtonProps } from "./Button";
 import { ButtonLink } from "./ButtonLink";
 
 const empty = tv({
@@ -53,14 +53,27 @@ const emptyIcon = tv({
 
 export interface EmptyProps
   extends EmptyVariants, Omit<ComponentProps<"div">, "title"> {
-  action?: { icon?: ReactNode; label: string } & (
+  action?: {
+    hierarchy?: ButtonProps["hierarchy"];
+    icon?: ReactNode;
+    kind?: ButtonProps["kind"];
+    label: string;
+  } & (
     | { as: "button"; onClick: () => void }
-    | { as: "link"; to: LinkProps["href"] }
+    | {
+        as: "link";
+        href: NonNullable<LinkProps["href"]>;
+      }
   );
   description?: string;
   icon?: ReactNode;
   title?: string;
 }
+
+type EmptyActionButtonProps = NonNullable<EmptyProps["action"]> & {
+  hierarchy?: ButtonProps["hierarchy"];
+  kind?: ButtonProps["kind"];
+};
 
 type EmptyVariants = VariantProps<typeof emptyIconWrapper>;
 
@@ -77,11 +90,13 @@ export function Empty({
     <div className="flex items-center justify-center">
       <div {...props} className={empty({ className })}>
         <div className="flex w-full flex-col items-center gap-4">
-          <div className={emptyIconWrapper({ kind })}>
-            <span aria-hidden className={emptyIcon({ kind })}>
-              {icon ?? <DefaultEmptyIcon kind={kind} />}
-            </span>
-          </div>
+          {icon !== null && (
+            <div className={emptyIconWrapper({ kind })}>
+              <span aria-hidden className={emptyIcon({ kind })}>
+                {icon ?? <DefaultEmptyIcon kind={kind} />}
+              </span>
+            </div>
+          )}
 
           <div className="flex w-full flex-col gap-1">
             {title && (
@@ -128,12 +143,14 @@ function EmptyActionButton({
   as,
   icon = null,
   label,
+  hierarchy = "neutral",
+  kind = "outlined",
   ...props
-}: NonNullable<EmptyProps["action"]>) {
+}: EmptyActionButtonProps) {
   const Component = as === "button" ? Button : ButtonLink;
 
   return (
-    <Component hierarchy="neutral" kind="outlined" size="md" {...props}>
+    <Component hierarchy={hierarchy} kind={kind} size="md" {...props}>
       {label}
       {icon}
     </Component>
