@@ -75,8 +75,8 @@ ALTER TABLE ${NAMESPACE}_eservice."eservice_category" ADD CONSTRAINT "eservice_c
 ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" DROP CONSTRAINT IF EXISTS "eservice_interface_eservice_id_eservice_id_fk";
 ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_eservice_id_fk" FOREIGN KEY ("eservice_id") REFERENCES ${NAMESPACE}_eservice."eservice"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" DROP CONSTRAINT IF EXISTS "eservice_interface_eservice_v_id_eservice_version_id_fk"; --added --> statement-breakpoint
-ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_v_id_eservice_v_id_fk" FOREIGN KEY ("eservice_version_id") REFERENCES ${NAMESPACE}_eservice."eservice_version"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED; --updated --> statement-breakpoint
+ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" DROP CONSTRAINT IF EXISTS "eservice_interface_eservice_v_id_eservice_version_id_fk";
+ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_v_id_eservice_v_id_fk" FOREIGN KEY ("eservice_version_id") REFERENCES ${NAMESPACE}_eservice."eservice_version"("id") ON DELETE cascade ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" DROP CONSTRAINT IF EXISTS "eservice_interface_eservice_id_metadata_v_fkey";
 ALTER TABLE ${NAMESPACE}_eservice."eservice_interface" ADD CONSTRAINT "eservice_interface_eservice_id_metadata_v_fkey" FOREIGN KEY ("eservice_id","metadata_version") REFERENCES ${NAMESPACE}_eservice."eservice"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
