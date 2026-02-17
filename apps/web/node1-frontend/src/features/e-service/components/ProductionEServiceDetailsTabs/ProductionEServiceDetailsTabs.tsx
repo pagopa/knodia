@@ -1,4 +1,4 @@
-import type { EserviceDetails } from "@knodia/bff-client";
+import type { ProducerEserviceDetails } from "@knodia/bff-client";
 
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@knodia/ui-kit/ui";
 
@@ -20,7 +20,7 @@ const tabItems = [
 export function ProductionEServiceDetailsTabs({
   eservice,
 }: {
-  eservice: EserviceDetails;
+  eservice: ProducerEserviceDetails;
 }) {
   return (
     <ProductionEserviceDetailsProvider eservice={eservice}>
