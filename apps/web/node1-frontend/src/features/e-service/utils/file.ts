@@ -1,4 +1,4 @@
-const CONTENT_TYPES: Record<string, string> = {
+export const FILE_CONTENT_TYPES: Record<string, string> = {
   json: "application/json",
   yaml: "application/x-yaml",
   yml: "application/x-yaml",
@@ -15,5 +15,5 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
 export function getContentType(file: File): string {
   if (file.type) return file.type;
   const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
-  return CONTENT_TYPES[ext] ?? "application/octet-stream";
+  return FILE_CONTENT_TYPES[ext] ?? "application/octet-stream";
 }

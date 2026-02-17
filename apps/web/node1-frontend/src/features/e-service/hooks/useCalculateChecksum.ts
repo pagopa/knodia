@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export const useCalculateChecksum = (
-  document: File | null | undefined,
+  document: File | undefined,
 ): { sha256Checksum: string } => {
   const [sha256Checksum, setSha256Checksum] = useState<string>("");
 

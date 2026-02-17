@@ -8,7 +8,6 @@ import { createContext, useContext } from "react";
 import type {
   AttributesStepData,
   DocsStepData,
-  EServiceFormData,
   GeneralStepData,
   TechnicalStepData,
 } from "@/features/e-service/types/eserviceCreateForm";
@@ -18,7 +17,9 @@ import {
   attributesStepSchema,
   DOCS_STEP_DEFAULTS,
   docsStepSchema,
+  docsStepValidationSchema,
   ESERVICE_FORM_DEFAULTS,
+  type EServiceValidationFormData,
   GENERAL_STEP_DEFAULTS,
   generalStepSchema,
   TECHNICAL_STEP_DEFAULTS,
@@ -27,7 +28,7 @@ import {
 
 // Wizard context for accumulated data
 export interface EServiceWizardContextValue {
-  data: Partial<EServiceFormData>;
+  data: EServiceValidationFormData;
   updateAttributesStep: (data: AttributesStepData) => void;
   updateDocsStep: (data: DocsStepData) => void;
   updateGeneralStep: (data: GeneralStepData) => void;
@@ -76,12 +77,13 @@ export function useDocsStepForm(onSubmitSuccess: () => void) {
         data.interfaceDocument ?? DOCS_STEP_DEFAULTS.interfaceDocument,
     },
     onSubmit: ({ value }) => {
-      updateDocsStep(value);
+      const parsedValue = docsStepSchema.parse(value);
+      updateDocsStep(parsedValue);
       onSubmitSuccess();
     },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: docsStepSchema,
+      onDynamic: docsStepValidationSchema,
     },
   });
 }

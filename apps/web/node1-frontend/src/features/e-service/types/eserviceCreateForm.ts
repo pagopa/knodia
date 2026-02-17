@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
+import { FILE_CONTENT_TYPES } from "../utils/file";
+
 const schemeRefSchema = z.object({
   code: z.string(),
   scheme: z.string(),
@@ -23,20 +25,12 @@ const eserviceFieldSchemas = {
     .min(10, "Description must be at least 10 characters.")
     .max(250, "Description must be at most 250 characters."),
   interfaceDocument: z
-    .instanceof(File)
-    .nullable()
-    .refine((file) => file !== null, "API specs file is required.")
-    .refine((file) => {
-      if (!file) return true;
-      return file.size <= 1024 * 1024;
-    }, "File size must be at most 1 MB.")
-    .refine((file) => {
-      if (!file) return true;
-      const validExtensions = [".yaml", ".yml", ".json"];
-      const fileName = file.name.toLowerCase();
-      return validExtensions.some((ext) => fileName.endsWith(ext));
-    }, "File must be YAML or JSON format.")
-    .pipe(z.instanceof(File)),
+    .file("API specs file is required.")
+    .max(1024 * 1024, "File size must be at most 1 MB.")
+    .mime(
+      Object.values(FILE_CONTENT_TYPES),
+      "File must be YAML or JSON format.",
+    ),
   isSignalHubEnabled: z.boolean(),
   maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),
   maxDailyCallsPerKnode: z.number().min(1, "Must be at least 1."),
@@ -57,6 +51,14 @@ const eserviceFieldSchemas = {
 export const eserviceFormSchema = z.object(eserviceFieldSchemas);
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
+export const eserviceValidationFormSchema = z.object({
+  ...eserviceFieldSchemas,
+  interfaceDocument: eserviceFieldSchemas.interfaceDocument.nullable(),
+});
+export type EServiceValidationFormData = z.infer<
+  typeof eserviceValidationFormSchema
+>;
+
 // Step-specific validation schemas
 export const generalStepSchema = z.object({
   categories: eserviceFieldSchemas.categories,
@@ -76,6 +78,10 @@ export const technicalStepSchema = z.object({
 
 export const docsStepSchema = z.object({
   interfaceDocument: eserviceFieldSchemas.interfaceDocument,
+});
+
+export const docsStepValidationSchema = z.object({
+  interfaceDocument: eserviceFieldSchemas.interfaceDocument.nullable(),
 });
 
 export const attributesStepSchema = z.object({
@@ -105,7 +111,7 @@ export const TECHNICAL_STEP_DEFAULTS: z.input<typeof technicalStepSchema> = {
   mode: "ProvideData",
 };
 
-export const DOCS_STEP_DEFAULTS: z.input<typeof docsStepSchema> = {
+export const DOCS_STEP_DEFAULTS: z.input<typeof docsStepValidationSchema> = {
   interfaceDocument: null,
 };
 
@@ -114,7 +120,9 @@ export const ATTRIBUTES_STEP_DEFAULTS: z.input<typeof attributesStepSchema> = {
 };
 
 // Full form defaults (for accumulated data)
-export const ESERVICE_FORM_DEFAULTS: z.input<typeof eserviceFormSchema> = {
+export const ESERVICE_FORM_DEFAULTS: z.input<
+  typeof eserviceValidationFormSchema
+> = {
   ...GENERAL_STEP_DEFAULTS,
   ...TECHNICAL_STEP_DEFAULTS,
   ...DOCS_STEP_DEFAULTS,
