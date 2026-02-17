@@ -103,4 +103,3 @@ GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_eservice TO readonly_user;
 -- Grant privileges to _eservice_readmodel_writer_user
 GRANT USAGE ON SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_eservice_readmodel_writer_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_eservice_readmodel_writer_user;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_eservice_readmodel_writer_user;
