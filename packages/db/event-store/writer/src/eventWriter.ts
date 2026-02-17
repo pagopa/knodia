@@ -1,5 +1,5 @@
 import type { CorrelationId, EserviceId } from "@knodia/common-models/ids";
-import type { eserviceEvents } from "@knodia/db-event-store-eservice";
+import type { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { EserviceEventV1 } from "@knodia/eservice-models";
@@ -23,7 +23,7 @@ type EventStoreEvents = z.infer<typeof EventStoreEvents>;
 type EventStoreStreamIds = EserviceId; // | AgreementId | ...;
 
 type EventStoreTables =
-  typeof eserviceEvents; /* | typeof eventStoreAgreementEvents | ... */
+  typeof eventStoreEserviceEvents; /* | typeof eventStoreAgreementEvents | ... */
 
 export const computeNextMetadataVersion = <
   TStreamId extends EventStoreStreamIds,
