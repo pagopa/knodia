@@ -4,8 +4,8 @@ node_modules/
 # Turbo
 .turbo/
 
-# Drizzle-kit generated files (use db:pull to regenerate)
-**/generated/
+# Generated files
+generated/
 
 # General
 .DS_Store
