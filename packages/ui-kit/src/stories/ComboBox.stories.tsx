@@ -64,3 +64,13 @@ export const Disabled: Story = {
     isDisabled: true,
   },
 };
+
+export const Sizes: Story = {
+  render: (args) => (
+    <div className="flex flex-col gap-4 w-80">
+      <ComboBox {...args} label="Small" size="sm" />
+      <ComboBox {...args} label="Medium" size="md" />
+      <ComboBox {...args} label="Large" size="lg" />
+    </div>
+  ),
+};
