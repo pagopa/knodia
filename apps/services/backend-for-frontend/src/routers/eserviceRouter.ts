@@ -258,7 +258,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     schema: {
       description:
         "Download the interface document for the latest version of an E-service",
-      operationId: "getEserviceVersionInterface",
+      operationId: "getEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
       response: {
