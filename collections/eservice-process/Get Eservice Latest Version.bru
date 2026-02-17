@@ -7,6 +7,7 @@ meta {
 get {
   url: {{host-eservice-process}}/eservices/:eserviceId/versions/latest
   body: none
+  auth: none
 }
 
 params:path {
@@ -15,4 +16,8 @@ params:path {
 
 headers {
   X-Correlation-Id: {{correlation-id}}
+}
+
+vars:post-response {
+  eserviceVersionId: res.body.id
 }
