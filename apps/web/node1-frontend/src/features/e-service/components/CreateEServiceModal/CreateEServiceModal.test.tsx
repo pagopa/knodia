@@ -268,7 +268,7 @@ describe("CreateEServiceModal — publish flow", () => {
     let capturedRequestBody: CreateEserviceBody | undefined;
 
     server.use(
-      http.post(`${BASE_URL}/eservices`, async ({ request }) => {
+      http.post(`${BASE_URL}/producer/eservices`, async ({ request }) => {
         capturedRequestBody = (await request.json()) as CreateEserviceBody;
         return HttpResponse.json({ id: "new-eservice-123" }, { status: 201 });
       }),
@@ -324,7 +324,7 @@ describe("CreateEServiceModal — publish flow", () => {
 
   it("shows error banner when BFF mutation fails", async () => {
     server.use(
-      http.post(`${BASE_URL}/eservices`, () =>
+      http.post(`${BASE_URL}/producer/eservices`, () =>
         HttpResponse.json(
           {
             correlationId: "test",
