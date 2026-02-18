@@ -1,11 +1,11 @@
 meta {
-  name: Create Eservice
+  name: Create Eservice (minimal)
   type: http
   seq: 2
 }
 
 post {
-  url: {{host-bff}}/producer/eservices
+  url: {{host-backend-for-frontend}}/producer/eservices
   body: json
   auth: none
 }
@@ -16,30 +16,12 @@ body:json {
       "en": "{{randomName}}"
     },
     "description": {
-      "en": "This is a test e-service"
+      "en": "Minimal e-service with only required fields"
     },
     "accessTokenAudience": ["https://api.example.com"],
-    "accessTokenDuration": 3600,
-    "accessTokenType": "Bearer",
     "maxDailyCallsPerConsumer": 1000,
     "maxDailyCallsPerKnode": 10000,
-    "requiredAttributes": [
-      [
-        {
-          "code": "nuts1",
-          "scheme": "vc_territorial_units"
-        }
-      ]
-    ],
-    "mode": "ProvideData",
-    "categories": [
-      {
-        "code": "citizen.identity.birth_date",
-        "scheme": "vc_example_eservice_categories"
-      }
-    ],
-    "isConsumerOperatorIdentificationRequired": false,
-    "isSignalHubEnabled": false,
+    "requiredAttributes": [],
     "interfaceDocument": {
       "checksum": "fbbd4b8920b1b58182256060d2918763f922dd09f7a2274118d8c990ddcf0800",
       "content": "b3BlbmFwaTogIjMuMC4wIgppbmZvOgogIHRpdGxlOiBUZXN0CiAgdmVyc2lvbjogIjEuMCIKcGF0aHM6IHt9Cg==",
@@ -58,5 +40,5 @@ vars:post-response {
 
 script:pre-request {
   const random = Math.round(Math.random() * 1000)
-  bru.setVar("randomName", `Test Eservice ${random}`)
+  bru.setVar("randomName", `Minimal Eservice ${random}`)
 }
