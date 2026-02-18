@@ -41,8 +41,6 @@
     "generate-artifacts": {
       "dependsOn": ["generate-api-client", "generate-protobuf"]
     },
-    "dev:storybook": {},
-    "build:storybook": {},
     "//#infra:start": {
       "cache": false
     },

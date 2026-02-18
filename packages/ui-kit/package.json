@@ -2,11 +2,11 @@
   "name": "@knodia/ui-kit",
   "type": "module",
   "scripts": {
+    "dev": "storybook dev -p 6006",
     "typecheck": "tsc -b",
+    "build": "storybook build",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "dev:storybook": "storybook dev -p 6006",
-    "build:storybook": "storybook build"
+    "lint:autofix": "eslint . --fix"
   },
   "exports": {
     "./themes/node1.css": "./src/themes/node1.css",
