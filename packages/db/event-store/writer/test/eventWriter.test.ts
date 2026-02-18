@@ -13,32 +13,32 @@ describe("computeNextMetadataVersion", () => {
       streamId,
     });
 
-    expect(version0).toBe(BigInt(0));
+    expect(version0).toBe(0);
   });
 
   it("increments the metadata version when the latest matches", () => {
     const version1 = computeNextMetadataVersion({
-      currentVersion: BigInt(0),
-      latestVersion: BigInt(0),
+      currentVersion: 0,
+      latestVersion: 0,
       streamId,
     });
 
-    expect(version1).toBe(BigInt(1));
+    expect(version1).toBe(1);
 
     const version2 = computeNextMetadataVersion({
-      currentVersion: BigInt(1),
-      latestVersion: BigInt(1),
+      currentVersion: 1,
+      latestVersion: 1,
       streamId,
     });
 
-    expect(version2).toBe(BigInt(2));
+    expect(version2).toBe(2);
   });
 
   it("throws when the provided metadata version is not the latest", () => {
     expect(() =>
       computeNextMetadataVersion({
-        currentVersion: BigInt(1),
-        latestVersion: BigInt(2),
+        currentVersion: 1,
+        latestVersion: 2,
         streamId,
       }),
     ).toThrowError(
@@ -47,7 +47,7 @@ describe("computeNextMetadataVersion", () => {
 
     expect(() =>
       computeNextMetadataVersion({
-        currentVersion: BigInt(0),
+        currentVersion: 0,
         latestVersion: undefined,
         streamId,
       }),
