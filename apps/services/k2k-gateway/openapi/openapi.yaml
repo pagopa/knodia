@@ -139,6 +139,41 @@ components:
         - code
         - scheme
       additionalProperties: false
+    AccessTokenType:
+      type: string
+      enum:
+        - BEARER
+        - DPOP
+    EserviceAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    EServiceRequiredAttributeGroup:
+      description: Described a group of required Attributes (consumers must possess at
+        least one Attribute among them in order to satisfy the requirement)
+      type: array
+      items:
+        $ref: "#/components/schemas/EserviceAttribute"
+    EserviceRequiredAttributes:
+      description: Describes the Attributes which a consumer must possess to request
+        an Agreement for the E-Service (at least one Attribute for each
+        Attribute Group)
+      type: array
+      items:
+        $ref: "#/components/schemas/EServiceRequiredAttributeGroup"
+    EserviceVersionState:
+      type: string
+      enum:
+        - ACTIVE
+        - SUSPENDED
+        - ARCHIVED
     GetCatalogEserviceSearchParams:
       anyOf:
         - type: object
@@ -172,45 +207,6 @@ components:
               required:
                 - category
               additionalProperties: false
-    EserviceVersionState:
-      type: string
-      enum:
-        - ACTIVE
-        - SUSPENDED
-        - ARCHIVED
-    EserviceMode:
-      description: Indicates if the E-Service is intended to provide or receive data
-      type: string
-      enum:
-        - PROVIDE_DATA
-        - RECEIVE_DATA
-    Attribute:
-      description: Identifies an Attribute standardized within Knodia
-      type: object
-      properties:
-        code:
-          type: string
-          minLength: 1
-        scheme:
-          type: string
-          minLength: 1
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    RequiredAttributeGroup:
-      description: Described a group of required Attributes (consumers must possess at
-        least one Attribute among them in order to satisfy the requirement)
-      type: array
-      items:
-        $ref: "#/components/schemas/Attribute"
-    RequiredAttributes:
-      description: Describes the Attributes which a consumer must possess to request
-        an Agreement for the E-Service (at least one Attribute for each
-        Attribute Group)
-      type: array
-      items:
-        $ref: "#/components/schemas/RequiredAttributeGroup"
     EserviceId:
       description: Unique identifier of the E-Service
       type: string
