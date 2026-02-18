@@ -1,7 +1,10 @@
+import { categories } from "@knodia/category-models";
 import { Button, ComboBox, ComboBoxItem, TextField } from "@knodia/ui-kit/ui";
 import { useForm } from "@tanstack/react-form";
 
 import type { ConsumptionEserviceSearchParams } from "../models/search-params";
+
+import { toSchemeRefOptions } from "../utils/schemeRef";
 
 // TODO: Replace with real data
 const knodeOptions = [
@@ -10,21 +13,19 @@ const knodeOptions = [
   { id: "knode-3", label: "Knode 3" },
 ];
 
-const categoryOptions = [
-  { id: "cat1", label: "Category 1" },
-  { id: "cat2", label: "Category 2" },
-  { id: "cat3", label: "Category 3" },
-];
+const categoryOptions = toSchemeRefOptions(categories);
+
+interface Props {
+  defaultValues: Omit<ConsumptionEserviceSearchParams, "offset">;
+  onSubmit: (values: Omit<ConsumptionEserviceSearchParams, "offset">) => void;
+  onValidationError: () => void;
+}
 
 export function ConsumptionEserviceSearchFilters({
   defaultValues,
   onSubmit,
   onValidationError,
-}: {
-  defaultValues: Omit<ConsumptionEserviceSearchParams, "offset">;
-  onSubmit: (values: Omit<ConsumptionEserviceSearchParams, "offset">) => void;
-  onValidationError: () => void;
-}) {
+}: Props) {
   const form = useForm({
     defaultValues,
     onSubmit: ({ value }) => {
