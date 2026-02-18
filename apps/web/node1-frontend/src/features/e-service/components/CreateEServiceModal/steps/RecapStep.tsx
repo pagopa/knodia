@@ -124,7 +124,7 @@ function DocumentsSection({
   sha256Checksum,
 }: {
   document: File | null | undefined;
-  sha256Checksum: null | string;
+  sha256Checksum: string;
 }) {
   return (
     <div className="flex flex-col gap-6">
