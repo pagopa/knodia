@@ -18,25 +18,45 @@ const LocalizedText = z.strictObject({
   en: z.string(),
 });
 
-const API_EserviceSearchByKeywords = z.strictObject({
-  keywords: z.string().min(1),
-});
+const API_KnodeId = z
+  .enum(["ORION", "LYNX"])
+  .meta({ description: "Unique Knode identifier", id: "KnodeId" });
 
-const API_EserviceSearchByCategory = z.strictObject({
+const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
+  keywords: z.string().min(1),
+  knodeId: API_KnodeId,
 });
 
-const API_EserviceSearchByKeywordsAndCategory =
-  API_EserviceSearchByKeywords.merge(API_EserviceSearchByCategory);
+const API_EserviceSearchByKeywords =
+  API_EserviceSearchByKeywordsAndCategory.pick({
+    category: true,
+    knodeId: true,
+  });
+
+const API_EserviceSearchByCategory =
+  API_EserviceSearchByKeywordsAndCategory.pick({
+    keywords: true,
+    knodeId: true,
+  });
 
 export const API_EserviceSearchParams = z
   .union([
-    API_EserviceSearchByKeywords,
     API_EserviceSearchByCategory,
+    API_EserviceSearchByKeywords,
     API_EserviceSearchByKeywordsAndCategory,
   ])
   .meta({ id: "EserviceSearchParams" });
 export type API_EserviceSearchParams = z.infer<typeof API_EserviceSearchParams>;
+
+export const API_EserviceSearchParamsWithoutKnodeId = z.union([
+  API_EserviceSearchByCategory.omit({ knodeId: true }),
+  API_EserviceSearchByKeywords.omit({ knodeId: true }),
+  API_EserviceSearchByKeywordsAndCategory.omit({ knodeId: true }),
+]);
+export type API_EserviceSearchParamsWithoutKnodeId = z.infer<
+  typeof API_EserviceSearchParamsWithoutKnodeId
+>;
 
 const API_EserviceVersionState = z
   .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])

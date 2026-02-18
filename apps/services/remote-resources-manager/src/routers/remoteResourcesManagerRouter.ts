@@ -23,10 +23,15 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
+      const { knodeId, ...bodyWithoutKnodeId } = req.body;
+      const { limit, offset } = req.query;
+      console.log(
+        `Searching E-services owned by knode ${knodeId} with filters ${JSON.stringify(bodyWithoutKnodeId)} and pagination { limit: ${limit}, offset: ${offset} }`,
+      );
 
       const eservices = await remoteResourcesManagerService.searchEservices({
         correlationId,
-        reqBody: req.body,
+        reqBody: bodyWithoutKnodeId,
         reqQuery: req.query,
       });
 

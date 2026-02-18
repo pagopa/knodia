@@ -4,7 +4,7 @@ import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { knodiaApiGatewayApi } from "@knodia/knodia-api-gateway-client";
 
 import type {
-  API_EserviceSearchParams,
+  API_EserviceSearchParamsWithoutKnodeId,
   API_EserviceSearchResults,
   API_SearchEservicesQueryParams,
 } from "../models/api.ts";
@@ -25,7 +25,7 @@ export function remoteResourcesManagerServiceBuilder(
       reqQuery,
     }: {
       correlationId: CorrelationId;
-      reqBody: API_EserviceSearchParams;
+      reqBody: API_EserviceSearchParamsWithoutKnodeId;
       reqQuery: API_SearchEservicesQueryParams;
     }): Promise<API_EserviceSearchResults> {
       const { data } = await knodiaApiGatewayApi.searchEservices({
