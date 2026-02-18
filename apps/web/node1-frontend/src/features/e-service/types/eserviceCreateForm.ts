@@ -2,13 +2,7 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
-const ACCEPTED_MIME_TYPES = [
-  "application/json",
-  "application/yaml",
-  "application/x-yaml",
-  "text/yaml",
-  "text/x-yaml",
-];
+const ACCEPTED_MIME_TYPES = ["application/json", "application/yaml"];
 
 const schemeRefSchema = z.object({
   code: z.string(),
