@@ -7,14 +7,14 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
-import type { KnodiaApiGatewayConfig } from "./config/config.ts";
+import type { K2KGatewayConfig } from "./config/config.ts";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
-export function buildAppFromConfig(config: KnodiaApiGatewayConfig) {
+export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
     eserviceProcessUrl: config.eserviceProcessUrl,
     loggerConfig: config,
