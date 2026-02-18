@@ -1,10 +1,14 @@
-import type { EserviceVersionState } from "@knodia/bff-client";
+import type { bffApi } from "@knodia/bff-client";
 
 import { Chip } from "@knodia/ui-kit/ui";
 import { ArchiveIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
-export function EserviceStateChip({ state }: { state: EserviceVersionState }) {
+export function EserviceStateChip({
+  state,
+}: {
+  state: bffApi.EserviceVersionState;
+}) {
   return match(state)
     .with("Active", () => (
       <Chip icon={<CheckIcon />} kind="brand" label="Available" type="light" />
