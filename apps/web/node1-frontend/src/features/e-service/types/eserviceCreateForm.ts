@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
+const ACCEPTED_MIME_TYPES = ["application/json", "application/yaml"];
+
 const schemeRefSchema = z.object({
   code: z.string(),
   scheme: z.string(),
@@ -23,20 +25,9 @@ const eserviceFieldSchemas = {
     .min(10, "Description must be at least 10 characters.")
     .max(250, "Description must be at most 250 characters."),
   interfaceDocument: z
-    .instanceof(File)
-    .nullable()
-    .refine((file) => file !== null, "API specs file is required.")
-    .refine((file) => {
-      if (!file) return true;
-      return file.size <= 1024 * 1024;
-    }, "File size must be at most 1 MB.")
-    .refine((file) => {
-      if (!file) return true;
-      const validExtensions = [".yaml", ".yml", ".json"];
-      const fileName = file.name.toLowerCase();
-      return validExtensions.some((ext) => fileName.endsWith(ext));
-    }, "File must be YAML or JSON format.")
-    .pipe(z.instanceof(File)),
+    .file("API specs file is required.")
+    .max(1024 * 1024, "File size must be at most 1 MB.")
+    .mime(ACCEPTED_MIME_TYPES, "File must be YAML or JSON format."),
   isSignalHubEnabled: z.boolean(),
   maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),
   maxDailyCallsPerKnode: z.number().min(1, "Must be at least 1."),
@@ -56,6 +47,12 @@ const eserviceFieldSchemas = {
 
 export const eserviceFormSchema = z.object(eserviceFieldSchemas);
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
+
+// Draft version of the form data: the interface document is nullable
+// because it's not required until the user submits the form.
+// This allows saving partial progress across steps without a valid file.
+export type EServiceFormDraftData = DocsStepDraftData &
+  Omit<EServiceFormData, "interfaceDocument">;
 
 // Step-specific validation schemas
 export const generalStepSchema = z.object({
@@ -87,6 +84,11 @@ export type AttributesStepData = z.infer<typeof attributesStepSchema>;
 export type DocsStepData = z.infer<typeof docsStepSchema>;
 export type GeneralStepData = z.infer<typeof generalStepSchema>;
 export type TechnicalStepData = z.infer<typeof technicalStepSchema>;
+// Override interfaceDocument to be nullable: in DocsStepData it's required (File),
+// but in draft mode we need null to represent the initial empty state.
+type DocsStepDraftData = Omit<DocsStepData, "interfaceDocument"> & {
+  interfaceDocument: File | null;
+};
 
 // Step defaults
 export const GENERAL_STEP_DEFAULTS: z.input<typeof generalStepSchema> = {
@@ -105,7 +107,7 @@ export const TECHNICAL_STEP_DEFAULTS: z.input<typeof technicalStepSchema> = {
   mode: "ProvideData",
 };
 
-export const DOCS_STEP_DEFAULTS: z.input<typeof docsStepSchema> = {
+export const DOCS_STEP_DEFAULTS: DocsStepDraftData = {
   interfaceDocument: null,
 };
 
@@ -114,7 +116,7 @@ export const ATTRIBUTES_STEP_DEFAULTS: z.input<typeof attributesStepSchema> = {
 };
 
 // Full form defaults (for accumulated data)
-export const ESERVICE_FORM_DEFAULTS: z.input<typeof eserviceFormSchema> = {
+export const ESERVICE_FORM_DEFAULTS: EServiceFormDraftData = {
   ...GENERAL_STEP_DEFAULTS,
   ...TECHNICAL_STEP_DEFAULTS,
   ...DOCS_STEP_DEFAULTS,

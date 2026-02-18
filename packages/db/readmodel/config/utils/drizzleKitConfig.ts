@@ -23,5 +23,6 @@ export const drizzleKitConfig = (
       user: readmodelDbUser,
     },
     dialect: "postgresql",
+    out: "./generated",
     schema: schemaPath,
   });

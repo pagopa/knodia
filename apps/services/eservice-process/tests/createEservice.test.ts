@@ -83,7 +83,7 @@ describe("POST /eservices (createEservice)", () => {
     expect(createdEvent).toMatchObject({
       streamId: responseBody.id,
       type: "EserviceVersionActivatedV1",
-      version: BigInt(0),
+      version: 0,
     });
 
     const createdEventData = EserviceEventV1.parse(createdEvent).data;
