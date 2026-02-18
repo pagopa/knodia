@@ -82,7 +82,7 @@ export function eserviceServiceBuilder(
 
       // TODO: get real producerId from auth context
       const producerId = unsafeBrandId<OrganizationId>(
-        "00000000-0000-0000-0000-000000000001",
+        "00000000-0000-0000-0000-000000000000",
       );
 
       logger.info(
