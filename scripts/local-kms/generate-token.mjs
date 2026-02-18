@@ -5,7 +5,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const KEYS_DIR = resolve(__dirname, "../../docker/keys");
+const KEYS_DIR = resolve(__dirname, "../../docker/tokens");
 
 const KMS_ENDPOINT = "http://localhost:4566";
 

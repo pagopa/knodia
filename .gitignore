@@ -14,8 +14,8 @@ generated/
 # MinIO container data
 docker/minio-data
 
-# Local KMS keys
-docker/keys/
+# Local KMS tokens
+docker/tokens/
 
 # Build outputs
 dist/
