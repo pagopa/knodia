@@ -1,6 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
   aggregateByPKString,
   throwIfMultipleOrEmpty,
@@ -11,6 +11,8 @@ import {
   EserviceMode,
   EserviceVersion,
   EserviceVersionState,
+  LocalizedDescription,
+  LocalizedName,
 } from "@knodia/eservice-models";
 
 import {
@@ -200,13 +202,13 @@ const buildEservice = ({
   const eservice: Eservice = {
     categories,
     createdAt: new Date(eserviceSQL.createdAt),
-    description: eserviceSQL.description,
+    description: LocalizedDescription.parse(eserviceSQL.description),
     id: unsafeBrandId(eserviceSQL.id),
     isConsumerOperatorIdentificationRequired:
       eserviceSQL.isConsumerOperatorIdentificationRequired,
     isSignalHubEnabled: eserviceSQL.isSignalHubEnabled,
     mode: EserviceMode.parse(eserviceSQL.mode),
-    name: eserviceSQL.name,
+    name: LocalizedName.parse(eserviceSQL.name),
     producerId: unsafeBrandId(eserviceSQL.producerId),
     updatedAt: new Date(eserviceSQL.updatedAt),
     versions: eserviceVersions,
