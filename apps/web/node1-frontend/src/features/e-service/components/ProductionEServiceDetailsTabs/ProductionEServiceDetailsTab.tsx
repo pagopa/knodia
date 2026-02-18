@@ -139,15 +139,9 @@ function SignalHubSection() {
   return (
     <Section className="mb-6" title="Signal hub">
       <p className="body-lg text-primary-dark">
-        {match({ isSignalHubEnabled })
-          .with(
-            { isSignalHubEnabled: true },
-            () => "This E-Service is available on Signal Hub.",
-          )
-          .with(
-            { isSignalHubEnabled: false },
-            () => "This E-Service is not available on Signal Hub.",
-          )
+        {match(isSignalHubEnabled)
+          .with(true, () => "This E-Service is available on Signal Hub.")
+          .with(false, () => "This E-Service is not available on Signal Hub.")
           .exhaustive()}
       </p>
     </Section>
