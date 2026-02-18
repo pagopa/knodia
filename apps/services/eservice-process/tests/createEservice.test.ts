@@ -6,14 +6,13 @@ import {
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
-import { upsertEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
 import { API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
-import { readmodelDb } from "./setup.ts";
+import { eserviceWriterService } from "./setup.ts";
 import { getAllEserviceEvents, injectAppRequest } from "./utils.ts";
 
 const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
@@ -137,7 +136,7 @@ describe("POST /eservices (createEservice)", () => {
   });
 
   it("should return 409 if an interface with the same ID already exists", async () => {
-    await upsertEservice(mockEservices[0]!, 0, readmodelDb);
+    await eserviceWriterService.upsertEservice(mockEservices[0]!, 0);
 
     const response = await injectAppRequest()
       .post("/eservices")

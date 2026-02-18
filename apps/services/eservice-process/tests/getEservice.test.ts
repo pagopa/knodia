@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { EserviceId, generateId } from "@knodia/common-models/ids";
-import {
-  toExpectAPI_Eservice,
-  upsertEservice,
-} from "@knodia/test-commons/utils";
+import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_Eservice } from "../src/models/api.ts";
 
 import { mockEservices } from "./mockEservices.ts";
-import { readmodelDb } from "./setup.ts";
+import { eserviceWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const eservice = mockEservices[0]!;
@@ -22,7 +19,9 @@ const getEservice = (eserviceId: string) =>
 describe("GET /eservices/:eserviceId (getEservice)", () => {
   beforeAll(async () => {
     await Promise.all(
-      mockEservices.map((eservice) => upsertEservice(eservice, 0, readmodelDb)),
+      mockEservices.map((eservice) =>
+        eserviceWriterService.upsertEservice(eservice, 0),
+      ),
     );
   });
 

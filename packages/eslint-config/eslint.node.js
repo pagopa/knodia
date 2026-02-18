@@ -1,5 +1,10 @@
 import { config } from "./base.js";
 
+export const blockTestCommonsImports = {
+  group: ["@knodia/test-commons/*"],
+  message: "@knodia/test-commons imports are restricted",
+};
+
 export default [
   ...config,
   {
@@ -8,7 +13,13 @@ export default [
       "no-restricted-imports": [
         "error",
         {
-          patterns: ["@knodia/test-commons/*"],
+          patterns: [
+            blockTestCommonsImports,
+            {
+              group: ["@knodia/db-readmodel-*/writer"],
+              message: `@knodia/db-readmodel-*/writer imports are restricted`,
+            },
+          ],
         },
       ],
     },
