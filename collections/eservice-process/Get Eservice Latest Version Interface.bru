@@ -1,0 +1,19 @@
+meta {
+  name: Get Eservice Latest Version Interface
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/:eserviceId/versions/latest/interface
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+}

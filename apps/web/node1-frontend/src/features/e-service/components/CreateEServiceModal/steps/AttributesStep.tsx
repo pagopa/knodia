@@ -1,18 +1,18 @@
-import { Banner, Button, Select, SelectItem } from "@knodia/ui-kit/ui";
+import { attributes } from "@knodia/attribute-models";
+import { Banner, Button, Select } from "@knodia/ui-kit/ui";
 import { TrashIcon } from "@phosphor-icons/react";
 
 import { useStepsContext } from "@/contexts/steps";
 import { useAttributesStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
+import {
+  parseSchemeRefKeys,
+  renderSchemeRefItems,
+  toSchemeRefKey,
+} from "@/features/e-service/utils/schemeRef";
 
 import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
-
-// TODO: use real data
-const MOCK_ATTRIBUTES = Array.from({ length: 10 }, (_, i) => ({
-  label: `NUTS${i + 1}`,
-  value: `NUTS${i + 1}`,
-}));
 
 export function AttributesStep() {
   const { nextStep, prevStep } = useStepsContext();
@@ -87,25 +87,16 @@ export function AttributesStep() {
                         isRequired
                         label="Attributes"
                         name={groupField.name}
-                        onChange={(values) =>
-                          groupField.handleChange(
-                            values.map((v) => ({
-                              code: String(v),
-                              scheme: String(v),
-                            })),
-                          )
+                        onChange={(keys) =>
+                          groupField.handleChange(parseSchemeRefKeys(keys))
                         }
                         placeholder="Select one or more attributes"
                         selectionMode="multiple"
                         value={
-                          groupField.state.value?.map((attr) => attr.code) ?? []
+                          groupField.state.value?.map(toSchemeRefKey) ?? []
                         }
                       >
-                        {MOCK_ATTRIBUTES.map(({ label, value }) => (
-                          <SelectItem id={value} key={value}>
-                            {label}
-                          </SelectItem>
-                        ))}
+                        {renderSchemeRefItems(attributes)}
                       </Select>
                     )}
                   </form.Field>

@@ -17,13 +17,16 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
+import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
   eventStoreDb,
   loggerConfig,
+  readmodelDb,
 }: {
   eventStoreDb: NodePgDatabase;
   loggerConfig: LoggerConfig;
+  readmodelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
     fastifyOptions: {
@@ -51,14 +54,17 @@ export function buildApp({
   app.register(healthRouter);
   app.register(
     eserviceRouter,
-    eserviceServiceBuilder(eserviceEventStoreWriterBuilder(eventStoreDb)),
+    eserviceServiceBuilder(
+      eserviceEventStoreWriterBuilder(eventStoreDb),
+      readmodelServiceBuilder(readmodelDb),
+    ),
   );
 
   return app;
 }
 
 export function buildAppFromConfig(config: EserviceProcessConfig) {
-  const pool = new Pool({
+  const eventStorePool = new Pool({
     database: config.eventStoreDbName,
     host: config.eventStoreDbHost,
     password: config.eventStoreDbPassword,
@@ -66,16 +72,27 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
     ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
     user: config.eventStoreDbUser,
   });
+  const eventStoreDb = drizzle(eventStorePool);
 
-  const eventStoreDb = drizzle(pool);
+  const readmodelPool = new Pool({
+    database: config.readmodelDbName,
+    host: config.readmodelDbHost,
+    password: config.readmodelDbPassword,
+    port: config.readmodelDbPort,
+    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.readmodelDbUser,
+  });
+  const readmodelDb = drizzle(readmodelPool);
 
   const app = buildApp({
     eventStoreDb,
     loggerConfig: config,
+    readmodelDb,
   });
 
   app.addHook("onClose", async () => {
-    await pool.end();
+    await eventStorePool.end();
+    await readmodelPool.end();
   });
 
   return app;

@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -14,12 +15,14 @@ import {
   API_Eservice,
   API_Eservices,
   API_EserviceSeed,
-  API_EservicesQueryParams,
   API_EserviceVersion,
+  API_EserviceVersionInterfaceDocument,
+  API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import {
   toAPI_Eservice,
   toAPI_EserviceVersion,
+  toAPI_EserviceVersionInterfaceDocument,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -28,11 +31,18 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   eserviceService,
 ) => {
   fastify.route({
-    handler: (req, res) => {
-      const result = eserviceService.getMockEservices(req.query);
+    handler: async (req, res) => {
+      const { results, totalCount } = await eserviceService.getEservices(
+        req.query,
+      );
+
       res.status(200).send({
-        items: result.items.map(toAPI_Eservice),
-        pagination: result.pagination,
+        items: results.map(toAPI_Eservice),
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
       });
     },
     method: "GET",
@@ -40,10 +50,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       description: "Retrieve a list of E-services",
       headers: processHeaders,
       operationId: "getEservices",
-      querystring: API_EservicesQueryParams,
+      querystring: API_GetEservicesQueryParams,
       response: {
-        200: API_Eservices.describe("E-services retrieved successfully"),
-        400: API_Problem.describe("Bad Request"),
+        200: API_Eservices.meta({
+          description: "E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [apiTags.eservice],
     },
@@ -63,8 +75,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       headers: processHeaders,
       operationId: "createEservice",
       response: {
-        201: API_Eservice.describe("E-service created successfully"),
-        400: API_Problem.describe("Bad Request"),
+        201: API_Eservice.meta({
+          description: "E-service created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.eservice],
     },
@@ -72,8 +87,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const eservice = eserviceService.getMockEservice(req.params.eserviceId);
+    handler: async (req, res) => {
+      const eservice = await eserviceService.getEservice(req.params.eserviceId);
+
       res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "GET",
@@ -83,9 +99,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEservice",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_Eservice.describe("E-service retrieved successfully"),
-        400: API_Problem.describe("Bad Request"),
-        404: API_Problem.describe("E-service not found"),
+        200: API_Eservice.meta({
+          description: "E-service retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
       },
       tags: [apiTags.eservice],
     },
@@ -93,11 +111,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
 
   fastify.route({
-    handler: (req, res) => {
-      const version = eserviceService.getMockEserviceLatestVersion(
+    handler: async (req, res) => {
+      const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
       );
-      res.status(200).send(toAPI_EserviceVersion(version));
+
+      res.status(200).send(toAPI_EserviceVersion(eserviceVersion));
     },
     method: "GET",
     schema: {
@@ -106,14 +125,43 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEserviceLatestVersion",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_EserviceVersion.describe(
-          "E-service version retrieved successfully",
-        ),
-        400: API_Problem.describe("Bad Request"),
-        404: API_Problem.describe("E-service not found"),
+        200: API_EserviceVersion.meta({
+          description: "E-service version retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
       },
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest",
+  });
+  fastify.route({
+    handler: async (req, res) => {
+      const eserviceVersionInterface =
+        await eserviceService.getEserviceLatestVersionInterface(
+          unsafeBrandId(req.params.eserviceId),
+        );
+      res
+        .status(200)
+        .send(toAPI_EserviceVersionInterfaceDocument(eserviceVersionInterface));
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the interface document of the latest E-service version",
+      headers: processHeaders,
+      operationId: "getEserviceLatestVersionInterface",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_EserviceVersionInterfaceDocument.meta({
+          description:
+            "E-service version interface document retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/versions/latest/interface",
   });
 };
