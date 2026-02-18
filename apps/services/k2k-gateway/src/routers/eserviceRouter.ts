@@ -5,9 +5,9 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { EserviceProcessClient } from "../clients/clientsProvider.ts";
 
 import {
-  API_EserviceSearchParams,
-  API_EserviceSearchResults,
-  API_SearchEservicesQueryParams,
+  API_CatalogEserviceSearchResults,
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -32,13 +32,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_EserviceSearchParams,
+      body: API_GetCatalogEserviceSearchParams,
       description:
         "Search for E-Services according to search criteria and considering only E-Services with an active or suspended Version",
-      operationId: "searchEservices",
-      querystring: API_SearchEservicesQueryParams,
+      operationId: "getCatalogEservices",
+      querystring: API_GetCatalogEservicesQueryParams,
       response: {
-        200: API_EserviceSearchResults.describe(
+        200: API_CatalogEserviceSearchResults.describe(
           "E-Service search results retrieved (sorted by most recently updated first)",
         ),
         400: API_Problem.describe("Bad Request"),
@@ -46,6 +46,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       summary: "Search for E-Services",
       tags: [apiTags.operations],
     },
-    url: "/searchEservices",
+    url: "/catalog",
   });
 };

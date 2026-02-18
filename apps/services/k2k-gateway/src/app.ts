@@ -36,10 +36,10 @@ function buildApp({
       openapi: {
         info: {
           description: "API for communicating with other Knodes",
-          title: "Knodia Api Gateway API",
+          title: "Knode to Knode Gateway API",
           version: "1.0.0",
         },
-        servers: [{ description: "Knodia Api Gateway", url: "/" }],
+        servers: [{ description: "Knode to Knode Gateway", url: "/" }],
         tags: [
           healthRouterTag,
           {
@@ -57,7 +57,7 @@ function buildApp({
     loggerConfig,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
-    serviceName: serviceName.KNODIA_API_GATEWAY,
+    serviceName: serviceName.K2K_GATEWAY,
   });
 
   app.register(healthRouter);

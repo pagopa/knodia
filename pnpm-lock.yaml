@@ -465,7 +465,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  apps/services/knodia-api-gateway:
+  apps/services/k2k-gateway:
     dependencies:
       '@knodia/common-models':
         specifier: workspace:*

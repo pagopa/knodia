@@ -27,17 +27,19 @@ const API_EserviceSearchByCategory = z.strictObject({
 });
 
 const API_EserviceSearchByKeywordsAndCategory =
-  API_EserviceSearchByKeywords.merge(API_EserviceSearchByCategory);
+  API_EserviceSearchByKeywords.and(API_EserviceSearchByCategory);
 
-export const API_EserviceSearchParams = z
+export const API_GetCatalogEserviceSearchParams = z
   .union([
     API_EserviceSearchByKeywords,
     API_EserviceSearchByCategory,
     API_EserviceSearchByKeywordsAndCategory,
   ])
-  .meta({ id: "EserviceSearchParams" });
+  .meta({ id: "GetCatalogEserviceSearchParams" });
 
-type API_EserviceSearchParams = z.infer<typeof API_EserviceSearchParams>;
+type API_GetCatalogEserviceSearchParams = z.infer<
+  typeof API_GetCatalogEserviceSearchParams
+>;
 
 const API_EserviceVersionState = z
   .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
@@ -74,24 +76,34 @@ const API_RequiredAttributes = z
     id: "RequiredAttributes",
   });
 
-const API_EserviceSearchResult = z
+const API_EserviceId = z.uuid().meta({
+  description: "Unique identifier of the E-Service",
+  id: "EserviceId",
+});
+
+const API_OrganizationId = z.uuid().meta({
+  description: "Unique identifier of the Organization",
+  id: "OrganizationId",
+});
+
+const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: LocalizedText,
-    id: z.uuid(),
+    id: API_EserviceId,
     latestVersionRequiredAttributes: API_RequiredAttributes,
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: LocalizedText,
-    producerId: z.uuid(),
+    producerId: API_OrganizationId,
   })
-  .meta({ id: "EserviceSearchResult" });
+  .meta({ id: "CatalogEserviceSearchResult" });
 
-export const API_EserviceSearchResults = z
+export const API_CatalogEserviceSearchResults = z
   .strictObject({
     pagination: API_Pagination,
-    results: z.array(API_EserviceSearchResult),
+    results: z.array(API_CatalogEserviceSearchResult),
   })
-  .meta({ id: "EserviceSearchResults" });
+  .meta({ id: "CatalogEserviceSearchResults" });
 
-export const API_SearchEservicesQueryParams = API_PaginationQueryParams;
+export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
