@@ -23,7 +23,7 @@ export const eventStoreEserviceEvents = eserviceSchema.table(
     logDate: timestamp("log_date", { mode: "date", withTimezone: true })
       .defaultNow()
       .notNull(),
-    sequenceNum: bigserial("sequence_num", { mode: "bigint" })
+    sequenceNum: bigserial("sequence_num", { mode: "number" })
       .primaryKey()
       .notNull(),
     streamId: uuid("stream_id").notNull(),
