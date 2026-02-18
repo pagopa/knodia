@@ -1,11 +1,11 @@
 meta {
-  name: Get Producer Eservice Details
+  name: Get Eservice Details
   type: http
   seq: 2
 }
 
 get {
-  url: {{host-bff}}/producer/eservices/:eserviceId
+  url: {{host-backend-for-frontend}}/producer/eservices/:eserviceId
   body: none
   auth: none
 }
