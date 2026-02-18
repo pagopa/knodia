@@ -9,6 +9,5 @@ export type K2K2GatewayApiClient = ReturnType<
 export function getK2K2GatewayApiClient(): K2K2GatewayApiClient {
   return createK2K2GatewayApiClient({
     baseURL: config.knodeUrl,
-    throwOnError: true,
   });
 }

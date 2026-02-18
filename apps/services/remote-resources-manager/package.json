@@ -17,7 +17,6 @@
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "openapi-types": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {

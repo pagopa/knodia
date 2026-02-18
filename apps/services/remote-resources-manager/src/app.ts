@@ -9,7 +9,7 @@ import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
 import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { type RemoteResourcesManagerConfig } from "./config/config.ts";
-import { k2kGatewayTag } from "./models/apiTags.ts";
+import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
 import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
@@ -33,12 +33,17 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
           version: "1.0.0",
         },
         servers: [{ description: "Remote Resources Manager API", url: "/" }],
-        tags: [healthRouterTag, k2kGatewayTag],
+        tags: [
+          healthRouterTag,
+          {
+            description: "K2K Gateway routes",
+            name: apiTags.k2kGateway,
+          },
+        ],
       },
     },
     loggerConfig: loggerConfig,
     makeApiProblem,
-    readCorrelationIdFromHeader: false,
     serviceName: serviceName.REMOTE_RESOURCES_MANAGER,
   });
 

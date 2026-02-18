@@ -80,7 +80,7 @@ const API_Attribute = z
 
 const API_RequiredAttributeGroup = z.array(API_Attribute).meta({
   description:
-    "Described a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
+    "Describes a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
   id: "RequiredAttributeGroup",
 });
 

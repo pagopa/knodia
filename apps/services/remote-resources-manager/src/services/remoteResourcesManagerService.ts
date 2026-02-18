@@ -28,7 +28,7 @@ export function remoteResourcesManagerServiceBuilder(
       reqBody: API_EserviceSearchParamsWithoutKnodeId;
       reqQuery: API_SearchEservicesQueryParams;
     }): Promise<API_EserviceSearchResults> {
-      const { data } = await k2kGatewayApi.searchEservices({
+      const { data } = await k2kGatewayApi.getCatalogEservices({
         body: reqBody,
         client: k2kGatewayClient,
         headers: {

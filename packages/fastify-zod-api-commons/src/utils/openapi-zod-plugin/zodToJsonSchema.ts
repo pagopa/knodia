@@ -188,13 +188,14 @@ const applyOpenApiTransforms = (
 ): Partial<OpenAPIV3.Document> =>
   transforms.reduce((acc, transform) => transform(acc), openapi);
 
-export const cleanOpenapi: typeof zodToJsonSchemaTransformObject = (openapi) =>
-  applyOpenApiTransforms(
-    zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
-    [
-      removeZodInputSchemasFromOpenapi,
-      updateErrorResponseContentsWithProblemJson,
-      markRequestBodiesAsRequired,
-      removeUnusedComponents,
-    ],
-  );
+export const zodToJsonSchemaTransformAndCleanObject: typeof zodToJsonSchemaTransformObject =
+  (openapi) =>
+    applyOpenApiTransforms(
+      zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
+      [
+        removeZodInputSchemasFromOpenapi,
+        updateErrorResponseContentsWithProblemJson,
+        markRequestBodiesAsRequired,
+        removeUnusedComponents,
+      ],
+    );

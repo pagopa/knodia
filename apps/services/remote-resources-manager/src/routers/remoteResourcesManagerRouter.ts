@@ -11,7 +11,7 @@ import {
   API_EserviceSearchResults,
   API_SearchEservicesQueryParams,
 } from "../models/api.ts";
-import { k2kGatewayTag } from "../models/apiTags.ts";
+import { apiTags } from "../models/apiTags.ts";
 
 interface RemoteResourcesManagerRouterOptions {
   remoteResourcesManagerService: RemoteResourcesManagerService;
@@ -51,7 +51,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         400: API_Problem.describe("Bad Request"),
       },
       summary: "Search for E-Services",
-      tags: [k2kGatewayTag.name],
+      tags: [apiTags.k2kGateway],
     },
     url: "/catalog",
   });
