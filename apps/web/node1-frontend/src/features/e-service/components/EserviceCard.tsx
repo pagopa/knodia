@@ -1,5 +1,4 @@
-import type { Eservice } from "@knodia/bff-client";
-
+import { bffApi } from "@knodia/bff-client";
 import { ButtonLink, Chip, Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
@@ -11,7 +10,11 @@ import type { EserviceMode, EserviceVersionState } from "../types";
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
 
-export function ProductionEserviceCard({ eservice }: { eservice: Eservice }) {
+export function ProductionEserviceCard({
+  eservice,
+}: {
+  eservice: bffApi.ProducerEservice;
+}) {
   return (
     <EserviceCard>
       <EserviceCardHeader id={eservice.id} title={eservice.name.en} />

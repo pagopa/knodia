@@ -1,4 +1,4 @@
-import type { EserviceSeed } from "@knodia/bff-client";
+import { bffApi } from "@knodia/bff-client";
 
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
@@ -9,7 +9,7 @@ import {
 
 export async function toEserviceSeed(
   data: EServiceFormData,
-): Promise<EserviceSeed> {
+): Promise<bffApi.EserviceSeed> {
   const { interfaceDocument } = data;
   const arrayBuffer = await interfaceDocument.arrayBuffer();
   const content = arrayBufferToBase64(arrayBuffer);
