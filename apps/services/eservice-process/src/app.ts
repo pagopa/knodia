@@ -1,7 +1,6 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { ServiceName } from "@knodia/common-models/services";
 import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/eservice";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
