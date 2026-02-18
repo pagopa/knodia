@@ -1,11 +1,11 @@
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 
-import type { API_EserviceSearchResult } from "./api.ts";
+import type { API_CatalogEserviceSearchResult } from "./api.ts";
 
-export const toAPI_EserviceSearchResult = (
+export const toAPI_CatalogEserviceSearchResult = (
   eservice: eserviceProcessApi.Eservice,
   eserviceVersion: eserviceProcessApi.EserviceVersion,
-): API_EserviceSearchResult => ({
+): API_CatalogEserviceSearchResult => ({
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,

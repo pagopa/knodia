@@ -15,7 +15,7 @@ import {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
-import { toAPI_EserviceSearchResult } from "../models/apiConverters.ts";
+import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverters.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -54,7 +54,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
             },
           });
 
-        return toAPI_EserviceSearchResult(eservice, latestVersion);
+        return toAPI_CatalogEserviceSearchResult(eservice, latestVersion);
       }
 
       res.send({
