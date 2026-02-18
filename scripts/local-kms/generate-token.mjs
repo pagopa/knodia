@@ -9,10 +9,10 @@ const KEYS_DIR = resolve(__dirname, "../../docker/tokens");
 
 const KMS_ENDPOINT = "http://localhost:4566";
 
-// Hardcoded user and organization IDs for local development
+// Hardcoded configuration for local development
 const USER_ID = "00000000-0000-0000-0000-000000000001";
 const ORG_ID = "00000000-0000-0000-0000-000000000002";
-const ROLE = "role:administrative";
+const ROLES = ["role:administrative", "role:technical"];
 const AUDIENCE = "local.knodia.test";
 
 const type = process.argv[2] ?? "session";
@@ -42,13 +42,13 @@ const claims =
   type === "cognito"
     ? {
         sub: USER_ID,
-        "cognito:groups": [ROLE, `org:${ORG_ID}`],
+        "cognito:groups": [...ROLES, `org:${ORG_ID}`],
         token_use: "access",
       }
     : {
         sub: USER_ID,
         organizationId: ORG_ID,
-        role: ROLE,
+        role: ROLES,
       };
 
 const payload = b64url(
