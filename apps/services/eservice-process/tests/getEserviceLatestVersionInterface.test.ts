@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { EserviceId, generateId } from "@knodia/common-models/ids";
-import { toExpectAPI_EserviceVersionInterfaceDocument } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_EserviceVersionInterfaceDocument } from "../src/models/api.ts";
 
+import { toAPI_EserviceVersionInterfaceDocument } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import {
+  injectAppRequest,
+  toExpectAPI_EserviceVersionInterfaceDocument,
+} from "./utils.ts";
 
 const eservice = mockEservices[0]!;
 const VALID_ESERVICE_ID = eservice.id;
@@ -33,7 +36,9 @@ describe("GET /eservices/:eserviceId/versions/latest/interface (getEserviceLates
     const body = response.json<API_EserviceVersionInterfaceDocument>();
     expect(body).toEqual(
       toExpectAPI_EserviceVersionInterfaceDocument(
-        eservice.versions[1]!.interfaceDocument,
+        toAPI_EserviceVersionInterfaceDocument(
+          eservice.versions[1]!.interfaceDocument,
+        ),
       ),
     );
   });

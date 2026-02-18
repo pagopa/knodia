@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { EserviceId, generateId } from "@knodia/common-models/ids";
-import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_Eservice } from "../src/models/api.ts";
 
+import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, toExpectAPI_Eservice } from "./utils.ts";
 
 const eservice = mockEservices[0]!;
 const VALID_ESERVICE_ID = eservice.id;
@@ -31,7 +31,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     expect(response.statusCode).toBe(200);
 
     const body = response.json<API_Eservice>();
-    expect(body).toEqual(toExpectAPI_Eservice(eservice));
+    expect(body).toEqual(toAPI_Eservice(eservice));
   });
 
   it("should return the same e-service as the list endpoint", async () => {

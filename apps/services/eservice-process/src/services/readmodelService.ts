@@ -1,6 +1,7 @@
 import type {
   EserviceId,
   EserviceInterfaceId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
 import type {
   ListResult,
@@ -27,10 +28,13 @@ import {
   toEserviceVersionInterface,
 } from "@knodia/db-readmodel-eservice/converters";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
-import { type Eservice, EserviceInterface } from "@knodia/eservice-models";
+import {
+  type Eservice,
+  EserviceInterface,
+  EserviceMode,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
-
-import type { API_GetEservicesQueryParams } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
@@ -108,9 +112,16 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           : undefined;
       });
     },
-    async getEservices(
-      params: API_GetEservicesQueryParams,
-    ): Promise<ListResult<Eservice>> {
+    async getEservices(params: {
+      limit: number;
+      mode?: EserviceMode | undefined;
+      offset: number;
+      producerId?: OrganizationId | undefined;
+      q?: string | undefined;
+      sortBy: "name";
+      sortOrder: "asc" | "desc";
+      state?: EserviceVersionState[] | undefined;
+    }): Promise<ListResult<Eservice>> {
       const { limit, mode, offset, producerId, q, sortBy, sortOrder, state } =
         params;
 

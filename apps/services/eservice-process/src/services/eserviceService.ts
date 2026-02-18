@@ -14,10 +14,12 @@ import {
   EserviceVersionId,
   generateId,
   OrganizationId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
   fromAPI_AccessTokenType,
   fromAPI_EserviceMode,
+  fromAPI_EserviceVersionState,
 } from "@knodia/eservice-models/apiConverters";
 
 import type {
@@ -178,7 +180,16 @@ export function eserviceServiceBuilder(
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {
-      return await readmodelService.getEservices(params);
+      return await readmodelService.getEservices({
+        ...params,
+        mode: params.mode ? fromAPI_EserviceMode(params.mode) : undefined,
+        producerId: params.producerId
+          ? unsafeBrandId<OrganizationId>(params.producerId)
+          : undefined,
+        state: params.state
+          ? params.state.map(fromAPI_EserviceVersionState)
+          : undefined,
+      });
     },
   };
 }

@@ -6,14 +6,14 @@ import {
   API_EserviceMode,
   API_EserviceVersionState,
 } from "@knodia/eservice-models/api";
-import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
 
+import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { mockEservices, producerId } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, toExpectAPI_Eservice } from "./utils.ts";
 
 describe("GET /eservices (getEservices)", () => {
   const defaultQuery = {
@@ -149,7 +149,9 @@ describe("GET /eservices (getEservices)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map((e) => toExpectAPI_Eservice(e)),
+        items: expectedResult.map((e) =>
+          toExpectAPI_Eservice(toAPI_Eservice(e)),
+        ),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
