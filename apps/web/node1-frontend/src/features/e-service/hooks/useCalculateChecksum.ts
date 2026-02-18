@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { toHex } from "../utils/file";
+
 export const useCalculateChecksum = (
   document: File | null | undefined,
 ): { sha256Checksum: string } => {
@@ -14,9 +16,7 @@ export const useCalculateChecksum = (
       const arrayBuffer = await document.arrayBuffer();
       const sha256Buffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
       const bytes = new Uint8Array(sha256Buffer);
-      const checksum = Array.from(bytes, (byte) =>
-        byte.toString(16).padStart(2, "0"),
-      ).join("");
+      const checksum = toHex(bytes);
       setSha256Checksum(checksum);
     };
 
