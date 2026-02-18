@@ -1,4 +1,4 @@
-import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
+import { getProducerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Breadcrumb,
   Breadcrumbs,
@@ -16,18 +16,16 @@ import { EserviceStateChip } from "@/features/e-service/components/EserviceState
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
 import { client } from "@/libs/axios";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const eserviceQuery = (_id: string) =>
-  getEservicesOptions({
+const eserviceQuery = (eserviceId: string) =>
+  getProducerEserviceDetailsOptions({
     client,
-    query: { limit: 1, offset: 0 },
+    path: { eserviceId },
   });
 
 export const Route = createFileRoute("/production/e-services_/$id")({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    (await queryClient.ensureQueryData(eserviceQuery(id))).items[0]!,
+    await queryClient.ensureQueryData(eserviceQuery(id)),
 });
 
 function EServiceActions() {

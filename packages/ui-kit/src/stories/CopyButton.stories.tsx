@@ -25,7 +25,6 @@ export const Default: Story = {
 export const CustomTooltip: Story = {
   args: {
     textToCopy: "custom-id-12345",
-    tooltipText: "Copy ID",
     copiedTooltipText: "ID copied!",
   },
 };

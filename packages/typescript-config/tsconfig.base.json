@@ -1,5 +1,10 @@
 {
   "extends": [
     "@tsconfig/strictest/tsconfig.json"
-  ]
+  ],
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    // TODO ^ required for hey-api generated clients to compile.
+    // Drop after issue is fixed: https://github.com/hey-api/openapi-ts/issues/2236
+  }
 }
