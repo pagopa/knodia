@@ -1,10 +1,14 @@
 import type { ServiceName } from "@knodia/common-models/services";
 import type { LoggerConfig } from "@knodia/logger/config";
+import type { LoggerMetadataFastify } from "@knodia/logger/models";
 
 import fastifyRequestContext from "@fastify/request-context";
 import { generateId, unsafeBrandId } from "@knodia/common-models/ids";
 import { createLoggerOptions } from "@knodia/logger";
-import Fastify, { type FastifyRegisterOptions } from "fastify";
+import Fastify, {
+  type FastifyInstance,
+  type FastifyRegisterOptions,
+} from "fastify";
 
 import { missingHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";
@@ -32,6 +36,8 @@ export const createFastifyApp = ({
   serviceName: ServiceName;
 }) => {
   const app = Fastify({
+    genReqId: (req) =>
+      req.headers[CORRELATION_ID_HEADER]?.toString() ?? generateId(),
     logger: createLoggerOptions(loggerConfig, serviceName),
   });
 
@@ -39,13 +45,21 @@ export const createFastifyApp = ({
   app.register(openapiZodPlugin, fastifyOptions);
 
   app.register(fastifyRequestContext, {
-    defaultStoreValues: (request) => ({
-      correlationId: request.headers[CORRELATION_ID_HEADER]
-        ? unsafeBrandId(request.headers[CORRELATION_ID_HEADER].toString())
-        : generateId(),
-      logger: request.log,
-      serviceName,
-    }),
+    defaultStoreValues: (req) => {
+      const loggerMetadata: LoggerMetadataFastify = {
+        correlationId: unsafeBrandId(req.id),
+        organizationId: generateId(),
+      };
+
+      const logger = req.log.child(loggerMetadata);
+      req.log = logger;
+
+      return {
+        correlationId: loggerMetadata.correlationId,
+        logger,
+        serviceName,
+      };
+    },
   });
 
   checkCorrelationIdHeader(app, makeApiProblem, readCorrelationIdFromHeader);
@@ -63,7 +77,7 @@ export const createFastifyApp = ({
 };
 
 const checkCorrelationIdHeader = (
-  app: Fastify.FastifyInstance,
+  app: FastifyInstance,
   makeApiProblem: MakeApiProblemFn,
   readCorrelationIdFromHeader: boolean,
 ) => {

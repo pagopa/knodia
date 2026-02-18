@@ -1,22 +1,44 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { LoggerMetadataKafka } from "@knodia/logger/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { eserviceWriterServiceBuilder } from "@knodia/db-readmodel-eservice/writer";
 import { EserviceEventV1 } from "@knodia/eservice-models";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
+import { createLogger } from "@knodia/logger";
 
+import { config } from "../config/config.ts";
 import { handleEserviceEvent } from "../services/consumerService.ts";
 
 export const createProcessMessage = (readmodelDb: NodePgDatabase) => {
   const eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
 
-  return async function processMessage({ message }: EachMessagePayload) {
+  return async function processMessage({
+    message,
+    partition,
+  }: EachMessagePayload) {
     const event = decodeKafkaMessageEvent(message, EserviceEventV1);
 
-    console.log("Processing event:", {
-      event,
+    const loggerMetadata: LoggerMetadataKafka = {
+      correlationId: unsafeBrandId(event.correlation_id),
+      eventType: event.type,
+      eventVersion: event.version,
+      streamId: event.stream_id,
+      streamVersion: event.version,
+    };
+    const logger = createLogger({
+      config,
+      loggerMetadata,
+      serviceName: "eservice-readmodel-writer",
     });
 
+    logger.info({ event }, "Processing event");
+
     await handleEserviceEvent(event, eserviceWriterService);
+
+    logger.info(
+      `Read model was updated. Partition number: ${partition}. Offset: ${message.offset}`,
+    );
   };
 };
