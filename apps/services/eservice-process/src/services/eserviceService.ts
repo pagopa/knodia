@@ -1,41 +1,81 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  Eservice,
+  EserviceInterface,
+  EserviceVersion,
+} from "@knodia/eservice-models";
 
 import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";
 import { getCategory } from "@knodia/category-models";
 import {
   EserviceId,
-  EserviceInterfaceId,
   EserviceVersionId,
   generateId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import { Eservice } from "@knodia/eservice-models";
 import {
   fromAPI_AccessTokenType,
   fromAPI_EserviceMode,
-  fromAPI_EserviceVersionState,
 } from "@knodia/eservice-models/apiConverters";
 
 import type {
   API_EserviceSeed,
-  API_EservicesQueryParams,
+  API_GetEservicesQueryParams,
 } from "../models/api.ts";
+import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
+  duplicateInterfaceId,
   eserviceNotFound,
+  eserviceVersionNotFound,
+  interfaceNotFound,
   invalidAttribute,
   invalidCategory,
 } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
-import { getLatestVersion } from "../utils/eserviceUtils.ts";
-import { mockEservices } from "./mockEservices.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
+  readmodelService: ReadmodelService,
 ) {
+  const retrieveEservice = async (eserviceId: EserviceId) => {
+    const eservice = await readmodelService.getEservice(eserviceId);
+
+    if (!eservice) {
+      throw eserviceNotFound(eserviceId);
+    }
+
+    return eservice.data;
+  };
+
+  const retrieveEserviceLatestVersion = async (eserviceId: EserviceId) => {
+    const eserviceVersion =
+      await readmodelService.getEserviceLatestVersion(eserviceId);
+
+    if (!eserviceVersion) {
+      throw eserviceVersionNotFound(eserviceId);
+    }
+
+    return eserviceVersion;
+  };
+
+  const retrieveEserviceLatestVersionInterface = async (
+    eserviceId: EserviceId,
+  ) => {
+    const eserviceVersionInterface =
+      await readmodelService.getEserviceLatestVersionInterface(eserviceId);
+
+    if (!eserviceVersionInterface) {
+      throw interfaceNotFound(eserviceId);
+    }
+
+    return eserviceVersionInterface;
+  };
+
   return {
     async createEservice(
       seed: API_EserviceSeed,
@@ -58,6 +98,14 @@ export function eserviceServiceBuilder(
         if (getCategory(cat.scheme, cat.code) === undefined) {
           throw invalidCategory(cat.scheme, cat.code);
         }
+      }
+
+      const existingInterface =
+        await readmodelService.getEserviceVersionInterfaceById(
+          seed.interfaceDocument.id,
+        );
+      if (existingInterface) {
+        throw duplicateInterfaceId(seed.interfaceDocument.id);
       }
 
       const now = new Date();
@@ -114,130 +162,23 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    getMockEservice(eserviceId: EserviceId): Eservice {
-      const eservices = generateMockEservices();
-      const eservice = eservices.find((e) => e.id === eserviceId);
-
-      if (!eservice) {
-        throw eserviceNotFound(eserviceId);
-      }
-
-      return eservice;
+    async getEservice(eserviceId: EserviceId): Promise<Eservice> {
+      return await retrieveEservice(eserviceId);
     },
-    getMockEserviceLatestVersion(eserviceId: EserviceId) {
-      const eservices = generateMockEservices();
-      const eservice = eservices.find((e) => e.id === eserviceId);
-
-      if (!eservice) {
-        throw eserviceNotFound(eserviceId);
-      }
-
-      return getLatestVersion(eservice);
+    async getEserviceLatestVersion(
+      eserviceId: EserviceId,
+    ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
+      return await retrieveEserviceLatestVersion(eserviceId);
     },
-    getMockEservices(params: API_EservicesQueryParams): {
-      items: Eservice[];
-      pagination: { limit: number; offset: number; total: number };
-    } {
-      const { limit, mode, offset, producerId, q, sortOrder, state } = params;
-
-      // TODO: replace mock data, filtering, and sorting with real database queries (read model)
-      let eservices = generateMockEservices(producerId);
-
-      // Filter by producerId
-      if (producerId) {
-        eservices = eservices.filter((e) => e.producerId === producerId);
-      }
-
-      // Filter by search query (name, description, categories)
-      // TODO: currently hardcoded to .en, should filter by the user's current language
-      if (q) {
-        const query = q.toLowerCase();
-        eservices = eservices.filter(
-          (e) =>
-            e.name.en.toLowerCase().includes(query) ||
-            e.description.en.toLowerCase().includes(query) ||
-            // TODO: filter by category name instead of code when using real data
-            e.categories.some((c) => c.code.toLowerCase().includes(query)),
-        );
-      }
-
-      // Filter by state
-      if (state && state.length > 0) {
-        eservices = eservices.filter((e) =>
-          state
-            .map(fromAPI_EserviceVersionState)
-            .includes(getLatestVersion(e).state),
-        );
-      }
-
-      // Filter by mode
-      if (mode) {
-        eservices = eservices.filter(
-          (e) => e.mode === fromAPI_EserviceMode(mode),
-        );
-      }
-
-      // Sort by name (the only supported sort field)
-      // TODO: currently hardcoded to .en, should sort by the user's current language
-      const direction = sortOrder === "asc" ? 1 : -1;
-      eservices.sort((a, b) => a.name.en.localeCompare(b.name.en) * direction);
-
-      // Paginate
-      const total = eservices.length;
-      const paginatedItems = eservices.slice(offset, offset + limit);
-
-      return {
-        items: paginatedItems,
-        pagination: {
-          limit,
-          offset,
-          total,
-        },
-      };
+    async getEserviceLatestVersionInterface(
+      eserviceId: EserviceId,
+    ): Promise<EserviceInterface> {
+      return await retrieveEserviceLatestVersionInterface(eserviceId);
+    },
+    async getEservices(
+      params: API_GetEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      return await readmodelService.getEservices(params);
     },
   };
-}
-
-function generateMockEservices(producerId?: OrganizationId): Eservice[] {
-  // TODO: remove when switching to real data — fixed to keep mock output deterministic across calls
-  const timestamp = new Date("2025-01-01T00:00:00.000Z");
-  return mockEservices.map((mock, idx) => ({
-    categories: mock.categories,
-    createdAt: timestamp,
-    description: { en: mock.description },
-    id: `00000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceId,
-    isConsumerOperatorIdentificationRequired: false,
-    isSignalHubEnabled: false,
-    mode: mock.mode,
-    name: { en: mock.name },
-    producerId:
-      producerId ??
-      (`30000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as OrganizationId),
-    updatedAt: timestamp,
-    versions: [
-      {
-        accessTokenAudience: ["audience-1"],
-        accessTokenDuration: 3600,
-        accessTokenType: "Bearer" as const,
-        createdAt: timestamp,
-        id: `10000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceVersionId,
-        interfaceDocument: {
-          checksum: "checksum-1",
-          contentType: "application/json",
-          createdAt: timestamp,
-          id: `20000000-0000-4000-a000-${idx.toString(16).padStart(12, "0")}` as EserviceInterfaceId,
-          name: "Interface 1",
-          path: "/interfaces/1.json",
-          prettyName: { en: "Interface 1" },
-          updatedAt: timestamp,
-        },
-        maxDailyCallsPerConsumer: 100,
-        maxDailyCallsPerKnode: 1000,
-        requiredAttributes: [[{ code: "attr-1", scheme: "attr-scheme-1" }]],
-        state: mock.state,
-        updatedAt: timestamp,
-        versionNumber: 1,
-      },
-    ],
-  }));
 }

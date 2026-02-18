@@ -1,3 +1,0 @@
-extends: ["@knodia/spectral-config/spectral.yaml"]
-rules:
-  paths-kebab-case: off # not compatible with our naming conventions

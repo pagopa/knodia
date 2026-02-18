@@ -33,6 +33,8 @@
     "@knodia/common-models": "workspace:*",
     "@knodia/db-event-store-eservice": "workspace:*",
     "@knodia/db-event-store-writer": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
+    "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",

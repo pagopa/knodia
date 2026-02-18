@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/bff-client": "workspace:*",
+    "@knodia/category-models": "workspace:*",
     "@knodia/ui-kit": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "@tailwindcss/vite": "catalog:",
@@ -26,7 +28,6 @@
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
-    "spark-md5": "catalog:",
     "tailwind-merge": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
@@ -39,7 +40,6 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/spark-md5": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",

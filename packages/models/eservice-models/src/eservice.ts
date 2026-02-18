@@ -17,6 +17,21 @@ export const maxDailyCalls = 1_000_000_000;
 
 const minEserviceVersionNumber = 1;
 
+export const maxDescriptionLength = 250;
+export const minDescriptionLength = 10;
+
+export const maxNameLength = 60;
+export const minNameLength = 5;
+
+export const LocalizedDescription = LocalizedText(
+  minDescriptionLength,
+  maxDescriptionLength,
+);
+export type LocalizedDescription = z.infer<typeof LocalizedDescription>;
+
+export const LocalizedName = LocalizedText(minNameLength, maxNameLength);
+export type LocalizedName = z.infer<typeof LocalizedName>;
+
 export const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;
 
@@ -33,7 +48,7 @@ export const EserviceInterface = z.strictObject({
   id: EserviceInterfaceId,
   name: z.string(),
   path: z.string(),
-  prettyName: LocalizedText,
+  prettyName: LocalizedName,
   updatedAt: z.coerce.date(),
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
@@ -43,7 +58,8 @@ const RequiredAttribute = z.strictObject({
   scheme: z.string(),
 });
 export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
-const RequiredAttributeGroup = z.array(RequiredAttribute);
+
+const RequiredAttributeGroup = z.array(RequiredAttribute).min(1);
 export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
 
 export const EserviceVersion = z.strictObject({
@@ -58,14 +74,14 @@ export const EserviceVersion = z.strictObject({
   interfaceDocument: EserviceInterface,
   maxDailyCallsPerConsumer: z.int().min(minDailyCalls).max(maxDailyCalls),
   maxDailyCallsPerKnode: z.int().min(minDailyCalls).max(maxDailyCalls),
-  requiredAttributes: z.array(RequiredAttributeGroup),
+  requiredAttributes: z.array(RequiredAttributeGroup).min(1),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),
   versionNumber: z.int().min(minEserviceVersionNumber).max(INT32_MAX),
 });
 export type EserviceVersion = z.infer<typeof EserviceVersion>;
 
-const EserviceCategory = z.strictObject({
+export const EserviceCategory = z.strictObject({
   code: z.string(),
   scheme: z.string(),
 });
@@ -74,12 +90,12 @@ export type EserviceCategory = z.infer<typeof EserviceCategory>;
 export const Eservice = z.strictObject({
   categories: z.array(EserviceCategory),
   createdAt: z.coerce.date(),
-  description: LocalizedText,
+  description: LocalizedDescription,
   id: EserviceId,
   isConsumerOperatorIdentificationRequired: z.boolean(),
   isSignalHubEnabled: z.boolean(),
   mode: EserviceMode,
-  name: LocalizedText,
+  name: LocalizedName,
   producerId: OrganizationId,
   updatedAt: z.coerce.date(),
   versions: z.array(EserviceVersion),

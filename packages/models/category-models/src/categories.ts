@@ -4,7 +4,7 @@ interface Category {
   scheme: string;
 }
 
-const categories: Record<string, Record<string, string>> = {
+export const categories: Record<string, Record<string, string>> = {
   vc_example_eservice_categories: {
     "citizen.identity.birth_date": "Birth date",
     "citizen.identity.birth_place": "Birth place",

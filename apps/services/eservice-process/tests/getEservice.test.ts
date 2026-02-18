@@ -1,42 +1,37 @@
-import {
-  API_EserviceMode,
-  API_EserviceVersionState,
-} from "@knodia/eservice-models/api";
-import { describe, expect, it } from "vitest";
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
+import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_Eservice } from "../src/models/api.ts";
 
+import { mockEservices } from "./mockEservices.ts";
+import { eserviceWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
-const VALID_ESERVICE_ID = "00000000-0000-4000-a000-000000000000";
-const NON_EXISTENT_ESERVICE_ID = "00000000-0000-4000-a000-ffffffffffff";
+const eservice = mockEservices[0]!;
+const VALID_ESERVICE_ID = eservice.id;
+const NON_EXISTENT_ESERVICE_ID = generateId<EserviceId>();
 
 const getEservice = (eserviceId: string) =>
   injectAppRequest().get(`/eservices/${eserviceId}`);
 
-// TODO: These tests rely on mock data. Update assertions when switching to real data.
 describe("GET /eservices/:eserviceId (getEservice)", () => {
+  beforeAll(async () => {
+    await Promise.all(
+      mockEservices.map((eservice) =>
+        eserviceWriterService.upsertEservice(eservice, 0),
+      ),
+    );
+  });
+
   it("should return the e-service with correct shape", async () => {
     const response = await getEservice(VALID_ESERVICE_ID);
 
     expect(response.statusCode).toBe(200);
 
     const body = response.json<API_Eservice>();
-    expect(body).toEqual(
-      expect.objectContaining({
-        categories: expect.any(Array),
-        createdAt: expect.any(String),
-        description: expect.objectContaining({ en: expect.any(String) }),
-        id: VALID_ESERVICE_ID,
-        isConsumerOperatorIdentificationRequired: expect.any(Boolean),
-        isSignalHubEnabled: expect.any(Boolean),
-        mode: expect.schemaMatching(API_EserviceMode),
-        name: expect.objectContaining({ en: expect.any(String) }),
-        producerId: expect.any(String),
-        state: expect.schemaMatching(API_EserviceVersionState),
-        updatedAt: expect.any(String),
-      }),
-    );
+    expect(body).toEqual(toExpectAPI_Eservice(eservice));
   });
 
   it("should return the same e-service as the list endpoint", async () => {
@@ -49,7 +44,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const response = await getEservice(VALID_ESERVICE_ID);
     const body = response.json<API_Eservice>();
 
-    expect(body).toEqual(expectedItem);
+    expect(body).toEqual(toExpectAPI_Eservice(expectedItem!));
   });
 
   it("should return 404 for non-existent e-service id", async () => {
