@@ -1,9 +1,8 @@
-import type { ProducerEserviceDetails } from "@knodia/bff-client";
-
+import { bffApi } from "@knodia/bff-client";
 import { createContext, useContext } from "react";
 
 export const ProductionEserviceDetailsContext =
-  createContext<null | ProducerEserviceDetails>(null);
+  createContext<bffApi.ProducerEserviceDetails | null>(null);
 
 export function useProductionEserviceDetailsContext() {
   const ctx = useContext(ProductionEserviceDetailsContext);

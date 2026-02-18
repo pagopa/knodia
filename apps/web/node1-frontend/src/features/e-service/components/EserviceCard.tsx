@@ -1,9 +1,4 @@
-import type {
-  EserviceMode,
-  EserviceVersionState,
-  ProducerEservice,
-} from "@knodia/bff-client";
-
+import { bffApi } from "@knodia/bff-client";
 import { ButtonLink, Chip, Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
@@ -16,7 +11,7 @@ import { EserviceStateChip } from "./EserviceStateChip";
 export function ProductionEserviceCard({
   eservice,
 }: {
-  eservice: ProducerEservice;
+  eservice: bffApi.ProducerEservice;
 }) {
   return (
     <EserviceCard>
@@ -54,8 +49,8 @@ function EserviceCardFooter({
   state,
 }: {
   children?: React.ReactNode;
-  mode: EserviceMode;
-  state: EserviceVersionState;
+  mode: bffApi.EserviceMode;
+  state: bffApi.EserviceVersionState;
 }) {
   return (
     <footer className="flex items-center">
