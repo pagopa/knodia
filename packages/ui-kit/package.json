@@ -2,7 +2,7 @@
   "name": "@knodia/ui-kit",
   "type": "module",
   "scripts": {
-    "typecheck": "tsc",
+    "typecheck": "tsc -b",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "dev:storybook": "storybook dev -p 6006",
