@@ -170,7 +170,7 @@ components:
         - scheme
       additionalProperties: false
     RequiredAttributeGroup:
-      description: Described a group of required Attributes (consumers must possess at
+      description: Describes a group of required Attributes (consumers must possess at
         least one Attribute among them in order to satisfy the requirement)
       type: array
       items:
