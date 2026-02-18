@@ -17,8 +17,8 @@
       "matchDepTypes": ["pnpm.catalog"]
     }
   ],
-  "prConcurrentLimit": 2,
-  "minimumReleaseAge": "14 days",
+  "prConcurrentLimit": 4,
+  "minimumReleaseAge": null,
   "internalChecksFilter": "strict",
   "prCreation": "not-pending",
   "lockFileMaintenance": {
