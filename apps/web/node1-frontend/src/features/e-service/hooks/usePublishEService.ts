@@ -20,8 +20,8 @@ export function usePublishEService() {
     },
   });
 
-  const publish = async (data: EServiceFormData) => {
-    const body = await toEserviceSeed(data);
+  const publish = async (data: EServiceFormData, checksum: string) => {
+    const body = await toEserviceSeed(data, checksum);
     mutate({ body });
   };
 
