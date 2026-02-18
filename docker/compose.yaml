@@ -293,7 +293,8 @@ services:
         condition: service_healthy
     volumes:
       - jwks-data:/jwks
-      - ../:/app:ro
+      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../node_modules:/app/node_modules:ro
     working_dir: /app
     environment:
       KMS_ENDPOINT: http://local-kms:8080
