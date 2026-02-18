@@ -34,7 +34,11 @@ export function ConsumptionEserviceSearchResultCard({
         state={eservice.state}
         trailing={
           <div className="flex shrink-0 items-center gap-2">
-            <Avatar fallback={eservice.organization.initials} size="sm" />
+            <Avatar
+              className="bg-brand-dark text-white"
+              fallback={eservice.organization.initials}
+              size="sm"
+            />
             <span className="label-md text-primary-light-high-contrast">
               {eservice.organization.name}
             </span>
