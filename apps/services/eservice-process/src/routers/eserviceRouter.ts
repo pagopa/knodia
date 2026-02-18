@@ -32,8 +32,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 ) => {
   fastify.route({
     handler: async (req, res) => {
+      const ctx = getContextValues(requestContext);
       const { results, totalCount } = await eserviceService.getEservices(
         req.query,
+        ctx,
       );
 
       res.status(200).send({
@@ -88,7 +90,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const eservice = await eserviceService.getEservice(req.params.eserviceId);
+      const ctx = getContextValues(requestContext);
+      const eservice = await eserviceService.getEservice(
+        req.params.eserviceId,
+        ctx,
+      );
 
       res.status(200).send(toAPI_Eservice(eservice));
     },
@@ -112,8 +118,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
+      const ctx = getContextValues(requestContext);
       const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
+        ctx,
       );
 
       res.status(200).send(toAPI_EserviceVersion(eserviceVersion));
@@ -137,9 +145,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
   fastify.route({
     handler: async (req, res) => {
+      const ctx = getContextValues(requestContext);
       const eserviceVersionInterface =
         await eserviceService.getEserviceLatestVersionInterface(
           unsafeBrandId(req.params.eserviceId),
+          ctx,
         );
       res
         .status(200)
