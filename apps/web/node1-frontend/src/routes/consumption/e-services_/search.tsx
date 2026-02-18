@@ -89,7 +89,7 @@ function RouteComponent() {
         <>
           <ConsumptionEserviceSearchResultList
             eservices={results.items}
-            isLoading={false}
+            isLoading={false} // TODO: Replace with isLoading from useQuery when BFF endpoint is available
           />
           <Pagination
             className="mx-auto mt-auto pt-6"

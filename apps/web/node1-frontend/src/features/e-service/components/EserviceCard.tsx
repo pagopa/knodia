@@ -53,11 +53,13 @@ export function EserviceCardHeader({
   to: string;
 }) {
   return (
-    <header className="flex items-start gap-10">
+    <header
+      className={`flex gap-10 ${description ? "items-start" : "items-center"}`}
+    >
       <div className="flex min-w-0 flex-1 flex-col">
-        <h3 className="title-md-em text-primary-dark">{title}</h3>
+        <h3 className="min-w-0 title-md-em truncate">{title}</h3>
         {description && (
-          <p className="body-md text-primary-light-low-contrast">
+          <p className="body-md text-primary-light-low-contrast line-clamp-2">
             {description}
           </p>
         )}
