@@ -11,6 +11,7 @@
     "./config": "./src/config.ts"
   },
   "devDependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",

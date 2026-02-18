@@ -1,11 +1,10 @@
+import type { ServiceName } from "@knodia/common-models/services";
 import type { LoggerConfig } from "@knodia/logger/config";
 
 import fastifyRequestContext from "@fastify/request-context";
 import { generateId, unsafeBrandId } from "@knodia/common-models/ids";
 import { createLoggerOptions } from "@knodia/logger";
 import Fastify, { type FastifyRegisterOptions } from "fastify";
-
-import type { ServiceName } from "../models/index.ts";
 
 import { missingHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";

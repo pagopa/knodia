@@ -1,11 +1,11 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 
+import { ServiceName } from "@knodia/common-models/services";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 import { initFileManager } from "@knodia/file-manager";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
@@ -46,7 +46,7 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
     loggerConfig: loggerConfig,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
-    serviceName: serviceName.BACKEND_FOR_FRONTEND,
+    serviceName: "backend-for-frontend",
   });
 
   app.register(healthRouter);

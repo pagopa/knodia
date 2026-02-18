@@ -14,7 +14,8 @@
     "./localization": "./src/localization.ts",
     "./event": "./src/events.ts",
     "./protobuf": "./src/protobuf.ts",
-    "./errors": "./src/errors.ts"
+    "./errors": "./src/errors.ts",
+    "./services": "./src/services.ts"
   },
   "dependencies": {
     "zod": "catalog:"

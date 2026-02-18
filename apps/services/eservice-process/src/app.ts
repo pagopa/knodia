@@ -1,13 +1,13 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { ServiceName } from "@knodia/common-models/services";
 import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/eservice";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -48,7 +48,7 @@ export function buildApp({
     },
     loggerConfig,
     makeApiProblem,
-    serviceName: serviceName.ESERVICE_PROCESS,
+    serviceName: "eservice-process",
   });
 
   app.register(healthRouter);

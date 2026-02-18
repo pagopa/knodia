@@ -1,4 +1,5 @@
 import type { LoggerOptions } from "pino";
+import { ServiceName } from "@knodia/common-models/services";
 
 import type { LoggerConfig } from "./config.ts";
 
@@ -26,7 +27,7 @@ const resolvePrettyConfig = (isProduction: boolean): Partial<LoggerOptions> =>
 
 export const createLoggerOptions = (
   config: LoggerConfig,
-  serviceName: string,
+  serviceName: ServiceName,
 ): LoggerOptions => ({
   level: config.logLevel,
   name: serviceName,
