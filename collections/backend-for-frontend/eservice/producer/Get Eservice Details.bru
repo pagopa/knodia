@@ -1,0 +1,15 @@
+meta {
+  name: Get Eservice Details
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producer/eservices/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}

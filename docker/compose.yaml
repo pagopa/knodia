@@ -15,6 +15,11 @@ services:
     command: -c 'max_connections=512' -c 'wal_level=logical'
     volumes:
       - event-store-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   readmodel:
     security_opt:
@@ -29,6 +34,93 @@ services:
       POSTGRES_DB: root
     volumes:
       - readmodel-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flyway-roles-event-store:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-roles-event-store
+    command: migrate
+    volumes:
+      - ../migration/local/event_store_roles.sql:/flyway/sql/R__event_store_roles.sql:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://event-store:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_SCHEMAS: public
+      FLYWAY_DEFAULT_SCHEMA: public
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+    depends_on:
+      event-store:
+        condition: service_healthy
+
+  flyway-roles-readmodel:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-roles-readmodel
+    command: migrate
+    volumes:
+      - ../migration/local/read_model_roles.sql:/flyway/sql/R__read_model_roles.sql:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_SCHEMAS: public
+      FLYWAY_DEFAULT_SCHEMA: public
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+    depends_on:
+      readmodel:
+        condition: service_healthy
+
+  flyway-event-store:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-event-store
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
+    volumes:
+      - ../migration/event-store:/flyway/schemas:ro
+      - ../scripts/flyway:/flyway/scripts:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://event-store:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+    depends_on:
+      flyway-roles-event-store:
+        condition: service_completed_successfully
+
+  flyway-readmodel:
+    security_opt:
+      - no-new-privileges:true
+    image: flyway/flyway:11
+    container_name: knodia-flyway-readmodel
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
+    volumes:
+      - ../migration/read-model:/flyway/schemas:ro
+      - ../scripts/flyway:/flyway/scripts:ro
+    environment:
+      FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
+      FLYWAY_USER: root
+      FLYWAY_PASSWORD: root
+      FLYWAY_CONNECT_RETRIES: "5"
+      FLYWAY_BASELINE_ON_MIGRATE: "true"
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+    depends_on:
+      flyway-roles-readmodel:
+        condition: service_completed_successfully
 
   kafka:
     security_opt:
@@ -72,7 +164,7 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
-    image: quay.io/debezium/connect:3.4.1.Final@sha256:9e024124a374cadcc9ccbd9861119c3151dcbc4b3a6441b84ba0f62105309a7b
+    image: quay.io/debezium/connect:3.4.1.Final
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
@@ -116,6 +208,7 @@ services:
   minio:
     security_opt:
       - no-new-privileges:true
+    container_name: knodia-minio
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
     entrypoint: >
       /usr/bin/minio server /data --console-address ':9001'
@@ -138,6 +231,7 @@ services:
   minio-setup:
     security_opt:
       - no-new-privileges:true
+    container_name: knodia-minio-setup
     image: minio/mc:RELEASE.2025-08-13T08-35-41Z@sha256:a7fe349ef4bd8521fb8497f55c6042871b2ae640607cf99d9bede5e9bdf11727
     depends_on:
       minio:
@@ -148,9 +242,30 @@ services:
       mc mb --ignore-existing local/knodia-eservice-interfaces;
       exit 0;
       "
+  # Web GUI for PostgreSQL
+  pgadmin:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-pgadmin
+    image: dpage/pgadmin4:9
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
+      - ./pgpass:/pgadmin4/pgpass:ro
+    depends_on:
+      - event-store
+      - readmodel
 
 volumes:
   event-store-data:
   readmodel-data:
   kafka-data:
   minio-data:
+  pgadmin-data:

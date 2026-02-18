@@ -1,0 +1,19 @@
+meta {
+  name: Get Eservice
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+}

@@ -6,13 +6,15 @@
     "generate-api-client": "turbo run generate-api-client",
     "generate-openapi": "turbo run generate-openapi",
     "generate-protobuf": "turbo run generate-protobuf",
+    "generate-bruno-collection": "node --experimental-strip-types ./tools/bruno-collection-generator/src/cli.ts",
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
     "lint-openapi": "turbo run lint-openapi",
     "dev:storybook": "turbo run dev:storybook",
     "build:storybook": "turbo run build:storybook",
-    "db:generate": "turbo run db:generate",
-    "db:migrate": "turbo run db:migrate",
+    "db:drizzle-pull": "turbo run db:drizzle-pull",
+    "db:generate-schema": "turbo run db:generate-schema",
+    "db:schema-normalize": "turbo run db:schema-normalize",
     "knip": "turbo run generate-artifacts && knip",
     "infra:start": "./scripts/infra-start.sh",
     "infra:stop": "./scripts/infra-stop.sh",
@@ -21,6 +23,7 @@
     "test": "turbo run generate-artifacts && vitest run"
   },
   "devDependencies": {
+    "@types/node": "catalog:",
     "knip": "catalog:",
     "turbo": "catalog:",
     "vitest": "catalog:"

@@ -1,0 +1,22 @@
+{
+  "name": "@knodia/generate-bruno-collection",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/js-yaml": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@usebruno/converters": "catalog:",
+    "@usebruno/lang": "catalog:",
+    "js-yaml": "catalog:"
+  }
+}

@@ -1,16 +1,16 @@
-import { ReadModelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
+import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
 import {
   EserviceTopicConfig,
   KafkaConsumerConfig,
 } from "@knodia/kafka-commons/config";
 import { z } from "zod";
 
-const EserviceReadModelWriterConfig =
-  ReadModelEserviceConfig.and(KafkaConsumerConfig).and(EserviceTopicConfig);
+const EserviceReadmodelWriterConfig =
+  ReadmodelEserviceConfig.and(KafkaConsumerConfig).and(EserviceTopicConfig);
 
-type EserviceReadModelWriterConfig = z.infer<
-  typeof EserviceReadModelWriterConfig
+type EserviceReadmodelWriterConfig = z.infer<
+  typeof EserviceReadmodelWriterConfig
 >;
 
-export const config: EserviceReadModelWriterConfig =
-  EserviceReadModelWriterConfig.parse(process.env);
+export const config: EserviceReadmodelWriterConfig =
+  EserviceReadmodelWriterConfig.parse(process.env);

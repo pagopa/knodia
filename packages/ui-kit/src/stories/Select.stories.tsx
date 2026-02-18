@@ -11,18 +11,26 @@ const meta: Meta<typeof Select> = {
   parameters: {
     layout: "centered",
   },
+  args: {
+    className: "w-80",
+  },
 };
 
 export default meta;
 type Story = StoryObj<typeof Select>;
 
 const items = Array.from({ length: 6 }, (_, i) => `Item ${i + 1}`);
+const children = items.map((item) => (
+  <SelectItem id={item} key={item}>
+    {item}
+  </SelectItem>
+));
 
 export const Default: Story = {
   args: {
     label: "Label",
     size: "md",
-    value: "Value",
+    children,
   },
 };
 
@@ -30,8 +38,8 @@ export const WithDescription: Story = {
   args: {
     label: "Label",
     size: "md",
-    value: "Value",
     description: "Hint message",
+    children,
   },
 };
 
@@ -39,9 +47,39 @@ export const Invalid: Story = {
   args: {
     label: "Label",
     size: "md",
-    value: "Value",
     isInvalid: true,
     errorMessage: "This is an error message",
+    children,
+  },
+};
+
+export const Multiple: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    selectionMode: "multiple",
+    children,
+  },
+};
+
+export const MultipleWithDescription: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    selectionMode: "multiple",
+    description: "Hint message",
+    children,
+  },
+};
+
+export const MultipleInvalid: Story = {
+  args: {
+    label: "Label",
+    size: "md",
+    selectionMode: "multiple",
+    isInvalid: true,
+    errorMessage: "This is an error message",
+    children,
   },
 };
 
@@ -49,19 +87,32 @@ export const StickerSheet: Story = {
   render: renderStickerSheet([["default", "disabled", "invalid"]], (state) =>
     sizes.map((size) => (
       <Select
+        className="w-48"
         isDisabled={state === "disabled"}
         isInvalid={state === "invalid"}
-        items={items}
         key={`${size}-${state}`}
         label="Label"
         size={size}
-        value="Value"
       >
-        {items.map((item) => (
-          <SelectItem id={item} key={item}>
-            {item}
-          </SelectItem>
-        ))}
+        {children}
+      </Select>
+    )),
+  ),
+};
+
+export const MultipleStickerSheet: Story = {
+  render: renderStickerSheet([["default", "disabled", "invalid"]], (state) =>
+    sizes.map((size) => (
+      <Select
+        className="w-48"
+        isDisabled={state === "disabled"}
+        isInvalid={state === "invalid"}
+        key={`${size}-${state}`}
+        label="Label"
+        selectionMode="multiple"
+        size={size}
+      >
+        {children}
       </Select>
     )),
   ),

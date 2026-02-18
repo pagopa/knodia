@@ -84,6 +84,12 @@ catalogs:
     '@testcontainers/kafka':
       specifier: 11.11.0
       version: 11.11.0
+    '@testcontainers/minio':
+      specifier: 11.11.0
+      version: 11.11.0
+    '@testcontainers/postgresql':
+      specifier: 11.11.0
+      version: 11.11.0
     '@tsconfig/node-ts':
       specifier: 23.6.2
       version: 23.6.2
@@ -96,6 +102,9 @@ catalogs:
     '@tsconfig/vite-react':
       specifier: 7.0.2
       version: 7.0.2
+    '@types/js-yaml':
+      specifier: 4.0.9
+      version: 4.0.9
     '@types/node':
       specifier: 25.0.0
       version: 25.0.0
@@ -108,9 +117,12 @@ catalogs:
     '@types/react-dom':
       specifier: 19.2.3
       version: 19.2.3
-    '@types/spark-md5':
-      specifier: 3.0.5
-      version: 3.0.5
+    '@usebruno/converters':
+      specifier: 0.2.0
+      version: 0.2.0
+    '@usebruno/lang':
+      specifier: 0.24.0
+      version: 0.24.0
     '@vitejs/plugin-react':
       specifier: 5.1.1
       version: 5.1.1
@@ -153,6 +165,9 @@ catalogs:
     globals:
       specifier: 16.5.0
       version: 16.5.0
+    js-yaml:
+      specifier: 4.1.0
+      version: 4.1.0
     knip:
       specifier: 5.73.4
       version: 5.73.4
@@ -177,9 +192,6 @@ catalogs:
     react-dom:
       specifier: 19.2.0
       version: 19.2.0
-    spark-md5:
-      specifier: 3.0.2
-      version: 3.0.2
     storybook:
       specifier: 10.1.11
       version: 10.1.11
@@ -198,9 +210,6 @@ catalogs:
     tailwindcss-react-aria-components:
       specifier: 2.0.1
       version: 2.0.1
-    testcontainers:
-      specifier: 11.11.0
-      version: 11.11.0
     ts-pattern:
       specifier: 5.9.0
       version: 5.9.0
@@ -230,6 +239,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
       knip:
         specifier: 'catalog:'
         version: 5.73.4(@types/node@25.0.0)(typescript@5.9.3)
@@ -324,6 +336,12 @@ importers:
       '@knodia/db-event-store-writer':
         specifier: workspace:*
         version: link:../../../packages/db/event-store/writer
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/eservice
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
@@ -453,7 +471,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  apps/services/knodia-api-gateway:
+  apps/services/k2k-gateway:
     dependencies:
       '@knodia/common-models':
         specifier: workspace:*
@@ -571,9 +589,15 @@ importers:
 
   apps/web/node1-frontend:
     dependencies:
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/bff-client':
         specifier: workspace:*
         version: link:../../../packages/clients/bff-client
+      '@knodia/category-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/category-models
       '@knodia/ui-kit':
         specifier: workspace:*
         version: link:../../../packages/ui-kit
@@ -619,9 +643,6 @@ importers:
       react-dom:
         specifier: 'catalog:'
         version: 19.2.0(react@19.2.0)
-      spark-md5:
-        specifier: 'catalog:'
-        version: 3.0.2
       tailwind-merge:
         specifier: 'catalog:'
         version: 3.4.0
@@ -650,9 +671,6 @@ importers:
       '@types/react-dom':
         specifier: 'catalog:'
         version: 19.2.3(@types/react@19.2.5)
-      '@types/spark-md5':
-        specifier: 'catalog:'
-        version: 3.0.5
       '@vitejs/plugin-react':
         specifier: 'catalog:'
         version: 5.1.1(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
@@ -842,6 +860,9 @@ importers:
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
@@ -852,6 +873,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1012,9 +1036,15 @@ importers:
         specifier: 'catalog:'
         version: 3.982.0
     devDependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../models/common-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -1027,6 +1057,9 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/kafka-commons:
     dependencies:
@@ -1201,12 +1234,18 @@ importers:
 
   packages/test-commons:
     devDependencies:
+      '@aws-sdk/client-s3':
+        specifier: 'catalog:'
+        version: 3.982.0
       '@confluentinc/kafka-javascript':
         specifier: 'catalog:'
         version: 1.7.0
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../db/readmodel/eservice
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../models/eservice-models
@@ -1222,15 +1261,18 @@ importers:
       '@testcontainers/kafka':
         specifier: 'catalog:'
         version: 11.11.0
+      '@testcontainers/minio':
+        specifier: 'catalog:'
+        version: 11.11.0
+      '@testcontainers/postgresql':
+        specifier: 'catalog:'
+        version: 11.11.0
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      testcontainers:
-        specifier: 'catalog:'
-        version: 11.11.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1331,6 +1373,37 @@ importers:
       vite:
         specifier: 'catalog:'
         version: rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2)
+
+  tools/bruno-collection-generator:
+    dependencies:
+      '@usebruno/converters':
+        specifier: 'catalog:'
+        version: 0.2.0(yup@0.32.11)
+      '@usebruno/lang':
+        specifier: 'catalog:'
+        version: 0.24.0
+      js-yaml:
+        specifier: 'catalog:'
+        version: 4.1.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/js-yaml':
+        specifier: 'catalog:'
+        version: 4.0.9
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
 packages:
 
@@ -4041,6 +4114,12 @@ packages:
   '@testcontainers/kafka@11.11.0':
     resolution: {integrity: sha512-DGGoQL0wELifn1GHrfe4tW7ejYDIXNFHisx6wlgFzQ1xqaN8ppYlO658Fgg8B9+rcl0wY2rZF0oF0QFADKgqEg==}
 
+  '@testcontainers/minio@11.11.0':
+    resolution: {integrity: sha512-Ty9vR69W2tNPIlveAkNlvYXH0SmV4lVfEBj5l7+CsFNYlXmke+ove5e2HZb+4FOXT3pgnd/vGb45WWYw1+ixnQ==}
+
+  '@testcontainers/postgresql@11.11.0':
+    resolution: {integrity: sha512-Og64I/h5LKLVvUTkAcLeTXfFcMhh3dCHCypN3Uzd+tQMd70SpCfQ0LCP9v/U+MS7JBRzU9EmqhUFkTOm4hyZWw==}
+
   '@testing-library/dom@10.4.1':
     resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
     engines: {node: '>=18'}
@@ -4109,8 +4188,14 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
+  '@types/js-yaml@4.0.9':
+    resolution: {integrity: sha512-k4MGaQl5TGo/iipqb2UDG2UwjXziSWkh0uysQelTlJpX1qGlpUZYm8PnO4DxG1qBomtJUdYJ6qR6xdIah10JLg==}
+
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+
+  '@types/lodash@4.17.23':
+    resolution: {integrity: sha512-RDvF6wTulMPjrNdCoYRC8gNR880JNGT8uB+REUpC2Ns4pRqQJhGz90wh7rgdXDPpCczF3VGktDuFGVnz8zP7HA==}
 
   '@types/markdown-escape@1.1.3':
     resolution: {integrity: sha512-JIc1+s3y5ujKnt/+N+wq6s/QdL2qZ11fP79MijrVXsAAnzSxCbT2j/3prHRouJdZ2yFLN3vkP0HytfnoCczjOw==}
@@ -4137,9 +4222,6 @@ packages:
 
   '@types/sarif@2.1.7':
     resolution: {integrity: sha512-kRz0VEkJqWLf1LLVN4pT1cg1Z9wAuvI6L97V3m2f5B76Tg8d413ddvLBPTEHAZJlnn4XSvu0FkZtViCQGVyrXQ==}
-
-  '@types/spark-md5@3.0.5':
-    resolution: {integrity: sha512-lWf05dnD42DLVKQJZrDHtWFidcLrHuip01CtnC2/S6AMhX4t9ZlEUj4iuRlAnts0PQk7KESOqKxeGE/b6sIPGg==}
 
   '@types/ssh2-streams@0.1.13':
     resolution: {integrity: sha512-faHyY3brO9oLEA0QlcO8N2wT7R0+1sHWZvQ+y3rMLwdY1ZyS1z0W3t65j9PqT4HmQ6ALzNe7RZlNuCNE0wBSWA==}
@@ -4211,6 +4293,17 @@ packages:
   '@typescript-eslint/visitor-keys@8.50.0':
     resolution: {integrity: sha512-Xzmnb58+Db78gT/CCj/PVCvK+zxbnsw6F+O1oheYszJbBSdEjVhQi3C/Xttzxgi/GLmpvOggRs1RFpiJ8+c34Q==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@usebruno/converters@0.2.0':
+    resolution: {integrity: sha512-/ecThqZ6kdX+hLum1JKK7tr6jG3uP7e6NDGsuvF+9P24r7/V72nkifxli8CjkcRWwhNx5sxfwxtVMqooZ/wTMQ==}
+
+  '@usebruno/lang@0.24.0':
+    resolution: {integrity: sha512-Xy8zwAbIQyWbs8XjjU4Qnsner8fv7qIYAO91YZKSbBhnlkO0SbplQaT2J+kIDtewmSOMVvAP/lzC0hKzCQJ1GA==}
+
+  '@usebruno/schema@0.15.0':
+    resolution: {integrity: sha512-hxBQYsRlfE06i6iaUPZhC4+sHLYvVvwOznuZGyEA2U0rhhQuvti/mSDjCLrOId+aAP2HrJQEbUiWOrChmDBetw==}
+    peerDependencies:
+      yup: ^0.32.11
 
   '@vitejs/plugin-react@5.1.1':
     resolution: {integrity: sha512-WQfkSw0QbQ5aJ2CHYw23ZGkqnRwqKHD/KYsMeTkZzPT4Jcf0DcBxBtwMJxnu6E7oxw5+JC6ZAiePgh28uJ1HBA==}
@@ -4384,6 +4477,9 @@ packages:
   archiver@7.0.1:
     resolution: {integrity: sha512-ZcbTaIqJOfCc03QwD468Unz/5Ir8ATtvAHsK+FdXbDIbGfihqh9mrvdcYunQzqn4HrvWWaFyaxJhGZagaJJpPQ==}
     engines: {node: '>= 14'}
+
+  arcsecond@5.0.0:
+    resolution: {integrity: sha512-J/fHdyadnsIencRsM6oUSsraCKG+Ni9Udcgr/eusxjTzX3SEQtCUQSpP0YtImFPfIK6DdT1nqwN0ng4FqNmwgA==}
 
   are-we-there-yet@2.0.0:
     resolution: {integrity: sha512-Ci/qENmwHnsYo9xKIcUJN5LeDKdJ6R1Z1j9V/J5wyq8nh/mYPEpIKJbBZXtZjG04HiK7zV/p6Vs9952MrMeUIw==}
@@ -4865,6 +4961,10 @@ packages:
 
   dom-accessibility-api@0.6.3:
     resolution: {integrity: sha512-7ZgogeTnjuHbo+ct10G9Ffp0mif17idi0IyWNVA/wcwcm7NPOD/WEHVP3n7n3MhXqxoIYm8d6MuZohYWIZ4T3w==}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
 
   dotenv@17.2.3:
     resolution: {integrity: sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==}
@@ -5707,6 +5807,10 @@ packages:
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
+  js-yaml@4.1.0:
+    resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
+    hasBin: true
+
   js-yaml@4.1.1:
     resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
@@ -5932,6 +6036,9 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  lodash-es@4.17.23:
+    resolution: {integrity: sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==}
+
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
 
@@ -6061,8 +6168,16 @@ packages:
   nan@2.24.0:
     resolution: {integrity: sha512-Vpf9qnVW1RaDkoNKFUvfxqAbtI8ncb8OJlqZ9wwpXzWPEsvsB1nvdUi6oYrHIkQ1Y/tMDnr1h4nczS0VB9Xykg==}
 
+  nanoclone@0.2.1:
+    resolution: {integrity: sha512-wynEP02LmIbLpcYw8uBKpcfF6dmg2vcpKqxeH5UcoKEYdExslsdUA4ugFauuaeYdTB76ez6gJW8XAZ6CgkXYxA==}
+
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
+    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@3.3.8:
+    resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -6143,6 +6258,10 @@ packages:
 
   ohash@2.0.11:
     resolution: {integrity: sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==}
+
+  ohm-js@16.6.0:
+    resolution: {integrity: sha512-X9P4koSGa7swgVQ0gt71UCYtkAQGOjciJPJAz74kDxWt8nXbH5HrDOQG6qBDH7SR40ktNv4x61BwpTDE9q4lRA==}
+    engines: {node: '>=0.12.1'}
 
   on-exit-leak-free@2.1.2:
     resolution: {integrity: sha512-0eJJY6hXLGf1udHwfNftBqH+g73EU4B504nZeKpz1sYRKafAghwxEJunB2O7rDZkL4PGfsMVnTXZ2EjibbqcsA==}
@@ -6358,6 +6477,9 @@ packages:
   properties-reader@2.3.0:
     resolution: {integrity: sha512-z597WicA7nDZxK12kZqHr2TcvwNU1GCfA5UwfDY/HDp3hXPoPlb5rlEx9bwGTiJnc0OqbBTkU975jDToth8Gxw==}
     engines: {node: '>=14'}
+
+  property-expr@2.0.6:
+    resolution: {integrity: sha512-SVtmxhRE/CGkn3eZY1T6pC8Nln6Fr/lu1mKSgRud0eC73whjGfoAogbn78LkD8aFL0zz3bAFerKSnOl7NlErBA==}
 
   protobufjs@7.5.4:
     resolution: {integrity: sha512-CvexbZtbov6jW2eXAvLukXjXUW1TzFaivC46BpWc/3BpcCysb5Vffu+B3XHMm8lVEuy2Mm4XGex8hBSg1yapPg==}
@@ -6741,9 +6863,6 @@ packages:
     resolution: {integrity: sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==}
     deprecated: Please use @jridgewell/sourcemap-codec instead
 
-  spark-md5@3.0.2:
-    resolution: {integrity: sha512-wcFzz9cDfbuqe0FZzfi2or1sgyIrsDwmPwfZC4hiNidPdPINjeUwNfv5kldczoEAcjl9Y1L3SM7Uz2PUEQzxQw==}
-
   split-ca@1.0.1:
     resolution: {integrity: sha512-Q5thBSxp5t8WPTTJQS59LrGqOZqOsrhDGDVm8azCqIBjSBd7nd9o2PM+mDulQQkh8h//4U6hFZnc/mul8t5pWQ==}
 
@@ -6969,6 +7088,9 @@ packages:
   toidentifier@1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
+
+  toposort@2.0.2:
+    resolution: {integrity: sha512-0a5EOkAUp8D4moMi2W8ZF8jcga7BgZd91O/yabJCFY8az+XSzeGyTKs0Aoo897iV1Nj6guFq8orWDS96z91oGg==}
 
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
@@ -7317,6 +7439,10 @@ packages:
 
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
+    engines: {node: '>=10'}
+
+  yup@0.32.11:
+    resolution: {integrity: sha512-Z2Fe1bn+eLstG8DRR6FTavGD+MeAwyfmouhHsIUgaADz8jvFKbO/fXc2trJKZg+5EBjh4gGm3iU/t3onKlXHIg==}
     engines: {node: '>=10'}
 
   zip-stream@6.0.1:
@@ -10918,6 +11044,24 @@ snapshots:
       - react-native-b4a
       - supports-color
 
+  '@testcontainers/minio@11.11.0':
+    dependencies:
+      testcontainers: 11.11.0
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+      - supports-color
+
+  '@testcontainers/postgresql@11.11.0':
+    dependencies:
+      testcontainers: 11.11.0
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+      - supports-color
+
   '@testing-library/dom@10.4.1':
     dependencies:
       '@babel/code-frame': 7.28.6
@@ -11006,7 +11150,11 @@ snapshots:
 
   '@types/estree@1.0.8': {}
 
+  '@types/js-yaml@4.0.9': {}
+
   '@types/json-schema@7.0.15': {}
+
+  '@types/lodash@4.17.23': {}
 
   '@types/markdown-escape@1.1.3': {}
 
@@ -11035,8 +11183,6 @@ snapshots:
   '@types/resolve@1.20.6': {}
 
   '@types/sarif@2.1.7': {}
-
-  '@types/spark-md5@3.0.5': {}
 
   '@types/ssh2-streams@0.1.13':
     dependencies:
@@ -11182,6 +11328,27 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.50.0
       eslint-visitor-keys: 4.2.1
+
+  '@usebruno/converters@0.2.0(yup@0.32.11)':
+    dependencies:
+      '@usebruno/schema': 0.15.0(yup@0.32.11)
+      js-yaml: 4.1.1
+      lodash: 4.17.21
+      nanoid: 3.3.8
+    transitivePeerDependencies:
+      - yup
+
+  '@usebruno/lang@0.24.0':
+    dependencies:
+      arcsecond: 5.0.0
+      dotenv: 16.6.1
+      lodash: 4.17.21
+      ohm-js: 16.6.0
+
+  '@usebruno/schema@0.15.0(yup@0.32.11)':
+    dependencies:
+      nanoid: 3.3.8
+      yup: 0.32.11
 
   '@vitejs/plugin-react@5.1.1(rolldown-vite@7.2.5(@types/node@25.0.0)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))':
     dependencies:
@@ -11370,6 +11537,8 @@ snapshots:
     transitivePeerDependencies:
       - bare-abort-controller
       - react-native-b4a
+
+  arcsecond@5.0.0: {}
 
   are-we-there-yet@2.0.0:
     dependencies:
@@ -11848,6 +12017,8 @@ snapshots:
   dom-accessibility-api@0.5.16: {}
 
   dom-accessibility-api@0.6.3: {}
+
+  dotenv@16.6.1: {}
 
   dotenv@17.2.3: {}
 
@@ -12781,6 +12952,10 @@ snapshots:
 
   js-tokens@4.0.0: {}
 
+  js-yaml@4.1.0:
+    dependencies:
+      argparse: 2.0.1
+
   js-yaml@4.1.1:
     dependencies:
       argparse: 2.0.1
@@ -12972,6 +13147,8 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  lodash-es@4.17.23: {}
+
   lodash.camelcase@4.3.0: {}
 
   lodash.merge@4.6.2: {}
@@ -13070,7 +13247,11 @@ snapshots:
 
   nan@2.24.0: {}
 
+  nanoclone@0.2.1: {}
+
   nanoid@3.3.11: {}
+
+  nanoid@3.3.8: {}
 
   natural-compare@1.4.0: {}
 
@@ -13144,6 +13325,8 @@ snapshots:
   obug@2.1.1: {}
 
   ohash@2.0.11: {}
+
+  ohm-js@16.6.0: {}
 
   on-exit-leak-free@2.1.2: {}
 
@@ -13387,6 +13570,8 @@ snapshots:
   properties-reader@2.3.0:
     dependencies:
       mkdirp: 1.0.4
+
+  property-expr@2.0.6: {}
 
   protobufjs@7.5.4:
     dependencies:
@@ -13897,8 +14082,6 @@ snapshots:
 
   sourcemap-codec@1.4.8: {}
 
-  spark-md5@3.0.2: {}
-
   split-ca@1.0.1: {}
 
   split2@4.2.0: {}
@@ -14173,6 +14356,8 @@ snapshots:
   toad-cache@3.7.0: {}
 
   toidentifier@1.0.1: {}
+
+  toposort@2.0.2: {}
 
   tr46@0.0.3: {}
 
@@ -14508,6 +14693,16 @@ snapshots:
       yargs-parser: 21.1.1
 
   yocto-queue@0.1.0: {}
+
+  yup@0.32.11:
+    dependencies:
+      '@babel/runtime': 7.28.6
+      '@types/lodash': 4.17.23
+      lodash: 4.17.21
+      lodash-es: 4.17.23
+      nanoclone: 0.2.1
+      property-expr: 2.0.6
+      toposort: 2.0.2
 
   zip-stream@6.0.1:
     dependencies:
