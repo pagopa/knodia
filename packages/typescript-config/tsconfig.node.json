@@ -6,7 +6,12 @@
   ],
   "compilerOptions": {
     "noEmit": true, // typecheck only, we don't transpile into JS, we run TS directly with Node.js
-    "exactOptionalPropertyTypes": false,
-    "lib": ["ES2024", "DOM", "DOM.Iterable"]
+    "lib": [
+      "ES2024",
+      "DOM",
+      "DOM.Iterable"
+      // TODO ^ required for hey-api generated clients to compile.
+      // Drop after issue is fixed: https://github.com/hey-api/openapi-ts/issues/2539
+    ]
   }
 }

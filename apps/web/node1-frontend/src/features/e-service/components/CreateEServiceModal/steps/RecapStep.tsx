@@ -1,9 +1,16 @@
-import { Banner, Chip, CopyButton, Divider } from "@knodia/ui-kit/ui";
+import { getCategory } from "@knodia/category-models";
+import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
+import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
+import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
+import {
+  eserviceFormSchema,
+  type SchemeRef,
+} from "@/features/e-service/types/eserviceCreateForm";
 import { downloadFile } from "@/utils/downloadFile";
 
 import { AttributeGroupContainer } from "../../AttributeGroupContainer";
@@ -17,11 +24,11 @@ const KNODE_NAME = "Orion Knode";
 export function RecapStep() {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
-  const { md5Checksum } = useCalculateChecksum(data.interfaceDocument);
+  const { sha256Checksum } = useCalculateChecksum(data.interfaceDocument);
+  const { isError, isPending, publish } = usePublishEService();
 
-  const onPublish = () => {
-    console.log("Publishing form: ", data);
-  };
+  const onPublish = () =>
+    publish(eserviceFormSchema.parse(data), sha256Checksum);
 
   return (
     <>
@@ -50,7 +57,7 @@ export function RecapStep() {
 
         <DocumentsSection
           document={data.interfaceDocument}
-          md5Checksum={md5Checksum}
+          sha256Checksum={sha256Checksum}
         />
 
         <Divider />
@@ -63,8 +70,20 @@ export function RecapStep() {
         modified.
       </Banner>
 
+      {isError && (
+        <Banner kind="error">
+          <div className="flex flex-col gap-2">
+            <div className="title-sm-em text-error-light-high-contrast">
+              Something went wrong
+            </div>
+            Please try again. Don't refresh the page to avoid data loss.
+          </div>
+        </Banner>
+      )}
+
       <Footer
         confirmLabel="Publish"
+        isDisabled={isPending}
         onCancel={prevStep}
         onConfirm={onPublish}
       />
@@ -75,7 +94,7 @@ export function RecapStep() {
 function AttributesSection({
   requiredAttributes,
 }: {
-  requiredAttributes: undefined | { code: string }[][];
+  requiredAttributes: SchemeRef[][] | undefined;
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -93,24 +112,19 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
   return (
     <div>
       <div className="body-sm-em text-primary-light-high-contrast">
-        MD5 checksum
+        File checksum
       </div>
-      <div className="flex gap-4 items-end">
-        <span className="body-md text-primary-light-high-contrast flex-1">
-          {checksum}
-        </span>
-        <CopyButton textToCopy={checksum} />
-      </div>
+      <CopyableValueField value={checksum} />
     </div>
   );
 }
 
 function DocumentsSection({
   document,
-  md5Checksum,
+  sha256Checksum,
 }: {
   document: File | null | undefined;
-  md5Checksum: null | string;
+  sha256Checksum: string;
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -120,7 +134,7 @@ function DocumentsSection({
         onDownload={() => downloadFile(document)}
         showDownloadButton
       />
-      {md5Checksum && <ChecksumDisplay checksum={md5Checksum} />}
+      {sha256Checksum && <ChecksumDisplay checksum={sha256Checksum} />}
     </div>
   );
 }
@@ -145,7 +159,7 @@ function GeneralInfoSection({
   description,
   name,
 }: {
-  categories: string[] | undefined;
+  categories: SchemeRef[] | undefined;
   description: string | undefined;
   name: string | undefined;
 }) {
@@ -163,9 +177,12 @@ function GeneralInfoSection({
           <div className="flex gap-3">
             {categories.map((category) => (
               <Chip
-                key={category}
+                key={`${category.scheme}$${category.code}`}
                 kind="neutral"
-                label={category}
+                label={
+                  getCategory(category.scheme, category.code)?.name ??
+                  category.code
+                }
                 type="light"
               />
             ))}

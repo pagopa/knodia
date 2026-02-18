@@ -1,3 +1,5 @@
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+
 import {
   readmodelEservice,
   readmodelEserviceCategory,
@@ -5,16 +7,10 @@ import {
   readmodelEserviceVersion,
   readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
-import {
-  aggregateEservices,
-  toEservicesAggregator,
-} from "@knodia/db-readmodel-eservice/converters";
+import { aggregateEservices } from "@knodia/db-readmodel-eservice/converters";
 import { eq } from "drizzle-orm";
 
-import { readmodelDb } from "./setup.ts";
-
-// TODO: move to a shared location for tests
-export async function getAllEservices() {
+export async function getAllEservices(readmodelDb: NodePgDatabase) {
   const queryRes = await readmodelDb
     .select({
       category: readmodelEserviceCategory,
@@ -47,5 +43,5 @@ export async function getAllEservices() {
       ),
     );
 
-  return aggregateEservices(toEservicesAggregator(queryRes));
+  return aggregateEservices(queryRes);
 }

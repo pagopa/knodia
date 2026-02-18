@@ -1,4 +1,4 @@
-import { getEservicesOptions } from "@knodia/bff-client/tanstack-query";
+import { getProducerEservicesOptions } from "@knodia/bff-client/tanstack-query";
 import { Button, ButtonLink, Pagination } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -18,7 +18,7 @@ import {
 import { client } from "@/libs/axios";
 
 const eservicesQuery = (offset: number) =>
-  getEservicesOptions({
+  getProducerEservicesOptions({
     client,
     query: { limit: 10, offset },
   });
