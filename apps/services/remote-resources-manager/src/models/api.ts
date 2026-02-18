@@ -42,36 +42,33 @@ const API_EserviceVersionState = z
   .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
   .meta({ id: "EserviceVersionState" });
 
-const API_EserviceMode = z
-  .enum(["PROVIDE_DATA", "RECEIVE_DATA"])
-  .describe("Indicates if the E-Service is intended to provide or receive data")
-  .meta({ id: "EserviceMode" });
+const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
+  description:
+    "Indicates if the E-Service is intended to provide or receive data",
+  id: "EserviceMode",
+});
 
 const API_Attribute = z
   .strictObject({
     code: z.string().min(1),
     scheme: z.string().min(1),
   })
-  .describe("Identifies an Attribute standardized within Knodia")
-  .meta({ id: "Attribute" });
+  .meta({
+    description: "Identifies an Attribute standardized within Knodia",
+    id: "Attribute",
+  });
 
-const API_RequiredAttributeGroup = z
-  .array(API_Attribute)
-  .describe(
+const API_RequiredAttributeGroup = z.array(API_Attribute).meta({
+  description:
     "Described a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
-  )
-  .meta({
-    id: "RequiredAttributeGroup",
-  });
+  id: "RequiredAttributeGroup",
+});
 
-const API_RequiredAttributes = z
-  .array(API_RequiredAttributeGroup)
-  .describe(
+const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
+  description:
     "Describes the Attributes which a consumer must possess to request an Agreement for the E-Service (at least one Attribute for each Attribute Group)",
-  )
-  .meta({
-    id: "RequiredAttributes",
-  });
+  id: "RequiredAttributes",
+});
 
 const API_EserviceSearchResult = z
   .strictObject({
