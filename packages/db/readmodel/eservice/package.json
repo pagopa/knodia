@@ -6,8 +6,9 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "db:generate": "dotenvx run -- drizzle-kit generate --name=readmodel-eservice",
-    "db:migrate": "../../../../scripts/add-deferrable-to-drizzle-sql.sh eservice && dotenvx run -- drizzle-kit migrate"
+    "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
+    "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
+    "db:schema-normalize": "node ../../../../scripts/normalize-drizzle-output.ts"
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",

@@ -1,10 +1,7 @@
-import type {
-  LocalizedDescription,
-  LocalizedName,
-} from "@knodia/eservice-models";
 import type { InferSelectModel } from "drizzle-orm";
 
 import {
+  bigint,
   boolean,
   foreignKey,
   integer,
@@ -29,49 +26,23 @@ export const readmodelEservice = eserviceSchema.table(
     createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
       .defaultNow()
       .notNull(),
-    description: jsonb().$type<LocalizedDescription>().notNull(),
-    id: uuid().primaryKey(),
+    description: jsonb().notNull(),
+    id: uuid().primaryKey().notNull(),
     isConsumerOperatorIdentificationRequired: boolean(
       "is_consumer_operator_identification_required",
     ).notNull(),
     isSignalHubEnabled: boolean("is_signal_hub_enabled").notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     mode: text().notNull(),
-    name: jsonb().$type<LocalizedName>().notNull(),
+    name: jsonb().notNull(),
     producerId: uuid("producer_id").notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
     }).notNull(),
   },
-  (table) => [unique().on(table.id, table.metadataVersion)],
-);
-
-export const readmodelEserviceCategory = eserviceSchema.table(
-  "eservice_category",
-  {
-    code: text().notNull(),
-    eserviceId: uuid("eservice_id")
-      .notNull()
-      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
-    metadataVersion: integer("metadata_version").notNull(),
-    scheme: text().notNull(),
-  },
   (table) => [
-    foreignKey({
-      columns: [table.eserviceId, table.metadataVersion],
-      foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
-      name: "eservice_category_eservice_id_metadata_version_fkey",
-    }),
-    primaryKey({
-      columns: [
-        table.eserviceId,
-        table.metadataVersion,
-        table.scheme,
-        table.code,
-      ],
-      name: "eservice_category_pk",
-    }),
+    unique("eservice_id_metadata_v_unique").on(table.metadataVersion, table.id),
   ],
 );
 
@@ -84,17 +55,13 @@ export const readmodelEserviceInterface = eserviceSchema.table(
       mode: "date",
       withTimezone: true,
     }).notNull(),
-    eserviceId: uuid("eservice_id")
-      .notNull()
-      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
-    eserviceVersionId: uuid("eservice_version_id")
-      .notNull()
-      .references(() => readmodelEserviceVersion.id, { onDelete: "cascade" }),
-    id: uuid().primaryKey(),
-    metadataVersion: integer("metadata_version").notNull(),
+    eserviceId: uuid("eservice_id").notNull(),
+    eserviceVersionId: uuid("eservice_version_id").notNull(),
+    id: uuid().primaryKey().notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: text().notNull(),
     path: text().notNull(),
-    prettyName: jsonb("pretty_name").$type<LocalizedName>().notNull(),
+    prettyName: jsonb("pretty_name").notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
@@ -102,9 +69,19 @@ export const readmodelEserviceInterface = eserviceSchema.table(
   },
   (table) => [
     foreignKey({
+      columns: [table.eserviceId],
+      foreignColumns: [readmodelEservice.id],
+      name: "eservice_interface_eservice_id_eservice_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.eserviceVersionId],
+      foreignColumns: [readmodelEserviceVersion.id],
+      name: "eservice_interface_eservice_v_id_eservice_v_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
       foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
-      name: "eservice_interface_eservice_id_metadata_version_fkey",
+      name: "eservice_interface_eservice_id_metadata_v_fkey",
     }),
   ],
 );
@@ -119,14 +96,12 @@ export const readmodelEserviceVersion = eserviceSchema.table(
       mode: "date",
       withTimezone: true,
     }).notNull(),
-    eserviceId: uuid("eservice_id")
-      .notNull()
-      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
-    id: uuid().primaryKey(),
+    eserviceId: uuid("eservice_id").notNull(),
+    id: uuid().primaryKey().notNull(),
     maxDailyCallsPerConsumer: integer("max_daily_calls_per_consumer").notNull(),
     maxDailyCallsPerKnode: integer("max_daily_calls_per_knode").notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
-    state: text("state").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
+    state: text().notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
@@ -135,9 +110,45 @@ export const readmodelEserviceVersion = eserviceSchema.table(
   },
   (table) => [
     foreignKey({
+      columns: [table.eserviceId],
+      foreignColumns: [readmodelEservice.id],
+      name: "eservice_v_eservice_id_eservice_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
       foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
-      name: "eservice_version_eservice_id_metadata_version_fkey",
+      name: "eservice_v_eservice_id_metadata_v_fkey",
+    }),
+  ],
+);
+
+export const readmodelEserviceCategory = eserviceSchema.table(
+  "eservice_category",
+  {
+    code: text().notNull(),
+    eserviceId: uuid("eservice_id").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
+    scheme: text().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.eserviceId],
+      foreignColumns: [readmodelEservice.id],
+      name: "eservice_category_eservice_id_eservice_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.eserviceId, table.metadataVersion],
+      foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
+      name: "eservice_category_eservice_id_metadata_v_fkey",
+    }),
+    primaryKey({
+      columns: [
+        table.scheme,
+        table.metadataVersion,
+        table.eserviceId,
+        table.code,
+      ],
+      name: "eservice_category_pk",
     }),
   ],
 );
@@ -146,30 +157,36 @@ export const readmodelEserviceVersionRequiredAttribute = eserviceSchema.table(
   "eservice_version_required_attribute",
   {
     code: text().notNull(),
-    eserviceId: uuid("eservice_id")
-      .notNull()
-      .references(() => readmodelEservice.id, { onDelete: "cascade" }),
-    eserviceVersionId: uuid("eservice_version_id")
-      .notNull()
-      .references(() => readmodelEserviceVersion.id, { onDelete: "cascade" }),
+    eserviceId: uuid("eservice_id").notNull(),
+    eserviceVersionId: uuid("eservice_version_id").notNull(),
     groupId: integer("group_id").notNull(),
-    metadataVersion: integer("metadata_version").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     scheme: text().notNull(),
   },
   (table) => [
     foreignKey({
+      columns: [table.eserviceId],
+      foreignColumns: [readmodelEservice.id],
+      name: "eservice_v_req_attribute_eservice_id_eservice_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.eserviceVersionId],
+      foreignColumns: [readmodelEserviceVersion.id],
+      name: "eservice_v_req_attribute_eservice_v_id_eservice_v_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
       columns: [table.eserviceId, table.metadataVersion],
       foreignColumns: [readmodelEservice.id, readmodelEservice.metadataVersion],
-      name: "eservice_version_required_attribute_eservice_id_metadata_version_fkey",
+      name: "eservice_v_req_attribute_eservice_id_metadata_v_fkey",
     }),
     primaryKey({
       columns: [
-        table.eserviceVersionId,
-        table.groupId,
         table.scheme,
+        table.groupId,
+        table.eserviceVersionId,
         table.code,
       ],
-      name: "eservice_version_required_attribute_pk",
+      name: "eservice_v_req_attribute_pk",
     }),
   ],
 );

@@ -1,9 +1,11 @@
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { readdirSync, readFileSync, statSync } from "node:fs";
+import { join } from "node:path";
 
 const TEST_POSTGRES_DB_PORT = 5432;
 const TEST_POSTGRES_IMAGE = "postgres:18";
+const TEST_NAMESPACE = "test";
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
@@ -19,14 +21,18 @@ export async function createPostgresDatabaseFromTemplate(
 
 export async function createPostgresTemplateFromMigrations({
   connectionString,
-  migrationFolders,
+  migrationsRoot,
+  rolesMigrationFolder,
   templateName,
 }: {
   connectionString: string;
-  migrationFolders: string[];
+  migrationsRoot: string;
+  rolesMigrationFolder: string;
   templateName: string;
 }) {
   await withAdminDb(connectionString, async (adminDb) => {
+    await applyMigrations(rolesMigrationFolder, adminDb);
+
     const existsResult = await adminDb.execute(
       `SELECT 1 FROM pg_database WHERE datname = '${templateName}'`,
     );
@@ -43,7 +49,7 @@ export async function createPostgresTemplateFromMigrations({
     const templateDb = drizzle(connectionString + `/${templateName}`);
 
     try {
-      await applyMigrations(migrationFolders, templateDb);
+      await applyMigrations(migrationsRoot, templateDb);
     } finally {
       await templateDb.$client.end();
     }
@@ -78,11 +84,29 @@ export async function startTestPostgresContainer({
   };
 }
 
-async function applyMigrations(migrationFolders: string[], db: NodePgDatabase) {
-  for (const migration of migrationFolders) {
-    await migrate(db, {
-      migrationsFolder: migration,
-    });
+/**
+ * Applies SQL migrations from a folder: executes .sql files in the folder itself,
+ * then iterates subfolders (one per domain schema) if exist and executes their .sql files.
+ */
+async function applyMigrations(folder: string, db: NodePgDatabase) {
+  const entries = readdirSync(folder);
+
+  const sqlFiles = entries.filter((f) => f.endsWith(".sql")).sort();
+  for (const file of sqlFiles) {
+    const filePath = join(folder, file);
+    let sql = readFileSync(filePath, "utf-8");
+
+    sql = sql.replace(/\$\{NAMESPACE\}/g, TEST_NAMESPACE);
+
+    await db.execute(sql);
+  }
+
+  const subfolders = entries
+    .filter((entry) => statSync(join(folder, entry)).isDirectory())
+    .sort();
+
+  for (const subfolder of subfolders) {
+    await applyMigrations(join(folder, subfolder), db);
   }
 }
 
