@@ -1,38 +1,43 @@
-import { importPKCS8, SignJWT } from "jose";
-import { readFileSync, writeFileSync } from "node:fs";
-import { randomUUID } from "node:crypto";
+import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { createHash, randomUUID } from "node:crypto";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KEYS_DIR = resolve(__dirname, "../../docker/keys");
 
+const KMS_ENDPOINT = "http://localhost:4566";
+
 // Hardcoded user and organization IDs for local development
 const USER_ID = "00000000-0000-0000-0000-000000000001";
 const ORG_ID = "00000000-0000-0000-0000-000000000002";
 const ROLE = "role:administrative";
+const AUDIENCE = "local.knodia.test";
 
-const type = process.argv[2] ?? "cognito";
+const type = process.argv[2] ?? "session";
 
 if (type !== "cognito" && type !== "session") {
   console.error("Usage: node generate-token.mjs [cognito|session]");
   process.exit(1);
 }
 
-const privateKeyPath = resolve(KEYS_DIR, type, "private.pem");
+const kmsClient = new KMSClient({
+  endpoint: KMS_ENDPOINT,
+  region: "eu-south-1",
+  credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
+});
 
-let privateKeyPem;
-try {
-  privateKeyPem = readFileSync(privateKeyPath, "utf-8");
-} catch {
-  console.error(
-    `Private key not found at ${privateKeyPath}.\nRun 'pnpm infra:start' first to generate keys.`
-  );
-  process.exit(1);
-}
+// Base64url encode helper
+const b64url = (data) => Buffer.from(data).toString("base64url");
 
-const privateKey = await importPKCS8(privateKeyPem, "RS256");
+// Build JWT header
+const header = b64url(
+  JSON.stringify({ alg: "RS256", typ: "JWT", kid: `local-${type}-key` })
+);
 
+// Build JWT payload
+const now = Math.floor(Date.now() / 1000);
 const claims =
   type === "cognito"
     ? {
@@ -46,17 +51,37 @@ const claims =
         role: ROLE,
       };
 
-const token = await new SignJWT(claims)
-  .setProtectedHeader({ alg: "RS256", kid: `local-${type}-key` })
-  .setIssuedAt()
-  .setExpirationTime("1h")
-  .setJti(randomUUID())
-  .setIssuer(`local-${type}`)
-  .sign(privateKey);
+const payload = b64url(
+  JSON.stringify({
+    ...claims,
+    iat: now,
+    exp: now + 3600,
+    jti: randomUUID(),
+    iss: `local-${type}`,
+    aud: AUDIENCE,
+  })
+);
+
+// Sign with KMS using the alias directly
+const message = `${header}.${payload}`;
+const digest = createHash("sha256").update(message).digest();
+
+const { Signature } = await kmsClient.send(
+  new SignCommand({
+    KeyId: `alias/local-${type}-key`,
+    Message: digest,
+    MessageType: "DIGEST",
+    SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
+  })
+);
+
+const signature = Buffer.from(Signature).toString("base64url");
+const token = `${message}.${signature}`;
 
 console.log(`Generated ${type} token:`);
 console.log(token);
 
+mkdirSync(KEYS_DIR, { recursive: true });
 const tokenPath = resolve(KEYS_DIR, `${type}.token`);
 writeFileSync(tokenPath, token);
 console.log(`\nToken written to ${tokenPath}`);

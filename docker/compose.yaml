@@ -263,6 +263,43 @@ services:
       - event-store
       - readmodel
 
+  # Mock AWS KMS for local development (no seed file — keys created via API)
+  local-kms:
+    security_opt:
+      - no-new-privileges:true
+    image: nsmithuk/local-kms:3.11.7
+    container_name: knodia-local-kms
+    ports:
+      - 4566:8080
+    environment:
+      PORT: 8080
+      KMS_REGION: eu-south-1
+    volumes:
+      - local-kms-data:/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Creates KMS keys and writes JWKS files to shared volume
+  local-kms-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: node:24-alpine
+    container_name: knodia-local-kms-setup
+    depends_on:
+      local-kms:
+        condition: service_healthy
+    volumes:
+      - jwks-data:/jwks
+      - ../:/app:ro
+    working_dir: /app
+    environment:
+      KMS_ENDPOINT: http://local-kms:8080
+      JWKS_OUTPUT_DIR: /jwks
+    command: node scripts/local-kms/kms-setup.mjs
+
   # Serves JWKS endpoints for local token validation
   # - http://localhost:4500/cognito/.well-known/jwks.json
   # - http://localhost:4500/session/.well-known/jwks.json
@@ -274,7 +311,7 @@ services:
     ports:
       - 4500:80
     volumes:
-      - ./keys/jwks:/usr/share/nginx/html:ro
+      - jwks-data:/usr/share/nginx/html:ro
 
 volumes:
   event-store-data:
@@ -282,3 +319,5 @@ volumes:
   kafka-data:
   minio-data:
   pgadmin-data:
+  local-kms-data:
+  jwks-data:

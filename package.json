@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "jose": "catalog:",
+    "@aws-sdk/client-kms": "catalog:",
     "knip": "catalog:",
     "turbo": "catalog:",
     "vitest": "catalog:"
