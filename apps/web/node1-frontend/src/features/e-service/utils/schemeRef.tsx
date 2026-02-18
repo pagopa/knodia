@@ -6,6 +6,18 @@ import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
 
 const SEPARATOR = "$";
 
+/**
+ * Given a composite key (e.g. "birth-certificate$birth-place") and the source
+ * data, returns the human-readable label (e.g. "Birth place").
+ */
+export function getSchemeRefLabel(
+  data: Record<string, Record<string, string>>,
+  compositeKey: string,
+): string {
+  const [scheme = "", code = ""] = compositeKey.split(SEPARATOR);
+  return data[scheme]?.[code] ?? compositeKey;
+}
+
 export function parseSchemeRefKeys(keys: Key[]): SchemeRef[] {
   return keys.map((v) => {
     const key = String(v);
