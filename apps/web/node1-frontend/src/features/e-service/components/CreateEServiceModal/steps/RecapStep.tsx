@@ -5,7 +5,7 @@ import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
-import { useCalculateMD5 } from "@/features/e-service/hooks/useCalculateMD5";
+import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
 import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
 import {
   eserviceFormSchema,
@@ -24,10 +24,11 @@ const KNODE_NAME = "Orion Knode";
 export function RecapStep() {
   const { data } = useEServiceWizardContext();
   const { prevStep } = useStepsContext();
-  const { md5Checksum } = useCalculateMD5(data.interfaceDocument);
+  const { sha256Checksum } = useCalculateChecksum(data.interfaceDocument);
   const { isError, isPending, publish } = usePublishEService();
 
-  const onPublish = () => publish(eserviceFormSchema.parse(data));
+  const onPublish = () =>
+    publish(eserviceFormSchema.parse(data), sha256Checksum);
 
   return (
     <>
@@ -56,7 +57,7 @@ export function RecapStep() {
 
         <DocumentsSection
           document={data.interfaceDocument}
-          md5Checksum={md5Checksum}
+          sha256Checksum={sha256Checksum}
         />
 
         <Divider />
@@ -111,7 +112,7 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
   return (
     <div>
       <div className="body-sm-em text-primary-light-high-contrast">
-        MD5 checksum
+        File checksum
       </div>
       <CopyableValueField value={checksum} />
     </div>
@@ -120,10 +121,10 @@ function ChecksumDisplay({ checksum }: { checksum: string }) {
 
 function DocumentsSection({
   document,
-  md5Checksum,
+  sha256Checksum,
 }: {
   document: File | null | undefined;
-  md5Checksum: null | string;
+  sha256Checksum: string;
 }) {
   return (
     <div className="flex flex-col gap-6">
@@ -133,7 +134,7 @@ function DocumentsSection({
         onDownload={() => downloadFile(document)}
         showDownloadButton
       />
-      {md5Checksum && <ChecksumDisplay checksum={md5Checksum} />}
+      {sha256Checksum && <ChecksumDisplay checksum={sha256Checksum} />}
     </div>
   );
 }

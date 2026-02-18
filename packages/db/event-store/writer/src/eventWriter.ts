@@ -11,7 +11,7 @@ export interface NewEventStoreEvent<
   TStreamId extends EventStoreStreamIds,
 > {
   correlationId: CorrelationId;
-  currentMetadataVersion: bigint | undefined;
+  currentMetadataVersion: number | undefined;
   event: TEvent;
   streamId: TStreamId;
 }
@@ -32,17 +32,17 @@ export const computeNextMetadataVersion = <
   latestVersion,
   streamId,
 }: {
-  currentVersion: bigint | undefined;
-  latestVersion: bigint | undefined;
+  currentVersion: number | undefined;
+  latestVersion: number | undefined;
   streamId: TStreamId;
-}): bigint => {
+}): number => {
   if (latestVersion !== currentVersion) {
     throw new Error(
       `Current metadata version ${currentVersion} is not the latest for stream ${streamId} (latest is ${latestVersion})`,
     );
   }
 
-  return currentVersion !== undefined ? currentVersion + BigInt(1) : BigInt(0);
+  return currentVersion !== undefined ? currentVersion + 1 : 0;
 };
 
 export function eventStoreWriterBuilder<

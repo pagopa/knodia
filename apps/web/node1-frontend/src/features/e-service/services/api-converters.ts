@@ -9,13 +9,11 @@ import {
 
 export async function toEserviceSeed(
   data: EServiceFormData,
+  checksum: string,
 ): Promise<bffApi.EserviceSeed> {
   const { interfaceDocument } = data;
   const arrayBuffer = await interfaceDocument.arrayBuffer();
   const content = arrayBufferToBase64(arrayBuffer);
-
-  const sha256Buffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
-  const checksumBase64 = arrayBufferToBase64(sha256Buffer);
 
   return {
     accessTokenAudience: [data.accessTokenAudience],
@@ -24,7 +22,7 @@ export async function toEserviceSeed(
     categories: data.categories,
     description: { en: data.description },
     interfaceDocument: {
-      checksum: checksumBase64,
+      checksum,
       content,
       contentType: getContentType(interfaceDocument),
       name: interfaceDocument.name,

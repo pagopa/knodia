@@ -1,6 +1,7 @@
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   EserviceInterface,
+  LocalizedName,
   type RequiredAttribute,
   type RequiredAttributeGroup,
 } from "@knodia/eservice-models";
@@ -37,6 +38,6 @@ export const toEserviceVersionInterface = (
   id: unsafeBrandId(interfaceSQL.id),
   name: interfaceSQL.name,
   path: interfaceSQL.path,
-  prettyName: interfaceSQL.prettyName,
+  prettyName: LocalizedName.parse(interfaceSQL.prettyName),
   updatedAt: new Date(interfaceSQL.updatedAt),
 });
