@@ -9,10 +9,11 @@ const API_EserviceCategory = z
     code: z.string(),
     scheme: z.string(),
   })
-  .describe(
-    "Identifies a category of data, standardized within Knodia, which the E-Service provides or receives",
-  )
-  .meta({ id: "EserviceCategory" });
+  .meta({
+    description:
+      "Identifies a category of data, standardized within Knodia, which the E-Service provides or receives",
+    id: "EserviceCategory",
+  });
 
 const LocalizedText = z.strictObject({
   en: z.string(),
@@ -40,22 +41,24 @@ const API_EserviceSearchByCategory =
     knodeId: true,
   });
 
-export const API_EserviceSearchParams = z
+export const API_GetCatalogEserviceSearchParams = z
   .union([
     API_EserviceSearchByCategory,
     API_EserviceSearchByKeywords,
     API_EserviceSearchByKeywordsAndCategory,
   ])
-  .meta({ id: "EserviceSearchParams" });
-export type API_EserviceSearchParams = z.infer<typeof API_EserviceSearchParams>;
+  .meta({ id: "GetCatalogEserviceSearchParams" });
+export type API_GetCatalogEserviceSearchParams = z.infer<
+  typeof API_GetCatalogEserviceSearchParams
+>;
 
-export const API_EserviceSearchParamsWithoutKnodeId = z.union([
+export const API_GetEserviceSearchParamsWithoutKnodeId = z.union([
   API_EserviceSearchByCategory.omit({ knodeId: true }),
   API_EserviceSearchByKeywords.omit({ knodeId: true }),
   API_EserviceSearchByKeywordsAndCategory.omit({ knodeId: true }),
 ]);
-export type API_EserviceSearchParamsWithoutKnodeId = z.infer<
-  typeof API_EserviceSearchParamsWithoutKnodeId
+export type API_GetEserviceSearchParamsWithoutKnodeId = z.infer<
+  typeof API_GetEserviceSearchParamsWithoutKnodeId
 >;
 
 const API_EserviceVersionState = z
@@ -90,30 +93,40 @@ const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
   id: "RequiredAttributes",
 });
 
-const API_EserviceSearchResult = z
+const API_EserviceId = z.uuid().meta({
+  description: "Unique identifier of the E-Service",
+  id: "EserviceId",
+});
+
+const API_OrganizationId = z.uuid().meta({
+  description: "Unique identifier of the Organization",
+  id: "OrganizationId",
+});
+
+const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: LocalizedText,
-    id: z.uuid(),
+    id: API_EserviceId,
     latestVersionRequiredAttributes: API_RequiredAttributes,
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: LocalizedText,
-    producerId: z.uuid(),
+    producerId: API_OrganizationId,
   })
-  .meta({ id: "EserviceSearchResult" });
+  .meta({ id: "CatalogEserviceSearchResult" });
 
-export const API_EserviceSearchResults = z
+export const API_CatalogEserviceSearchResults = z
   .strictObject({
     pagination: API_Pagination,
-    results: z.array(API_EserviceSearchResult),
+    results: z.array(API_CatalogEserviceSearchResult),
   })
-  .meta({ id: "EserviceSearchResults" });
-export type API_EserviceSearchResults = z.infer<
-  typeof API_EserviceSearchResults
+  .meta({ id: "CatalogEserviceSearchResults" });
+export type API_CatalogEserviceSearchResults = z.infer<
+  typeof API_CatalogEserviceSearchResults
 >;
 
-export const API_SearchEservicesQueryParams = API_PaginationQueryParams;
-export type API_SearchEservicesQueryParams = z.infer<
-  typeof API_SearchEservicesQueryParams
+export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
+export type API_GetCatalogEservicesQueryParams = z.infer<
+  typeof API_GetCatalogEservicesQueryParams
 >;

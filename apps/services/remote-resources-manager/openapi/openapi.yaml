@@ -106,7 +106,7 @@ components:
       enum:
         - ORION
         - LYNX
-    EserviceSearchParams:
+    GetCatalogEserviceSearchParams:
       anyOf:
         - type: object
           properties:
@@ -182,7 +182,17 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/RequiredAttributeGroup"
-    EserviceSearchResult:
+    EserviceId:
+      description: Unique identifier of the E-Service
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    OrganizationId:
+      description: Unique identifier of the Organization
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CatalogEserviceSearchResult:
       type: object
       properties:
         categories:
@@ -198,9 +208,7 @@ components:
             - en
           additionalProperties: false
         id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          $ref: "#/components/schemas/EserviceId"
         latestVersionRequiredAttributes:
           $ref: "#/components/schemas/RequiredAttributes"
         latestVersionState:
@@ -216,9 +224,7 @@ components:
             - en
           additionalProperties: false
         producerId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          $ref: "#/components/schemas/OrganizationId"
       required:
         - categories
         - description
@@ -229,7 +235,7 @@ components:
         - name
         - producerId
       additionalProperties: false
-    EserviceSearchResults:
+    CatalogEserviceSearchResults:
       type: object
       properties:
         pagination:
@@ -237,7 +243,7 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/EserviceSearchResult"
+            $ref: "#/components/schemas/CatalogEserviceSearchResult"
       required:
         - pagination
         - results
@@ -260,7 +266,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /catalog:
     post:
-      operationId: searchEservices
+      operationId: getCatalogEservices
       summary: Search for E-Services
       tags:
         - k2k-gateway
@@ -270,7 +276,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EserviceSearchParams"
+              $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
         required: true
       parameters:
         - schema:
@@ -300,7 +306,7 @@ paths:
                 description: E-Service search results retrieved (sorted by most recently updated
                   first)
                 allOf:
-                  - $ref: "#/components/schemas/EserviceSearchResults"
+                  - $ref: "#/components/schemas/CatalogEserviceSearchResults"
         "400":
           description: Bad Request
           content:

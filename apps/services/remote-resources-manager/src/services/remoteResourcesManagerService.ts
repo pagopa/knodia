@@ -4,9 +4,9 @@ import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
-  API_EserviceSearchParamsWithoutKnodeId,
-  API_EserviceSearchResults,
-  API_SearchEservicesQueryParams,
+  API_CatalogEserviceSearchResults,
+  API_GetCatalogEservicesQueryParams,
+  API_GetEserviceSearchParamsWithoutKnodeId,
 } from "../models/api.ts";
 
 import { type K2K2GatewayApiClient } from "../clients/clientsProvider.ts";
@@ -19,15 +19,15 @@ export function remoteResourcesManagerServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
 ) {
   return {
-    async searchEservices({
+    async getCatalogEservices({
       correlationId,
       reqBody,
       reqQuery,
     }: {
       correlationId: CorrelationId;
-      reqBody: API_EserviceSearchParamsWithoutKnodeId;
-      reqQuery: API_SearchEservicesQueryParams;
-    }): Promise<API_EserviceSearchResults> {
+      reqBody: API_GetEserviceSearchParamsWithoutKnodeId;
+      reqQuery: API_GetCatalogEservicesQueryParams;
+    }): Promise<API_CatalogEserviceSearchResults> {
       const { data } = await k2kGatewayApi.getCatalogEservices({
         body: reqBody,
         client: k2kGatewayClient,
