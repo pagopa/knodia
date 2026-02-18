@@ -1,8 +1,11 @@
 import type z from "zod";
 
 import { SortDirection } from "@knodia/db-readmodel-commons/models";
-import { Eservice, EserviceMode } from "@knodia/eservice-models";
-import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import { Eservice } from "@knodia/eservice-models";
+import {
+  API_EserviceMode,
+  API_EserviceVersionState,
+} from "@knodia/eservice-models/api";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -77,7 +80,7 @@ describe("GET /eservices (getEservices)", () => {
       ] as Eservice[],
       query: {
         ...defaultQuery,
-        mode: EserviceMode.enum.ProvideData,
+        mode: API_EserviceMode.enum.PROVIDE_DATA,
         producerId,
       },
       testCase: "filter by mode",
@@ -94,8 +97,8 @@ describe("GET /eservices (getEservices)", () => {
         ...defaultQuery,
         producerId,
         state: [
-          API_EserviceVersionState.enum.Active,
-          API_EserviceVersionState.enum.Suspended,
+          API_EserviceVersionState.enum.ACTIVE,
+          API_EserviceVersionState.enum.SUSPENDED,
         ],
       },
       testCase: "filter by state",
@@ -121,12 +124,12 @@ describe("GET /eservices (getEservices)", () => {
       expectedResult: [mockEservices[1]] as Eservice[],
       query: {
         ...defaultQuery,
-        mode: EserviceMode.enum.ProvideData,
+        mode: API_EserviceMode.enum.PROVIDE_DATA,
         producerId,
         q: "KNODIA",
         sortBy: "name",
         sortOrder: SortDirection.enum.desc,
-        state: [API_EserviceVersionState.enum.Suspended],
+        state: [API_EserviceVersionState.enum.SUSPENDED],
       },
       testCase: "full query",
       totalCount: 1,
