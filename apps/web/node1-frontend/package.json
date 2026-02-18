@@ -28,7 +28,6 @@
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
-    "spark-md5": "catalog:",
     "tailwind-merge": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
@@ -41,7 +40,6 @@
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
-    "@types/spark-md5": "catalog:",
     "@vitejs/plugin-react": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
