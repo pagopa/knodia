@@ -1,13 +1,13 @@
-import { createKnodiaApiGatewayApiClient } from "@knodia/knodia-api-gateway-client";
+import { createK2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import { config } from "../config/config.ts";
 
-export type KnodiaApiGatewayClient = ReturnType<
-  typeof createKnodiaApiGatewayApiClient
+export type K2K2GatewayApiClient = ReturnType<
+  typeof createK2K2GatewayApiClient
 >;
 
-export function getKnodiaApiGatewayClient(): KnodiaApiGatewayClient {
-  return createKnodiaApiGatewayApiClient({
+export function getK2K2GatewayApiClient(): K2K2GatewayApiClient {
+  return createK2K2GatewayApiClient({
     baseURL: config.knodeUrl,
     throwOnError: true,
   });

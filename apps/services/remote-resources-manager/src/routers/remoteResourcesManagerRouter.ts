@@ -11,7 +11,7 @@ import {
   API_EserviceSearchResults,
   API_SearchEservicesQueryParams,
 } from "../models/api.ts";
-import { knodiaApiGatewayTag } from "../models/apiTags.ts";
+import { k2kGatewayTag } from "../models/apiTags.ts";
 
 interface RemoteResourcesManagerRouterOptions {
   remoteResourcesManagerService: RemoteResourcesManagerService;
@@ -51,8 +51,8 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         400: API_Problem.describe("Bad Request"),
       },
       summary: "Search for E-Services",
-      tags: [knodiaApiGatewayTag.name],
+      tags: [k2kGatewayTag.name],
     },
-    url: "/searchEservices",
+    url: "/catalog",
   });
 };

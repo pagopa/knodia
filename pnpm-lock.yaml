@@ -540,9 +540,9 @@ importers:
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
-      '@knodia/knodia-api-gateway-client':
+      '@knodia/k2k-gateway-client':
         specifier: workspace:*
-        version: link:../../../packages/clients/knodia-api-gateway
+        version: link:../../../packages/clients/k2k-gateway
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
@@ -734,7 +734,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/clients/knodia-api-gateway:
+  packages/clients/k2k-gateway:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
@@ -11333,7 +11333,7 @@ snapshots:
     dependencies:
       '@usebruno/schema': 0.15.0(yup@0.32.11)
       js-yaml: 4.1.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       nanoid: 3.3.8
     transitivePeerDependencies:
       - yup
@@ -11342,7 +11342,7 @@ snapshots:
     dependencies:
       arcsecond: 5.0.0
       dotenv: 16.6.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       ohm-js: 16.6.0
 
   '@usebruno/schema@0.15.0(yup@0.32.11)':
@@ -14698,7 +14698,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.6
       '@types/lodash': 4.17.23
-      lodash: 4.17.21
+      lodash: 4.17.23
       lodash-es: 4.17.23
       nanoclone: 0.2.1
       property-expr: 2.0.6
