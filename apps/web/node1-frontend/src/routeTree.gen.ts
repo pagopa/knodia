@@ -14,6 +14,7 @@ import { Route as KeychainsRouteImport } from './routes/keychains'
 import { Route as DetailsAndAttributesRouteImport } from './routes/details-and-attributes'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductionIndexRouteImport } from './routes/production/index'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as ConsumptionIndexRouteImport } from './routes/consumption/index'
 import { Route as ProductionPurposesRouteImport } from './routes/production/purposes'
 import { Route as ProductionAgreementsRouteImport } from './routes/production/agreements'
@@ -49,6 +50,11 @@ const IndexRoute = IndexRouteImport.update({
 const ProductionIndexRoute = ProductionIndexRouteImport.update({
   id: '/production/',
   path: '/production/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsumptionIndexRoute = ConsumptionIndexRouteImport.update({
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
+  '/login': typeof LoginIndexRoute
   '/production': typeof ProductionIndexRoute
   '/consumption/e-services/$id': typeof ConsumptionEServicesIdRoute
   '/consumption/e-services/search': typeof ConsumptionEServicesSearchRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByTo {
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
+  '/login': typeof LoginIndexRoute
   '/production': typeof ProductionIndexRoute
   '/consumption/e-services/$id': typeof ConsumptionEServicesIdRoute
   '/consumption/e-services/search': typeof ConsumptionEServicesSearchRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/production/agreements': typeof ProductionAgreementsRoute
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption/': typeof ConsumptionIndexRoute
+  '/login/': typeof LoginIndexRoute
   '/production/': typeof ProductionIndexRoute
   '/consumption/e-services_/$id': typeof ConsumptionEServicesIdRoute
   '/consumption/e-services_/search': typeof ConsumptionEServicesSearchRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
     | '/production/agreements'
     | '/production/purposes'
     | '/consumption'
+    | '/login'
     | '/production'
     | '/consumption/e-services/$id'
     | '/consumption/e-services/search'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/production/agreements'
     | '/production/purposes'
     | '/consumption'
+    | '/login'
     | '/production'
     | '/consumption/e-services/$id'
     | '/consumption/e-services/search'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/production/agreements'
     | '/production/purposes'
     | '/consumption/'
+    | '/login/'
     | '/production/'
     | '/consumption/e-services_/$id'
     | '/consumption/e-services_/search'
@@ -235,6 +247,7 @@ export interface RootRouteChildren {
   ProductionAgreementsRoute: typeof ProductionAgreementsRoute
   ProductionPurposesRoute: typeof ProductionPurposesRoute
   ConsumptionIndexRoute: typeof ConsumptionIndexRoute
+  LoginIndexRoute: typeof LoginIndexRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
   ConsumptionEServicesIdRoute: typeof ConsumptionEServicesIdRoute
   ConsumptionEServicesSearchRoute: typeof ConsumptionEServicesSearchRoute
@@ -276,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/production'
       fullPath: '/production'
       preLoaderRoute: typeof ProductionIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/consumption/': {
@@ -384,6 +404,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductionAgreementsRoute: ProductionAgreementsRoute,
   ProductionPurposesRoute: ProductionPurposesRoute,
   ConsumptionIndexRoute: ConsumptionIndexRoute,
+  LoginIndexRoute: LoginIndexRoute,
   ProductionIndexRoute: ProductionIndexRoute,
   ConsumptionEServicesIdRoute: ConsumptionEServicesIdRoute,
   ConsumptionEServicesSearchRoute: ConsumptionEServicesSearchRoute,

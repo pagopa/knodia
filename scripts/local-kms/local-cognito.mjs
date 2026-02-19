@@ -68,7 +68,15 @@ app.get("/login", async (req, res) => {
 
     console.log(`Generated token:`);
     console.log(token);
-    res.json({ token });
+
+    const returnUrl = req.query.return_url;
+    if (returnUrl) {
+      const redirectUrl = new URL(returnUrl);
+      redirectUrl.searchParams.set("token", token);
+      res.redirect(redirectUrl.toString());
+    } else {
+      res.json({ token });
+    }
   } catch (error) {
     res.status(500).json({ error });
   }

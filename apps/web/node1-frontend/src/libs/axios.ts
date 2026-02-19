@@ -3,6 +3,7 @@ import axios, { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
 import { config } from "@/config/config";
+import { getAuthToken } from "@/libs/auth";
 
 import { getAuthToken } from "./auth";
 

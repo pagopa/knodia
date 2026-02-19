@@ -16,10 +16,15 @@ import { z } from "zod";
 
 const FrontendNode1Config = z
   .object({
+    AUTH_URL: z.string().min(1, "AUTH_URL is required"),
     BFF_URL: z.string().min(1, "BFF_URL is required"),
+    SESSION_TOKEN: z.string().optional(),
+    // TODO ^ remove this token once we have a real local dev auth flow in place
   })
   .transform((c) => ({
+    authUrl: c.AUTH_URL,
     bffUrl: c.BFF_URL,
+    sessionToken: c.SESSION_TOKEN,
   }));
 
 const parsed = FrontendNode1Config.safeParse(window.env);
