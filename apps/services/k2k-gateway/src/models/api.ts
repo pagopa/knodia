@@ -20,11 +20,16 @@ const API_LocalizedText = z.strictObject({
 });
 
 const API_EserviceSearchByKeywords = z.strictObject({
-  keywords: z.string().min(1),
+  keywords: z
+    .string()
+    .min(1)
+    .meta({ description: "Search by name or description" }),
 });
 
 const API_EserviceSearchByCategory = z.strictObject({
-  category: API_EserviceCategory,
+  category: API_EserviceCategory.meta({
+    description: "Include only E-services belonging to the specified category",
+  }),
 });
 
 const API_EserviceSearchByKeywordsAndCategory =
@@ -42,15 +47,17 @@ type API_GetCatalogEserviceSearchParams = z.infer<
   typeof API_GetCatalogEserviceSearchParams
 >;
 
-const API_EserviceVersionState = z
+export const API_EserviceVersionState = z
   .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
   .meta({ id: "EserviceVersionState" });
+export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
 
-const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
+export const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
   description:
     "Indicates if the E-Service is intended to provide or receive data",
   id: "EserviceMode",
 });
+export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
 
 const API_Attribute = z
   .strictObject({
@@ -84,7 +91,7 @@ const API_OrganizationId = z.uuid().meta({
   id: "OrganizationId",
 });
 
-const API_CatalogEserviceSearchResult = z
+export const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedText,
@@ -96,6 +103,10 @@ const API_CatalogEserviceSearchResult = z
     producerId: API_OrganizationId,
   })
   .meta({ id: "CatalogEserviceSearchResult" });
+
+export type API_CatalogEserviceSearchResult = z.infer<
+  typeof API_CatalogEserviceSearchResult
+>;
 
 export const API_CatalogEserviceSearchResults = z
   .strictObject({

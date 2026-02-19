@@ -21,6 +21,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
@@ -28,6 +29,7 @@
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }

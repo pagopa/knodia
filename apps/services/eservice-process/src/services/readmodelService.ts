@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type {
   EserviceId,
   EserviceInterfaceId,
@@ -30,7 +31,11 @@ import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/s
 import { type Eservice, EserviceInterface } from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
-import type { API_GetEservicesQueryParams } from "../models/api.ts";
+import type {
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
+  API_GetEservicesQueryParams,
+} from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
@@ -54,6 +59,94 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       .as("latestVersion");
 
   return {
+    async getCatalogEservices(
+      body: API_GetCatalogEserviceSearchParams,
+      params: API_GetCatalogEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      const { limit, offset } = params;
+
+      const keywords = "keywords" in body ? body.keywords : undefined;
+      const category = "category" in body ? body.category : undefined;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const orderByFilters = createOrderByFilters({
+          sortBy: "updatedAt",
+          sortOrder: "asc",
+          table: readmodelEservice,
+        });
+
+        const latestEserviceVersion = latestVersionSubquery(
+          tx,
+          readmodelEservice.id,
+        );
+
+        const createFilterQuery = () =>
+          tx
+            .select({ eserviceId: readmodelEservice.id })
+            .from(readmodelEservice)
+            .leftJoin(
+              readmodelEserviceCategory,
+              eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+            )
+            .innerJoinLateral(latestEserviceVersion, sql`true`)
+            .where(
+              and(
+                category
+                  ? and(
+                      eq(readmodelEserviceCategory.code, category.code),
+                      eq(readmodelEserviceCategory.scheme, category.scheme),
+                    )
+                  : undefined,
+                keywords
+                  ? or(
+                      ilikeJsonB({
+                        column: readmodelEservice.name,
+                        value: keywords,
+                      }),
+                      ilikeJsonB({
+                        column: readmodelEservice.description,
+                        value: keywords,
+                      }),
+                    )
+                  : undefined,
+              ),
+            )
+            .groupBy(readmodelEservice.id)
+            .$dynamic();
+
+        const paginatedIds = createFilterQuery()
+          .orderBy(...orderByFilters)
+          .limit(limit)
+          .offset(offset)
+          .as("paginatedIds");
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select({
+              category: readmodelEserviceCategory,
+              eservice: readmodelEservice,
+            })
+            .from(readmodelEservice)
+            .innerJoin(
+              paginatedIds,
+              eq(readmodelEservice.id, paginatedIds.eserviceId),
+            )
+            .leftJoin(
+              readmodelEserviceCategory,
+              eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
+            )
+            .orderBy(...orderByFilters),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        const eservices = aggregateEservices(queryRes);
+
+        return {
+          results: eservices.map((e) => e.data),
+          totalCount,
+        };
+      });
+    },
     async getEservice(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<Eservice>> {

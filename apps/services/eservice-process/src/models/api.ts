@@ -235,3 +235,35 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
+
+const API_EserviceSearchByKeywords = z.strictObject({
+  keywords: z
+    .string()
+    .min(1)
+    .meta({ description: "Search by name or description" }),
+});
+
+const API_EserviceSearchByCategory = z.strictObject({
+  category: API_EserviceCategory.meta({
+    description: "Include only E-services belonging to the specified category",
+  }),
+});
+
+const API_EserviceSearchByKeywordsAndCategory =
+  API_EserviceSearchByKeywords.and(API_EserviceSearchByCategory);
+
+export const API_GetCatalogEserviceSearchParams = z
+  .union([
+    API_EserviceSearchByKeywords,
+    API_EserviceSearchByCategory,
+    API_EserviceSearchByKeywordsAndCategory,
+  ])
+  .meta({ id: "GetCatalogEserviceSearchParams" });
+export type API_GetCatalogEserviceSearchParams = z.infer<
+  typeof API_GetCatalogEserviceSearchParams
+>;
+
+export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
+export type API_GetCatalogEservicesQueryParams = z.infer<
+  typeof API_GetCatalogEservicesQueryParams
+>;

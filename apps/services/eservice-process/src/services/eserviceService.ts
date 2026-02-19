@@ -19,6 +19,8 @@ import {
 
 import type {
   API_EserviceSeed,
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -160,6 +162,12 @@ export function eserviceServiceBuilder(
       );
 
       return eservice;
+    },
+    async getCatalogEservices(
+      body: API_GetCatalogEserviceSearchParams,
+      params: API_GetCatalogEservicesQueryParams,
+    ): Promise<ListResult<Eservice>> {
+      return await readmodelService.getCatalogEservices(body, params);
     },
     async getEservice(eserviceId: EserviceId): Promise<Eservice> {
       return await retrieveEservice(eserviceId);

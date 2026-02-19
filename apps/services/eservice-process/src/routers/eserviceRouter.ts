@@ -17,6 +17,8 @@ import {
   API_EserviceSeed,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import {
@@ -163,5 +165,40 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { results, totalCount } = await eserviceService.getCatalogEservices(
+        req.body,
+        req.query,
+      );
+
+      res.status(200).send({
+        items: results.map(toAPI_Eservice),
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+      });
+    },
+    method: "POST",
+    schema: {
+      body: API_GetCatalogEserviceSearchParams,
+      description:
+        "Retrieve a list of E-services based on complex search criteria contained in the request body",
+      headers: processHeaders,
+      operationId: "getCatalogEservices",
+      querystring: API_GetCatalogEservicesQueryParams,
+      response: {
+        200: API_Eservices.meta({
+          description: "E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/catalog",
   });
 };

@@ -1,6 +1,12 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { requestContext } from "@fastify/request-context";
+import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import {
+  API_Problem,
+  CORRELATION_ID_HEADER,
+} from "@knodia/fastify-zod-api-commons/models";
 
 import type { EserviceProcessClient } from "../clients/clientsProvider.ts";
 
@@ -9,6 +15,7 @@ import {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
+import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverters.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -17,17 +24,44 @@ interface EserviceRouterOptions {
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
-> = async (fastify) => {
+> = async (fastify, { eserviceProcessClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      // TODO: Implement actual search logic calling eserviceProcessClient
-      res.send({
-        pagination: {
+      const { correlationId } = getContextValues(requestContext);
+
+      const headers = {
+        [CORRELATION_ID_HEADER]: correlationId,
+      };
+
+      const { data } = await eserviceProcessApi.getEservices({
+        client: eserviceProcessClient,
+        headers,
+        query: {
           limit: req.query.limit,
           offset: req.query.offset,
-          total: 0,
         },
-        results: [],
+      });
+
+      async function enrichWithLatestVersionAndMapToAPIResult(
+        eservice: eserviceProcessApi.Eservice,
+      ) {
+        const { data: latestVersion } =
+          await eserviceProcessApi.getEserviceLatestVersion({
+            client: eserviceProcessClient,
+            headers,
+            path: {
+              eserviceId: eservice.id,
+            },
+          });
+
+        return toAPI_CatalogEserviceSearchResult(eservice, latestVersion);
+      }
+
+      res.send({
+        pagination: data.pagination,
+        results: await Promise.all(
+          data.items.map(enrichWithLatestVersionAndMapToAPIResult),
+        ),
       });
     },
     method: "POST",
