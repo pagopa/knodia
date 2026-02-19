@@ -152,6 +152,16 @@ components:
       anyOf:
         - type: object
           properties:
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+            knodeId:
+              $ref: "#/components/schemas/KnodeId"
+          required:
+            - category
+            - knodeId
+          additionalProperties: false
+        - type: object
+          properties:
             keywords:
               type: string
               minLength: 1
@@ -159,16 +169,6 @@ components:
               $ref: "#/components/schemas/KnodeId"
           required:
             - keywords
-            - knodeId
-          additionalProperties: false
-        - type: object
-          properties:
-            category:
-              $ref: "#/components/schemas/EserviceCategory"
-            knodeId:
-              $ref: "#/components/schemas/KnodeId"
-          required:
-            - category
             - knodeId
           additionalProperties: false
         - type: object
