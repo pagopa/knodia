@@ -4,7 +4,7 @@ services:
   event-store:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:1090bc3a8ccfb0b55f78a494d76f8d603434f7e4553543d6e807bc7bd6bbd17f
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
     container_name: knodia-event-store
     ports:
       - 6001:5432
@@ -24,7 +24,7 @@ services:
   readmodel:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:1090bc3a8ccfb0b55f78a494d76f8d603434f7e4553543d6e807bc7bd6bbd17f
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
     container_name: knodia-readmodel
     ports:
       - 6002:5432
@@ -43,7 +43,7 @@ services:
   flyway-roles-event-store:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11
+    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
     container_name: knodia-flyway-roles-event-store
     command: migrate
     volumes:
@@ -64,7 +64,7 @@ services:
   flyway-roles-readmodel:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11
+    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
     container_name: knodia-flyway-roles-readmodel
     command: migrate
     volumes:
@@ -85,7 +85,7 @@ services:
   flyway-event-store:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11
+    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
     container_name: knodia-flyway-event-store
     entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
     volumes:
@@ -105,7 +105,7 @@ services:
   flyway-readmodel:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11
+    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
     container_name: knodia-flyway-readmodel
     entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
     volumes:
@@ -164,7 +164,7 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
-    image: quay.io/debezium/connect:3.4.1.Final
+    image: quay.io/debezium/connect:3.4.1.Final@sha256:3a6e0a30d37d560371a1d39fb788068b29d3dc47c38394b0ffea5bbe4c6f8e1d
     container_name: knodia-debezium-connect
     ports:
       - 8083:8083
@@ -247,7 +247,7 @@ services:
     security_opt:
       - no-new-privileges:true
     container_name: knodia-pgadmin
-    image: dpage/pgadmin4:9
+    image: dpage/pgadmin4:9@sha256:10137f33be7ed61e47f56004493710cb5b80ba7fb0ca01758855e242f1f284a7
     ports:
       - 5050:80
     environment:
@@ -263,9 +263,62 @@ services:
       - event-store
       - readmodel
 
+  # Mock AWS KMS for local development (no seed file — keys created via API)
+  local-kms:
+    security_opt:
+      - no-new-privileges:true
+    image: nsmithuk/local-kms:3.11.7
+    container_name: knodia-local-kms
+    ports:
+      - 4566:8080
+    environment:
+      PORT: 8080
+      KMS_REGION: eu-south-1
+    volumes:
+      - local-kms-data:/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Creates KMS keys and writes JWKS files to shared volume
+  local-kms-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: node:24-alpine
+    container_name: knodia-local-kms-setup
+    depends_on:
+      local-kms:
+        condition: service_healthy
+    volumes:
+      - jwks-data:/jwks
+      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../node_modules:/app/node_modules:ro
+    working_dir: /app
+    environment:
+      KMS_ENDPOINT: http://local-kms:8080
+      JWKS_OUTPUT_DIR: /jwks
+    command: node scripts/local-kms/kms-setup.mjs
+
+  # Serves JWKS endpoints for local token validation
+  # - http://localhost:4500/cognito/.well-known/jwks.json
+  # - http://localhost:4500/knodia/.well-known/jwks.json
+  local-jwks:
+    security_opt:
+      - no-new-privileges:true
+    image: nginx:1.28-alpine@sha256:15e96e59aa3b0aada3a121296e3bce117721f42d88f5f64217ef4b18f458c6ab
+    container_name: knodia-local-jwks
+    ports:
+      - 4500:80
+    volumes:
+      - jwks-data:/usr/share/nginx/html:ro
+
 volumes:
   event-store-data:
   readmodel-data:
   kafka-data:
   minio-data:
   pgadmin-data:
+  local-kms-data:
+  jwks-data:

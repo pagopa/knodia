@@ -68,17 +68,18 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_GetCatalogEserviceSearchParams,
       description:
-        "Search for E-Services according to search criteria and considering only E-Services with an active or suspended Version",
+        "Search for E-services according to search criteria and considering only E-services with an active or suspended Version",
       operationId: "getCatalogEservices",
       querystring: API_GetCatalogEservicesQueryParams,
       response: {
-        200: API_CatalogEserviceSearchResults.describe(
-          "E-Service search results retrieved (sorted by most recently updated first)",
-        ),
-        400: API_Problem.describe("Bad Request"),
+        200: API_CatalogEserviceSearchResults.meta({
+          description:
+            "E-service search results retrieved (sorted by most recently updated first)",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
-      summary: "Search for E-Services",
-      tags: [apiTags.operations],
+      summary: "Search for E-services",
+      tags: [apiTags.operation],
     },
     url: "/catalog",
   });
