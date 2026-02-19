@@ -36,5 +36,4 @@ export const client = createBffApiClient({
   headers: {
     "Content-Type": "application/json",
   },
-  throwOnError: true,
 });

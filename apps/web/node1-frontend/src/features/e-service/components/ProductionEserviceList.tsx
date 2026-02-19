@@ -1,5 +1,4 @@
-import type { Eservice } from "@knodia/bff-client";
-
+import { bffApi } from "@knodia/bff-client";
 import { Empty, Loader } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 
@@ -9,7 +8,7 @@ export function ProductionEserviceList({
   eservices,
   isLoading,
 }: {
-  eservices: Eservice[];
+  eservices: bffApi.ProducerEservice[];
   isLoading: boolean;
 }) {
   if (isLoading) {
