@@ -432,6 +432,40 @@ components:
         - name
         - requiredAttributes
       additionalProperties: false
+    GetCatalogEserviceSearchParams:
+      anyOf:
+        - type: object
+          properties:
+            keywords:
+              description: Search by name or description
+              type: string
+              minLength: 1
+          required:
+            - keywords
+          additionalProperties: false
+        - type: object
+          properties:
+            category:
+              description: Include only E-services belonging to the specified category
+              allOf:
+                - $ref: "#/components/schemas/EserviceCategory"
+          required:
+            - category
+          additionalProperties: false
+        - type: object
+          properties:
+            keywords:
+              description: Search by name or description
+              type: string
+              minLength: 1
+            category:
+              description: Include only E-services belonging to the specified category
+              allOf:
+                - $ref: "#/components/schemas/EserviceCategory"
+          required:
+            - keywords
+            - category
+          additionalProperties: false
 paths:
   /status:
     get:
@@ -724,6 +758,61 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /catalog:
+    post:
+      operationId: getCatalogEservices
+      tags:
+        - eservice
+      description: Retrieve a list of E-services based on complex search criteria
+        contained in the request body
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
+        required: true
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: E-services retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-services retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservices"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

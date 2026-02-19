@@ -249,8 +249,10 @@ const API_EserviceSearchByCategory = z.strictObject({
   }),
 });
 
-const API_EserviceSearchByKeywordsAndCategory =
-  API_EserviceSearchByKeywords.and(API_EserviceSearchByCategory);
+const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
+  ...API_EserviceSearchByKeywords.shape,
+  ...API_EserviceSearchByCategory.shape,
+});
 
 export const API_GetCatalogEserviceSearchParams = z
   .union([
