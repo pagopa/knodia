@@ -1,14 +1,12 @@
 import { requestContext } from "@fastify/request-context";
-import {
-  extractAuthData,
-  TokenClaims,
-} from "@knodia/common-models/tokenCodecs";
+import { TokenClaims } from "@knodia/common-models/tokenCodecs";
 import fastifyPlugin from "fastify-plugin";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
 import { unauthorizedError } from "../models/errors/errors.ts";
 import { healthRouterUrl } from "../routers/healthRouter.ts";
 import { docsRoutePrefix } from "../utils/openapi-zod-plugin/openapiZodPlugin.ts";
+import { extractAuthData } from "./authData.ts";
 
 interface AuthorizationMiddlewareOptions {
   acceptedAudiences: string[];

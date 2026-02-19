@@ -3,10 +3,11 @@ import type {
   RequestContextData,
 } from "@fastify/request-context";
 import type { CorrelationId } from "@knodia/common-models/ids";
-import type { AuthData } from "@knodia/common-models/tokenCodecs";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import Fastify from "fastify";
+
+import type { AuthData } from "../auth/authData.ts";
 
 // Documentation: https://github.com/fastify/fastify-request-context#typescript
 declare module "@fastify/request-context" {

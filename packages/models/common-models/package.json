@@ -18,7 +18,6 @@
     "./tokenCodecs": "./src/tokenCodecs.ts"
   },
   "dependencies": {
-    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
