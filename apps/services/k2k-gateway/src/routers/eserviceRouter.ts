@@ -38,11 +38,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       operationId: "getCatalogEservices",
       querystring: API_GetCatalogEservicesQueryParams,
       response: {
-        200: API_CatalogEserviceSearchResults.meta({
-          description:
-            "E-Service search results retrieved (sorted by most recently updated first)",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
+        200: API_CatalogEserviceSearchResults.describe(
+          "E-Service search results retrieved (sorted by most recently updated first)",
+        ),
+        400: API_Problem.describe("Bad Request"),
       },
       summary: "Search for E-Services",
       tags: [apiTags.operations],
