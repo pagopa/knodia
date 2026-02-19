@@ -43,7 +43,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_GetCatalogEserviceSearchParams,
       description:
-        "Search for E-Services according to search criteria and considering only E-Services with an active or suspended Version",
+        "Search for E-services according to search criteria and considering only E-services with an active or suspended Version",
       operationId: "getCatalogEservices",
       querystring: API_GetCatalogEservicesQueryParams,
       response: {
@@ -52,7 +52,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         ),
         400: API_Problem.describe("Bad Request"),
       },
-      summary: "Search for E-Services",
+      summary: "Search for E-services",
       tags: [apiTags.remoteResourcesManager],
     },
     url: "/catalog",
