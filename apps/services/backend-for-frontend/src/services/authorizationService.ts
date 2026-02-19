@@ -35,7 +35,7 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
     if (cognitoPublicKey) return cognitoPublicKey;
 
     const { PublicKey } = await kmsClient.send(
-      new GetPublicKeyCommand({ KeyId: config.cognitoKmsKeyId }),
+      new GetPublicKeyCommand({ KeyId: `alias/${config.cognitoKmsKeyId}` }),
     );
 
     if (!PublicKey) {
@@ -54,16 +54,20 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
   return {
     async generateSessionToken(claims: SessionClaims): Promise<string> {
       const header = b64url(
-        JSON.stringify({ alg: "RS256", kid: "local-session-key", typ: "JWT" }),
+        JSON.stringify({
+          alg: "RS256",
+          kid: config.knodiaKmsKeyId,
+          typ: "JWT",
+        }),
       );
 
       const now = Math.floor(Date.now() / 1000);
       const payload = b64url(
         JSON.stringify({
-          aud: config.tokenAudience,
+          aud: config.bffTokenAudience,
           exp: now + 3600,
           iat: now,
-          iss: "local-session",
+          iss: "local-knodia",
           jti: randomUUID(),
           organizationId: claims.organizationId,
           role: claims.roles,
@@ -76,7 +80,7 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
 
       const { Signature } = await kmsClient.send(
         new SignCommand({
-          KeyId: "alias/local-session-key",
+          KeyId: `alias/${config.knodiaKmsKeyId}`,
           Message: digest,
           MessageType: "DIGEST",
           SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
@@ -96,7 +100,7 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
 
       const { payload: rawPayload } = await jwtVerify(token, publicKey, {
         algorithms: ["RS256"],
-        audience: config.tokenAudience,
+        audience: config.bffTokenAudience,
       });
 
       const payload = CognitoPayload.parse(rawPayload);

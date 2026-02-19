@@ -8,7 +8,6 @@ const KMS_ENDPOINT = process.env.KMS_ENDPOINT ?? "http://localhost:4566";
 const USER_ID = "00000000-0000-0000-0000-000000000001";
 const ORG_ID = "00000000-0000-0000-0000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
-const AUDIENCE = "local.knodia.test";
 
 const app = express();
 
@@ -46,7 +45,7 @@ app.get("/login", async (req, res) => {
         exp: now + 3600,
         jti: randomUUID(),
         iss: `local-cognito`,
-        aud: AUDIENCE,
+        aud: "local.knodia.test/ui-session",
       }),
     );
 
