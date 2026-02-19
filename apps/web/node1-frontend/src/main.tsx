@@ -14,7 +14,10 @@ import ReactDOM from "react-dom/client";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 
+import { APP_BASE_PATH } from "./config/basepath";
+
 const router = createRouter({
+  basepath: APP_BASE_PATH,
   context: {
     queryClient,
   },

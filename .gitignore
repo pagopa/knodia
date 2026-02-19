@@ -14,6 +14,9 @@ generated/
 # MinIO container data
 docker/minio-data
 
+# Local KMS tokens
+docker/tokens/
+
 # Build outputs
 dist/
 storybook-static/
