@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 
 interface GenericInfoCardProps extends React.ComponentProps<"dl"> {
   children: React.ReactNode;
-  label: string;
+  label: React.ReactNode;
 }
 
 export function GenericInfoCard({
