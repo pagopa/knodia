@@ -2,7 +2,9 @@ import { generateId, OrganizationId } from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceCategory,
+  EserviceMode,
   EserviceVersion,
+  EserviceVersionState,
 } from "@knodia/eservice-models";
 import { zocker } from "zocker";
 
@@ -13,7 +15,7 @@ const zockerEservices = zocker(Eservice).setSeed(0).generateMany(10);
 export const mockEservices: Eservice[] = [
   {
     ...(zockerEservices[0] as Eservice),
-    mode: "PROVIDE_DATA",
+    mode: EserviceMode.enum.ProvideData,
     name: {
       en: "1 knodia 1",
     },
@@ -21,12 +23,12 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "SUSPENDED",
+        state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
@@ -36,7 +38,7 @@ export const mockEservices: Eservice[] = [
     description: {
       en: "2 knodia 2",
     },
-    mode: "PROVIDE_DATA",
+    mode: EserviceMode.enum.ProvideData,
     name: {
       en: "other name 1",
     },
@@ -44,19 +46,19 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "SUSPENDED",
+        state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
     ...(zockerEservices[2] as Eservice),
-    mode: "RECEIVE_DATA",
+    mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 2",
     },
@@ -64,12 +66,12 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "SUSPENDED",
+        state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
@@ -82,7 +84,7 @@ export const mockEservices: Eservice[] = [
         code: "3 knodia 3",
       },
     ],
-    mode: "RECEIVE_DATA",
+    mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 3",
     },
@@ -90,19 +92,19 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 2,
       },
     ],
   },
   {
     ...(zockerEservices[4] as Eservice),
-    mode: "PROVIDE_DATA",
+    mode: EserviceMode.enum.ProvideData,
     name: {
       en: "other name 4",
     },
@@ -110,19 +112,19 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "SUSPENDED",
+        state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
     ...(zockerEservices[5] as Eservice),
-    mode: "RECEIVE_DATA",
+    mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 5",
     },
@@ -130,19 +132,19 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ACTIVE",
+        state: EserviceVersionState.enum.Active,
         versionNumber: 2,
       },
     ],
   },
   {
     ...(zockerEservices[6] as Eservice),
-    mode: "RECEIVE_DATA",
+    mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 6",
     },
@@ -150,19 +152,19 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ACTIVE",
+        state: EserviceVersionState.enum.Active,
         versionNumber: 2,
       },
     ],
   },
   {
     ...(zockerEservices[7] as Eservice),
-    mode: "PROVIDE_DATA",
+    mode: EserviceMode.enum.ProvideData,
     name: {
       en: "other name 7",
     },
@@ -170,19 +172,19 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 2,
       },
     ],
   },
   {
     ...(zockerEservices[8] as Eservice),
-    mode: "RECEIVE_DATA",
+    mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 8",
     },
@@ -190,19 +192,19 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "SUSPENDED",
+        state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
     ...(zockerEservices[9] as Eservice),
-    mode: "RECEIVE_DATA",
+    mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 9",
     },
@@ -210,12 +212,12 @@ export const mockEservices: Eservice[] = [
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ARCHIVED",
+        state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
         ...zocker(EserviceVersion).generate(),
-        state: "ACTIVE",
+        state: EserviceVersionState.enum.Active,
         versionNumber: 2,
       },
     ],
