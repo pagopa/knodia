@@ -19,8 +19,8 @@
   ],
   "prConcurrentLimit": 4,
   "minimumReleaseAge": null,
-  "internalChecksFilter": "strict",
-  "prCreation": "not-pending",
+  "internalChecksFilter": "none",
+  "prCreation": "immediate",
   "lockFileMaintenance": {
     "enabled": true
   },
