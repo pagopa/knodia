@@ -1,9 +1,6 @@
-import { categories } from "@knodia/category-models";
+import type { bffApi } from "@knodia/bff-client";
 
-import type {
-  EserviceMode,
-  EserviceVersionState,
-} from "@/features/e-service/types";
+import { categories } from "@knodia/category-models";
 
 import { toSchemeRefOptions } from "@/features/e-service/utils/schemeRef";
 
@@ -13,13 +10,13 @@ export interface ConsumptionEserviceSearchResult {
   description: string;
   hasRequiredAttributes: boolean;
   id: string;
-  mode: EserviceMode;
+  mode: bffApi.EserviceMode;
   name: string;
   organization: {
     initials: string;
     name: string;
   };
-  state: EserviceVersionState;
+  state: bffApi.EserviceVersionState;
 }
 
 function catId(label: string): string {
