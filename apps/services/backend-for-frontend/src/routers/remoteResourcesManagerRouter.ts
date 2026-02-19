@@ -47,10 +47,11 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
       operationId: "getCatalogEservices",
       querystring: API_GetCatalogEservicesQueryParams,
       response: {
-        200: API_CatalogEserviceSearchResults.describe(
-          "E-Service search results retrieved (sorted by most recently updated first)",
-        ),
-        400: API_Problem.describe("Bad Request"),
+        200: API_CatalogEserviceSearchResults.meta({
+          description:
+            "E-service search results retrieved (sorted by most recently updated first)",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       summary: "Search for E-services",
       tags: [apiTags.remoteResourcesManager],
