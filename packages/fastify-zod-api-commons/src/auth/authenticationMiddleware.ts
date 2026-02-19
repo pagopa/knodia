@@ -8,13 +8,13 @@ import { healthRouterUrl } from "../routers/healthRouter.ts";
 import { docsRoutePrefix } from "../utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import { extractAuthData } from "./authData.ts";
 
-interface AuthorizationMiddlewareOptions {
+interface authenticationMiddlewareOptions {
   acceptedAudiences: string[];
   wellKnownUrls: string[];
 }
 
-export const authorizationMiddleware =
-  fastifyPlugin<AuthorizationMiddlewareOptions>(async (fastify, opts) => {
+export const authenticationMiddleware =
+  fastifyPlugin<authenticationMiddlewareOptions>(async (fastify, opts) => {
     const jwksSets = opts.wellKnownUrls.map((url) =>
       createRemoteJWKSet(new URL(url)),
     );

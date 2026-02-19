@@ -9,7 +9,7 @@
     "test": "vitest"
   },
   "exports": {
-    "./auth": "./src/auth/authorizationMiddleware.ts",
+    "./auth": "./src/auth/authenticationMiddleware.ts",
     "./config": "./src/config/config.ts",
     "./context": "./src/context/context.ts",
     "./fastify": "./src/utils/fastify.ts",

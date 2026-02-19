@@ -3,7 +3,7 @@ import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/eservice";
-import { authorizationMiddleware } from "@knodia/fastify-zod-api-commons/auth";
+import { authenticationMiddleware } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -53,7 +53,7 @@ export function buildApp({
     serviceName: serviceName.ESERVICE_PROCESS,
   });
 
-  app.register(authorizationMiddleware, config);
+  app.register(authenticationMiddleware, config);
   app.register(healthRouter);
   app.register(
     eserviceRouter,

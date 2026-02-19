@@ -1,7 +1,7 @@
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 
-import { authorizationMiddleware } from "@knodia/fastify-zod-api-commons/auth";
+import { authenticationMiddleware } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -47,7 +47,7 @@ function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
     serviceName: serviceName.BACKEND_FOR_FRONTEND,
   });
 
-  app.register(authorizationMiddleware, config);
+  app.register(authenticationMiddleware, config);
   app.register(healthRouter);
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
