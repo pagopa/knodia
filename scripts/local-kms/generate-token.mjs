@@ -12,8 +12,8 @@ const KMS_ENDPOINT = "http://localhost:4566";
 // Hardcoded configuration for local development
 const USER_ID = "00000000-0000-0000-0000-000000000001";
 const ORG_ID = "00000000-0000-0000-0000-000000000002";
-const ROLES = ["role:administrative", "role:technical"];
-const AUDIENCE = "local.knodia.test";
+const ROLES = ["administrative", "technical"];
+
 
 const type = process.argv[2] ?? "session";
 
@@ -21,6 +21,8 @@ if (type !== "cognito" && type !== "session") {
   console.error("Usage: node generate-token.mjs [cognito|session]");
   process.exit(1);
 }
+
+const AUDIENCE = "local.knodia.test/" + type;
 
 const kmsClient = new KMSClient({
   endpoint: KMS_ENDPOINT,
@@ -42,7 +44,7 @@ const claims =
   type === "cognito"
     ? {
         sub: USER_ID,
-        "cognito:groups": [...ROLES, `org:${ORG_ID}`],
+        "cognito:groups": [...ROLES.map((role) => `role:${role}`), `org:${ORG_ID}`],
         token_use: "access",
       }
     : {
