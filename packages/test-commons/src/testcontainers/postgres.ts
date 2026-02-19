@@ -36,13 +36,13 @@ export async function createPostgresDatabaseFromTemplate(
 }
 
 /**
+ * !!! Intended to be called once in global test setup !!!
+ *
  * Creates template databases and runs all Flyway migrations in a single container.
  * Handles role creation (cluster-wide, idempotent) and schema migrations for
  * each template. Each entry maps a template name to its migrations directory,
  * whose subdirectories become schemas (e.g. migration/event-store/eservice → test_eservice).
  * If the Postgres container is reused from a previous run, Flyway is incremental.
- *
- * !!! Intended to be called once in global test setup !!!
  */
 export async function runFlywayMigrations({
   connectionString,
