@@ -1,19 +1,17 @@
 import {
+  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
-import { LocalizedDescription, LocalizedName } from "@knodia/eservice-models";
 import {
   API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
   API_EserviceVersionState,
+  API_LocalizedDescription,
+  API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { z } from "zod";
-
-const API_KnodeId = z
-  .enum(["ORION", "LYNX"])
-  .meta({ description: "Unique Knode identifier", id: "KnodeId" });
 
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
@@ -56,12 +54,12 @@ export type API_GetEserviceSearchParamsWithoutKnodeId = z.infer<
 export const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
-    description: LocalizedDescription,
+    description: API_LocalizedDescription,
     id: z.uuid(),
     latestVersionRequiredAttributes: z.array(z.array(API_EserviceAttribute)),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
-    name: LocalizedName,
+    name: API_LocalizedName,
     producerId: z.uuid(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
