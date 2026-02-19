@@ -1,4 +1,4 @@
-import type { Eservice } from "@knodia/bff-client";
+import type { bffApi } from "@knodia/bff-client";
 
 import { Chip } from "@knodia/ui-kit/ui";
 import { CheckIcon } from "@phosphor-icons/react";
@@ -11,7 +11,11 @@ import {
   EserviceCardHeader,
 } from "./EserviceCard";
 
-export function ProductionEserviceCard({ eservice }: { eservice: Eservice }) {
+export function ProductionEserviceCard({
+  eservice,
+}: {
+  eservice: bffApi.ProducerEservice;
+}) {
   return (
     <EserviceCard>
       <EserviceCardHeader

@@ -1,8 +1,8 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { ButtonLink, Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
-
-import type { bffApi } from "@knodia/bff-client";
 
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
