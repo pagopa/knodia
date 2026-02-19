@@ -11,52 +11,85 @@ import {
 } from "@knodia/eservice-models/api";
 import { z } from "zod";
 
-const API_EserviceSearchByKeywords = z.strictObject({
-  keywords: z.string().min(1),
-});
+const API_KnodeId = z
+  .enum(["ORION", "LYNX"])
+  .meta({ description: "Unique Knode identifier", id: "KnodeId" });
 
-const API_EserviceSearchByCategory = z.strictObject({
+const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
+  keywords: z.string().min(1),
+  knodeId: API_KnodeId,
 });
 
-const API_EserviceSearchByKeywordsAndCategory =
-  API_EserviceSearchByKeywords.merge(API_EserviceSearchByCategory);
+const API_EserviceSearchByKeywords =
+  API_EserviceSearchByKeywordsAndCategory.pick({
+    category: true,
+    knodeId: true,
+  });
 
-export const API_EserviceSearchParams = z
+const API_EserviceSearchByCategory =
+  API_EserviceSearchByKeywordsAndCategory.pick({
+    keywords: true,
+    knodeId: true,
+  });
+
+export const API_GetCatalogEserviceSearchParams = z
   .union([
-    API_EserviceSearchByKeywords,
     API_EserviceSearchByCategory,
+    API_EserviceSearchByKeywords,
     API_EserviceSearchByKeywordsAndCategory,
   ])
-  .meta({ id: "EserviceSearchParams" });
-export type API_EserviceSearchParams = z.infer<typeof API_EserviceSearchParams>;
+  .meta({ id: "GetCatalogEserviceSearchParams" });
+export type API_GetCatalogEserviceSearchParams = z.infer<
+  typeof API_GetCatalogEserviceSearchParams
+>;
 
-const API_EserviceSearchResult = z
+const API_RequiredAttributeGroup = z.array(API_EserviceAttribute).meta({
+  description:
+    "Describes a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
+  id: "RequiredAttributeGroup",
+});
+
+const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
+  description:
+    "Describes the Attributes which a consumer must possess to request an Agreement for the E-Service (at least one Attribute for each Attribute Group)",
+  id: "RequiredAttributes",
+});
+
+const API_EserviceId = z.uuid().meta({
+  description: "Unique identifier of the E-Service",
+  id: "EserviceId",
+});
+
+const API_OrganizationId = z.uuid().meta({
+  description: "Unique identifier of the Organization",
+  id: "OrganizationId",
+});
+
+const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: LocalizedText,
-    id: z.uuid(),
-    latestVersionRequiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
-      .meta({ description: "Required attributes for the E-service" }),
+    id: API_EserviceId,
+    latestVersionRequiredAttributes: API_RequiredAttributes,
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: LocalizedText,
-    producerId: z.uuid(),
+    producerId: API_OrganizationId,
   })
-  .meta({ id: "EserviceSearchResult" });
+  .meta({ id: "CatalogEserviceSearchResult" });
 
-export const API_EserviceSearchResults = z
+export const API_CatalogEserviceSearchResults = z
   .strictObject({
     pagination: API_Pagination,
-    results: z.array(API_EserviceSearchResult),
+    results: z.array(API_CatalogEserviceSearchResult),
   })
-  .meta({ id: "EserviceSearchResults" });
-export type API_EserviceSearchResults = z.infer<
-  typeof API_EserviceSearchResults
+  .meta({ id: "CatalogEserviceSearchResults" });
+export type API_CatalogEserviceSearchResults = z.infer<
+  typeof API_CatalogEserviceSearchResults
 >;
 
-export const API_SearchEservicesQueryParams = API_PaginationQueryParams;
-export type API_SearchEservicesQueryParams = z.infer<
-  typeof API_SearchEservicesQueryParams
+export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
+export type API_GetCatalogEservicesQueryParams = z.infer<
+  typeof API_GetCatalogEservicesQueryParams
 >;

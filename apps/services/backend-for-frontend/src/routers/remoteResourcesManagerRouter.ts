@@ -12,9 +12,9 @@ import type { RemoteResourcesManagerClient } from "../clients/clientsProvider.ts
 
 import { apiTags } from "../models/apiTags.ts";
 import {
-  API_EserviceSearchParams,
-  API_EserviceSearchResults,
-  API_SearchEservicesQueryParams,
+  API_CatalogEserviceSearchResults,
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
 } from "../models/remoteResourcesManagerApi.ts";
 
 interface RemoteResourcesManagerRouterOptions {
@@ -28,7 +28,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
 
-      const { data } = await remoteResourcesManagerApi.searchEservices({
+      const { data } = await remoteResourcesManagerApi.getCatalogEservices({
         body: req.body,
         client: remoteResourcesManagerClient,
         headers: {
@@ -41,13 +41,13 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_EserviceSearchParams,
+      body: API_GetCatalogEserviceSearchParams,
       description:
         "Search for E-Services according to search criteria and considering only E-Services with an active or suspended Version",
-      operationId: "searchEservices",
-      querystring: API_SearchEservicesQueryParams,
+      operationId: "getCatalogEservices",
+      querystring: API_GetCatalogEservicesQueryParams,
       response: {
-        200: API_EserviceSearchResults.describe(
+        200: API_CatalogEserviceSearchResults.describe(
           "E-Service search results retrieved (sorted by most recently updated first)",
         ),
         400: API_Problem.describe("Bad Request"),
@@ -55,6 +55,6 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
       summary: "Search for E-Services",
       tags: [apiTags.remoteResourcesManager],
     },
-    url: "/searchEservices",
+    url: "/catalog",
   });
 };
