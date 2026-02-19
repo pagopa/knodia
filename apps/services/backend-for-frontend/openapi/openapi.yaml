@@ -635,6 +635,45 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /auth/session:
+    get:
+      operationId: createSession
+      tags:
+        - auth
+      description: Validate a Cognito token and generate a session token
+      responses:
+        "200":
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                description: Session created successfully
+                type: object
+                properties:
+                  organizationId:
+                    type: string
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                  sessionToken:
+                    type: string
+                  userId:
+                    type: string
+                required:
+                  - organizationId
+                  - roles
+                  - sessionToken
+                  - userId
+                additionalProperties: false
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice
@@ -880,5 +919,7 @@ servers:
 tags:
   - description: Health check routes
     name: health
+  - description: Authentication routes
+    name: auth
   - description: E-services routes
     name: eservice

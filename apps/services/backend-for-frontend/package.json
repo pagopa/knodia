@@ -20,6 +20,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "catalog:",
     "@dotenvx/dotenvx": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
@@ -30,6 +31,7 @@
     "@knodia/logger": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
     "fastify": "catalog:",
+    "jose": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
