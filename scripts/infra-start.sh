@@ -1,9 +1,7 @@
 #!/bin/bash
 
-# Start all Docker services
 docker compose -f docker/compose.yaml up -d --wait
 
-# Register Debezium connector
 CONNECTORS_URL="localhost:8083/connectors"
 
 echo "Waiting for Debezium to be available at $CONNECTORS_URL ..."
