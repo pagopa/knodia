@@ -246,7 +246,7 @@ describe("CreateEServiceModal — file upload", () => {
     await fillTechnicalStep(user);
 
     const yamlFile = new File(["openapi: 3.0.0"], "spec.yaml", {
-      type: "application/x-yaml",
+      type: "application/yaml",
     });
     const fileInput = document.querySelector("input[type='file']");
     expect(fileInput).toBeTruthy();
