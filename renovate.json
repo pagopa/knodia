@@ -18,7 +18,7 @@
     }
   ],
   "prConcurrentLimit": 4,
-  "minimumReleaseAge": "3 days",
+  "minimumReleaseAge": null,
   "internalChecksFilter": "none",
   "prCreation": "immediate",
   "lockFileMaintenance": {
