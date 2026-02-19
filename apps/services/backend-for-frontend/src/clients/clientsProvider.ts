@@ -14,7 +14,6 @@ export function getKnodiaClients(): KnodiaClients {
   return {
     eserviceProcessClient: createEserviceProcessApiClient({
       baseURL: config.eserviceProcessUrl,
-      throwOnError: true,
     }),
   };
 }

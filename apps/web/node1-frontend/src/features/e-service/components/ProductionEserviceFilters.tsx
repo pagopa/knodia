@@ -86,22 +86,21 @@ export function ProductionEserviceFilters({
           children={(field) => (
             <Select
               id={field.name}
-              items={statusOptions}
               label="Status"
               name={field.name}
               onBlur={field.handleBlur}
               onChange={(key) =>
                 field.handleChange(
-                  (key as (typeof statusOptions)[number]["id"]) ?? "all",
+                  statusOptions.find((o) => o.id === key)?.id ?? "all",
                 )
               }
               value={field.state.value}
             >
-              {(option) => (
+              {statusOptions.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
-              )}
+              ))}
             </Select>
           )}
           name="status"
@@ -111,22 +110,21 @@ export function ProductionEserviceFilters({
           children={(field) => (
             <Select
               id={field.name}
-              items={dataModeOptions}
               label="Data Mode"
               name={field.name}
               onBlur={field.handleBlur}
               onChange={(key) =>
                 field.handleChange(
-                  (key as (typeof dataModeOptions)[number]["id"]) ?? "all",
+                  dataModeOptions.find((o) => o.id === key)?.id ?? "all",
                 )
               }
               value={field.state.value}
             >
-              {(option) => (
+              {dataModeOptions.map((option) => (
                 <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
-              )}
+              ))}
             </Select>
           )}
           name="dataMode"
