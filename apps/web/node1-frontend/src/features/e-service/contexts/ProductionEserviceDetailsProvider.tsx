@@ -10,7 +10,7 @@ export function ProductionEserviceDetailsProvider({
   eservice: bffApi.ProducerEserviceDetails;
 }) {
   return (
-    <ProductionEserviceDetailsContext.Provider value={{ eservice }}>
+    <ProductionEserviceDetailsContext.Provider value={eservice}>
       {children}
     </ProductionEserviceDetailsContext.Provider>
   );

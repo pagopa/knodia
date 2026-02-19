@@ -1,8 +1,12 @@
+import { bffApi } from "@knodia/bff-client";
 import { Banner, Divider } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { SettingsCard } from "@/components/SettingCard";
+import { client } from "@/libs/axios";
+import { downloadFile } from "@/utils/downloadFile";
+import { formatNumber } from "@/utils/formatters";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { AttributeGroupContainer } from "../AttributeGroupContainer";
@@ -26,20 +30,30 @@ export function ProductionEServiceDetailsTab() {
 }
 
 function AccessTokenSettingsSection() {
+  const {
+    version: { accessTokenAudience, accessTokenDuration, accessTokenType },
+  } = useProductionEserviceDetailsContext();
+
   return (
     <Section title="Access token settings">
       <div className="grid grid-cols-3 gap-4">
-        <SettingsCard label="Duration">30 minutes</SettingsCard>
-        <SettingsCard label="Audience">
-          www.rigel.orion/residence/v1
+        <SettingsCard label="Duration">
+          {Math.floor(accessTokenDuration / 60)} minutes
         </SettingsCard>
-        <SettingsCard label="Type">Bearer</SettingsCard>
+        <SettingsCard label="Audience">
+          {accessTokenAudience.join(", ")}
+        </SettingsCard>
+        <SettingsCard label="Type">{accessTokenType}</SettingsCard>
       </div>
     </Section>
   );
 }
 
 function ConsumptionRequirementsSection() {
+  const {
+    version: { requiredAttributes },
+  } = useProductionEserviceDetailsContext();
+
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -48,30 +62,18 @@ function ConsumptionRequirementsSection() {
             Attributes
           </h3>
           <ul className="gap-2 flex flex-col" role="list">
-            <li>
-              <AttributeGroupContainer
-                attributes={[
-                  { code: "NUTS1", scheme: "vc_territorial_units" },
-                  { code: "NUTS2", scheme: "vc_territorial_units" },
-                ]}
-              />
-            </li>
-            <li>
-              <AttributeGroupContainer
-                attributes={[{ code: "NUTS3", scheme: "vc_territorial_units" }]}
-              />
-            </li>
-            <li>
-              <AttributeGroupContainer
-                attributes={[{ code: "NUTS4", scheme: "vc_territorial_units" }]}
-              />
-            </li>
+            {requiredAttributes.map((group, index) => (
+              <li key={index}>
+                <AttributeGroupContainer attributes={group} />
+              </li>
+            ))}
           </ul>
         </div>
         <div>
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Identification
           </h3>
+          {/** It depends on the Knode, this could be set with a env flag? */}
           <Banner kind="informative">Identification required</Banner>
         </div>
       </div>
@@ -80,44 +82,66 @@ function ConsumptionRequirementsSection() {
 }
 
 function DocumentsSection() {
+  const {
+    id,
+    version: { interfaceDocument },
+  } = useProductionEserviceDetailsContext();
+
+  async function downloadInterfaceDocument() {
+    const response = await bffApi.getEserviceLatestVersionInterface({
+      client,
+      path: { eserviceId: id },
+    });
+
+    const file = new File([response.data], interfaceDocument.prettyName.en, {
+      type: response.headers["content-type"],
+    });
+
+    downloadFile(file);
+  }
+
   return (
     <Section title="Documents">
-      <DocumentRecap name="Api Specs" showDownloadButton />
+      <DocumentRecap
+        name={interfaceDocument.prettyName.en}
+        onDownload={downloadInterfaceDocument}
+        showDownloadButton
+      />
       <CopyableValueField
         className="mt-6"
         label="Checksum:"
-        value="3f653f35f8311c870e209cc672dfc3698081eefe84cc40f1af5bd61db2c54287D"
+        value={interfaceDocument.checksum}
       />
     </Section>
   );
 }
 
 function MaxAPICallsPerDaySection() {
+  const { version } = useProductionEserviceDetailsContext();
+
   return (
     <Section title="Max API calls per day">
       <div className="grid grid-cols-2 gap-4">
-        <SettingsCard label="Per Knode">10.000</SettingsCard>
-        <SettingsCard label="Per Consumer">1.000</SettingsCard>
+        <SettingsCard label="Per Knode">
+          {formatNumber(version.maxDailyCallsPerKnode)}
+        </SettingsCard>
+        <SettingsCard label="Per Consumer">
+          {formatNumber(version.maxDailyCallsPerConsumer)}
+        </SettingsCard>
       </div>
     </Section>
   );
 }
 
 function SignalHubSection() {
-  const { eservice } = useProductionEserviceDetailsContext();
+  const { isSignalHubEnabled } = useProductionEserviceDetailsContext();
 
   return (
     <Section className="mb-6" title="Signal hub">
       <p className="body-lg text-primary-dark">
-        {match(eservice)
-          .with(
-            { isSignalHubEnabled: true },
-            () => "This E-Service is available on Signal Hub.",
-          )
-          .with(
-            { isSignalHubEnabled: false },
-            () => "This E-Service is not available on Signal Hub.",
-          )
+        {match(isSignalHubEnabled)
+          .with(true, () => "This E-Service is available on Signal Hub.")
+          .with(false, () => "This E-Service is not available on Signal Hub.")
           .exhaustive()}
       </p>
     </Section>

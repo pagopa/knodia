@@ -1,10 +1,10 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { Chip } from "@knodia/ui-kit/ui";
 import { ArrowsInIcon, ArrowsOutIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
-import type { EserviceMode } from "../types";
-
-export function EserviceModeChip({ mode }: { mode: EserviceMode }) {
+export function EserviceModeChip({ mode }: { mode: bffApi.EserviceMode }) {
   return match(mode)
     .with("ProvideData", () => (
       <Chip

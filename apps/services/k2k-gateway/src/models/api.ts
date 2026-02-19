@@ -9,12 +9,13 @@ const API_EserviceCategory = z
     code: z.string(),
     scheme: z.string(),
   })
-  .describe(
-    "Identifies a category of data, standardized within Knodia, which the E-Service provides or receives",
-  )
-  .meta({ id: "EserviceCategory" });
+  .meta({
+    description:
+      "Identifies a category of data, standardized within Knodia, which the E-Service provides or receives",
+    id: "EserviceCategory",
+  });
 
-const LocalizedText = z.strictObject({
+const API_LocalizedText = z.strictObject({
   en: z.string(),
 });
 
@@ -45,36 +46,33 @@ const API_EserviceVersionState = z
   .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
   .meta({ id: "EserviceVersionState" });
 
-const API_EserviceMode = z
-  .enum(["PROVIDE_DATA", "RECEIVE_DATA"])
-  .describe("Indicates if the E-Service is intended to provide or receive data")
-  .meta({ id: "EserviceMode" });
+const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
+  description:
+    "Indicates if the E-Service is intended to provide or receive data",
+  id: "EserviceMode",
+});
 
 const API_Attribute = z
   .strictObject({
     code: z.string().min(1),
     scheme: z.string().min(1),
   })
-  .describe("Identifies an Attribute standardized within Knodia")
-  .meta({ id: "Attribute" });
-
-const API_RequiredAttributeGroup = z
-  .array(API_Attribute)
-  .describe(
-    "Described a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
-  )
   .meta({
-    id: "RequiredAttributeGroup",
+    description: "Identifies an Attribute standardized within Knodia",
+    id: "Attribute",
   });
 
-const API_RequiredAttributes = z
-  .array(API_RequiredAttributeGroup)
-  .describe(
+const API_RequiredAttributeGroup = z.array(API_Attribute).meta({
+  description:
+    "Describes a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
+  id: "RequiredAttributeGroup",
+});
+
+const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
+  description:
     "Describes the Attributes which a consumer must possess to request an Agreement for the E-Service (at least one Attribute for each Attribute Group)",
-  )
-  .meta({
-    id: "RequiredAttributes",
-  });
+  id: "RequiredAttributes",
+});
 
 const API_EserviceId = z.uuid().meta({
   description: "Unique identifier of the E-Service",
@@ -89,12 +87,12 @@ const API_OrganizationId = z.uuid().meta({
 const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
-    description: LocalizedText,
+    description: API_LocalizedText,
     id: API_EserviceId,
     latestVersionRequiredAttributes: API_RequiredAttributes,
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
-    name: LocalizedText,
+    name: API_LocalizedText,
     producerId: API_OrganizationId,
   })
   .meta({ id: "CatalogEserviceSearchResult" });

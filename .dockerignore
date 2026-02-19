@@ -16,3 +16,4 @@
 **/tests
 **/*.test.ts
 **/*.test.tsx
+**/aws.config.local

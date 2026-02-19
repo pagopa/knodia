@@ -6,6 +6,7 @@ import {
   EserviceInterfaceId,
   generateId,
   OrganizationId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
@@ -100,7 +101,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const { correlationId } = getContextValues(requestContext);
 
       // TODO: get real producerId from auth context
-      const producerId = generateId<OrganizationId>();
+      const producerId = unsafeBrandId<OrganizationId>(
+        "00000000-0000-0000-0000-000000000000",
+      );
 
       // TODO: Implement sorting by activeAgreements/activePurposes.
       // Currently falls back to name sorting. Two options:
