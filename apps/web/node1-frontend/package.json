@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc -b",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "preview": "vite preview"
