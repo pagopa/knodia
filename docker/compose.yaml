@@ -368,7 +368,7 @@ services:
   local-cognito:
     security_opt:
       - no-new-privileges:true
-    image: node:24-alpine
+    image: node:24-alpine@sha256:d88d203cab4ee6fa4897d8286f3caea2e9cf48db77176042fca2f4ac4a4414ce
     container_name: knodia-local-cognito
     ports:
       - 4567:3000
@@ -381,6 +381,8 @@ services:
     depends_on:
       local-kms:
         condition: service_healthy
+      local-kms-setup:
+        condition: service_completed_successfully
     command: node scripts/local-kms/local-cognito.mjs
 
 volumes:

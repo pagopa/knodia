@@ -1,6 +1,6 @@
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
-import express from "express";
 import { createHash, randomUUID } from "node:crypto";
+import { createServer } from "node:http";
 
 const KMS_ENDPOINT = process.env.KMS_ENDPOINT ?? "http://localhost:4566";
 
@@ -9,9 +9,15 @@ const USER_ID = "00000000-0000-0000-0000-000000000001";
 const ORG_ID = "00000000-0000-0000-0000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
 
-const app = express();
+createServer(async (req, res) => {
+  const url = new URL(req.url, "http://localhost:3000");
 
-app.get("/login", async (req, res) => {
+  if (req.method !== "GET" || url.pathname !== "/login") {
+    res.writeHead(404);
+    res.end();
+    return;
+  }
+
   try {
     const kmsClient = new KMSClient({
       endpoint: KMS_ENDPOINT,
@@ -68,19 +74,20 @@ app.get("/login", async (req, res) => {
     console.log(`Generated token:`);
     console.log(token);
 
-    const returnUrl = req.query.return_url;
+    const returnUrl = url.searchParams.get("return_url");
     if (returnUrl) {
       const redirectUrl = new URL(returnUrl);
       redirectUrl.searchParams.set("token", token);
-      res.redirect(redirectUrl.toString());
+      res.writeHead(302, { Location: redirectUrl.toString() });
+      res.end();
     } else {
-      res.json({ token });
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ token }));
     }
   } catch (error) {
-    res.status(500).json({ error });
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ error: error.message }));
   }
-});
-
-app.listen(3000, () => {
+}).listen(3000, () => {
   console.log("Server started on port 3000");
 });
