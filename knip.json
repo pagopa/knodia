@@ -22,7 +22,7 @@
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/web/**/*": {
-      "ignore": ["src/routeTree.gen.ts"],
+      "ignore": ["src/routeTree.gen.ts", "public/**/*"],
       "ignoreDependencies": ["babel-plugin-react-compiler"]
     },
     "packages/ui-kit": {
