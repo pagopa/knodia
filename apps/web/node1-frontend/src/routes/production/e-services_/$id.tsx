@@ -70,7 +70,9 @@ function RouteComponent() {
 
       <PageHeader
         actions={<EServiceActions />}
-        resourceStatusChip={<EserviceStateChip state="Active" />}
+        resourceStatusChip={
+          <EserviceStateChip state={eservice.version.state} />
+        }
         title={eservice.name.en}
       >
         <CopyableValueField className="mt-3" label="ID" value={eservice.id} />

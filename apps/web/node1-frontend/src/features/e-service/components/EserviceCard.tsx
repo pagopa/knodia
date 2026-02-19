@@ -5,8 +5,6 @@ import { createLink } from "@tanstack/react-router";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 
-import type { EserviceMode, EserviceVersionState } from "../types";
-
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
 
@@ -51,8 +49,8 @@ function EserviceCardFooter({
   state,
 }: {
   children?: React.ReactNode;
-  mode: EserviceMode;
-  state: EserviceVersionState;
+  mode: bffApi.EserviceMode;
+  state: bffApi.EserviceVersionState;
 }) {
   return (
     <footer className="flex items-center">
