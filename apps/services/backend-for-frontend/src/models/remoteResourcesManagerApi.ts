@@ -11,7 +11,7 @@ import {
 } from "@knodia/eservice-models/api";
 import { z } from "zod";
 
-export const API_KnodeId = z
+const API_KnodeId = z
   .enum(["Orion", "Lynx"])
   .meta({ description: "Unique Knode identifier", id: "KnodeId" });
 
