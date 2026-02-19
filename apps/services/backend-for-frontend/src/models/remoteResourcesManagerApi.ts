@@ -44,38 +44,16 @@ export type API_GetCatalogEserviceSearchParams = z.infer<
   typeof API_GetCatalogEserviceSearchParams
 >;
 
-const API_RequiredAttributeGroup = z.array(API_EserviceAttribute).meta({
-  description:
-    "Describes a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
-  id: "RequiredAttributeGroup",
-});
-
-const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
-  description:
-    "Describes the Attributes which a consumer must possess to request an Agreement for the E-Service (at least one Attribute for each Attribute Group)",
-  id: "RequiredAttributes",
-});
-
-const API_EserviceId = z.uuid().meta({
-  description: "Unique identifier of the E-Service",
-  id: "EserviceId",
-});
-
-const API_OrganizationId = z.uuid().meta({
-  description: "Unique identifier of the Organization",
-  id: "OrganizationId",
-});
-
 const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: LocalizedDescription,
-    id: API_EserviceId,
-    latestVersionRequiredAttributes: API_RequiredAttributes,
+    id: z.uuid(),
+    latestVersionRequiredAttributes: z.array(z.array(API_EserviceAttribute)),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: LocalizedName,
-    producerId: API_OrganizationId,
+    producerId: z.uuid(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
 

@@ -10,7 +10,7 @@ import {
 } from "./eservice.ts";
 
 export const API_EserviceVersionState = z
-  .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
+  .enum(["Active", "Suspended", "Archived"])
   .meta({ id: "EserviceVersionState" });
 export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
 
@@ -46,7 +46,7 @@ export type API_LocalizedInterfacePrettyName = z.infer<
 >;
 
 export const API_EserviceMode = z
-  .enum(["PROVIDE_DATA", "RECEIVE_DATA"])
+  .enum(["ProvideData", "ReceiveData"])
   .meta({ id: "EserviceMode" });
 export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
 

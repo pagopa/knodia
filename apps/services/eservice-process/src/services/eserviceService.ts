@@ -115,7 +115,7 @@ export function eserviceServiceBuilder(
         isConsumerOperatorIdentificationRequired:
           seed.isConsumerOperatorIdentificationRequired ?? false,
         isSignalHubEnabled: seed.isSignalHubEnabled ?? false,
-        mode: seed.mode ?? "PROVIDE_DATA",
+        mode: seed.mode ?? "ProvideData",
         name: seed.name,
         producerId,
         updatedAt: now,
@@ -139,7 +139,7 @@ export function eserviceServiceBuilder(
             maxDailyCallsPerConsumer: seed.maxDailyCallsPerConsumer,
             maxDailyCallsPerKnode: seed.maxDailyCallsPerKnode,
             requiredAttributes: seed.requiredAttributes,
-            state: "ACTIVE",
+            state: "Active",
             updatedAt: now,
             versionNumber: 1,
           },

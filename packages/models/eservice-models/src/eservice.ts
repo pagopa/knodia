@@ -32,13 +32,13 @@ export type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 export const LocalizedName = LocalizedText(minNameLength, maxNameLength);
 export type LocalizedName = z.infer<typeof LocalizedName>;
 
-export const EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]);
+export const EserviceMode = z.enum(["ProvideData", "ReceiveData"]);
 export type EserviceMode = z.infer<typeof EserviceMode>;
 
 export const EserviceAccessTokenType = z.enum(["Bearer", "DPoP"]);
 export type EserviceAccessTokenType = z.infer<typeof EserviceAccessTokenType>;
 
-export const EserviceVersionState = z.enum(["ACTIVE", "SUSPENDED", "ARCHIVED"]);
+export const EserviceVersionState = z.enum(["Active", "Suspended", "Archived"]);
 export type EserviceVersionState = z.infer<typeof EserviceVersionState>;
 
 export const EserviceInterface = z.strictObject({

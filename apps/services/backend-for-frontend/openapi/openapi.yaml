@@ -69,9 +69,9 @@ components:
     EserviceVersionState:
       type: string
       enum:
-        - ACTIVE
-        - SUSPENDED
-        - ARCHIVED
+        - Active
+        - Suspended
+        - Archived
     LocalizedName:
       description: Name of the E-service
       type: object
@@ -108,8 +108,8 @@ components:
     EserviceMode:
       type: string
       enum:
-        - PROVIDE_DATA
-        - RECEIVE_DATA
+        - ProvideData
+        - ReceiveData
     EserviceCategory:
       type: object
       properties:
@@ -555,29 +555,6 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
-    RequiredAttributeGroup:
-      description: Describes a group of required Attributes (consumers must possess at
-        least one Attribute among them in order to satisfy the requirement)
-      type: array
-      items:
-        $ref: "#/components/schemas/EserviceAttribute"
-    RequiredAttributes:
-      description: Describes the Attributes which a consumer must possess to request
-        an Agreement for the E-Service (at least one Attribute for each
-        Attribute Group)
-      type: array
-      items:
-        $ref: "#/components/schemas/RequiredAttributeGroup"
-    EserviceId:
-      description: Unique identifier of the E-Service
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    OrganizationId:
-      description: Unique identifier of the Organization
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -596,9 +573,15 @@ components:
             - en
           additionalProperties: false
         id:
-          $ref: "#/components/schemas/EserviceId"
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         latestVersionRequiredAttributes:
-          $ref: "#/components/schemas/RequiredAttributes"
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
@@ -614,7 +597,9 @@ components:
             - en
           additionalProperties: false
         producerId:
-          $ref: "#/components/schemas/OrganizationId"
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - categories
         - description

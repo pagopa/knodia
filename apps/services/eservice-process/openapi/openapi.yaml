@@ -69,9 +69,9 @@ components:
     EserviceVersionState:
       type: string
       enum:
-        - ACTIVE
-        - SUSPENDED
-        - ARCHIVED
+        - Active
+        - Suspended
+        - Archived
     LocalizedName:
       description: Name of the E-service
       type: object
@@ -108,8 +108,8 @@ components:
     EserviceMode:
       type: string
       enum:
-        - PROVIDE_DATA
-        - RECEIVE_DATA
+        - ProvideData
+        - ReceiveData
     EserviceCategory:
       type: object
       properties:
