@@ -22,7 +22,6 @@ export function getKnodiaClients(): KnodiaClients {
     }),
     remoteResourcesManagerClient: createRemoteResourcesManagerApiClient({
       baseURL: config.remoteResourcesManagerUrl,
-      throwOnError: true,
     }),
   };
 }
