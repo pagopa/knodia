@@ -32,7 +32,7 @@ export async function setupReadmodelTestContainer() {
       new URL(`../../../migration/read-model`, import.meta.url),
     ),
     rolesMigrationFolder: fileURLToPath(
-      new URL(`../../../migration/test`, import.meta.url),
+      new URL(`../../../migration/roles`, import.meta.url),
     ),
     templateName: READMODEL_DB_TEMPLATE_NAME,
   });

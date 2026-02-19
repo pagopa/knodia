@@ -32,7 +32,7 @@ export async function setupEventstoreTestContainer() {
       new URL(`../../../migration/event-store`, import.meta.url),
     ),
     rolesMigrationFolder: fileURLToPath(
-      new URL(`../../../migration/test`, import.meta.url),
+      new URL(`../../../migration/roles`, import.meta.url),
     ),
     templateName: EVENTSTORE_DB_TEMPLATE_NAME,
   });
