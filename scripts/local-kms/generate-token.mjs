@@ -5,7 +5,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const KEYS_DIR = resolve(__dirname, "../../docker/tokens");
+const TOKENS_DIR = resolve(__dirname, "../../docker/tokens");
 
 const KMS_ENDPOINT = "http://localhost:4566";
 
@@ -52,7 +52,8 @@ const claims =
     : {
         sub: USER_ID,
         organizationId: ORG_ID,
-        role: ROLES,
+        roles: ROLES,
+        type,
       };
 
 const payload = b64url(
@@ -84,7 +85,15 @@ const token = `${message}.${signature}`;
 console.log(`Generated ${type} token:`);
 console.log(token);
 
-mkdirSync(KEYS_DIR, { recursive: true });
-const tokenPath = resolve(KEYS_DIR, `${type}.token`);
+mkdirSync(TOKENS_DIR, { recursive: true });
+const tokenPath = resolve(TOKENS_DIR, `${type}.token`);
 writeFileSync(tokenPath, token);
 console.log(`\nToken written to ${tokenPath}`);
+
+const COLLECTIONS_DIR = resolve(__dirname, "../../collections");
+const envPath = resolve(COLLECTIONS_DIR, ".env");
+const brunoEnvKey = type === "ui-session" ? "UI_SESSION_JWT" : null;
+if (brunoEnvKey) {
+  writeFileSync(envPath, `${brunoEnvKey}=${token}\n`);
+  console.log(`Bruno env written to ${envPath}`);
+}

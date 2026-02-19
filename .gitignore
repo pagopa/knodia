@@ -17,6 +17,9 @@ docker/minio-data
 # Local KMS tokens
 docker/tokens/
 
+# Bruno local env (contains generated JWTs)
+collections/.env
+
 # Build outputs
 dist/
 storybook-static/
