@@ -10,6 +10,7 @@ import type {
 } from "../models/api.ts";
 
 import { type K2K2GatewayApiClient } from "../clients/clientsProvider.ts";
+import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
 
 export type RemoteResourcesManagerService = ReturnType<
   typeof remoteResourcesManagerServiceBuilder
@@ -37,7 +38,10 @@ export function remoteResourcesManagerServiceBuilder(
         query: reqQuery,
       });
 
-      return data;
+      return {
+        pagination: data.pagination,
+        results: data.results.map(toAPI_CatalogEserviceSearchResult),
+      };
     },
   };
 }
