@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 
 import { config } from "@/config/config";
-import { setAuthToken } from "@/libs/auth";
+import { clearAuthToken, getAuthToken, setAuthToken } from "@/libs/auth";
 
 const loginSearchSchema = z.object({
   token: z.string().optional(),
@@ -19,6 +19,7 @@ export const Route = createFileRoute("/login/")({
 function LoginPage() {
   const navigate = useNavigate();
   const { token } = Route.useSearch();
+  const existingToken = getAuthToken();
 
   const { isError, isSuccess } = useQuery({
     enabled: !!token,
@@ -40,30 +41,42 @@ function LoginPage() {
       // TODO: navigate to home or profile
       // navigate({ replace: true, to: "/" });
     }
-  }, [isSuccess, token, navigate]);
+  }, [isSuccess, token]);
 
   const handleLogin = () => {
     const returnUrl = `${window.location.origin}/login`;
     window.location.href = `${config.authUrl}?return_url=${encodeURIComponent(returnUrl)}`;
   };
 
-  const showButton = isError || !token;
+  const handleLogout = () => {
+    clearAuthToken();
+    navigate({ replace: true, to: "/login" });
+  };
+
+  const isLoggedIn = (!!token && isSuccess) || !!existingToken;
+  const displayToken = isSuccess ? token : existingToken;
+  const showLoginButton = !isLoggedIn && (isError || !token);
 
   return (
     <div className="flex flex-col h-full items-center justify-center">
-      {token && (
-        <pre className="whitespace-pre-wrap break-all max-w-full">
-          <b>Session Token:</b>
-          <br />
-          {token}
-        </pre>
+      {isError ? (
+        <p>Invalid token</p>
+      ) : (
+        displayToken && (
+          <pre className="whitespace-pre-wrap break-all max-w-full">
+            <b>UI Session Token:</b>
+            <br />
+            {displayToken}
+          </pre>
+        )
       )}
-      {isError && <p>Invalid token</p>}
-      {showButton && (
+
+      {showLoginButton && (
         <Button onClick={handleLogin} type="button">
-          {isError ? "Retry Login" : "Login with SSO"}
+          {isError ? "Retry Login" : "Login"}
         </Button>
       )}
+      {isLoggedIn && <Button onClick={handleLogout}>Logout</Button>}
     </div>
   );
 }
