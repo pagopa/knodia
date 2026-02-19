@@ -87,9 +87,29 @@ components:
         - offset
         - total
       additionalProperties: false
+    EserviceVersionState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
+    EserviceMode:
+      type: string
+      enum:
+        - ProvideData
+        - ReceiveData
     EserviceCategory:
-      description: Identifies a category of data, standardized within Knodia, which
-        the E-Service provides or receives
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    EserviceAttribute:
       type: object
       properties:
         code:
@@ -143,55 +163,6 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
-    EserviceVersionState:
-      type: string
-      enum:
-        - ACTIVE
-        - SUSPENDED
-        - ARCHIVED
-    EserviceMode:
-      description: Indicates if the E-Service is intended to provide or receive data
-      type: string
-      enum:
-        - PROVIDE_DATA
-        - RECEIVE_DATA
-    Attribute:
-      description: Identifies an Attribute standardized within Knodia
-      type: object
-      properties:
-        code:
-          type: string
-          minLength: 1
-        scheme:
-          type: string
-          minLength: 1
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    RequiredAttributeGroup:
-      description: Describes a group of required Attributes (consumers must possess at
-        least one Attribute among them in order to satisfy the requirement)
-      type: array
-      items:
-        $ref: "#/components/schemas/Attribute"
-    RequiredAttributes:
-      description: Describes the Attributes which a consumer must possess to request
-        an Agreement for the E-Service (at least one Attribute for each
-        Attribute Group)
-      type: array
-      items:
-        $ref: "#/components/schemas/RequiredAttributeGroup"
-    EserviceId:
-      description: Unique identifier of the E-Service
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    OrganizationId:
-      description: Unique identifier of the Organization
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -204,13 +175,21 @@ components:
           properties:
             en:
               type: string
+              minLength: 10
+              maxLength: 250
           required:
             - en
           additionalProperties: false
         id:
-          $ref: "#/components/schemas/EserviceId"
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         latestVersionRequiredAttributes:
-          $ref: "#/components/schemas/RequiredAttributes"
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
@@ -220,11 +199,15 @@ components:
           properties:
             en:
               type: string
+              minLength: 5
+              maxLength: 60
           required:
             - en
           additionalProperties: false
         producerId:
-          $ref: "#/components/schemas/OrganizationId"
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - categories
         - description
