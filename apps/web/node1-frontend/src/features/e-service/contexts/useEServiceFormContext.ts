@@ -8,7 +8,6 @@ import { createContext, useContext } from "react";
 import type {
   AttributesStepData,
   DocsStepData,
-  EServiceFormData,
   GeneralStepData,
   TechnicalStepData,
 } from "@/features/e-service/types/eserviceCreateForm";
@@ -19,6 +18,7 @@ import {
   DOCS_STEP_DEFAULTS,
   docsStepSchema,
   ESERVICE_FORM_DEFAULTS,
+  type EServiceFormDraftData,
   GENERAL_STEP_DEFAULTS,
   generalStepSchema,
   TECHNICAL_STEP_DEFAULTS,
@@ -27,7 +27,7 @@ import {
 
 // Wizard context for accumulated data
 export interface EServiceWizardContextValue {
-  data: Partial<EServiceFormData>;
+  data: EServiceFormDraftData;
   updateAttributesStep: (data: AttributesStepData) => void;
   updateDocsStep: (data: DocsStepData) => void;
   updateGeneralStep: (data: GeneralStepData) => void;
@@ -76,7 +76,9 @@ export function useDocsStepForm(onSubmitSuccess: () => void) {
         data.interfaceDocument ?? DOCS_STEP_DEFAULTS.interfaceDocument,
     },
     onSubmit: ({ value }) => {
-      updateDocsStep(value);
+      // Already validated by onDynamic, re-parse only to narrow File | null → File
+      const parsedValue = docsStepSchema.parse(value);
+      updateDocsStep(parsedValue);
       onSubmitSuccess();
     },
     validationLogic: revalidateLogic(),

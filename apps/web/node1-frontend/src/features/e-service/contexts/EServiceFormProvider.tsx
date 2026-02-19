@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import type {
   AttributesStepData,
   DocsStepData,
-  EServiceFormData,
+  EServiceFormDraftData,
   GeneralStepData,
   TechnicalStepData,
 } from "@/features/e-service/types/eserviceCreateForm";
@@ -19,7 +19,7 @@ export function EServiceFormProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [data, setData] = useState<Partial<EServiceFormData>>(
+  const [data, setData] = useState<EServiceFormDraftData>(
     ESERVICE_FORM_DEFAULTS,
   );
 

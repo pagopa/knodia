@@ -1,0 +1,24 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Event Store",
+      "Group": "Knodia",
+      "Host": "event-store",
+      "Port": 5432,
+      "MaintenanceDB": "root",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    },
+    "2": {
+      "Name": "Read Model",
+      "Group": "Knodia",
+      "Host": "readmodel",
+      "Port": 5432,
+      "MaintenanceDB": "root",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    }
+  }
+}

@@ -7,9 +7,9 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
-import { getKnodiaApiGatewayClient } from "./clients/clientsProvider.ts";
+import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { type RemoteResourcesManagerConfig } from "./config/config.ts";
-import { knodiaApiGatewayTag } from "./models/apiTags.ts";
+import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
 import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
@@ -23,7 +23,7 @@ export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
 }
 
 function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
-  const knodiaApiGatewayClient = getKnodiaApiGatewayClient();
+  const k2kGatewayClient = getK2K2GatewayApiClient();
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -33,7 +33,13 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
           version: "1.0.0",
         },
         servers: [{ description: "Remote Resources Manager API", url: "/" }],
-        tags: [healthRouterTag, knodiaApiGatewayTag],
+        tags: [
+          healthRouterTag,
+          {
+            description: "K2K Gateway routes",
+            name: apiTags.k2kGateway,
+          },
+        ],
       },
     },
     loggerConfig: loggerConfig,
@@ -43,9 +49,8 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
 
   app.register(healthRouter);
   app.register(remoteResourcesManagerRouter, {
-    remoteResourcesManagerService: remoteResourcesManagerServiceBuilder(
-      knodiaApiGatewayClient,
-    ),
+    remoteResourcesManagerService:
+      remoteResourcesManagerServiceBuilder(k2kGatewayClient),
   });
 
   return app;

@@ -1,38 +1,37 @@
 import type { RequestContextData } from "@fastify/request-context";
+import type { CorrelationId } from "@knodia/common-models/ids";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
-import { knodiaApiGatewayApi } from "@knodia/knodia-api-gateway-client";
+import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import type {
-  API_EserviceSearchParams,
-  API_EserviceSearchResults,
-  API_SearchEservicesQueryParams,
+  API_CatalogEserviceSearchResults,
+  API_GetCatalogEservicesQueryParams,
+  API_GetEserviceSearchParamsWithoutKnodeId,
 } from "../models/api.ts";
 
-import { type KnodiaApiGatewayClient } from "../clients/clientsProvider.ts";
+import { type K2K2GatewayApiClient } from "../clients/clientsProvider.ts";
 
 export type RemoteResourcesManagerService = ReturnType<
   typeof remoteResourcesManagerServiceBuilder
 >;
 
 export function remoteResourcesManagerServiceBuilder(
-  knodiaApiGatewayClient: KnodiaApiGatewayClient,
+  k2kGatewayClient: K2K2GatewayApiClient,
 ) {
   return {
-    async searchEservices({
-      ctx,
+    async getCatalogEservices({
+      correlationId,
       reqBody,
       reqQuery,
     }: {
-      ctx: RequestContextData;
-      reqBody: API_EserviceSearchParams;
-      reqQuery: API_SearchEservicesQueryParams;
-    }): Promise<API_EserviceSearchResults> {
-      const { correlationId } = ctx;
-
-      const { data } = await knodiaApiGatewayApi.searchEservices({
+      correlationId: CorrelationId;
+      reqBody: API_GetEserviceSearchParamsWithoutKnodeId;
+      reqQuery: API_GetCatalogEservicesQueryParams;
+    }): Promise<API_CatalogEserviceSearchResults> {
+      const { data } = await k2kGatewayApi.getCatalogEservices({
         body: reqBody,
-        client: knodiaApiGatewayClient,
+        client: k2kGatewayClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,
         },

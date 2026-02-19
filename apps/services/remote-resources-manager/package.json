@@ -17,13 +17,12 @@
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "openapi-types": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@fastify/request-context": "catalog:",
-    "@knodia/knodia-api-gateway-client": "workspace:*",
+    "@knodia/k2k-gateway-client": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",

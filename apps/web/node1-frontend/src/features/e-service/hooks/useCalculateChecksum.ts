@@ -1,26 +1,27 @@
 import { useEffect, useState } from "react";
-import SparkMD5 from "spark-md5";
 
-export const useCalculateChecksum = (document: File | null | undefined) => {
-  const [md5Checksum, setMd5Checksum] = useState<null | string>(null);
+import { toHex } from "../utils/file";
+
+export const useCalculateChecksum = (
+  document: File | null | undefined,
+): { sha256Checksum: string } => {
+  const [sha256Checksum, setSha256Checksum] = useState<string>("");
 
   useEffect(() => {
     if (!document) {
       return;
     }
 
-    const file = document;
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const arrayBuffer = e.target?.result as ArrayBuffer;
-      const spark = new SparkMD5.ArrayBuffer();
-      spark.append(arrayBuffer);
-      setMd5Checksum(spark.end());
+    const f = async () => {
+      const arrayBuffer = await document.arrayBuffer();
+      const sha256Buffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+      const bytes = new Uint8Array(sha256Buffer);
+      const checksum = toHex(bytes);
+      setSha256Checksum(checksum);
     };
 
-    reader.readAsArrayBuffer(file);
+    f();
   }, [document]);
 
-  return { md5Checksum };
+  return { sha256Checksum };
 };

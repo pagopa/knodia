@@ -1,8 +1,9 @@
+import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 import { generateId } from "@knodia/common-models/ids";
-import { initKafka } from "@knodia/kafka-commons";
+import { initKafka, runConsumer } from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
 
 const { logLevel } = KafkaJS;
@@ -44,6 +45,7 @@ export async function setupKafkaTestProducer(broker: string) {
     kafkaClientId: `test-client-${randomId}`,
     kafkaLogLevel: logLevel.INFO,
   });
+
   const producer = kafka.producer({
     "allow.auto.create.topics": true,
   });
@@ -65,6 +67,27 @@ declare module "vitest" {
   export interface ProvidedContext {
     KAFKA_BROKER: string;
   }
+}
+
+export async function runTestConsumer(
+  topicName: string,
+  processMessage: (readmodelDb: EachMessagePayload) => Promise<void>,
+  kafkaConfig: KafkaConsumerConfig,
+) {
+  await new Promise<void>((resolve, reject) => {
+    runConsumer(
+      [topicName],
+      async (payload) => {
+        try {
+          await processMessage(payload);
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      },
+      kafkaConfig,
+    );
+  });
 }
 
 export async function sendTestEvent({

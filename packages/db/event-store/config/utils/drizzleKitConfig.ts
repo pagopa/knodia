@@ -23,5 +23,6 @@ export const drizzleKitConfig = (
       user: eventStoreDbUser,
     },
     dialect: "postgresql",
+    out: "./generated",
     schema: schemaPath,
   });

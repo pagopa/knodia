@@ -1,0 +1,15 @@
+meta {
+  name: Download Eservice Interface
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host-backend-for-frontend}}/eservices/:eserviceId/interface
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}

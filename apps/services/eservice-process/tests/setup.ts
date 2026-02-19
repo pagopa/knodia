@@ -1,14 +1,25 @@
+import {
+  type EserviceWriterService,
+  eserviceWriterServiceBuilder,
+} from "@knodia/db-readmodel-eservice/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
+import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
+let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
+let eserviceWriterService: EserviceWriterService;
 
 beforeAll(async () => {
   eventStoreDb = await setupEventstoreTestDatabase(
     inject("EVENTSTORE_CONNECTION_STRING"),
+  );
+
+  readmodelDb = await setupReadmodelTestDatabase(
+    inject("READMODEL_CONNECTION_STRING"),
   );
 
   app = buildApp({
@@ -18,19 +29,28 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
     },
+    readmodelDb,
   });
+
+  eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
 });
 
 beforeEach(async () => {
-  await eventStoreDb.execute("BEGIN");
+  await Promise.all([
+    eventStoreDb.execute("BEGIN"),
+    readmodelDb.execute("BEGIN"),
+  ]);
 });
 
 afterEach(async () => {
-  await eventStoreDb.execute("ROLLBACK");
+  await Promise.all([
+    eventStoreDb.execute("ROLLBACK"),
+    readmodelDb.execute("ROLLBACK"),
+  ]);
 });
 
 afterAll(async () => {
-  await eventStoreDb.$client.end();
+  await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eventStoreDb };
+export { app, eserviceWriterService, eventStoreDb };

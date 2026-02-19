@@ -95,10 +95,14 @@ const updateErrorResponseContentsWithProblemJson = (
         if ("$ref" in response) continue;
 
         const content = response.content;
-        if (!content || !content["application/json"]) continue;
+
+        if (!content) continue;
+
+        const responseSchema = Object.values(content).at(0);
+        if (!responseSchema) continue;
 
         response.content = {
-          "application/problem+json": content["application/json"],
+          "application/problem+json": responseSchema,
         };
       }
     }
@@ -184,13 +188,14 @@ const applyOpenApiTransforms = (
 ): Partial<OpenAPIV3.Document> =>
   transforms.reduce((acc, transform) => transform(acc), openapi);
 
-export const cleanOpenapi: typeof zodToJsonSchemaTransformObject = (openapi) =>
-  applyOpenApiTransforms(
-    zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
-    [
-      removeZodInputSchemasFromOpenapi,
-      updateErrorResponseContentsWithProblemJson,
-      markRequestBodiesAsRequired,
-      removeUnusedComponents,
-    ],
-  );
+export const zodToJsonSchemaTransformAndCleanObject: typeof zodToJsonSchemaTransformObject =
+  (openapi) =>
+    applyOpenApiTransforms(
+      zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
+      [
+        removeZodInputSchemasFromOpenapi,
+        updateErrorResponseContentsWithProblemJson,
+        markRequestBodiesAsRequired,
+        removeUnusedComponents,
+      ],
+    );
