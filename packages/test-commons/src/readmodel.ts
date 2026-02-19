@@ -1,5 +1,3 @@
-import type {} from "vitest";
-
 import { drizzle } from "drizzle-orm/node-postgres";
 import { fileURLToPath } from "node:url";
 
@@ -32,10 +30,4 @@ export async function setupReadmodelTestDatabase(connectionString: string) {
   );
 
   return drizzle(connectionString + `/${dbName}`);
-}
-
-declare module "vitest" {
-  export interface ProvidedContext {
-    POSTGRES_CONNECTION_STRING: string;
-  }
 }

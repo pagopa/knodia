@@ -129,23 +129,20 @@ async function runFlywayContainer({
   network,
 }: {
   command: string[];
-  entrypoint?: string[];
+  entrypoint: string[];
   environment: Record<string, string>;
   mounts: { source: string; target: string }[];
   network: StartedNetwork;
 }) {
-  let container = new GenericContainer(FLYWAY_IMAGE)
+  const startedContainer = await new GenericContainer(FLYWAY_IMAGE)
     .withNetwork(network)
     .withEnvironment(environment)
+    .withEntrypoint(entrypoint)
     .withCommand(command)
     .withWaitStrategy(Wait.forOneShotStartup())
-    .withBindMounts(mounts.map((mount) => ({ mode: "ro" as const, ...mount })));
+    .withBindMounts(mounts.map((mount) => ({ mode: "ro" as const, ...mount })))
+    .start();
 
-  if (entrypoint) {
-    container = container.withEntrypoint(entrypoint);
-  }
-
-  const startedContainer = await container.start();
   await startedContainer.stop();
 }
 
@@ -159,5 +156,11 @@ async function withAdminDb(
     return await callback(adminDb);
   } finally {
     await adminDb.$client.end();
+  }
+}
+
+declare module "vitest" {
+  export interface ProvidedContext {
+    POSTGRES_CONNECTION_STRING: string;
   }
 }
