@@ -1,4 +1,3 @@
-import type { RequestContextData } from "@fastify/request-context";
 import type { CorrelationId } from "@knodia/common-models/ids";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
