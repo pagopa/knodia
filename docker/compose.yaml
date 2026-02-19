@@ -4,7 +4,7 @@ services:
   event-store:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:b6b4d0b75c699a2c94dfc5a94fe09f38630f3b67ab0e1653ede1b7ac8e13c197
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
     container_name: knodia-event-store
     ports:
       - 6001:5432
@@ -24,7 +24,7 @@ services:
   readmodel:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:b6b4d0b75c699a2c94dfc5a94fe09f38630f3b67ab0e1653ede1b7ac8e13c197
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
     container_name: knodia-readmodel
     ports:
       - 6002:5432
