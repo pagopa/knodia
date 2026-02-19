@@ -158,12 +158,6 @@ components:
         - offset
         - total
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -518,8 +512,24 @@ components:
         - updatedAt
         - version
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     GetCatalogEserviceSearchParams:
       anyOf:
+        - type: object
+          properties:
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+            knodeId:
+              $ref: "#/components/schemas/KnodeId"
+          required:
+            - category
+            - knodeId
+          additionalProperties: false
         - type: object
           properties:
             keywords:
@@ -529,16 +539,6 @@ components:
               $ref: "#/components/schemas/KnodeId"
           required:
             - keywords
-            - knodeId
-          additionalProperties: false
-        - type: object
-          properties:
-            category:
-              $ref: "#/components/schemas/EserviceCategory"
-            knodeId:
-              $ref: "#/components/schemas/KnodeId"
-          required:
-            - category
             - knodeId
           additionalProperties: false
         - type: object

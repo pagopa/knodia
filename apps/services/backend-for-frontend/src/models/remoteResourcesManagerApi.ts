@@ -21,13 +21,13 @@ const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   knodeId: API_KnodeId,
 });
 
-const API_EserviceSearchByKeywords =
+const API_EserviceSearchByCategory =
   API_EserviceSearchByKeywordsAndCategory.pick({
     category: true,
     knodeId: true,
   });
 
-const API_EserviceSearchByCategory =
+const API_EserviceSearchByKeywords =
   API_EserviceSearchByKeywordsAndCategory.pick({
     keywords: true,
     knodeId: true,
