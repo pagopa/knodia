@@ -1,5 +1,7 @@
+import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 
+import { authorizationMiddleware } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -15,14 +17,10 @@ import { makeApiProblem } from "./models/errors.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
-  const app = buildApp({
-    loggerConfig: config,
-  });
-
-  return app;
+  return buildApp({ config });
 }
 
-function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
+function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
   const clients = getKnodiaClients();
   const fileManager = initFileManager();
   const app = createFastifyApp({
@@ -43,12 +41,13 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
         ],
       },
     },
-    loggerConfig: loggerConfig,
+    loggerConfig: config,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
     serviceName: serviceName.BACKEND_FOR_FRONTEND,
   });
 
+  app.register(authorizationMiddleware, config);
   app.register(healthRouter);
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,

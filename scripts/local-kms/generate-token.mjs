@@ -49,6 +49,7 @@ const claims =
         sub: USER_ID,
         organizationId: ORG_ID,
         role: ROLES,
+        tokenType: "session",
       };
 
 const payload = b64url(

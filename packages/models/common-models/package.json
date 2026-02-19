@@ -10,13 +10,15 @@
   },
   "exports": {
     "./api": "./src/api.ts",
+    "./errors": "./src/errors.ts",
+    "./event": "./src/events.ts",
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
-    "./event": "./src/events.ts",
     "./protobuf": "./src/protobuf.ts",
-    "./errors": "./src/errors.ts"
+    "./tokenCodecs": "./src/tokenCodecs.ts"
   },
   "dependencies": {
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
