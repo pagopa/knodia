@@ -14,6 +14,7 @@ import {
   EserviceVersionId,
   generateId,
   OrganizationId,
+  unsafeBrandId,
 } from "@knodia/common-models/ids";
 
 import type {
@@ -78,7 +79,11 @@ export function eserviceServiceBuilder(
       { correlationId, logger }: RequestContextData,
     ): Promise<Eservice> {
       const eserviceId = generateId<EserviceId>();
-      const producerId = generateId<OrganizationId>(); // TODO get from context after implementing auth
+
+      // TODO: get real producerId from auth context
+      const producerId = unsafeBrandId<OrganizationId>(
+        "00000000-0000-0000-0000-000000000000",
+      );
 
       logger.info(
         `Creating E-service ${eserviceId} for producer ${producerId} `,
