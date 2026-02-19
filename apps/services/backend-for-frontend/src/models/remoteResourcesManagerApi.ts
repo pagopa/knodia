@@ -2,7 +2,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
-import { LocalizedText } from "@knodia/common-models/localization";
+import { LocalizedDescription, LocalizedName } from "@knodia/eservice-models";
 import {
   API_EserviceAttribute,
   API_EserviceCategory,
@@ -69,12 +69,12 @@ const API_OrganizationId = z.uuid().meta({
 const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
-    description: LocalizedText,
+    description: LocalizedDescription,
     id: API_EserviceId,
     latestVersionRequiredAttributes: API_RequiredAttributes,
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
-    name: LocalizedText,
+    name: LocalizedName,
     producerId: API_OrganizationId,
   })
   .meta({ id: "CatalogEserviceSearchResult" });
