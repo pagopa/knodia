@@ -17,7 +17,7 @@ export async function toEserviceSeed(
 
   return {
     accessTokenAudience: [data.accessTokenAudience],
-    accessTokenDuration: data.accessTokenDuration,
+    accessTokenDuration: data.accessTokenDuration * 60,
     accessTokenType: data.accessTokenType,
     categories: data.categories,
     description: { en: data.description },
