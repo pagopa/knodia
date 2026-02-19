@@ -861,12 +861,12 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: E-Service search results retrieved (sorted by most recently updated
+          description: E-service search results retrieved (sorted by most recently updated
             first)
           content:
             application/json:
               schema:
-                description: E-Service search results retrieved (sorted by most recently updated
+                description: E-service search results retrieved (sorted by most recently updated
                   first)
                 allOf:
                   - $ref: "#/components/schemas/CatalogEserviceSearchResults"
