@@ -190,6 +190,34 @@ services:
         condition: service_healthy
       event-store:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8083/connectors || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  debezium-setup:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-debezium-setup
+    image: curlimages/curl:8.12.1
+    depends_on:
+      debezium-connect:
+        condition: service_healthy
+    volumes:
+      - ./event-store-connector.json:/connector.json:ro
+    entrypoint: >
+      /bin/sh -c "
+      response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
+      -H 'Accept:application/json'
+      -H 'Content-Type:application/json'
+      -d @/connector.json
+      http://debezium-connect:8083/connectors);
+      if [ \"$$response\" -eq 201 ]; then echo 'Connector registered'; exit 0; fi;
+      if [ \"$$response\" -eq 409 ]; then echo 'Connector already exists'; exit 0; fi;
+      echo \"Failed to register connector: HTTP $$response\"; exit 1;
+      "
 
   kafka-ui:
     security_opt:
