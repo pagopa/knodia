@@ -1,10 +1,15 @@
 /**
- * To be able to modify environment variables without needing of rebuilding the entire application,
- * we load them from a global variable `window.env` that is populated at runtime by the `env.js` script.
- * In the index.html there is a script tag that loads the `env.js` file.
+ * To allow environment variables to be changed without rebuilding the application,
+ * we load them from the global `window.env` object, which is populated at runtime
+ * by the `env.js` script.
  *
- * In local environment, we take the variables from the `public/env.js` file, while in production,
- * the `env.js` file is distributed by the web server.
+ * The `env.js` file is loaded in `index.html` via a dedicated `<script>` tag.
+ *
+ * In local development, variables are read from `public/env.js`. In production,
+ * `env.js` is served by the web server.
+ *
+ * Note: `public/env.js` is removed from the final build in the Dockerfile, so it
+ * is not included in the production image.
  */
 
 import { z } from "zod";
