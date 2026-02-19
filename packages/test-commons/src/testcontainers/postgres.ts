@@ -1,13 +1,27 @@
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
-import { drizzle, NodePgDatabase } from "drizzle-orm/node-postgres";
-import { readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
+import { fileURLToPath } from "node:url";
+import {
+  GenericContainer,
+  Network,
+  type StartedNetwork,
+  Wait,
+} from "testcontainers";
 
 const TEST_POSTGRES_DB_PORT = 5432;
 const TEST_POSTGRES_IMAGE = "postgres:17.7";
-const TEST_NAMESPACE = "test";
+const FLYWAY_IMAGE = "flyway/flyway:11";
+const NAMESPACE = "test";
 const DB_USER = "root";
 const DB_PASSWORD = "root";
+
+const FLYWAY_SCRIPTS_PATH = fileURLToPath(
+  new URL(`../../../../scripts/flyway`, import.meta.url),
+);
+
+const ROLES_MIGRATION_PATH = fileURLToPath(
+  new URL(`../../../../migration/roles`, import.meta.url),
+);
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
@@ -21,47 +35,79 @@ export async function createPostgresDatabaseFromTemplate(
   });
 }
 
-export async function createPostgresTemplateFromMigrations({
+/**
+ * Creates template databases and runs all Flyway migrations in a single container.
+ * Handles role creation (cluster-wide, idempotent) and schema migrations for
+ * each template. Each entry maps a template name to its migrations directory,
+ * whose subdirectories become schemas (e.g. migration/event-store/eservice → test_eservice).
+ * If the Postgres container is reused from a previous run, Flyway is incremental.
+ *
+ * !!! Intended to be called once in global test setup !!!
+ */
+export async function runFlywayMigrations({
   connectionString,
-  migrationsRoot,
-  rolesMigrationFolder,
-  templateName,
+  network,
+  templates,
 }: {
   connectionString: string;
-  migrationsRoot: string;
-  rolesMigrationFolder: string;
-  templateName: string;
+  network: StartedNetwork;
+  templates: { migrationsRoot: string; templateName: string }[];
 }) {
   await withAdminDb(connectionString, async (adminDb) => {
-    await applyMigrations(rolesMigrationFolder, adminDb);
+    for (const { templateName } of templates) {
+      const existsResult = await adminDb.execute(
+        `SELECT 1 FROM pg_database WHERE datname = '${templateName}'`,
+      );
 
-    const existsResult = await adminDb.execute(
-      `SELECT 1 FROM pg_database WHERE datname = '${templateName}'`,
-    );
+      const rows = existsResult.rows;
+      const templateExists = Array.isArray(rows) && rows.length > 0;
 
-    const rows = existsResult.rows;
-    const templateExists = Array.isArray(rows) && rows.length > 0;
-
-    if (templateExists) {
-      return;
+      if (!templateExists) {
+        await adminDb.execute(`CREATE DATABASE "${templateName}"`);
+      }
     }
+  });
 
-    await adminDb.execute(`CREATE DATABASE "${templateName}"`);
+  const mounts: { source: string; target: string }[] = [
+    { source: ROLES_MIGRATION_PATH, target: "/flyway/roles" },
+    { source: FLYWAY_SCRIPTS_PATH, target: "/flyway/scripts" },
+  ];
 
-    const templateDb = drizzle(connectionString + `/${templateName}`);
+  for (const { migrationsRoot, templateName } of templates) {
+    mounts.push({
+      source: migrationsRoot,
+      target: `/flyway/databases/${templateName}`,
+    });
+  }
 
-    try {
-      await applyMigrations(migrationsRoot, templateDb);
-    } finally {
-      await templateDb.$client.end();
+  await runFlywayContainer({
+    command: ["/flyway/scripts/migrate-all-databases.sh"],
+    entrypoint: ["/bin/sh"],
+    environment: {
+      FLYWAY_BASELINE_ON_MIGRATE: "true",
+      FLYWAY_PASSWORD: DB_PASSWORD,
+      FLYWAY_PLACEHOLDERS_NAMESPACE: NAMESPACE,
+      FLYWAY_USER: DB_USER,
+    },
+    mounts,
+    network,
+  });
+
+  await withAdminDb(connectionString, async (adminDb) => {
+    for (const { templateName } of templates) {
+      await adminDb.execute(
+        `ALTER DATABASE "${templateName}" IS_TEMPLATE true`,
+      );
     }
-
-    await adminDb.execute(`ALTER DATABASE "${templateName}" IS_TEMPLATE true`);
   });
 }
 
 export async function startPostgresTestContainer() {
+  const network = await new Network().start();
+
   const container = await new PostgreSqlContainer(TEST_POSTGRES_IMAGE)
+    .withNetwork(network)
+    .withNetworkAliases("postgres")
     .withName("knodia-postgres-test-container")
     .withReuse()
     .withPassword(DB_PASSWORD)
@@ -72,36 +118,35 @@ export async function startPostgresTestContainer() {
   const host = container.getHost();
   const connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${host}:${port}`;
 
-  return {
-    connectionString,
-    container,
-  };
+  return { connectionString, container, network };
 }
 
-/**
- * Applies SQL migrations from a folder: executes .sql files in the folder itself,
- * then iterates subfolders (one per domain schema) if exist and executes their .sql files.
- */
-async function applyMigrations(folder: string, db: NodePgDatabase) {
-  const entries = readdirSync(folder);
+async function runFlywayContainer({
+  command,
+  entrypoint,
+  environment,
+  mounts,
+  network,
+}: {
+  command: string[];
+  entrypoint?: string[];
+  environment: Record<string, string>;
+  mounts: { source: string; target: string }[];
+  network: StartedNetwork;
+}) {
+  let container = new GenericContainer(FLYWAY_IMAGE)
+    .withNetwork(network)
+    .withEnvironment(environment)
+    .withCommand(command)
+    .withWaitStrategy(Wait.forOneShotStartup())
+    .withBindMounts(mounts.map((mount) => ({ mode: "ro" as const, ...mount })));
 
-  const sqlFiles = entries.filter((f) => f.endsWith(".sql")).sort();
-  for (const file of sqlFiles) {
-    const filePath = join(folder, file);
-    let sql = readFileSync(filePath, "utf-8");
-
-    sql = sql.replace(/\$\{NAMESPACE\}/g, TEST_NAMESPACE);
-
-    await db.execute(sql);
+  if (entrypoint) {
+    container = container.withEntrypoint(entrypoint);
   }
 
-  const subfolders = entries
-    .filter((entry) => statSync(join(folder, entry)).isDirectory())
-    .sort();
-
-  for (const subfolder of subfolders) {
-    await applyMigrations(join(folder, subfolder), db);
-  }
+  const startedContainer = await container.start();
+  await startedContainer.stop();
 }
 
 async function withAdminDb(

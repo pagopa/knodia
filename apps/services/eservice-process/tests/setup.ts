@@ -14,13 +14,11 @@ let app: ReturnType<typeof buildApp>;
 let eserviceWriterService: EserviceWriterService;
 
 beforeAll(async () => {
-  eventStoreDb = await setupEventstoreTestDatabase(
-    inject("POSTGRES_CONNECTION_STRING"),
-  );
+  const connectionString = inject("POSTGRES_CONNECTION_STRING");
 
-  readmodelDb = await setupReadmodelTestDatabase(
-    inject("POSTGRES_CONNECTION_STRING"),
-  );
+  eventStoreDb = await setupEventstoreTestDatabase(connectionString);
+
+  readmodelDb = await setupReadmodelTestDatabase(connectionString);
 
   app = buildApp({
     eventStoreDb,

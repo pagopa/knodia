@@ -42,6 +42,7 @@ catalog:
   "@testcontainers/kafka": 11.11.0
   "@testcontainers/minio": 11.11.0
   "@testcontainers/postgresql": 11.11.0
+  testcontainers: 11.11.0
   "@tsconfig/node-ts": 23.6.2
   "@tsconfig/node24": 24.0.3
   "@tsconfig/strictest": 2.0.8

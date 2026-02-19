@@ -3,31 +3,16 @@ import type {} from "vitest";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { fileURLToPath } from "node:url";
 
-import {
-  createPostgresDatabaseFromTemplate,
-  createPostgresTemplateFromMigrations,
-} from "./testcontainers/postgres.ts";
+import { createPostgresDatabaseFromTemplate } from "./testcontainers/postgres.ts";
 
 const READMODEL_DB_TEMPLATE_NAME = "readmodel_template";
 
-/**
- * !!! Intended to be called once in global test setup !!!
- *
- *  Prepares the readmodel template database.
- *  It applies migrations once and marks it as a Postgres template.
- */
-export async function setupReadmodelTemplate(connectionString: string) {
-  await createPostgresTemplateFromMigrations({
-    connectionString,
-    migrationsRoot: fileURLToPath(
-      new URL(`../../../migration/read-model`, import.meta.url),
-    ),
-    rolesMigrationFolder: fileURLToPath(
-      new URL(`../../../migration/roles`, import.meta.url),
-    ),
-    templateName: READMODEL_DB_TEMPLATE_NAME,
-  });
-}
+export const readmodelTemplate = {
+  migrationsRoot: fileURLToPath(
+    new URL(`../../../migration/read-model`, import.meta.url),
+  ),
+  templateName: READMODEL_DB_TEMPLATE_NAME,
+};
 
 /**
  * Creates a dedicated database for a single test file by cloning the template.
