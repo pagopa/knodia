@@ -15,11 +15,11 @@ let eserviceWriterService: EserviceWriterService;
 
 beforeAll(async () => {
   eventStoreDb = await setupEventstoreTestDatabase(
-    inject("EVENTSTORE_CONNECTION_STRING"),
+    inject("POSTGRES_CONNECTION_STRING"),
   );
 
   readmodelDb = await setupReadmodelTestDatabase(
-    inject("READMODEL_CONNECTION_STRING"),
+    inject("POSTGRES_CONNECTION_STRING"),
   );
 
   app = buildApp({

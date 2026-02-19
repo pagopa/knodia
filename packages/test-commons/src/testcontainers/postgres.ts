@@ -6,6 +6,8 @@ import { join } from "node:path";
 const TEST_POSTGRES_DB_PORT = 5432;
 const TEST_POSTGRES_IMAGE = "postgres:17.7";
 const TEST_NAMESPACE = "test";
+const DB_USER = "root";
+const DB_PASSWORD = "root";
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
@@ -58,25 +60,17 @@ export async function createPostgresTemplateFromMigrations({
   });
 }
 
-export async function startTestPostgresContainer({
-  password,
-  testContainerName,
-  user,
-}: {
-  password: string;
-  testContainerName: string;
-  user: string;
-}) {
+export async function startPostgresTestContainer() {
   const container = await new PostgreSqlContainer(TEST_POSTGRES_IMAGE)
-    .withName(testContainerName)
+    .withName("knodia-postgres-test-container")
     .withReuse()
-    .withPassword(password)
-    .withUsername(user)
+    .withPassword(DB_PASSWORD)
+    .withUsername(DB_USER)
     .start();
 
   const port = container.getMappedPort(TEST_POSTGRES_DB_PORT);
   const host = container.getHost();
-  const connectionString = `postgresql://${user}:${password}@${host}:${port}`;
+  const connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${host}:${port}`;
 
   return {
     connectionString,

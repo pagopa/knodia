@@ -6,28 +6,19 @@ import { fileURLToPath } from "node:url";
 import {
   createPostgresDatabaseFromTemplate,
   createPostgresTemplateFromMigrations,
-  startTestPostgresContainer,
 } from "./testcontainers/postgres.ts";
 
-const EVENTSTORE_DB_PASSWORD = "eventstore_testpassword";
-const EVENTSTORE_DB_USER = "eventstore_testuser";
 const EVENTSTORE_DB_TEMPLATE_NAME = "eventstore_template";
 
 /**
  * !!! Intended to be called once in global test setup !!!
  *
- *  Starts the shared Postgres test container and prepares a template database.
- *  It creates the eventstore template, applies migrations once, and marks it as a Postgres template.
+ *  Prepares the eventstore template database.
+ *  It applies migrations once and marks it as a Postgres template.
  */
-export async function setupEventstoreTestContainer() {
-  const startedContainer = await startTestPostgresContainer({
-    password: EVENTSTORE_DB_PASSWORD,
-    testContainerName: "knodia-event-store-test-container",
-    user: EVENTSTORE_DB_USER,
-  });
-
+export async function setupEventstoreTemplate(connectionString: string) {
   await createPostgresTemplateFromMigrations({
-    connectionString: startedContainer.connectionString,
+    connectionString,
     migrationsRoot: fileURLToPath(
       new URL(`../../../migration/event-store`, import.meta.url),
     ),
@@ -36,8 +27,6 @@ export async function setupEventstoreTestContainer() {
     ),
     templateName: EVENTSTORE_DB_TEMPLATE_NAME,
   });
-
-  return startedContainer;
 }
 
 /**
@@ -61,6 +50,6 @@ export async function setupEventstoreTestDatabase(connectionString: string) {
 
 declare module "vitest" {
   export interface ProvidedContext {
-    EVENTSTORE_CONNECTION_STRING: string;
+    POSTGRES_CONNECTION_STRING: string;
   }
 }

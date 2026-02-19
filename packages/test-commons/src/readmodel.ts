@@ -6,28 +6,19 @@ import { fileURLToPath } from "node:url";
 import {
   createPostgresDatabaseFromTemplate,
   createPostgresTemplateFromMigrations,
-  startTestPostgresContainer,
 } from "./testcontainers/postgres.ts";
 
-const READMODEL_DB_PASSWORD = "readmodel_testpassword";
-const READMODEL_DB_USER = "readmodel_testuser";
 const READMODEL_DB_TEMPLATE_NAME = "readmodel_template";
 
 /**
  * !!! Intended to be called once in global test setup !!!
  *
- *  Starts the shared Postgres test container and prepares a template database.
- *  It creates the readmodel template, applies migrations once, and marks it as a Postgres template.
+ *  Prepares the readmodel template database.
+ *  It applies migrations once and marks it as a Postgres template.
  */
-export async function setupReadmodelTestContainer() {
-  const startedContainer = await startTestPostgresContainer({
-    password: READMODEL_DB_PASSWORD,
-    testContainerName: "knodia-readmodel-test-container",
-    user: READMODEL_DB_USER,
-  });
-
+export async function setupReadmodelTemplate(connectionString: string) {
   await createPostgresTemplateFromMigrations({
-    connectionString: startedContainer.connectionString,
+    connectionString,
     migrationsRoot: fileURLToPath(
       new URL(`../../../migration/read-model`, import.meta.url),
     ),
@@ -36,8 +27,6 @@ export async function setupReadmodelTestContainer() {
     ),
     templateName: READMODEL_DB_TEMPLATE_NAME,
   });
-
-  return startedContainer;
 }
 
 /**
@@ -62,6 +51,6 @@ export async function setupReadmodelTestDatabase(connectionString: string) {
 
 declare module "vitest" {
   export interface ProvidedContext {
-    READMODEL_CONNECTION_STRING: string;
+    POSTGRES_CONNECTION_STRING: string;
   }
 }
