@@ -14,15 +14,20 @@ const USER_ID = "00000000-0000-0000-0000-000000000001";
 const ORG_ID = "00000000-0000-0000-0000-000000000002";
 const ROLES = ["administrative", "technical"];
 
+// Token type: determines the audience, claims structure, and output filename.
+// - "cognito"    → simulates a Cognito user pool access token (signed with the cognito key)
+// - "ui-session" → our UI session token (signed with the knodia key)
+// New token types (e.g. "internal") should use the knodia key as well.
+const type = process.argv[2] ?? "ui-session";
 
-const type = process.argv[2] ?? "session";
-
-if (type !== "cognito" && type !== "session") {
-  console.error("Usage: node generate-token.mjs [cognito|session]");
+if (type !== "cognito" && type !== "ui-session") {
+  console.error("Usage: node generate-token.mjs [cognito|ui-session]");
   process.exit(1);
 }
 
-const AUDIENCE = "local.knodia.test/" + type;
+// KMS key alias: "cognito" tokens use the cognito key; all knodia-issued tokens
+// share the "knodia" key regardless of their type (ui-session, internal, etc.).
+const keyAlias = type === "cognito" ? "cognito" : "knodia";
 
 const kmsClient = new KMSClient({
   endpoint: KMS_ENDPOINT,
@@ -30,15 +35,12 @@ const kmsClient = new KMSClient({
   credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
 });
 
-// Base64url encode helper
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
-// Build JWT header
 const header = b64url(
-  JSON.stringify({ alg: "RS256", typ: "JWT", kid: `local-${type}-key` })
+  JSON.stringify({ alg: "RS256", typ: "JWT", kid: `local-${keyAlias}-key` })
 );
 
-// Build JWT payload
 const now = Math.floor(Date.now() / 1000);
 const claims =
   type === "cognito"
@@ -56,21 +58,20 @@ const claims =
 const payload = b64url(
   JSON.stringify({
     ...claims,
-    iat: now,
+    aud: `local.knodia.test/${type}`,
     exp: now + 3600,
+    iat: now,
+    iss: `local-${keyAlias}`,
     jti: randomUUID(),
-    iss: `local-${type}`,
-    aud: AUDIENCE,
   })
 );
 
-// Sign with KMS using the alias directly
 const message = `${header}.${payload}`;
 const digest = createHash("sha256").update(message).digest();
 
 const { Signature } = await kmsClient.send(
   new SignCommand({
-    KeyId: `alias/local-${type}-key`,
+    KeyId: `alias/local-${keyAlias}-key`,
     Message: digest,
     MessageType: "DIGEST",
     SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",

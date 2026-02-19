@@ -17,17 +17,18 @@ const kmsClient = new KMSClient({
   credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
 });
 
-const keysets = ["cognito", "session"];
+// Two KMS keys for local development:
+// - "cognito": simulates the Cognito user pool signing key (used to issue and verify login tokens)
+// - "knodia":  shared key for all tokens knodia services issue (ui-session, internal, etc.)
+const keysets = ["cognito", "knodia"];
 
 for (const name of keysets) {
   const aliasName = `alias/local-${name}-key`;
 
   try {
-    // Check if key already exists via alias
     await kmsClient.send(new DescribeKeyCommand({ KeyId: aliasName }));
     console.log(`Key "${name}" already exists.`);
   } catch {
-    // Key doesn't exist — create it
     console.log(`Creating KMS key for "${name}"...`);
 
     const { KeyMetadata } = await kmsClient.send(
@@ -47,7 +48,6 @@ for (const name of keysets) {
     console.log(`Key "${name}" created.`);
   }
 
-  // Get public key and build JWKS
   const { PublicKey: publicKeyDer } = await kmsClient.send(
     new GetPublicKeyCommand({ KeyId: aliasName })
   );
@@ -63,7 +63,6 @@ for (const name of keysets) {
     keys: [{ ...jwk, kid: `local-${name}-key`, use: "sig", alg: "RS256" }],
   };
 
-  // Write JWKS to output directory
   const jwksDir = `${JWKS_OUTPUT_DIR}/${name}/.well-known`;
   mkdirSync(jwksDir, { recursive: true });
   writeFileSync(`${jwksDir}/jwks.json`, JSON.stringify(jwks, null, 2));

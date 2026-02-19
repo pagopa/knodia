@@ -303,7 +303,7 @@ services:
 
   # Serves JWKS endpoints for local token validation
   # - http://localhost:4500/cognito/.well-known/jwks.json
-  # - http://localhost:4500/session/.well-known/jwks.json
+  # - http://localhost:4500/knodia/.well-known/jwks.json
   local-jwks:
     security_opt:
       - no-new-privileges:true
