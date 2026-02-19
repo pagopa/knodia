@@ -36,20 +36,20 @@ function buildApp({
       openapi: {
         info: {
           description: "API for communicating with other Knodes",
-          title: "Knode to Knode Gateway API",
+          title: "Knode to Knode API",
           version: "1.0.0",
         },
-        servers: [{ description: "Knode to Knode Gateway", url: "/" }],
+        servers: [{ description: "Knode to Knode API", url: "/" }],
         tags: [
           healthRouterTag,
           {
             description:
               "Routes to access resources following RESTful conventions",
-            name: apiTags.resources,
+            name: apiTags.resource,
           },
           {
             description: "Ad-hoc routes to simplify frequent use cases",
-            name: apiTags.operations,
+            name: apiTags.operation,
           },
         ],
       },
