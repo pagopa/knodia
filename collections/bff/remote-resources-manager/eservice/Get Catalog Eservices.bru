@@ -1,11 +1,11 @@
 meta {
-  name: Search Eservices
+  name: Get Catalog Eservices
   type: http
   seq: 1
 }
 
 post {
-  url: {{host-bff}}/searchEservices?offset=0&limit=50
+  url: {{host-backend-for-frontend}}/catalog?offset=0&limit=50
   body: json
   auth: none
 }
@@ -15,8 +15,13 @@ params:query {
   limit: 50
 }
 
+headers {
+  x-correlation-id: {{correlation-id}}
+}
+
 body:json {
   {
+    "knodeId": "ORION",
     "keywords": "test"
   }
 }
