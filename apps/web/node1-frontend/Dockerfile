@@ -19,11 +19,9 @@ COPY --from=pruner /repo/out/full/ ./
 
 FROM installer AS build
 ARG SERVICE_NAME
-ARG SERVICE_PATH
 RUN pnpm --filter @knodia/${SERVICE_NAME} build
-RUN rm -f /repo/${SERVICE_PATH}/dist/env.js
 
 FROM nginx:1.29.2@sha256:3b7732505933ca591ce4a6d860cb713ad96a3176b82f7979a8dfa9973486a0d6 AS runner
 ARG SERVICE_PATH
-RUN mkdir -p /usr/share/nginx/html
-COPY --from=build /repo/${SERVICE_PATH}/dist /usr/share/nginx/html
+RUN mkdir -p /usr/share/nginx/html/ui
+COPY --from=build /repo/${SERVICE_PATH}/dist /usr/share/nginx/html/ui

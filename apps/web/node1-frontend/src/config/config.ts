@@ -16,10 +16,10 @@ import { z } from "zod";
 
 const FrontendNode1Config = z
   .object({
-    VITE_BFF_URL: z.string().min(1, "VITE_BFF_URL is required"),
+    BFF_URL: z.string().min(1, "BFF_URL is required"),
   })
   .transform((c) => ({
-    bffUrl: c.VITE_BFF_URL,
+    bffUrl: c.BFF_URL,
   }));
 
 const parsed = FrontendNode1Config.safeParse(window.env);
