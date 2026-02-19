@@ -2,7 +2,7 @@ import { ButtonLink, Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 
-import type { EserviceMode, EserviceVersionState } from "../types";
+import type { bffApi } from "@knodia/bff-client";
 
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
@@ -22,8 +22,8 @@ export function EserviceCardFooter({
   trailing,
 }: {
   children?: React.ReactNode;
-  mode: EserviceMode;
-  state: EserviceVersionState;
+  mode: bffApi.EserviceMode;
+  state: bffApi.EserviceVersionState;
   trailing?: React.ReactNode;
 }) {
   return (
