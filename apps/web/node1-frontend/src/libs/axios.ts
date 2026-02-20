@@ -5,8 +5,6 @@ import { match } from "ts-pattern";
 import { config } from "@/config/config";
 import { getAuthToken } from "@/libs/auth";
 
-import { getAuthToken } from "./auth";
-
 axios.interceptors.request.use((axiosConfig) => {
   const token = getAuthToken();
   if (token) {

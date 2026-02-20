@@ -19,7 +19,7 @@ const CognitoPayload = z.object({
   sub: z.string(),
 });
 
-export interface SessionClaims {
+interface SessionClaims {
   organizationId: string;
   roles: string[];
   userId: string;
