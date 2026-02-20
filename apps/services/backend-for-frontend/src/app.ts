@@ -58,12 +58,18 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     serviceName: "backend-for-frontend",
   });
 
-  app.register(authenticationPlugin, config);
+  // Public routes (no JWT required)
   app.register(healthRouter);
   app.register(authRouter, { authorizationService: tokenService });
-  app.register(eserviceProducerRouter, {
-    eserviceProcessClient: clients.eserviceProcessClient,
-    fileManager,
+
+  // Protected routes — authenticationPlugin hook is scoped to this context only.
+  // See https://fastify.dev/docs/latest/Reference/Encapsulation/
+  app.register(async (protectedApp) => {
+    protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(eserviceProducerRouter, {
+      eserviceProcessClient: clients.eserviceProcessClient,
+      fileManager,
+    });
   });
   app.register(eserviceConsumerRouter, {
     remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
