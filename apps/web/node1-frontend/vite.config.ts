@@ -2,8 +2,9 @@ import tailwindcss from "@tailwindcss/vite";
 import { devtools } from "@tanstack/devtools-vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
+import fs from "fs";
 import path from "path";
-import { defineConfig, loadEnv, type ProxyOptions } from "vite";
+import { defineConfig, loadEnv, type Plugin, type ProxyOptions } from "vite";
 
 import { APP_BASE_PATH } from "./src/config/basepath.ts";
 
@@ -14,6 +15,7 @@ export default defineConfig(({ mode }) => {
   return {
     base: APP_BASE_PATH,
     plugins: [
+      devSessionToken(),
       devtools(),
       tanstackRouter({
         autoCodeSplitting: true,
@@ -37,6 +39,36 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+
+/**
+ * TODO remove this once we have a real local dev auth flow in place.
+ * Dev-only: reads `docker/tokens/ui-session.token` and injects it into window.env
+ */
+function devSessionToken(): Plugin {
+  return {
+    apply: "serve",
+    name: "dev-session-token",
+    transformIndexHtml() {
+      try {
+        const token = fs
+          .readFileSync(
+            path.resolve(__dirname, "../../../docker/tokens/ui-session.token"),
+            "utf-8",
+          )
+          .trim();
+        return [
+          {
+            children: `window.env.SESSION_TOKEN = ${JSON.stringify(token)};`,
+            injectTo: "body",
+            tag: "script",
+          },
+        ];
+      } catch {
+        return [];
+      }
+    },
+  };
+}
 
 function getDevProxy(
   env: Record<string, string>,

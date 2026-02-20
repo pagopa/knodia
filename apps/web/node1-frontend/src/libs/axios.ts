@@ -4,14 +4,14 @@ import { match } from "ts-pattern";
 
 import { config } from "@/config/config";
 
-axios.interceptors.request.use((config) => {
-  // TODO: How do we handle auth tokens?
-  const token = undefined;
+axios.interceptors.request.use((axiosConfig) => {
+  // TODO: Replace with real auth flow
+  const token = config.sessionToken;
   if (token) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${token}`;
+    axiosConfig.headers = axiosConfig.headers ?? {};
+    axiosConfig.headers.Authorization = `Bearer ${token}`;
   }
-  return config;
+  return axiosConfig;
 });
 
 axios.interceptors.response.use(
