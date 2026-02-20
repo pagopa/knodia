@@ -1,33 +1,55 @@
-import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { Logger } from "pino";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
+import {
+  generateAuthToken,
+  type GenerateAuthTokenResponse,
+} from "aws-msk-iam-sasl-signer-js";
 
-import { KafkaConfig, KafkaConsumerConfig } from "../config/config.ts";
+import { KafkaConfig } from "../config/config.ts";
 
-export async function initKafka(config: KafkaConfig): Promise<KafkaJS.Kafka> {
+export async function initKafka(
+  config: KafkaConfig,
+  logger: Logger,
+): Promise<KafkaJS.Kafka> {
+  const saslConfigs = config.kafkaDisableAwsIamAuth
+    ? {}
+    : {
+        oauthbearer_token_refresh_cb: async () => {
+          const tokenResponse = await oauthBearerTokenProvider(
+            config.awsRegion,
+            logger,
+          );
+          return {
+            lifetime: tokenResponse.expiryTime,
+            tokenValue: tokenResponse.token,
+          };
+        },
+        "sasl.mechanism": "OAUTHBEARER" as const,
+        "security.protocol": "sasl_ssl" as const,
+      };
+
   return new KafkaJS.Kafka({
     "bootstrap.servers": config.kafkaBrokers,
     "client.id": config.kafkaClientId,
     log_level: config.kafkaLogLevel,
+    ...saslConfigs,
   });
 }
 
-export async function runConsumer(
-  topics: string[],
-  consumerHandler: (messagePayload: EachMessagePayload) => Promise<void>,
-  config: KafkaConsumerConfig,
-) {
-  const kafka = await initKafka(config);
+async function oauthBearerTokenProvider(
+  region: string,
+  logger: Logger,
+): Promise<GenerateAuthTokenResponse> {
+  logger.debug("Fetching token from AWS");
 
-  const consumer = kafka.consumer({
-    "auto.offset.reset": config.topicStartingOffset,
-    "group.id": config.kafkaGroupId,
+  const authTokenResponse = await generateAuthToken({
+    region,
   });
 
-  await consumer.connect();
-  await consumer.subscribe({ topics });
+  logger.debug(
+    `Token fetched from AWS expires at ${authTokenResponse.expiryTime}`,
+  );
 
-  await consumer.run({
-    eachMessage: consumerHandler,
-  });
+  return authTokenResponse;
 }

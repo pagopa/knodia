@@ -9,7 +9,10 @@
   },
   "dependencies": {
     "@knodia/common-models": "workspace:*",
+    "@knodia/logger": "workspace:*",
     "@confluentinc/kafka-javascript": "catalog:",
+    "aws-msk-iam-sasl-signer-js": "catalog:",
+    "pino": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -20,7 +23,7 @@
     "eslint": "catalog:"
   },
   "exports": {
-    ".": "./utils/kafka.ts",
+    ".": "./utils/index.ts",
     "./utils": "./utils/utils.ts",
     "./config": "./config/config.ts"
   }

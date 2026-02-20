@@ -55,6 +55,7 @@ catalog:
   "@usebruno/converters": 0.2.0
   "@usebruno/lang": 0.24.0
   "@vitejs/plugin-react": 5.1.1
+  aws-msk-iam-sasl-signer-js: 1.0.1
   axios: 1.13.5
   babel-plugin-react-compiler: 1.0.0
   concurrently: 9.2.1
