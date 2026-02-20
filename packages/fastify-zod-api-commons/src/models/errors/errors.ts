@@ -13,8 +13,11 @@ import {
   createApiErrorFromErrorsList,
 } from "./apiError.ts";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
-  constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_UNAUTHORIZED,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 export const commonErrorCodes = {
@@ -23,6 +26,7 @@ export const commonErrorCodes = {
   RESPONSE_SERIALIZATION_ERROR: "9993",
   MISSING_HEADER: "9994",
   FASTIFY_ERROR: "9995",
+  UNAUTHORIZED: "9996",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
@@ -68,6 +72,15 @@ export function responseSerializationError(
     errors: error.cause.issues,
     status: error.statusCode || HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Response Serialization Error",
+  });
+}
+
+export function unauthorizedError(detail: string): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: "UNAUTHORIZED",
+    detail,
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "Unauthorized",
   });
 }
 
