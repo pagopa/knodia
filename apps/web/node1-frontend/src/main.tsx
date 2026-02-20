@@ -11,7 +11,7 @@ import { StrictMode } from "react";
 import "@knodia/ui-kit/themes/node1.css";
 import ReactDOM from "react-dom/client";
 
-import { AuthProvider } from "@/contexts/auth/AuthContext";
+import { AuthProvider } from "@/contexts/auth";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 

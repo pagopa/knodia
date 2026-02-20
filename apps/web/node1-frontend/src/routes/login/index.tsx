@@ -1,3 +1,4 @@
+import { createSessionOptions } from "@knodia/bff-client/tanstack-query";
 import { Button } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -6,6 +7,7 @@ import { z } from "zod";
 
 import { config } from "@/config/config";
 import { useAuth } from "@/contexts/auth";
+import { client } from "@/libs/axios";
 
 const loginSearchSchema = z.object({
   token: z.string().optional(),
@@ -19,18 +21,14 @@ export const Route = createFileRoute("/login/")({
 function LoginPage() {
   const navigate = useNavigate();
   const { token: searchToken } = Route.useSearch();
-  const { isAuthenticated, logout, setToken } = useAuth();
+  const { isAuthenticated, setToken } = useAuth();
 
   const { data, isError, isSuccess } = useQuery({
+    ...createSessionOptions({
+      client,
+      headers: { Authorization: `Bearer ${searchToken}` },
+    }),
     enabled: !!searchToken,
-    queryFn: async () => {
-      const response = await fetch(`${config.bffUrl}/auth/ui-session`, {
-        headers: { Authorization: `Bearer ${searchToken}` },
-      });
-      if (!response.ok) throw new Error("Token non valido");
-      return response.json();
-    },
-    queryKey: ["auth-ui-session", searchToken],
     retry: false,
     throwOnError: false,
   });
@@ -47,11 +45,6 @@ function LoginPage() {
     window.location.href = `${config.authUrl}?return_url=${encodeURIComponent(returnUrl)}`;
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate({ replace: true, to: "/login" });
-  };
-
   const showLoginButton = !isAuthenticated && (isError || !searchToken);
 
   return (
@@ -63,7 +56,6 @@ function LoginPage() {
           {isError ? "Retry Login" : "Login"}
         </Button>
       )}
-      {isAuthenticated && <Button onClick={handleLogout}>Logout</Button>}
     </div>
   );
 }
