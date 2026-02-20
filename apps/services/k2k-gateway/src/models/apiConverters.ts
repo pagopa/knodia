@@ -7,7 +7,7 @@ import type {
   API_EserviceVersionState,
 } from "./api.ts";
 
-export function toAPI_EserviceMode(
+function toAPI_EserviceMode(
   mode: eserviceProcessApi.EserviceMode,
 ): API_EserviceMode {
   return match(mode)
@@ -16,7 +16,7 @@ export function toAPI_EserviceMode(
     .exhaustive();
 }
 
-export function toAPI_EserviceVersionState(
+function toAPI_EserviceVersionState(
   state: eserviceProcessApi.EserviceVersionState,
 ): API_EserviceVersionState {
   return match(state)
