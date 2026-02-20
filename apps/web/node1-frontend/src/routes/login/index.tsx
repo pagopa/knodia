@@ -44,7 +44,7 @@ function LoginPage() {
   }, [isSuccess, token]);
 
   const handleLogin = () => {
-    const returnUrl = `${window.location.origin}/login`;
+    const returnUrl = `${window.location.origin}/ui/login`;
     window.location.href = `${config.authUrl}?return_url=${encodeURIComponent(returnUrl)}`;
   };
 
