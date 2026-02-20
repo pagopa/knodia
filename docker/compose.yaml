@@ -1,126 +1,47 @@
 name: knodia
 
 services:
-  event-store:
+  postgres:
     security_opt:
       - no-new-privileges:true
     image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
-    container_name: knodia-event-store
+    container_name: knodia-postgres
     ports:
-      - 6001:5432
+      - 5432:5432
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: root
     command: -c 'max_connections=512' -c 'wal_level=logical'
     volumes:
-      - event-store-data:/var/lib/postgresql
+      - postgres-data:/var/lib/postgresql
+      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U root"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  readmodel:
-    security_opt:
-      - no-new-privileges:true
-    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
-    container_name: knodia-readmodel
-    ports:
-      - 6002:5432
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: root
-    volumes:
-      - readmodel-data:/var/lib/postgresql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  flyway-roles-event-store:
+  flyway:
     security_opt:
       - no-new-privileges:true
     image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
-    container_name: knodia-flyway-roles-event-store
-    command: migrate
+    container_name: knodia-flyway
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-databases.sh"]
     volumes:
-      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
-    environment:
-      FLYWAY_URL: jdbc:postgresql://event-store:5432/root
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_SCHEMAS: public
-      FLYWAY_DEFAULT_SCHEMA: public
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      event-store:
-        condition: service_healthy
-
-  flyway-roles-readmodel:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
-    container_name: knodia-flyway-roles-readmodel
-    command: migrate
-    volumes:
-      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
-    environment:
-      FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_SCHEMAS: public
-      FLYWAY_DEFAULT_SCHEMA: public
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      readmodel:
-        condition: service_healthy
-
-  flyway-event-store:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
-    container_name: knodia-flyway-event-store
-    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
-    volumes:
-      - ../migration/event-store:/flyway/schemas:ro
+      - ../migration/event-store:/flyway/databases/event_store:ro
+      - ../migration/read-model:/flyway/databases/readmodel:ro
+      - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
-      FLYWAY_URL: jdbc:postgresql://event-store:5432/root
       FLYWAY_USER: root
       FLYWAY_PASSWORD: root
       FLYWAY_CONNECT_RETRIES: "5"
       FLYWAY_BASELINE_ON_MIGRATE: "true"
       FLYWAY_PLACEHOLDERS_NAMESPACE: local
     depends_on:
-      flyway-roles-event-store:
-        condition: service_completed_successfully
-
-  flyway-readmodel:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
-    container_name: knodia-flyway-readmodel
-    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
-    volumes:
-      - ../migration/read-model:/flyway/schemas:ro
-      - ../scripts/flyway:/flyway/scripts:ro
-    environment:
-      FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      flyway-roles-readmodel:
-        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
 
   kafka:
     security_opt:
@@ -188,7 +109,7 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      event-store:
+      postgres:
         condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8083/connectors || exit 1"]
@@ -288,8 +209,7 @@ services:
       - ./pgadmin-servers.json:/pgadmin4/servers.json:ro
       - ./pgpass:/pgadmin4/pgpass:ro
     depends_on:
-      - event-store
-      - readmodel
+      - postgres
 
   # Mock AWS KMS for local development (no seed file — keys created via API)
   local-kms:
@@ -343,8 +263,7 @@ services:
       - jwks-data:/usr/share/nginx/html:ro
 
 volumes:
-  event-store-data:
-  readmodel-data:
+  postgres-data:
   kafka-data:
   minio-data:
   pgadmin-data:
