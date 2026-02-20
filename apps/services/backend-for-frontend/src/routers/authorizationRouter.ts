@@ -60,6 +60,6 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       },
       tags: [apiTags.auth],
     },
-    url: "/auth/session",
+    url: "/auth/ui-session",
   });
 };

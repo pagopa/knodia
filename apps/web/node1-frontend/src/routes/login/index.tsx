@@ -24,13 +24,13 @@ function LoginPage() {
   const { isError, isSuccess } = useQuery({
     enabled: !!token,
     queryFn: async () => {
-      const response = await fetch(`${config.bffUrl}/auth/session`, {
+      const response = await fetch(`${config.bffUrl}/auth/ui-session`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!response.ok) throw new Error("Token non valido");
       return response.json();
     },
-    queryKey: ["auth-session", token],
+    queryKey: ["auth-ui-session", token],
     retry: false,
     throwOnError: false,
   });

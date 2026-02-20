@@ -635,7 +635,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /auth/session:
+  /auth/ui-session:
     get:
       operationId: createSession
       tags:
