@@ -2,12 +2,20 @@ import z from "zod";
 
 export const AuthConfig = z
   .object({
-    ACCEPTED_AUDIENCES: z.string().min(1),
-    WELL_KNOWN_URLS: z.string().min(1),
+    ACCEPTED_AUDIENCES: z
+      .string()
+      .min(1)
+      .transform((value) => value.split(",").map((a) => a.trim()))
+      .pipe(z.string().array()),
+    WELL_KNOWN_URLS: z
+      .string()
+      .min(1)
+      .transform((value) => value.split(",").map((u) => u.trim()))
+      .pipe(z.string().array()),
   })
   .transform((c) => ({
-    acceptedAudiences: c.ACCEPTED_AUDIENCES.split(",").map((a) => a.trim()),
-    wellKnownUrls: c.WELL_KNOWN_URLS.split(",").map((u) => u.trim()),
+    acceptedAudiences: c.ACCEPTED_AUDIENCES,
+    wellKnownUrls: c.WELL_KNOWN_URLS,
   }));
 export type AuthConfig = z.infer<typeof AuthConfig>;
 
