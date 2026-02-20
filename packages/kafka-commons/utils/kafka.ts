@@ -1,3 +1,4 @@
+import type { CommonConstructorConfig } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 import type { Logger } from "pino";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
@@ -12,7 +13,7 @@ export async function initKafka(
   config: KafkaConfig,
   logger: Logger,
 ): Promise<KafkaJS.Kafka> {
-  const saslConfigs = config.kafkaDisableAwsIamAuth
+  const saslConfigs: CommonConstructorConfig = config.kafkaDisableAwsIamAuth
     ? {}
     : {
         oauthbearer_token_refresh_cb: async () => {
@@ -25,8 +26,8 @@ export async function initKafka(
             tokenValue: tokenResponse.token,
           };
         },
-        "sasl.mechanism": "OAUTHBEARER" as const,
-        "security.protocol": "sasl_ssl" as const,
+        "sasl.mechanism": "OAUTHBEARER",
+        "security.protocol": "sasl_ssl",
       };
 
   return new KafkaJS.Kafka({
