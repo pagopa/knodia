@@ -2,12 +2,7 @@ import type { UISessionTokenClaims } from "@knodia/common-models/auth";
 
 import fastifyRequestContext from "@fastify/request-context";
 import { requestContext } from "@fastify/request-context";
-import {
-  generateId,
-  OrganizationId,
-  unsafeBrandId,
-  UserId,
-} from "@knodia/common-models/ids";
+import { generateId, OrganizationId, UserId } from "@knodia/common-models/ids";
 import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -16,6 +11,8 @@ import {
   parseAuthHeaderToken,
 } from "../../src/auth/authentication.ts";
 import { ApiError } from "../../src/models/errors/apiError.ts";
+import { healthRouterUrl } from "../../src/routers/healthRouter.ts";
+import { docsRoutePrefix } from "../../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import { makeApiProblemBuilder } from "../../src/utils/problemBuilder.ts";
 
 const { createRemoteJWKSet, jwtVerify } = vi.hoisted(() => ({
@@ -64,16 +61,24 @@ describe("parseAuthHeaderToken", () => {
     expect(() => parseAuthHeaderToken("Bearer")).toThrow(ApiError);
   });
 
-  it("returns the token when header is a valid Bearer value", () => {
+  it("returns the token when header is a valid Bearer value, case-insensitive", () => {
     expect(parseAuthHeaderToken("Bearer my-token-value")).toBe(
+      "my-token-value",
+    );
+
+    expect(parseAuthHeaderToken("bearer my-token-value")).toBe(
+      "my-token-value",
+    );
+
+    expect(parseAuthHeaderToken("BEARER my-token-value")).toBe(
       "my-token-value",
     );
   });
 });
 
 describe("authenticationPlugin", () => {
-  const userId: UserId = unsafeBrandId(crypto.randomUUID());
-  const organizationId: OrganizationId = unsafeBrandId(crypto.randomUUID());
+  const userId = generateId<UserId>();
+  const organizationId = generateId<OrganizationId>();
 
   const validPayload: UISessionTokenClaims = {
     aud: "test-audience",
@@ -89,11 +94,13 @@ describe("authenticationPlugin", () => {
 
   let app: Awaited<ReturnType<typeof buildTestApp>>;
 
+  const docsTestRoute = `${docsRoutePrefix}/test`;
+
   beforeAll(async () => {
     app = await buildTestApp(["https://example.com/.well-known/jwks.json"]);
 
-    app.get("/status", async () => ({ ok: true }));
-    app.get("/docs/test", async () => ({ ok: true }));
+    app.get(healthRouterUrl, async () => ({ ok: true }));
+    app.get(docsTestRoute, async () => ({ ok: true }));
     app.get("/protected", async () => ({
       authData: requestContext.get("authData"),
     }));
@@ -105,14 +112,17 @@ describe("authenticationPlugin", () => {
     await app.close();
   });
 
-  it("bypasses auth for the /status route", async () => {
-    const response = await app.inject({ method: "GET", url: "/status" });
+  it("bypasses auth for the health status route", async () => {
+    const response = await app.inject({ method: "GET", url: healthRouterUrl });
 
     expect(response.statusCode).toBe(200);
   });
 
   it("bypasses auth for routes under the /docs prefix", async () => {
-    const response = await app.inject({ method: "GET", url: "/docs/test" });
+    const response = await app.inject({
+      method: "GET",
+      url: docsTestRoute,
+    });
 
     expect(response.statusCode).toBe(200);
   });
@@ -179,7 +189,7 @@ describe("authenticationPlugin", () => {
 
   it("returns 401 when roles array contains an invalid value", async () => {
     jwtVerify.mockResolvedValueOnce({
-      payload: { ...validPayload, roles: ["admin"] },
+      payload: { ...validPayload, roles: ["invalid-role"] },
     });
 
     const response = await app.inject({

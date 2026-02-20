@@ -1,10 +1,6 @@
 import type { UISessionTokenClaims } from "@knodia/common-models/auth";
 
-import {
-  OrganizationId,
-  unsafeBrandId,
-  UserId,
-} from "@knodia/common-models/ids";
+import { generateId, OrganizationId, UserId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -12,8 +8,8 @@ import {
   type UISessionAuthData,
 } from "../../src/auth/authData.ts";
 
-const userId: UserId = unsafeBrandId(crypto.randomUUID());
-const organizationId: OrganizationId = unsafeBrandId(crypto.randomUUID());
+const userId = generateId<UserId>();
+const organizationId = generateId<OrganizationId>();
 
 const baseUISessionClaims: UISessionTokenClaims = {
   aud: "test-audience",

@@ -8,7 +8,7 @@ import { healthRouterUrl } from "../routers/healthRouter.ts";
 import { docsRoutePrefix } from "../utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import { extractAuthDataFromToken } from "./authData.ts";
 
-const BEARER_PREFIX = "Bearer ";
+const BEARER_PREFIX = "bearer ";
 
 interface AuthenticationPluginOptions {
   acceptedAudiences: string[];
@@ -16,7 +16,7 @@ interface AuthenticationPluginOptions {
 }
 
 export const parseAuthHeaderToken = (authHeader: string | undefined) => {
-  if (!authHeader?.startsWith(BEARER_PREFIX)) {
+  if (!authHeader?.toLowerCase().startsWith(BEARER_PREFIX)) {
     throw unauthorizedError("Missing or invalid Authorization header");
   }
 
