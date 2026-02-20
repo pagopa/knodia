@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const TEST_POSTGRES_DB_PORT = 5432;
-const TEST_POSTGRES_IMAGE = "postgres:18";
+const TEST_POSTGRES_IMAGE = "postgres:17.7";
 const TEST_NAMESPACE = "test";
 
 export async function createPostgresDatabaseFromTemplate(

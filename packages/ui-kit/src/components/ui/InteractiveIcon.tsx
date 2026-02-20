@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import {
   Button,
   type ButtonProps,
@@ -31,11 +32,10 @@ export type InteractiveIconProps = ButtonProps & InteractiveIconVariants;
 
 type InteractiveIconVariants = VariantProps<typeof interactiveIconStyles>;
 
-export function InteractiveIcon({
-  children,
-  hierarchy,
-  ...props
-}: InteractiveIconProps) {
+export const InteractiveIcon = forwardRef<
+  HTMLButtonElement,
+  InteractiveIconProps
+>(function InteractiveIcon({ children, hierarchy, ...props }, ref) {
   return (
     <Button
       {...props}
@@ -46,8 +46,9 @@ export function InteractiveIcon({
           hierarchy,
         }),
       )}
+      ref={ref}
     >
       {children}
     </Button>
   );
-}
+});

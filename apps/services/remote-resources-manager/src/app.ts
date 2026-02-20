@@ -1,5 +1,3 @@
-import type { LoggerConfig } from "@knodia/logger/config";
-
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -16,14 +14,16 @@ import { remoteResourcesManagerServiceBuilder } from "./services/remoteResources
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
   const app = buildApp({
-    loggerConfig: config,
+    config,
   });
 
   return app;
 }
 
-function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
-  const k2kGatewayClient = getK2K2GatewayApiClient();
+function buildApp({ config }: { config: RemoteResourcesManagerConfig }) {
+  const k2kGatewayClient = getK2K2GatewayApiClient({
+    knodeUrl: config.knodeUrl,
+  });
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -42,7 +42,7 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
         ],
       },
     },
-    loggerConfig: loggerConfig,
+    loggerConfig: config,
     makeApiProblem,
     serviceName: serviceName.REMOTE_RESOURCES_MANAGER,
   });

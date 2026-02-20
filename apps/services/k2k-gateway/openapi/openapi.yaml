@@ -4,7 +4,7 @@ info:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
   description: API for communicating with other Knodes
-  title: Knode to Knode Gateway API
+  title: Knode to Knode API
   version: 1.0.0
 components:
   schemas:
@@ -160,7 +160,7 @@ components:
         - scheme
       additionalProperties: false
     RequiredAttributeGroup:
-      description: Described a group of required Attributes (consumers must possess at
+      description: Describes a group of required Attributes (consumers must possess at
         least one Attribute among them in order to satisfy the requirement)
       type: array
       items:
@@ -257,11 +257,11 @@ paths:
   /catalog:
     post:
       operationId: getCatalogEservices
-      summary: Search for E-Services
+      summary: Search for E-services
       tags:
-        - operations
-      description: Search for E-Services according to search criteria and considering
-        only E-Services with an active or suspended Version
+        - operation
+      description: Search for E-services according to search criteria and considering
+        only E-services with an active or suspended Version
       requestBody:
         content:
           application/json:
@@ -288,12 +288,12 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: E-Service search results retrieved (sorted by most recently updated
+          description: E-service search results retrieved (sorted by most recently updated
             first)
           content:
             application/json:
               schema:
-                description: E-Service search results retrieved (sorted by most recently updated
+                description: E-service search results retrieved (sorted by most recently updated
                   first)
                 allOf:
                   - $ref: "#/components/schemas/CatalogEserviceSearchResults"
@@ -306,12 +306,12 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
-  - description: Knode to Knode Gateway
+  - description: Knode to Knode API
     url: /
 tags:
   - description: Health check routes
     name: health
   - description: Routes to access resources following RESTful conventions
-    name: resources
+    name: resource
   - description: Ad-hoc routes to simplify frequent use cases
-    name: operations
+    name: operation
