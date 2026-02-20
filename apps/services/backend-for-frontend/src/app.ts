@@ -1,5 +1,3 @@
-import type { LoggerConfig } from "@knodia/logger/config";
-
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -17,14 +15,17 @@ import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRo
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   const app = buildApp({
-    loggerConfig: config,
+    config,
   });
 
   return app;
 }
 
-function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
-  const clients = getKnodiaClients();
+function buildApp({ config }: { config: BffProcessConfig }) {
+  const clients = getKnodiaClients({
+    eserviceProcessUrl: config.eserviceProcessUrl,
+    remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
+  });
   const fileManager = initFileManager();
   const app = createFastifyApp({
     fastifyOptions: {
@@ -48,7 +49,7 @@ function buildApp({ loggerConfig }: { loggerConfig: LoggerConfig }) {
         ],
       },
     },
-    loggerConfig: loggerConfig,
+    loggerConfig: config,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
     serviceName: serviceName.BACKEND_FOR_FRONTEND,
