@@ -81,7 +81,8 @@ export const API_EserviceSeed = z
       .min(minDailyCalls)
       .max(maxDailyCalls)
       .meta({
-        description: "Maximum daily calls per consumer",
+        description:
+          "Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)",
         format: "int32",
       }),
     maxDailyCallsPerKnode: z
@@ -90,7 +91,8 @@ export const API_EserviceSeed = z
       .min(minDailyCalls)
       .max(maxDailyCalls)
       .meta({
-        description: "Maximum daily calls per Knode",
+        description:
+          "Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)",
         format: "int32",
       }),
     mode: API_EserviceMode.meta({
