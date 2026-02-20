@@ -949,9 +949,6 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
-      '@knodia/logger':
-        specifier: workspace:*
-        version: link:../logger
       aws-msk-iam-sasl-signer-js:
         specifier: 'catalog:'
         version: 1.0.1
