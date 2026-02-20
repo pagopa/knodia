@@ -16,7 +16,7 @@ interface AuthRouterOptions {
 const API_SessionResponse = z.object({
   organizationId: z.string(),
   roles: z.array(z.string()),
-  sessionToken: z.string(),
+  uiSessionToken: z.string(),
   userId: z.string(),
 });
 
@@ -39,10 +39,15 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         const claims =
           await authorizationService.validateCognitoToken(cognitoToken);
 
-        const sessionToken =
-          await authorizationService.generateSessionToken(claims);
+        const uiSessionToken =
+          await authorizationService.generateUISessionToken(claims);
 
-        res.send({ ...claims, sessionToken });
+        res.send({
+          organizationId: claims.organizationId,
+          roles: claims.roles,
+          uiSessionToken,
+          userId: claims.sub,
+        });
       } catch (error) {
         logger.error(error, "Failed to validate Cognito token");
         throw unauthorizedError("Invalid or expired token");

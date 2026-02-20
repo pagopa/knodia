@@ -3,6 +3,7 @@ import {
   KMSClient,
   SignCommand,
 } from "@aws-sdk/client-kms";
+import { UISessionTokenClaims, UserRole } from "@knodia/common-models/auth";
 import { jwtVerify } from "jose";
 import {
   createHash,
@@ -15,15 +16,14 @@ import z from "zod";
 import { config } from "../config/config.ts";
 
 const CognitoPayload = z.object({
+  aud: z.union([z.string(), z.array(z.string())]),
   "cognito:groups": z.array(z.string()),
+  exp: z.number().int(),
+  iat: z.number().int(),
+  iss: z.string(),
+  jti: z.string(),
   sub: z.string(),
 });
-
-interface SessionClaims {
-  organizationId: string;
-  roles: string[];
-  userId: string;
-}
 
 const b64url = (data: string): string =>
   Buffer.from(data).toString("base64url");
@@ -52,7 +52,9 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
   }
 
   return {
-    async generateSessionToken(claims: SessionClaims): Promise<string> {
+    async generateUISessionToken(
+      claims: UISessionTokenClaims,
+    ): Promise<string> {
       const header = b64url(
         JSON.stringify({
           alg: "RS256",
@@ -70,8 +72,9 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
           iss: "local-knodia",
           jti: randomUUID(),
           organizationId: claims.organizationId,
-          role: claims.roles,
-          sub: claims.userId,
+          roles: claims.roles,
+          sub: claims.sub,
+          type: "ui-session",
         }),
       );
 
@@ -95,7 +98,7 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
       return `${message}.${signature}`;
     },
 
-    async validateCognitoToken(token: string): Promise<SessionClaims> {
+    async validateCognitoToken(token: string): Promise<UISessionTokenClaims> {
       const publicKey = await getCognitoPublicKey();
 
       const { payload: rawPayload } = await jwtVerify(token, publicKey, {
@@ -103,21 +106,33 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
         audience: config.bffTokenAudience,
       });
 
-      const payload = CognitoPayload.parse(rawPayload);
+      const cognitoPayload = CognitoPayload.parse(rawPayload);
+      const groups = cognitoPayload["cognito:groups"];
 
-      const groups = payload["cognito:groups"];
-      const roles = groups.filter((g) => g.startsWith("role:"));
+      const roles = groups
+        .filter((g) => g.startsWith("role:"))
+        .map((g) => UserRole.parse(g.slice("role:".length)));
       const orgGroup = groups.find((g) => g.startsWith("org:"));
 
       if (!orgGroup) {
         throw new Error("Missing organization claim in token");
       }
 
-      return {
+      if (roles.length === 0) {
+        throw new Error("Missing role claims in token");
+      }
+
+      return UISessionTokenClaims.parse({
+        aud: cognitoPayload.aud,
+        exp: cognitoPayload.exp,
+        iat: cognitoPayload.iat,
+        iss: cognitoPayload.iss,
+        jti: cognitoPayload.jti,
         organizationId: orgGroup.slice("org:".length),
         roles,
-        userId: payload.sub,
-      };
+        sub: cognitoPayload.sub,
+        type: "ui-session",
+      });
     },
   };
 }
