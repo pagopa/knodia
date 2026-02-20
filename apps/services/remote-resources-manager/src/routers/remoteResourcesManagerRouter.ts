@@ -49,7 +49,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
       response: {
         200: API_CatalogEserviceSearchResults.meta({
           description:
-            "E-Service search results retrieved (sorted by most recently updated first)",
+            "E-service search results retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
