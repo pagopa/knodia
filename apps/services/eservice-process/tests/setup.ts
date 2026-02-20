@@ -23,12 +23,14 @@ beforeAll(async () => {
   );
 
   app = buildApp({
-    eventStoreDb,
-    loggerConfig: {
+    config: {
+      acceptedAudiences: ["test-audience"],
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",
+      wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
+    eventStoreDb,
     readmodelDb,
   });
 
