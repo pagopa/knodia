@@ -5,6 +5,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { z } from "zod";
 
+import { APP_BASE_PATH } from "@/config/basepath";
 import { config } from "@/config/config";
 import { useAuth } from "@/contexts/auth";
 import { client } from "@/libs/axios";
@@ -41,7 +42,7 @@ function LoginPage() {
   }, [isSuccess, data, setToken, navigate]);
 
   const handleLogin = () => {
-    const returnUrl = `${window.location.origin}/ui/login`;
+    const returnUrl = `${window.location.origin}${APP_BASE_PATH}${Route.fullPath}`;
     window.location.href = `${config.authUrl}?return_url=${encodeURIComponent(returnUrl)}`;
   };
 
