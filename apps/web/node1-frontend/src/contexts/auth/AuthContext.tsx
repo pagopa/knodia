@@ -4,7 +4,13 @@ import { clearAuthToken, getAuthToken, setAuthToken } from "@/libs/auth";
 
 import { AuthContext } from "./useAuthContext";
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({
+  children,
+  onLogout,
+}: {
+  children: ReactNode;
+  onLogout?: () => void;
+}) {
   const [token, setTokenState] = useState<null | string>(() => getAuthToken());
 
   const setToken = useCallback((newToken: string) => {
@@ -15,7 +21,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     clearAuthToken();
     setTokenState(null);
-  }, []);
+    onLogout?.();
+  }, [onLogout]);
 
   return (
     <AuthContext.Provider

@@ -81,7 +81,7 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
+        <AuthProvider onLogout={() => router.navigate({ to: "/login" })}>
           <RouterProvider router={router} />
         </AuthProvider>
       </QueryClientProvider>
