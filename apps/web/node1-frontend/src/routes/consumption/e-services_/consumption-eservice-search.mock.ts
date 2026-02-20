@@ -1,12 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { categories } from "@knodia/category-models";
-
-import { toSchemeRefOptions } from "@/features/e-service/utils/schemeRef";
-
 // TODO: Replace this interface with the auto-generated type when the consumption e-service search BFF endpoint is implemented
 export interface ConsumptionEserviceSearchResult {
-  categories: { code: string }[];
+  categories: bffApi.EserviceCategory[];
   description: string;
   hasRequiredAttributes: boolean;
   id: string;
@@ -19,23 +15,22 @@ export interface ConsumptionEserviceSearchResult {
   state: bffApi.EserviceVersionState;
 }
 
-function catId(label: string): string {
-  const found = toSchemeRefOptions(categories).find((c) => c.label === label);
-  if (!found) throw new Error(`Category "${label}" not found`);
-  return found.id;
-}
+const SCHEME = "vc_example_eservice_categories";
 
 const CAT = {
-  birthDate: catId("Birth date"),
-  birthPlace: catId("Birth place"),
-  companyAddress: catId("Company address"),
-  maritalStatus: catId("Marital status"),
-  residencePlace: catId("Residence place"),
+  birthDate: { code: "citizen.identity.birth_date", scheme: SCHEME },
+  birthPlace: { code: "citizen.identity.birth_place", scheme: SCHEME },
+  companyAddress: {
+    code: "organization.private_company.address",
+    scheme: SCHEME,
+  },
+  maritalStatus: { code: "citizen.identity.marital_status", scheme: SCHEME },
+  residencePlace: { code: "citizen.residence.residence_place", scheme: SCHEME },
 } as const;
 
 const allResults: ConsumptionEserviceSearchResult[] = [
   {
-    categories: [{ code: CAT.birthPlace }, { code: CAT.birthDate }],
+    categories: [CAT.birthPlace, CAT.birthDate],
     description: "Proof of registration of birth or birth certificate.",
     hasRequiredAttributes: true,
     id: "a1b2c3d4-e5f6-7890-abcd-ef1234567801",
@@ -45,7 +40,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.birthPlace }],
+    categories: [CAT.birthPlace],
     description:
       "Provision of verified personal identity details as recorded in the national register.",
     hasRequiredAttributes: false,
@@ -56,7 +51,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.birthPlace }],
+    categories: [CAT.birthPlace],
     description:
       "Confirmation of birth record details as registered in the civil registry.",
     hasRequiredAttributes: true,
@@ -67,7 +62,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Suspended",
   },
   {
-    categories: [{ code: CAT.residencePlace }],
+    categories: [CAT.residencePlace],
     description:
       "Verification of residence address registered in the municipal records.",
     hasRequiredAttributes: true,
@@ -78,7 +73,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.maritalStatus }, { code: CAT.birthDate }],
+    categories: [CAT.maritalStatus, CAT.birthDate],
     description:
       "Official marriage certificate from the civil registry office.",
     hasRequiredAttributes: false,
@@ -89,7 +84,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.companyAddress }],
+    categories: [CAT.companyAddress],
     description:
       "Provision of verified tax identification number for cross-border tax purposes.",
     hasRequiredAttributes: true,
@@ -100,7 +95,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.birthDate }, { code: CAT.companyAddress }],
+    categories: [CAT.birthDate, CAT.companyAddress],
     description:
       "Verification of educational degrees and professional qualifications.",
     hasRequiredAttributes: true,
@@ -111,7 +106,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Suspended",
   },
   {
-    categories: [{ code: CAT.residencePlace }],
+    categories: [CAT.residencePlace],
     description:
       "Provision of criminal record information for employment or residency purposes.",
     hasRequiredAttributes: false,
@@ -122,7 +117,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.companyAddress }],
+    categories: [CAT.companyAddress],
     description:
       "Cross-border retrieval of social security contribution records.",
     hasRequiredAttributes: true,
@@ -133,7 +128,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.birthPlace }, { code: CAT.residencePlace }],
+    categories: [CAT.birthPlace, CAT.residencePlace],
     description:
       "Official proof of current address from the local municipality records.",
     hasRequiredAttributes: true,
@@ -144,7 +139,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.companyAddress }],
+    categories: [CAT.companyAddress],
     description: "Verification of driving licence status across EU countries.",
     hasRequiredAttributes: false,
     id: "e1f2a3b4-c5d6-7890-efab-901234567811",
@@ -154,7 +149,7 @@ const allResults: ConsumptionEserviceSearchResult[] = [
     state: "Active",
   },
   {
-    categories: [{ code: CAT.maritalStatus }, { code: CAT.companyAddress }],
+    categories: [CAT.maritalStatus, CAT.companyAddress],
     description:
       "Official certification of disability status for cross-border benefits.",
     hasRequiredAttributes: true,
@@ -183,8 +178,10 @@ export function searchConsumptionEservices({
   let filtered = allResults;
 
   if (category) {
+    // category from search params is a composite key "scheme$code"
+    const categoryCode = category.split("$")[1] ?? category;
     filtered = filtered.filter((e) =>
-      e.categories.some((c) => c.code === category),
+      e.categories.some((c) => c.code === categoryCode),
     );
   }
 

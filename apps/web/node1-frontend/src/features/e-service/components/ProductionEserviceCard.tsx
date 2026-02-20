@@ -1,11 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Chip } from "@knodia/ui-kit/ui";
-import { CheckIcon } from "@phosphor-icons/react";
-
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 
 import {
+  CategoryChip,
   EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,
@@ -29,16 +27,14 @@ export function ProductionEserviceCard({
       </EserviceCardInfoGrid>
       <EserviceCardFooter mode="ProvideData" state="Active">
         {eservice.categories.map((category) => (
-          <CategoryChip key={category.code} label={category.code} />
+          <CategoryChip
+            code={category.code}
+            key={category.code}
+            scheme={category.scheme}
+          />
         ))}
       </EserviceCardFooter>
     </EserviceCard>
-  );
-}
-
-function CategoryChip({ label }: { label: string }) {
-  return (
-    <Chip icon={<CheckIcon />} kind="neutral" label={label} type="light" />
   );
 }
 

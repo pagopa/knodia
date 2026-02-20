@@ -1,11 +1,10 @@
-import { categories } from "@knodia/category-models";
-import { Avatar, Banner, Chip } from "@knodia/ui-kit/ui";
+import { Avatar, Banner } from "@knodia/ui-kit/ui";
 import { SealCheckIcon, WarningDiamondIcon } from "@phosphor-icons/react";
 
 import type { ConsumptionEserviceSearchResult } from "@/routes/consumption/e-services_/consumption-eservice-search.mock";
 
-import { getSchemeRefLabel } from "../../utils/schemeRef";
 import {
+  CategoryChip,
   EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,
@@ -46,11 +45,10 @@ export function ConsumptionEserviceSearchResultCard({
         }
       >
         {eservice.categories.map((category) => (
-          <Chip
+          <CategoryChip
+            code={category.code}
             key={category.code}
-            kind="neutral"
-            label={getSchemeRefLabel(categories, category.code)}
-            type="light"
+            scheme={category.scheme}
           />
         ))}
       </EserviceCardFooter>
