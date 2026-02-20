@@ -1,12 +1,6 @@
 import type { Kafka } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 import type { Logger } from "pino";
 
-export async function initKafkaAdmin(kafka: Kafka) {
-  const admin = kafka.admin();
-  await admin.connect();
-  return admin;
-}
-
 export async function validateTopicMetadata(
   kafka: Kafka,
   topicNames: string[],
@@ -32,4 +26,10 @@ export async function validateTopicMetadata(
   } finally {
     await admin.disconnect();
   }
+}
+
+async function initKafkaAdmin(kafka: Kafka) {
+  const admin = kafka.admin();
+  await admin.connect();
+  return admin;
 }
