@@ -67,15 +67,31 @@ export const generalStepSchema = z.object({
   name: eserviceFieldSchemas.name,
 });
 
-export const technicalStepSchema = z.object({
-  accessTokenAudience: eserviceFieldSchemas.accessTokenAudience,
-  accessTokenDuration: eserviceFieldSchemas.accessTokenDuration,
-  accessTokenType: eserviceFieldSchemas.accessTokenType,
-  isSignalHubEnabled: eserviceFieldSchemas.isSignalHubEnabled,
-  maxDailyCallsPerConsumer: eserviceFieldSchemas.maxDailyCallsPerConsumer,
-  maxDailyCallsPerKnode: eserviceFieldSchemas.maxDailyCallsPerKnode,
-  mode: eserviceFieldSchemas.mode,
-});
+const maxDailyCallsValidation = z
+  .object({
+    maxDailyCallsPerConsumer: eserviceFieldSchemas.maxDailyCallsPerConsumer,
+    maxDailyCallsPerKnode: eserviceFieldSchemas.maxDailyCallsPerKnode,
+  })
+  .superRefine((seed, ctx) => {
+    if (seed.maxDailyCallsPerKnode < seed.maxDailyCallsPerConsumer) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Max daily calls per node must be greater than or equal to max daily calls per consumer.",
+        path: ["maxDailyCallsPerKnode"],
+      });
+    }
+  });
+
+export const technicalStepSchema = z
+  .object({
+    accessTokenAudience: eserviceFieldSchemas.accessTokenAudience,
+    accessTokenDuration: eserviceFieldSchemas.accessTokenDuration,
+    accessTokenType: eserviceFieldSchemas.accessTokenType,
+    isSignalHubEnabled: eserviceFieldSchemas.isSignalHubEnabled,
+    mode: eserviceFieldSchemas.mode,
+  })
+  .and(maxDailyCallsValidation);
 
 export const docsStepSchema = z.object({
   interfaceDocument: eserviceFieldSchemas.interfaceDocument,
