@@ -520,7 +520,8 @@ components:
         - Lynx
     GetCatalogEserviceSearchParams:
       anyOf:
-        - type: object
+        - description: Include only E-services belonging to the specified category
+          type: object
           properties:
             category:
               $ref: "#/components/schemas/EserviceCategory"
@@ -530,7 +531,8 @@ components:
             - category
             - knodeId
           additionalProperties: false
-        - type: object
+        - description: Search by name or description
+          type: object
           properties:
             keywords:
               type: string
