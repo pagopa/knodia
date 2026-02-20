@@ -650,21 +650,10 @@ paths:
                 description: Session created successfully
                 type: object
                 properties:
-                  organizationId:
-                    type: string
-                  roles:
-                    type: array
-                    items:
-                      type: string
-                  uiSessionToken:
-                    type: string
-                  userId:
+                  token:
                     type: string
                 required:
-                  - organizationId
-                  - roles
-                  - uiSessionToken
-                  - userId
+                  - token
                 additionalProperties: false
         "401":
           description: Unauthorized

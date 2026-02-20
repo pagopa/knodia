@@ -14,10 +14,7 @@ interface AuthRouterOptions {
 }
 
 const API_SessionResponse = z.object({
-  organizationId: z.string(),
-  roles: z.array(z.string()),
-  uiSessionToken: z.string(),
-  userId: z.string(),
+  token: z.string(),
 });
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
@@ -43,10 +40,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
           await authorizationService.generateUISessionToken(claims);
 
         res.send({
-          organizationId: claims.organizationId,
-          roles: claims.roles,
-          uiSessionToken,
-          userId: claims.sub,
+          token: uiSessionToken,
         });
       } catch (error) {
         logger.error(error, "Failed to validate Cognito token");

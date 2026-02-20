@@ -35,8 +35,8 @@ function LoginPage() {
   });
 
   useEffect(() => {
-    if (isSuccess && data.uiSessionToken) {
-      setToken(data.uiSessionToken);
+    if (isSuccess && data.token) {
+      setToken(data.token);
       navigate({ replace: true, to: "/" });
     }
   }, [isSuccess, data, setToken, navigate]);
