@@ -44,7 +44,7 @@ export async function createPostgresDatabaseFromTemplate(
  * whose subdirectories become schemas (e.g. migration/event-store/eservice → test_eservice).
  * If the Postgres container is reused from a previous run, Flyway is incremental.
  */
-export async function runFlywayMigrations({
+export async function runTestFlywayMigrations({
   connectionString,
   network,
   templates,
@@ -102,7 +102,7 @@ export async function runFlywayMigrations({
   });
 }
 
-export async function startPostgresTestContainer() {
+export async function setupPostgresTestContainer() {
   const network = await new Network().start();
 
   const container = await new PostgreSqlContainer(TEST_POSTGRES_IMAGE)
