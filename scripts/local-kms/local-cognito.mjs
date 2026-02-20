@@ -5,8 +5,8 @@ import { createServer } from "node:http";
 const KMS_ENDPOINT = process.env.KMS_ENDPOINT ?? "http://localhost:4566";
 
 // Hardcoded configuration for local development
-const USER_ID = "00000000-0000-0000-0000-000000000001";
-const ORG_ID = "00000000-0000-0000-0000-000000000002";
+const USER_ID = "00000000-0000-4000-8000-000000000001";
+const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
 
 createServer(async (req, res) => {
