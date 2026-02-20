@@ -6,12 +6,12 @@ import type { Logger } from "pino";
 
 import { kafkaMessageProcessError } from "@knodia/common-models/errors";
 
-import type { KafkaConsumerConfig } from "../config/config.ts";
+import type { KafkaConsumerConfig } from "./config/config.ts";
 
 import { validateTopicMetadata } from "./admin.ts";
 import { initKafka } from "./kafka.ts";
 import { errorEventsListener } from "./listeners.ts";
-import { processExit } from "./utils.ts";
+import { processExit } from "./utils/utils.ts";
 
 export async function runConsumer(
   topics: string[],
@@ -20,8 +20,7 @@ export async function runConsumer(
   logger: Logger,
 ) {
   try {
-    const topicsString = topics.join(", ");
-    logger.debug(`Kafka consumer connecting to topics: ${topicsString}`);
+    logger.debug(`Kafka consumer connecting to topics: ${topics}`);
     const kafka = await initKafka(config, logger);
 
     const consumer = kafka.consumer({
@@ -42,7 +41,7 @@ export async function runConsumer(
     }
 
     await consumer.subscribe({ topics });
-    logger.info(`Kafka subscribed to topics: ${topicsString}`);
+    logger.info(`Kafka subscribed to topics: ${topics}`);
 
     await consumer.run({
       eachMessage: async (payload: EachMessagePayload): Promise<void> => {

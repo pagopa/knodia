@@ -7,7 +7,7 @@ import {
   type GenerateAuthTokenResponse,
 } from "aws-msk-iam-sasl-signer-js";
 
-import { KafkaConfig } from "../config/config.ts";
+import { KafkaConfig } from "./config/config.ts";
 
 export async function initKafka(
   config: KafkaConfig,

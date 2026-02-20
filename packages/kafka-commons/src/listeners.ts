@@ -4,7 +4,7 @@ import type {
 } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 import type { Logger } from "pino";
 
-import { processExit } from "./utils.ts";
+import { processExit } from "./utils/utils.ts";
 
 const errorTypes = ["unhandledRejection", "uncaughtException"];
 const signalTraps = ["SIGTERM", "SIGINT", "SIGUSR2"];

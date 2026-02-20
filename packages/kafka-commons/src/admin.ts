@@ -6,7 +6,7 @@ export async function validateTopicMetadata(
   topicNames: string[],
   logger: Logger,
 ): Promise<boolean> {
-  logger.debug(`Check topics [${JSON.stringify(topicNames)}] existence...`);
+  logger.debug(`Check topics [${topicNames}] existence...`);
 
   const admin = await initKafkaAdmin(kafka);
 
@@ -18,7 +18,7 @@ export async function validateTopicMetadata(
     return true;
   } catch (e) {
     logger.error(
-      `Unable to subscribe! Error during topic metadata fetch: ${JSON.stringify(
+      `Unable to subscribe to topics "${topicNames}"! Error during topic metadata fetch: ${JSON.stringify(
         e,
       )}`,
     );
