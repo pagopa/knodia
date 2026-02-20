@@ -20,6 +20,9 @@ docker/tokens/
 # Bruno local env (contains generated JWTs)
 collections/.env
 
+# Local env overrides
+.env.local
+
 # Build outputs
 dist/
 storybook-static/

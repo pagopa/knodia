@@ -97,3 +97,9 @@ if (brunoEnvKey) {
   writeFileSync(envPath, `${brunoEnvKey}=${token}\n`);
   console.log(`Bruno env written to ${envPath}`);
 }
+
+if (type === "ui-session") {
+  const frontendEnvLocal = resolve(__dirname, "../../apps/web/node1-frontend/.env.local");
+  writeFileSync(frontendEnvLocal, `VITE_DEV_SESSION_TOKEN=${token}\n`);
+  console.log(`Frontend .env.local written to ${frontendEnvLocal}`);
+}

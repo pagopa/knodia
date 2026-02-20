@@ -5,8 +5,10 @@ import { match } from "ts-pattern";
 import { config } from "@/config/config";
 
 axios.interceptors.request.use((axiosConfig) => {
-  // TODO: Replace with real auth flow
-  const token = config.sessionToken;
+  const token = document.cookie
+    .split("; ")
+    .find((c) => c.startsWith("session_token="))
+    ?.split("=")[1];
   if (token) {
     axiosConfig.headers = axiosConfig.headers ?? {};
     axiosConfig.headers.Authorization = `Bearer ${token}`;
