@@ -10,9 +10,9 @@ import {
   consumptionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
 
-import { searchConsumptionEservices } from "./consumption-eservice-search.mock";
+import { searchConsumptionEservices } from "@/features/e-service/consumption-eservice-search.mock";
 
-export const Route = createFileRoute("/consumption/e-services_/search")({
+export const Route = createFileRoute("/_authenticated/consumption/e-services_/search")({
   component: RouteComponent,
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],

@@ -10,8 +10,6 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { RouterProvider } from "react-aria-components";
 
-import { AppLayout } from "@/layouts/AppLayout";
-
 interface RouterContext {
   queryClient: QueryClient;
 }
@@ -33,9 +31,7 @@ function RootLayout() {
         return router.buildLocation(href).href;
       }}
     >
-      <AppLayout>
-        <Outlet />
-      </AppLayout>
+      <Outlet />
       <TanStackDevtools
         plugins={[
           {

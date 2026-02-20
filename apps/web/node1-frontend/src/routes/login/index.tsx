@@ -5,7 +5,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 
 import { config } from "@/config/config";
-import { clearAuthToken, getAuthToken, setAuthToken } from "@/libs/auth";
+import { useAuth } from "@/contexts/auth";
 
 const loginSearchSchema = z.object({
   token: z.string().optional(),
@@ -18,30 +18,29 @@ export const Route = createFileRoute("/login/")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { token } = Route.useSearch();
-  const existingToken = getAuthToken();
+  const { token: searchToken } = Route.useSearch();
+  const { isAuthenticated, logout, setToken } = useAuth();
 
-  const { isError, isSuccess } = useQuery({
-    enabled: !!token,
+  const { data, isError, isSuccess } = useQuery({
+    enabled: !!searchToken,
     queryFn: async () => {
       const response = await fetch(`${config.bffUrl}/auth/ui-session`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${searchToken}` },
       });
       if (!response.ok) throw new Error("Token non valido");
       return response.json();
     },
-    queryKey: ["auth-ui-session", token],
+    queryKey: ["auth-ui-session", searchToken],
     retry: false,
     throwOnError: false,
   });
 
   useEffect(() => {
-    if (isSuccess && token) {
-      setAuthToken(token);
-      // TODO: navigate to home or profile
-      // navigate({ replace: true, to: "/" });
+    if (isSuccess && data.sessionToken) {
+      setToken(data.sessionToken);
+      navigate({ replace: true, to: "/" });
     }
-  }, [isSuccess, token]);
+  }, [isSuccess, data, setToken, navigate]);
 
   const handleLogin = () => {
     const returnUrl = `${window.location.origin}/ui/login`;
@@ -49,34 +48,22 @@ function LoginPage() {
   };
 
   const handleLogout = () => {
-    clearAuthToken();
+    logout();
     navigate({ replace: true, to: "/login" });
   };
 
-  const isLoggedIn = (!!token && isSuccess) || !!existingToken;
-  const displayToken = isSuccess ? token : existingToken;
-  const showLoginButton = !isLoggedIn && (isError || !token);
+  const showLoginButton = !isAuthenticated && (isError || !searchToken);
 
   return (
     <div className="flex flex-col h-full items-center justify-center">
-      {isError ? (
-        <p>Invalid token</p>
-      ) : (
-        displayToken && (
-          <pre className="whitespace-pre-wrap break-all max-w-full">
-            <b>UI Session Token:</b>
-            <br />
-            {displayToken}
-          </pre>
-        )
-      )}
+      {isError && <p>Invalid token</p>}
 
       {showLoginButton && (
         <Button onClick={handleLogin} type="button">
           {isError ? "Retry Login" : "Login"}
         </Button>
       )}
-      {isLoggedIn && <Button onClick={handleLogout}>Logout</Button>}
+      {isAuthenticated && <Button onClick={handleLogout}>Logout</Button>}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { client } from "@/libs/axios";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   component: Index,
 });
 

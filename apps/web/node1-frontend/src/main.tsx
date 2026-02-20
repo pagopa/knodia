@@ -11,6 +11,7 @@ import { StrictMode } from "react";
 import "@knodia/ui-kit/themes/node1.css";
 import ReactDOM from "react-dom/client";
 
+import { AuthProvider } from "@/contexts/auth/AuthContext";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 
@@ -80,7 +81,9 @@ if (rootElement && !rootElement.innerHTML) {
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
       </QueryClientProvider>
     </StrictMode>,
   );
