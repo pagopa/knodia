@@ -4,11 +4,10 @@ import { match } from "ts-pattern";
 
 import { config } from "@/config/config";
 
+import { getAuthToken } from "./auth";
+
 axios.interceptors.request.use((axiosConfig) => {
-  const token = document.cookie
-    .split("; ")
-    .find((c) => c.startsWith("session_token="))
-    ?.split("=")[1];
+  const token = getAuthToken();
   if (token) {
     axiosConfig.headers = axiosConfig.headers ?? {};
     axiosConfig.headers.Authorization = `Bearer ${token}`;

@@ -41,7 +41,8 @@ export default defineConfig(({ mode }) => {
 
 /**
  * TODO: remove once we have a real local dev auth flow.
- * Dev-only: reads VITE_DEV_SESSION_TOKEN from .env.local and sets it as a cookie.
+ * Dev-only: reads VITE_DEV_SESSION_TOKEN from .env.local and sets it in local storage.
+ * Note: the key "knodia_auth_token" must match AUTH_TOKEN_KEY in src/libs/auth.ts.
  */
 function devSessionToken(env: Record<string, string>): Plugin {
   return {
@@ -52,7 +53,7 @@ function devSessionToken(env: Record<string, string>): Plugin {
       if (!token) return [];
       return [
         {
-          children: `document.cookie = "session_token=${token}; path=/";`,
+          children: `localStorage.setItem("knodia_auth_token", ${JSON.stringify(token)});`,
           injectTo: "body",
           tag: "script",
         },
