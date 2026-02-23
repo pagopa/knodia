@@ -1,17 +1,10 @@
-import {
-  Banner,
-  Breadcrumb,
-  Breadcrumbs,
-  Empty,
-  Pagination,
-} from "@knodia/ui-kit/ui";
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/PageHeader";
-import { ConsumptionEserviceSearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/ConsumptionEserviceSearchFilters";
-import { ConsumptionEserviceSearchResultList } from "@/features/e-service/components/ConsumptionEserviceSearch/ConsumptionEserviceSearchResultList";
+import { SearchContent } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchContent";
+import { SearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchFilters";
 import {
   consumptionEserviceSearchDefaultValues,
   consumptionEserviceSearchSchema,
@@ -70,7 +63,7 @@ function RouteComponent() {
 
       <PageHeader title="Search New E-Services" />
 
-      <ConsumptionEserviceSearchFilters
+      <SearchFilters
         defaultValues={{
           category: search.category,
           keywords: search.keywords,
@@ -80,31 +73,11 @@ function RouteComponent() {
         onValidationError={handleValidationError}
       />
 
-      {hasValidationError ? (
-        <Banner kind="error">
-          To search for an E-Service, you should select a Knode and add a
-          category or a keyword.
-        </Banner>
-      ) : results ? (
-        <>
-          <ConsumptionEserviceSearchResultList
-            eservices={results.items}
-            isLoading={false} // TODO: Replace with isLoading from useQuery when BFF endpoint is available
-          />
-          <Pagination
-            className="mx-auto mt-auto pt-6"
-            limit={results.pagination.limit}
-            offset={search.offset}
-            onOffsetChange={handleOffsetChange}
-            totalItems={results.pagination.total}
-          />
-        </>
-      ) : (
-        <Empty
-          description="Search the E-Services in a Knode that match a category or a keyword"
-          icon={<MagnifyingGlassIcon />}
-        />
-      )}
+      <SearchContent
+        hasValidationError={hasValidationError}
+        onOffsetChange={handleOffsetChange}
+        results={results}
+      />
     </div>
   );
 }

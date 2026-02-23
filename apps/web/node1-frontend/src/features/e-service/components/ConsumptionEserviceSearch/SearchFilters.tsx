@@ -21,7 +21,7 @@ interface Props {
   onValidationError: () => void;
 }
 
-export function ConsumptionEserviceSearchFilters({
+export function SearchFilters({
   defaultValues,
   onSubmit,
   onValidationError,

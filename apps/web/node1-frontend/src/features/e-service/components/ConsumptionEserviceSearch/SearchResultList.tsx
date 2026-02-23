@@ -3,9 +3,9 @@ import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 import type { ConsumptionEserviceSearchResult } from "@/routes/consumption/e-services_/consumption-eservice-search.mock";
 
-import { ConsumptionEserviceSearchResultCard } from "./ConsumptionEserviceSearchResultCard";
+import { SearchResultCard } from "./SearchResultCard";
 
-export function ConsumptionEserviceSearchResultList({
+export function SearchResultList({
   eservices,
   isLoading,
 }: {
@@ -30,7 +30,7 @@ export function ConsumptionEserviceSearchResultList({
     <ul className="flex flex-col gap-4" role="list">
       {eservices.map((eservice) => (
         <li key={eservice.id}>
-          <ConsumptionEserviceSearchResultCard eservice={eservice} />
+          <SearchResultCard eservice={eservice} />
         </li>
       ))}
     </ul>

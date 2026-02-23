@@ -10,7 +10,7 @@ import {
   EserviceCardHeader,
 } from "../EserviceCard";
 
-export function ConsumptionEserviceSearchResultCard({
+export function SearchResultCard({
   eservice,
 }: {
   eservice: ConsumptionEserviceSearchResult;
