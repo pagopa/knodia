@@ -3,7 +3,7 @@ import type {
   RequestContextData,
 } from "@fastify/request-context";
 import type { CorrelationId } from "@knodia/common-models/ids";
-import type { ServiceName } from "@knodia/common-models/services";
+import type { HTTPServiceName } from "@knodia/common-models/services";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import { type FastifyBaseLogger } from "fastify";
@@ -16,7 +16,7 @@ declare module "@fastify/request-context" {
     authData?: AuthData;
     correlationId: CorrelationId;
     logger: FastifyBaseLogger;
-    serviceName: ServiceName;
+    serviceName: HTTPServiceName;
   }
 }
 

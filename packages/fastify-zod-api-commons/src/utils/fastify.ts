@@ -1,4 +1,4 @@
-import type { ServiceName } from "@knodia/common-models/services";
+import type { HTTPServiceName } from "@knodia/common-models/services";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { HTTPServiceLoggerMetadata } from "@knodia/logger/models";
 
@@ -33,7 +33,7 @@ export const createFastifyApp = ({
   loggerConfig: LoggerConfig;
   makeApiProblem: MakeApiProblemFn;
   readCorrelationIdFromHeader?: boolean;
-  serviceName: ServiceName;
+  serviceName: HTTPServiceName;
 }) => {
   const app = Fastify({
     genReqId: (req) =>
