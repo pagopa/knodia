@@ -1,3 +1,4 @@
+import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -14,11 +15,7 @@ import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
-  const app = buildApp({
-    config,
-  });
-
-  return app;
+  return buildApp({ config });
 }
 
 function buildApp({ config }: { config: BffProcessConfig }) {
@@ -55,6 +52,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     serviceName: serviceName.BACKEND_FOR_FRONTEND,
   });
 
+  app.register(authenticationPlugin, config);
   app.register(healthRouter);
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,

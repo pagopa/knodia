@@ -1,7 +1,9 @@
+import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/eservice";
+import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -20,12 +22,12 @@ import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
+  config,
   eventStoreDb,
-  loggerConfig,
   readmodelDb,
 }: {
+  config: AuthConfig & LoggerConfig;
   eventStoreDb: NodePgDatabase;
-  loggerConfig: LoggerConfig;
   readmodelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
@@ -46,11 +48,12 @@ export function buildApp({
         ],
       },
     },
-    loggerConfig,
+    loggerConfig: config,
     makeApiProblem,
     serviceName: serviceName.ESERVICE_PROCESS,
   });
 
+  app.register(authenticationPlugin, config);
   app.register(healthRouter);
   app.register(
     eserviceRouter,
@@ -85,8 +88,8 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
   const readmodelDb = drizzle(readmodelPool);
 
   const app = buildApp({
+    config,
     eventStoreDb,
-    loggerConfig: config,
     readmodelDb,
   });
 

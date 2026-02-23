@@ -6,6 +6,7 @@ export * from "./ButtonLink";
 export * from "./Checkbox";
 export * from "./CheckboxGroup";
 export * from "./Chip";
+export * from "./ComboBox";
 export * from "./CopyButton";
 export * from "./Divider";
 export * from "./Empty";

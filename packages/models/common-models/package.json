@@ -6,15 +6,18 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "test": "vitest"
+    "test": "pnpm -w test --project @knodia/common-models",
+    "test:watch": "pnpm test --watch"
   },
   "exports": {
     "./api": "./src/api.ts",
+    "./errors": "./src/errors.ts",
+    "./event": "./src/events.ts",
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
-    "./event": "./src/events.ts",
     "./protobuf": "./src/protobuf.ts",
-    "./errors": "./src/errors.ts"
+    "./auth": "./src/auth/index.ts",
+    "./types": "./src/types.ts"
   },
   "dependencies": {
     "zod": "catalog:"

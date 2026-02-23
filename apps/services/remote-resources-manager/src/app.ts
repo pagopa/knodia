@@ -1,3 +1,4 @@
+import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -47,6 +48,7 @@ function buildApp({ config }: { config: RemoteResourcesManagerConfig }) {
     serviceName: serviceName.REMOTE_RESOURCES_MANAGER,
   });
 
+  app.register(authenticationPlugin, config);
   app.register(healthRouter);
   app.register(remoteResourcesManagerRouter, {
     remoteResourcesManagerService:
