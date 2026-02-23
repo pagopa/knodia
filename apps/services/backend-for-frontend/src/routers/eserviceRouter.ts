@@ -11,10 +11,7 @@ import {
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  API_Problem,
-  CORRELATION_ID_HEADER,
-} from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
 import { config } from "../config/config.ts";
@@ -31,6 +28,7 @@ import {
   toAPI_ProducerEserviceDetails,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { getProcessHeaders } from "../utils/headers.ts";
 
 interface EserviceRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
@@ -73,9 +71,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const { data } = await eserviceProcessApi.createEservice({
         body: seed,
         client: eserviceProcessClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
+        headers: getProcessHeaders(req, correlationId),
       });
       res.status(201).send(API_CreatedResource.parse({ id: data.id }));
     },
@@ -114,9 +110,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
+        headers: getProcessHeaders(req, correlationId),
         query: {
           limit,
           mode,
@@ -135,9 +129,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
           const { data: latestEserviceVersion } =
             await eserviceProcessApi.getEserviceLatestVersion({
               client: eserviceProcessClient,
-              headers: {
-                [CORRELATION_ID_HEADER]: correlationId,
-              },
+              headers: getProcessHeaders(req, correlationId),
               path: { eserviceId: eservice.id },
             });
 
@@ -175,8 +167,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
-
-      const headers = { [CORRELATION_ID_HEADER]: correlationId };
       const path = { eserviceId: req.params.eserviceId };
 
       const [
@@ -186,17 +176,17 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       ] = await Promise.all([
         eserviceProcessApi.getEservice({
           client: eserviceProcessClient,
-          headers,
+          headers: getProcessHeaders(req, correlationId),
           path,
         }),
         eserviceProcessApi.getEserviceLatestVersion({
           client: eserviceProcessClient,
-          headers,
+          headers: getProcessHeaders(req, correlationId),
           path,
         }),
         eserviceProcessApi.getEserviceLatestVersionInterface({
           client: eserviceProcessClient,
-          headers,
+          headers: getProcessHeaders(req, correlationId),
           path,
         }),
       ]);
@@ -238,9 +228,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const { data } =
         await eserviceProcessApi.getEserviceLatestVersionInterface({
           client: eserviceProcessClient,
-          headers: {
-            [CORRELATION_ID_HEADER]: correlationId,
-          },
+          headers: getProcessHeaders(req, correlationId),
           path: {
             eserviceId: req.params.eserviceId,
           },
