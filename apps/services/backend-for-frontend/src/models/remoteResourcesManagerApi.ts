@@ -1,4 +1,5 @@
 import {
+  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -10,10 +11,6 @@ import {
   API_EserviceVersionState,
 } from "@knodia/eservice-models/api";
 import { z } from "zod";
-
-const API_KnodeId = z
-  .enum(["Orion", "Lynx"])
-  .meta({ description: "Unique Knode identifier", id: "KnodeId" });
 
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
