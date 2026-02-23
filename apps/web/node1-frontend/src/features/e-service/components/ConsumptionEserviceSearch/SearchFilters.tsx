@@ -2,9 +2,9 @@ import { categories } from "@knodia/category-models";
 import { Button, ComboBox, ComboBoxItem, TextField } from "@knodia/ui-kit/ui";
 import { useForm } from "@tanstack/react-form";
 
-import type { ConsumptionEserviceSearchParams } from "../models/search-params";
+import type { ConsumptionEserviceSearchParams } from "../../models/search-params";
 
-import { toSchemeRefOptions } from "../utils/schemeRef";
+import { toSchemeRefOptions } from "../../utils/schemeRef";
 
 // TODO: Replace with real data
 const knodeOptions = [
@@ -21,7 +21,7 @@ interface Props {
   onValidationError: () => void;
 }
 
-export function ConsumptionEserviceSearchFilters({
+export function SearchFilters({
   defaultValues,
   onSubmit,
   onValidationError,

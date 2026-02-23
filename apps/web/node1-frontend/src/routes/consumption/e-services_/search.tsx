@@ -1,14 +1,16 @@
-import { Banner, Breadcrumb, Breadcrumbs, Empty } from "@knodia/ui-kit/ui";
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/PageHeader";
-import { ConsumptionEserviceSearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearchFilters";
+import { SearchContent } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchContent";
+import { SearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchFilters";
 import {
   consumptionEserviceSearchDefaultValues,
   consumptionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
+
+import { searchConsumptionEservices } from "./consumption-eservice-search.mock";
 
 export const Route = createFileRoute("/consumption/e-services_/search")({
   component: RouteComponent,
@@ -23,9 +25,26 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
+  const hasSearched = Boolean(
+    search.knode && (search.category || search.keywords),
+  );
+
+  const results = useMemo(() => {
+    if (!hasSearched) return null;
+    return searchConsumptionEservices({
+      category: search.category,
+      keywords: search.keywords,
+      offset: search.offset,
+    });
+  }, [hasSearched, search.category, search.keywords, search.offset]);
+
   const handleSearch = (params: Omit<typeof search, "offset">) => {
     if (hasValidationError) setHasValidationError(false);
     navigate({ replace: true, search: { ...params, offset: 0 } });
+  };
+
+  const handleOffsetChange = (offset: number) => {
+    navigate({ replace: true, search: (s) => ({ ...s, offset }) });
   };
 
   const handleValidationError = () => {
@@ -33,7 +52,7 @@ function RouteComponent() {
   };
 
   return (
-    <>
+    <div className="flex min-h-full flex-col">
       <Breadcrumbs className="mb-10">
         <Breadcrumb isDisabled>Consumption</Breadcrumb>
         <Breadcrumb href={{ to: "/consumption/e-services" }}>
@@ -44,7 +63,7 @@ function RouteComponent() {
 
       <PageHeader title="Search New E-Services" />
 
-      <ConsumptionEserviceSearchFilters
+      <SearchFilters
         defaultValues={{
           category: search.category,
           keywords: search.keywords,
@@ -54,17 +73,11 @@ function RouteComponent() {
         onValidationError={handleValidationError}
       />
 
-      {hasValidationError ? (
-        <Banner kind="error">
-          To search for an E-Service, you should select a Knode and add a
-          category or a keyword.
-        </Banner>
-      ) : (
-        <Empty
-          description="Search the E-Services in a Knode that match a category or a keyword"
-          icon={<MagnifyingGlassIcon />}
-        />
-      )}
-    </>
+      <SearchContent
+        hasValidationError={hasValidationError}
+        onOffsetChange={handleOffsetChange}
+        results={results}
+      />
+    </div>
   );
 }
