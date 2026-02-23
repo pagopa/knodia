@@ -64,6 +64,13 @@ describe("POST /catalog (getCatalogEservices)", () => {
       totalCount: orderedByUpdatedAtEservicesResult.length,
     },
     {
+      body: { keywords: "1 knodia 1" },
+      expectedResult: [mockEservices.at(0)] as Eservice[],
+      query: defaultQuery,
+      testCase: "search by keywords in name",
+      totalCount: 1,
+    },
+    {
       body: { keywords: "2 knodia 2" },
       expectedResult: [mockEservices.at(1)] as Eservice[],
       query: defaultQuery,
@@ -86,7 +93,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
       totalCount: 0,
     },
   ] satisfies {
-    body: z.input<typeof API_GetCatalogEserviceSearchParams>;
+    body: API_GetCatalogEserviceSearchParams;
     expectedResult: Eservice[];
     query: z.input<typeof API_GetCatalogEservicesQueryParams>;
     testCase: string;
