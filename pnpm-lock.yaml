@@ -488,6 +488,9 @@ importers:
 
   apps/services/k2k-gateway:
     dependencies:
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
