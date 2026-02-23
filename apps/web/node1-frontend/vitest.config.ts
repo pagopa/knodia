@@ -10,7 +10,7 @@ export default defineConfig({
   test: {
     css: false,
     env: {
-      VITE_BFF_URL: "http://localhost:3000/bff",
+      BFF_URL: "http://localhost:3000/bff",
     },
     environment: "jsdom",
     globals: false,

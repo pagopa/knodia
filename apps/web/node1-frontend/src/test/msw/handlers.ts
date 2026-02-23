@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 
-const BASE_URL = import.meta.env["VITE_BFF_URL"];
+const BASE_URL = import.meta.env["BFF_URL"];
 
 export const handlers = [
   http.get(`${BASE_URL}/producer/eservices`, ({ request }) => {
