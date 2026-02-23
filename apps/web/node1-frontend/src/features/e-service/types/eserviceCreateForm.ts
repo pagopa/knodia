@@ -17,7 +17,22 @@ const schemeRefSchema = z.object({
 
 export type SchemeRef = z.infer<typeof schemeRefSchema>;
 
-// Schema for form fields
+const maxDailyCallsFormSchema = z
+  .object({
+    maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),
+    maxDailyCallsPerKnode: z.number().min(1, "Must be at least 1."),
+  })
+  .superRefine((seed, ctx) => {
+    if (seed.maxDailyCallsPerKnode < seed.maxDailyCallsPerConsumer) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Max daily calls per node must be greater than or equal to max daily calls per consumer.",
+        path: ["maxDailyCallsPerKnode"],
+      });
+    }
+  });
+
 const eserviceFieldSchemas = {
   accessTokenAudience: z.string().min(1, "Access token audience is required."),
   accessTokenDuration: z
@@ -51,7 +66,10 @@ const eserviceFieldSchemas = {
     .min(1, "At least one group is required."),
 };
 
-export const eserviceFormSchema = z.object(eserviceFieldSchemas);
+export const eserviceFormSchema = z
+  .object(eserviceFieldSchemas)
+  .and(maxDailyCallsFormSchema);
+
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
 // Draft version of the form data: the interface document is nullable
@@ -67,22 +85,6 @@ export const generalStepSchema = z.object({
   name: eserviceFieldSchemas.name,
 });
 
-const maxDailyCallsValidation = z
-  .object({
-    maxDailyCallsPerConsumer: eserviceFieldSchemas.maxDailyCallsPerConsumer,
-    maxDailyCallsPerKnode: eserviceFieldSchemas.maxDailyCallsPerKnode,
-  })
-  .superRefine((seed, ctx) => {
-    if (seed.maxDailyCallsPerKnode < seed.maxDailyCallsPerConsumer) {
-      ctx.addIssue({
-        code: "custom",
-        message:
-          "Max daily calls per node must be greater than or equal to max daily calls per consumer.",
-        path: ["maxDailyCallsPerKnode"],
-      });
-    }
-  });
-
 export const technicalStepSchema = z
   .object({
     accessTokenAudience: eserviceFieldSchemas.accessTokenAudience,
@@ -91,7 +93,7 @@ export const technicalStepSchema = z
     isSignalHubEnabled: eserviceFieldSchemas.isSignalHubEnabled,
     mode: eserviceFieldSchemas.mode,
   })
-  .and(maxDailyCallsValidation);
+  .and(maxDailyCallsFormSchema);
 
 export const docsStepSchema = z.object({
   interfaceDocument: eserviceFieldSchemas.interfaceDocument,
