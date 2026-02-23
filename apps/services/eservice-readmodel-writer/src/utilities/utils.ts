@@ -1,4 +1,5 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { LoggerConfig } from "@knodia/logger/config";
 import type { LoggerMetadataKafka } from "@knodia/logger/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -8,10 +9,12 @@ import { EserviceEventV1 } from "@knodia/eservice-models";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { createLogger } from "@knodia/logger";
 
-import { config } from "../config/config.ts";
 import { handleEserviceEvent } from "../services/consumerService.ts";
 
-export const createProcessMessage = (readmodelDb: NodePgDatabase) => {
+export const createProcessMessage = (
+  readmodelDb: NodePgDatabase,
+  loggerConfig: LoggerConfig,
+) => {
   const eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
 
   return async function processMessage({
@@ -28,7 +31,7 @@ export const createProcessMessage = (readmodelDb: NodePgDatabase) => {
       streamVersion: event.version,
     };
     const logger = createLogger({
-      config,
+      config: loggerConfig,
       loggerMetadata,
       serviceName: "eservice-readmodel-writer",
     });
