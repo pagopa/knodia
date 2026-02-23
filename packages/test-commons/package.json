@@ -20,11 +20,14 @@
     "@testcontainers/postgresql": "catalog:",
     "drizzle-orm": "catalog:",
     "eslint": "catalog:",
+    "jose": "catalog:",
+    "ts-pattern": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "zocker": "catalog:"
   },
   "exports": {
+    "./auth": "./src/auth.ts",
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",

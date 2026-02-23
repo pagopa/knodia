@@ -2,7 +2,9 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "includeEntryExports": true,
   "workspaces": {
-    ".": {},
+    ".": {
+      "ignore": ["scripts/local-kms/kms-setup.mjs"]
+    },
     "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],
       "ignore": ["src/generated/**/*.ts"]
@@ -20,7 +22,7 @@
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/web/**/*": {
-      "ignore": ["src/routeTree.gen.ts"],
+      "ignore": ["src/routeTree.gen.ts", "public/**/*"],
       "ignoreDependencies": ["babel-plugin-react-compiler"]
     },
     "packages/ui-kit": {

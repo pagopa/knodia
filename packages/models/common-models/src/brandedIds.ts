@@ -15,12 +15,16 @@ export type EserviceInterfaceId = z.infer<typeof EserviceInterfaceId>;
 export const OrganizationId = z.uuid().brand<"OrganizationId">();
 export type OrganizationId = z.infer<typeof OrganizationId>;
 
+export const UserId = z.uuid().brand<"UserId">();
+export type UserId = z.infer<typeof UserId>;
+
 type IDS =
   | CorrelationId
   | EserviceId
   | EserviceInterfaceId
   | EserviceVersionId
-  | OrganizationId;
+  | OrganizationId
+  | UserId;
 
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
