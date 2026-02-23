@@ -18,11 +18,23 @@ export type OrganizationId = z.infer<typeof OrganizationId>;
 export const UserId = z.uuid().brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 
+export const KnodeId = z.uuid().brand<"KnodeId">();
+export type KnodeId = z.infer<typeof KnodeId>;
+
+export const AgreementId = z.uuid().brand<"AgreementId">();
+export type AgreementId = z.infer<typeof AgreementId>;
+
+export const ExternalId = <T extends z.ZodTypeAny>(schema: T) =>
+  schema.brand<"ExternalId">();
+export type ExternalId<T extends IDS> = T & z.BRAND<"ExternalId">;
+
 type IDS =
+  | AgreementId
   | CorrelationId
   | EserviceId
   | EserviceInterfaceId
   | EserviceVersionId
+  | KnodeId
   | OrganizationId
   | UserId;
 

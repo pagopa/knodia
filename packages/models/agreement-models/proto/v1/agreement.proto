@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package agreement.v1;
+
+message AgreementV1 {
+  string id = 1;
+  string eserviceId = 2;
+  string eserviceVersionId = 3;
+  string consumerId = 4;
+  string producerId = 5;
+  AgreementStateV1 state = 6;
+  int64 createdAt = 7;
+  int64 updatedAt = 8;
+}
+
+enum AgreementStateV1 {
+  ACTIVE = 0;
+  SUSPENDED = 1;
+  ARCHIVED = 2;
+}
