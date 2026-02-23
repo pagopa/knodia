@@ -45,15 +45,6 @@ export type API_GetCatalogEserviceSearchParams = z.infer<
   typeof API_GetCatalogEserviceSearchParams
 >;
 
-export const API_GetEserviceSearchParamsWithoutKnodeId = z.union([
-  API_EserviceSearchByCategory.omit({ knodeId: true }),
-  API_EserviceSearchByKeywords.omit({ knodeId: true }),
-  API_EserviceSearchByKeywordsAndCategory.omit({ knodeId: true }),
-]);
-export type API_GetEserviceSearchParamsWithoutKnodeId = z.infer<
-  typeof API_GetEserviceSearchParamsWithoutKnodeId
->;
-
 export const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
