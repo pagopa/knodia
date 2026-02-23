@@ -1,9 +1,12 @@
 import type { HTTPServiceName } from "@knodia/common-models/services";
 import type { LoggerConfig } from "@knodia/logger/config";
-import type { HTTPServiceLoggerMetadata } from "@knodia/logger/models";
 
 import fastifyRequestContext from "@fastify/request-context";
-import { generateId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  CorrelationId,
+  generateId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { createLoggerOptions } from "@knodia/logger";
 import Fastify, {
   type FastifyInstance,
@@ -46,17 +49,12 @@ export const createFastifyApp = ({
 
   app.register(fastifyRequestContext, {
     defaultStoreValues: (req) => {
-      const loggerMetadata: HTTPServiceLoggerMetadata = {
-        correlationId: unsafeBrandId(req.id),
-        organizationId: generateId(),
-        userId: generateId(),
-      };
-
-      const logger = req.log.child(loggerMetadata);
+      const correlationId = unsafeBrandId<CorrelationId>(req.id);
+      const logger = req.log.child({ correlationId });
       req.log = logger;
 
       return {
-        correlationId: loggerMetadata.correlationId,
+        correlationId,
         logger,
         serviceName,
       };
