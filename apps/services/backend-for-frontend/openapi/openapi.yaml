@@ -557,6 +557,28 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
+    CompactOrganization:
+      description: Organization with only id and name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+              minLength: 5
+              maxLength: 60
+          required:
+            - en
+          additionalProperties: false
+      required:
+        - id
+        - name
+      additionalProperties: false
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -598,10 +620,8 @@ components:
           required:
             - en
           additionalProperties: false
-        producerId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
       required:
         - categories
         - description
@@ -610,7 +630,7 @@ components:
         - latestVersionState
         - mode
         - name
-        - producerId
+        - producer
       additionalProperties: false
     CatalogEserviceSearchResults:
       type: object

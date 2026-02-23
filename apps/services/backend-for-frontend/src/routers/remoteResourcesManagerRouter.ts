@@ -10,6 +10,7 @@ import { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-clie
 
 import type { RemoteResourcesManagerClient } from "../clients/clientsProvider.ts";
 
+import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CatalogEserviceSearchResults,
@@ -37,7 +38,14 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         query: req.query,
       });
 
-      res.send(data);
+      res.send({
+        pagination: data.pagination,
+        results: data.results.map((r) =>
+          toAPI_CatalogEserviceSearchResult(r, {
+            en: "Producer name", // TODO: retrieve producer name
+          }),
+        ),
+      });
     },
     method: "POST",
     schema: {
