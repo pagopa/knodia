@@ -7,6 +7,7 @@ import {
   arrayBufferToBase64,
   getContentType,
 } from "@/features/e-service/utils/file";
+import { getOrganizationInitials } from "@/utils/getOrganizationInitials";
 
 export function toCatalogSearchResultUI(
   result: bffApi.CatalogEserviceSearchResult,
@@ -19,8 +20,10 @@ export function toCatalogSearchResultUI(
     id: result.id,
     mode: result.mode,
     name: result.name.en,
-    // TODO: resolve producer organization name from producerId (BFF should enrich the response)
-    producerId: result.producerId,
+    organization: {
+      initials: getOrganizationInitials(result.producer.name.en),
+      name: result.producer.name.en,
+    },
     state: result.latestVersionState,
   };
 }

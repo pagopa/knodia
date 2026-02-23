@@ -8,7 +8,9 @@ export interface ConsumptionEserviceSearchResult {
   id: string;
   mode: bffApi.EserviceMode;
   name: string;
-  // TODO: resolve producer organization name from producerId (BFF should enrich the response)
-  producerId: string;
+  organization: {
+    initials: string;
+    name: string;
+  };
   state: bffApi.EserviceVersionState;
 }
