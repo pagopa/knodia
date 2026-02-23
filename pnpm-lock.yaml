@@ -287,6 +287,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/remote-resources-manager-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/remote-resources-manager
       fastify:
         specifier: 'catalog:'
         version: 5.7.3
@@ -486,6 +489,125 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  apps/services/k2k-gateway:
+    dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
+      '@knodia/eservice-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/eservice-process-client
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/logger':
+        specifier: workspace:*
+        version: link:../../../packages/logger
+      fastify:
+        specifier: 'catalog:'
+        version: 5.7.3
+      fastify-type-provider-zod:
+        specifier: 'catalog:'
+        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/spectral-config':
+        specifier: workspace:*
+        version: link:../../../packages/spectral-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@stoplight/spectral-cli':
+        specifier: 'catalog:'
+        version: 6.15.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  apps/services/remote-resources-manager:
+    dependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-models
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/k2k-gateway-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/k2k-gateway
+      '@knodia/logger':
+        specifier: workspace:*
+        version: link:../../../packages/logger
+      fastify:
+        specifier: 'catalog:'
+        version: 5.7.3
+      fastify-type-provider-zod:
+        specifier: 'catalog:'
+        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/spectral-config':
+        specifier: workspace:*
+        version: link:../../../packages/spectral-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@stoplight/spectral-cli':
+        specifier: 'catalog:'
+        version: 6.15.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   apps/web/node1-frontend:
     dependencies:
       '@knodia/attribute-models':
@@ -615,6 +737,50 @@ importers:
         version: 5.9.3
 
   packages/clients/eservice-process-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/k2k-gateway:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/remote-resources-manager:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
@@ -5940,8 +6106,8 @@ packages:
   lodash.topath@4.5.2:
     resolution: {integrity: sha512-1/W4dM+35DwvE/iEd1M9ekewOSTlpFekhw9mhAtrwjVqUr83/ilQiyAvmg4tVX7Unkcfl1KC+i9WdaT4B6aQcg==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   long@5.3.2:
     resolution: {integrity: sha512-mNAgZ1GmyNhD7AuqnTG3/VQ26o760+ZYBPKjPvugO8+nLbYfX6TVpJPseBvopbdY+qpZ/lKUnmEc1LeZYS3QAA==}
@@ -8513,7 +8679,7 @@ snapshots:
       '@jsdevtools/ono': 7.1.3
       '@types/json-schema': 7.0.15
       js-yaml: 4.1.1
-      lodash: 4.17.21
+      lodash: 4.17.23
 
   '@hey-api/openapi-ts@0.89.2(typescript@5.9.3)':
     dependencies:
@@ -10353,7 +10519,7 @@ snapshots:
       dependency-graph: 0.11.0
       fast-memoize: 2.5.2
       immer: 9.0.21
-      lodash: 4.17.21
+      lodash: 4.17.23
       tslib: 2.8.1
       urijs: 1.19.11
 
@@ -10363,7 +10529,7 @@ snapshots:
       '@stoplight/path': 1.3.2
       '@stoplight/types': 13.20.0
       jsonc-parser: 2.2.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       safe-stable-stringify: 1.1.1
 
   '@stoplight/ordered-object-literal@1.0.5': {}
@@ -10386,7 +10552,7 @@ snapshots:
       chalk: 4.1.2
       fast-glob: 3.2.12
       hpagent: 1.2.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       pony-cause: 1.1.1
       stacktracey: 2.1.8
       tslib: 2.8.1
@@ -10410,7 +10576,7 @@ snapshots:
       ajv-formats: 2.1.1(ajv@8.17.1)
       es-aggregate-error: 1.0.14
       jsonpath-plus: 10.3.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       lodash.topath: 4.5.2
       minimatch: 3.1.2
       nimma: 0.2.3
@@ -10438,7 +10604,7 @@ snapshots:
       '@types/markdown-escape': 1.1.3
       chalk: 4.1.2
       cliui: 7.0.4
-      lodash: 4.17.21
+      lodash: 4.17.23
       markdown-escape: 2.0.0
       node-sarif-builder: 2.0.3
       strip-ansi: 6.0.1
@@ -10458,7 +10624,7 @@ snapshots:
       ajv-draft-04: 1.0.0(ajv@8.17.1)
       ajv-errors: 3.0.0(ajv@8.17.1)
       ajv-formats: 2.1.1(ajv@8.17.1)
-      lodash: 4.17.21
+      lodash: 4.17.23
       tslib: 2.8.1
     transitivePeerDependencies:
       - encoding
@@ -10535,7 +10701,7 @@ snapshots:
       ajv-formats: 2.1.1(ajv@8.17.1)
       json-schema-traverse: 1.0.0
       leven: 3.1.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       tslib: 2.8.1
     transitivePeerDependencies:
       - encoding
@@ -10546,7 +10712,7 @@ snapshots:
       '@stoplight/path': 1.3.2
       '@stoplight/types': 13.20.0
       abort-controller: 3.0.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       node-fetch: 2.7.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -11269,7 +11435,7 @@ snapshots:
     dependencies:
       '@usebruno/schema': 0.15.0(yup@0.32.11)
       js-yaml: 4.1.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       nanoid: 3.3.8
     transitivePeerDependencies:
       - yup
@@ -11278,7 +11444,7 @@ snapshots:
     dependencies:
       arcsecond: 5.0.0
       dotenv: 16.6.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       ohm-js: 16.6.0
 
   '@usebruno/schema@0.15.0(yup@0.32.11)':
@@ -11457,7 +11623,7 @@ snapshots:
       graceful-fs: 4.2.11
       is-stream: 2.0.1
       lazystream: 1.0.1
-      lodash: 4.17.21
+      lodash: 4.17.23
       normalize-path: 3.0.0
       readable-stream: 4.7.0
 
@@ -13089,7 +13255,7 @@ snapshots:
 
   lodash.topath@4.5.2: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.23: {}
 
   long@5.3.2: {}
 
@@ -14632,7 +14798,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.28.6
       '@types/lodash': 4.17.23
-      lodash: 4.17.21
+      lodash: 4.17.23
       lodash-es: 4.17.23
       nanoclone: 0.2.1
       property-expr: 2.0.6

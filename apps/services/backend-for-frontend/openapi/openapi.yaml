@@ -512,6 +512,119 @@ components:
         - updatedAt
         - version
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
+    GetCatalogEserviceSearchParams:
+      anyOf:
+        - description: Include only E-services belonging to the specified category
+          type: object
+          properties:
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+            knodeId:
+              $ref: "#/components/schemas/KnodeId"
+          required:
+            - category
+            - knodeId
+          additionalProperties: false
+        - description: Search by name or description
+          type: object
+          properties:
+            keywords:
+              type: string
+              minLength: 1
+            knodeId:
+              $ref: "#/components/schemas/KnodeId"
+          required:
+            - keywords
+            - knodeId
+          additionalProperties: false
+        - type: object
+          properties:
+            category:
+              $ref: "#/components/schemas/EserviceCategory"
+            keywords:
+              type: string
+              minLength: 1
+            knodeId:
+              $ref: "#/components/schemas/KnodeId"
+          required:
+            - category
+            - keywords
+            - knodeId
+          additionalProperties: false
+    CatalogEserviceSearchResult:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+              minLength: 10
+              maxLength: 250
+          required:
+            - en
+          additionalProperties: false
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        latestVersionRequiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
+        latestVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+              minLength: 5
+              maxLength: 60
+          required:
+            - en
+          additionalProperties: false
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - categories
+        - description
+        - id
+        - latestVersionRequiredAttributes
+        - latestVersionState
+        - mode
+        - name
+        - producerId
+      additionalProperties: false
+    CatalogEserviceSearchResults:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogEserviceSearchResult"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -716,6 +829,57 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /catalog:
+    post:
+      operationId: getCatalogEservices
+      summary: Search for E-services
+      tags:
+        - remote-resources-manager
+      description: Search for E-services according to search criteria and considering
+        only E-services with an active or suspended Version
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
+        required: true
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: E-service search results retrieved (sorted by most recently updated
+            first)
+          content:
+            application/json:
+              schema:
+                description: E-service search results retrieved (sorted by most recently updated
+                  first)
+                allOf:
+                  - $ref: "#/components/schemas/CatalogEserviceSearchResults"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -724,3 +888,5 @@ tags:
     name: health
   - description: E-services routes
     name: eservice
+  - description: Remote Resources Manager routes
+    name: remote-resources-manager
