@@ -27,7 +27,12 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
 > = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { query: req.query, requestBody: req.body },
+        `Getting E-services owned by knode ${req.body.knodeId} with query parameters and body data`,
+      );
 
       const { data } = await remoteResourcesManagerApi.getCatalogEservices({
         body: req.body,
