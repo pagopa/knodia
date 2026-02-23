@@ -75,7 +75,6 @@ function RouteComponent() {
 
       <SearchContent
         hasValidationError={hasValidationError}
-        offset={search.offset}
         onOffsetChange={handleOffsetChange}
         results={results}
       />

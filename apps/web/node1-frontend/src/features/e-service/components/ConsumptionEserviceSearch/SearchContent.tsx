@@ -7,12 +7,10 @@ import { SearchResultList } from "./SearchResultList";
 
 export function SearchContent({
   hasValidationError,
-  offset,
   onOffsetChange,
   results,
 }: {
   hasValidationError: boolean;
-  offset: number;
   onOffsetChange: (offset: number) => void;
   results: null | {
     items: ConsumptionEserviceSearchResult[];
@@ -46,7 +44,7 @@ export function SearchContent({
       <Pagination
         className="mx-auto mt-auto pt-6"
         limit={results.pagination.limit}
-        offset={offset}
+        offset={results.pagination.offset}
         onOffsetChange={onOffsetChange}
         totalItems={results.pagination.total}
       />
