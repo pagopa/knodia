@@ -26,7 +26,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { query: req.query, requestBody: req.body },
-        "Searching catalog E-services with query parameters and body data",
+        "Getting catalog E-services with query parameters and body data",
       );
 
       // TODO: Implement actual search logic calling eserviceProcessClient
