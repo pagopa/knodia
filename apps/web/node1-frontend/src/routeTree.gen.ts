@@ -116,13 +116,13 @@ const AuthenticatedConsumptionEServicesSearchRoute =
   AuthenticatedConsumptionEServicesSearchRouteImport.update({
     id: '/consumption/e-services_/search',
     path: '/consumption/e-services/search',
-    getParentRoute: () => AuthenticatedRoute,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedConsumptionEServicesIdRoute =
   AuthenticatedConsumptionEServicesIdRouteImport.update({
     id: '/consumption/e-services_/$id',
     path: '/consumption/e-services/$id',
-    getParentRoute: () => AuthenticatedRoute,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProductionEServicesNewIndexRoute =
   AuthenticatedProductionEServicesNewIndexRouteImport.update({
@@ -368,14 +368,14 @@ declare module '@tanstack/react-router' {
       path: '/consumption/e-services/search'
       fullPath: '/consumption/e-services/search'
       preLoaderRoute: typeof AuthenticatedConsumptionEServicesSearchRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/consumption/e-services_/$id': {
       id: '/_authenticated/consumption/e-services_/$id'
       path: '/consumption/e-services/$id'
       fullPath: '/consumption/e-services/$id'
       preLoaderRoute: typeof AuthenticatedConsumptionEServicesIdRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/production/e-services/new/': {
       id: '/_authenticated/production/e-services/new/'
