@@ -46,6 +46,16 @@ export type API_GetCatalogEserviceSearchParams = z.infer<
   typeof API_GetCatalogEserviceSearchParams
 >;
 
+export const API_CompactOrganization = z
+  .strictObject({
+    id: z.uuid(),
+    name: LocalizedName,
+  })
+  .meta({
+    description: "Organization with only id and name",
+    id: "CompactOrganization",
+  });
+
 const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -55,9 +65,12 @@ const API_CatalogEserviceSearchResult = z
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: LocalizedName,
-    producerId: z.uuid(),
+    producer: API_CompactOrganization,
   })
   .meta({ id: "CatalogEserviceSearchResult" });
+export type API_CatalogEserviceSearchResult = z.infer<
+  typeof API_CatalogEserviceSearchResult
+>;
 
 export const API_CatalogEserviceSearchResults = z
   .strictObject({

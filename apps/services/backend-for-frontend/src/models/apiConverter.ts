@@ -1,9 +1,12 @@
+import type { LocalizedName } from "@knodia/eservice-models";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
+import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
   API_ProducerEservice,
   API_ProducerEserviceDetails,
 } from "./api.ts";
+import type { API_CatalogEserviceSearchResult } from "./remoteResourcesManagerApi.ts";
 
 export const toAPI_ProducerEservice = ({
   activeAgreements,
@@ -68,5 +71,23 @@ export const toAPI_ProducerEserviceDetails = ({
     state: latestVersion.state,
     updatedAt: latestVersion.updatedAt,
     versionNumber: latestVersion.versionNumber,
+  },
+});
+
+export const toAPI_CatalogEserviceSearchResult = (
+  catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,
+  producerName: LocalizedName,
+): API_CatalogEserviceSearchResult => ({
+  categories: catalogEserviceSearchResult.categories,
+  description: catalogEserviceSearchResult.description,
+  id: catalogEserviceSearchResult.id,
+  latestVersionRequiredAttributes:
+    catalogEserviceSearchResult.latestVersionRequiredAttributes,
+  latestVersionState: catalogEserviceSearchResult.latestVersionState,
+  mode: catalogEserviceSearchResult.mode,
+  name: catalogEserviceSearchResult.name,
+  producer: {
+    id: catalogEserviceSearchResult.producerId,
+    name: producerName,
   },
 });
