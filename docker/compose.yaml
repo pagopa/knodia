@@ -201,7 +201,7 @@ services:
     security_opt:
       - no-new-privileges:true
     container_name: knodia-debezium-setup
-    image: curlimages/curl:8.12.1
+    image: curlimages/curl:8.12.1@sha256:94e9e444bcba979c2ea12e27ae39bee4cd10bc7041a472c4727a558e213744e6
     depends_on:
       debezium-connect:
         condition: service_healthy
@@ -295,7 +295,7 @@ services:
   local-kms:
     security_opt:
       - no-new-privileges:true
-    image: nsmithuk/local-kms:3.11.7
+    image: nsmithuk/local-kms:3.11.7@sha256:360d7377b6f3687c89a622236791e4fa3f7316366267b437829edbdfa8a5fc60
     container_name: knodia-local-kms
     ports:
       - 4566:8080
@@ -314,7 +314,7 @@ services:
   local-kms-setup:
     security_opt:
       - no-new-privileges:true
-    image: node:24-alpine
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
     container_name: knodia-local-kms-setup
     depends_on:
       local-kms:
