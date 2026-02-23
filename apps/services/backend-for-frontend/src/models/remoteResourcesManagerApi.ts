@@ -46,7 +46,7 @@ export type API_GetCatalogEserviceSearchParams = z.infer<
   typeof API_GetCatalogEserviceSearchParams
 >;
 
-export const API_CompactOrganization = z
+const API_CompactOrganization = z
   .strictObject({
     id: z.uuid(),
     name: LocalizedName,
