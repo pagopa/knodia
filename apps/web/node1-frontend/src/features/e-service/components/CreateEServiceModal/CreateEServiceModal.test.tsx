@@ -1,5 +1,3 @@
-import type { bffApi } from "@knodia/bff-client";
-
 import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
@@ -9,8 +7,6 @@ import { renderWithProviders, screen, waitFor } from "@/test/utils";
 import { CreateEServiceModal } from "./CreateEServiceModal";
 
 const BASE_URL = "http://localhost:3000/bff";
-type CreateEserviceBody = bffApi.EserviceSeed;
-type InterfaceDocumentBody = CreateEserviceBody["interfaceDocument"];
 
 /** Helper: select first attribute on AttributesStep and click Next */
 async function fillAttributesStep(
@@ -264,14 +260,11 @@ describe("CreateEServiceModal — file upload", () => {
 });
 
 describe("CreateEServiceModal — publish flow", () => {
-  it("completes the full wizard flow and publishes to BFF", async () => {
-    let capturedRequestBody: CreateEserviceBody | undefined;
-
+  it("completes the full wizard flow and navigates to the detail page", async () => {
     server.use(
-      http.post(`${BASE_URL}/producer/eservices`, async ({ request }) => {
-        capturedRequestBody = (await request.json()) as CreateEserviceBody;
-        return HttpResponse.json({ id: "new-eservice-123" }, { status: 201 });
-      }),
+      http.post(`${BASE_URL}/producer/eservices`, () =>
+        HttpResponse.json({ id: "new-eservice-123" }, { status: 201 }),
+      ),
     );
 
     const { router, user } = renderWizard();
@@ -290,31 +283,6 @@ describe("CreateEServiceModal — publish flow", () => {
 
     await user.click(screen.getByRole("button", { name: "Publish" }));
 
-    await waitFor(() => {
-      expect(capturedRequestBody).toBeDefined();
-    });
-
-    const body = capturedRequestBody as CreateEserviceBody;
-    expect(body).toMatchObject({
-      accessTokenAudience: ["https://api.test.com"],
-      accessTokenDuration: 60,
-      accessTokenType: "Bearer",
-      description: { en: "A complete test description for the e-service" },
-      isSignalHubEnabled: false,
-      maxDailyCallsPerConsumer: 100,
-      maxDailyCallsPerKnode: 1000,
-      mode: "ProvideData",
-      name: { en: "My Test E-Service" },
-    });
-
-    const doc: InterfaceDocumentBody = body.interfaceDocument;
-    expect(doc.name).toBe("spec.json");
-    expect(doc.contentType).toBe("application/json");
-    expect(doc.content).toBeTruthy();
-    expect(doc.checksum).toBeTruthy();
-    expect(doc.prettyName).toEqual({ en: "spec.json" });
-
-    // Verify navigation to detail page on success
     await waitFor(() => {
       expect(router.state.location.pathname).toBe(
         "/production/e-services/new-eservice-123",

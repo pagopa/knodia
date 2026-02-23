@@ -56,6 +56,7 @@ describe("toEserviceSeed", () => {
     expect(body.interfaceDocument.name).toBe("spec.json");
     expect(body.interfaceDocument.contentType).toBe("application/json");
     expect(body.interfaceDocument.prettyName).toEqual({ en: "spec.json" });
+    expect(body.interfaceDocument.checksum).toBe(TEST_CHECKSUM);
   });
 
   it("falls back to extension-based content type when file.type is empty", async () => {
@@ -68,10 +69,15 @@ describe("toEserviceSeed", () => {
     expect(body.interfaceDocument.contentType).toBe("application/yaml");
   });
 
+  it("converts accessTokenDuration from minutes to seconds", async () => {
+    const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
+
+    expect(body.accessTokenDuration).toBe(60 * 60);
+  });
+
   it("passes through scalar fields unchanged", async () => {
     const body = await toEserviceSeed(createFormData(), TEST_CHECKSUM);
 
-    expect(body.accessTokenDuration).toBe(60);
     expect(body.accessTokenType).toBe("Bearer");
     expect(body.mode).toBe("ProvideData");
     expect(body.isSignalHubEnabled).toBe(false);
