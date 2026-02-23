@@ -7,7 +7,7 @@ export const HTTPServiceName = z.enum([
 ]);
 export type HTTPServiceName = z.infer<typeof HTTPServiceName>;
 
-export const KafkaConsumerServiceName = z.enum(["eservice-readmodel-writer"]);
-export type KafkaConsumerServiceName = z.infer<typeof KafkaConsumerServiceName>;
-
 export type ServiceName = HTTPServiceName | KafkaConsumerServiceName;
+
+const KafkaConsumerServiceName = z.enum(["eservice-readmodel-writer"]);
+type KafkaConsumerServiceName = z.infer<typeof KafkaConsumerServiceName>;
