@@ -1,9 +1,14 @@
-import { CorrelationId, OrganizationId } from "@knodia/common-models/ids";
+import {
+  CorrelationId,
+  OrganizationId,
+  UserId,
+} from "@knodia/common-models/ids";
 
 export type LoggerMetadata = LoggerMetadataFastify | LoggerMetadataKafka;
 
 export interface LoggerMetadataFastify extends LoggerMetadataCommon {
   organizationId: OrganizationId;
+  userId: UserId;
 }
 
 export interface LoggerMetadataKafka extends LoggerMetadataCommon {
