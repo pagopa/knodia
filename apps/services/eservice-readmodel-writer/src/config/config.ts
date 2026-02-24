@@ -3,10 +3,12 @@ import {
   EserviceTopicConfig,
   KafkaConsumerConfig,
 } from "@knodia/kafka-commons/config";
+import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
-const EserviceReadmodelWriterConfig =
-  ReadmodelEserviceConfig.and(KafkaConsumerConfig).and(EserviceTopicConfig);
+const EserviceReadmodelWriterConfig = LoggerConfig.and(ReadmodelEserviceConfig)
+  .and(KafkaConsumerConfig)
+  .and(EserviceTopicConfig);
 
 type EserviceReadmodelWriterConfig = z.infer<
   typeof EserviceReadmodelWriterConfig

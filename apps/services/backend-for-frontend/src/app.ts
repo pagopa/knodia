@@ -4,7 +4,6 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 import { initFileManager } from "@knodia/file-manager";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
@@ -45,7 +44,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     loggerConfig: config,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
-    serviceName: serviceName.BACKEND_FOR_FRONTEND,
+    serviceName: "backend-for-frontend",
   });
 
   app.register(authenticationPlugin, config);

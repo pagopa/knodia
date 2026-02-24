@@ -1,5 +1,8 @@
+import type { HTTPServiceLoggerMetadata } from "@knodia/logger/models";
+
 import { requestContext } from "@fastify/request-context";
 import { KnodiaTokenClaims } from "@knodia/common-models/auth";
+import { type CorrelationId, unsafeBrandId } from "@knodia/common-models/ids";
 import fastifyPlugin from "fastify-plugin";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
@@ -61,7 +64,17 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
         throw unauthorizedError("Invalid token claims");
       }
 
-      requestContext.set("authData", extractAuthDataFromToken(parsed.data));
+      const authData = extractAuthDataFromToken(parsed.data);
+      requestContext.set("authData", authData);
+
+      const loggerMetadata: HTTPServiceLoggerMetadata = {
+        correlationId: unsafeBrandId<CorrelationId>(request.id),
+        organizationId: authData.organizationId,
+        userId: authData.userId,
+      };
+      const logger = request.log.child(loggerMetadata);
+      request.log = logger;
+      requestContext.set("logger", logger);
     });
   },
 );

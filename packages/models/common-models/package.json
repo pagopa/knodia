@@ -11,12 +11,13 @@
   },
   "exports": {
     "./api": "./src/api.ts",
+    "./auth": "./src/auth/index.ts",
     "./errors": "./src/errors.ts",
     "./event": "./src/events.ts",
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
     "./protobuf": "./src/protobuf.ts",
-    "./auth": "./src/auth/index.ts",
+    "./services": "./src/services.ts",
     "./types": "./src/types.ts"
   },
   "dependencies": {
