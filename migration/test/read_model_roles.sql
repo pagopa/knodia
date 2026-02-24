@@ -9,5 +9,13 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'test_eservice_process_user') THEN
         CREATE ROLE test_eservice_process_user WITH LOGIN PASSWORD 'test_eservice_process_user';
     END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'test_keychain_rmw_user') THEN
+        CREATE ROLE test_keychain_rmw_user WITH LOGIN PASSWORD 'test_keychain_rmw_user';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'test_keychain_process_user') THEN
+        CREATE ROLE test_keychain_process_user WITH LOGIN PASSWORD 'test_keychain_process_user';
+    END IF;
 END
 $$;
