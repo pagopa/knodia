@@ -1,3 +1,5 @@
+import { unsafeBrandId } from "@knodia/common-models/ids";
+
 import type { ConsumptionEserviceDetail } from "./consumption-eservice-detail";
 
 export const mockConsumptionEserviceDetail: ConsumptionEserviceDetail = {
@@ -13,7 +15,7 @@ export const mockConsumptionEserviceDetail: ConsumptionEserviceDetail = {
   description:
     "This E-Service provides certified proof of registration of birth, enabling cross-border verification of birth records between EU member states in compliance with the Single Digital Gateway regulation.",
   hasRequiredAttributes: true,
-  id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  id: unsafeBrandId("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
   identificationRequired: false,
   interfaceDocument: {
     checksum:

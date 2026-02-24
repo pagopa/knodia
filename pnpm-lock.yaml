@@ -625,6 +625,9 @@ importers:
       '@knodia/category-models':
         specifier: workspace:*
         version: link:../../../packages/models/category-models
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
       '@knodia/ui-kit':
         specifier: workspace:*
         version: link:../../../packages/ui-kit
