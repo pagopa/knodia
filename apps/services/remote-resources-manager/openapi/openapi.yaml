@@ -87,12 +87,6 @@ components:
         - offset
         - total
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     EserviceVersionState:
       type: string
       enum:
@@ -148,10 +142,15 @@ components:
         - code
         - scheme
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     GetCatalogEserviceSearchParams:
       anyOf:
-        - description: Include only E-services belonging to the specified category
-          type: object
+        - type: object
           properties:
             category:
               $ref: "#/components/schemas/EserviceCategory"
@@ -161,8 +160,7 @@ components:
             - category
             - knodeId
           additionalProperties: false
-        - description: Search by name or description
-          type: object
+        - type: object
           properties:
             keywords:
               type: string
