@@ -1,93 +1,238 @@
-import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
-import { createHash, randomUUID } from "node:crypto";
+import {
+  KMSClient,
+  SignCommand,
+  GetPublicKeyCommand,
+} from "@aws-sdk/client-kms";
+import { createHash, createPublicKey, randomUUID } from "node:crypto";
 import { createServer } from "node:http";
 
 const KMS_ENDPOINT = process.env.KMS_ENDPOINT ?? "http://localhost:4566";
+const PORT = 3000;
+const ISSUER = process.env.ISSUER ?? "http://localhost:4567";
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN ?? "http://localhost:5175";
 
-// Hardcoded configuration for local development
+// Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
 
-createServer(async (req, res) => {
-  const url = new URL(req.url, "http://localhost:3000");
+const kmsClient = new KMSClient({
+  endpoint: KMS_ENDPOINT,
+  region: "eu-south-1",
+  credentials: {
+    accessKeyId: "testawskey",
+    secretAccessKey: "testawssecret",
+  },
+});
 
-  if (req.method !== "GET" || url.pathname !== "/login") {
-    res.writeHead(404);
+// --- JWKS: fetch public key from KMS at startup ---
+
+const { PublicKey: publicKeyDer } = await kmsClient.send(
+  new GetPublicKeyCommand({ KeyId: "alias/local-cognito-key" }),
+);
+const publicKey = createPublicKey({
+  key: Buffer.from(publicKeyDer),
+  format: "der",
+  type: "spki",
+});
+const jwk = publicKey.export({ format: "jwk" });
+const JWKS = {
+  keys: [{ ...jwk, kid: "local-cognito-key", use: "sig", alg: "RS256" }],
+};
+
+// Auth codes for the authorization code flow (consumed immediately by /token)
+const authCodes = new Map();
+
+// --- JWT helpers ---
+
+const b64url = (data) => Buffer.from(data).toString("base64url");
+
+async function signJwt(payload) {
+  const header = b64url(
+    JSON.stringify({ alg: "RS256", typ: "JWT", kid: "local-cognito-key" }),
+  );
+  const body = b64url(JSON.stringify(payload));
+  const message = `${header}.${body}`;
+  const digest = createHash("sha256").update(message).digest();
+
+  const { Signature } = await kmsClient.send(
+    new SignCommand({
+      KeyId: "alias/local-cognito-key",
+      Message: digest,
+      MessageType: "DIGEST",
+      SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
+    }),
+  );
+
+  return `${message}.${Buffer.from(Signature).toString("base64url")}`;
+}
+
+// --- Request body parser ---
+
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on("data", (chunk) => chunks.push(chunk));
+    req.on("end", () => resolve(Buffer.concat(chunks).toString()));
+    req.on("error", reject);
+  });
+}
+
+// --- CORS helpers ---
+
+function setCorsHeaders(res) {
+  res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
+// --- HTTP server ---
+
+createServer(async (req, res) => {
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+
+  setCorsHeaders(res);
+
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
     res.end();
     return;
   }
 
   try {
-    const kmsClient = new KMSClient({
-      endpoint: KMS_ENDPOINT,
-      region: "eu-south-1",
-      credentials: {
-        accessKeyId: "testawskey",
-        secretAccessKey: "testawssecret",
-      },
-    });
+    // OpenID Connect Discovery
+    if (
+      req.method === "GET" &&
+      url.pathname === "/.well-known/openid-configuration"
+    ) {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          issuer: ISSUER,
+          authorization_endpoint: `${ISSUER}/authorize`,
+          token_endpoint: `${ISSUER}/token`,
+          jwks_uri: `${ISSUER}/jwks`,
+          response_types_supported: ["code"],
+          subject_types_supported: ["public"],
+          id_token_signing_alg_values_supported: ["RS256"],
+          scopes_supported: ["openid", "email", "phone"],
+          token_endpoint_auth_methods_supported: ["none"],
+          grant_types_supported: ["authorization_code"],
+        }),
+      );
+      return;
+    }
 
-    // Base64url encode helper
-    const b64url = (data) => Buffer.from(data).toString("base64url");
+    // JWKS endpoint
+    if (req.method === "GET" && url.pathname === "/jwks") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(JWKS));
+      return;
+    }
 
-    // Build JWT header
-    const header = b64url(
-      JSON.stringify({ alg: "RS256", typ: "JWT", kid: `local-cognito-key` }),
-    );
+    // Authorization endpoint — auto-approve, redirect with code
+    if (req.method === "GET" && url.pathname === "/authorize") {
+      const redirectUri = url.searchParams.get("redirect_uri");
+      const state = url.searchParams.get("state");
+      const nonce = url.searchParams.get("nonce");
+      const clientId = url.searchParams.get("client_id");
 
-    // Build JWT payload
-    const now = Math.floor(Date.now() / 1000);
-    const claims = {
-      sub: USER_ID,
-      "cognito:groups": [...ROLES, `org:${ORG_ID}`],
-      token_use: "access",
-    };
+      if (!redirectUri || !state) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({ error: "redirect_uri and state are required" }),
+        );
+        return;
+      }
 
-    const payload = b64url(
-      JSON.stringify({
-        ...claims,
+      const code = randomUUID();
+      authCodes.set(code, {
+        redirectUri,
+        nonce,
+        clientId,
+        createdAt: Date.now(),
+      });
+
+      const redirect = new URL(redirectUri);
+      redirect.searchParams.set("code", code);
+      redirect.searchParams.set("state", state);
+
+      console.log(`[authorize] Issued code ${code} for client ${clientId}`);
+
+      res.writeHead(302, { Location: redirect.toString() });
+      res.end();
+      return;
+    }
+
+    // Token endpoint — exchange code for tokens
+    if (req.method === "POST" && url.pathname === "/token") {
+      const body = await readBody(req);
+      const params = new URLSearchParams(body);
+
+      const grantType = params.get("grant_type");
+      const code = params.get("code");
+      const clientId = params.get("client_id");
+
+      if (grantType !== "authorization_code" || !code) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "invalid_request" }));
+        return;
+      }
+
+      const codeData = authCodes.get(code);
+      if (!codeData) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "invalid_grant" }));
+        return;
+      }
+      authCodes.delete(code);
+
+      const now = Math.floor(Date.now() / 1000);
+
+      const accessToken = await signJwt({
+        sub: USER_ID,
+        "cognito:groups": [...ROLES, `org:${ORG_ID}`],
+        token_use: "access",
+        iss: ISSUER,
+        aud: "local.knodia.test/ui-session",
         iat: now,
         exp: now + 3600,
         jti: randomUUID(),
-        iss: `local-cognito`,
-        aud: "local.knodia.test/ui-session",
-      }),
-    );
+      });
 
-    // Sign with KMS using the alias directly
-    const message = `${header}.${payload}`;
-    const digest = createHash("sha256").update(message).digest();
+      const idToken = await signJwt({
+        sub: USER_ID,
+        iss: ISSUER,
+        aud: clientId || codeData.clientId,
+        iat: now,
+        exp: now + 3600,
+        nonce: codeData.nonce,
+      });
 
-    const { Signature } = await kmsClient.send(
-      new SignCommand({
-        KeyId: `alias/local-cognito-key`,
-        Message: digest,
-        MessageType: "DIGEST",
-        SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
-      }),
-    );
+      console.log(`[token] Exchanged code ${code} for tokens`);
 
-    const signature = Buffer.from(Signature).toString("base64url");
-    const token = `${message}.${signature}`;
-
-    console.log(`Generated token:`);
-    console.log(token);
-
-    const returnUrl = url.searchParams.get("return_url");
-    if (returnUrl) {
-      const redirectUrl = new URL(returnUrl);
-      redirectUrl.searchParams.set("token", token);
-      res.writeHead(302, { Location: redirectUrl.toString() });
-      res.end();
-    } else {
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ token }));
+      res.end(
+        JSON.stringify({
+          access_token: accessToken,
+          id_token: idToken,
+          token_type: "Bearer",
+          expires_in: 3600,
+        }),
+      );
+      return;
     }
+
+    res.writeHead(404);
+    res.end();
   } catch (error) {
+    console.error("Error:", error);
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ error: error.message }));
   }
-}).listen(3000, () => {
-  console.log("Server started on port 3000");
+}).listen(PORT, () => {
+  console.log(`Local OIDC provider started on port ${PORT}`);
+  console.log(`Issuer: ${ISSUER}`);
+  console.log(`Discovery: ${ISSUER}/.well-known/openid-configuration`);
 });

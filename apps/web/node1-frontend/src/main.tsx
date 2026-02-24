@@ -7,11 +7,14 @@ import {
   RouterProvider,
   type ToOptions,
 } from "@tanstack/react-router";
-import { StrictMode } from "react";
+import { WebStorageStateStore } from "oidc-client-ts";
 import "@knodia/ui-kit/themes/node1.css";
+import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
+import { AuthProvider as OidcProvider } from "react-oidc-context";
 
-import { AuthProvider } from "@/contexts/auth";
+import { config } from "@/config/config";
+import { OidcAuthProvider } from "@/contexts/auth";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 
@@ -74,17 +77,28 @@ declare module "react-aria-components" {
   }
 }
 
+const app = (
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
+  </QueryClientProvider>
+);
+
 const rootElement = document.getElementById("root");
 
 if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider onLogout={() => router.navigate({ to: "/login" })}>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </QueryClientProvider>
+      <OidcProvider
+        authority={config.cognito.authority}
+        client_id={config.cognito.clientId}
+        onSigninCallback={() => void router.navigate({ to: "/" })}
+        redirect_uri={config.cognito.redirectUri}
+        scope="openid"
+        userStore={new WebStorageStateStore({ store: window.localStorage })}
+      >
+        <OidcAuthProvider>{app}</OidcAuthProvider>
+      </OidcProvider>
     </StrictMode>,
   );
 }

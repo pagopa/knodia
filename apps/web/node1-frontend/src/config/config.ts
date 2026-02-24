@@ -10,22 +10,19 @@
  *
  * Note: `public/env.js` is removed from the final build in the Dockerfile, so it
  * is not included in the production image.
+ *
+ * Auth: Uses OIDC (OpenID Connect) with Cognito in production and local-cognito in development.
+ * Requires COGNITO_AUTHORITY, COGNITO_CLIENT_ID, COGNITO_REDIRECT_URI.
  */
 
 import { z } from "zod";
 
-const FrontendNode1Config = z
-  .object({
-    AUTH_URL: z.string().min(1, "AUTH_URL is required"),
-    BFF_URL: z.string().min(1, "BFF_URL is required"),
-    SESSION_TOKEN: z.string().optional(),
-    // TODO ^ remove this token once we have a real local dev auth flow in place
-  })
-  .transform((c) => ({
-    authUrl: c.AUTH_URL,
-    bffUrl: c.BFF_URL,
-    sessionToken: c.SESSION_TOKEN,
-  }));
+const FrontendNode1Config = z.object({
+  BFF_URL: z.string().min(1, "BFF_URL is required"),
+  COGNITO_AUTHORITY: z.string().min(1, "COGNITO_AUTHORITY is required"),
+  COGNITO_CLIENT_ID: z.string().min(1, "COGNITO_CLIENT_ID is required"),
+  COGNITO_REDIRECT_URI: z.string().min(1, "COGNITO_REDIRECT_URI is required"),
+});
 
 const parsed = FrontendNode1Config.safeParse(window.env);
 
@@ -37,8 +34,14 @@ if (!parsed.success) {
   throw new Error("Invalid environment variables");
 }
 
-type FrontendNode1Config = z.infer<typeof FrontendNode1Config>;
-export const config = parsed.data;
+export const config = {
+  bffUrl: parsed.data.BFF_URL,
+  cognito: {
+    authority: parsed.data.COGNITO_AUTHORITY,
+    clientId: parsed.data.COGNITO_CLIENT_ID,
+    redirectUri: parsed.data.COGNITO_REDIRECT_URI,
+  },
+};
 
 declare global {
   interface Window {

@@ -1,60 +1,30 @@
-import {
-  GetPublicKeyCommand,
-  KMSClient,
-  SignCommand,
-} from "@aws-sdk/client-kms";
+import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { UISessionTokenClaims, UserRole } from "@knodia/common-models/auth";
-import { jwtVerify } from "jose";
-import {
-  createHash,
-  createPublicKey,
-  KeyObject,
-  randomUUID,
-} from "node:crypto";
+import { createRemoteJWKSet, jwtVerify } from "jose";
+import { createHash, randomUUID } from "node:crypto";
 import z from "zod";
 
 import { config } from "../config/config.ts";
 
 const CognitoPayload = z.object({
-  aud: z.union([z.string(), z.array(z.string())]),
   "cognito:groups": z.array(z.string()),
-  exp: z.number().int(),
-  iat: z.number().int(),
-  iss: z.string(),
-  jti: z.string(),
   sub: z.string(),
 });
+
+interface CognitoClaims {
+  organizationId: string;
+  roles: z.infer<typeof UserRole>[];
+  sub: string;
+}
 
 const b64url = (data: string): string =>
   Buffer.from(data).toString("base64url");
 
 export function authorizationServiceBuilder(kmsClient: KMSClient) {
-  let cognitoPublicKey: KeyObject | undefined;
-
-  async function getCognitoPublicKey(): Promise<KeyObject> {
-    if (cognitoPublicKey) return cognitoPublicKey;
-
-    const { PublicKey } = await kmsClient.send(
-      new GetPublicKeyCommand({ KeyId: `alias/${config.cognitoKmsKeyId}` }),
-    );
-
-    if (!PublicKey) {
-      throw new Error("KMS returned no public key");
-    }
-
-    const key = createPublicKey({
-      format: "der",
-      key: Buffer.from(PublicKey),
-      type: "spki",
-    });
-    cognitoPublicKey = key;
-    return key;
-  }
+  const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
 
   return {
-    async generateUISessionToken(
-      claims: UISessionTokenClaims,
-    ): Promise<string> {
+    async generateUISessionToken(claims: CognitoClaims): Promise<string> {
       const header = b64url(
         JSON.stringify({
           alg: "RS256",
@@ -64,19 +34,18 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
       );
 
       const now = Math.floor(Date.now() / 1000);
-      const payload = b64url(
-        JSON.stringify({
-          aud: config.bffTokenAudience,
-          exp: now + 3600,
-          iat: now,
-          iss: "local-knodia",
-          jti: randomUUID(),
-          organizationId: claims.organizationId,
-          roles: claims.roles,
-          sub: claims.sub,
-          type: "ui-session",
-        }),
-      );
+      const tokenClaims = UISessionTokenClaims.parse({
+        aud: config.bffTokenAudience,
+        exp: now + 3600,
+        iat: now,
+        iss: "local-knodia",
+        jti: randomUUID(),
+        organizationId: claims.organizationId,
+        roles: claims.roles,
+        sub: claims.sub,
+        type: "ui-session",
+      });
+      const payload = b64url(JSON.stringify(tokenClaims));
 
       const message = `${header}.${payload}`;
       const digest = createHash("sha256").update(message).digest();
@@ -98,12 +67,9 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
       return `${message}.${signature}`;
     },
 
-    async validateCognitoToken(token: string): Promise<UISessionTokenClaims> {
-      const publicKey = await getCognitoPublicKey();
-
-      const { payload: rawPayload } = await jwtVerify(token, publicKey, {
+    async validateCognitoToken(token: string): Promise<CognitoClaims> {
+      const { payload: rawPayload } = await jwtVerify(token, cognitoJwks, {
         algorithms: ["RS256"],
-        audience: config.bffTokenAudience,
       });
 
       const cognitoPayload = CognitoPayload.parse(rawPayload);
@@ -122,17 +88,11 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
         throw new Error("Missing role claims in token");
       }
 
-      return UISessionTokenClaims.parse({
-        aud: cognitoPayload.aud,
-        exp: cognitoPayload.exp,
-        iat: cognitoPayload.iat,
-        iss: cognitoPayload.iss,
-        jti: cognitoPayload.jti,
+      return {
         organizationId: orgGroup.slice("org:".length),
         roles,
         sub: cognitoPayload.sub,
-        type: "ui-session",
-      });
+      };
     },
   };
 }

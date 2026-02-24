@@ -11,7 +11,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
     z
       .object({
         BFF_TOKEN_AUDIENCE: z.string(),
-        COGNITO_KMS_KEY_ID: z.string(),
+        COGNITO_JWKS_URL: z.url(),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
         KMS_ENDPOINT: z.url(),
@@ -21,7 +21,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
       })
       .transform((c) => ({
         bffTokenAudience: c.BFF_TOKEN_AUDIENCE,
-        cognitoKmsKeyId: c.COGNITO_KMS_KEY_ID,
+        cognitoJwksUrl: c.COGNITO_JWKS_URL,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         kmsEndpoint: c.KMS_ENDPOINT,

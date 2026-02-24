@@ -1,4 +1,6 @@
 window.env = {
-  AUTH_URL: "http://localhost:4567/login",
   BFF_URL: "http://localhost:5175/bff",
+  COGNITO_AUTHORITY: "http://localhost:4567",
+  COGNITO_CLIENT_ID: "local-dev-client",
+  COGNITO_REDIRECT_URI: "http://localhost:5175/ui/login/",
 };
