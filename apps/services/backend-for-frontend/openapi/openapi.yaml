@@ -77,10 +77,10 @@ components:
     SessionResponse:
       type: object
       properties:
-        token:
+        uiSessionToken:
           type: string
       required:
-        - token
+        - uiSessionToken
       additionalProperties: false
     Pagination:
       type: object

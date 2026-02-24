@@ -18,7 +18,7 @@ const API_SessionRequest = z
 
 const API_SessionResponse = z
   .object({
-    token: z.string(),
+    uiSessionToken: z.string(),
   })
   .meta({ id: "SessionResponse" });
 
@@ -30,13 +30,11 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
     handler: async (req, res) => {
       const { oidcToken } = req.body;
 
-      const claims = await authorizationService.validateCognitoToken(oidcToken);
-
       const uiSessionToken =
-        await authorizationService.generateUISessionToken(claims);
+        await authorizationService.generateUISessionToken(oidcToken);
 
       res.send({
-        token: uiSessionToken,
+        uiSessionToken,
       });
     },
     method: "POST",

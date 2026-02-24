@@ -37,8 +37,44 @@ export function authorizationServiceBuilder() {
     }
   }
 
+  async function validateCognitoToken(token: string): Promise<CognitoClaims> {
+    const rawPayload = await verifyCognitoJwt(token);
+
+    const payloadParsed = CognitoPayload.safeParse(rawPayload);
+    if (!payloadParsed.success) {
+      throw unauthorizedError("Invalid Cognito token payload");
+    }
+
+    const cognitoPayload = payloadParsed.data;
+    const groups = cognitoPayload["cognito:groups"];
+
+    const roles = groups
+      .filter((g) => g.startsWith("role:"))
+      .flatMap((g) => {
+        const parsed = UserRole.safeParse(g.slice("role:".length));
+        return parsed.success ? [parsed.data] : [];
+      });
+    const orgGroup = groups.find((g) => g.startsWith("org:"));
+
+    if (!orgGroup) {
+      throw unauthorizedError("Missing organization claim in cognito token");
+    }
+
+    if (roles.length === 0) {
+      throw unauthorizedError("Missing role claims in cognito token");
+    }
+
+    return {
+      organizationId: orgGroup.slice("org:".length),
+      roles,
+      sub: cognitoPayload.sub,
+    };
+  }
+
   return {
-    async generateUISessionToken(claims: CognitoClaims): Promise<string> {
+    async generateUISessionToken(cognitoToken: string): Promise<string> {
+      const cognitoClaims = await validateCognitoToken(cognitoToken);
+
       const header = b64url(
         JSON.stringify({
           alg: "RS256",
@@ -54,9 +90,9 @@ export function authorizationServiceBuilder() {
         iat: now,
         iss: config.uiSessionJwt.issuer,
         jti: randomUUID(),
-        organizationId: claims.organizationId,
-        roles: claims.roles,
-        sub: claims.sub,
+        organizationId: cognitoClaims.organizationId,
+        roles: cognitoClaims.roles,
+        sub: cognitoClaims.sub,
         type: "ui-session",
       });
 
@@ -81,40 +117,6 @@ export function authorizationServiceBuilder() {
 
       const signature = Buffer.from(Signature).toString("base64url");
       return `${message}.${signature}`;
-    },
-
-    async validateCognitoToken(token: string): Promise<CognitoClaims> {
-      const rawPayload = await verifyCognitoJwt(token);
-
-      const payloadParsed = CognitoPayload.safeParse(rawPayload);
-      if (!payloadParsed.success) {
-        throw unauthorizedError("Invalid Cognito token payload");
-      }
-
-      const cognitoPayload = payloadParsed.data;
-      const groups = cognitoPayload["cognito:groups"];
-
-      const roles = groups
-        .filter((g) => g.startsWith("role:"))
-        .flatMap((g) => {
-          const parsed = UserRole.safeParse(g.slice("role:".length));
-          return parsed.success ? [parsed.data] : [];
-        });
-      const orgGroup = groups.find((g) => g.startsWith("org:"));
-
-      if (!orgGroup) {
-        throw unauthorizedError("Missing organization claim in cognito token");
-      }
-
-      if (roles.length === 0) {
-        throw unauthorizedError("Missing role claims in cognito token");
-      }
-
-      return {
-        organizationId: orgGroup.slice("org:".length),
-        roles,
-        sub: cognitoPayload.sub,
-      };
     },
   };
 }

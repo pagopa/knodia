@@ -53,8 +53,8 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
       void removeUser();
     },
     onSuccess: (data) => {
-      setAuthToken(data.token);
-      setUiSessionToken(data.token);
+      setAuthToken(data.uiSessionToken);
+      setUiSessionToken(data.uiSessionToken);
     },
   });
 
