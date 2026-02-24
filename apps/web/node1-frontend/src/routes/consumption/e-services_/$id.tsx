@@ -61,6 +61,7 @@ function ConsumptionRequirementsSection({
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Attributes
           </h3>
+          {/* TODO: Attributes that the organization possesses should be displayed in bold */}
           <ul className="gap-2 flex flex-col" role="list">
             {requiredAttributes.map((group, index) => (
               <li key={index}>
@@ -72,6 +73,10 @@ function ConsumptionRequirementsSection({
             ))}
           </ul>
 
+          {/* TODO: "Request Agreement" button behavior:
+              - Has required attributes + e-service available: redirect to Request Agreement flow
+              - Has required attributes + e-service unavailable: show message that user can't proceed
+              - Lacks required attributes: show informative message (button already disabled) */}
           <Banner
             className="mt-6 [&>div:last-child]:flex-1"
             icon={<SealCheckIcon />}
