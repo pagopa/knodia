@@ -7,6 +7,7 @@ import { unsafeBrandId } from "@knodia/common-models/ids";
 import { eserviceWriterServiceBuilder } from "@knodia/db-readmodel-eservice/writer";
 import { EserviceEventV1 } from "@knodia/eservice-models";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
+import { createLogger } from "@knodia/logger";
 
 import { handleEserviceEvent } from "../services/consumerService.ts";
 
