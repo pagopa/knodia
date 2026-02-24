@@ -12,6 +12,7 @@ function LoginPage() {
   const { error, isAuthenticated, isLoading, login } = useAuth();
   const navigate = useNavigate();
 
+  // Redirect after completing the OIDC + token exchange flow while on this page.
   useEffect(() => {
     if (isAuthenticated) {
       void navigate({ replace: true, to: "/" });

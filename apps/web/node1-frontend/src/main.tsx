@@ -1,3 +1,4 @@
+import "@knodia/ui-kit/themes/node1.css";
 import { Empty, Loader } from "@knodia/ui-kit/ui";
 import { BracketsCurlyIcon } from "@phosphor-icons/react";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -7,11 +8,11 @@ import {
   RouterProvider,
   type ToOptions,
 } from "@tanstack/react-router";
-import "@knodia/ui-kit/themes/node1.css";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
 import { OidcAuthProvider } from "@/contexts/auth";
+import { getAuthToken } from "@/libs/auth";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
 
@@ -20,6 +21,9 @@ import { APP_BASE_PATH } from "./config/basepath";
 const router = createRouter({
   basepath: APP_BASE_PATH,
   context: {
+    auth: {
+      isAuthenticated: () => !!getAuthToken(),
+    },
     queryClient,
   },
   defaultErrorComponent: () => (
