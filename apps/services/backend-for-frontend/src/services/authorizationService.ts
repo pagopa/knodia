@@ -1,5 +1,6 @@
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { UISessionTokenClaims, UserRole } from "@knodia/common-models/auth";
+import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { randomUUID } from "node:crypto";
 import z from "zod";
@@ -23,6 +24,18 @@ const b64url = (data: string): string =>
 export function authorizationServiceBuilder() {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
 
+  async function verifyCognitoJwt(token: string): Promise<unknown> {
+    try {
+      const { payload } = await jwtVerify(token, cognitoJwks, {
+        algorithms: ["RS256"],
+        issuer: config.cognitoIssuer,
+      });
+      return payload;
+    } catch {
+      throw unauthorizedError("Cognito token verification failed");
+    }
+  }
+
   return {
     async generateUISessionToken(claims: CognitoClaims): Promise<string> {
       const header = b64url(
@@ -34,7 +47,7 @@ export function authorizationServiceBuilder() {
       );
 
       const now = Math.floor(Date.now() / 1000);
-      const tokenClaims = UISessionTokenClaims.parse({
+      const claimsParsed = UISessionTokenClaims.safeParse({
         aud: config.uiSessionJwt.audience,
         exp: now + config.uiSessionJwt.secondsDuration,
         iat: now,
@@ -45,7 +58,13 @@ export function authorizationServiceBuilder() {
         sub: claims.sub,
         type: "ui-session",
       });
-      const payload = b64url(JSON.stringify(tokenClaims));
+
+      if (!claimsParsed.success) {
+        throw unauthorizedError(
+          `Failed to parse ui session token claims: ${claimsParsed.error}`,
+        );
+      }
+      const payload = b64url(JSON.stringify(claimsParsed.data));
 
       const message = `${header}.${payload}`;
 
@@ -58,7 +77,7 @@ export function authorizationServiceBuilder() {
       );
 
       if (!Signature) {
-        throw new Error("KMS sign returned no signature");
+        throw unauthorizedError("KMS sign returned no signature");
       }
 
       const signature = Buffer.from(Signature).toString("base64url");
@@ -66,12 +85,16 @@ export function authorizationServiceBuilder() {
     },
 
     async validateCognitoToken(token: string): Promise<CognitoClaims> {
-      const { payload: rawPayload } = await jwtVerify(token, cognitoJwks, {
-        algorithms: ["RS256"],
-        issuer: config.cognitoIssuer,
-      });
+      const rawPayload = await verifyCognitoJwt(token);
 
-      const cognitoPayload = CognitoPayload.parse(rawPayload);
+      const payloadParsed = CognitoPayload.safeParse(rawPayload);
+      if (!payloadParsed.success) {
+        throw unauthorizedError(
+          `Invalid Cognito token payload: ${payloadParsed.error}`,
+        );
+      }
+
+      const cognitoPayload = payloadParsed.data;
       const groups = cognitoPayload["cognito:groups"];
 
       const roles = groups
@@ -80,11 +103,11 @@ export function authorizationServiceBuilder() {
       const orgGroup = groups.find((g) => g.startsWith("org:"));
 
       if (!orgGroup) {
-        throw new Error("Missing organization claim in token");
+        throw unauthorizedError("Missing organization claim in cognito token");
       }
 
       if (roles.length === 0) {
-        throw new Error("Missing role claims in token");
+        throw unauthorizedError("Missing role claims in cognito token");
       }
 
       return {

@@ -1,7 +1,5 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { requestContext } from "@fastify/request-context";
-import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   unauthorizedError,
@@ -32,24 +30,17 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         throw unauthorizedError("Missing or invalid Authorization header");
       }
 
-      const { logger } = getContextValues(requestContext);
-
       const cognitoToken = authHeader.slice("Bearer ".length);
 
-      try {
-        const claims =
-          await authorizationService.validateCognitoToken(cognitoToken);
+      const claims =
+        await authorizationService.validateCognitoToken(cognitoToken);
 
-        const uiSessionToken =
-          await authorizationService.generateUISessionToken(claims);
+      const uiSessionToken =
+        await authorizationService.generateUISessionToken(claims);
 
-        res.send({
-          token: uiSessionToken,
-        });
-      } catch (error) {
-        logger.error(error, "Failed to validate Cognito token");
-        throw unauthorizedError("Invalid or expired token");
-      }
+      res.send({
+        token: uiSessionToken,
+      });
     },
     method: "POST",
     schema: {
