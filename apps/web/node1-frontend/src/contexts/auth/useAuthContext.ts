@@ -1,7 +1,10 @@
 import { createContext, useContext } from "react";
 
 interface AuthContextValue {
+  error?: Error | null;
   isAuthenticated: boolean;
+  isLoading: boolean;
+  login: () => void;
   logout: () => void;
   token: null | string;
 }

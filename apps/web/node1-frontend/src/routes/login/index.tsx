@@ -1,7 +1,6 @@
 import { Button, Loader } from "@knodia/ui-kit/ui";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { useAuth as useOidcAuth } from "react-oidc-context";
 
 import { useAuth } from "@/contexts/auth";
 
@@ -10,8 +9,7 @@ export const Route = createFileRoute("/login/")({
 });
 
 function LoginPage() {
-  const oidcAuth = useOidcAuth();
-  const { isAuthenticated } = useAuth();
+  const { error, isAuthenticated, isLoading, login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,19 +18,51 @@ function LoginPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  if (oidcAuth.isLoading) {
+  return (
+    <div className="flex flex-col gap-4 h-full items-center justify-center">
+      <LoginPageContent
+        error={error}
+        isAuthenticated={isAuthenticated}
+        isLoading={isLoading}
+        onClick={login}
+      />
+    </div>
+  );
+}
+
+function LoginPageContent({
+  error,
+  isAuthenticated,
+  isLoading,
+  onClick,
+}: {
+  error?: Error | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  onClick: () => void;
+}) {
+  if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
   }
 
-  return (
-    <div className="flex flex-col gap-4 h-full items-center justify-center">
-      {oidcAuth.error && <p>Login error: {oidcAuth.error.message}</p>}
-
-      {!oidcAuth.isAuthenticated && (
-        <Button onClick={() => void oidcAuth.signinRedirect()} type="button">
-          {oidcAuth.error ? "Retry" : "Login"}
+  if (error) {
+    return (
+      <>
+        <p>Login error: {error.message}</p>
+        <Button onClick={onClick} type="button">
+          Retry
         </Button>
-      )}
-    </div>
+      </>
+    );
+  }
+
+  if (isAuthenticated) {
+    return null;
+  }
+
+  return (
+    <Button onClick={onClick} type="button">
+      Login
+    </Button>
   );
 }

@@ -24,7 +24,7 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
     getAuthToken,
   );
 
-  const tokenExchange = useMutation({
+  const { error, mutate } = useMutation({
     ...createSessionMutation({ client }),
     onSuccess: (data) => {
       setAuthToken(data.token);
@@ -35,12 +35,12 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
   const handleSigninCallback = useCallback(
     (user?: User) => {
       if (user?.access_token && !getAuthToken()) {
-        tokenExchange.mutate({
+        mutate({
           headers: { Authorization: `Bearer ${user.access_token}` },
         });
       }
     },
-    [tokenExchange],
+    [mutate],
   );
 
   return (
@@ -52,6 +52,7 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
       scope="openid"
     >
       <AuthStateProvider
+        exchangeError={error}
         setUiSessionToken={setUiSessionToken}
         uiSessionToken={uiSessionToken}
       >
@@ -63,14 +64,20 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
 
 function AuthStateProvider({
   children,
+  exchangeError,
   setUiSessionToken,
   uiSessionToken,
 }: {
   children: ReactNode;
+  exchangeError?: Error | null;
   setUiSessionToken: (token: null | string) => void;
   uiSessionToken: null | string;
 }) {
   const oidcAuth = useOidcAuth();
+
+  const login = useCallback(() => {
+    void oidcAuth.signinRedirect();
+  }, [oidcAuth]);
 
   const logout = useCallback(() => {
     clearAuthToken();
@@ -81,7 +88,10 @@ function AuthStateProvider({
   return (
     <AuthContext.Provider
       value={{
+        error: oidcAuth.error ?? exchangeError,
         isAuthenticated: !!uiSessionToken,
+        isLoading: oidcAuth.isLoading,
+        login,
         logout,
         token: uiSessionToken,
       }}
