@@ -2,10 +2,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  API_Problem,
-  CORRELATION_ID_HEADER,
-} from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type { RemoteResourcesManagerClient } from "../clients/clientsProvider.ts";
@@ -17,6 +14,7 @@ import {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/remoteResourcesManagerApi.ts";
+import { getProcessHeaders } from "../utils/headers.ts";
 
 interface RemoteResourcesManagerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
@@ -27,14 +25,17 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
 > = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { query: req.query, requestBody: req.body },
+        `Getting E-services owned by knode ${req.body.knodeId} with query parameters and body data`,
+      );
 
       const { data } = await remoteResourcesManagerApi.getCatalogEservices({
         body: req.body,
         client: remoteResourcesManagerClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
+        headers: getProcessHeaders(req, correlationId),
         query: req.query,
       });
 

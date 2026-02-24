@@ -158,6 +158,12 @@ components:
         - offset
         - total
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -512,12 +518,6 @@ components:
         - updatedAt
         - version
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     GetCatalogEserviceSearchParams:
       anyOf:
         - description: Include only E-services belonging to the specified category
