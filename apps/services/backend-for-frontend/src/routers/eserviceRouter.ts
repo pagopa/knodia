@@ -42,7 +42,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body },
+        "Creating new E-service with body data",
+      );
+
       const {
         interfaceDocument: { content, name, ...interfaceDocumentRest },
         ...rest
@@ -93,6 +99,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
+      const { logger } = getContextValues(requestContext);
+
+      logger.info(
+        { query: req.query },
+        "Getting Producer E-services with query parameters",
+      );
+
       const { limit, mode, offset, q, sortBy, sortOrder, state } = req.query;
       const { correlationId } = getContextValues(requestContext);
 
@@ -166,7 +179,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Getting Producer E-service with id ${req.params.eserviceId}`,
+      );
+
       const path = { eserviceId: req.params.eserviceId };
 
       const [
@@ -223,7 +242,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId } = getContextValues(requestContext);
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Downloading interface of E-service with id ${req.params.eserviceId}`,
+      );
 
       const { data } =
         await eserviceProcessApi.getEserviceLatestVersionInterface({

@@ -1,16 +1,18 @@
 import { Banner, Empty, Pagination } from "@knodia/ui-kit/ui";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
-import type { ConsumptionEserviceSearchResult } from "@/routes/consumption/e-services_/consumption-eservice-search.mock";
+import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 
 import { SearchResultList } from "./SearchResultList";
 
 export function SearchContent({
   hasValidationError,
+  isLoading,
   onOffsetChange,
   results,
 }: {
   hasValidationError: boolean;
+  isLoading: boolean;
   onOffsetChange: (offset: number) => void;
   results: null | {
     items: ConsumptionEserviceSearchResult[];
@@ -37,10 +39,7 @@ export function SearchContent({
 
   return (
     <>
-      <SearchResultList
-        eservices={results.items}
-        isLoading={false} // TODO: Replace with isLoading from useQuery when BFF endpoint is available
-      />
+      <SearchResultList eservices={results.items} isLoading={isLoading} />
       <Pagination
         className="mx-auto mt-auto pt-6"
         limit={results.pagination.limit}
