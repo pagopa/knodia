@@ -9,6 +9,8 @@ interface FileUploadProps extends Pick<
   FileTriggerProps,
   "acceptedFileTypes" | "allowsMultiple" | "onSelect"
 > {
+  /** Accessible label applied to the hidden file input */
+  ariaLabel?: string;
   /** Text shown on the file trigger button */
   buttonLabel?: string;
   /** Description text (e.g., "Accepted format: YAML, JSON") */
@@ -22,6 +24,7 @@ interface FileUploadProps extends Pick<
 export function FileUpload({
   acceptedFileTypes = DEFAULT_ACCEPTED_FILE_TYPES,
   allowsMultiple = false,
+  ariaLabel,
   buttonLabel = "Choose file",
   description = "Accepted format: YAML, JSON",
   errorMessage,
@@ -34,6 +37,7 @@ export function FileUpload({
         <FileTrigger
           acceptedFileTypes={acceptedFileTypes}
           allowsMultiple={allowsMultiple}
+          aria-label={ariaLabel}
           {...(onSelect && { onSelect })}
         >
           <Button hierarchy="neutral" isDisabled={isDisabled} kind="tonal">
