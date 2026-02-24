@@ -10,6 +10,7 @@ import {
 
 import { config } from "@/config/config";
 import { clearAuthToken, getAuthToken, setAuthToken } from "@/libs/auth";
+import { client } from "@/libs/axios";
 
 import { AuthContext } from "./useAuthContext";
 
@@ -24,7 +25,7 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
   );
 
   const tokenExchange = useMutation({
-    ...createSessionMutation(),
+    ...createSessionMutation({ client }),
     onSuccess: (data) => {
       setAuthToken(data.token);
       setUiSessionToken(data.token);

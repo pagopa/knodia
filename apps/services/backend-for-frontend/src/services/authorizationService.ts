@@ -70,7 +70,6 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
     async validateCognitoToken(token: string): Promise<CognitoClaims> {
       const { payload: rawPayload } = await jwtVerify(token, cognitoJwks, {
         algorithms: ["RS256"],
-        audience: config.bffTokenAudience,
         issuer: config.cognitoIssuer,
       });
 
