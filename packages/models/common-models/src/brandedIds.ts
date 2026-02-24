@@ -18,9 +18,6 @@ export type OrganizationId = z.infer<typeof OrganizationId>;
 export const UserId = z.uuid().brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 
-export const KnodeId = z.uuid().brand<"KnodeId">();
-export type KnodeId = z.infer<typeof KnodeId>;
-
 export const KeychainId = z.uuid().brand<"KeychainId">();
 export type KeychainId = z.infer<typeof KeychainId>;
 
@@ -33,7 +30,6 @@ type IDS =
   | EserviceInterfaceId
   | EserviceVersionId
   | KeychainId
-  | KnodeId
   | OrganizationId
   | PurposeId
   | UserId;
