@@ -36,8 +36,6 @@ export const createProcessMessage = (
       serviceName: "eservice-readmodel-writer",
     });
 
-    logger.info({ event }, "Processing event");
-
     await handleEserviceEvent(event, eserviceWriterService);
 
     logger.info(
