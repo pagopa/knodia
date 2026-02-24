@@ -28,33 +28,31 @@ export const Route = createFileRoute("/consumption/e-services_/$id")({
 });
 
 function AccessTokenSettingsSection({
-  eservice,
+  accessToken,
 }: {
-  eservice: ConsumptionEserviceDetail;
+  accessToken: ConsumptionEserviceDetail["accessToken"];
 }) {
   return (
     <Section title="Access token settings">
       <div className="grid grid-cols-3 gap-4">
         <SettingsCard label="Duration">
-          {eservice.accessToken.duration} minutes
+          {accessToken.duration} minutes
         </SettingsCard>
-        <SettingsCard label="Audience">
-          {eservice.accessToken.audience}
-        </SettingsCard>
-        <SettingsCard label="Type">{eservice.accessToken.type}</SettingsCard>
+        <SettingsCard label="Audience">{accessToken.audience}</SettingsCard>
+        <SettingsCard label="Type">{accessToken.type}</SettingsCard>
       </div>
     </Section>
   );
 }
 
 function ConsumptionRequirementsSection({
-  eservice,
-}: {
-  eservice: ConsumptionEserviceDetail;
-}) {
-  const { hasRequiredAttributes, identificationRequired, requiredAttributes } =
-    eservice;
-
+  hasRequiredAttributes,
+  identificationRequired,
+  requiredAttributes,
+}: Pick<
+  ConsumptionEserviceDetail,
+  "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
+>) {
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -113,38 +111,35 @@ function ConsumptionRequirementsSection({
 }
 
 function DocumentsSection({
-  eservice,
+  interfaceDocument,
 }: {
-  eservice: ConsumptionEserviceDetail;
+  interfaceDocument: ConsumptionEserviceDetail["interfaceDocument"];
 }) {
   return (
     <Section title="Documents">
-      <DocumentRecap
-        name={eservice.interfaceDocument.name}
-        showDownloadButton
-      />
+      <DocumentRecap name={interfaceDocument.name} showDownloadButton />
       <CopyableValueField
         className="mt-6"
         label="Checksum:"
-        value={eservice.interfaceDocument.checksum}
+        value={interfaceDocument.checksum}
       />
     </Section>
   );
 }
 
 function MaxAPICallsPerDaySection({
-  eservice,
+  maxDailyCalls,
 }: {
-  eservice: ConsumptionEserviceDetail;
+  maxDailyCalls: ConsumptionEserviceDetail["maxDailyCalls"];
 }) {
   return (
     <Section title="Max API calls per day">
       <div className="grid grid-cols-2 gap-4">
         <SettingsCard label="Per Knode">
-          {formatNumber(eservice.maxDailyCalls.perKnode)}
+          {formatNumber(maxDailyCalls.perKnode)}
         </SettingsCard>
         <SettingsCard label="Per Consumer">
-          {formatNumber(eservice.maxDailyCalls.perConsumer)}
+          {formatNumber(maxDailyCalls.perConsumer)}
         </SettingsCard>
       </div>
     </Section>
@@ -200,36 +195,40 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
-      <ConsumptionRequirementsSection eservice={eservice} />
+      <ConsumptionRequirementsSection
+        hasRequiredAttributes={eservice.hasRequiredAttributes}
+        identificationRequired={eservice.identificationRequired}
+        requiredAttributes={eservice.requiredAttributes}
+      />
 
       <Divider className="my-10" />
 
-      <DocumentsSection eservice={eservice} />
+      <DocumentsSection interfaceDocument={eservice.interfaceDocument} />
 
       <Divider className="my-10" />
 
-      <AccessTokenSettingsSection eservice={eservice} />
+      <AccessTokenSettingsSection accessToken={eservice.accessToken} />
 
       <Divider className="my-10" />
 
-      <MaxAPICallsPerDaySection eservice={eservice} />
+      <MaxAPICallsPerDaySection maxDailyCalls={eservice.maxDailyCalls} />
 
       <Divider className="my-10" />
 
-      <SignalHubSection eservice={eservice} />
+      <SignalHubSection isSignalHubEnabled={eservice.isSignalHubEnabled} />
     </>
   );
 }
 
 function SignalHubSection({
-  eservice,
+  isSignalHubEnabled,
 }: {
-  eservice: ConsumptionEserviceDetail;
+  isSignalHubEnabled: boolean;
 }) {
   return (
     <Section className="mb-6" title="Signal hub">
       <p className="body-lg text-primary-dark">
-        {eservice.isSignalHubEnabled
+        {isSignalHubEnabled
           ? "This E-Service is available on Signal Hub."
           : "This E-Service is not available on Signal Hub."}
       </p>
