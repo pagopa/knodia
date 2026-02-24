@@ -6,7 +6,7 @@ import {
   Button,
   Divider,
 } from "@knodia/ui-kit/ui";
-import { AddressBookIcon } from "@phosphor-icons/react";
+import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
@@ -66,11 +66,38 @@ function ConsumptionRequirementsSection({
           <ul className="gap-2 flex flex-col" role="list">
             {requiredAttributes.map((group, index) => (
               <li key={index}>
-                <AttributeGroupContainer attributes={group} />
+                <AttributeGroupContainer
+                  attributes={group}
+                  verified={hasRequiredAttributes}
+                />
               </li>
             ))}
           </ul>
+
+          <Banner
+            className="mt-6 [&>div:last-child]:flex-1"
+            icon={<SealCheckIcon />}
+            kind="neutral"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <span>
+                {hasRequiredAttributes
+                  ? "Your organization has the required attributes."
+                  : "Your organization does not have the required attributes."}
+              </span>
+              <Button
+                className="shrink-0"
+                hierarchy="brand"
+                isDisabled={!hasRequiredAttributes}
+                kind="filled"
+                size="md"
+              >
+                Request Agreement
+              </Button>
+            </div>
+          </Banner>
         </div>
+
         <div>
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Identification
@@ -81,25 +108,6 @@ function ConsumptionRequirementsSection({
               : "Identification not required"}
           </Banner>
         </div>
-      </div>
-
-      <div className="mt-6">
-        <Banner kind={hasRequiredAttributes ? "success" : "warning"}>
-          {hasRequiredAttributes
-            ? "Your organization has the required attributes to request an agreement."
-            : "Your organization does not have the required attributes to request an agreement."}
-        </Banner>
-      </div>
-
-      <div className="mt-6">
-        <Button
-          hierarchy="brand"
-          isDisabled={!hasRequiredAttributes}
-          kind="filled"
-          size="md"
-        >
-          Request Agreement
-        </Button>
       </div>
     </Section>
   );
