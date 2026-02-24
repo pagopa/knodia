@@ -31,6 +31,7 @@
   "exports": {
     ".": "./src/keychain.ts",
     "./config": "./config/config.ts",
+    "./converters": "./src/converters/index.ts",
     "./writer": "./src/services/writerService.ts",
     "./services": "./src/services/readmodelService.ts"
   }
