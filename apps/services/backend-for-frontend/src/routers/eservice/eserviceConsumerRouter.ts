@@ -3,24 +3,25 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 
-import type { RemoteResourcesManagerClient } from "../clients/clientsProvider.ts";
-
-import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
-import { apiTags } from "../models/apiTags.ts";
 import {
   API_CatalogEserviceSearchResults,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
-} from "../models/remoteResourcesManagerApi.ts";
-import { getProcessHeaders } from "../utils/headers.ts";
+} from "../../models/api.ts";
+import { toAPI_CatalogEserviceSearchResult } from "../../models/apiConverter.ts";
+import { apiTags } from "../../models/apiTags.ts";
+import { getProcessHeaders } from "../../utils/headers.ts";
 
 interface RemoteResourcesManagerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
-export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
+export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   RemoteResourcesManagerRouterOptions
 > = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
@@ -63,8 +64,8 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
       },
       summary: "Search for E-services",
-      tags: [apiTags.remoteResourcesManager],
+      tags: [apiTags.eservice],
     },
-    url: "/catalog",
+    url: "/consumer/catalog",
   });
 };

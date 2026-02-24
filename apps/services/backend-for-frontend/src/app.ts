@@ -11,8 +11,8 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { eserviceRouter } from "./routers/eserviceRouter.ts";
-import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
+import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
+import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   return buildApp({ config });
@@ -39,10 +39,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             description: "E-services routes",
             name: apiTags.eservice,
           },
-          {
-            description: "Remote Resources Manager routes",
-            name: apiTags.remoteResourcesManager,
-          },
         ],
       },
     },
@@ -54,11 +50,11 @@ function buildApp({ config }: { config: BffProcessConfig }) {
 
   app.register(authenticationPlugin, config);
   app.register(healthRouter);
-  app.register(eserviceRouter, {
+  app.register(eserviceProducerRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
   });
-  app.register(remoteResourcesManagerRouter, {
+  app.register(eserviceConsumerRouter, {
     remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
   });
 

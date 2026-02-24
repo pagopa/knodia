@@ -9,12 +9,14 @@ import {
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
-import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import {
+  eserviceProcessApi,
+  type EserviceProcessClient,
+} from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import { type EserviceProcessClient } from "../clients/clientsProvider.ts";
-import { config } from "../config/config.ts";
+import { config } from "../../config/config.ts";
 import {
   API_CreatedResource,
   API_EserviceSeed,
@@ -22,13 +24,13 @@ import {
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
-} from "../models/api.ts";
+} from "../../models/api.ts";
 import {
   toAPI_ProducerEservice,
   toAPI_ProducerEserviceDetails,
-} from "../models/apiConverter.ts";
-import { apiTags } from "../models/apiTags.ts";
-import { getProcessHeaders } from "../utils/headers.ts";
+} from "../../models/apiConverter.ts";
+import { apiTags } from "../../models/apiTags.ts";
+import { getProcessHeaders } from "../../utils/headers.ts";
 
 interface EserviceRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
@@ -36,7 +38,7 @@ interface EserviceRouterOptions {
 }
 
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
-export const eserviceRouter: FastifyPluginAsyncZod<
+export const eserviceProducerRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
   // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
@@ -273,7 +275,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     schema: {
       description:
         "Download the interface document for the latest version of an E-service",
-      operationId: "getEserviceLatestVersionInterface",
+      operationId: "getProducerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
       response: {
@@ -285,6 +287,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.eservice],
     },
-    url: "/eservices/:eserviceId/interface",
+    url: "/producer/eservices/:eserviceId/interface",
   });
 };
