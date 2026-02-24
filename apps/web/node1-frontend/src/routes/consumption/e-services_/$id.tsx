@@ -112,7 +112,10 @@ function DocumentsSection({
 }) {
   return (
     <Section title="Documents">
-      <DocumentRecap name={eservice.interfaceDocument.name} />
+      <DocumentRecap
+        name={eservice.interfaceDocument.name}
+        showDownloadButton
+      />
       <CopyableValueField
         className="mt-6"
         label="Checksum:"
