@@ -10,26 +10,34 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
-        BFF_TOKEN_AUDIENCE: z.string(),
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
         KMS_ENDPOINT: z.url(),
-        KNODIA_KMS_KEY_ID: z.string(),
         REMOTE_RESOURCES_MANAGER_URL: z.url(),
-        TOKEN_AUDIENCE: z.string(),
+        UI_SESSION_JWT_AUDIENCE: z.string(),
+        UI_SESSION_JWT_ISSUER: z.string(),
+        UI_SESSION_JWT_KID: z.string(),
+        UI_SESSION_JWT_SECONDS_DURATION: z.coerce
+          .number()
+          .int()
+          .positive()
+          .default(3600),
       })
       .transform((c) => ({
-        bffTokenAudience: c.BFF_TOKEN_AUDIENCE,
         cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         kmsEndpoint: c.KMS_ENDPOINT,
-        knodiaKmsKeyId: c.KNODIA_KMS_KEY_ID,
         remoteResourcesManagerUrl: c.REMOTE_RESOURCES_MANAGER_URL,
-        tokenAudience: c.TOKEN_AUDIENCE,
+        uiSessionJwt: {
+          audience: c.UI_SESSION_JWT_AUDIENCE,
+          issuer: c.UI_SESSION_JWT_ISSUER,
+          kid: c.UI_SESSION_JWT_KID,
+          secondsDuration: c.UI_SESSION_JWT_SECONDS_DURATION,
+        },
       })),
   );
 

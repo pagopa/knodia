@@ -66,6 +66,14 @@ components:
         - status
         - title
       additionalProperties: false
+    SessionResponse:
+      type: object
+      properties:
+        token:
+          type: string
+      required:
+        - token
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -648,13 +656,8 @@ paths:
             application/json:
               schema:
                 description: Session created successfully
-                type: object
-                properties:
-                  token:
-                    type: string
-                required:
-                  - token
-                additionalProperties: false
+                allOf:
+                  - $ref: "#/components/schemas/SessionResponse"
         "401":
           description: Unauthorized
           content:

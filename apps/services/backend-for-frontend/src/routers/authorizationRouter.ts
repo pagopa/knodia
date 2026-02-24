@@ -2,20 +2,24 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  unauthorizedError,
+} from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
 import { apiTags } from "../models/apiTags.ts";
-import { unauthorizedError } from "../models/errors.ts";
 import { type authorizationServiceBuilder } from "../services/authorizationService.ts";
 
 interface AuthRouterOptions {
   authorizationService: ReturnType<typeof authorizationServiceBuilder>;
 }
 
-const API_SessionResponse = z.object({
-  token: z.string(),
-});
+const API_SessionResponse = z
+  .object({
+    token: z.string(),
+  })
+  .meta({ id: "SessionResponse" });
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,

@@ -1,7 +1,7 @@
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { UISessionTokenClaims, UserRole } from "@knodia/common-models/auth";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { createHash, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import z from "zod";
 
 import { config } from "../config/config.ts";
@@ -28,17 +28,17 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
       const header = b64url(
         JSON.stringify({
           alg: "RS256",
-          kid: config.knodiaKmsKeyId,
+          kid: config.uiSessionJwt.kid,
           typ: "JWT",
         }),
       );
 
       const now = Math.floor(Date.now() / 1000);
       const tokenClaims = UISessionTokenClaims.parse({
-        aud: config.bffTokenAudience,
-        exp: now + 3600,
+        aud: config.uiSessionJwt.audience,
+        exp: now + config.uiSessionJwt.secondsDuration,
         iat: now,
-        iss: "local-knodia",
+        iss: config.uiSessionJwt.issuer,
         jti: randomUUID(),
         organizationId: claims.organizationId,
         roles: claims.roles,
@@ -48,13 +48,11 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
       const payload = b64url(JSON.stringify(tokenClaims));
 
       const message = `${header}.${payload}`;
-      const digest = createHash("sha256").update(message).digest();
 
       const { Signature } = await kmsClient.send(
         new SignCommand({
-          KeyId: `alias/${config.knodiaKmsKeyId}`,
-          Message: digest,
-          MessageType: "DIGEST",
+          KeyId: `alias/${config.uiSessionJwt.kid}`,
+          Message: new TextEncoder().encode(message),
           SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
         }),
       );
