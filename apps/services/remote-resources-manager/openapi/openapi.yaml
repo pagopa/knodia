@@ -150,8 +150,7 @@ components:
       additionalProperties: false
     GetCatalogEserviceSearchParams:
       anyOf:
-        - description: Include only E-services belonging to the specified category
-          type: object
+        - type: object
           properties:
             category:
               $ref: "#/components/schemas/EserviceCategory"
@@ -161,8 +160,7 @@ components:
             - category
             - knodeId
           additionalProperties: false
-        - description: Search by name or description
-          type: object
+        - type: object
           properties:
             keywords:
               type: string
