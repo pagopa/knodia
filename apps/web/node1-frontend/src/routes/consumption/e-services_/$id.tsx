@@ -25,6 +25,7 @@ import { formatNumber } from "@/utils/formatters";
 
 export const Route = createFileRoute("/consumption/e-services_/$id")({
   component: RouteComponent,
+  // TODO: Add loader to fetch consumption e-service detail from BFF
 });
 
 function AccessTokenSettingsSection({
@@ -36,7 +37,7 @@ function AccessTokenSettingsSection({
     <Section title="Access token settings">
       <div className="grid grid-cols-3 gap-4">
         <SettingsCard label="Duration">
-          {accessToken.duration} minutes
+          {accessToken.durationInMinutes} minutes
         </SettingsCard>
         <SettingsCard label="Audience">{accessToken.audience}</SettingsCard>
         <SettingsCard label="Type">{accessToken.type}</SettingsCard>
@@ -117,6 +118,7 @@ function DocumentsSection({
 }) {
   return (
     <Section title="Documents">
+      {/* TODO: Add onDownload handler once the BFF endpoint is available */}
       <DocumentRecap name={interfaceDocument.name} showDownloadButton />
       <CopyableValueField
         className="mt-6"
@@ -147,6 +149,7 @@ function MaxAPICallsPerDaySection({
 }
 
 function RouteComponent() {
+  // TODO: Use Route.useParams() to fetch consumption e-service detail once the BFF endpoint is available
   const eservice = mockConsumptionEserviceDetail;
 
   return (
