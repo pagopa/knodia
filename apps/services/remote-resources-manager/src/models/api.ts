@@ -23,15 +23,13 @@ const API_EserviceSearchByCategory =
   API_EserviceSearchByKeywordsAndCategory.pick({
     category: true,
     knodeId: true,
-  }).meta({
-    description: "Include only E-services belonging to the specified category",
   });
 
 const API_EserviceSearchByKeywords =
   API_EserviceSearchByKeywordsAndCategory.pick({
     keywords: true,
     knodeId: true,
-  }).meta({ description: "Search by name or description" });
+  });
 
 export const API_GetCatalogEserviceSearchParams = z
   .union([

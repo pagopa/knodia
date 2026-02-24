@@ -183,7 +183,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Getting Producer E-service with id ${req.params.eserviceId}`,
+        `Getting Producer E-service with ID ${req.params.eserviceId}`,
       );
 
       const path = { eserviceId: req.params.eserviceId };
@@ -246,7 +246,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Downloading interface of E-service with id ${req.params.eserviceId}`,
+        `Downloading interface of E-service with ID ${req.params.eserviceId}`,
       );
 
       const { data } =
