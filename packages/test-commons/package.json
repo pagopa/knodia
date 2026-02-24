@@ -19,6 +19,7 @@
     "@testcontainers/kafka": "catalog:",
     "@testcontainers/minio": "catalog:",
     "@testcontainers/postgresql": "catalog:",
+    "testcontainers": "catalog:",
     "drizzle-orm": "catalog:",
     "eslint": "catalog:",
     "jose": "catalog:",

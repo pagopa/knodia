@@ -11,7 +11,7 @@ import { createTestLogger } from "../utilities/logger.ts";
 const { logLevel } = KafkaJS;
 
 const TEST_KAFKA_PORT = 9093;
-const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:7.6.9";
+const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:8.1.1";
 const AWS_REGION = "eu-south-1";
 
 const { logger, loggerConfig } = createTestLogger();

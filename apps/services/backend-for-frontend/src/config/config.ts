@@ -12,10 +12,12 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
       .object({
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
+        REMOTE_RESOURCES_MANAGER_URL: z.url(),
       })
       .transform((c) => ({
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
+        remoteResourcesManagerUrl: c.REMOTE_RESOURCES_MANAGER_URL,
       })),
   );
 export type BffProcessConfig = z.infer<typeof BffProcessConfig>;

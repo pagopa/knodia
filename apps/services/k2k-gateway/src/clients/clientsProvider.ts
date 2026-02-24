@@ -1,8 +1,7 @@
-import { createEserviceProcessApiClient } from "@knodia/eservice-process-client";
-
-export type EserviceProcessClient = ReturnType<
-  typeof createEserviceProcessApiClient
->;
+import {
+  createEserviceProcessApiClient,
+  type EserviceProcessClient,
+} from "@knodia/eservice-process-client";
 
 interface KnodiaClients {
   eserviceProcessClient: EserviceProcessClient;

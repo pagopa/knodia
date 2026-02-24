@@ -15,7 +15,7 @@ let processMessage: ReturnType<typeof createProcessMessage>;
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
-    inject("READMODEL_CONNECTION_STRING"),
+    inject("POSTGRES_CONNECTION_STRING"),
   );
 
   ({ kafkaConfig, producer, topicName } = await setupKafkaTestProducer(

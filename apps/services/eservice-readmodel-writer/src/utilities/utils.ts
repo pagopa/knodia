@@ -31,8 +31,6 @@ export const createProcessMessage = (
     };
     const messageLogger = logger.child(loggerMetadata);
 
-    messageLogger.info({ event }, "Processing event");
-
     await handleEserviceEvent(event, eserviceWriterService);
 
     messageLogger.info(
