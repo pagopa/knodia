@@ -1,5 +1,8 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
-import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
+import type {
+  KafkaConfig,
+  KafkaConsumerConfig,
+} from "@knodia/kafka-commons/config";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 import { generateId } from "@knodia/common-models/ids";
@@ -14,7 +17,7 @@ const TEST_KAFKA_PORT = 9093;
 const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:8.1.1";
 const AWS_REGION = "eu-south-1";
 
-const { logger, loggerConfig } = createTestLogger();
+const { logger } = createTestLogger();
 
 /**
  * !!! Intended to be called once in global test setup !!!
@@ -45,7 +48,7 @@ export async function setupKafkaTestProducer(broker: string) {
   const randomId = crypto.randomUUID();
   const topicName = `test_kafka_topic_worker_${randomId}`;
 
-  const kafkaCommonConfig = {
+  const kafkaCommonConfig: Omit<KafkaConfig, "kafkaClientId"> = {
     awsRegion: AWS_REGION,
     kafkaBrokers: broker,
     kafkaDisableAwsIamAuth: true,
@@ -55,7 +58,6 @@ export async function setupKafkaTestProducer(broker: string) {
     {
       kafkaClientId: `test-client-${randomId}`,
       ...kafkaCommonConfig,
-      ...loggerConfig,
     },
     logger,
   );
@@ -71,7 +73,6 @@ export async function setupKafkaTestProducer(broker: string) {
     kafkaGroupId: `test-consumer-group-${randomId}`,
     topicStartingOffset: "earliest",
     ...kafkaCommonConfig,
-    ...loggerConfig,
   };
 
   return { kafkaConfig, producer, topicName };
