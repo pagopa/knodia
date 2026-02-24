@@ -1,0 +1,24 @@
+{
+  "name": "@knodia/k2k-gateway-client",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "generate-api-client": "node ./openapi/generateApiClient.ts",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@knodia/openapi-client-generator": "workspace:*",
+    "axios": "catalog:"
+  }
+}
