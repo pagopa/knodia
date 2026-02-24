@@ -15,7 +15,7 @@ import { buildCatalogSearchBody } from "@/features/e-service/services/buildCatal
 import { getCatalogEservicesQueryOptions } from "@/features/e-service/services/catalogEservicesQuery";
 import { client } from "@/libs/axios";
 
-const CATALOG_SEARCH_LIMIT = 10;
+const CATALOG_SEARCH_LIMIT = 4;
 
 const catalogQuery = (
   body: ReturnType<typeof buildCatalogSearchBody>,
