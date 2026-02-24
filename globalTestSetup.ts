@@ -1,33 +1,38 @@
-import { setupReadmodelTestContainer } from "./packages/test-commons/src/readmodel"
-import { setupEventstoreTestContainer } from "./packages/test-commons/src/eventstore"
+import { eventstoreTemplate } from "./packages/test-commons/src/eventstore"
+import { readmodelTemplate } from "./packages/test-commons/src/readmodel"
 import { setupKafkaTestContainer } from "./packages/test-commons/src/testcontainers/kafka"
 import { setupMinioTestContainer } from "./packages/test-commons/src/testcontainers/minio"
+import { runTestFlywayMigrations, setupPostgresTestContainer } from "./packages/test-commons/src/testcontainers/postgres"
 import type { TestProject } from 'vitest/node'
 
 export default async function setup(project: TestProject) {
   const [
-    { container: readmodelContainer, connectionString: readmodelConnectionString },
-    { container: eventstoreContainer, connectionString: eventstoreConnectionString },
+    { container: postgresContainer, connectionString: postgresConnectionString, network },
     { container: kafkaContainer, broker },
     { container: minioContainer, connectionString: minioConnectionString },
   ] = await Promise.all([
-    setupReadmodelTestContainer(),
-    setupEventstoreTestContainer(),
+    setupPostgresTestContainer(),
     setupKafkaTestContainer(),
     setupMinioTestContainer()
   ]);
 
-  project.provide("READMODEL_CONNECTION_STRING", readmodelConnectionString);
-  project.provide("EVENTSTORE_CONNECTION_STRING", eventstoreConnectionString);
+  // Single Flyway container: creates roles + migrates all template databases
+  await runTestFlywayMigrations({
+    connectionString: postgresConnectionString,
+    network,
+    templates: [eventstoreTemplate, readmodelTemplate],
+  });
+
+  project.provide("POSTGRES_CONNECTION_STRING", postgresConnectionString);
   project.provide("KAFKA_BROKER", broker);
   project.provide("MINIO_CONNECTION_STRING", minioConnectionString);
 
   return async function teardown() {
     await Promise.all([
-      readmodelContainer.stop({ removeVolumes: true }),
-      eventstoreContainer.stop({ removeVolumes: true }),
+      postgresContainer.stop({ removeVolumes: true }),
       kafkaContainer.stop({ removeVolumes: true }),
       minioContainer.stop({ removeVolumes: true }),
     ]);
+    await network.stop();
   };
 }
