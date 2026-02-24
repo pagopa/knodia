@@ -216,6 +216,9 @@ catalogs:
     tailwindcss-react-aria-components:
       specifier: 2.0.1
       version: 2.0.1
+    testcontainers:
+      specifier: 11.11.0
+      version: 11.11.0
     ts-pattern:
       specifier: 5.9.0
       version: 5.9.0
@@ -491,6 +494,9 @@ importers:
 
   apps/services/k2k-gateway:
     dependencies:
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -540,6 +546,70 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  apps/services/remote-resources-manager:
+    dependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-models
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/k2k-gateway-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/k2k-gateway
+      '@knodia/logger':
+        specifier: workspace:*
+        version: link:../../../packages/logger
+      fastify:
+        specifier: 'catalog:'
+        version: 5.7.3
+      fastify-type-provider-zod:
+        specifier: 'catalog:'
+        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/spectral-config':
+        specifier: workspace:*
+        version: link:../../../packages/spectral-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@stoplight/spectral-cli':
+        specifier: 'catalog:'
+        version: 6.15.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -673,6 +743,28 @@ importers:
         version: 5.9.3
 
   packages/clients/eservice-process-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/k2k-gateway:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
@@ -1220,6 +1312,9 @@ importers:
       jose:
         specifier: 'catalog:'
         version: 6.1.3
+      testcontainers:
+        specifier: 'catalog:'
+        version: 11.11.0
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
