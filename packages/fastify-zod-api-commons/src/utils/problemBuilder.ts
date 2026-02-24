@@ -1,6 +1,6 @@
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
-import { serviceCode, ServiceName } from "@knodia/common-models/services";
+import { HTTPServiceName } from "@knodia/common-models/services";
 import { type AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
@@ -23,6 +23,7 @@ import {
   responseSerializationError,
   zodFastifySchemaValidationError,
 } from "../models/errors/errors.ts";
+import { serviceErrorCode } from "../models/errors/services.ts";
 
 const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = constants;
 
@@ -63,10 +64,10 @@ export function makeApiProblemBuilder<T extends string>(
     options;
   const allErrors = { ...commonErrorCodes, ...errors };
 
-  function retrieveServiceErrorCode(serviceName: ServiceName): string {
-    const serviceNameParsed = ServiceName.safeParse(serviceName);
+  function retrieveServiceErrorCode(serviceName: HTTPServiceName): string {
+    const serviceNameParsed = HTTPServiceName.safeParse(serviceName);
     return serviceNameParsed.success
-      ? serviceCode[serviceNameParsed.data]
+      ? serviceErrorCode[serviceNameParsed.data]
       : "000";
   }
 

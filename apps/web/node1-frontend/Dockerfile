@@ -21,7 +21,7 @@ FROM installer AS build
 ARG SERVICE_NAME
 RUN pnpm --filter @knodia/${SERVICE_NAME} build
 
-FROM nginx:1.29.2@sha256:3b7732505933ca591ce4a6d860cb713ad96a3176b82f7979a8dfa9973486a0d6 AS runner
+FROM nginx:1.29.2@sha256:029d4461bd98f124e531380505ceea2072418fdf28752aa73b7b273ba3048903 AS runner
 ARG SERVICE_PATH
 RUN mkdir -p /usr/share/nginx/html/ui
 COPY --from=build /repo/${SERVICE_PATH}/dist /usr/share/nginx/html/ui

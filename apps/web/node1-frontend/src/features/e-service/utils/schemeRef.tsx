@@ -32,3 +32,14 @@ export function renderSchemeRefItems(
 export function toSchemeRefKey(ref: SchemeRef): string {
   return `${ref.scheme}${SEPARATOR}${ref.code}`;
 }
+
+export function toSchemeRefOptions(
+  data: Record<string, Record<string, string>>,
+) {
+  return Object.entries(data).flatMap(([scheme, codes]) =>
+    Object.entries(codes).map(([code, name]) => ({
+      id: `${scheme}${SEPARATOR}${code}`,
+      label: name,
+    })),
+  );
+}

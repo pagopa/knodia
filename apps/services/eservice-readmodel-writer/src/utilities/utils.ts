@@ -1,5 +1,5 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
-import type { LoggerMetadataKafka } from "@knodia/logger/models";
+import type { KafkaConsumerLoggerMetadata } from "@knodia/logger/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { Logger } from "pino";
 
@@ -22,7 +22,7 @@ export const createProcessMessage = (
   }: EachMessagePayload) {
     const event = decodeKafkaMessageEvent(message, EserviceEventV1);
 
-    const loggerMetadata: LoggerMetadataKafka = {
+    const loggerMetadata: KafkaConsumerLoggerMetadata = {
       correlationId: unsafeBrandId(event.correlation_id),
       eventType: event.type,
       eventVersion: event.version,
