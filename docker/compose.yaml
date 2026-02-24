@@ -47,7 +47,7 @@ services:
     container_name: knodia-flyway-roles-event-store
     command: migrate
     volumes:
-      - ../migration/local/event_store_roles.sql:/flyway/sql/R__event_store_roles.sql:ro
+      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
     environment:
       FLYWAY_URL: jdbc:postgresql://event-store:5432/root
       FLYWAY_USER: root
@@ -68,7 +68,7 @@ services:
     container_name: knodia-flyway-roles-readmodel
     command: migrate
     volumes:
-      - ../migration/local/read_model_roles.sql:/flyway/sql/R__read_model_roles.sql:ro
+      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
     environment:
       FLYWAY_URL: jdbc:postgresql://readmodel:5432/root
       FLYWAY_USER: root
@@ -125,7 +125,7 @@ services:
   kafka:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:7.6.9@sha256:652f4017a6389f22930eb27ad02ce730622ebe145efa442625d7f439f1bc111e
+    image: confluentinc/cp-kafka:8.1.1
     container_name: knodia-kafka
     ports:
       - 9092:9092
@@ -160,6 +160,29 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+
+  kafka-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: confluentinc/cp-kafka:8.1.1
+    container_name: knodia-kafka-setup
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./kafka-topics:/kafka-topics:ro
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        while IFS=: read -r topic partitions; do
+          kafka-topics --bootstrap-server kafka:9092 \
+            --create --if-not-exists \
+            --topic "$$topic" \
+            --partitions "$$partitions" \
+            --replication-factor 1
+        done < /kafka-topics
+        echo 'All topics created'
 
   debezium-connect:
     security_opt:
