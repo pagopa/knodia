@@ -49,6 +49,7 @@ export function SearchResultCard({
             code={category.code}
             key={category.code}
             scheme={category.scheme}
+            showIcon={false}
           />
         ))}
       </EserviceCardFooter>

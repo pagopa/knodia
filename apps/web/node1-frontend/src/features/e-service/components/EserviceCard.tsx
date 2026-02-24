@@ -11,13 +11,20 @@ import { EserviceStateChip } from "./EserviceStateChip";
 export function CategoryChip({
   code,
   scheme,
+  showIcon = true,
 }: {
   code: string;
   scheme: string;
+  showIcon?: boolean;
 }) {
   const label = getCategory(scheme, code)?.name ?? code;
   return (
-    <Chip icon={<CheckIcon />} kind="neutral" label={label} type="light" />
+    <Chip
+      icon={showIcon ? <CheckIcon /> : undefined}
+      kind="neutral"
+      label={label}
+      type="light"
+    />
   );
 }
 

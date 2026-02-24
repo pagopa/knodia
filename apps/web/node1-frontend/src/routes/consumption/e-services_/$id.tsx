@@ -180,7 +180,7 @@ function RouteComponent() {
             size={16}
           />
         </div>
-        <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
+        <p className="mt-6 body-md text-primary-light-low-contrast max-w-200">
           {eservice.description}
         </p>
       </PageHeader>
@@ -192,6 +192,7 @@ function RouteComponent() {
             code={category.code}
             key={category.code}
             scheme={category.scheme}
+            showIcon={false}
           />
         ))}
       </div>
