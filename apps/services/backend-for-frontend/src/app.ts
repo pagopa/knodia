@@ -13,10 +13,7 @@ import { makeApiProblem } from "./models/errors.ts";
 import { authRouter } from "./routers/authorizationRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
-import {
-  authorizationServiceBuilder,
-  makeKmsClient,
-} from "./services/authorizationService.ts";
+import { authorizationServiceBuilder } from "./services/authorizationService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   return buildApp({ config });
@@ -28,8 +25,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
   const fileManager = initFileManager();
-  const kmsClient = makeKmsClient();
-  const tokenService = authorizationServiceBuilder(kmsClient);
+  const tokenService = authorizationServiceBuilder();
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {

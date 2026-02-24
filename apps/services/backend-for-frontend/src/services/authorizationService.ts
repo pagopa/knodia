@@ -20,7 +20,7 @@ interface CognitoClaims {
 const b64url = (data: string): string =>
   Buffer.from(data).toString("base64url");
 
-export function authorizationServiceBuilder(kmsClient: KMSClient) {
+export function authorizationServiceBuilder() {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
 
   return {
@@ -49,7 +49,7 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
 
       const message = `${header}.${payload}`;
 
-      const { Signature } = await kmsClient.send(
+      const { Signature } = await new KMSClient().send(
         new SignCommand({
           KeyId: `alias/${config.uiSessionJwt.kid}`,
           Message: new TextEncoder().encode(message),
@@ -94,8 +94,4 @@ export function authorizationServiceBuilder(kmsClient: KMSClient) {
       };
     },
   };
-}
-
-export function makeKmsClient(): KMSClient {
-  return new KMSClient({ endpoint: config.kmsEndpoint });
 }
