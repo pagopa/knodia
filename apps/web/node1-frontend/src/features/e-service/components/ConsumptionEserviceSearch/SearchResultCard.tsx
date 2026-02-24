@@ -32,16 +32,12 @@ export function SearchResultCard({
         mode={eservice.mode}
         state={eservice.state}
         trailing={
-          <div className="flex shrink-0 items-center gap-2">
-            <Avatar
-              className="bg-brand-dark text-white"
-              fallback={eservice.organization.initials}
-              size="sm"
-            />
-            <span className="label-md text-primary-light-high-contrast">
-              {eservice.organization.name}
-            </span>
-          </div>
+          <Avatar
+            className="bg-brand-dark text-white"
+            fallback={eservice.organization.initials}
+            name={eservice.organization.name}
+            size="sm"
+          />
         }
       >
         {eservice.categories.map((category) => (

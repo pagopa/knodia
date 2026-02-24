@@ -170,11 +170,9 @@ function RouteComponent() {
           <Avatar
             className="bg-brand-dark text-white"
             fallback={eservice.producer.initials}
+            name={eservice.producer.name}
             size="sm"
           />
-          <span className="body-md text-primary-light-high-contrast">
-            {eservice.producer.name}
-          </span>
           <AddressBookIcon
             className="text-primary-light-low-contrast"
             size={16}
