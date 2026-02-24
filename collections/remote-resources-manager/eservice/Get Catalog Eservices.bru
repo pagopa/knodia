@@ -1,0 +1,32 @@
+meta {
+  name: Get Catalog Eservices
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host-remote-resources-manager}}/catalog?offset=0&limit=50
+  body: json
+  auth: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+}
+
+body:json {
+  {
+    "knodeId": "Orion",
+    "keywords": "test"
+  }
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  eservices: res.body.results
+}
