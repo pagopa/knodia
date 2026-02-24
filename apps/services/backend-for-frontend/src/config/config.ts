@@ -11,6 +11,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
     z
       .object({
         BFF_TOKEN_AUDIENCE: z.string(),
+        COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
@@ -21,6 +22,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
       })
       .transform((c) => ({
         bffTokenAudience: c.BFF_TOKEN_AUDIENCE,
+        cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,

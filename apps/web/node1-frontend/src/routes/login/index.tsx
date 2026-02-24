@@ -25,12 +25,12 @@ function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col h-full items-center justify-center">
+    <div className="flex flex-col gap-4 h-full items-center justify-center">
       {oidcAuth.error && <p>Login error: {oidcAuth.error.message}</p>}
 
       {!oidcAuth.isAuthenticated && (
         <Button onClick={() => void oidcAuth.signinRedirect()} type="button">
-          Login
+          {oidcAuth.error ? "Retry" : "Login"}
         </Button>
       )}
     </div>

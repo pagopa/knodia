@@ -636,7 +636,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /auth/ui-session:
-    get:
+    post:
       operationId: createSession
       tags:
         - auth

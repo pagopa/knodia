@@ -80,13 +80,11 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <OidcAuthProvider
-        onSigninCallback={() => void router.navigate({ to: "/" })}
-      >
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <OidcAuthProvider>
           <RouterProvider router={router} />
-        </QueryClientProvider>
-      </OidcAuthProvider>
+        </OidcAuthProvider>
+      </QueryClientProvider>
     </StrictMode>,
   );
 }

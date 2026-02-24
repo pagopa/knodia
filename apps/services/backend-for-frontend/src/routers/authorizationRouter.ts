@@ -47,7 +47,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         throw unauthorizedError("Invalid or expired token");
       }
     },
-    method: "GET",
+    method: "POST",
     schema: {
       description: "Validate a Cognito token and generate a session token",
       operationId: "createSession",
