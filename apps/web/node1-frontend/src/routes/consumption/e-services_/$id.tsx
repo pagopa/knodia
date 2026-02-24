@@ -173,6 +173,7 @@ function RouteComponent() {
             name={eservice.producer.name}
             size="sm"
           />
+          {/* TODO: AddressBookIcon click does nothing yet — producer organization data is not available from BE (see Figma comments) */}
           <AddressBookIcon
             className="text-primary-light-low-contrast"
             size={16}
