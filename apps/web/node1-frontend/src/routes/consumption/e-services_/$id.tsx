@@ -5,9 +5,11 @@ import {
   Breadcrumbs,
   Button,
   Divider,
+  Popover,
 } from "@knodia/ui-kit/ui";
 import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { DialogTrigger } from "react-aria-components";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -153,6 +155,45 @@ function MaxAPICallsPerDaySection({
   );
 }
 
+function ProducerContactPopover({
+  producer,
+}: {
+  producer: ConsumptionEserviceDetail["producer"];
+}) {
+  return (
+    <DialogTrigger>
+      <Button
+        aria-label="View producer contact info"
+        className="p-0"
+        hierarchy="neutral"
+        kind="ghost"
+        size="icon-sm"
+      >
+        <AddressBookIcon
+          className="text-primary-light-low-contrast"
+          size={16}
+        />
+      </Button>
+      <Popover
+        className="max-w-md"
+        placement="bottom start"
+        title={`${producer.name} – ${producer.knodeName}`}
+      >
+        <dl className="body-sm flex flex-col gap-1">
+          <div className="flex gap-2">
+            <dt>E-mail address:</dt>
+            <dd className="body-sm-em">{producer.email}</dd>
+          </div>
+          <div className="flex gap-2">
+            <dt>Notes:</dt>
+            <dd className="body-sm-em">{producer.notes}</dd>
+          </div>
+        </dl>
+      </Popover>
+    </DialogTrigger>
+  );
+}
+
 function RouteComponent() {
   // TODO: Use Route.useParams() to fetch consumption e-service detail once the BFF endpoint is available
   const eservice = mockConsumptionEserviceDetail;
@@ -178,11 +219,7 @@ function RouteComponent() {
             name={eservice.producer.name}
             size="sm"
           />
-          {/* TODO: AddressBookIcon click does nothing yet — producer organization data is not available from BE (see Figma comments) */}
-          <AddressBookIcon
-            className="text-primary-light-low-contrast"
-            size={16}
-          />
+          <ProducerContactPopover producer={eservice.producer} />
         </div>
         <p className="mt-6 body-md text-primary-light-low-contrast max-w-200">
           {eservice.description}

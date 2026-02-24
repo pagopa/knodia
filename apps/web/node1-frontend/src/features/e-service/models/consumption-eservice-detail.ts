@@ -27,8 +27,11 @@ export interface ConsumptionEserviceDetail {
   mode: bffApi.EserviceMode;
   name: string;
   producer: {
+    email: string;
     initials: string;
+    knodeName: string;
     name: string;
+    notes: string;
   };
   requiredAttributes: SchemeRef[][];
   state: bffApi.EserviceVersionState;

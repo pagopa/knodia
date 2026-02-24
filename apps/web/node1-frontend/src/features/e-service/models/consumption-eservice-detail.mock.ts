@@ -30,8 +30,11 @@ export const mockConsumptionEserviceDetail: ConsumptionEserviceDetail = {
   mode: "ProvideData",
   name: "Requesting proof of registration of birth",
   producer: {
+    email: "info@ursa.com",
     initials: "UR",
+    knodeName: "Lynx Knode",
     name: "Ursa",
+    notes: "Offices are open from Monday to Friday, 8.00 - 17.00",
   },
   requiredAttributes: [
     [
