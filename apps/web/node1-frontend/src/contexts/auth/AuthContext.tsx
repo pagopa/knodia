@@ -1,19 +1,44 @@
 import { type ReactNode, useCallback, useEffect, useState } from "react";
-import { useAuth as useOidcAuth } from "react-oidc-context";
+import {
+  AuthProvider as OidcProvider,
+  useAuth as useOidcAuth,
+} from "react-oidc-context";
 
 import { config } from "@/config/config";
-import { clearAuthToken, setAuthToken } from "@/libs/auth";
+import { clearAuthToken, getAuthToken, setAuthToken } from "@/libs/auth";
 
 import { AuthContext } from "./useAuthContext";
 
 /**
- * OIDC AuthProvider — must be rendered inside react-oidc-context's AuthProvider.
- * After OIDC login, exchanges the Cognito access_token for a ui-session token
- * via the BFF, and exposes that token through AuthContext.
+ * Wraps react-oidc-context's AuthProvider with OIDC configuration
+ * and token exchange logic. After OIDC login, exchanges the Cognito
+ * access_token for a ui-session token via the BFF.
  */
-export function OidcAuthProvider({ children }: { children: ReactNode }) {
+export function OidcAuthProvider({
+  children,
+  onSigninCallback,
+}: {
+  children: ReactNode;
+  onSigninCallback?: () => void;
+}) {
+  return (
+    <OidcProvider
+      authority={config.cognito.authority}
+      client_id={config.cognito.clientId}
+      onSigninCallback={onSigninCallback}
+      redirect_uri={config.cognito.redirectUri}
+      scope="openid"
+    >
+      <TokenExchangeProvider>{children}</TokenExchangeProvider>
+    </OidcProvider>
+  );
+}
+
+function TokenExchangeProvider({ children }: { children: ReactNode }) {
   const oidcAuth = useOidcAuth();
-  const [uiSessionToken, setUiSessionToken] = useState<null | string>(null);
+  const [uiSessionToken, setUiSessionToken] = useState<null | string>(
+    getAuthToken,
+  );
   const accessToken = oidcAuth.user?.access_token;
 
   useEffect(() => {
@@ -43,7 +68,9 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
     };
   }, [accessToken]);
 
-  const isAuthenticated = oidcAuth.isAuthenticated && !!uiSessionToken;
+  // Based on BFF ui-session token (localStorage), not OIDC state (sessionStorage),
+  // so closing the tab doesn't force re-login.
+  const isAuthenticated = !!uiSessionToken;
 
   const logout = useCallback(() => {
     clearAuthToken();
