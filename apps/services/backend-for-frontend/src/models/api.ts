@@ -229,7 +229,7 @@ const API_ProducerEserviceVersionDetails = z
       format: "int32",
     }),
   })
-  .meta({ id: "EserviceVersion" });
+  .meta({ id: "ProducerEserviceVersionDetails" });
 
 const API_ProducerEserviceDetailsCounters = z
   .strictObject({
@@ -288,28 +288,25 @@ const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   keywords: z.string().min(1),
   knodeId: API_KnodeId,
 });
-
 const API_EserviceSearchByCategory =
   API_EserviceSearchByKeywordsAndCategory.pick({
     category: true,
     knodeId: true,
   });
-
 const API_EserviceSearchByKeywords =
   API_EserviceSearchByKeywordsAndCategory.pick({
     keywords: true,
     knodeId: true,
   });
-
-export const API_GetCatalogEserviceSearchParams = z
+export const API_GetConsumerCatalogEserviceSearchParams = z
   .union([
     API_EserviceSearchByCategory,
     API_EserviceSearchByKeywords,
     API_EserviceSearchByKeywordsAndCategory,
   ])
-  .meta({ id: "GetCatalogEserviceSearchParams" });
-export type API_GetCatalogEserviceSearchParams = z.infer<
-  typeof API_GetCatalogEserviceSearchParams
+  .meta({ id: "GetConsumerCatalogEserviceSearchParams" });
+export type API_GetConsumerCatalogEserviceSearchParams = z.infer<
+  typeof API_GetConsumerCatalogEserviceSearchParams
 >;
 
 const API_CompactOrganization = z
@@ -322,7 +319,7 @@ const API_CompactOrganization = z
     id: "CompactOrganization",
   });
 
-const API_CatalogEserviceSearchResult = z
+const API_ConsumerCatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
@@ -333,22 +330,23 @@ const API_CatalogEserviceSearchResult = z
     name: API_LocalizedName,
     producer: API_CompactOrganization,
   })
-  .meta({ id: "CatalogEserviceSearchResult" });
-export type API_CatalogEserviceSearchResult = z.infer<
-  typeof API_CatalogEserviceSearchResult
+  .meta({ id: "ConsumerCatalogEserviceSearchResult" });
+export type API_ConsumerCatalogEserviceSearchResult = z.infer<
+  typeof API_ConsumerCatalogEserviceSearchResult
 >;
 
-export const API_CatalogEserviceSearchResults = z
+export const API_ConsumerCatalogEserviceSearchResults = z
   .strictObject({
     pagination: API_Pagination,
-    results: z.array(API_CatalogEserviceSearchResult),
+    results: z.array(API_ConsumerCatalogEserviceSearchResult),
   })
-  .meta({ id: "CatalogEserviceSearchResults" });
-export type API_CatalogEserviceSearchResults = z.infer<
-  typeof API_CatalogEserviceSearchResults
+  .meta({ id: "ConsumerCatalogEserviceSearchResults" });
+export type API_ConsumerCatalogEserviceSearchResults = z.infer<
+  typeof API_ConsumerCatalogEserviceSearchResults
 >;
 
-export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
-export type API_GetCatalogEservicesQueryParams = z.infer<
-  typeof API_GetCatalogEservicesQueryParams
+export const API_GetConsumerCatalogEservicesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerCatalogEservicesQueryParams = z.infer<
+  typeof API_GetConsumerCatalogEservicesQueryParams
 >;

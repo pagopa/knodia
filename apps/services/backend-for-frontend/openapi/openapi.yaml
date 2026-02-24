@@ -324,7 +324,7 @@ components:
         - items
         - pagination
       additionalProperties: false
-    EserviceVersion:
+    ProducerEserviceVersionDetails:
       type: object
       properties:
         accessTokenAudience:
@@ -502,7 +502,7 @@ components:
         version:
           description: Latest version details
           allOf:
-            - $ref: "#/components/schemas/EserviceVersion"
+            - $ref: "#/components/schemas/ProducerEserviceVersionDetails"
       required:
         - agreements
         - categories
@@ -518,7 +518,7 @@ components:
         - updatedAt
         - version
       additionalProperties: false
-    GetCatalogEserviceSearchParams:
+    GetConsumerCatalogEserviceSearchParams:
       anyOf:
         - type: object
           properties:
@@ -569,7 +569,7 @@ components:
         - id
         - name
       additionalProperties: false
-    CatalogEserviceSearchResult:
+    ConsumerCatalogEserviceSearchResult:
       type: object
       properties:
         categories:
@@ -606,7 +606,7 @@ components:
         - name
         - producer
       additionalProperties: false
-    CatalogEserviceSearchResults:
+    ConsumerCatalogEserviceSearchResults:
       type: object
       properties:
         pagination:
@@ -614,7 +614,7 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/CatalogEserviceSearchResult"
+            $ref: "#/components/schemas/ConsumerCatalogEserviceSearchResult"
       required:
         - pagination
         - results
@@ -825,7 +825,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
     post:
-      operationId: getCatalogEservices
+      operationId: getConsumerCatalogEservices
       summary: Search for E-services
       tags:
         - eservice
@@ -835,7 +835,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
+              $ref: "#/components/schemas/GetConsumerCatalogEserviceSearchParams"
         required: true
       parameters:
         - schema:
@@ -865,7 +865,7 @@ paths:
                 description: E-service search results retrieved (sorted by most recently updated
                   first)
                 allOf:
-                  - $ref: "#/components/schemas/CatalogEserviceSearchResults"
+                  - $ref: "#/components/schemas/ConsumerCatalogEserviceSearchResults"
         "400":
           description: Bad Request
           content:

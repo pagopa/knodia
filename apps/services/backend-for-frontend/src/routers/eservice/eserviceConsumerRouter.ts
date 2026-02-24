@@ -9,11 +9,11 @@ import {
 } from "@knodia/remote-resources-manager-client";
 
 import {
-  API_CatalogEserviceSearchResults,
-  API_GetCatalogEserviceSearchParams,
-  API_GetCatalogEservicesQueryParams,
+  API_ConsumerCatalogEserviceSearchResults,
+  API_GetConsumerCatalogEserviceSearchParams,
+  API_GetConsumerCatalogEservicesQueryParams,
 } from "../../models/api.ts";
-import { toAPI_CatalogEserviceSearchResult } from "../../models/apiConverter.ts";
+import { toAPI_ConsumerCatalogEserviceSearchResult } from "../../models/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getProcessHeaders } from "../../utils/headers.ts";
 
@@ -43,7 +43,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       res.send({
         pagination: data.pagination,
         results: data.results.map((r) =>
-          toAPI_CatalogEserviceSearchResult(r, {
+          toAPI_ConsumerCatalogEserviceSearchResult(r, {
             en: "Producer name", // TODO: retrieve producer name
           }),
         ),
@@ -51,13 +51,13 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_GetCatalogEserviceSearchParams,
+      body: API_GetConsumerCatalogEserviceSearchParams,
       description:
         "Search for E-services according to search criteria and considering only E-services with an active or suspended Version",
-      operationId: "getCatalogEservices",
-      querystring: API_GetCatalogEservicesQueryParams,
+      operationId: "getConsumerCatalogEservices",
+      querystring: API_GetConsumerCatalogEservicesQueryParams,
       response: {
-        200: API_CatalogEserviceSearchResults.meta({
+        200: API_ConsumerCatalogEserviceSearchResults.meta({
           description:
             "E-service search results retrieved (sorted by most recently updated first)",
         }),
