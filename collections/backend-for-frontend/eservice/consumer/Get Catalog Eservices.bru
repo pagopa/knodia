@@ -1,11 +1,10 @@
 meta {
   name: Get Catalog Eservices
   type: http
-  seq: 1
 }
 
 post {
-  url: {{host-backend-for-frontend}}/catalog?offset=0&limit=50
+  url: {{host-backend-for-frontend}}/consumer/catalog?offset=0&limit=50
   body: json
   auth: none
 }
