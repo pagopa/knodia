@@ -9,7 +9,7 @@ import { KafkaContainer } from "@testcontainers/kafka";
 const { logLevel } = KafkaJS;
 
 const TEST_KAFKA_PORT = 9093;
-const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:7.6.9";
+const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:8.1.1";
 
 /**
  * !!! Intended to be called once in global test setup !!!

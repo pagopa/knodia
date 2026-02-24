@@ -125,7 +125,7 @@ services:
   kafka:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:7.6.9@sha256:652f4017a6389f22930eb27ad02ce730622ebe145efa442625d7f439f1bc111e
+    image: confluentinc/cp-kafka:8.1.1
     container_name: knodia-kafka
     ports:
       - 9092:9092
