@@ -13,10 +13,8 @@ export function AttributeGroupContainer({
 }) {
   return (
     <div
-      className={`flex items-center gap-4 py-3 px-4 rounded-lg body-md ${
-        verified
-          ? "bg-success-light text-secondary-light-mid-contrast"
-          : "bg-secondary-light text-secondary-light-mid-contrast"
+      className={`flex items-center gap-4 py-3 px-4 rounded-lg body-md text-secondary-light-mid-contrast ${
+        verified ? "bg-success-light" : "bg-secondary-light"
       }`}
     >
       {attributes.map((attribute, index) => (

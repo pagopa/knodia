@@ -8,7 +8,6 @@ import {
 } from "@knodia/ui-kit/ui";
 import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
-import { match } from "ts-pattern";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -230,10 +229,9 @@ function SignalHubSection({
   return (
     <Section className="mb-6" title="Signal hub">
       <p className="body-lg text-primary-dark">
-        {match(eservice.isSignalHubEnabled)
-          .with(true, () => "This E-Service is available on Signal Hub.")
-          .with(false, () => "This E-Service is not available on Signal Hub.")
-          .exhaustive()}
+        {eservice.isSignalHubEnabled
+          ? "This E-Service is available on Signal Hub."
+          : "This E-Service is not available on Signal Hub."}
       </p>
     </Section>
   );
