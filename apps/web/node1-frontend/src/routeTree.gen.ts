@@ -22,6 +22,8 @@ import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/
 import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
 import { Route as ConsumptionEServicesRouteRouteImport } from './routes/consumption/e-services/route'
 import { Route as ProductionEServicesIdRouteImport } from './routes/production/e-services_/$id'
+import { Route as ConsumptionEServicesSearchRouteImport } from './routes/consumption/e-services_/search'
+import { Route as ConsumptionEServicesIdRouteImport } from './routes/consumption/e-services_/$id'
 import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
 
 const OperatorsRoute = OperatorsRouteImport.update({
@@ -91,6 +93,17 @@ const ProductionEServicesIdRoute = ProductionEServicesIdRouteImport.update({
   path: '/production/e-services/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConsumptionEServicesSearchRoute =
+  ConsumptionEServicesSearchRouteImport.update({
+    id: '/consumption/e-services_/search',
+    path: '/consumption/e-services/search',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ConsumptionEServicesIdRoute = ConsumptionEServicesIdRouteImport.update({
+  id: '/consumption/e-services_/$id',
+  path: '/consumption/e-services/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductionEServicesNewIndexRoute =
   ProductionEServicesNewIndexRouteImport.update({
     id: '/new/',
@@ -111,6 +124,8 @@ export interface FileRoutesByFullPath {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/consumption/e-services/$id': typeof ConsumptionEServicesIdRoute
+  '/consumption/e-services/search': typeof ConsumptionEServicesSearchRoute
   '/production/e-services/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
@@ -127,6 +142,8 @@ export interface FileRoutesByTo {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption': typeof ConsumptionIndexRoute
   '/production': typeof ProductionIndexRoute
+  '/consumption/e-services/$id': typeof ConsumptionEServicesIdRoute
+  '/consumption/e-services/search': typeof ConsumptionEServicesSearchRoute
   '/production/e-services/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
 }
@@ -144,6 +161,8 @@ export interface FileRoutesById {
   '/production/purposes': typeof ProductionPurposesRoute
   '/consumption/': typeof ConsumptionIndexRoute
   '/production/': typeof ProductionIndexRoute
+  '/consumption/e-services_/$id': typeof ConsumptionEServicesIdRoute
+  '/consumption/e-services_/search': typeof ConsumptionEServicesSearchRoute
   '/production/e-services_/$id': typeof ProductionEServicesIdRoute
   '/production/e-services/new/': typeof ProductionEServicesNewIndexRoute
 }
@@ -162,6 +181,8 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/consumption/e-services/$id'
+    | '/consumption/e-services/search'
     | '/production/e-services/$id'
     | '/production/e-services/new'
   fileRoutesByTo: FileRoutesByTo
@@ -178,6 +199,8 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption'
     | '/production'
+    | '/consumption/e-services/$id'
+    | '/consumption/e-services/search'
     | '/production/e-services/$id'
     | '/production/e-services/new'
   id:
@@ -194,6 +217,8 @@ export interface FileRouteTypes {
     | '/production/purposes'
     | '/consumption/'
     | '/production/'
+    | '/consumption/e-services_/$id'
+    | '/consumption/e-services_/search'
     | '/production/e-services_/$id'
     | '/production/e-services/new/'
   fileRoutesById: FileRoutesById
@@ -211,6 +236,8 @@ export interface RootRouteChildren {
   ProductionPurposesRoute: typeof ProductionPurposesRoute
   ConsumptionIndexRoute: typeof ConsumptionIndexRoute
   ProductionIndexRoute: typeof ProductionIndexRoute
+  ConsumptionEServicesIdRoute: typeof ConsumptionEServicesIdRoute
+  ConsumptionEServicesSearchRoute: typeof ConsumptionEServicesSearchRoute
   ProductionEServicesIdRoute: typeof ProductionEServicesIdRoute
 }
 
@@ -307,6 +334,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductionEServicesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/consumption/e-services_/search': {
+      id: '/consumption/e-services_/search'
+      path: '/consumption/e-services/search'
+      fullPath: '/consumption/e-services/search'
+      preLoaderRoute: typeof ConsumptionEServicesSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/consumption/e-services_/$id': {
+      id: '/consumption/e-services_/$id'
+      path: '/consumption/e-services/$id'
+      fullPath: '/consumption/e-services/$id'
+      preLoaderRoute: typeof ConsumptionEServicesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/production/e-services/new/': {
       id: '/production/e-services/new/'
       path: '/new'
@@ -344,6 +385,8 @@ const rootRouteChildren: RootRouteChildren = {
   ProductionPurposesRoute: ProductionPurposesRoute,
   ConsumptionIndexRoute: ConsumptionIndexRoute,
   ProductionIndexRoute: ProductionIndexRoute,
+  ConsumptionEServicesIdRoute: ConsumptionEServicesIdRoute,
+  ConsumptionEServicesSearchRoute: ConsumptionEServicesSearchRoute,
   ProductionEServicesIdRoute: ProductionEServicesIdRoute,
 }
 export const routeTree = rootRouteImport

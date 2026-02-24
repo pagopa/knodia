@@ -2,7 +2,7 @@ import { bffApi } from "@knodia/bff-client";
 import { Empty, Loader } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 
-import { ProductionEserviceCard } from "./EserviceCard";
+import { ProductionEserviceCard } from "./ProductionEserviceCard";
 
 export function ProductionEserviceList({
   eservices,

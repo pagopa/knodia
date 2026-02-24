@@ -3,10 +3,11 @@
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
-    "test": "vitest",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/db-event-store-writer",
+    "test:watch": "pnpm test --watch"
   },
   "dependencies": {
     "@knodia/db-event-store-eservice": "workspace:*",
