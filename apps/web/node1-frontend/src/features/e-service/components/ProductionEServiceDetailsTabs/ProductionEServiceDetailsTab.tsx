@@ -11,7 +11,7 @@ import { formatNumber } from "@/utils/formatters";
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { AttributeGroupContainer } from "../AttributeGroupContainer";
 import { DocumentRecap } from "../DocumentRecap";
-import { Section } from "./Section";
+import { Section } from "../Section";
 
 export function ProductionEServiceDetailsTab() {
   return (

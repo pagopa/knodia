@@ -2,7 +2,7 @@ import type { Key } from "react-aria-components";
 
 import { SelectItem } from "@knodia/ui-kit/ui";
 
-import type { SchemeRef } from "@/features/e-service/types/eserviceCreateForm";
+import type { SchemeRef } from "@/features/e-service/types/schemeRef";
 
 const SEPARATOR = "$";
 

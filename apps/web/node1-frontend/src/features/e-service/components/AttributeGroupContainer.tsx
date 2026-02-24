@@ -2,7 +2,7 @@ import { getAttribute } from "@knodia/attribute-models";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 import { Fragment } from "react";
 
-import type { SchemeRef } from "../types/eserviceCreateForm";
+import type { SchemeRef } from "../types/schemeRef";
 
 export function AttributeGroupContainer({
   attributes,
