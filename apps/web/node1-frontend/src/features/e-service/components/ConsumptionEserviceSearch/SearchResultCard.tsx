@@ -3,8 +3,8 @@ import { SealCheckIcon, WarningDiamondIcon } from "@phosphor-icons/react";
 
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 
+import { CategoryChip } from "../CategoryChip";
 import {
-  CategoryChip,
   EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,
