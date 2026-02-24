@@ -1,5 +1,4 @@
 import type { RequestContextData } from "@fastify/request-context";
-import type { CorrelationId } from "@knodia/common-models/ids";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -23,18 +22,11 @@ export function remoteResourcesManagerServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
 ) {
   return {
-    async getCatalogEservices({
-      correlationId,
-      ctx,
-      reqBody,
-      reqQuery,
-    }: {
-      correlationId: CorrelationId;
-      ctx: RequestContextData;
-      reqBody: API_GetCatalogEserviceSearchParams;
-      reqQuery: API_GetCatalogEservicesQueryParams;
-    }): Promise<API_CatalogEserviceSearchResults> {
-      const { logger } = ctx;
+    async getCatalogEservices(
+      reqBody: API_GetCatalogEserviceSearchParams,
+      reqQuery: API_GetCatalogEservicesQueryParams,
+      { correlationId, logger }: RequestContextData,
+    ): Promise<API_CatalogEserviceSearchResults> {
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
 
       logger.info(
