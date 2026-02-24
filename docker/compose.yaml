@@ -368,7 +368,7 @@ services:
   local-cognito:
     security_opt:
       - no-new-privileges:true
-    image: node:24-alpine@sha256:d88d203cab4ee6fa4897d8286f3caea2e9cf48db77176042fca2f4ac4a4414ce
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
     container_name: knodia-local-cognito
     ports:
       - 4567:3000

@@ -23,6 +23,7 @@ const b64url = (data: string): string =>
 
 export function authorizationServiceBuilder() {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
+  const kmsClient = new KMSClient();
 
   async function verifyCognitoJwt(token: string): Promise<unknown> {
     try {
@@ -60,15 +61,13 @@ export function authorizationServiceBuilder() {
       });
 
       if (!claimsParsed.success) {
-        throw unauthorizedError(
-          `Failed to parse ui session token claims: ${claimsParsed.error}`,
-        );
+        throw unauthorizedError("Failed to build ui session token claims");
       }
       const payload = b64url(JSON.stringify(claimsParsed.data));
 
       const message = `${header}.${payload}`;
 
-      const { Signature } = await new KMSClient().send(
+      const { Signature } = await kmsClient.send(
         new SignCommand({
           KeyId: `alias/${config.uiSessionJwt.kid}`,
           Message: new TextEncoder().encode(message),
@@ -89,9 +88,7 @@ export function authorizationServiceBuilder() {
 
       const payloadParsed = CognitoPayload.safeParse(rawPayload);
       if (!payloadParsed.success) {
-        throw unauthorizedError(
-          `Invalid Cognito token payload: ${payloadParsed.error}`,
-        );
+        throw unauthorizedError("Invalid Cognito token payload");
       }
 
       const cognitoPayload = payloadParsed.data;
@@ -99,7 +96,10 @@ export function authorizationServiceBuilder() {
 
       const roles = groups
         .filter((g) => g.startsWith("role:"))
-        .map((g) => UserRole.parse(g.slice("role:".length)));
+        .flatMap((g) => {
+          const parsed = UserRole.safeParse(g.slice("role:".length));
+          return parsed.success ? [parsed.data] : [];
+        });
       const orgGroup = groups.find((g) => g.startsWith("org:"));
 
       if (!orgGroup) {
