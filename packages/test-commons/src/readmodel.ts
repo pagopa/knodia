@@ -1,44 +1,16 @@
-import type {} from "vitest";
-
 import { drizzle } from "drizzle-orm/node-postgres";
 import { fileURLToPath } from "node:url";
 
-import {
-  createPostgresDatabaseFromTemplate,
-  createPostgresTemplateFromMigrations,
-  startTestPostgresContainer,
-} from "./testcontainers/postgres.ts";
+import { createPostgresDatabaseFromTemplate } from "./testcontainers/postgres.ts";
 
-const READMODEL_DB_PASSWORD = "readmodel_testpassword";
-const READMODEL_DB_USER = "readmodel_testuser";
 const READMODEL_DB_TEMPLATE_NAME = "readmodel_template";
 
-/**
- * !!! Intended to be called once in global test setup !!!
- *
- *  Starts the shared Postgres test container and prepares a template database.
- *  It creates the readmodel template, applies migrations once, and marks it as a Postgres template.
- */
-export async function setupReadmodelTestContainer() {
-  const startedContainer = await startTestPostgresContainer({
-    password: READMODEL_DB_PASSWORD,
-    testContainerName: "knodia-readmodel-test-container",
-    user: READMODEL_DB_USER,
-  });
-
-  await createPostgresTemplateFromMigrations({
-    connectionString: startedContainer.connectionString,
-    migrationsRoot: fileURLToPath(
-      new URL(`../../../migration/read-model`, import.meta.url),
-    ),
-    rolesMigrationFolder: fileURLToPath(
-      new URL(`../../../migration/test`, import.meta.url),
-    ),
-    templateName: READMODEL_DB_TEMPLATE_NAME,
-  });
-
-  return startedContainer;
-}
+export const readmodelTemplate = {
+  migrationsRoot: fileURLToPath(
+    new URL(`../../../migration/read-model`, import.meta.url),
+  ),
+  templateName: READMODEL_DB_TEMPLATE_NAME,
+};
 
 /**
  * Creates a dedicated database for a single test file by cloning the template.
@@ -58,10 +30,4 @@ export async function setupReadmodelTestDatabase(connectionString: string) {
   );
 
   return drizzle(connectionString + `/${dbName}`);
-}
-
-declare module "vitest" {
-  export interface ProvidedContext {
-    READMODEL_CONNECTION_STRING: string;
-  }
 }

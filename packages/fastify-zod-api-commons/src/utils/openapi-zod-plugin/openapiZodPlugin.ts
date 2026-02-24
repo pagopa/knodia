@@ -11,7 +11,7 @@ import {
 import { OPENAPI_VERSION } from "./constants.ts";
 import {
   zodToJsonSchemaTransform,
-  zodToJsonSchemaTransformObjectWithoutInputSchemas,
+  zodToJsonSchemaTransformAndCleanObject,
 } from "./zodToJsonSchema.ts";
 
 export const docsRoutePrefix = "/docs";
@@ -43,7 +43,7 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
         openapi: OPENAPI_VERSION,
       },
       transform: zodToJsonSchemaTransform,
-      transformObject: zodToJsonSchemaTransformObjectWithoutInputSchemas,
+      transformObject: zodToJsonSchemaTransformAndCleanObject,
     } satisfies fastifySwagger.FastifyDynamicSwaggerOptions);
 
     // Optionally register fastify-swagger-ui to serve the OpenAPI docs
