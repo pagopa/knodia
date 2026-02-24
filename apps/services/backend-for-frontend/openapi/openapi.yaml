@@ -66,6 +66,14 @@ components:
         - status
         - title
       additionalProperties: false
+    SessionRequest:
+      type: object
+      properties:
+        oidcToken:
+          type: string
+      required:
+        - oidcToken
+      additionalProperties: false
     SessionResponse:
       type: object
       properties:
@@ -649,6 +657,12 @@ paths:
       tags:
         - auth
       description: Validate a Cognito token and generate a session token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionRequest"
+        required: true
       responses:
         "200":
           description: Session created successfully
@@ -658,6 +672,14 @@ paths:
                 description: Session created successfully
                 allOf:
                   - $ref: "#/components/schemas/SessionResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:

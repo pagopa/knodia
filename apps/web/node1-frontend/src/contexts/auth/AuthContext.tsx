@@ -36,7 +36,9 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
     (user?: User) => {
       if (user?.access_token && !getAuthToken()) {
         mutate({
-          headers: { Authorization: `Bearer ${user.access_token}` },
+          body: {
+            oidcToken: user.access_token,
+          },
         });
       }
     },
