@@ -2,7 +2,10 @@ import type { RequestContextData } from "@fastify/request-context";
 import type { CorrelationId } from "@knodia/common-models/ids";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
-import { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import {
+  type K2K2GatewayApiClient,
+  k2kGatewayApi,
+} from "@knodia/k2k-gateway-client";
 
 import type {
   API_CatalogEserviceSearchResults,
@@ -10,7 +13,6 @@ import type {
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
 
-import { type K2K2GatewayApiClient } from "../clients/clientsProvider.ts";
 import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
 
 export type RemoteResourcesManagerService = ReturnType<
@@ -37,7 +39,7 @@ export function remoteResourcesManagerServiceBuilder(
 
       logger.info(
         { query: reqQuery, requestBody: reqBody },
-        `Getting E-services owned by knode ${knodeId} with query parameters and body data`,
+        `Getting E-services owned by Knode ${knodeId} with query parameters and body data`,
       );
 
       const { data } = await k2kGatewayApi.getCatalogEservices({
