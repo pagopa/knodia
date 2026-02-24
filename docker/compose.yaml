@@ -353,7 +353,6 @@ services:
     command: node scripts/local-kms/kms-setup.mjs
 
   # Serves JWKS endpoints for local token validation
-  # - http://localhost:4500/cognito/.well-known/jwks.json
   # - http://localhost:4500/knodia/.well-known/jwks.json
   local-jwks:
     security_opt:
@@ -374,15 +373,7 @@ services:
       - 4567:3000
     volumes:
       - ../scripts/local-kms:/app/scripts/local-kms:ro
-      - ../node_modules:/app/node_modules:ro
     working_dir: /app
-    environment:
-      KMS_ENDPOINT: http://local-kms:8080
-    depends_on:
-      local-kms:
-        condition: service_healthy
-      local-kms-setup:
-        condition: service_completed_successfully
     command: node scripts/local-kms/local-cognito.mjs
 
 volumes:

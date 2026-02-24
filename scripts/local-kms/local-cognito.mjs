@@ -1,12 +1,6 @@
-import {
-  KMSClient,
-  SignCommand,
-  GetPublicKeyCommand,
-} from "@aws-sdk/client-kms";
-import { createHash, createPublicKey, randomUUID } from "node:crypto";
+import { generateKeyPairSync, createSign, randomUUID } from "node:crypto";
 import { createServer } from "node:http";
 
-const KMS_ENDPOINT = process.env.KMS_ENDPOINT ?? "http://localhost:4566";
 const PORT = 3000;
 const ISSUER = process.env.ISSUER ?? "http://localhost:4567";
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN ?? "http://localhost:5175";
@@ -16,24 +10,10 @@ const USER_ID = "00000000-0000-4000-8000-000000000001";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
 
-const kmsClient = new KMSClient({
-  endpoint: KMS_ENDPOINT,
-  region: "eu-south-1",
-  credentials: {
-    accessKeyId: "testawskey",
-    secretAccessKey: "testawssecret",
-  },
-});
+// --- RSA key pair generated in memory at startup ---
 
-// --- JWKS: fetch public key from KMS at startup ---
-
-const { PublicKey: publicKeyDer } = await kmsClient.send(
-  new GetPublicKeyCommand({ KeyId: "alias/local-cognito-key" }),
-);
-const publicKey = createPublicKey({
-  key: Buffer.from(publicKeyDer),
-  format: "der",
-  type: "spki",
+const { privateKey, publicKey } = generateKeyPairSync("rsa", {
+  modulusLength: 2048,
 });
 const jwk = publicKey.export({ format: "jwk" });
 const JWKS = {
@@ -47,24 +27,18 @@ const authCodes = new Map();
 
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
-async function signJwt(payload) {
+function signJwt(payload) {
   const header = b64url(
     JSON.stringify({ alg: "RS256", typ: "JWT", kid: "local-cognito-key" }),
   );
   const body = b64url(JSON.stringify(payload));
   const message = `${header}.${body}`;
-  const digest = createHash("sha256").update(message).digest();
 
-  const { Signature } = await kmsClient.send(
-    new SignCommand({
-      KeyId: "alias/local-cognito-key",
-      Message: digest,
-      MessageType: "DIGEST",
-      SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
-    }),
-  );
+  const signer = createSign("RSA-SHA256");
+  signer.update(message);
+  const signature = signer.sign(privateKey, "base64url");
 
-  return `${message}.${Buffer.from(Signature).toString("base64url")}`;
+  return `${message}.${signature}`;
 }
 
 // --- Request body parser ---
@@ -190,7 +164,7 @@ createServer(async (req, res) => {
 
       const now = Math.floor(Date.now() / 1000);
 
-      const accessToken = await signJwt({
+      const accessToken = signJwt({
         sub: USER_ID,
         "cognito:groups": [...ROLES, `org:${ORG_ID}`],
         token_use: "access",
@@ -201,7 +175,7 @@ createServer(async (req, res) => {
         jti: randomUUID(),
       });
 
-      const idToken = await signJwt({
+      const idToken = signJwt({
         sub: USER_ID,
         iss: ISSUER,
         aud: clientId || codeData.clientId,
