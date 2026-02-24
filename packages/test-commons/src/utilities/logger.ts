@@ -15,7 +15,7 @@ export function createTestLogger(): {
 
   const logger = createLogger({
     config: loggerConfig,
-    serviceName: "test-consumer" as ServiceName,
+    serviceName: "test-service" as ServiceName,
   });
 
   return { logger, loggerConfig };
