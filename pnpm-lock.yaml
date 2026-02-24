@@ -216,6 +216,9 @@ catalogs:
     tailwindcss-react-aria-components:
       specifier: 2.0.1
       version: 2.0.1
+    testcontainers:
+      specifier: 11.11.0
+      version: 11.11.0
     ts-pattern:
       specifier: 5.9.0
       version: 5.9.0
@@ -1214,6 +1217,9 @@ importers:
       jose:
         specifier: 'catalog:'
         version: 6.1.3
+      testcontainers:
+        specifier: 'catalog:'
+        version: 11.11.0
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
