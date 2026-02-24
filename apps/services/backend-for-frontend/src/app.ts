@@ -1,6 +1,3 @@
-import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
-import type { LoggerConfig } from "@knodia/logger/config";
-
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -14,14 +11,18 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
+import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   return buildApp({ config });
 }
 
-function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
-  const clients = getKnodiaClients();
+function buildApp({ config }: { config: BffProcessConfig }) {
+  const clients = getKnodiaClients({
+    eserviceProcessUrl: config.eserviceProcessUrl,
+    remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
+  });
   const fileManager = initFileManager();
   const app = createFastifyApp({
     fastifyOptions: {
@@ -49,9 +50,13 @@ function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
 
   app.register(authenticationPlugin, config);
   app.register(healthRouter);
-  app.register(eserviceRouter, {
+  app.register(eserviceProducerRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
   });
+  app.register(eserviceConsumerRouter, {
+    remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+  });
+
   return app;
 }
