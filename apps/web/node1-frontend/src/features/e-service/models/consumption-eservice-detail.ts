@@ -6,6 +6,7 @@ import type { SchemeRef } from "../types/schemeRef";
 export interface ConsumptionEserviceDetail {
   accessToken: {
     audience: string;
+    // TODO: duration is in minutes (UI), but BFF API returns seconds. Convert in the api-converter.
     duration: number;
     type: bffApi.AccessTokenType;
   };
