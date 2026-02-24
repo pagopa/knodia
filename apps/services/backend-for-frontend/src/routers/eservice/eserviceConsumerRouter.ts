@@ -30,7 +30,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { query: req.query, requestBody: req.body },
-        `Getting E-services owned by knode ${req.body.knodeId} with query parameters and body data`,
+        `Getting E-services owned by Knode ${req.body.knodeId} with query parameters and body data`,
       );
 
       const { data } = await remoteResourcesManagerApi.getCatalogEservices({

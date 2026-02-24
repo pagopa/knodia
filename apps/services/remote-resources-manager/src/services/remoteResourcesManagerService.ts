@@ -39,7 +39,7 @@ export function remoteResourcesManagerServiceBuilder(
 
       logger.info(
         { query: reqQuery, requestBody: reqBody },
-        `Getting E-services owned by knode ${knodeId} with query parameters and body data`,
+        `Getting E-services owned by Knode ${knodeId} with query parameters and body data`,
       );
 
       const { data } = await k2kGatewayApi.getCatalogEservices({
