@@ -7,12 +7,16 @@ import {
 } from "@knodia/k2k-gateway-client";
 
 import type {
+  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResults,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
 
-import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
+import {
+  toAPI_CatalogEserviceDetail,
+  toAPI_CatalogEserviceSearchResult,
+} from "../models/apiConverter.ts";
 
 export type RemoteResourcesManagerService = ReturnType<
   typeof remoteResourcesManagerServiceBuilder
@@ -22,6 +26,29 @@ export function remoteResourcesManagerServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
 ) {
   return {
+    async getCatalogEserviceDetail(
+      eserviceId: string,
+      knodeId: string,
+      { correlationId, logger }: RequestContextData,
+      authorization: string | undefined,
+    ): Promise<API_CatalogEserviceDetail> {
+      logger.info(
+        { eserviceId, knodeId },
+        `Getting E-service detail ${eserviceId} from Knode ${knodeId}`,
+      );
+
+      const { data } = await k2kGatewayApi.getCatalogEserviceDetail({
+        client: k2kGatewayClient,
+        headers: {
+          Authorization: authorization,
+          [CORRELATION_ID_HEADER]: correlationId,
+        },
+        path: { eserviceId },
+      });
+
+      return toAPI_CatalogEserviceDetail(data);
+    },
+
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,

@@ -7,7 +7,10 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { RemoteResourcesManagerService } from "../services/remoteResourcesManagerService.ts";
 
 import {
+  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResults,
+  API_EserviceIdPathParam,
+  API_GetCatalogEserviceDetailQueryParams,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
@@ -49,5 +52,36 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.k2kGateway],
     },
     url: "/catalog",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const detail =
+        await remoteResourcesManagerService.getCatalogEserviceDetail(
+          req.params.eserviceId,
+          req.query.knodeId,
+          getContextValues(requestContext),
+          req.headers.authorization,
+        );
+
+      res.send(detail);
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an E-service with all its details",
+      operationId: "getCatalogEserviceDetail",
+      params: API_EserviceIdPathParam,
+      querystring: API_GetCatalogEserviceDetailQueryParams,
+      response: {
+        200: API_CatalogEserviceDetail.meta({
+          description: "E-service detail retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+      },
+      summary: "Get E-service detail",
+      tags: [apiTags.k2kGateway],
+    },
+    url: "/catalog/:eserviceId",
   });
 };
