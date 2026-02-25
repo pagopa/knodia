@@ -180,6 +180,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const { results, totalCount } = await eserviceService.getCatalogEservices(
         req.body,
         req.query,
+        getContextValues(requestContext),
       );
 
       res.status(200).send({
