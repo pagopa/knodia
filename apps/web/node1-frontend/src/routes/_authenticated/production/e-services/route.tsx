@@ -23,7 +23,7 @@ const eservicesQuery = (offset: number) =>
     query: { limit: 10, offset },
   });
 
-export const Route = createFileRoute("/production/e-services")({
+export const Route = createFileRoute("/_authenticated/production/e-services")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects

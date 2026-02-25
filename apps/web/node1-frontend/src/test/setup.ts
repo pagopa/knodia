@@ -2,7 +2,12 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, vi } from "vitest";
 
-vi.stubGlobal("env", { BFF_URL: import.meta.env["BFF_URL"] });
+vi.stubGlobal("env", {
+  BFF_URL: import.meta.env["BFF_URL"],
+  COGNITO_AUTHORITY: "http://localhost:9229",
+  COGNITO_CLIENT_ID: "test-client-id",
+  COGNITO_REDIRECT_URI: "http://localhost:5173/auth/callback",
+});
 
 import { server } from "./msw/server";
 

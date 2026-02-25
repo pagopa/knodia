@@ -353,7 +353,6 @@ services:
     command: node scripts/local-kms/kms-setup.mjs
 
   # Serves JWKS endpoints for local token validation
-  # - http://localhost:4500/cognito/.well-known/jwks.json
   # - http://localhost:4500/knodia/.well-known/jwks.json
   local-jwks:
     security_opt:
@@ -364,6 +363,18 @@ services:
       - 4500:80
     volumes:
       - jwks-data:/usr/share/nginx/html:ro
+
+  local-cognito:
+    security_opt:
+      - no-new-privileges:true
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    container_name: knodia-local-cognito
+    ports:
+      - 4567:3000
+    volumes:
+      - ../scripts/local-kms:/app/scripts/local-kms:ro
+    working_dir: /app
+    command: node scripts/local-kms/local-cognito.mjs
 
 volumes:
   event-store-data:
