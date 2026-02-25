@@ -1,7 +1,7 @@
 import type { Kafka } from "@confluentinc/kafka-javascript/types/kafkajs.js";
 import type { Logger } from "pino";
 
-export async function validateTopicMetadata(
+export async function checkTopicsExist(
   kafka: Kafka,
   topicNames: string[],
   logger: Logger,

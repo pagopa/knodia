@@ -8,7 +8,7 @@ import { kafkaMessageProcessError } from "@knodia/common-models/errors";
 
 import type { KafkaConsumerConfig } from "./config/config.ts";
 
-import { validateTopicMetadata } from "./admin.ts";
+import { checkTopicsExist } from "./admin.ts";
 import { initKafka } from "./kafka.ts";
 import { errorEventsListener } from "./listeners.ts";
 import { processExit } from "./utils/utils.ts";
@@ -35,7 +35,7 @@ export async function runConsumer(
     await consumer.connect();
     logger.debug("Kafka consumer connected");
 
-    const topicExists = await validateTopicMetadata(kafka, topics, logger);
+    const topicExists = await checkTopicsExist(kafka, topics, logger);
     if (!topicExists) {
       processExit({ logger });
     }
