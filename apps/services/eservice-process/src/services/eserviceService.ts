@@ -89,7 +89,7 @@ export function eserviceServiceBuilder(
       );
 
       logger.info(
-        `Creating E-service ${eserviceId} for producer ${producerId} `,
+        `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
 
       for (const attr of seed.requiredAttributes.flat()) {
