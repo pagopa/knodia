@@ -2,15 +2,20 @@ import type { InternalToken } from "./models.ts";
 
 import {
   type InternalTokenInput,
-  type tokenGeneratorBuilder,
+  tokenGeneratorBuilder,
 } from "./tokenGenerator.ts";
 
 const REFRESH_BEFORE_EXP_SECONDS = 30;
 
+export type RefreshableInternalTokenGenerator = ReturnType<
+  typeof refreshableInternalTokenGenerator
+>;
+
 export function refreshableInternalTokenGenerator(
-  tokenGenerator: ReturnType<typeof tokenGeneratorBuilder>,
   input: InternalTokenInput,
+  tokenGenerator?: ReturnType<typeof tokenGeneratorBuilder>,
 ) {
+  const generator = tokenGenerator ?? tokenGeneratorBuilder();
   let token: InternalToken | null = null;
 
   function shouldRefresh(exp: number): boolean {
@@ -20,7 +25,7 @@ export function refreshableInternalTokenGenerator(
   return {
     async get(): Promise<InternalToken> {
       if (!token || shouldRefresh(token.payload.exp)) {
-        token = await tokenGenerator.generateInternalToken(input);
+        token = await generator.generateInternalToken(input);
       }
       return token;
     },

@@ -37,6 +37,7 @@ interface UISessionInput extends TokenParams {
 const b64url = (data: string): string =>
   Buffer.from(data).toString("base64url");
 
+export type TokenGenerator = ReturnType<typeof tokenGeneratorBuilder>;
 export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   const client = kmsClient ?? new KMSClient();
 

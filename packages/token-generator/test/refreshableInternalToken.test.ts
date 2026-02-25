@@ -22,7 +22,7 @@ const input: InternalTokenInput = {
 describe("refreshableInternalTokenGenerator", () => {
   let refreshable: ReturnType<typeof refreshableInternalTokenGenerator>;
   beforeEach(() => {
-    refreshable = refreshableInternalTokenGenerator(generator, input);
+    refreshable = refreshableInternalTokenGenerator(input, generator);
   });
   it("generates a token on the first call", async () => {
     const result = await refreshable.get();

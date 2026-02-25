@@ -3,7 +3,7 @@ import type { FastifyRequest } from "fastify";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 
-export const getProcessHeaders = (
+export const getKnodiaServiceHeaders = (
   req: FastifyRequest,
   correlationId: CorrelationId,
 ) => ({

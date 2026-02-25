@@ -30,7 +30,7 @@ import {
   toAPI_ProducerEserviceDetails,
 } from "../../models/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
-import { getProcessHeaders } from "../../utils/headers.ts";
+import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
@@ -79,7 +79,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       const { data } = await eserviceProcessApi.createEservice({
         body: seed,
         client: eserviceProcessClient,
-        headers: getProcessHeaders(req, correlationId),
+        headers: getKnodiaServiceHeaders(req, correlationId),
       });
       res.status(201).send(API_CreatedResource.parse({ id: data.id }));
     },
@@ -125,7 +125,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
-        headers: getProcessHeaders(req, correlationId),
+        headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
           limit,
           mode,
@@ -144,7 +144,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           const { data: latestEserviceVersion } =
             await eserviceProcessApi.getEserviceLatestVersion({
               client: eserviceProcessClient,
-              headers: getProcessHeaders(req, correlationId),
+              headers: getKnodiaServiceHeaders(req, correlationId),
               path: { eserviceId: eservice.id },
             });
 
@@ -197,17 +197,17 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       ] = await Promise.all([
         eserviceProcessApi.getEservice({
           client: eserviceProcessClient,
-          headers: getProcessHeaders(req, correlationId),
+          headers: getKnodiaServiceHeaders(req, correlationId),
           path,
         }),
         eserviceProcessApi.getEserviceLatestVersion({
           client: eserviceProcessClient,
-          headers: getProcessHeaders(req, correlationId),
+          headers: getKnodiaServiceHeaders(req, correlationId),
           path,
         }),
         eserviceProcessApi.getEserviceLatestVersionInterface({
           client: eserviceProcessClient,
-          headers: getProcessHeaders(req, correlationId),
+          headers: getKnodiaServiceHeaders(req, correlationId),
           path,
         }),
       ]);
@@ -254,7 +254,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       const { data } =
         await eserviceProcessApi.getEserviceLatestVersionInterface({
           client: eserviceProcessClient,
-          headers: getProcessHeaders(req, correlationId),
+          headers: getKnodiaServiceHeaders(req, correlationId),
           path: {
             eserviceId: req.params.eserviceId,
           },
