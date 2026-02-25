@@ -216,7 +216,8 @@ export const API_EserviceSeed = z
       .min(minDailyCalls)
       .max(maxDailyCalls)
       .meta({
-        description: "Maximum daily calls per consumer",
+        description:
+          "Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)",
         format: "int32",
       }),
     maxDailyCallsPerKnode: z
@@ -224,7 +225,11 @@ export const API_EserviceSeed = z
       .int()
       .min(minDailyCalls)
       .max(maxDailyCalls)
-      .meta({ description: "Maximum daily calls per Knode", format: "int32" }),
+      .meta({
+        description:
+          "Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)",
+        format: "int32",
+      }),
     mode: API_EserviceMode.meta({
       description: "Mode of the E-service",
     }).optional(),
@@ -235,3 +240,37 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
+
+const API_EserviceSearchByKeywords = z.strictObject({
+  keywords: z
+    .string()
+    .min(1)
+    .meta({ description: "Search by name or description" }),
+});
+
+const API_EserviceSearchByCategory = z.strictObject({
+  category: API_EserviceCategory.meta({
+    description: "Include only E-services belonging to the specified category",
+  }),
+});
+
+const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
+  ...API_EserviceSearchByKeywords.shape,
+  ...API_EserviceSearchByCategory.shape,
+});
+
+export const API_GetCatalogEserviceSearchParams = z
+  .union([
+    API_EserviceSearchByKeywords,
+    API_EserviceSearchByCategory,
+    API_EserviceSearchByKeywordsAndCategory,
+  ])
+  .meta({ id: "GetCatalogEserviceSearchParams" });
+export type API_GetCatalogEserviceSearchParams = z.infer<
+  typeof API_GetCatalogEserviceSearchParams
+>;
+
+export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
+export type API_GetCatalogEservicesQueryParams = z.infer<
+  typeof API_GetCatalogEservicesQueryParams
+>;

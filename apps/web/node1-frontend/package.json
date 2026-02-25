@@ -31,6 +31,8 @@
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
+    "oidc-client-ts": "catalog:",
+    "react-oidc-context": "catalog:",
     "tailwind-merge": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"

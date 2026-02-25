@@ -12,7 +12,22 @@ const ACCEPTED_MIME_TYPES = [
   "text/x-yaml",
 ];
 
-// Schema for form fields
+const maxDailyCallsFormSchema = z
+  .object({
+    maxDailyCallsPerConsumer: z.number().min(1, "Must be at least 1."),
+    maxDailyCallsPerKnode: z.number().min(1, "Must be at least 1."),
+  })
+  .superRefine((seed, ctx) => {
+    if (seed.maxDailyCallsPerKnode < seed.maxDailyCallsPerConsumer) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Max API calls per consumer cannot exceed max API calls per Knode.",
+        path: ["maxDailyCallsPerConsumer"],
+      });
+    }
+  });
+
 const eserviceFieldSchemas = {
   accessTokenAudience: z.string().min(1, "Access token audience is required."),
   accessTokenDuration: z
@@ -46,7 +61,10 @@ const eserviceFieldSchemas = {
     .min(1, "At least one group is required."),
 };
 
-export const eserviceFormSchema = z.object(eserviceFieldSchemas);
+export const eserviceFormSchema = z
+  .object(eserviceFieldSchemas)
+  .and(maxDailyCallsFormSchema);
+
 export type EServiceFormData = z.infer<typeof eserviceFormSchema>;
 
 // Draft version of the form data: the interface document is nullable
@@ -62,15 +80,15 @@ export const generalStepSchema = z.object({
   name: eserviceFieldSchemas.name,
 });
 
-export const technicalStepSchema = z.object({
-  accessTokenAudience: eserviceFieldSchemas.accessTokenAudience,
-  accessTokenDuration: eserviceFieldSchemas.accessTokenDuration,
-  accessTokenType: eserviceFieldSchemas.accessTokenType,
-  isSignalHubEnabled: eserviceFieldSchemas.isSignalHubEnabled,
-  maxDailyCallsPerConsumer: eserviceFieldSchemas.maxDailyCallsPerConsumer,
-  maxDailyCallsPerKnode: eserviceFieldSchemas.maxDailyCallsPerKnode,
-  mode: eserviceFieldSchemas.mode,
-});
+export const technicalStepSchema = z
+  .object({
+    accessTokenAudience: eserviceFieldSchemas.accessTokenAudience,
+    accessTokenDuration: eserviceFieldSchemas.accessTokenDuration,
+    accessTokenType: eserviceFieldSchemas.accessTokenType,
+    isSignalHubEnabled: eserviceFieldSchemas.isSignalHubEnabled,
+    mode: eserviceFieldSchemas.mode,
+  })
+  .and(maxDailyCallsFormSchema);
 
 export const docsStepSchema = z.object({
   interfaceDocument: eserviceFieldSchemas.interfaceDocument,

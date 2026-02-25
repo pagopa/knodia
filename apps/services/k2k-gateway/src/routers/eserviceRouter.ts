@@ -2,14 +2,19 @@ import type { EserviceProcessClient } from "@knodia/eservice-process-client";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  CORRELATION_ID_HEADER,
+} from "@knodia/fastify-zod-api-commons/models";
 
 import {
   API_CatalogEserviceSearchResults,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
+import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverters.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -18,24 +23,48 @@ interface EserviceRouterOptions {
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
-> = async (fastify) => {
+> = async (fastify, { eserviceProcessClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = getContextValues(requestContext);
+      const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
         { query: req.query, requestBody: req.body },
         "Getting catalog E-services with query parameters and body data",
       );
 
-      // TODO: Implement actual search logic calling eserviceProcessClient
+      const headers = {
+        Authorization: req.headers.authorization,
+        [CORRELATION_ID_HEADER]: correlationId,
+      };
+
+      const { data } = await eserviceProcessApi.getCatalogEservices({
+        body: req.body,
+        client: eserviceProcessClient,
+        headers,
+        query: req.query,
+      });
+
+      async function enrichWithLatestVersionAndMapToAPIResult(
+        eservice: eserviceProcessApi.Eservice,
+      ) {
+        const { data: latestVersion } =
+          await eserviceProcessApi.getEserviceLatestVersion({
+            client: eserviceProcessClient,
+            headers,
+            path: {
+              eserviceId: eservice.id,
+            },
+          });
+
+        return toAPI_CatalogEserviceSearchResult(eservice, latestVersion);
+      }
+
       res.send({
-        pagination: {
-          limit: req.query.limit,
-          offset: req.query.offset,
-          total: 0,
-        },
-        results: [],
+        pagination: data.pagination,
+        results: await Promise.all(
+          data.items.map(enrichWithLatestVersionAndMapToAPIResult),
+        ),
       });
     },
     method: "POST",

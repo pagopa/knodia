@@ -25,7 +25,9 @@ import { Section } from "@/features/e-service/components/Section";
 import { mockConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail.mock";
 import { formatNumber } from "@/utils/formatters";
 
-export const Route = createFileRoute("/consumption/e-services_/$id")({
+export const Route = createFileRoute(
+  "/_authenticated/consumption/e-services_/$id",
+)({
   component: RouteComponent,
   // TODO: Add loader to fetch consumption e-service detail from BFF
 });

@@ -3,8 +3,7 @@ import axios, { isAxiosError } from "axios";
 import { match } from "ts-pattern";
 
 import { config } from "@/config/config";
-
-import { getAuthToken } from "./auth";
+import { getAuthToken } from "@/libs/auth";
 
 axios.interceptors.request.use((axiosConfig) => {
   const token = getAuthToken();
