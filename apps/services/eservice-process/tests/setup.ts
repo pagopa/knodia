@@ -17,7 +17,6 @@ beforeAll(async () => {
   const connectionString = inject("POSTGRES_CONNECTION_STRING");
 
   eventStoreDb = await setupEventstoreTestDatabase(connectionString);
-
   readmodelDb = await setupReadmodelTestDatabase(connectionString);
 
   app = buildApp({
