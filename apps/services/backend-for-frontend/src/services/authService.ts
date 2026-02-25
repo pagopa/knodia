@@ -87,7 +87,7 @@ export function authServiceBuilder() {
         ...config.uiSessionJwt,
         organizationId: cognitoClaims.organizationId,
         roles: cognitoClaims.roles,
-        sub: cognitoClaims.sub,
+        subject: cognitoClaims.sub,
       });
       return token.serialized;
     },

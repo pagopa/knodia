@@ -16,7 +16,7 @@ const input: InternalTokenInput = {
   issuer: "test-issuer",
   kid: "test-kid",
   secondsDuration: SECONDS_DURATION,
-  sub: "test-service",
+  subject: "test-service",
 };
 
 describe("refreshableInternalTokenGenerator", () => {

@@ -23,7 +23,7 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
         issuer: c.INTERNAL_JWT_ISSUER,
         kid: c.INTERNAL_JWT_KID,
         secondsDuration: c.INTERNAL_JWT_SECONDS_DURATION,
-        sub: c.INTERNAL_JWT_SUBJECT,
+        subject: c.INTERNAL_JWT_SUBJECT,
       },
     })),
 );

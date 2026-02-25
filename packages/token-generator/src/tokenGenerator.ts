@@ -18,7 +18,7 @@ const JWT_HEADER_USE = "sig";
 const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 export interface InternalTokenInput extends TokenParams {
-  sub: string;
+  subject: string;
 }
 
 interface TokenParams {
@@ -31,7 +31,7 @@ interface TokenParams {
 interface UISessionInput extends TokenParams {
   organizationId: OrganizationId;
   roles: NonEmptyArray<z.infer<typeof UserRole>>;
-  sub: UserId;
+  subject: UserId;
 }
 
 const b64url = (data: string): string =>
@@ -94,7 +94,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         iat: now,
         iss: input.issuer,
         jti: randomUUID(),
-        sub: input.sub,
+        sub: input.subject,
         type: "internal",
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
@@ -113,7 +113,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
         jti: randomUUID(),
         organizationId: input.organizationId,
         roles: input.roles,
-        sub: input.sub,
+        sub: input.subject,
         type: "ui-session",
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
