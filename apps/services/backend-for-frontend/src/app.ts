@@ -66,9 +66,9 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
     });
-  });
-  app.register(eserviceConsumerRouter, {
-    remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    protectedApp.register(eserviceConsumerRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
   });
 
   return app;
