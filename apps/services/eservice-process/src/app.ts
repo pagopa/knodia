@@ -9,7 +9,6 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -50,7 +49,7 @@ export function buildApp({
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: serviceName.ESERVICE_PROCESS,
+    serviceName: "eservice-process",
   });
 
   app.register(authenticationPlugin, config);

@@ -10,7 +10,7 @@
   },
   "workspaces": {
     ".": {
-      "ignore": ["scripts/local-kms/kms-setup.mjs"]
+      "ignore": ["scripts/local-kms/kms-setup.mjs", "scripts/local-kms/local-cognito.mjs"]
     },
     "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],

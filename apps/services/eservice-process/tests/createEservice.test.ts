@@ -25,6 +25,8 @@ describe("POST /eservices (createEservice)", () => {
   const body = {
     ...zocker(API_EserviceSeed).setSeed(0).generate(),
     categories: [validCategory],
+    maxDailyCallsPerConsumer: 1000,
+    maxDailyCallsPerKnode: 2000,
     requiredAttributes: [[validAttribute]],
   };
 
@@ -119,6 +121,17 @@ describe("POST /eservices (createEservice)", () => {
         requiredAttributes: [
           [{ code: "nonexistent", scheme: "vc_territorial_units" }],
         ],
+      });
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if the maxDailyCallsPerConsumer is greater than maxDailyCallsPerKnode", async () => {
+    const response = await injectAppRequest()
+      .post("/eservices")
+      .body({
+        ...body,
+        maxDailyCallsPerConsumer: 2000,
+        maxDailyCallsPerKnode: 1000,
       });
     expect(response.statusCode).toBe(400);
   });

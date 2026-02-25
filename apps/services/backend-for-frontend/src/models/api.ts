@@ -1,4 +1,5 @@
 import {
+  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -81,7 +82,8 @@ export const API_EserviceSeed = z
       .min(minDailyCalls)
       .max(maxDailyCalls)
       .meta({
-        description: "Maximum daily calls per consumer",
+        description:
+          "Maximum daily calls per consumer (must be less than or equal to maxDailyCallsPerKnode)",
         format: "int32",
       }),
     maxDailyCallsPerKnode: z
@@ -90,7 +92,8 @@ export const API_EserviceSeed = z
       .min(minDailyCalls)
       .max(maxDailyCalls)
       .meta({
-        description: "Maximum daily calls per Knode",
+        description:
+          "Maximum daily calls per Knode (must be greater than or equal to maxDailyCallsPerConsumer)",
         format: "int32",
       }),
     mode: API_EserviceMode.meta({
@@ -228,7 +231,7 @@ const API_ProducerEserviceVersionDetails = z
       format: "int32",
     }),
   })
-  .meta({ id: "EserviceVersion" });
+  .meta({ id: "ProducerEserviceVersionDetails" });
 
 const API_ProducerEserviceDetailsCounters = z
   .strictObject({
@@ -281,3 +284,71 @@ export type API_ProducerEserviceDetails = z.infer<
 >;
 
 export const API_FileDownload = z.string().meta({ format: "binary" });
+
+const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
+  category: API_EserviceCategory,
+  keywords: z.string().min(1),
+  knodeId: API_KnodeId,
+});
+const API_EserviceSearchByCategory =
+  API_EserviceSearchByKeywordsAndCategory.pick({
+    category: true,
+    knodeId: true,
+  });
+const API_EserviceSearchByKeywords =
+  API_EserviceSearchByKeywordsAndCategory.pick({
+    keywords: true,
+    knodeId: true,
+  });
+export const API_GetConsumerCatalogEserviceSearchParams = z
+  .union([
+    API_EserviceSearchByCategory,
+    API_EserviceSearchByKeywords,
+    API_EserviceSearchByKeywordsAndCategory,
+  ])
+  .meta({ id: "GetConsumerCatalogEserviceSearchParams" });
+export type API_GetConsumerCatalogEserviceSearchParams = z.infer<
+  typeof API_GetConsumerCatalogEserviceSearchParams
+>;
+
+const API_CompactOrganization = z
+  .strictObject({
+    id: z.uuid(),
+    name: API_LocalizedName,
+  })
+  .meta({
+    description: "Organization with only id and name",
+    id: "CompactOrganization",
+  });
+
+const API_ConsumerCatalogEserviceSearchResult = z
+  .strictObject({
+    categories: z.array(API_EserviceCategory),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    latestVersionRequiredAttributes: z.array(z.array(API_EserviceAttribute)),
+    latestVersionState: API_EserviceVersionState,
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producer: API_CompactOrganization,
+  })
+  .meta({ id: "ConsumerCatalogEserviceSearchResult" });
+export type API_ConsumerCatalogEserviceSearchResult = z.infer<
+  typeof API_ConsumerCatalogEserviceSearchResult
+>;
+
+export const API_ConsumerCatalogEserviceSearchResults = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerCatalogEserviceSearchResult),
+  })
+  .meta({ id: "ConsumerCatalogEserviceSearchResults" });
+export type API_ConsumerCatalogEserviceSearchResults = z.infer<
+  typeof API_ConsumerCatalogEserviceSearchResults
+>;
+
+export const API_GetConsumerCatalogEservicesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerCatalogEservicesQueryParams = z.infer<
+  typeof API_GetConsumerCatalogEservicesQueryParams
+>;

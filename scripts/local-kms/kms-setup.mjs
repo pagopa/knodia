@@ -17,10 +17,9 @@ const kmsClient = new KMSClient({
   credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
 });
 
-// Two KMS keys for local development:
-// - "cognito": simulates the Cognito user pool signing key (used to issue and verify login tokens)
-// - "knodia":  shared key for all tokens knodia services issue (ui-session, internal, etc.)
-const keysets = ["cognito", "knodia"];
+// KMS key for knodia services (ui-session, internal, etc.)
+// JWKS is written to disk and served by the local-jwks nginx container.
+const keysets = ["knodia"];
 
 for (const name of keysets) {
   const aliasName = `alias/local-${name}-key`;

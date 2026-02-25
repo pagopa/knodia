@@ -1,0 +1,14 @@
+meta {
+  name: Download Eservice Interface
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producer/eservices/:eserviceId/interface
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}

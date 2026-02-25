@@ -10,3 +10,7 @@ export const createK2K2GatewayApiClient = (
     ...config,
     throwOnError: true,
   } satisfies Config);
+
+export type K2K2GatewayApiClient = ReturnType<
+  typeof createK2K2GatewayApiClient
+>;

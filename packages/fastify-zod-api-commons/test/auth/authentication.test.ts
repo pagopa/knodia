@@ -25,7 +25,7 @@ vi.mock("jose", () => ({ createRemoteJWKSet, jwtVerify }));
 const makeApiProblem = makeApiProblemBuilder({});
 
 const buildTestApp = async (wellKnownUrls: string[]) => {
-  const app = Fastify({ logger: false });
+  const app = Fastify({ genReqId: () => generateId(), logger: false });
 
   await app.register(fastifyRequestContext, {
     defaultStoreValues: (request) => ({

@@ -3,9 +3,10 @@ import type {
   RequestContextData,
 } from "@fastify/request-context";
 import type { CorrelationId } from "@knodia/common-models/ids";
+import type { HTTPServiceName } from "@knodia/common-models/services";
 
 import { genericInternalError } from "@knodia/common-models/errors";
-import Fastify from "fastify";
+import { type FastifyBaseLogger } from "fastify";
 
 import type { AuthData } from "../auth/authData.ts";
 
@@ -14,8 +15,8 @@ declare module "@fastify/request-context" {
   interface RequestContextData {
     authData?: AuthData;
     correlationId: CorrelationId;
-    logger: Fastify.FastifyBaseLogger;
-    serviceName: string;
+    logger: FastifyBaseLogger;
+    serviceName: HTTPServiceName;
   }
 }
 
