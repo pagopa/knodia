@@ -280,7 +280,12 @@ services:
       MINIO_ROOT_USER: testawskey
       MINIO_ROOT_PASSWORD: testawssecret
       MINIO_SITE_REGION: eu-south-1
-      MINIO_DOMAIN: localhost
+      MINIO_DOMAIN: minio
+    networks:
+      default:
+        aliases:
+          - knodia-orion-eservice-interfaces.minio
+          - knodia-lynx-eservice-interfaces.minio
     volumes:
       - multi-node-minio-data:/data
     healthcheck:
