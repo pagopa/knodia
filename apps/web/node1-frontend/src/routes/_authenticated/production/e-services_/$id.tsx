@@ -27,12 +27,7 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
-    await queryClient.ensureQueryData({
-      ...eserviceQuery(id),
-      // Retry a few times to handle eventual consistency (e.g. right after publish)
-      retry: 3,
-      retryDelay: 1000,
-    }),
+    await queryClient.ensureQueryData(eserviceQuery(id)),
 });
 
 function EServiceActions() {
