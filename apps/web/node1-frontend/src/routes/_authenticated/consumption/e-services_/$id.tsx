@@ -57,9 +57,9 @@ function ConsumptionRequirementsSection({
   ConsumptionEserviceDetail,
   "identificationRequired" | "requiredAttributes"
 >) {
-  const hasRequiredAttributes = requiredAttributes.every((group) =>
-    group.some((attr) => attr.possessed),
-  );
+  const hasRequiredAttributes =
+    requiredAttributes.length > 0 &&
+    requiredAttributes.every((group) => group.some((attr) => attr.possessed));
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
