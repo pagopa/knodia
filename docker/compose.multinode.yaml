@@ -406,11 +406,11 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
-      KNODE_URL: "http://k2k-gateway-orion:3000"
+      KNODE_URL: "http://k2k-gateway-lynx:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
-      k2k-gateway-orion:
+      k2k-gateway-lynx:
         condition: service_started
       local-kms-setup:
         condition: service_completed_successfully
@@ -544,11 +544,11 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
-      KNODE_URL: "http://k2k-gateway-lynx:3000"
+      KNODE_URL: "http://k2k-gateway-orion:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
-      k2k-gateway-lynx:
+      k2k-gateway-orion:
         condition: service_started
       local-kms-setup:
         condition: service_completed_successfully
