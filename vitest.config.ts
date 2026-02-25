@@ -26,6 +26,8 @@ export default defineConfig({
       "apps/services/*",
       "apps/web/*",
       "packages/*",
+      "packages/db/event-store/*",
+      "packages/db/readmodel/*",
       "packages/models/*",
     ],
     env: loadEnvFile(".env.test"),
