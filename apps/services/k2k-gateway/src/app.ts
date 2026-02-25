@@ -5,7 +5,6 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
 import type { K2KGatewayConfig } from "./config/config.ts";
 
@@ -57,7 +56,7 @@ function buildApp({
     loggerConfig,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
-    serviceName: serviceName.K2K_GATEWAY,
+    serviceName: "k2k-gateway",
   });
 
   app.register(healthRouter);

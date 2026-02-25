@@ -18,6 +18,6 @@ const readmodelDb = drizzle(pool);
 
 await runConsumer(
   [config.eserviceTopic],
-  createProcessMessage(readmodelDb),
+  createProcessMessage(readmodelDb, config),
   config,
 );

@@ -1,8 +1,9 @@
+import type { EserviceProcessClient } from "@knodia/eservice-process-client";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
+import { requestContext } from "@fastify/request-context";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-
-import type { EserviceProcessClient } from "../clients/clientsProvider.ts";
 
 import {
   API_CatalogEserviceSearchResults,
@@ -20,6 +21,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 > = async (fastify) => {
   fastify.route({
     handler: async (req, res) => {
+      const { logger } = getContextValues(requestContext);
+
+      logger.info(
+        { query: req.query, requestBody: req.body },
+        "Getting catalog E-services with query parameters and body data",
+      );
+
       // TODO: Implement actual search logic calling eserviceProcessClient
       res.send({
         pagination: {
