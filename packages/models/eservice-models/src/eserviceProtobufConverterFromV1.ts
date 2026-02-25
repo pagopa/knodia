@@ -1,3 +1,5 @@
+import type { RequiredAttributeGroup } from "@knodia/attribute-models";
+
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { match } from "ts-pattern";
 
@@ -8,7 +10,6 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
-  type RequiredAttributeGroup,
 } from "./eservice.ts";
 import {
   EserviceAccessTokenTypeV1,

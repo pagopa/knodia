@@ -1,3 +1,4 @@
+import { RequiredAttributeGroup } from "@knodia/attribute-models";
 import {
   EserviceId,
   EserviceInterfaceId,
@@ -52,15 +53,6 @@ export const EserviceInterface = z.strictObject({
   updatedAt: z.coerce.date(),
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
-
-const RequiredAttribute = z.strictObject({
-  code: z.string(),
-  scheme: z.string(),
-});
-export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
-
-const RequiredAttributeGroup = z.array(RequiredAttribute).min(1);
-export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
 
 export const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),

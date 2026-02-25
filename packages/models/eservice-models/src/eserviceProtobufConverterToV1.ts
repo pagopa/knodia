@@ -1,3 +1,5 @@
+import type { RequiredAttributeGroup } from "@knodia/attribute-models";
+
 import { match } from "ts-pattern";
 
 import type {
@@ -7,7 +9,6 @@ import type {
   EserviceMode,
   EserviceVersion,
   EserviceVersionState,
-  RequiredAttributeGroup,
 } from "./eservice.ts";
 
 import {
