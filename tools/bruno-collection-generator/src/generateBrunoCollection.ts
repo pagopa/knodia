@@ -92,7 +92,6 @@ function collectionItemToBruLang(item: BrunoRequest): Record<string, unknown> {
     },
     meta: {
       name: formatName(item.name),
-      seq: item.seq,
       type: "http",
     },
     params,

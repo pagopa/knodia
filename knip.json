@@ -3,7 +3,7 @@
   "includeEntryExports": true,
   "workspaces": {
     ".": {
-      "ignore": ["scripts/local-kms/kms-setup.mjs"]
+      "ignore": ["scripts/local-kms/kms-setup.mjs", "scripts/local-kms/local-cognito.mjs"]
     },
     "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],
@@ -18,6 +18,10 @@
       "ignoreDependencies": ["@knodia/spectral-config"]
     },
     "apps/services/k2k-gateway": {
+      "entry": ["tests/**/*.ts"],
+      "ignoreDependencies": ["@knodia/spectral-config"]
+    },
+    "apps/services/remote-resources-manager": {
       "entry": ["tests/**/*.ts"],
       "ignoreDependencies": ["@knodia/spectral-config"]
     },

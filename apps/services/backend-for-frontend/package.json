@@ -7,7 +7,9 @@
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
+    "test": "pnpm -w test --project @knodia/backend-for-frontend",
+    "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
@@ -20,6 +22,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@aws-sdk/client-kms": "catalog:",
     "@dotenvx/dotenvx": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
@@ -28,7 +31,9 @@
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/remote-resources-manager-client": "workspace:*",
     "fastify": "catalog:",
+    "jose": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"

@@ -1,15 +1,8 @@
-import { z } from "zod";
+import type { HTTPServiceName } from "@knodia/common-models/services";
 
-export const serviceName = {
-  BACKEND_FOR_FRONTEND: "backend-for-frontend",
-  ESERVICE_PROCESS: "eservice-process",
-  K2K_GATEWAY: "k2k-gateway",
-} as const;
-export const ServiceName = z.enum(Object.values(serviceName));
-export type ServiceName = z.infer<typeof ServiceName>;
-
-export const serviceErrorCode: Record<ServiceName, string> = {
-  [serviceName.BACKEND_FOR_FRONTEND]: "001",
-  [serviceName.ESERVICE_PROCESS]: "002",
-  [serviceName.K2K_GATEWAY]: "003",
+export const serviceErrorCode: Record<HTTPServiceName, string> = {
+  "backend-for-frontend": "001",
+  "eservice-process": "002",
+  "k2k-gateway": "003",
+  "remote-resources-manager": "004",
 };

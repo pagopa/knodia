@@ -4,8 +4,19 @@ import {
   Navbar as UINavbar,
 } from "@knodia/ui-kit/layout";
 import { MenuItem } from "@knodia/ui-kit/ui";
+import { useNavigate } from "@tanstack/react-router";
+
+import { useAuth } from "@/contexts/auth";
 
 export function Navbar() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate({ replace: true, to: "/login" });
+  };
+
   return (
     <UINavbar>
       <NavbarBrand>Orion Knode</NavbarBrand>
@@ -16,7 +27,7 @@ export function Navbar() {
       >
         <MenuItem>Edit Profile</MenuItem>
         <MenuItem>Settings</MenuItem>
-        <MenuItem>Logout</MenuItem>
+        <MenuItem onAction={handleLogout}>Logout</MenuItem>
       </NavbarUserMenu>
     </UINavbar>
   );
