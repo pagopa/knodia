@@ -39,4 +39,4 @@ export interface ConsumptionEserviceDetail {
 }
 
 // TODO: Replace with the auto-generated type from bffApi when the BFF endpoint provides per-attribute possession info
-export type ConsumptionRequiredAttribute = SchemeRef & { possessed: boolean };
+type ConsumptionRequiredAttribute = SchemeRef & { possessed: boolean };
