@@ -10,11 +10,16 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 
 import {
+  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResults,
+  API_EserviceIdPathParam,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
-import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverters.ts";
+import {
+  toAPI_CatalogEserviceDetail,
+  toAPI_CatalogEserviceSearchResult,
+} from "../models/apiConverters.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface EserviceRouterOptions {
@@ -85,5 +90,65 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.operation],
     },
     url: "/catalog",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Getting catalog E-service detail with ID ${req.params.eserviceId}`,
+      );
+
+      const headers = {
+        Authorization: req.headers.authorization,
+        [CORRELATION_ID_HEADER]: correlationId,
+      };
+
+      const path = { eserviceId: req.params.eserviceId };
+
+      const [
+        { data: eservice },
+        { data: latestVersion },
+        { data: interfaceDocument },
+      ] = await Promise.all([
+        eserviceProcessApi.getEservice({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceLatestVersion({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+      ]);
+
+      res.send(
+        toAPI_CatalogEserviceDetail(eservice, latestVersion, interfaceDocument),
+      );
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an E-service with all its details",
+      operationId: "getCatalogEserviceDetail",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: API_CatalogEserviceDetail.meta({
+          description: "E-service detail retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+      },
+      summary: "Get E-service detail",
+      tags: [apiTags.operation],
+    },
+    url: "/catalog/:eserviceId",
   });
 };

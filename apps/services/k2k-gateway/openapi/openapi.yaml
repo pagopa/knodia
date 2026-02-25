@@ -140,6 +140,12 @@ components:
         - ACTIVE
         - SUSPENDED
         - ARCHIVED
+    AccessTokenType:
+      description: Type of the access token
+      type: string
+      enum:
+        - BEARER
+        - DPOP
     EserviceMode:
       description: Indicates if the E-Service is intended to provide or receive data
       type: string
@@ -239,6 +245,113 @@ components:
         - pagination
         - results
       additionalProperties: false
+    CatalogEserviceDetailLatestVersion:
+      type: object
+      properties:
+        accessTokenAudience:
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          description: Duration of the access token in seconds
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        accessTokenType:
+          $ref: "#/components/schemas/AccessTokenType"
+        maxDailyCallsPerConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        maxDailyCallsPerKnode:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        requiredAttributes:
+          $ref: "#/components/schemas/RequiredAttributes"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
+        - requiredAttributes
+        - state
+      additionalProperties: false
+    CatalogEserviceDetailInterfaceDocument:
+      type: object
+      properties:
+        checksum:
+          type: string
+        name:
+          type: string
+        prettyName:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+      required:
+        - checksum
+        - name
+        - prettyName
+      additionalProperties: false
+    CatalogEserviceDetail:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        id:
+          $ref: "#/components/schemas/EserviceId"
+        interfaceDocument:
+          $ref: "#/components/schemas/CatalogEserviceDetailInterfaceDocument"
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        latestVersion:
+          $ref: "#/components/schemas/CatalogEserviceDetailLatestVersion"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        producerId:
+          $ref: "#/components/schemas/OrganizationId"
+      required:
+        - categories
+        - description
+        - id
+        - interfaceDocument
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - latestVersion
+        - mode
+        - name
+        - producerId
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -304,6 +417,44 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /catalog/{eserviceId}:
+    get:
+      operationId: getCatalogEserviceDetail
+      summary: Get E-service detail
+      tags:
+        - operation
+      description: Retrieve an E-service with all its details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service detail retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/CatalogEserviceDetail"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

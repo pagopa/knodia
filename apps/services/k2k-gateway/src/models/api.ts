@@ -54,6 +54,12 @@ export const API_EserviceVersionState = z
   .meta({ id: "EserviceVersionState" });
 export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
 
+export const API_AccessTokenType = z.enum(["BEARER", "DPOP"]).meta({
+  description: "Type of the access token",
+  id: "AccessTokenType",
+});
+export type API_AccessTokenType = z.infer<typeof API_AccessTokenType>;
+
 export const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
   description:
     "Indicates if the E-Service is intended to provide or receive data",
@@ -118,3 +124,49 @@ export const API_CatalogEserviceSearchResults = z
   .meta({ id: "CatalogEserviceSearchResults" });
 
 export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
+
+export const API_EserviceIdPathParam = z.strictObject({
+  eserviceId: API_EserviceId,
+});
+
+const API_CatalogEserviceDetailLatestVersion = z
+  .strictObject({
+    accessTokenAudience: z.array(z.string()),
+    accessTokenDuration: z.number().int().meta({
+      description: "Duration of the access token in seconds",
+      format: "int32",
+    }),
+    accessTokenType: API_AccessTokenType,
+    maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
+    maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
+    requiredAttributes: API_RequiredAttributes,
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "CatalogEserviceDetailLatestVersion" });
+
+const API_CatalogEserviceDetailInterfaceDocument = z
+  .strictObject({
+    checksum: z.string(),
+    name: z.string(),
+    prettyName: API_LocalizedText,
+  })
+  .meta({ id: "CatalogEserviceDetailInterfaceDocument" });
+
+export const API_CatalogEserviceDetail = z
+  .strictObject({
+    categories: z.array(API_EserviceCategory),
+    description: API_LocalizedText,
+    id: API_EserviceId,
+    interfaceDocument: API_CatalogEserviceDetailInterfaceDocument,
+    isConsumerOperatorIdentificationRequired: z.boolean(),
+    isSignalHubEnabled: z.boolean(),
+    latestVersion: API_CatalogEserviceDetailLatestVersion,
+    mode: API_EserviceMode,
+    name: API_LocalizedText,
+    producerId: API_OrganizationId,
+  })
+  .meta({ id: "CatalogEserviceDetail" });
+
+export type API_CatalogEserviceDetail = z.infer<
+  typeof API_CatalogEserviceDetail
+>;
