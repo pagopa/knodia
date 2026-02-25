@@ -29,6 +29,7 @@ import {
   duplicateInterfaceId,
   eserviceNotFound,
   eserviceVersionNotFound,
+  inconsistentDailyCalls,
   interfaceNotFound,
   invalidAttribute,
   invalidCategory,
@@ -107,8 +108,13 @@ export function eserviceServiceBuilder(
         await readmodelService.getEserviceVersionInterfaceById(
           seed.interfaceDocument.id,
         );
+
       if (existingInterface) {
         throw duplicateInterfaceId(seed.interfaceDocument.id);
+      }
+
+      if (seed.maxDailyCallsPerConsumer > seed.maxDailyCallsPerKnode) {
+        throw inconsistentDailyCalls();
       }
 
       const now = new Date();

@@ -19,6 +19,7 @@ const errorCodes = {
   ESERVICE_VERSION_NOT_FOUND: "0004",
   INTERFACE_NOT_FOUND: "0005",
   DUPLICATE_INTERFACE_ID: "0006",
+  INCONSISTENT_DAILY_CALLS: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -57,6 +58,15 @@ export function eserviceVersionNotFound(
     detail,
     status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Version Not Found",
+  });
+}
+
+export function inconsistentDailyCalls() {
+  return createApiError<ErrorCodes>({
+    code: "INCONSISTENT_DAILY_CALLS",
+    detail: `maxDailyCallsPerConsumer can't be greater than maxDailyCallsPerKnode`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Inconsistent daily calls",
   });
 }
 
