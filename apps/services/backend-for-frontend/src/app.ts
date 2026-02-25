@@ -38,10 +38,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             description: "E-services routes",
             name: apiTags.eservice,
           },
-          {
-            description: "Remote Resources Manager routes",
-            name: apiTags.remoteResourcesManager,
-          },
         ],
       },
     },
