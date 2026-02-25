@@ -1,3 +1,8 @@
+import type {
+  RefreshTokenClaims,
+  UISessionTokenClaims,
+} from "@knodia/common-models/auth";
+
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -64,6 +69,31 @@ function makeCognitoPayload(
   };
 }
 
+function makeRefreshPayload(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  return {
+    aud: "test-audience",
+    exp: Math.floor(Date.now() / 1000) + 86400,
+    iat: Math.floor(Date.now() / 1000),
+    iss: "test-issuer",
+    jti: "some-jti",
+    organizationId: TEST_ORG_ID,
+    roles: ["administrative", "technical"],
+    sub: TEST_USER_ID,
+    type: "refresh",
+    ...overrides,
+  };
+}
+
+function parseJwtPayload<T extends RefreshTokenClaims | UISessionTokenClaims>(
+  jwt: string,
+): T {
+  return JSON.parse(
+    Buffer.from(jwt.split(".")[1] ?? "", "base64url").toString(),
+  ) as T;
+}
+
 function setupValidCognitoToken(
   payloadOverrides: Record<string, unknown> = {},
 ) {
@@ -73,166 +103,218 @@ function setupValidCognitoToken(
   });
 }
 
-describe("authService", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
+function setupValidRefreshToken(overrides: Record<string, unknown> = {}) {
+  mockJwtVerify.mockResolvedValue({
+    payload: makeRefreshPayload(overrides),
+    protectedHeader: { alg: "RS256" },
+  });
+}
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
+
+describe("generateTokenPair", () => {
+  it("generates valid ui-session and refresh JWTs", async () => {
+    setupValidCognitoToken();
+    mockKmsSend.mockResolvedValue({
+      Signature: new Uint8Array([1, 2, 3, 4]),
+    });
+
+    const service = buildService();
+    const result = await service.generateTokenPair("valid-cognito-token");
+
+    expect(result.uiSessionToken).toBeDefined();
+    expect(result.refreshToken).toBeDefined();
+    expect(result.uiSessionToken.split(".")).toHaveLength(3);
+    expect(result.refreshToken.split(".")).toHaveLength(3);
+
+    const uiPayload = parseJwtPayload<UISessionTokenClaims>(
+      result.uiSessionToken,
+    );
+    expect(uiPayload.sub).toBe(TEST_USER_ID);
+    expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
+    expect(uiPayload.roles).toEqual(["administrative", "technical"]);
+    expect(uiPayload.type).toBe("ui-session");
+
+    const refreshPayload = parseJwtPayload<RefreshTokenClaims>(
+      result.refreshToken,
+    );
+    expect(refreshPayload.sub).toBe(TEST_USER_ID);
+    expect(refreshPayload.type).toBe("refresh");
   });
 
-  describe("generateTokenPair", () => {
-    it("generates valid ui-session and refresh JWTs", async () => {
-      setupValidCognitoToken();
-      mockKmsSend.mockResolvedValue({
-        Signature: new Uint8Array([1, 2, 3, 4]),
-      });
-
-      const service = buildService();
-      const result = await service.generateTokenPair("valid-cognito-token");
-
-      expect(result.uiSessionToken).toBeDefined();
-      expect(result.refreshToken).toBeDefined();
-
-      const uiParts = result.uiSessionToken.split(".");
-      expect(uiParts).toHaveLength(3);
-
-      const uiPayload = JSON.parse(
-        Buffer.from(uiParts[1] ?? "", "base64url").toString(),
-      );
-      expect(uiPayload.sub).toBe(TEST_USER_ID);
-      expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
-      expect(uiPayload.roles).toEqual(["administrative", "technical"]);
-      expect(uiPayload.type).toBe("ui-session");
-
-      const refreshParts = result.refreshToken.split(".");
-      expect(refreshParts).toHaveLength(3);
-
-      const refreshPayload = JSON.parse(
-        Buffer.from(refreshParts[1] ?? "", "base64url").toString(),
-      );
-      expect(refreshPayload.sub).toBe(TEST_USER_ID);
-      expect(refreshPayload.type).toBe("refresh");
+  it("calls KMS with the correct key alias and signing algorithm", async () => {
+    setupValidCognitoToken();
+    mockKmsSend.mockResolvedValue({
+      Signature: new Uint8Array([5, 6, 7, 8]),
     });
 
-    it("calls KMS with the correct key alias and signing algorithm", async () => {
-      setupValidCognitoToken();
-      mockKmsSend.mockResolvedValue({
-        Signature: new Uint8Array([5, 6, 7, 8]),
-      });
+    const service = buildService();
+    await service.generateTokenPair("token");
 
-      const service = buildService();
-      await service.generateTokenPair("token");
+    expect(mockKmsSend).toHaveBeenCalledTimes(2);
+    const sendArg = mockKmsSend.mock.calls[0]?.[0] as Record<string, unknown>;
+    expect(sendArg).toMatchObject({
+      KeyId: "alias/test-kid",
+      SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
+    });
+  });
 
-      // Called twice: once for ui-session, once for refresh
-      expect(mockKmsSend).toHaveBeenCalledTimes(2);
-      const sendArg = mockKmsSend.mock.calls[0]?.[0] as Record<string, unknown>;
-      expect(sendArg).toMatchObject({
-        KeyId: "alias/test-kid",
-        SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
-      });
+  it("throws unauthorized when Cognito JWT verification fails", async () => {
+    mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
+
+    const service = buildService();
+
+    await expect(service.generateTokenPair("bad-token")).rejects.toThrow();
+  });
+
+  it("throws unauthorized when cognito:groups is missing", async () => {
+    mockJwtVerify.mockResolvedValue({
+      payload: { sub: TEST_USER_ID },
+      protectedHeader: { alg: "RS256" },
     });
 
-    it("throws unauthorized when Cognito JWT verification fails", async () => {
-      mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
+    const service = buildService();
 
-      const service = buildService();
+    await expect(
+      service.generateTokenPair("token-no-groups"),
+    ).rejects.toThrow();
+  });
 
-      await expect(service.generateTokenPair("bad-token")).rejects.toThrow();
+  it("throws unauthorized when no org: group is present", async () => {
+    setupValidCognitoToken({
+      "cognito:groups": ["role:administrative"],
     });
 
-    it("throws unauthorized when cognito:groups is missing", async () => {
-      mockJwtVerify.mockResolvedValue({
-        payload: { sub: TEST_USER_ID },
-        protectedHeader: { alg: "RS256" },
-      });
+    const service = buildService();
 
-      const service = buildService();
+    await expect(service.generateTokenPair("token-no-org")).rejects.toThrow();
+  });
 
-      await expect(
-        service.generateTokenPair("token-no-groups"),
-      ).rejects.toThrow();
+  it("throws unauthorized when no role: group is present", async () => {
+    setupValidCognitoToken({
+      "cognito:groups": [`org:${TEST_ORG_ID}`],
     });
 
-    it("throws unauthorized when no org: group is present", async () => {
-      setupValidCognitoToken({
-        "cognito:groups": ["role:administrative"],
-      });
+    const service = buildService();
 
-      const service = buildService();
+    await expect(service.generateTokenPair("token-no-roles")).rejects.toThrow();
+  });
 
-      await expect(service.generateTokenPair("token-no-org")).rejects.toThrow();
+  it("throws unauthorized when role is not a valid UserRole value", async () => {
+    setupValidCognitoToken({
+      "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
     });
 
-    it("throws unauthorized when no role: group is present", async () => {
-      setupValidCognitoToken({
-        "cognito:groups": [`org:${TEST_ORG_ID}`],
-      });
+    const service = buildService();
 
-      const service = buildService();
+    await expect(service.generateTokenPair("token-bad-role")).rejects.toThrow();
+  });
 
-      await expect(
-        service.generateTokenPair("token-no-roles"),
-      ).rejects.toThrow();
+  it("throws unauthorized when KMS returns no signature", async () => {
+    setupValidCognitoToken();
+    mockKmsSend.mockResolvedValue({ Signature: undefined });
+
+    const service = buildService();
+
+    await expect(service.generateTokenPair("token")).rejects.toThrow();
+  });
+
+  it("extracts org ID by stripping the 'org:' prefix", async () => {
+    const customOrgId = "30000000-3000-1000-8000-000000000003";
+    setupValidCognitoToken({
+      "cognito:groups": [`org:${customOrgId}`, "role:technical"],
+    });
+    mockKmsSend.mockResolvedValue({ Signature: new Uint8Array([1]) });
+
+    const service = buildService();
+    const { uiSessionToken } = await service.generateTokenPair("token");
+    expect(
+      parseJwtPayload<UISessionTokenClaims>(uiSessionToken).organizationId,
+    ).toBe(customOrgId);
+  });
+
+  it("ignores groups that do not start with 'org:' or 'role:'", async () => {
+    setupValidCognitoToken({
+      "cognito:groups": [
+        `org:${TEST_ORG_ID}`,
+        "role:administrative",
+        "team:frontend",
+        "random-group",
+      ],
+    });
+    mockKmsSend.mockResolvedValue({ Signature: new Uint8Array([1]) });
+
+    const service = buildService();
+    const { uiSessionToken } = await service.generateTokenPair("token");
+    const payload = parseJwtPayload<UISessionTokenClaims>(uiSessionToken);
+    expect(payload.roles).toEqual(["administrative"]);
+    expect(payload.organizationId).toBe(TEST_ORG_ID);
+  });
+});
+
+describe("refreshTokenPair", () => {
+  it("returns a new token pair from a valid refresh token", async () => {
+    setupValidRefreshToken();
+    mockKmsSend.mockResolvedValue({
+      Signature: new Uint8Array([1, 2, 3, 4]),
     });
 
-    it("throws unauthorized when role is not a valid UserRole value", async () => {
-      setupValidCognitoToken({
-        "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
-      });
+    const service = buildService();
+    const result = await service.refreshTokenPair("valid-refresh-jwt");
 
-      const service = buildService();
+    expect(result.uiSessionToken).toBeDefined();
+    expect(result.refreshToken).toBeDefined();
 
-      await expect(
-        service.generateTokenPair("token-bad-role"),
-      ).rejects.toThrow();
+    const uiPayload = parseJwtPayload<UISessionTokenClaims>(
+      result.uiSessionToken,
+    );
+    expect(uiPayload.sub).toBe(TEST_USER_ID);
+    expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
+    expect(uiPayload.roles).toEqual(["administrative", "technical"]);
+    expect(uiPayload.type).toBe("ui-session");
+
+    const refreshPayload = parseJwtPayload<RefreshTokenClaims>(
+      result.refreshToken,
+    );
+    expect(refreshPayload.sub).toBe(TEST_USER_ID);
+    expect(refreshPayload.type).toBe("refresh");
+  });
+
+  it("throws when refresh token verification fails", async () => {
+    mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
+    const service = buildService();
+    await expect(service.refreshTokenPair("bad-jwt")).rejects.toThrow();
+  });
+
+  it("throws when refresh token has invalid claims", async () => {
+    mockJwtVerify.mockResolvedValue({
+      payload: { sub: TEST_USER_ID, type: "refresh" },
+      protectedHeader: { alg: "RS256" },
     });
+    const service = buildService();
+    await expect(service.refreshTokenPair("jwt")).rejects.toThrow();
+  });
 
-    it("throws unauthorized when KMS returns no signature", async () => {
-      setupValidCognitoToken();
-      mockKmsSend.mockResolvedValue({ Signature: undefined });
+  it("throws when refresh token has wrong type", async () => {
+    setupValidRefreshToken({ type: "ui-session" });
+    const service = buildService();
+    await expect(service.refreshTokenPair("jwt")).rejects.toThrow();
+  });
 
-      const service = buildService();
-
-      await expect(service.generateTokenPair("token")).rejects.toThrow();
+  it("preserves claims from the refresh token in the new pair", async () => {
+    const customOrgId = "30000000-3000-1000-8000-000000000003";
+    setupValidRefreshToken({
+      organizationId: customOrgId,
+      roles: ["technical"],
     });
+    mockKmsSend.mockResolvedValue({ Signature: new Uint8Array([1]) });
 
-    it("extracts org ID by stripping the 'org:' prefix", async () => {
-      const customOrgId = "30000000-3000-1000-8000-000000000003";
-      setupValidCognitoToken({
-        "cognito:groups": [`org:${customOrgId}`, "role:technical"],
-      });
-      mockKmsSend.mockResolvedValue({
-        Signature: new Uint8Array([1]),
-      });
-
-      const service = buildService();
-      const { uiSessionToken } = await service.generateTokenPair("token");
-
-      const payload = JSON.parse(
-        Buffer.from(uiSessionToken.split(".")[1] ?? "", "base64url").toString(),
-      );
-      expect(payload.organizationId).toBe(customOrgId);
-    });
-
-    it("ignores groups that do not start with 'org:' or 'role:'", async () => {
-      setupValidCognitoToken({
-        "cognito:groups": [
-          `org:${TEST_ORG_ID}`,
-          "role:administrative",
-          "team:frontend",
-          "random-group",
-        ],
-      });
-      mockKmsSend.mockResolvedValue({
-        Signature: new Uint8Array([1]),
-      });
-
-      const service = buildService();
-      const { uiSessionToken } = await service.generateTokenPair("token");
-
-      const payload = JSON.parse(
-        Buffer.from(uiSessionToken.split(".")[1] ?? "", "base64url").toString(),
-      );
-      expect(payload.roles).toEqual(["administrative"]);
-      expect(payload.organizationId).toBe(TEST_ORG_ID);
-    });
+    const service = buildService();
+    const { uiSessionToken } = await service.refreshTokenPair("refresh-jwt");
+    const payload = parseJwtPayload<UISessionTokenClaims>(uiSessionToken);
+    expect(payload.organizationId).toBe(customOrgId);
+    expect(payload.roles).toEqual(["technical"]);
   });
 });

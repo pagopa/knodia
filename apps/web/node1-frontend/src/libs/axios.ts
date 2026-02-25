@@ -1,5 +1,5 @@
 import { createBffApiClient } from "@knodia/bff-client";
-import axios, { type AxiosError, isAxiosError } from "axios";
+import axios, { isAxiosError } from "axios";
 
 import { config } from "@/config/config";
 import {
@@ -30,6 +30,12 @@ function handleRefresh(): Promise<boolean> {
   return refreshPromise;
 }
 
+function redirectToLogout(): void {
+  clearAllTokens();
+  const { clientId, domain, postLogoutRedirectUri } = config.cognito;
+  window.location.href = `${domain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(postLogoutRedirectUri)}`;
+}
+
 async function tryRefreshToken(): Promise<boolean> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) return false;
@@ -50,7 +56,7 @@ async function tryRefreshToken(): Promise<boolean> {
 
 axios.interceptors.response.use(
   (response) => response,
-  async (error: AxiosError) => {
+  async (error: unknown) => {
     if (
       isAxiosError(error) &&
       error.response?.status === 401 &&
@@ -64,8 +70,7 @@ axios.interceptors.response.use(
         return axios.request(error.config);
       }
 
-      clearAllTokens();
-      window.location.href = "/ui/login/";
+      redirectToLogout();
     }
 
     return Promise.reject(error);
