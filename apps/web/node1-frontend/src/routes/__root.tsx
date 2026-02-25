@@ -9,7 +9,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { RouterProvider } from "react-aria-components";
 
-import { type RouterContext } from "@/libs/router-context";
+import { type RouterContext } from "@/libs/router";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
