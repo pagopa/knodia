@@ -1,11 +1,17 @@
+import type { HTTPServiceName } from "@knodia/common-models/services";
 import type { LoggerConfig } from "@knodia/logger/config";
 
 import fastifyRequestContext from "@fastify/request-context";
-import { generateId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  CorrelationId,
+  generateId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { createLoggerOptions } from "@knodia/logger";
-import Fastify, { type FastifyRegisterOptions } from "fastify";
-
-import type { ServiceName } from "../models/index.ts";
+import Fastify, {
+  type FastifyInstance,
+  type FastifyRegisterOptions,
+} from "fastify";
 
 import { missingHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";
@@ -30,9 +36,11 @@ export const createFastifyApp = ({
   loggerConfig: LoggerConfig;
   makeApiProblem: MakeApiProblemFn;
   readCorrelationIdFromHeader?: boolean;
-  serviceName: ServiceName;
+  serviceName: HTTPServiceName;
 }) => {
   const app = Fastify({
+    genReqId: (req) =>
+      req.headers[CORRELATION_ID_HEADER]?.toString() ?? generateId(),
     logger: createLoggerOptions(loggerConfig, serviceName),
   });
 
@@ -40,13 +48,17 @@ export const createFastifyApp = ({
   app.register(openapiZodPlugin, fastifyOptions);
 
   app.register(fastifyRequestContext, {
-    defaultStoreValues: (request) => ({
-      correlationId: request.headers[CORRELATION_ID_HEADER]
-        ? unsafeBrandId(request.headers[CORRELATION_ID_HEADER].toString())
-        : generateId(),
-      logger: request.log,
-      serviceName,
-    }),
+    defaultStoreValues: (req) => {
+      const correlationId = unsafeBrandId<CorrelationId>(req.id);
+      const logger = req.log.child({ correlationId });
+      req.log = logger;
+
+      return {
+        correlationId,
+        logger,
+        serviceName,
+      };
+    },
   });
 
   checkCorrelationIdHeader(app, makeApiProblem, readCorrelationIdFromHeader);
@@ -64,7 +76,7 @@ export const createFastifyApp = ({
 };
 
 const checkCorrelationIdHeader = (
-  app: Fastify.FastifyInstance,
+  app: FastifyInstance,
   makeApiProblem: MakeApiProblemFn,
   readCorrelationIdFromHeader: boolean,
 ) => {

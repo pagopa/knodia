@@ -4,7 +4,6 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 
 import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { type RemoteResourcesManagerConfig } from "./config/config.ts";
@@ -45,7 +44,7 @@ function buildApp({ config }: { config: RemoteResourcesManagerConfig }) {
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: serviceName.REMOTE_RESOURCES_MANAGER,
+    serviceName: "remote-resources-manager",
   });
 
   app.register(authenticationPlugin, config);

@@ -1,12 +1,11 @@
-import { createEserviceProcessApiClient } from "@knodia/eservice-process-client";
-import { createRemoteResourcesManagerApiClient } from "@knodia/remote-resources-manager-client";
-
-export type EserviceProcessClient = ReturnType<
-  typeof createEserviceProcessApiClient
->;
-export type RemoteResourcesManagerClient = ReturnType<
-  typeof createRemoteResourcesManagerApiClient
->;
+import {
+  createEserviceProcessApiClient,
+  type EserviceProcessClient,
+} from "@knodia/eservice-process-client";
+import {
+  createRemoteResourcesManagerApiClient,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 
 interface KnodiaClients {
   eserviceProcessClient: EserviceProcessClient;

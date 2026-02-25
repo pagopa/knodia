@@ -10,3 +10,7 @@ export const createRemoteResourcesManagerApiClient = (
     ...config,
     throwOnError: true,
   } satisfies Config);
+
+export type RemoteResourcesManagerClient = ReturnType<
+  typeof createRemoteResourcesManagerApiClient
+>;

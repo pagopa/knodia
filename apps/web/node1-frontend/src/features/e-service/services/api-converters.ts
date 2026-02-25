@@ -11,13 +11,12 @@ import {
 import { getOrganizationInitials } from "@/utils/getOrganizationInitials";
 
 export function toCatalogSearchResultUI(
-  result: bffApi.CatalogEserviceSearchResult,
+  result: bffApi.ConsumerCatalogEserviceSearchResult,
 ): ConsumptionEserviceSearchResult {
   return {
     categories: result.categories,
     description: result.description.en,
-    // TODO: use result.hasRequiredAttributes
-    hasRequiredAttributes: true,
+    hasRequiredAttributes: result.hasRequiredAttributes,
     id: unsafeBrandId(result.id),
     mode: result.mode,
     name: result.name.en,

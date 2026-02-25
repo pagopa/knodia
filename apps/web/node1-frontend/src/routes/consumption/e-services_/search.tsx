@@ -12,7 +12,7 @@ import {
 } from "@/features/e-service/models/search-params";
 import { toCatalogSearchResultUI } from "@/features/e-service/services/api-converters";
 import { buildCatalogSearchBody } from "@/features/e-service/services/buildCatalogSearchBody";
-import { getCatalogEservicesQueryOptions } from "@/features/e-service/services/catalogEservicesQuery";
+import { getConsumerCatalogEservicesQueryOptions } from "@/features/e-service/services/catalogEservicesQuery";
 import { client } from "@/libs/axios";
 
 const CATALOG_SEARCH_LIMIT = 4;
@@ -21,7 +21,7 @@ const catalogQuery = (
   body: ReturnType<typeof buildCatalogSearchBody>,
   offset: number,
 ) =>
-  getCatalogEservicesQueryOptions({
+  getConsumerCatalogEservicesQueryOptions({
     body,
     client,
     query: { limit: CATALOG_SEARCH_LIMIT, offset },

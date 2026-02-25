@@ -4,12 +4,12 @@ import { queryOptions, skipToken } from "@tanstack/react-query";
 import type { client } from "@/libs/axios";
 
 interface CatalogEservicesQueryParams {
-  body: bffApi.GetCatalogEserviceSearchParams | null;
+  body: bffApi.GetConsumerCatalogEserviceSearchParams | null;
   client: typeof client;
   query: { limit: number; offset: number };
 }
 
-export const getCatalogEservicesQueryOptions = ({
+export const getConsumerCatalogEservicesQueryOptions = ({
   body,
   client,
   query,
@@ -17,7 +17,7 @@ export const getCatalogEservicesQueryOptions = ({
   queryOptions({
     queryFn: body
       ? async ({ signal }) => {
-          const { data } = await bffApi.getCatalogEservices({
+          const { data } = await bffApi.getConsumerCatalogEservices({
             body,
             client,
             query,
@@ -27,5 +27,5 @@ export const getCatalogEservicesQueryOptions = ({
           return data;
         }
       : skipToken,
-    queryKey: ["getCatalogEservices", { body, query }] as const,
+    queryKey: ["getConsumerCatalogEservices", { body, query }] as const,
   });

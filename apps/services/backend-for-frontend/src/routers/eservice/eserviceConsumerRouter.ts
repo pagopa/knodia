@@ -3,24 +3,25 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
-
-import type { RemoteResourcesManagerClient } from "../clients/clientsProvider.ts";
-
-import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
-import { apiTags } from "../models/apiTags.ts";
 import {
-  API_CatalogEserviceSearchResults,
-  API_GetCatalogEserviceSearchParams,
-  API_GetCatalogEservicesQueryParams,
-} from "../models/remoteResourcesManagerApi.ts";
-import { getProcessHeaders } from "../utils/headers.ts";
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
+
+import {
+  API_ConsumerCatalogEserviceSearchResults,
+  API_GetConsumerCatalogEserviceSearchParams,
+  API_GetConsumerCatalogEservicesQueryParams,
+} from "../../models/api.ts";
+import { toAPI_ConsumerCatalogEserviceSearchResult } from "../../models/apiConverter.ts";
+import { apiTags } from "../../models/apiTags.ts";
+import { getProcessHeaders } from "../../utils/headers.ts";
 
 interface RemoteResourcesManagerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
-export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
+export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   RemoteResourcesManagerRouterOptions
 > = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
@@ -29,7 +30,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { query: req.query, requestBody: req.body },
-        `Getting E-services owned by knode ${req.body.knodeId} with query parameters and body data`,
+        `Getting E-services owned by Knode ${req.body.knodeId} with query parameters and body data`,
       );
 
       const { data } = await remoteResourcesManagerApi.getCatalogEservices({
@@ -42,29 +43,31 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
       res.send({
         pagination: data.pagination,
         results: data.results.map((r) =>
-          toAPI_CatalogEserviceSearchResult(r, {
-            en: "Producer name", // TODO: retrieve producer name
-          }),
+          toAPI_ConsumerCatalogEserviceSearchResult(
+            r,
+            Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
+            { en: "Producer name" }, // TODO: retrieve producer name
+          ),
         ),
       });
     },
     method: "POST",
     schema: {
-      body: API_GetCatalogEserviceSearchParams,
+      body: API_GetConsumerCatalogEserviceSearchParams,
       description:
         "Search for E-services according to search criteria and considering only E-services with an active or suspended Version",
-      operationId: "getCatalogEservices",
-      querystring: API_GetCatalogEservicesQueryParams,
+      operationId: "getConsumerCatalogEservices",
+      querystring: API_GetConsumerCatalogEservicesQueryParams,
       response: {
-        200: API_CatalogEserviceSearchResults.meta({
+        200: API_ConsumerCatalogEserviceSearchResults.meta({
           description:
             "E-service search results retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
       summary: "Search for E-services",
-      tags: [apiTags.remoteResourcesManager],
+      tags: [apiTags.eservice],
     },
-    url: "/catalog",
+    url: "/consumer/catalog",
   });
 };

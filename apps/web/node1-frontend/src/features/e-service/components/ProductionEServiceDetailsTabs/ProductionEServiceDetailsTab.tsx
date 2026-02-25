@@ -88,7 +88,7 @@ function DocumentsSection() {
   } = useProductionEserviceDetailsContext();
 
   async function downloadInterfaceDocument() {
-    const response = await bffApi.getEserviceLatestVersionInterface({
+    const response = await bffApi.getProducerEserviceLatestVersionInterface({
       client,
       path: { eserviceId: id },
     });

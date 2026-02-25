@@ -1,6 +1,9 @@
-import type { LoggerOptions } from "pino";
+import type { ServiceName } from "@knodia/common-models/services";
+
+import { type Logger, type LoggerOptions, pino } from "pino";
 
 import type { LoggerConfig } from "./config.ts";
+import type { LoggerMetadata } from "./models/models.ts";
 
 const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
 
@@ -18,7 +21,7 @@ const resolvePrettyConfig = (isProduction: boolean): Partial<LoggerOptions> =>
           options: {
             colorize: true,
             ignore: "pid,hostname",
-            translateTime: "HH:MM:ss Z",
+            translateTime: "HH:MM:ss.l Z",
           },
           target: "pino-pretty",
         },
@@ -26,10 +29,21 @@ const resolvePrettyConfig = (isProduction: boolean): Partial<LoggerOptions> =>
 
 export const createLoggerOptions = (
   config: LoggerConfig,
-  serviceName: string,
+  serviceName: ServiceName,
 ): LoggerOptions => ({
   level: config.logLevel,
   name: serviceName,
   redact: DEFAULT_REDACT_PATHS,
   ...resolvePrettyConfig(config.isProduction),
 });
+
+export const createLogger = ({
+  config,
+  loggerMetadata,
+  serviceName,
+}: {
+  config: LoggerConfig;
+  loggerMetadata: LoggerMetadata;
+  serviceName: ServiceName;
+}): Logger =>
+  pino(createLoggerOptions(config, serviceName)).child(loggerMetadata);

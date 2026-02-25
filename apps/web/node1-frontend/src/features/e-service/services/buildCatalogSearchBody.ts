@@ -6,7 +6,9 @@ export function buildCatalogSearchBody(params: {
   category: string;
   keywords: string;
   knode: string;
-}): bffApi.GetCatalogEserviceSearchParams | null {
+}): bffApi.GetConsumerCatalogEserviceSearchParams | null {
+  if (!params.knode) return null;
+
   const knodeId = params.knode as bffApi.KnodeId;
   const category = params.category
     ? parseSchemeRefKeys([params.category])[0]
