@@ -27,7 +27,6 @@
     "vitest": "catalog:"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./api": "./src/api.ts"
+    ".": "./src/index.ts"
   }
 }
