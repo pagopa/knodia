@@ -21,7 +21,11 @@ beforeAll(async () => {
     inject("KAFKA_BROKER"),
   ));
 
-  processMessage = createProcessMessage(readmodelDb);
+  processMessage = createProcessMessage(readmodelDb, {
+    isProduction: false,
+    logLevel: "silent",
+    nodeEnv: "test",
+  });
 });
 
 beforeEach(async () => {

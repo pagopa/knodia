@@ -19,6 +19,8 @@ import {
 
 import type {
   API_EserviceSeed,
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -167,22 +169,47 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
-    async getEservice(eserviceId: EserviceId): Promise<Eservice> {
+    async getCatalogEservices(
+      body: API_GetCatalogEserviceSearchParams,
+      params: API_GetCatalogEservicesQueryParams,
+      { logger }: RequestContextData,
+    ): Promise<ListResult<Eservice>> {
+      logger.info({ body, params }, "Getting catalog E-services with params");
+      return await readmodelService.getCatalogEservices(body, params);
+    },
+
+    async getEservice(
+      eserviceId: EserviceId,
+      { logger }: RequestContextData,
+    ): Promise<Eservice> {
+      logger.info(`Getting E-service with ID ${eserviceId}`);
+
       return await retrieveEservice(eserviceId);
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
+      { logger }: RequestContextData,
     ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
+      logger.info(`Getting latest version of E-service with ID ${eserviceId}`);
+
       return await retrieveEserviceLatestVersion(eserviceId);
     },
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
+      { logger }: RequestContextData,
     ): Promise<EserviceInterface> {
+      logger.info(
+        `Getting latest version interface of E-service with ID ${eserviceId}`,
+      );
+
       return await retrieveEserviceLatestVersionInterface(eserviceId);
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
+      { logger }: RequestContextData,
     ): Promise<ListResult<Eservice>> {
+      logger.info({ params }, "Getting E-services with params");
+
       return await readmodelService.getEservices(params);
     },
   };

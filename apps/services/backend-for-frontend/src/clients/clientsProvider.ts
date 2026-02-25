@@ -1,19 +1,30 @@
-import { createEserviceProcessApiClient } from "@knodia/eservice-process-client";
-
-import { config } from "../config/config.ts";
-
-export type EserviceProcessClient = ReturnType<
-  typeof createEserviceProcessApiClient
->;
+import {
+  createEserviceProcessApiClient,
+  type EserviceProcessClient,
+} from "@knodia/eservice-process-client";
+import {
+  createRemoteResourcesManagerApiClient,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 
 interface KnodiaClients {
   eserviceProcessClient: EserviceProcessClient;
+  remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
-export function getKnodiaClients(): KnodiaClients {
+export function getKnodiaClients({
+  eserviceProcessUrl,
+  remoteResourcesManagerUrl,
+}: {
+  eserviceProcessUrl: string;
+  remoteResourcesManagerUrl: string;
+}): KnodiaClients {
   return {
     eserviceProcessClient: createEserviceProcessApiClient({
-      baseURL: config.eserviceProcessUrl,
+      baseURL: eserviceProcessUrl,
+    }),
+    remoteResourcesManagerClient: createRemoteResourcesManagerApiClient({
+      baseURL: remoteResourcesManagerUrl,
     }),
   };
 }

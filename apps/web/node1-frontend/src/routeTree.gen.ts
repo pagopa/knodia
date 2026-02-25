@@ -9,170 +9,195 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as OperatorsRouteImport } from './routes/operators'
-import { Route as KeychainsRouteImport } from './routes/keychains'
-import { Route as DetailsAndAttributesRouteImport } from './routes/details-and-attributes'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductionIndexRouteImport } from './routes/production/index'
-import { Route as ConsumptionIndexRouteImport } from './routes/consumption/index'
-import { Route as ProductionPurposesRouteImport } from './routes/production/purposes'
-import { Route as ProductionAgreementsRouteImport } from './routes/production/agreements'
-import { Route as ConsumptionPurposesRouteImport } from './routes/consumption/purposes'
-import { Route as ConsumptionAgreementsRouteImport } from './routes/consumption/agreements'
-import { Route as ProductionEServicesRouteRouteImport } from './routes/production/e-services/route'
-import { Route as ConsumptionEServicesRouteRouteImport } from './routes/consumption/e-services/route'
-import { Route as ProductionEServicesIdRouteImport } from './routes/production/e-services_/$id'
-import { Route as ConsumptionEServicesSearchRouteImport } from './routes/consumption/e-services_/search'
-import { Route as ConsumptionEServicesIdRouteImport } from './routes/consumption/e-services_/$id'
-import { Route as ProductionEServicesNewIndexRouteImport } from './routes/production/e-services/new/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedOperatorsRouteImport } from './routes/_authenticated/operators'
+import { Route as AuthenticatedKeychainsRouteImport } from './routes/_authenticated/keychains'
+import { Route as AuthenticatedDetailsAndAttributesRouteImport } from './routes/_authenticated/details-and-attributes'
+import { Route as AuthenticatedProductionIndexRouteImport } from './routes/_authenticated/production/index'
+import { Route as AuthenticatedConsumptionIndexRouteImport } from './routes/_authenticated/consumption/index'
+import { Route as AuthenticatedProductionPurposesRouteImport } from './routes/_authenticated/production/purposes'
+import { Route as AuthenticatedProductionAgreementsRouteImport } from './routes/_authenticated/production/agreements'
+import { Route as AuthenticatedConsumptionPurposesRouteImport } from './routes/_authenticated/consumption/purposes'
+import { Route as AuthenticatedConsumptionAgreementsRouteImport } from './routes/_authenticated/consumption/agreements'
+import { Route as AuthenticatedProductionEServicesRouteRouteImport } from './routes/_authenticated/production/e-services/route'
+import { Route as AuthenticatedConsumptionEServicesRouteRouteImport } from './routes/_authenticated/consumption/e-services/route'
+import { Route as AuthenticatedProductionEServicesIdRouteImport } from './routes/_authenticated/production/e-services_/$id'
+import { Route as AuthenticatedConsumptionEServicesSearchRouteImport } from './routes/_authenticated/consumption/e-services_/search'
+import { Route as AuthenticatedConsumptionEServicesIdRouteImport } from './routes/_authenticated/consumption/e-services_/$id'
+import { Route as AuthenticatedProductionEServicesNewIndexRouteImport } from './routes/_authenticated/production/e-services/new/index'
 
-const OperatorsRoute = OperatorsRouteImport.update({
-  id: '/operators',
-  path: '/operators',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const KeychainsRoute = KeychainsRouteImport.update({
-  id: '/keychains',
-  path: '/keychains',
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DetailsAndAttributesRoute = DetailsAndAttributesRouteImport.update({
-  id: '/details-and-attributes',
-  path: '/details-and-attributes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndexRoute = IndexRouteImport.update({
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ProductionIndexRoute = ProductionIndexRouteImport.update({
-  id: '/production/',
-  path: '/production/',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedOperatorsRoute = AuthenticatedOperatorsRouteImport.update({
+  id: '/operators',
+  path: '/operators',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ConsumptionIndexRoute = ConsumptionIndexRouteImport.update({
-  id: '/consumption/',
-  path: '/consumption/',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedKeychainsRoute = AuthenticatedKeychainsRouteImport.update({
+  id: '/keychains',
+  path: '/keychains',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ProductionPurposesRoute = ProductionPurposesRouteImport.update({
-  id: '/production/purposes',
-  path: '/production/purposes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductionAgreementsRoute = ProductionAgreementsRouteImport.update({
-  id: '/production/agreements',
-  path: '/production/agreements',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConsumptionPurposesRoute = ConsumptionPurposesRouteImport.update({
-  id: '/consumption/purposes',
-  path: '/consumption/purposes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConsumptionAgreementsRoute = ConsumptionAgreementsRouteImport.update({
-  id: '/consumption/agreements',
-  path: '/consumption/agreements',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductionEServicesRouteRoute =
-  ProductionEServicesRouteRouteImport.update({
+const AuthenticatedDetailsAndAttributesRoute =
+  AuthenticatedDetailsAndAttributesRouteImport.update({
+    id: '/details-and-attributes',
+    path: '/details-and-attributes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionIndexRoute =
+  AuthenticatedProductionIndexRouteImport.update({
+    id: '/production/',
+    path: '/production/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedConsumptionIndexRoute =
+  AuthenticatedConsumptionIndexRouteImport.update({
+    id: '/consumption/',
+    path: '/consumption/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionPurposesRoute =
+  AuthenticatedProductionPurposesRouteImport.update({
+    id: '/production/purposes',
+    path: '/production/purposes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionAgreementsRoute =
+  AuthenticatedProductionAgreementsRouteImport.update({
+    id: '/production/agreements',
+    path: '/production/agreements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedConsumptionPurposesRoute =
+  AuthenticatedConsumptionPurposesRouteImport.update({
+    id: '/consumption/purposes',
+    path: '/consumption/purposes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedConsumptionAgreementsRoute =
+  AuthenticatedConsumptionAgreementsRouteImport.update({
+    id: '/consumption/agreements',
+    path: '/consumption/agreements',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionEServicesRouteRoute =
+  AuthenticatedProductionEServicesRouteRouteImport.update({
     id: '/production/e-services',
     path: '/production/e-services',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ConsumptionEServicesRouteRoute =
-  ConsumptionEServicesRouteRouteImport.update({
+const AuthenticatedConsumptionEServicesRouteRoute =
+  AuthenticatedConsumptionEServicesRouteRouteImport.update({
     id: '/consumption/e-services',
     path: '/consumption/e-services',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ProductionEServicesIdRoute = ProductionEServicesIdRouteImport.update({
-  id: '/production/e-services_/$id',
-  path: '/production/e-services/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConsumptionEServicesSearchRoute =
-  ConsumptionEServicesSearchRouteImport.update({
+const AuthenticatedProductionEServicesIdRoute =
+  AuthenticatedProductionEServicesIdRouteImport.update({
+    id: '/production/e-services_/$id',
+    path: '/production/e-services/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedConsumptionEServicesSearchRoute =
+  AuthenticatedConsumptionEServicesSearchRouteImport.update({
     id: '/consumption/e-services_/search',
     path: '/consumption/e-services/search',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const ConsumptionEServicesIdRoute = ConsumptionEServicesIdRouteImport.update({
-  id: '/consumption/e-services_/$id',
-  path: '/consumption/e-services/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductionEServicesNewIndexRoute =
-  ProductionEServicesNewIndexRouteImport.update({
+const AuthenticatedConsumptionEServicesIdRoute =
+  AuthenticatedConsumptionEServicesIdRouteImport.update({
+    id: '/consumption/e-services_/$id',
+    path: '/consumption/e-services/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionEServicesNewIndexRoute =
+  AuthenticatedProductionEServicesNewIndexRouteImport.update({
     id: '/new/',
     path: '/new/',
-    getParentRoute: () => ProductionEServicesRouteRoute,
+    getParentRoute: () => AuthenticatedProductionEServicesRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/details-and-attributes': typeof DetailsAndAttributesRoute
-  '/keychains': typeof KeychainsRoute
-  '/operators': typeof OperatorsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
-  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
-  '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/purposes': typeof ConsumptionPurposesRoute
-  '/production/agreements': typeof ProductionAgreementsRoute
-  '/production/purposes': typeof ProductionPurposesRoute
-  '/consumption': typeof ConsumptionIndexRoute
-  '/production': typeof ProductionIndexRoute
-  '/consumption/e-services/$id': typeof ConsumptionEServicesIdRoute
-  '/consumption/e-services/search': typeof ConsumptionEServicesSearchRoute
-  '/production/e-services/$id': typeof ProductionEServicesIdRoute
-  '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
+  '/details-and-attributes': typeof AuthenticatedDetailsAndAttributesRoute
+  '/keychains': typeof AuthenticatedKeychainsRoute
+  '/operators': typeof AuthenticatedOperatorsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/login': typeof LoginIndexRoute
+  '/consumption/e-services': typeof AuthenticatedConsumptionEServicesRouteRoute
+  '/production/e-services': typeof AuthenticatedProductionEServicesRouteRouteWithChildren
+  '/consumption/agreements': typeof AuthenticatedConsumptionAgreementsRoute
+  '/consumption/purposes': typeof AuthenticatedConsumptionPurposesRoute
+  '/production/agreements': typeof AuthenticatedProductionAgreementsRoute
+  '/production/purposes': typeof AuthenticatedProductionPurposesRoute
+  '/consumption': typeof AuthenticatedConsumptionIndexRoute
+  '/production': typeof AuthenticatedProductionIndexRoute
+  '/consumption/e-services/$id': typeof AuthenticatedConsumptionEServicesIdRoute
+  '/consumption/e-services/search': typeof AuthenticatedConsumptionEServicesSearchRoute
+  '/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
+  '/production/e-services/new': typeof AuthenticatedProductionEServicesNewIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/details-and-attributes': typeof DetailsAndAttributesRoute
-  '/keychains': typeof KeychainsRoute
-  '/operators': typeof OperatorsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
-  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
-  '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/purposes': typeof ConsumptionPurposesRoute
-  '/production/agreements': typeof ProductionAgreementsRoute
-  '/production/purposes': typeof ProductionPurposesRoute
-  '/consumption': typeof ConsumptionIndexRoute
-  '/production': typeof ProductionIndexRoute
-  '/consumption/e-services/$id': typeof ConsumptionEServicesIdRoute
-  '/consumption/e-services/search': typeof ConsumptionEServicesSearchRoute
-  '/production/e-services/$id': typeof ProductionEServicesIdRoute
-  '/production/e-services/new': typeof ProductionEServicesNewIndexRoute
+  '/details-and-attributes': typeof AuthenticatedDetailsAndAttributesRoute
+  '/keychains': typeof AuthenticatedKeychainsRoute
+  '/operators': typeof AuthenticatedOperatorsRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/login': typeof LoginIndexRoute
+  '/consumption/e-services': typeof AuthenticatedConsumptionEServicesRouteRoute
+  '/production/e-services': typeof AuthenticatedProductionEServicesRouteRouteWithChildren
+  '/consumption/agreements': typeof AuthenticatedConsumptionAgreementsRoute
+  '/consumption/purposes': typeof AuthenticatedConsumptionPurposesRoute
+  '/production/agreements': typeof AuthenticatedProductionAgreementsRoute
+  '/production/purposes': typeof AuthenticatedProductionPurposesRoute
+  '/consumption': typeof AuthenticatedConsumptionIndexRoute
+  '/production': typeof AuthenticatedProductionIndexRoute
+  '/consumption/e-services/$id': typeof AuthenticatedConsumptionEServicesIdRoute
+  '/consumption/e-services/search': typeof AuthenticatedConsumptionEServicesSearchRoute
+  '/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
+  '/production/e-services/new': typeof AuthenticatedProductionEServicesNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/details-and-attributes': typeof DetailsAndAttributesRoute
-  '/keychains': typeof KeychainsRoute
-  '/operators': typeof OperatorsRoute
-  '/consumption/e-services': typeof ConsumptionEServicesRouteRoute
-  '/production/e-services': typeof ProductionEServicesRouteRouteWithChildren
-  '/consumption/agreements': typeof ConsumptionAgreementsRoute
-  '/consumption/purposes': typeof ConsumptionPurposesRoute
-  '/production/agreements': typeof ProductionAgreementsRoute
-  '/production/purposes': typeof ProductionPurposesRoute
-  '/consumption/': typeof ConsumptionIndexRoute
-  '/production/': typeof ProductionIndexRoute
-  '/consumption/e-services_/$id': typeof ConsumptionEServicesIdRoute
-  '/consumption/e-services_/search': typeof ConsumptionEServicesSearchRoute
-  '/production/e-services_/$id': typeof ProductionEServicesIdRoute
-  '/production/e-services/new/': typeof ProductionEServicesNewIndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/details-and-attributes': typeof AuthenticatedDetailsAndAttributesRoute
+  '/_authenticated/keychains': typeof AuthenticatedKeychainsRoute
+  '/_authenticated/operators': typeof AuthenticatedOperatorsRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/login/': typeof LoginIndexRoute
+  '/_authenticated/consumption/e-services': typeof AuthenticatedConsumptionEServicesRouteRoute
+  '/_authenticated/production/e-services': typeof AuthenticatedProductionEServicesRouteRouteWithChildren
+  '/_authenticated/consumption/agreements': typeof AuthenticatedConsumptionAgreementsRoute
+  '/_authenticated/consumption/purposes': typeof AuthenticatedConsumptionPurposesRoute
+  '/_authenticated/production/agreements': typeof AuthenticatedProductionAgreementsRoute
+  '/_authenticated/production/purposes': typeof AuthenticatedProductionPurposesRoute
+  '/_authenticated/consumption/': typeof AuthenticatedConsumptionIndexRoute
+  '/_authenticated/production/': typeof AuthenticatedProductionIndexRoute
+  '/_authenticated/consumption/e-services_/$id': typeof AuthenticatedConsumptionEServicesIdRoute
+  '/_authenticated/consumption/e-services_/search': typeof AuthenticatedConsumptionEServicesSearchRoute
+  '/_authenticated/production/e-services_/$id': typeof AuthenticatedProductionEServicesIdRoute
+  '/_authenticated/production/e-services/new/': typeof AuthenticatedProductionEServicesNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/'
+    | '/login'
     | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
@@ -187,10 +212,11 @@ export interface FileRouteTypes {
     | '/production/e-services/new'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/'
     | '/details-and-attributes'
     | '/keychains'
     | '/operators'
+    | '/'
+    | '/login'
     | '/consumption/e-services'
     | '/production/e-services'
     | '/consumption/agreements'
@@ -205,189 +231,227 @@ export interface FileRouteTypes {
     | '/production/e-services/new'
   id:
     | '__root__'
-    | '/'
-    | '/details-and-attributes'
-    | '/keychains'
-    | '/operators'
-    | '/consumption/e-services'
-    | '/production/e-services'
-    | '/consumption/agreements'
-    | '/consumption/purposes'
-    | '/production/agreements'
-    | '/production/purposes'
-    | '/consumption/'
-    | '/production/'
-    | '/consumption/e-services_/$id'
-    | '/consumption/e-services_/search'
-    | '/production/e-services_/$id'
-    | '/production/e-services/new/'
+    | '/_authenticated'
+    | '/_authenticated/details-and-attributes'
+    | '/_authenticated/keychains'
+    | '/_authenticated/operators'
+    | '/_authenticated/'
+    | '/login/'
+    | '/_authenticated/consumption/e-services'
+    | '/_authenticated/production/e-services'
+    | '/_authenticated/consumption/agreements'
+    | '/_authenticated/consumption/purposes'
+    | '/_authenticated/production/agreements'
+    | '/_authenticated/production/purposes'
+    | '/_authenticated/consumption/'
+    | '/_authenticated/production/'
+    | '/_authenticated/consumption/e-services_/$id'
+    | '/_authenticated/consumption/e-services_/search'
+    | '/_authenticated/production/e-services_/$id'
+    | '/_authenticated/production/e-services/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  DetailsAndAttributesRoute: typeof DetailsAndAttributesRoute
-  KeychainsRoute: typeof KeychainsRoute
-  OperatorsRoute: typeof OperatorsRoute
-  ConsumptionEServicesRouteRoute: typeof ConsumptionEServicesRouteRoute
-  ProductionEServicesRouteRoute: typeof ProductionEServicesRouteRouteWithChildren
-  ConsumptionAgreementsRoute: typeof ConsumptionAgreementsRoute
-  ConsumptionPurposesRoute: typeof ConsumptionPurposesRoute
-  ProductionAgreementsRoute: typeof ProductionAgreementsRoute
-  ProductionPurposesRoute: typeof ProductionPurposesRoute
-  ConsumptionIndexRoute: typeof ConsumptionIndexRoute
-  ProductionIndexRoute: typeof ProductionIndexRoute
-  ConsumptionEServicesIdRoute: typeof ConsumptionEServicesIdRoute
-  ConsumptionEServicesSearchRoute: typeof ConsumptionEServicesSearchRoute
-  ProductionEServicesIdRoute: typeof ProductionEServicesIdRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  LoginIndexRoute: typeof LoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/operators': {
-      id: '/operators'
-      path: '/operators'
-      fullPath: '/operators'
-      preLoaderRoute: typeof OperatorsRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/keychains': {
-      id: '/keychains'
-      path: '/keychains'
-      fullPath: '/keychains'
-      preLoaderRoute: typeof KeychainsRouteImport
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/details-and-attributes': {
-      id: '/details-and-attributes'
-      path: '/details-and-attributes'
-      fullPath: '/details-and-attributes'
-      preLoaderRoute: typeof DetailsAndAttributesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/': {
-      id: '/'
+    '/_authenticated/': {
+      id: '/_authenticated/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/production/': {
-      id: '/production/'
+    '/_authenticated/operators': {
+      id: '/_authenticated/operators'
+      path: '/operators'
+      fullPath: '/operators'
+      preLoaderRoute: typeof AuthenticatedOperatorsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/keychains': {
+      id: '/_authenticated/keychains'
+      path: '/keychains'
+      fullPath: '/keychains'
+      preLoaderRoute: typeof AuthenticatedKeychainsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/details-and-attributes': {
+      id: '/_authenticated/details-and-attributes'
+      path: '/details-and-attributes'
+      fullPath: '/details-and-attributes'
+      preLoaderRoute: typeof AuthenticatedDetailsAndAttributesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/production/': {
+      id: '/_authenticated/production/'
       path: '/production'
       fullPath: '/production'
-      preLoaderRoute: typeof ProductionIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProductionIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/consumption/': {
-      id: '/consumption/'
+    '/_authenticated/consumption/': {
+      id: '/_authenticated/consumption/'
       path: '/consumption'
       fullPath: '/consumption'
-      preLoaderRoute: typeof ConsumptionIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedConsumptionIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/production/purposes': {
-      id: '/production/purposes'
+    '/_authenticated/production/purposes': {
+      id: '/_authenticated/production/purposes'
       path: '/production/purposes'
       fullPath: '/production/purposes'
-      preLoaderRoute: typeof ProductionPurposesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProductionPurposesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/production/agreements': {
-      id: '/production/agreements'
+    '/_authenticated/production/agreements': {
+      id: '/_authenticated/production/agreements'
       path: '/production/agreements'
       fullPath: '/production/agreements'
-      preLoaderRoute: typeof ProductionAgreementsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProductionAgreementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/consumption/purposes': {
-      id: '/consumption/purposes'
+    '/_authenticated/consumption/purposes': {
+      id: '/_authenticated/consumption/purposes'
       path: '/consumption/purposes'
       fullPath: '/consumption/purposes'
-      preLoaderRoute: typeof ConsumptionPurposesRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedConsumptionPurposesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/consumption/agreements': {
-      id: '/consumption/agreements'
+    '/_authenticated/consumption/agreements': {
+      id: '/_authenticated/consumption/agreements'
       path: '/consumption/agreements'
       fullPath: '/consumption/agreements'
-      preLoaderRoute: typeof ConsumptionAgreementsRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedConsumptionAgreementsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/production/e-services': {
-      id: '/production/e-services'
+    '/_authenticated/production/e-services': {
+      id: '/_authenticated/production/e-services'
       path: '/production/e-services'
       fullPath: '/production/e-services'
-      preLoaderRoute: typeof ProductionEServicesRouteRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProductionEServicesRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/consumption/e-services': {
-      id: '/consumption/e-services'
+    '/_authenticated/consumption/e-services': {
+      id: '/_authenticated/consumption/e-services'
       path: '/consumption/e-services'
       fullPath: '/consumption/e-services'
-      preLoaderRoute: typeof ConsumptionEServicesRouteRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedConsumptionEServicesRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/production/e-services_/$id': {
-      id: '/production/e-services_/$id'
+    '/_authenticated/production/e-services_/$id': {
+      id: '/_authenticated/production/e-services_/$id'
       path: '/production/e-services/$id'
       fullPath: '/production/e-services/$id'
-      preLoaderRoute: typeof ProductionEServicesIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedProductionEServicesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/consumption/e-services_/search': {
-      id: '/consumption/e-services_/search'
+    '/_authenticated/consumption/e-services_/search': {
+      id: '/_authenticated/consumption/e-services_/search'
       path: '/consumption/e-services/search'
       fullPath: '/consumption/e-services/search'
-      preLoaderRoute: typeof ConsumptionEServicesSearchRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedConsumptionEServicesSearchRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/consumption/e-services_/$id': {
-      id: '/consumption/e-services_/$id'
+    '/_authenticated/consumption/e-services_/$id': {
+      id: '/_authenticated/consumption/e-services_/$id'
       path: '/consumption/e-services/$id'
       fullPath: '/consumption/e-services/$id'
-      preLoaderRoute: typeof ConsumptionEServicesIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedConsumptionEServicesIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/production/e-services/new/': {
-      id: '/production/e-services/new/'
+    '/_authenticated/production/e-services/new/': {
+      id: '/_authenticated/production/e-services/new/'
       path: '/new'
       fullPath: '/production/e-services/new'
-      preLoaderRoute: typeof ProductionEServicesNewIndexRouteImport
-      parentRoute: typeof ProductionEServicesRouteRoute
+      preLoaderRoute: typeof AuthenticatedProductionEServicesNewIndexRouteImport
+      parentRoute: typeof AuthenticatedProductionEServicesRouteRoute
     }
   }
 }
 
-interface ProductionEServicesRouteRouteChildren {
-  ProductionEServicesNewIndexRoute: typeof ProductionEServicesNewIndexRoute
+interface AuthenticatedProductionEServicesRouteRouteChildren {
+  AuthenticatedProductionEServicesNewIndexRoute: typeof AuthenticatedProductionEServicesNewIndexRoute
 }
 
-const ProductionEServicesRouteRouteChildren: ProductionEServicesRouteRouteChildren =
+const AuthenticatedProductionEServicesRouteRouteChildren: AuthenticatedProductionEServicesRouteRouteChildren =
   {
-    ProductionEServicesNewIndexRoute: ProductionEServicesNewIndexRoute,
+    AuthenticatedProductionEServicesNewIndexRoute:
+      AuthenticatedProductionEServicesNewIndexRoute,
   }
 
-const ProductionEServicesRouteRouteWithChildren =
-  ProductionEServicesRouteRoute._addFileChildren(
-    ProductionEServicesRouteRouteChildren,
+const AuthenticatedProductionEServicesRouteRouteWithChildren =
+  AuthenticatedProductionEServicesRouteRoute._addFileChildren(
+    AuthenticatedProductionEServicesRouteRouteChildren,
   )
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDetailsAndAttributesRoute: typeof AuthenticatedDetailsAndAttributesRoute
+  AuthenticatedKeychainsRoute: typeof AuthenticatedKeychainsRoute
+  AuthenticatedOperatorsRoute: typeof AuthenticatedOperatorsRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedConsumptionEServicesRouteRoute: typeof AuthenticatedConsumptionEServicesRouteRoute
+  AuthenticatedProductionEServicesRouteRoute: typeof AuthenticatedProductionEServicesRouteRouteWithChildren
+  AuthenticatedConsumptionAgreementsRoute: typeof AuthenticatedConsumptionAgreementsRoute
+  AuthenticatedConsumptionPurposesRoute: typeof AuthenticatedConsumptionPurposesRoute
+  AuthenticatedProductionAgreementsRoute: typeof AuthenticatedProductionAgreementsRoute
+  AuthenticatedProductionPurposesRoute: typeof AuthenticatedProductionPurposesRoute
+  AuthenticatedConsumptionIndexRoute: typeof AuthenticatedConsumptionIndexRoute
+  AuthenticatedProductionIndexRoute: typeof AuthenticatedProductionIndexRoute
+  AuthenticatedConsumptionEServicesIdRoute: typeof AuthenticatedConsumptionEServicesIdRoute
+  AuthenticatedConsumptionEServicesSearchRoute: typeof AuthenticatedConsumptionEServicesSearchRoute
+  AuthenticatedProductionEServicesIdRoute: typeof AuthenticatedProductionEServicesIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDetailsAndAttributesRoute:
+    AuthenticatedDetailsAndAttributesRoute,
+  AuthenticatedKeychainsRoute: AuthenticatedKeychainsRoute,
+  AuthenticatedOperatorsRoute: AuthenticatedOperatorsRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedConsumptionEServicesRouteRoute:
+    AuthenticatedConsumptionEServicesRouteRoute,
+  AuthenticatedProductionEServicesRouteRoute:
+    AuthenticatedProductionEServicesRouteRouteWithChildren,
+  AuthenticatedConsumptionAgreementsRoute:
+    AuthenticatedConsumptionAgreementsRoute,
+  AuthenticatedConsumptionPurposesRoute: AuthenticatedConsumptionPurposesRoute,
+  AuthenticatedProductionAgreementsRoute:
+    AuthenticatedProductionAgreementsRoute,
+  AuthenticatedProductionPurposesRoute: AuthenticatedProductionPurposesRoute,
+  AuthenticatedConsumptionIndexRoute: AuthenticatedConsumptionIndexRoute,
+  AuthenticatedProductionIndexRoute: AuthenticatedProductionIndexRoute,
+  AuthenticatedConsumptionEServicesIdRoute:
+    AuthenticatedConsumptionEServicesIdRoute,
+  AuthenticatedConsumptionEServicesSearchRoute:
+    AuthenticatedConsumptionEServicesSearchRoute,
+  AuthenticatedProductionEServicesIdRoute:
+    AuthenticatedProductionEServicesIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  DetailsAndAttributesRoute: DetailsAndAttributesRoute,
-  KeychainsRoute: KeychainsRoute,
-  OperatorsRoute: OperatorsRoute,
-  ConsumptionEServicesRouteRoute: ConsumptionEServicesRouteRoute,
-  ProductionEServicesRouteRoute: ProductionEServicesRouteRouteWithChildren,
-  ConsumptionAgreementsRoute: ConsumptionAgreementsRoute,
-  ConsumptionPurposesRoute: ConsumptionPurposesRoute,
-  ProductionAgreementsRoute: ProductionAgreementsRoute,
-  ProductionPurposesRoute: ProductionPurposesRoute,
-  ConsumptionIndexRoute: ConsumptionIndexRoute,
-  ProductionIndexRoute: ProductionIndexRoute,
-  ConsumptionEServicesIdRoute: ConsumptionEServicesIdRoute,
-  ConsumptionEServicesSearchRoute: ConsumptionEServicesSearchRoute,
-  ProductionEServicesIdRoute: ProductionEServicesIdRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  LoginIndexRoute: LoginIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

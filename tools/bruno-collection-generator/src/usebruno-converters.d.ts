@@ -44,7 +44,6 @@ declare module "@usebruno/converters" {
       };
       url: string;
     };
-    seq: number;
     type: "http-request";
     uid: string;
   }

@@ -1,8 +1,7 @@
-import { createK2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
-
-export type K2K2GatewayApiClient = ReturnType<
-  typeof createK2K2GatewayApiClient
->;
+import {
+  createK2K2GatewayApiClient,
+  type K2K2GatewayApiClient,
+} from "@knodia/k2k-gateway-client";
 
 export function getK2K2GatewayApiClient({
   knodeUrl,
