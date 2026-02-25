@@ -58,7 +58,7 @@ export function processExit({
 }: {
   exitStatusCode?: number;
   logger: Logger;
-}): void {
+}): never {
   logger.debug(`Process exit with code ${exitStatusCode}`);
   process.exit(exitStatusCode);
 }
