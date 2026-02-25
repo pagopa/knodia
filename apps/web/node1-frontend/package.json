@@ -7,7 +7,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "pnpm -w test --project @knodia/node1-frontend",
+    "test:watch": "pnpm test --watch"
   },
   "dependencies": {
     "@knodia/attribute-models": "workspace:*",
@@ -28,6 +30,8 @@
     "react": "catalog:",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
+    "oidc-client-ts": "catalog:",
+    "react-oidc-context": "catalog:",
     "tailwind-merge": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
@@ -37,6 +41,10 @@
     "@knodia/typescript-config": "workspace:*",
     "@knodia/ui-kit": "workspace:*",
     "@tanstack/router-plugin": "catalog:",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/user-event": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
@@ -44,7 +52,10 @@
     "babel-plugin-react-compiler": "catalog:",
     "eslint": "catalog:",
     "globals": "catalog:",
+    "jsdom": "catalog:",
+    "msw": "catalog:",
     "typescript": "catalog:",
-    "vite": "catalog:"
+    "vite": "catalog:",
+    "vitest": "catalog:"
   }
 }

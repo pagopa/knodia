@@ -16,6 +16,7 @@ export function FullPageModal({ children, onClose, title }: Props) {
       <Navbar className="bg-brand-light">
         <h1 className="text-brand-light-high-contrast headline-sm">{title}</h1>
         <Button
+          aria-label="Close modal"
           hierarchy="neutral"
           kind="ghost"
           onPress={onClose}

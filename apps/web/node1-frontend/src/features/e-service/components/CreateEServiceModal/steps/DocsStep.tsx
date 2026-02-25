@@ -42,6 +42,7 @@ export function DocsStep() {
             <form.Field name="interfaceDocument">
               {(field) => (
                 <FileUpload
+                  ariaLabel="API specs file"
                   description="Accepted format: YAML, JSON (up to 1 MB)."
                   errorMessage={getFieldErrorMessage(field.state.meta.errors)}
                   onSelect={(files) => {
