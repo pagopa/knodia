@@ -1,38 +1,54 @@
-// import type { Agreement } from "@knodia/agreement-models";
-// import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+import type { Agreement } from "@knodia/agreement-models";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-// import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
-// import { eq } from "drizzle-orm";
+import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
+import { eq } from "drizzle-orm";
 
-// import { readmodelAgreement } from "../agreement.ts";
-// import { toAgreementSQL } from "../converters/splitters.ts";
+import {
+  readmodelAgreement,
+  readmodelAgreementRequiredAttribute,
+} from "../agreement.ts";
+import { splitAgreementIntoObjectsSQL } from "../converters/splitters.ts";
 
-// export function agreementWriterServiceBuilder(db: NodePgDatabase) {
-//   return {
-//     async upsertAgreement(
-//       agreement: Agreement,
-//       metadataVersion: number,
-//     ): Promise<void> {
-//       return db.transaction(async (tx) => {
-//         const shouldUpsert = await checkMetadataVersion(
-//           tx,
-//           readmodelAgreement,
-//           metadataVersion,
-//           agreement.id,
-//         );
+function agreementWriterServiceBuilder(db: NodePgDatabase) {
+  return {
+    async upsertAgreement(
+      agreement: Agreement,
+      metadataVersion: number,
+    ): Promise<void> {
+      const { agreementSQL, requiredAttributesSQL } =
+        splitAgreementIntoObjectsSQL(agreement, metadataVersion);
 
-//         if (!shouldUpsert) {
-//           return;
-//         }
+      await db.transaction(async (tx) => {
+        const shouldUpsert = await checkMetadataVersion(
+          tx,
+          readmodelAgreement,
+          metadataVersion,
+          agreement.id,
+        );
 
-//         await tx
-//           .delete(readmodelAgreement)
-//           .where(eq(readmodelAgreement.id, agreement.id));
+        if (!shouldUpsert) {
+          return;
+        }
 
-//         const agreementSQL = toAgreementSQL(agreement, metadataVersion);
+        await tx
+          .delete(readmodelAgreement)
+          .where(eq(readmodelAgreement.id, agreement.id));
 
-//         await tx.insert(readmodelAgreement).values(agreementSQL);
-//       });
-//     },
-//   };
-// }
+        await tx.insert(readmodelAgreement).values(agreementSQL);
+
+        if (requiredAttributesSQL.length > 0) {
+          await tx
+            .insert(readmodelAgreementRequiredAttribute)
+            .values(requiredAttributesSQL);
+        }
+      });
+    },
+  };
+}
+
+// TODO: knip workaround
+console.log(
+  "🚀 ~ agreementWriterServiceBuilder ~ agreementWriterServiceBuilder:",
+  agreementWriterServiceBuilder,
+);
