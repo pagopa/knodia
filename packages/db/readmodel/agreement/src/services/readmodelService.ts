@@ -22,6 +22,13 @@ function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           requiredAttribute: readmodelAgreementRequiredAttribute,
         })
         .from(readmodelAgreement)
+        .leftJoin(
+          readmodelAgreementRequiredAttribute,
+          eq(
+            readmodelAgreementRequiredAttribute.agreementId,
+            readmodelAgreement.id,
+          ),
+        )
         .where(eq(readmodelAgreement.id, agreementId));
 
       return aggregateAgreement(queryRes);
