@@ -17,7 +17,8 @@
     "./localization": "./src/localization.ts",
     "./protobuf": "./src/protobuf.ts",
     "./auth": "./src/auth/index.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./utils": "./src/utils.ts"
   },
   "dependencies": {
     "zod": "catalog:"

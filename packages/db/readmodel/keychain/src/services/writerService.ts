@@ -47,19 +47,16 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
 
         await tx.insert(readmodelKeychain).values(keychainSQL);
 
-        for (const userSQL of keychainUsersSQL) {
-          await tx
-            .insert(readmodelKeychainUser)
-            .values(userSQL)
-            .onConflictDoNothing();
+        if (keychainUsersSQL.length > 0) {
+          await tx.insert(readmodelKeychainUser).values(keychainUsersSQL);
         }
 
-        for (const purposeSQL of keychainPurposesSQL) {
-          await tx.insert(readmodelKeychainPurpose).values(purposeSQL);
+        if (keychainPurposesSQL.length > 0) {
+          await tx.insert(readmodelKeychainPurpose).values(keychainPurposesSQL);
         }
 
-        for (const keySQL of keychainKeysSQL) {
-          await tx.insert(readmodelKeychainKey).values(keySQL);
+        if (keychainKeysSQL.length > 0) {
+          await tx.insert(readmodelKeychainKey).values(keychainKeysSQL);
         }
       });
     },

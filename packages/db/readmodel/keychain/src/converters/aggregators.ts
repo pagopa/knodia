@@ -12,6 +12,7 @@ import {
 } from "@knodia/db-readmodel-commons/utils";
 import {
   Keychain,
+  KeychainKey,
   KeychainKind,
   KeyFormat,
   KeyUse,
@@ -44,23 +45,6 @@ const buildKeychain = ({
   keychainSQL,
   keychainUsersSQL,
 }: KeychainItemsSQL): WithMetadata<Keychain> => {
-  const keys = keychainKeysSQL.map((keySQL) => {
-    if (!keySQL.userId) {
-      throw new Error(`Missing userId for key ${keySQL.kid}`);
-    }
-
-    return {
-      algorithm: keySQL.algorithm,
-      createdAt: new Date(keySQL.createdAt),
-      encodedPem: keySQL.encodedPem,
-      format: KeyFormat.parse(keySQL.format),
-      kid: keySQL.kid,
-      name: LocalizedName.parse(keySQL.name),
-      use: KeyUse.parse(keySQL.use),
-      userId: unsafeBrandId<UserId>(keySQL.userId),
-    };
-  });
-
   const keychain: Keychain = {
     createdAt: new Date(keychainSQL.createdAt),
     description:
@@ -68,13 +52,14 @@ const buildKeychain = ({
         ? undefined
         : LocalizedDescription.parse(keychainSQL.description),
     id: unsafeBrandId(keychainSQL.id),
-    keys,
+    keys: keychainKeysSQL.map(buildKeychainKey),
     kind: KeychainKind.parse(keychainSQL.kind),
     name: LocalizedName.parse(keychainSQL.name),
     ownerId: unsafeBrandId<UserId>(keychainSQL.ownerId),
     purposes: keychainPurposesSQL.map((purposeSQL) =>
       unsafeBrandId<PurposeId>(purposeSQL.purposeId),
     ),
+    updatedAt: new Date(keychainSQL.updatedAt),
     users: keychainUsersSQL.map((userSQL) =>
       unsafeBrandId<UserId>(userSQL.userId),
     ),
@@ -85,6 +70,19 @@ const buildKeychain = ({
     metadata: { version: keychainSQL.metadataVersion },
   };
 };
+
+function buildKeychainKey(keySQL: KeychainKeySQL): KeychainKey {
+  return {
+    algorithm: keySQL.algorithm,
+    createdAt: new Date(keySQL.createdAt),
+    encodedPem: keySQL.encodedPem,
+    format: KeyFormat.parse(keySQL.format),
+    kid: keySQL.kid,
+    name: LocalizedName.parse(keySQL.name),
+    use: KeyUse.parse(keySQL.use),
+    userId: unsafeBrandId<UserId>(keySQL.userId),
+  };
+}
 
 export const aggregateKeychain = (
   queryRes: KeychainAggregatorInput,

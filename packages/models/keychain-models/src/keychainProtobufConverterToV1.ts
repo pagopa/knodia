@@ -55,5 +55,6 @@ export const toKeychainV1 = (keychain: Keychain): KeychainV1 => ({
   name: keychain.name,
   ownerId: keychain.ownerId,
   purposes: keychain.purposes,
+  updatedAt: keychain.updatedAt.getTime(),
   users: keychain.users,
 });

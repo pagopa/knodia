@@ -47,6 +47,7 @@ export const Keychain = z.object({
   name: LocalizedName,
   ownerId: UserId,
   purposes: z.array(PurposeId),
+  updatedAt: z.coerce.date(),
   users: z.array(UserId),
 });
 

@@ -22,7 +22,7 @@ export const readmodelKeychain = keychainSchema.table(
   "keychain",
   {
     createdAt: timestamp("created_at", {
-      mode: "string",
+      mode: "date",
       withTimezone: true,
     }).notNull(),
     description: jsonb(),
@@ -31,6 +31,10 @@ export const readmodelKeychain = keychainSchema.table(
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: jsonb().notNull(),
     ownerId: uuid("owner_id").notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
   },
   (table) => [
     unique("keychain_id_metadata_v_unique").on(table.metadataVersion, table.id),
@@ -92,7 +96,7 @@ export const readmodelKeychainKey = keychainSchema.table(
   {
     algorithm: text().notNull(),
     createdAt: timestamp("created_at", {
-      mode: "string",
+      mode: "date",
       withTimezone: true,
     }).notNull(),
     encodedPem: text().notNull(),
@@ -102,7 +106,7 @@ export const readmodelKeychainKey = keychainSchema.table(
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: jsonb().notNull(),
     use: text().notNull(),
-    userId: uuid("user_id"),
+    userId: uuid("user_id").notNull(),
   },
   (table) => [
     foreignKey({

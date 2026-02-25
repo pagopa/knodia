@@ -47,13 +47,14 @@ const toKeychainSQL = (
   keychain: Keychain,
   metadataVersion: number,
 ): KeychainSQL => ({
-  createdAt: keychain.createdAt.toISOString(),
-  description: keychain.description ?? null,
+  createdAt: keychain.createdAt,
+  description: keychain.description,
   id: keychain.id,
   kind: keychain.kind,
   metadataVersion,
   name: keychain.name,
   ownerId: keychain.ownerId,
+  updatedAt: keychain.updatedAt,
 });
 
 const toKeychainKeySQL = ({
@@ -66,7 +67,7 @@ const toKeychainKeySQL = ({
   metadataVersion: number;
 }): KeychainKeySQL => ({
   algorithm: key.algorithm,
-  createdAt: key.createdAt.toISOString(),
+  createdAt: key.createdAt,
   encodedPem: key.encodedPem,
   format: key.format,
   keychainId,

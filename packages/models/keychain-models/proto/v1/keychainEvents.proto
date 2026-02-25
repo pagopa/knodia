@@ -6,5 +6,4 @@ import "v1/keychain.proto";
 
 message KeychainCreatedV1 {
   KeychainV1 keychain = 1;
-  string keychainId = 2;
 }

@@ -1,4 +1,5 @@
 import { PurposeId, unsafeBrandId, UserId } from "@knodia/common-models/ids";
+import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import {
@@ -16,46 +17,37 @@ import {
   KeyUse,
 } from "./keychain.ts";
 
-// TODO: move to a shared utilities package
-function throwIfMissing<T>(value: T | undefined, message: string): T;
-function throwIfMissing<T, R>(
-  value: T | undefined,
-  message: string,
-  converter: (value: T) => R,
-): R;
-function throwIfMissing<T, R>(
-  value: T | undefined,
-  message: string,
-  converter?: (value: T) => R,
-): R | T {
-  if (value === undefined) {
-    throw new Error(message);
-  }
-  return converter ? converter(value) : value;
-}
+export const fromKeychainV1 = (input: KeychainV1): Keychain => {
+  assertRequired(input.name, "Keychain name is undefined");
 
-export const fromKeychainV1 = (input: KeychainV1): Keychain => ({
-  createdAt: new Date(input.createdAt),
-  description: input.description,
-  id: unsafeBrandId(input.id),
-  keys: input.keys.map(fromKeychainKeyV1),
-  kind: fromKeychainKindV1(input.kind),
-  name: throwIfMissing(input.name, "Keychain name is undefined"),
-  ownerId: unsafeBrandId(input.ownerId),
-  purposes: input.purposes.map(unsafeBrandId<PurposeId>),
-  users: input.users.map(unsafeBrandId<UserId>),
-});
+  return {
+    createdAt: new Date(input.createdAt),
+    description: input.description,
+    id: unsafeBrandId(input.id),
+    keys: input.keys.map(fromKeychainKeyV1),
+    kind: fromKeychainKindV1(input.kind),
+    name: input.name,
+    ownerId: unsafeBrandId(input.ownerId),
+    purposes: input.purposes.map(unsafeBrandId<PurposeId>),
+    updatedAt: new Date(input.updatedAt),
+    users: input.users.map(unsafeBrandId<UserId>),
+  };
+};
 
-const fromKeychainKeyV1 = (input: KeychainKeyV1): KeychainKey => ({
-  algorithm: input.algorithm,
-  createdAt: new Date(input.createdAt),
-  encodedPem: input.encodedPem,
-  format: fromKeyFormatV1(input.format),
-  kid: input.kid,
-  name: throwIfMissing(input.name, "Key name is undefined"),
-  use: fromKeyUseV1(input.use),
-  userId: unsafeBrandId(input.userId),
-});
+const fromKeychainKeyV1 = (input: KeychainKeyV1): KeychainKey => {
+  assertRequired(input.name, "Key name is undefined");
+
+  return {
+    algorithm: input.algorithm,
+    createdAt: new Date(input.createdAt),
+    encodedPem: input.encodedPem,
+    format: fromKeyFormatV1(input.format),
+    kid: input.kid,
+    name: input.name,
+    use: fromKeyUseV1(input.use),
+    userId: unsafeBrandId(input.userId),
+  };
+};
 
 const fromKeyUseV1 = (input: KeyUseV1): KeyUse =>
   match(input)

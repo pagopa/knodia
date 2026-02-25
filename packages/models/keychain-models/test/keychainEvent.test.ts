@@ -30,6 +30,7 @@ describe("KeychainEventV1 codec", () => {
     name: { en: "Test Keychain" },
     ownerId: generateId(),
     purposes: [generateId()],
+    updatedAt: new Date(1),
     users: [generateId()],
   };
 
@@ -37,7 +38,6 @@ describe("KeychainEventV1 codec", () => {
     const event: KeychainEventV1 = {
       data: {
         keychain: toKeychainV1(keychain),
-        keychainId: keychain.id,
       },
       type: "KeychainCreated",
     };
@@ -53,7 +53,6 @@ describe("KeychainEventV1 codec", () => {
     const codec = protobufBinaryCodec(KeychainCreatedV1);
     const value = {
       keychain: toKeychainV1(keychain),
-      keychainId: generateId(),
     };
     const bytes = codec.encode(value);
     expect(bytes).toBeInstanceOf(Uint8Array);
@@ -66,7 +65,6 @@ describe("KeychainEventV1 codec", () => {
     const event: KeychainEventV1 = {
       data: {
         keychain: toKeychainV1(keychain),
-        keychainId: keychain.id,
       },
       type: "KeychainCreated",
     };

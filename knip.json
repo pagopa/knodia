@@ -1,6 +1,13 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "includeEntryExports": true,
+  "ignoreWorkspaces": [
+    "packages/models/keychain-models",
+    "packages/db/readmodel/keychain"
+  ],
+  "ignoreIssues": {
+    "packages/models/common-models/src/brandedIds.ts": ["exports", "types"]
+  },
   "workspaces": {
     ".": {
       "ignore": ["scripts/local-kms/kms-setup.mjs"]
