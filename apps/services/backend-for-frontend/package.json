@@ -22,7 +22,6 @@
     "typescript": "catalog:"
   },
   "dependencies": {
-    "@aws-sdk/client-kms": "catalog:",
     "@dotenvx/dotenvx": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
