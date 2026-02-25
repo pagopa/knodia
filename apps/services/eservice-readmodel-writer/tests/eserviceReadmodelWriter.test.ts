@@ -8,11 +8,7 @@ import {
   toEserviceV1,
 } from "@knodia/eservice-models";
 import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
-import {
-  getAllEservices,
-  getMockEservice,
-  toExpectEservice,
-} from "@knodia/test-commons/utils";
+import { getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -22,6 +18,7 @@ import {
   readmodelDb,
   topicName,
 } from "./setup.ts";
+import { getAllEservices } from "./utils.ts";
 
 describe("E-service read model writer tests", async () => {
   it("EserviceVersionActivatedV1", async () => {
