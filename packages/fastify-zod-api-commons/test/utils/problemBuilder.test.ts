@@ -451,7 +451,7 @@ describe("makeApiProblemBuilder", () => {
     });
   });
 
-  describe("AxiosError non conforme a API_Problem", () => {
+  describe("AxiosError not conform a API_Problem", () => {
     it("does not enter the passthrough branch and falls back to generic", () => {
       mockContextValues();
 
@@ -460,7 +460,7 @@ describe("makeApiProblemBuilder", () => {
         message: "Request failed",
         name: "AxiosError",
         response: {
-          data: { foo: "bar" }, // shape non conforme ad API_Problem
+          data: { foo: "bar" },
           status: 400,
         },
         toJSON: () => ({}),
