@@ -21,10 +21,10 @@ export type UserId = z.infer<typeof UserId>;
 export const AgreementId = z.uuid().brand<"AgreementId">();
 export type AgreementId = z.infer<typeof AgreementId>;
 
-export const ExternalId = <B extends string>() =>
-  z.uuid().brand<`ExternalId:${B}`>();
-export type ExternalId<B extends string> = z.infer<
-  ReturnType<typeof ExternalId<B>>
+export const ExternalId = <T extends string>() =>
+  z.uuid().brand<`ExternalId:${T}`>();
+export type ExternalId<T extends string> = z.infer<
+  ReturnType<typeof ExternalId<T>>
 >;
 
 type IDS =
