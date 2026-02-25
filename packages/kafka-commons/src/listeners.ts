@@ -17,7 +17,7 @@ export function errorEventsListener(
     process.on(type, async (e) => {
       try {
         logger.error(`Error ${type} intercepted; Error detail: ${e}`);
-        await consumerOrProducer.disconnect().finally(() => {
+        await consumerOrProducer.disconnect().then(() => {
           logger.debug("Disconnected successfully");
         });
       } catch (e) {
@@ -33,12 +33,12 @@ export function errorEventsListener(
   signalTraps.forEach((type) => {
     process.once(type, async () => {
       try {
-        await consumerOrProducer.disconnect().finally(() => {
-          logger.debug("Disconnected successfully");
-          processExit({ logger });
-        });
+        await consumerOrProducer.disconnect();
+        logger.debug("Disconnected successfully");
+      } catch (err) {
+        logger.error(`Error during disconnect on ${type}: ${err}`);
       } finally {
-        process.kill(process.pid, type);
+        processExit({ logger });
       }
     });
   });
