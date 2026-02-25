@@ -5,6 +5,7 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
@@ -24,8 +25,11 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     eserviceProcessUrl: config.eserviceProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
+
   const fileManager = initFileManager();
-  const authService = authServiceBuilder();
+  const tokenGenerator = tokenGeneratorBuilder();
+  const authService = authServiceBuilder(tokenGenerator);
+
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {

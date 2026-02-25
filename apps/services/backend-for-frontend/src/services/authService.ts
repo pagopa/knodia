@@ -2,7 +2,7 @@ import { UserRole } from "@knodia/common-models/auth";
 import { OrganizationId, UserId } from "@knodia/common-models/ids";
 import { NonEmptyArray } from "@knodia/common-models/types";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
-import { tokenGeneratorBuilder } from "@knodia/token-generator";
+import { type TokenGenerator } from "@knodia/token-generator";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import z from "zod";
 
@@ -20,10 +20,8 @@ const ClaimsFromCognito = z.object({
 });
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
-export function authServiceBuilder() {
+export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
-
-  const tokenGenerator = tokenGeneratorBuilder();
 
   async function verifyCognitoJwt(token: string): Promise<unknown> {
     try {

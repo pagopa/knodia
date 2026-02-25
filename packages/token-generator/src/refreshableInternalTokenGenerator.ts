@@ -2,6 +2,7 @@ import type { InternalToken } from "./models.ts";
 
 import {
   type InternalTokenInput,
+  type TokenGenerator,
   tokenGeneratorBuilder,
 } from "./tokenGenerator.ts";
 
@@ -13,7 +14,7 @@ export type RefreshableInternalTokenGenerator = ReturnType<
 
 export function refreshableInternalTokenGenerator(
   input: InternalTokenInput,
-  tokenGenerator?: ReturnType<typeof tokenGeneratorBuilder>,
+  tokenGenerator?: TokenGenerator,
 ) {
   const generator = tokenGenerator ?? tokenGeneratorBuilder();
   let token: InternalToken | null = null;
