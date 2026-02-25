@@ -25,7 +25,7 @@ if (type !== "ui-session" && type !== "internal") {
   process.exit(1);
 }
 
-const keyAlias = "knodia";
+const KID = "alias/local-knodia-key";
 
 const kmsClient = new KMSClient({
   endpoint: KMS_ENDPOINT,
@@ -36,7 +36,7 @@ const kmsClient = new KMSClient({
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
 const header = b64url(
-  JSON.stringify({ alg: "RS256", typ: "JWT", kid: `local-${keyAlias}-key` })
+  JSON.stringify({ alg: "RS256", typ: "JWT", kid: KID })
 );
 
 const now = Math.floor(Date.now() / 1000);
@@ -60,7 +60,7 @@ const payload = b64url(
     aud: `local.knodia.test/${type}`,
     exp: now + 3600,
     iat: now,
-    iss: `local-${keyAlias}`,
+    iss: "local-knodia",
     jti: randomUUID(),
   })
 );
@@ -70,7 +70,7 @@ const digest = createHash("sha256").update(message).digest();
 
 const { Signature } = await kmsClient.send(
   new SignCommand({
-    KeyId: `alias/local-${keyAlias}-key`,
+    KeyId: KID,
     Message: digest,
     MessageType: "DIGEST",
     SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
