@@ -21,6 +21,7 @@ const FrontendNode1Config = z.object({
   BFF_URL: z.string().min(1, "BFF_URL is required"),
   COGNITO_AUTHORITY: z.string().min(1, "COGNITO_AUTHORITY is required"),
   COGNITO_CLIENT_ID: z.string().min(1, "COGNITO_CLIENT_ID is required"),
+  COGNITO_DOMAIN: z.string().min(1, "COGNITO_DOMAIN is required"),
   COGNITO_POST_LOGOUT_REDIRECT_URI: z
     .string()
     .min(1, "COGNITO_POST_LOGOUT_REDIRECT_URI is required"),
@@ -42,6 +43,7 @@ export const config = {
   cognito: {
     authority: parsed.data.COGNITO_AUTHORITY,
     clientId: parsed.data.COGNITO_CLIENT_ID,
+    domain: parsed.data.COGNITO_DOMAIN,
     postLogoutRedirectUri: parsed.data.COGNITO_POST_LOGOUT_REDIRECT_URI,
     redirectUri: parsed.data.COGNITO_REDIRECT_URI,
   },
