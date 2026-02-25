@@ -15,8 +15,7 @@ export function toCatalogSearchResultUI(
   return {
     categories: result.categories,
     description: result.description.en,
-    // TODO: use result.hasRequiredAttributes
-    hasRequiredAttributes: true,
+    hasRequiredAttributes: result.hasRequiredAttributes,
     id: result.id,
     mode: result.mode,
     name: result.name.en,
