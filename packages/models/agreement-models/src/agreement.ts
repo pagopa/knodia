@@ -12,7 +12,7 @@ export const AgreementState = z.enum(["Active", "Suspended", "Archived"]);
 export type AgreementState = z.infer<typeof AgreementState>;
 
 export const Agreement = z.strictObject({
-  consumerId: OrganizationId.or(ExternalId(OrganizationId)),
+  consumerId: OrganizationId.or(ExternalId<OrganizationId>()),
   createdAt: z.coerce.date(),
   eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,
