@@ -18,7 +18,7 @@ export type OrganizationId = z.infer<typeof OrganizationId>;
 export const UserId = z.uuid().brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 
-export const KnodeId = z.uuid().brand<"KnodeId">();
+export const KnodeId = z.enum(["Orion", "Lynx"]).brand<"KnodeId">();
 export type KnodeId = z.infer<typeof KnodeId>;
 
 export const AgreementId = z.uuid().brand<"AgreementId">();

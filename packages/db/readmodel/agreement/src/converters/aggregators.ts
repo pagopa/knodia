@@ -1,7 +1,11 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { Agreement, AgreementState } from "@knodia/agreement-models";
-import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  type AgreementId,
+  KnodeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import {
   aggregateByPKString,
   throwIfMultipleOrEmpty,
@@ -38,7 +42,7 @@ const buildAgreement = ({
   const agreement: Agreement = {
     consumer: {
       id: unsafeBrandId(agreementSQL.consumerId),
-      knodeId: unsafeBrandId(agreementSQL.consumerKnodeId),
+      knodeId: KnodeId.parse(agreementSQL.consumerKnodeId),
     },
     createdAt: new Date(agreementSQL.createdAt),
     eserviceId: unsafeBrandId(agreementSQL.eserviceId),
