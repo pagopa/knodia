@@ -1,10 +1,16 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import type z from "zod";
 
-import { type Eservice } from "@knodia/eservice-models";
+import {
+  type Eservice,
+  EserviceVersion,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
+import { zocker } from "zocker";
 
 import type {
   API_GetCatalogEserviceSearchParams,
@@ -24,63 +30,89 @@ describe("POST /catalog (getCatalogEservices)", () => {
   const eserviceWithCategory = mockEservices.at(3);
   const eserviceCategory = eserviceWithCategory?.categories.at(0);
 
-  if (!eserviceCategory) {
+  if (!eserviceWithCategory || !eserviceCategory) {
     throw new Error("Missing category for mock e-service at index 3");
   }
 
-  const orderedByUpdatedAtEservicesResult = [
-    mockEservices.at(1)!,
-    mockEservices.at(2)!,
-    mockEservices.at(3)!,
-    mockEservices.at(4)!,
-    mockEservices.at(5)!,
-    mockEservices.at(6)!,
-    mockEservices.at(7)!,
-    mockEservices.at(8)!,
-    mockEservices.at(9)!,
-  ].sort((a, b) => a.updatedAt.getTime() - b.updatedAt.getTime());
+  const withLatestVersionState = (
+    eservice: Eservice,
+    state: EserviceVersion["state"],
+  ): Eservice => ({
+    ...eservice,
+    versions: [
+      zocker(EserviceVersion)
+        .supply(EserviceVersion.shape.state, state)
+        .generate(),
+    ],
+  });
 
-  beforeAll(async () => {
+  const withActiveLatestVersion = (eservice: Eservice): Eservice =>
+    withLatestVersionState(eservice, EserviceVersionState.enum.Active);
+
+  const catalogSeedEservices = [
+    withActiveLatestVersion(mockEservices.at(1)!),
+    withActiveLatestVersion(mockEservices.at(2)!),
+    withActiveLatestVersion(mockEservices.at(3)!),
+    withActiveLatestVersion(mockEservices.at(4)!),
+    withActiveLatestVersion(mockEservices.at(5)!),
+    withActiveLatestVersion(mockEservices.at(6)!),
+    withActiveLatestVersion(mockEservices.at(7)!),
+    withActiveLatestVersion(mockEservices.at(8)!),
+    withActiveLatestVersion(mockEservices.at(9)!),
+  ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
+
+  const seedEservices = async (eservices: Eservice[]) => {
     await Promise.all(
-      mockEservices.map((eservice) =>
+      eservices.map((eservice) =>
         eserviceWriterService.upsertEservice(eservice, 0),
       ),
     );
-  });
+  };
 
   it.each([
     {
       body: { keywords: "other name" },
-      expectedResult: orderedByUpdatedAtEservicesResult.slice(0, 4),
+      expectedResult: catalogSeedEservices.slice(0, 4),
       query: defaultQuery,
-      testCase: "pagination only (1st page), sorted by updatedAt asc",
-      totalCount: orderedByUpdatedAtEservicesResult.length,
+      seedData: catalogSeedEservices,
+      testCase: "pagination only (1st page), sorted by updatedAt desc",
+      totalCount: catalogSeedEservices.length,
     },
     {
       body: { keywords: "other name" },
-      expectedResult: orderedByUpdatedAtEservicesResult.slice(4, 8),
+      expectedResult: catalogSeedEservices.slice(4, 8),
       query: { limit: "4", offset: "4" },
+      seedData: catalogSeedEservices,
       testCase: "pagination only (2nd page), sorted by updatedAt asc",
-      totalCount: orderedByUpdatedAtEservicesResult.length,
+      totalCount: catalogSeedEservices.length,
     },
     {
       body: { keywords: "1 knodia 1" },
-      expectedResult: [mockEservices.at(0)] as Eservice[],
+      expectedResult: [
+        withActiveLatestVersion(mockEservices.at(0)!),
+      ] as Eservice[],
       query: defaultQuery,
+      seedData: [withActiveLatestVersion(mockEservices.at(0)!)],
       testCase: "search by keywords in name",
       totalCount: 1,
     },
     {
       body: { keywords: "2 knodia 2" },
-      expectedResult: [mockEservices.at(1)] as Eservice[],
+      expectedResult: [
+        withActiveLatestVersion(mockEservices.at(1)!),
+      ] as Eservice[],
       query: defaultQuery,
+      seedData: [withActiveLatestVersion(mockEservices.at(1)!)],
       testCase: "search by keywords in description",
       totalCount: 1,
     },
     {
       body: { category: eserviceCategory },
-      expectedResult: [eserviceWithCategory] as Eservice[],
+      expectedResult: [
+        withActiveLatestVersion(eserviceWithCategory),
+      ] as Eservice[],
       query: defaultQuery,
+      seedData: [withActiveLatestVersion(eserviceWithCategory)],
       testCase: "search by category",
       totalCount: 1,
     },
@@ -89,6 +121,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
       body: { keywords: "no match" },
       expectedResult: [] as Eservice[],
       query: defaultQuery,
+      seedData: [withActiveLatestVersion(mockEservices.at(1)!)],
       testCase: "no results",
       totalCount: 0,
     },
@@ -96,11 +129,14 @@ describe("POST /catalog (getCatalogEservices)", () => {
     body: API_GetCatalogEserviceSearchParams;
     expectedResult: Eservice[];
     query: z.input<typeof API_GetCatalogEservicesQueryParams>;
+    seedData: Eservice[];
     testCase: string;
     totalCount: number;
   }[])(
     "should return catalog e-services with correct shape and pagination: $testCase (seed #%#)",
-    async ({ body, expectedResult, query, totalCount }) => {
+    async ({ body, expectedResult, query, seedData, totalCount }) => {
+      await seedEservices(seedData);
+
       const response = await injectAppRequest()
         .post("/catalog")
         .query(query)
@@ -117,6 +153,57 @@ describe("POST /catalog (getCatalogEservices)", () => {
       });
     },
   );
+
+  it("should not include e-services without Active or Suspended versions", async () => {
+    const activeEservice = withLatestVersionState(
+      mockEservices.at(1)!,
+      EserviceVersionState.enum.Active,
+    );
+    const suspendedEservice = withLatestVersionState(
+      mockEservices.at(2)!,
+      EserviceVersionState.enum.Suspended,
+    );
+    const archivedOnlyEservice = withLatestVersionState(
+      mockEservices.at(3)!,
+      EserviceVersionState.enum.Archived,
+    );
+
+    await seedEservices([
+      activeEservice,
+      suspendedEservice,
+      archivedOnlyEservice,
+    ]);
+
+    const expectedResult = [activeEservice, suspendedEservice].sort(
+      (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
+    );
+
+    const response = await injectAppRequest()
+      .post("/catalog")
+      .query(defaultQuery)
+      .body({ keywords: "other name" });
+
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    const returnedIds = body.items.map(
+      (item: { id: string }): string => item.id,
+    );
+
+    expect(body.pagination).toEqual({
+      limit: Number(defaultQuery.limit),
+      offset: Number(defaultQuery.offset),
+      total: 2,
+    });
+    expect(returnedIds).toContain(activeEservice.id);
+    expect(returnedIds).toContain(suspendedEservice.id);
+    expect(returnedIds).not.toContain(archivedOnlyEservice.id);
+    expect(body.items).toHaveLength(2);
+    expect(body.items).toEqual(
+      expect.arrayContaining(
+        expectedResult.map((e) => toExpectAPI_Eservice(e)),
+      ),
+    );
+  });
 
   it.each([
     { body: { keywords: "other name" }, query: { limit: "abc", offset: "0" } },

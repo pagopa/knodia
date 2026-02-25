@@ -28,7 +28,11 @@ import {
   toEserviceVersionInterface,
 } from "@knodia/db-readmodel-eservice/converters";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
-import { type Eservice, EserviceInterface } from "@knodia/eservice-models";
+import {
+  type Eservice,
+  EserviceInterface,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
 import type {
@@ -71,7 +75,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
           sortBy: "updatedAt",
-          sortOrder: "asc",
+          sortOrder: "desc",
           table: readmodelEservice,
         });
 
@@ -88,7 +92,13 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               readmodelEserviceCategory,
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
             )
-            .innerJoinLateral(latestEserviceVersion, sql`true`)
+            .innerJoinLateral(
+              latestEserviceVersion,
+              inArray(latestEserviceVersion.state, [
+                EserviceVersionState.enum.Active,
+                EserviceVersionState.enum.Suspended,
+              ]),
+            )
             .where(
               and(
                 category

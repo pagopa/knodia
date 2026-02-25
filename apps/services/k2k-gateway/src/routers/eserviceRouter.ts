@@ -33,13 +33,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         [CORRELATION_ID_HEADER]: correlationId,
       };
 
-      const { data } = await eserviceProcessApi.getEservices({
+      const { data } = await eserviceProcessApi.getCatalogEservices({
+        body: req.body,
         client: eserviceProcessClient,
         headers,
-        query: {
-          limit: req.query.limit,
-          offset: req.query.offset,
-        },
+        query: req.query,
       });
 
       async function enrichWithLatestVersionAndMapToAPIResult(
