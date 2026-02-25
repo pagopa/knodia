@@ -1,4 +1,5 @@
 import type {
+  InternalTokenClaims,
   KnodiaTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
@@ -26,8 +27,21 @@ export function createTestTokenPayload(
 ): string {
   const claims = match(type)
     .with("ui-session", getTestUISessionTokenClaims)
+    .with("internal", getTestInternalTokenClaims)
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
+}
+
+export function getTestInternalTokenClaims(): InternalTokenClaims {
+  return {
+    aud: "test-audience",
+    exp: 9999999999,
+    iat: 0,
+    iss: "test-issuer",
+    jti: "test-jti",
+    sub: "test-internal-service",
+    type: "internal",
+  };
 }
 
 function getTestUISessionTokenClaims(): UISessionTokenClaims {

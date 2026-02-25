@@ -32,6 +32,7 @@
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
+    "@knodia/token-generator": "workspace:*",
     "fastify": "catalog:",
     "jose": "catalog:",
     "fastify-type-provider-zod": "catalog:",

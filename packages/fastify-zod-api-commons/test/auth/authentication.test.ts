@@ -1,4 +1,7 @@
-import type { UISessionTokenClaims } from "@knodia/common-models/auth";
+import type {
+  InternalTokenClaims,
+  UISessionTokenClaims,
+} from "@knodia/common-models/auth";
 
 import fastifyRequestContext from "@fastify/request-context";
 import { requestContext } from "@fastify/request-context";
@@ -76,25 +79,35 @@ describe("parseAuthHeaderToken", () => {
   });
 });
 
+const userId = generateId<UserId>();
+const organizationId = generateId<OrganizationId>();
+
+const validUISessionPayload: UISessionTokenClaims = {
+  aud: "test-audience",
+  exp: 9999999999,
+  iat: 0,
+  iss: "test-issuer",
+  jti: "test-jti",
+  organizationId,
+  roles: ["administrative"],
+  sub: userId,
+  type: "ui-session",
+};
+
+const validInternalPayload: InternalTokenClaims = {
+  aud: "test-audience",
+  exp: 9999999999,
+  iat: 0,
+  iss: "test-issuer",
+  jti: "test-jti",
+  sub: "test-internal-service",
+  type: "internal",
+};
+
+const docsTestRoute = `${docsRoutePrefix}/test`;
+
 describe("authenticationPlugin", () => {
-  const userId = generateId<UserId>();
-  const organizationId = generateId<OrganizationId>();
-
-  const validPayload: UISessionTokenClaims = {
-    aud: "test-audience",
-    exp: 9999999999,
-    iat: 0,
-    iss: "test-issuer",
-    jti: "test-jti",
-    organizationId,
-    roles: ["administrative"],
-    sub: userId,
-    type: "ui-session",
-  };
-
   let app: Awaited<ReturnType<typeof buildTestApp>>;
-
-  const docsTestRoute = `${docsRoutePrefix}/test`;
 
   beforeAll(async () => {
     app = await buildTestApp(["https://example.com/.well-known/jwks.json"]);
@@ -112,147 +125,174 @@ describe("authenticationPlugin", () => {
     await app.close();
   });
 
-  it("bypasses auth for the health status route", async () => {
-    const response = await app.inject({ method: "GET", url: healthRouterUrl });
+  describe("route bypass", () => {
+    it("bypasses auth for the health status route", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: healthRouterUrl,
+      });
 
-    expect(response.statusCode).toBe(200);
-  });
-
-  it("bypasses auth for routes under the /docs prefix", async () => {
-    const response = await app.inject({
-      method: "GET",
-      url: docsTestRoute,
+      expect(response.statusCode).toBe(200);
     });
 
-    expect(response.statusCode).toBe(200);
-  });
+    it("bypasses auth for routes under the /docs prefix", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: docsTestRoute,
+      });
 
-  it("returns 401 when the Authorization header is missing", async () => {
-    const response = await app.inject({ method: "GET", url: "/protected" });
-
-    expect(response.statusCode).toBe(401);
-  });
-
-  it("returns 401 when the Authorization header is not a Bearer token", async () => {
-    const response = await app.inject({
-      headers: { authorization: "Basic abc123" },
-      method: "GET",
-      url: "/protected",
-    });
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toContain("Missing or invalid Authorization header");
-  });
-
-  it("returns 401 when token verification fails on all JWKS sets", async () => {
-    jwtVerify.mockRejectedValueOnce(new Error("invalid signature"));
-
-    const response = await app.inject({
-      headers: { authorization: "Bearer bad-token" },
-      method: "GET",
-      url: "/protected",
-    });
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toContain("Token verification failed");
-  });
-
-  it("returns 401 when the verified payload does not match KnodiaTokenClaims", async () => {
-    jwtVerify.mockResolvedValueOnce({
-      payload: { sub: userId, tokenType: "unknown" },
-    });
-
-    const response = await app.inject({
-      headers: { authorization: "Bearer bad-claims-token" },
-      method: "GET",
-      url: "/protected",
-    });
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toContain("Invalid token claims");
-  });
-
-  it("returns 401 when roles array is empty", async () => {
-    jwtVerify.mockResolvedValueOnce({
-      payload: { ...validPayload, roles: [] },
-    });
-
-    const response = await app.inject({
-      headers: { authorization: "Bearer empty-roles-token" },
-      method: "GET",
-      url: "/protected",
-    });
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toContain("Invalid token claims");
-  });
-
-  it("returns 401 when roles array contains an invalid value", async () => {
-    jwtVerify.mockResolvedValueOnce({
-      payload: { ...validPayload, roles: ["invalid-role"] },
-    });
-
-    const response = await app.inject({
-      headers: { authorization: "Bearer invalid-role-token" },
-      method: "GET",
-      url: "/protected",
-    });
-
-    expect(response.statusCode).toBe(401);
-    expect(response.body).toContain("Invalid token claims");
-  });
-
-  it("sets authData in context when token is valid", async () => {
-    jwtVerify.mockResolvedValueOnce({ payload: validPayload });
-
-    const response = await app.inject({
-      headers: { authorization: "Bearer valid-token" },
-      method: "GET",
-      url: "/protected",
-    });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({
-      authData: {
-        organizationId,
-        tokenType: "ui-session",
-        userId,
-        userRoles: ["administrative"],
-      },
+      expect(response.statusCode).toBe(200);
     });
   });
 
-  it("succeeds using the first valid JWKS when multiple are configured", async () => {
-    const multiJwksApp = await buildTestApp([
-      "https://primary.example.com/.well-known/jwks.json",
-      "https://secondary.example.com/.well-known/jwks.json",
-    ]);
-    multiJwksApp.get("/protected", async () => ({
-      authData: requestContext.get("authData"),
-    }));
-    await multiJwksApp.ready();
+  describe("rejection", () => {
+    it("returns 401 when the Authorization header is missing", async () => {
+      const response = await app.inject({ method: "GET", url: "/protected" });
 
-    // First JWKS fails, second succeeds
-    jwtVerify
-      .mockRejectedValueOnce(new Error("key not found"))
-      .mockResolvedValueOnce({ payload: validPayload });
-
-    const response = await multiJwksApp.inject({
-      headers: { authorization: "Bearer fallback-token" },
-      method: "GET",
-      url: "/protected",
+      expect(response.statusCode).toBe(401);
     });
 
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toMatchObject({
-      authData: {
-        organizationId,
-        tokenType: "ui-session",
-        userId,
-        userRoles: ["administrative"],
-      },
+    it("returns 401 when the Authorization header is not a Bearer token", async () => {
+      const response = await app.inject({
+        headers: { authorization: "Basic abc123" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toContain(
+        "Missing or invalid Authorization header",
+      );
     });
 
-    await multiJwksApp.close();
+    it("returns 401 when token verification fails on all JWKS sets", async () => {
+      jwtVerify.mockRejectedValueOnce(new Error("invalid signature"));
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer bad-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toContain("Token verification failed");
+    });
+
+    it("returns 401 when the verified payload does not match KnodiaTokenClaims", async () => {
+      jwtVerify.mockResolvedValueOnce({
+        payload: { sub: userId, tokenType: "unknown" },
+      });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer bad-claims-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toContain("Invalid token claims");
+    });
+
+    it("returns 401 when roles array is empty", async () => {
+      jwtVerify.mockResolvedValueOnce({
+        payload: { ...validUISessionPayload, roles: [] },
+      });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer empty-roles-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toContain("Invalid token claims");
+    });
+
+    it("returns 401 when roles array contains an invalid value", async () => {
+      jwtVerify.mockResolvedValueOnce({
+        payload: { ...validUISessionPayload, roles: ["invalid-role"] },
+      });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer invalid-role-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.body).toContain("Invalid token claims");
+    });
+  });
+
+  describe("valid tokens", () => {
+    it("sets authData in context when ui-session token is valid", async () => {
+      jwtVerify.mockResolvedValueOnce({ payload: validUISessionPayload });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer valid-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        authData: {
+          organizationId,
+          tokenType: "ui-session",
+          userId,
+          userRoles: ["administrative"],
+        },
+      });
+    });
+
+    it("sets authData in context when internal token is valid", async () => {
+      jwtVerify.mockResolvedValueOnce({ payload: validInternalPayload });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer internal-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        authData: {
+          tokenType: "internal",
+        },
+      });
+    });
+
+    it("succeeds using the first valid JWKS when multiple are configured", async () => {
+      const multiJwksApp = await buildTestApp([
+        "https://primary.example.com/.well-known/jwks.json",
+        "https://secondary.example.com/.well-known/jwks.json",
+      ]);
+      multiJwksApp.get("/protected", async () => ({
+        authData: requestContext.get("authData"),
+      }));
+      await multiJwksApp.ready();
+
+      jwtVerify
+        .mockRejectedValueOnce(new Error("key not found"))
+        .mockResolvedValueOnce({ payload: validUISessionPayload });
+
+      const response = await multiJwksApp.inject({
+        headers: { authorization: "Bearer fallback-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        authData: {
+          organizationId,
+          tokenType: "ui-session",
+          userId,
+          userRoles: ["administrative"],
+        },
+      });
+
+      await multiJwksApp.close();
+    });
   });
 });

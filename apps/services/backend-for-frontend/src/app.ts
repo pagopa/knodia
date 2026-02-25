@@ -10,10 +10,10 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { authRouter } from "./routers/authorizationRouter.ts";
+import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
-import { authorizationServiceBuilder } from "./services/authorizationService.ts";
+import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   return buildApp({ config });
@@ -25,7 +25,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
   const fileManager = initFileManager();
-  const tokenService = authorizationServiceBuilder();
+  const authService = authServiceBuilder();
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -56,7 +56,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
 
   // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(authRouter, { authorizationService: tokenService });
+  app.register(authRouter, { authService: authService });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
