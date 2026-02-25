@@ -5,5 +5,5 @@ import { eventStoreEserviceConfig } from "./config/config.ts";
 export default {
   ...drizzleKitConfig(eventStoreEserviceConfig),
   schemaFilter: [eventStoreEserviceConfig.eventStoreDbEserviceSchema],
-  tablesFilter: ["!flyway_schema_history_eservice"],
+  tablesFilter: ["!flyway_schema_history"],
 };
