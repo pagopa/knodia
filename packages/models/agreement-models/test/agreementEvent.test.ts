@@ -17,6 +17,14 @@ describe("AgreementEventV1 codec", () => {
     eserviceVersionId: generateId(),
     id: generateId(),
     producerId: generateId(),
+    requiredAttributes: [
+      [
+        {
+          code: "CODE",
+          scheme: "ATTR",
+        },
+      ],
+    ],
     state: "Active",
     updatedAt: new Date(1),
   };

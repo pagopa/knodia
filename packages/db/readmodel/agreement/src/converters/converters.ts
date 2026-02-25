@@ -1,24 +1,24 @@
-// import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type {
+  RequiredAttribute,
+  RequiredAttributeGroup,
+} from "@knodia/attribute-models";
 
-// import { type Agreement, AgreementState } from "@knodia/agreement-models";
-// import { unsafeBrandId } from "@knodia/common-models/ids";
+import type { AgreementRequiredAttributeSQL } from "../agreement.ts";
 
-// import type { AgreementSQL } from "../agreement.ts";
+export const toGroupedRequiredAttributes = (
+  requiredAttributesSQL: AgreementRequiredAttributeSQL[],
+): RequiredAttributeGroup[] => {
+  const groupsMap = new Map<number, RequiredAttribute[]>();
 
-// export const toAgreement = (
-//   agreementSQL: AgreementSQL,
-// ): WithMetadata<Agreement> => ({
-//   data: {
-//     consumerId: unsafeBrandId(agreementSQL.consumerId),
-//     createdAt: new Date(agreementSQL.createdAt),
-//     eserviceId: unsafeBrandId(agreementSQL.eserviceId),
-//     eserviceVersionId: unsafeBrandId(agreementSQL.eserviceVersionId),
-//     id: unsafeBrandId(agreementSQL.id),
-//     producerId: unsafeBrandId(agreementSQL.producerId),
-//     state: AgreementState.parse(agreementSQL.state),
-//     updatedAt: new Date(agreementSQL.updatedAt),
-//   },
-//   metadata: {
-//     version: agreementSQL.metadataVersion,
-//   },
-// });
+  for (const attribute of requiredAttributesSQL) {
+    const group = groupsMap.get(attribute.groupId) ?? [];
+    group.push({ code: attribute.code, scheme: attribute.scheme });
+    groupsMap.set(attribute.groupId, group);
+  }
+
+  const sortedGroups = Array.from(groupsMap.entries())
+    .sort(([groupId1], [groupId2]) => groupId1 - groupId2)
+    .map(([, attributes]) => attributes);
+
+  return sortedGroups;
+};

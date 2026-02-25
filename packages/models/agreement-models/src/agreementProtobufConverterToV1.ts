@@ -1,8 +1,14 @@
+import type { RequiredAttributeGroup } from "@knodia/attribute-models";
+
 import { match } from "ts-pattern";
 
 import type { Agreement, AgreementState } from "./agreement.ts";
 
-import { AgreementStateV1, AgreementV1 } from "./generated/v1/agreement.js";
+import {
+  AgreementRequiredAttributeGroupV1,
+  AgreementStateV1,
+  AgreementV1,
+} from "./generated/v1/agreement.js";
 
 const toAgreementStateV1 = (state: AgreementState): AgreementStateV1 =>
   match(state)
@@ -14,6 +20,17 @@ const toAgreementStateV1 = (state: AgreementState): AgreementStateV1 =>
 export const toAgreementV1 = (agreement: Agreement): AgreementV1 => ({
   ...agreement,
   createdAt: agreement.createdAt.getTime(),
+  requiredAttributes: agreement.requiredAttributes.map(
+    toAgreementRequiredAttributeGroupV1,
+  ),
   state: toAgreementStateV1(agreement.state),
   updatedAt: agreement.updatedAt.getTime(),
+});
+
+const toAgreementRequiredAttributeGroupV1 = (
+  group: RequiredAttributeGroup,
+  index: number,
+): AgreementRequiredAttributeGroupV1 => ({
+  attributes: group,
+  groupId: index,
 });

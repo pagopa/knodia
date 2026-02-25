@@ -1,6 +1,9 @@
 import {
   bigint,
+  foreignKey,
+  integer,
   pgSchema,
+  primaryKey,
   text,
   timestamp,
   unique,
@@ -38,3 +41,41 @@ export const readmodelAgreement = agreementSchema.table(
     ),
   ],
 );
+
+export const readmodelAgreementRequiredAttribute = agreementSchema.table(
+  "agreement_required_attribute",
+  {
+    agreementId: uuid("agreement_id").notNull(),
+    code: text().notNull(),
+    groupId: integer("group_id").notNull(),
+    metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
+    scheme: text().notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.agreementId],
+      foreignColumns: [readmodelAgreement.id],
+      name: "agreement_req_attribute_agreement_id_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [table.agreementId, table.metadataVersion],
+      foreignColumns: [
+        readmodelAgreement.id,
+        readmodelAgreement.metadataVersion,
+      ],
+      name: "agreement_req_attribute_agreement_id_metadata_v_fkey",
+    }),
+    primaryKey({
+      columns: [table.code, table.agreementId, table.groupId, table.scheme],
+      name: "agreement_req_attribute_pk",
+    }),
+  ],
+);
+
+export interface AgreementItemsSQL {
+  agreementSQL: AgreementSQL;
+  requiredAttributesSQL: AgreementRequiredAttributeSQL[];
+}
+export type AgreementRequiredAttributeSQL =
+  typeof readmodelAgreementRequiredAttribute.$inferSelect;
+export type AgreementSQL = typeof readmodelAgreement.$inferSelect;
