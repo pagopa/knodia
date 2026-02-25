@@ -27,8 +27,8 @@ const maxDailyCallsFormSchema = z
       ctx.addIssue({
         code: "custom",
         message:
-          "Max daily calls per node must be greater than or equal to max daily calls per consumer.",
-        path: ["maxDailyCallsPerKnode"],
+          "Max API calls per consumer cannot exceed max API calls per Knode.",
+        path: ["maxDailyCallsPerConsumer"],
       });
     }
   });
