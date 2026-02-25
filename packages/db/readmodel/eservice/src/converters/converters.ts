@@ -1,10 +1,10 @@
+import type {
+  RequiredAttribute,
+  RequiredAttributeGroup,
+} from "@knodia/attribute-models";
+
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import {
-  EserviceInterface,
-  LocalizedName,
-  type RequiredAttribute,
-  type RequiredAttributeGroup,
-} from "@knodia/eservice-models";
+import { EserviceInterface, LocalizedName } from "@knodia/eservice-models";
 
 import type {
   EserviceInterfaceSQL,
