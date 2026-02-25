@@ -27,7 +27,9 @@ const catalogQuery = (
     query: { limit: CATALOG_SEARCH_LIMIT, offset },
   });
 
-export const Route = createFileRoute("/consumption/e-services_/search")({
+export const Route = createFileRoute(
+  "/_authenticated/consumption/e-services_/search",
+)({
   component: RouteComponent,
   loaderDeps: ({ search }) => search,
   // eslint-disable-next-line perfectionist/sort-objects

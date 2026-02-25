@@ -24,8 +24,8 @@
     "test": "turbo run generate-artifacts && vitest run"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
     "@aws-sdk/client-kms": "catalog:",
+    "@types/node": "catalog:",
     "knip": "catalog:",
     "turbo": "catalog:",
     "vitest": "catalog:"

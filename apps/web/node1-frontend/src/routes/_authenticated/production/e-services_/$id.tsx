@@ -22,7 +22,9 @@ const eserviceQuery = (eserviceId: string) =>
     path: { eserviceId },
   });
 
-export const Route = createFileRoute("/production/e-services_/$id")({
+export const Route = createFileRoute(
+  "/_authenticated/production/e-services_/$id",
+)({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
     await queryClient.ensureQueryData({
