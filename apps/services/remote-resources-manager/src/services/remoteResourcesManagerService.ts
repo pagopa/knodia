@@ -26,6 +26,7 @@ export function remoteResourcesManagerServiceBuilder(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,
       { correlationId, logger }: RequestContextData,
+      authorization: string | undefined,
     ): Promise<API_CatalogEserviceSearchResults> {
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
 
@@ -38,6 +39,7 @@ export function remoteResourcesManagerServiceBuilder(
         body: bodyWithoutKnodeId,
         client: k2kGatewayClient,
         headers: {
+          Authorization: authorization,
           [CORRELATION_ID_HEADER]: correlationId,
         },
         query: reqQuery,

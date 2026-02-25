@@ -34,6 +34,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       );
 
       const headers = {
+        Authorization: req.headers.authorization,
         [CORRELATION_ID_HEADER]: correlationId,
       };
 
