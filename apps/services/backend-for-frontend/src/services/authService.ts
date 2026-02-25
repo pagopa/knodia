@@ -1,4 +1,4 @@
-import { UserRole } from "@knodia/common-models/auth";
+import { RefreshTokenClaims, UserRole } from "@knodia/common-models/auth";
 import { OrganizationId, UserId } from "@knodia/common-models/ids";
 import { NonEmptyArray } from "@knodia/common-models/types";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
@@ -22,17 +22,39 @@ type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
 export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
+  const bffJwks = config.wellKnownUrls.map((url) =>
+    createRemoteJWKSet(new URL(url)),
+  );
 
-  async function verifyCognitoJwt(token: string): Promise<unknown> {
-    try {
-      const { payload } = await jwtVerify(token, cognitoJwks, {
-        algorithms: ["RS256"],
-        issuer: config.cognitoIssuer,
-      });
-      return payload;
-    } catch {
-      throw unauthorizedError("Cognito token verification failed");
-    }
+  const tokenParams = {
+    audience: config.uiSessionJwt.audience,
+    issuer: config.uiSessionJwt.issuer,
+    kid: config.uiSessionJwt.kid,
+  };
+
+  async function generateTokenPairFromClaims(
+    claims: ClaimsFromCognito,
+  ): Promise<{ refreshToken: string; uiSessionToken: string }> {
+    const [uiSession, refresh] = await Promise.all([
+      tokenGenerator.generateUISessionToken({
+        ...tokenParams,
+        organizationId: claims.organizationId,
+        roles: claims.roles,
+        secondsDuration: config.uiSessionJwt.secondsDuration,
+        subject: claims.sub,
+      }),
+      tokenGenerator.generateRefreshToken({
+        ...tokenParams,
+        organizationId: claims.organizationId,
+        roles: claims.roles,
+        secondsDuration: config.refreshJwt.secondsDuration,
+        subject: claims.sub,
+      }),
+    ]);
+    return {
+      refreshToken: refresh.serialized,
+      uiSessionToken: uiSession.serialized,
+    };
   }
 
   async function validateCognitoToken(
@@ -77,17 +99,63 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
     return claimsParsed.data;
   }
 
-  return {
-    async generateUISessionToken(cognitoToken: string): Promise<string> {
-      const cognitoClaims = await validateCognitoToken(cognitoToken);
-
-      const token = await tokenGenerator.generateUISessionToken({
-        ...config.uiSessionJwt,
-        organizationId: cognitoClaims.organizationId,
-        roles: cognitoClaims.roles,
-        subject: cognitoClaims.sub,
+  async function verifyCognitoJwt(token: string): Promise<unknown> {
+    try {
+      const { payload } = await jwtVerify(token, cognitoJwks, {
+        algorithms: ["RS256"],
+        issuer: config.cognitoIssuer,
       });
-      return token.serialized;
+      return payload;
+    } catch {
+      throw unauthorizedError("Cognito token verification failed");
+    }
+  }
+
+  async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
+    let rawPayload: unknown = null;
+    for (const jwks of bffJwks) {
+      try {
+        const { payload } = await jwtVerify(token, jwks, {
+          audience: config.acceptedAudiences,
+        });
+        rawPayload = payload;
+        break;
+      } catch {
+        // Try next JWKS set
+      }
+    }
+
+    if (rawPayload === null) {
+      throw unauthorizedError("Refresh token verification failed");
+    }
+
+    const parsed = RefreshTokenClaims.safeParse(rawPayload);
+    if (!parsed.success) {
+      throw unauthorizedError("Invalid refresh token claims");
+    }
+
+    return ClaimsFromCognito.parse({
+      organizationId: parsed.data.organizationId,
+      roles: parsed.data.roles,
+      sub: parsed.data.sub,
+    });
+  }
+
+  return {
+    async generateTokenPair(cognitoToken: string): Promise<{
+      refreshToken: string;
+      uiSessionToken: string;
+    }> {
+      const claims = await validateCognitoToken(cognitoToken);
+      return generateTokenPairFromClaims(claims);
+    },
+
+    async refreshTokenPair(refreshTokenJwt: string): Promise<{
+      refreshToken: string;
+      uiSessionToken: string;
+    }> {
+      const claims = await verifyRefreshToken(refreshTokenJwt);
+      return generateTokenPairFromClaims(claims);
     },
   };
 }

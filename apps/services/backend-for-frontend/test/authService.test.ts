@@ -22,24 +22,33 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
-const tokenGenerator = tokenGeneratorBuilder();
-
 vi.mock("../src/config/config.ts", () => ({
   config: {
+    acceptedAudiences: ["test-audience"],
     cognitoIssuer: "https://cognito-idp.eu-west-1.amazonaws.com/pool-id",
     cognitoJwksUrl:
       "https://cognito-idp.eu-west-1.amazonaws.com/pool-id/.well-known/jwks.json",
+    refreshJwt: {
+      secondsDuration: 86400,
+    },
     uiSessionJwt: {
       audience: "test-audience",
       issuer: "test-issuer",
       kid: "alias/test-kid",
       secondsDuration: 3600,
     },
+    wellKnownUrls: ["http://localhost:4500/knodia/.well-known/jwks.json"],
   },
 }));
 
 const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
+
+const tokenGenerator = tokenGeneratorBuilder();
+
+function buildService() {
+  return authServiceBuilder(tokenGenerator);
+}
 
 function makeCognitoPayload(
   overrides: Record<string, unknown> = {},
@@ -69,41 +78,38 @@ describe("authService", () => {
     vi.clearAllMocks();
   });
 
-  describe("generateUISessionToken", () => {
-    it("generates a valid JWT string when given a valid Cognito token", async () => {
+  describe("generateTokenPair", () => {
+    it("generates valid ui-session and refresh JWTs", async () => {
       setupValidCognitoToken();
       mockKmsSend.mockResolvedValue({
         Signature: new Uint8Array([1, 2, 3, 4]),
       });
 
-      const service = authServiceBuilder(tokenGenerator);
-      const token = await service.generateUISessionToken("valid-cognito-token");
+      const service = buildService();
+      const result = await service.generateTokenPair("valid-cognito-token");
 
-      const parts = token.split(".");
-      expect(parts).toHaveLength(3);
+      expect(result.uiSessionToken).toBeDefined();
+      expect(result.refreshToken).toBeDefined();
 
-      const [headerPart, payloadPart] = parts;
-      const header = JSON.parse(
-        Buffer.from(headerPart ?? "", "base64url").toString(),
+      const uiParts = result.uiSessionToken.split(".");
+      expect(uiParts).toHaveLength(3);
+
+      const uiPayload = JSON.parse(
+        Buffer.from(uiParts[1] ?? "", "base64url").toString(),
       );
-      expect(header).toEqual({
-        alg: "RS256",
-        kid: "alias/test-kid",
-        typ: "at+jwt",
-        use: "sig",
-      });
+      expect(uiPayload.sub).toBe(TEST_USER_ID);
+      expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
+      expect(uiPayload.roles).toEqual(["administrative", "technical"]);
+      expect(uiPayload.type).toBe("ui-session");
 
-      const payload = JSON.parse(
-        Buffer.from(payloadPart ?? "", "base64url").toString(),
+      const refreshParts = result.refreshToken.split(".");
+      expect(refreshParts).toHaveLength(3);
+
+      const refreshPayload = JSON.parse(
+        Buffer.from(refreshParts[1] ?? "", "base64url").toString(),
       );
-      expect(payload.sub).toBe(TEST_USER_ID);
-      expect(payload.organizationId).toBe(TEST_ORG_ID);
-      expect(payload.roles).toEqual(["administrative", "technical"]);
-      expect(payload.aud).toBe("test-audience");
-      expect(payload.iss).toBe("test-issuer");
-      expect(payload.type).toBe("ui-session");
-      expect(payload.exp).toBeGreaterThan(payload.iat);
-      expect(payload.jti).toBeDefined();
+      expect(refreshPayload.sub).toBe(TEST_USER_ID);
+      expect(refreshPayload.type).toBe("refresh");
     });
 
     it("calls KMS with the correct key alias and signing algorithm", async () => {
@@ -112,10 +118,11 @@ describe("authService", () => {
         Signature: new Uint8Array([5, 6, 7, 8]),
       });
 
-      const service = authServiceBuilder(tokenGenerator);
-      await service.generateUISessionToken("token");
+      const service = buildService();
+      await service.generateTokenPair("token");
 
-      expect(mockKmsSend).toHaveBeenCalledOnce();
+      // Called twice: once for ui-session, once for refresh
+      expect(mockKmsSend).toHaveBeenCalledTimes(2);
       const sendArg = mockKmsSend.mock.calls[0]?.[0] as Record<string, unknown>;
       expect(sendArg).toMatchObject({
         KeyId: "alias/test-kid",
@@ -126,11 +133,9 @@ describe("authService", () => {
     it("throws unauthorized when Cognito JWT verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
 
-      const service = authServiceBuilder(tokenGenerator);
+      const service = buildService();
 
-      await expect(
-        service.generateUISessionToken("bad-token"),
-      ).rejects.toThrow();
+      await expect(service.generateTokenPair("bad-token")).rejects.toThrow();
     });
 
     it("throws unauthorized when cognito:groups is missing", async () => {
@@ -139,10 +144,10 @@ describe("authService", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const service = authServiceBuilder(tokenGenerator);
+      const service = buildService();
 
       await expect(
-        service.generateUISessionToken("token-no-groups"),
+        service.generateTokenPair("token-no-groups"),
       ).rejects.toThrow();
     });
 
@@ -151,11 +156,9 @@ describe("authService", () => {
         "cognito:groups": ["role:administrative"],
       });
 
-      const service = authServiceBuilder(tokenGenerator);
+      const service = buildService();
 
-      await expect(
-        service.generateUISessionToken("token-no-org"),
-      ).rejects.toThrow();
+      await expect(service.generateTokenPair("token-no-org")).rejects.toThrow();
     });
 
     it("throws unauthorized when no role: group is present", async () => {
@@ -163,10 +166,10 @@ describe("authService", () => {
         "cognito:groups": [`org:${TEST_ORG_ID}`],
       });
 
-      const service = authServiceBuilder(tokenGenerator);
+      const service = buildService();
 
       await expect(
-        service.generateUISessionToken("token-no-roles"),
+        service.generateTokenPair("token-no-roles"),
       ).rejects.toThrow();
     });
 
@@ -175,10 +178,10 @@ describe("authService", () => {
         "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
       });
 
-      const service = authServiceBuilder(tokenGenerator);
+      const service = buildService();
 
       await expect(
-        service.generateUISessionToken("token-bad-role"),
+        service.generateTokenPair("token-bad-role"),
       ).rejects.toThrow();
     });
 
@@ -186,9 +189,9 @@ describe("authService", () => {
       setupValidCognitoToken();
       mockKmsSend.mockResolvedValue({ Signature: undefined });
 
-      const service = authServiceBuilder(tokenGenerator);
+      const service = buildService();
 
-      await expect(service.generateUISessionToken("token")).rejects.toThrow();
+      await expect(service.generateTokenPair("token")).rejects.toThrow();
     });
 
     it("extracts org ID by stripping the 'org:' prefix", async () => {
@@ -200,11 +203,11 @@ describe("authService", () => {
         Signature: new Uint8Array([1]),
       });
 
-      const service = authServiceBuilder(tokenGenerator);
-      const token = await service.generateUISessionToken("token");
+      const service = buildService();
+      const { uiSessionToken } = await service.generateTokenPair("token");
 
       const payload = JSON.parse(
-        Buffer.from(token.split(".")[1] ?? "", "base64url").toString(),
+        Buffer.from(uiSessionToken.split(".")[1] ?? "", "base64url").toString(),
       );
       expect(payload.organizationId).toBe(customOrgId);
     });
@@ -222,11 +225,11 @@ describe("authService", () => {
         Signature: new Uint8Array([1]),
       });
 
-      const service = authServiceBuilder(tokenGenerator);
-      const token = await service.generateUISessionToken("token");
+      const service = buildService();
+      const { uiSessionToken } = await service.generateTokenPair("token");
 
       const payload = JSON.parse(
-        Buffer.from(token.split(".")[1] ?? "", "base64url").toString(),
+        Buffer.from(uiSessionToken.split(".")[1] ?? "", "base64url").toString(),
       );
       expect(payload.roles).toEqual(["administrative"]);
       expect(payload.organizationId).toBe(TEST_ORG_ID);

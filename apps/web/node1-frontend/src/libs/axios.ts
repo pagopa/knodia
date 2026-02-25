@@ -1,9 +1,14 @@
 import { createBffApiClient } from "@knodia/bff-client";
-import axios, { isAxiosError } from "axios";
-import { match } from "ts-pattern";
+import axios, { type AxiosError, isAxiosError } from "axios";
 
 import { config } from "@/config/config";
-import { getAuthToken } from "@/libs/auth";
+import {
+  clearAllTokens,
+  getAuthToken,
+  getRefreshToken,
+  setAuthToken,
+  setRefreshToken,
+} from "@/libs/auth";
 
 axios.interceptors.request.use((axiosConfig) => {
   const token = getAuthToken();
@@ -14,18 +19,55 @@ axios.interceptors.request.use((axiosConfig) => {
   return axiosConfig;
 });
 
+let refreshPromise: null | Promise<boolean> = null;
+
+function handleRefresh(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = tryRefreshToken().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
+async function tryRefreshToken(): Promise<boolean> {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return false;
+
+  try {
+    const { data } = await axios.post<{
+      refreshToken: string;
+      uiSessionToken: string;
+    }>(`${config.bffUrl}/auth/ui-session/refresh`, { refreshToken });
+
+    setAuthToken(data.uiSessionToken);
+    setRefreshToken(data.refreshToken);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (isAxiosError(error)) {
-      match(error.response?.status)
-        .with(401, () => {
-          // Do something when unauthorized, e.g., redirect to login
-        })
-        .otherwise(() => {
-          // ... other error handling
-        });
+  async (error: AxiosError) => {
+    if (
+      isAxiosError(error) &&
+      error.response?.status === 401 &&
+      error.config &&
+      !error.config.url?.includes("/auth/ui-session")
+    ) {
+      const refreshed = await handleRefresh();
+
+      if (refreshed) {
+        error.config.headers.Authorization = `Bearer ${getAuthToken()}`;
+        return axios.request(error.config);
+      }
+
+      clearAllTokens();
+      window.location.href = "/ui/login/";
     }
+
     return Promise.reject(error);
   },
 );

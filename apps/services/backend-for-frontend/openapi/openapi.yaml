@@ -77,10 +77,21 @@ components:
     SessionResponse:
       type: object
       properties:
+        refreshToken:
+          type: string
         uiSessionToken:
           type: string
       required:
+        - refreshToken
         - uiSessionToken
+      additionalProperties: false
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
       additionalProperties: false
     Pagination:
       type: object
@@ -682,6 +693,35 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /auth/ui-session/refresh:
+    post:
+      operationId: refreshSession
+      tags:
+        - auth
+      description: Refresh an expired UI session token using a refresh token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+        required: true
+      responses:
+        "200":
+          description: Session refreshed successfully
+          content:
+            application/json:
+              schema:
+                description: Session refreshed successfully
+                allOf:
+                  - $ref: "#/components/schemas/SessionResponse"
         "401":
           description: Unauthorized
           content:

@@ -18,9 +18,16 @@ const API_SessionRequest = z
 
 const API_SessionResponse = z
   .object({
+    refreshToken: z.string(),
     uiSessionToken: z.string(),
   })
   .meta({ id: "SessionResponse" });
+
+const API_RefreshRequest = z
+  .strictObject({
+    refreshToken: z.string(),
+  })
+  .meta({ id: "RefreshRequest" });
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
@@ -28,14 +35,8 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const { oidcToken } = req.body;
-
-      const uiSessionToken =
-        await authService.generateUISessionToken(oidcToken);
-
-      res.send({
-        uiSessionToken,
-      });
+      const tokens = await authService.generateTokenPair(req.body.oidcToken);
+      res.send(tokens);
     },
     method: "POST",
     schema: {
@@ -52,5 +53,26 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       tags: [apiTags.auth],
     },
     url: "/auth/ui-session",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const tokens = await authService.refreshTokenPair(req.body.refreshToken);
+      res.send(tokens);
+    },
+    method: "POST",
+    schema: {
+      body: API_RefreshRequest,
+      description: "Refresh an expired UI session token using a refresh token",
+      operationId: "refreshSession",
+      response: {
+        200: API_SessionResponse.meta({
+          description: "Session refreshed successfully",
+        }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+      },
+      tags: [apiTags.auth],
+    },
+    url: "/auth/ui-session/refresh",
   });
 };

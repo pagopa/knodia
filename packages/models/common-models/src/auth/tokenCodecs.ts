@@ -26,6 +26,13 @@ export const InternalTokenClaims = BaseJwtClaims.extend({
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
+export const RefreshTokenClaims = BaseJwtClaims.extend({
+  organizationId: OrganizationId,
+  roles: NonEmptyArray(UserRole),
+  type: z.literal("refresh"),
+});
+export type RefreshTokenClaims = z.infer<typeof RefreshTokenClaims>;
+
 export const KnodiaTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,

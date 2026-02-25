@@ -86,6 +86,7 @@ createServer(async (req, res) => {
           issuer: ISSUER,
           authorization_endpoint: `${ISSUER}/authorize`,
           token_endpoint: `${ISSUER}/token`,
+          end_session_endpoint: `${ISSUER}/logout`,
           jwks_uri: `${ISSUER}/jwks`,
           response_types_supported: ["code"],
           subject_types_supported: ["public"],
@@ -195,6 +196,23 @@ createServer(async (req, res) => {
           expires_in: 3600,
         }),
       );
+      return;
+    }
+
+    // Logout endpoint — redirect to post_logout_redirect_uri
+    if (req.method === "GET" && url.pathname === "/logout") {
+      const postLogoutRedirectUri = url.searchParams.get("post_logout_redirect_uri");
+
+      if (!postLogoutRedirectUri) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "post_logout_redirect_uri is required" }));
+        return;
+      }
+
+      console.log(`[logout] Redirecting to ${postLogoutRedirectUri}`);
+
+      res.writeHead(302, { Location: postLogoutRedirectUri });
+      res.end();
       return;
     }
 

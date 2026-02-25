@@ -1,5 +1,6 @@
 import type {
   InternalTokenClaims,
+  RefreshTokenClaims,
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
@@ -10,7 +11,7 @@ import type z from "zod";
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { randomUUID } from "node:crypto";
 
-import type { InternalToken, UISessionToken } from "./models.ts";
+import type { InternalToken, RefreshToken, UISessionToken } from "./models.ts";
 
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_TYPE = "at+jwt";
@@ -19,6 +20,12 @@ const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 export interface InternalTokenInput extends TokenParams {
   subject: string;
+}
+
+export interface RefreshTokenInput extends TokenParams {
+  organizationId: OrganizationId;
+  roles: NonEmptyArray<z.infer<typeof UserRole>>;
+  subject: UserId;
 }
 
 interface TokenParams {
@@ -74,7 +81,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
 
   async function buildAndSignToken(
     kid: string,
-    claims: InternalTokenClaims | UISessionTokenClaims,
+    claims: InternalTokenClaims | RefreshTokenClaims | UISessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
     const header = buildHeader(kid);
     const payload = b64url(JSON.stringify(claims));
@@ -99,6 +106,25 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
       return { header, payload: claims, serialized, type: "internal" };
+    },
+
+    async generateRefreshToken(
+      input: RefreshTokenInput,
+    ): Promise<RefreshToken> {
+      const now = getNowInSeconds();
+      const claims: RefreshTokenClaims = {
+        aud: input.audience,
+        exp: now + input.secondsDuration,
+        iat: now,
+        iss: input.issuer,
+        jti: randomUUID(),
+        organizationId: input.organizationId,
+        roles: input.roles,
+        sub: input.subject,
+        type: "refresh",
+      };
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      return { header, payload: claims, serialized, type: "refresh" };
     },
 
     async generateUISessionToken(
