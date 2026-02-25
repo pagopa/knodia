@@ -1,4 +1,5 @@
 import type { RequestContextData } from "@fastify/request-context";
+import type { HTTPServiceName } from "@knodia/common-models/services";
 
 import createError from "@fastify/error";
 import { CorrelationId, generateId } from "@knodia/common-models/ids";
@@ -7,12 +8,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
 
 import * as contextModule from "../../src/context/context.ts";
+import { serviceErrorCode } from "../../src/models/errors/services.ts";
 import {
   API_Problem,
   ApiError,
   commonErrorCodes,
-  serviceErrorCode,
-  type ServiceName,
 } from "../../src/models/index.ts";
 import { makeApiProblemBuilder } from "../../src/utils/problemBuilder.ts";
 
@@ -48,7 +48,7 @@ const mockedIsResponseSerializationError = vi.mocked(
 );
 
 const mockedGetContextValues = vi.mocked(contextModule.getContextValues);
-const defaultServiceName: ServiceName = "backend-for-frontend";
+const defaultServiceName: HTTPServiceName = "backend-for-frontend";
 const genericProblemExpectation = {
   detail: "Unexpected error",
   errorCode: commonErrorCodes.GENERIC_ERROR,
@@ -82,7 +82,7 @@ describe("makeApiProblemBuilder", () => {
   const makeApiProblem = makeApiProblemBuilder({}, {});
   describe("error code mapping", () => {
     it("prefixes error codes with serviceErrorCode when serviceName is valid", () => {
-      const serviceName: ServiceName = defaultServiceName;
+      const serviceName: HTTPServiceName = defaultServiceName;
       const serviceNameCode = serviceErrorCode[serviceName];
 
       mockContextValues({ serviceName });
@@ -98,7 +98,9 @@ describe("makeApiProblemBuilder", () => {
       );
     });
     it("uses the fallback serviceErrorCode '000' when serviceName is invalid", () => {
-      mockContextValues({ serviceName: generateId() });
+      mockContextValues({
+        serviceName: "invalid-service-name" as HTTPServiceName,
+      });
 
       const error = makeApiProblem(new Error());
 
@@ -536,7 +538,7 @@ function expectToMatchProblem(
   }: {
     detail: string;
     errorCode: string;
-    serviceName: ServiceName;
+    serviceName: HTTPServiceName;
     status: number;
     title: string;
   },
