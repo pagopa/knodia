@@ -1,7 +1,7 @@
 import { Banner, Empty, Pagination } from "@knodia/ui-kit/ui";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
-import type { ConsumptionEserviceSearchResult } from "@/routes/consumption/e-services_/consumption-eservice-search.mock";
+import type { ConsumptionEserviceSearchResult } from "@/features/e-service/consumption-eservice-search.mock";
 
 import { SearchResultList } from "./SearchResultList";
 
