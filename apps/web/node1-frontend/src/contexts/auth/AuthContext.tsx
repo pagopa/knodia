@@ -10,6 +10,7 @@ import { config } from "@/config/config";
 import {
   clearAllTokens,
   getAuthToken,
+  redirectToLogout,
   setAuthToken,
   setRefreshToken,
 } from "@/libs/auth";
@@ -49,11 +50,6 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     user,
   } = useOidcAuth();
 
-  const signOutRedirect = () => {
-    const { clientId, domain, postLogoutRedirectUri } = config.cognito;
-    window.location.href = `${domain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(postLogoutRedirectUri)}`;
-  };
-
   const {
     error: exchangeError,
     isPending: isExchangePending,
@@ -61,7 +57,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   } = useMutation({
     ...createSessionMutation({ client }),
     onError: () => {
-      void signOutRedirect();
+      void redirectToLogout();
     },
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
@@ -81,11 +77,14 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   }, [signinRedirect]);
 
   const logout = useCallback(async () => {
-    // Must be done in this order to ensure that the OIDC user is removed before the token is cleared
-    await removeUser();
-    clearAllTokens();
-    setUiSessionToken(null);
-    signOutRedirect();
+    // removeUser() can throw — ensure cleanup and redirect happen regardless
+    try {
+      await removeUser();
+    } finally {
+      clearAllTokens();
+      setUiSessionToken(null);
+      redirectToLogout();
+    }
   }, [removeUser]);
 
   return (

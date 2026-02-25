@@ -3,9 +3,9 @@ import axios, { isAxiosError } from "axios";
 
 import { config } from "@/config/config";
 import {
-  clearAllTokens,
   getAuthToken,
   getRefreshToken,
+  redirectToLogout,
   setAuthToken,
   setRefreshToken,
 } from "@/libs/auth";
@@ -28,12 +28,6 @@ function handleRefresh(): Promise<boolean> {
     });
   }
   return refreshPromise;
-}
-
-function redirectToLogout(): void {
-  clearAllTokens();
-  const { clientId, domain, postLogoutRedirectUri } = config.cognito;
-  window.location.href = `${domain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(postLogoutRedirectUri)}`;
 }
 
 async function tryRefreshToken(): Promise<boolean> {

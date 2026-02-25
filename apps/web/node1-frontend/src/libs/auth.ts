@@ -1,3 +1,5 @@
+import { config } from "@/config/config";
+
 const AUTH_TOKEN_KEY = "knodia_auth_token";
 const REFRESH_TOKEN_KEY = "knodia_refresh_token";
 
@@ -12,6 +14,12 @@ export function getAuthToken(): null | string {
 
 export function getRefreshToken(): null | string {
   return localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
+export function redirectToLogout(): void {
+  clearAllTokens();
+  const { clientId, domain, postLogoutRedirectUri } = config.cognito;
+  window.location.href = `${domain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(postLogoutRedirectUri)}`;
 }
 
 export function setAuthToken(token: string): void {
