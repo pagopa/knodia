@@ -58,6 +58,7 @@ for db_dir in /flyway/databases/*/; do
       -locations="filesystem:$schema_dir" \
       -schemas="${NAMESPACE}_${schema_name}" \
       -defaultSchema="${NAMESPACE}_${schema_name}" \
+      -table="flyway_schema_history_${schema_name}" \
       migrate
 
     echo "Schema ${NAMESPACE}_${schema_name} migrated successfully"
