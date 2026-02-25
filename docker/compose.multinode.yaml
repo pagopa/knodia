@@ -57,7 +57,7 @@ services:
     container_name: knodia-multi-node-flyway-roles-event-store
     command: migrate
     volumes:
-      - ../migration/local/event_store_roles.sql:/flyway/sql/R__event_store_roles.sql:ro
+      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
     environment:
       FLYWAY_URL: jdbc:postgresql://event-store:5432/orion
       FLYWAY_USER: root
@@ -78,7 +78,7 @@ services:
     container_name: knodia-multi-node-flyway-roles-readmodel
     command: migrate
     volumes:
-      - ../migration/local/read_model_roles.sql:/flyway/sql/R__read_model_roles.sql:ro
+      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
     environment:
       FLYWAY_URL: jdbc:postgresql://readmodel:5432/orion
       FLYWAY_USER: root
@@ -360,10 +360,54 @@ services:
       READMODEL_DB_NAME: orion
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_eservice
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
       flyway-event-store-orion:
         condition: service_completed_successfully
       flyway-readmodel-orion:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+
+  k2k-gateway-orion:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multi-node-k2k-gateway-orion
+    build:
+      context: ..
+      dockerfile: apps/services/k2k-gateway/Dockerfile
+    ports:
+      - 3101:3000
+    environment:
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      ESERVICE_PROCESS_URL: "http://eservice-process-orion:3000"
+    depends_on:
+      eservice-process-orion:
+        condition: service_started
+
+  remote-resources-manager-orion:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multi-node-remote-resources-manager-orion
+    build:
+      context: ..
+      dockerfile: apps/services/remote-resources-manager/Dockerfile
+    ports:
+      - 4901:3000
+    environment:
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KNODE_URL: "http://k2k-gateway-orion:3000"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      k2k-gateway-orion:
+        condition: service_started
+      local-kms-setup:
         condition: service_completed_successfully
 
   bff-orion:
@@ -380,16 +424,21 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       ESERVICE_PROCESS_URL: "http://eservice-process-orion:3000"
+      REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-orion:3000"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-orion-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
-      eservice-process-orion:
+      remote-resources-manager-orion:
         condition: service_started
       minio:
         condition: service_healthy
+      local-kms-setup:
+        condition: service_completed_successfully
 
   readmodel-writer-orion:
     security_opt:
@@ -449,10 +498,54 @@ services:
       READMODEL_DB_NAME: lynx
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_eservice
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
       flyway-event-store-lynx:
         condition: service_completed_successfully
       flyway-readmodel-lynx:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+
+  k2k-gateway-lynx:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multi-node-k2k-gateway-lynx
+    build:
+      context: ..
+      dockerfile: apps/services/k2k-gateway/Dockerfile
+    ports:
+      - 3102:3000
+    environment:
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      ESERVICE_PROCESS_URL: "http://eservice-process-lynx:3000"
+    depends_on:
+      eservice-process-lynx:
+        condition: service_started
+
+  remote-resources-manager-lynx:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multi-node-remote-resources-manager-lynx
+    build:
+      context: ..
+      dockerfile: apps/services/remote-resources-manager/Dockerfile
+    ports:
+      - 4902:3000
+    environment:
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      KNODE_URL: "http://k2k-gateway-lynx:3000"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      k2k-gateway-lynx:
+        condition: service_started
+      local-kms-setup:
         condition: service_completed_successfully
 
   bff-lynx:
@@ -469,16 +562,21 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       ESERVICE_PROCESS_URL: "http://eservice-process-lynx:3000"
+      REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-lynx:3000"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-lynx-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
-      eservice-process-lynx:
+      remote-resources-manager-lynx:
         condition: service_started
       minio:
         condition: service_healthy
+      local-kms-setup:
+        condition: service_completed_successfully
 
   readmodel-writer-lynx:
     security_opt:
@@ -507,9 +605,61 @@ services:
       kafka:
         condition: service_healthy
 
+  # ============================================================
+  # Local KMS & JWKS (authentication)
+  # ============================================================
+
+  local-kms:
+    security_opt:
+      - no-new-privileges:true
+    image: nsmithuk/local-kms:3.11.7@sha256:360d7377b6f3687c89a622236791e4fa3f7316366267b437829edbdfa8a5fc60
+    container_name: knodia-multi-node-local-kms
+    ports:
+      - 4566:8080
+    environment:
+      PORT: 8080
+      KMS_REGION: eu-south-1
+    volumes:
+      - multi-node-local-kms-data:/data
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  local-kms-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    container_name: knodia-multi-node-local-kms-setup
+    depends_on:
+      local-kms:
+        condition: service_healthy
+    volumes:
+      - multi-node-jwks-data:/jwks
+      - ../scripts/local-kms:/app/scripts/local-kms:ro
+      - ../node_modules:/app/node_modules:ro
+    working_dir: /app
+    environment:
+      KMS_ENDPOINT: http://local-kms:8080
+      JWKS_OUTPUT_DIR: /jwks
+    command: node scripts/local-kms/kms-setup.mjs
+
+  local-jwks:
+    security_opt:
+      - no-new-privileges:true
+    image: nginx:1.28-alpine@sha256:15e96e59aa3b0aada3a121296e3bce117721f42d88f5f64217ef4b18f458c6ab
+    container_name: knodia-multi-node-local-jwks
+    ports:
+      - 4500:80
+    volumes:
+      - multi-node-jwks-data:/usr/share/nginx/html:ro
+
 volumes:
   multi-node-event-store-data:
   multi-node-readmodel-data:
   multi-node-kafka-data:
   multi-node-minio-data:
   multi-node-pgadmin-data:
+  multi-node-local-kms-data:
+  multi-node-jwks-data:
