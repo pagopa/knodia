@@ -1,0 +1,25 @@
+meta {
+  name: Get Catalog Eservices
+  seq: 6
+  type: http
+}
+
+post {
+  url: {{host-eservice-process}}/catalog?offset=0&limit=50
+  body: json
+}
+
+params:query {
+  limit: 50
+  offset: 0
+}
+
+body:json {
+  {
+    "keywords": "test"
+  }
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+}

@@ -15,19 +15,16 @@ const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
 
 // Token type: determines the audience, claims structure, and output filename.
-// - "cognito"    → simulates a Cognito user pool access token (signed with the cognito key)
-// - "ui-session" → our UI session token (signed with the knodia key)
-// New token types (e.g. "internal") should use the knodia key as well.
+// All knodia-issued tokens share the "knodia" key regardless of type.
+// Cognito tokens are handled by the local-cognito OIDC provider instead.
 const type = process.argv[2] ?? "ui-session";
 
-if (type !== "cognito" && type !== "ui-session") {
-  console.error("Usage: node generate-token.mjs [cognito|ui-session]");
+if (type !== "ui-session") {
+  console.error("Usage: node generate-token.mjs [ui-session]");
   process.exit(1);
 }
 
-// KMS key alias: "cognito" tokens use the cognito key; all knodia-issued tokens
-// share the "knodia" key regardless of their type (ui-session, internal, etc.).
-const keyAlias = type === "cognito" ? "cognito" : "knodia";
+const keyAlias = "knodia";
 
 const kmsClient = new KMSClient({
   endpoint: KMS_ENDPOINT,
@@ -42,19 +39,12 @@ const header = b64url(
 );
 
 const now = Math.floor(Date.now() / 1000);
-const claims =
-  type === "cognito"
-    ? {
-        sub: USER_ID,
-        "cognito:groups": [...ROLES.map((role) => `role:${role}`), `org:${ORG_ID}`],
-        token_use: "access",
-      }
-    : {
-        sub: USER_ID,
-        organizationId: ORG_ID,
-        roles: ROLES,
-        type,
-      };
+const claims = {
+  sub: USER_ID,
+  organizationId: ORG_ID,
+  roles: ROLES,
+  type,
+};
 
 const payload = b64url(
   JSON.stringify({
@@ -92,14 +82,5 @@ console.log(`\nToken written to ${tokenPath}`);
 
 const COLLECTIONS_DIR = resolve(__dirname, "../../collections");
 const envPath = resolve(COLLECTIONS_DIR, ".env");
-const brunoEnvKey = type === "ui-session" ? "UI_SESSION_JWT" : null;
-if (brunoEnvKey) {
-  writeFileSync(envPath, `${brunoEnvKey}=${token}\n`);
-  console.log(`Bruno env written to ${envPath}`);
-}
-
-if (type === "ui-session") {
-  const frontendEnvLocal = resolve(__dirname, "../../apps/web/node1-frontend/.env.local");
-  writeFileSync(frontendEnvLocal, `VITE_DEV_SESSION_TOKEN=${token}\n`);
-  console.log(`Frontend .env.local written to ${frontendEnvLocal}`);
-}
+writeFileSync(envPath, `UI_SESSION_JWT=${token}\n`);
+console.log(`Bruno env written to ${envPath}`);

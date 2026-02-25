@@ -10,8 +10,10 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { authRouter } from "./routers/authorizationRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
+import { authorizationServiceBuilder } from "./services/authorizationService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   return buildApp({ config });
@@ -23,6 +25,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
   const fileManager = initFileManager();
+  const tokenService = authorizationServiceBuilder();
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -34,6 +37,10 @@ function buildApp({ config }: { config: BffProcessConfig }) {
         servers: [{ description: "BFF API", url: "/" }],
         tags: [
           healthRouterTag,
+          {
+            description: "Authentication routes",
+            name: apiTags.auth,
+          },
           {
             description: "E-services routes",
             name: apiTags.eservice,
@@ -47,14 +54,21 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     serviceName: "backend-for-frontend",
   });
 
-  app.register(authenticationPlugin, config);
+  // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(eserviceProducerRouter, {
-    eserviceProcessClient: clients.eserviceProcessClient,
-    fileManager,
-  });
-  app.register(eserviceConsumerRouter, {
-    remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+  app.register(authRouter, { authorizationService: tokenService });
+
+  // Protected routes — authenticationPlugin hook is scoped to this context only.
+  // See https://fastify.dev/docs/latest/Reference/Encapsulation/
+  app.register(async (protectedApp) => {
+    protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(eserviceProducerRouter, {
+      eserviceProcessClient: clients.eserviceProcessClient,
+      fileManager,
+    });
+    protectedApp.register(eserviceConsumerRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
   });
 
   return app;

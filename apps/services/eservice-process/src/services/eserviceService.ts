@@ -19,6 +19,8 @@ import {
 
 import type {
   API_EserviceSeed,
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -27,6 +29,7 @@ import {
   duplicateInterfaceId,
   eserviceNotFound,
   eserviceVersionNotFound,
+  inconsistentDailyCalls,
   interfaceNotFound,
   invalidAttribute,
   invalidCategory,
@@ -105,8 +108,13 @@ export function eserviceServiceBuilder(
         await readmodelService.getEserviceVersionInterfaceById(
           seed.interfaceDocument.id,
         );
+
       if (existingInterface) {
         throw duplicateInterfaceId(seed.interfaceDocument.id);
+      }
+
+      if (seed.maxDailyCallsPerConsumer > seed.maxDailyCallsPerKnode) {
+        throw inconsistentDailyCalls();
       }
 
       const now = new Date();
@@ -161,6 +169,15 @@ export function eserviceServiceBuilder(
 
       return eservice;
     },
+    async getCatalogEservices(
+      body: API_GetCatalogEserviceSearchParams,
+      params: API_GetCatalogEservicesQueryParams,
+      { logger }: RequestContextData,
+    ): Promise<ListResult<Eservice>> {
+      logger.info({ body, params }, "Getting catalog E-services with params");
+      return await readmodelService.getCatalogEservices(body, params);
+    },
+
     async getEservice(
       eserviceId: EserviceId,
       { logger }: RequestContextData,
