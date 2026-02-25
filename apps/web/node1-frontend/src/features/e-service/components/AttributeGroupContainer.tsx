@@ -4,17 +4,21 @@ import { Fragment } from "react";
 
 import type { SchemeRef } from "../types/schemeRef";
 
+interface AttributeWithPossession extends SchemeRef {
+  possessed?: boolean;
+}
+
 export function AttributeGroupContainer({
   attributes,
-  verified = false,
 }: {
-  attributes: SchemeRef[];
-  verified?: boolean;
+  attributes: AttributeWithPossession[];
 }) {
+  const isGroupSatisfied = attributes.some((attr) => attr.possessed === true);
+
   return (
     <div
       className={`flex items-center gap-4 py-3 px-4 rounded-lg body-md text-secondary-light-mid-contrast ${
-        verified ? "bg-success-light" : "bg-secondary-light"
+        isGroupSatisfied ? "bg-success-light" : "bg-secondary-light"
       }`}
     >
       {attributes.map((attribute, index) => (
@@ -24,14 +28,16 @@ export function AttributeGroupContainer({
               or
             </span>
           )}
-          <span className="flex gap-1">
+          <span
+            className={`flex gap-1 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
+          >
             {getAttribute(attribute.scheme, attribute.code)?.name ??
               attribute.code}
             <BookOpenTextIcon size={20} />
           </span>
         </Fragment>
       ))}
-      {verified && (
+      {isGroupSatisfied && (
         <SealCheckIcon
           className="ml-auto shrink-0 text-success-light-low-contrast"
           size={24}

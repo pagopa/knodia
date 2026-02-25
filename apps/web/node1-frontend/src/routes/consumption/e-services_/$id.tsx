@@ -49,13 +49,15 @@ function AccessTokenSettingsSection({
 }
 
 function ConsumptionRequirementsSection({
-  hasRequiredAttributes,
   identificationRequired,
   requiredAttributes,
 }: Pick<
   ConsumptionEserviceDetail,
-  "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
+  "identificationRequired" | "requiredAttributes"
 >) {
+  const hasRequiredAttributes = requiredAttributes.every((group) =>
+    group.some((attr) => attr.possessed),
+  );
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -63,14 +65,10 @@ function ConsumptionRequirementsSection({
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Attributes
           </h3>
-          {/* TODO: Attributes that the organization possesses should be displayed in bold */}
           <ul className="gap-2 flex flex-col" role="list">
             {requiredAttributes.map((group, index) => (
               <li key={index}>
-                <AttributeGroupContainer
-                  attributes={group}
-                  verified={hasRequiredAttributes}
-                />
+                <AttributeGroupContainer attributes={group} />
               </li>
             ))}
           </ul>
@@ -241,7 +239,6 @@ function RouteComponent() {
       <Divider className="my-10" />
 
       <ConsumptionRequirementsSection
-        hasRequiredAttributes={eservice.hasRequiredAttributes}
         identificationRequired={eservice.identificationRequired}
         requiredAttributes={eservice.requiredAttributes}
       />

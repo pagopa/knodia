@@ -12,7 +12,6 @@ export interface ConsumptionEserviceDetail {
   };
   categories: SchemeRef[];
   description: string;
-  hasRequiredAttributes: boolean;
   id: EserviceId;
   identificationRequired: boolean;
   interfaceDocument: {
@@ -33,6 +32,11 @@ export interface ConsumptionEserviceDetail {
     name: string;
     notes: string;
   };
-  requiredAttributes: SchemeRef[][];
+  // Each inner array is a group of alternatives (OR): the consumer needs at least one.
+  // All groups must be satisfied (AND) to meet the requirements.
+  requiredAttributes: ConsumptionRequiredAttribute[][];
   state: bffApi.EserviceVersionState;
 }
+
+// TODO: Replace with the auto-generated type from bffApi when the BFF endpoint provides per-attribute possession info
+export type ConsumptionRequiredAttribute = SchemeRef & { possessed: boolean };

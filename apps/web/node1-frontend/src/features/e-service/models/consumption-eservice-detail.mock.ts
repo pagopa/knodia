@@ -14,7 +14,6 @@ export const mockConsumptionEserviceDetail: ConsumptionEserviceDetail = {
   ],
   description:
     "This E-Service provides certified proof of registration of birth, enabling cross-border verification of birth records between EU member states in compliance with the Single Digital Gateway regulation.",
-  hasRequiredAttributes: true,
   id: unsafeBrandId("f47ac10b-58cc-4372-a567-0e02b2c3d479"),
   identificationRequired: false,
   interfaceDocument: {
@@ -38,8 +37,8 @@ export const mockConsumptionEserviceDetail: ConsumptionEserviceDetail = {
   },
   requiredAttributes: [
     [
-      { code: "NUTS3", scheme: "eu" },
-      { code: "NUTS0", scheme: "eu" },
+      { code: "NUTS3", possessed: true, scheme: "eu" },
+      { code: "NUTS0", possessed: false, scheme: "eu" },
     ],
   ],
   state: "Active",
