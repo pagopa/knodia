@@ -5,14 +5,15 @@ import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { SearchContent } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchContent";
 import { SearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchFilters";
+import { searchConsumptionEservices } from "@/features/e-service/consumption-eservice-search.mock";
 import {
   consumptionEserviceSearchDefaultValues,
   consumptionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
 
-import { searchConsumptionEservices } from "./consumption-eservice-search.mock";
-
-export const Route = createFileRoute("/consumption/e-services_/search")({
+export const Route = createFileRoute(
+  "/_authenticated/consumption/e-services_/search",
+)({
   component: RouteComponent,
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],

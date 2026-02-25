@@ -66,6 +66,22 @@ components:
         - status
         - title
       additionalProperties: false
+    SessionRequest:
+      type: object
+      properties:
+        oidcToken:
+          type: string
+      required:
+        - oidcToken
+      additionalProperties: false
+    SessionResponse:
+      type: object
+      properties:
+        uiSessionToken:
+          type: string
+      required:
+        - uiSessionToken
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -635,6 +651,43 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /auth/ui-session:
+    post:
+      operationId: createSession
+      tags:
+        - auth
+      description: Validate a Cognito token and generate a session token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionRequest"
+        required: true
+      responses:
+        "200":
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                description: Session created successfully
+                allOf:
+                  - $ref: "#/components/schemas/SessionResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice
@@ -880,5 +933,7 @@ servers:
 tags:
   - description: Health check routes
     name: health
+  - description: Authentication routes
+    name: auth
   - description: E-services routes
     name: eservice
