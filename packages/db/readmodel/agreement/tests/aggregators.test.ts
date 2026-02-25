@@ -1,9 +1,11 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { Agreement } from "@knodia/agreement-models";
-import { toExpectAgreement } from "@knodia/test-commons/utils";
+import {
+  getMockAgreement,
+  toExpectAgreement,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
-import { zocker } from "zocker";
 
 import {
   aggregateAgreement,
@@ -14,7 +16,7 @@ import { splitAgreementIntoObjectsSQL } from "../src/converters/splitters.ts";
 describe("Agreement Aggregators", () => {
   it("should convert Agreement SQL objects into an Agreement business object", () => {
     const agreement: WithMetadata<Agreement> = {
-      data: zocker(Agreement).setSeed(0).generate(),
+      data: getMockAgreement(),
       metadata: {
         version: 1,
       },
@@ -38,13 +40,13 @@ describe("Agreement Aggregators", () => {
 
   it("should convert Agreements SQL objects into Agreements business objects", () => {
     const agreement1: WithMetadata<Agreement> = {
-      data: zocker(Agreement).setSeed(0).generate(),
+      data: getMockAgreement(),
       metadata: {
         version: 1,
       },
     };
     const agreement2: WithMetadata<Agreement> = {
-      data: zocker(Agreement).setSeed(1).generate(),
+      data: getMockAgreement(1),
       metadata: {
         version: 1,
       },

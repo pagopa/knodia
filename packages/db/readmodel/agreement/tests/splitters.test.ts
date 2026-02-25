@@ -1,6 +1,5 @@
-import { Agreement } from "@knodia/agreement-models";
+import { getMockAgreement } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
-import { zocker } from "zocker";
 
 import type {
   AgreementRequiredAttributeSQL,
@@ -12,7 +11,7 @@ import { splitAgreementIntoObjectsSQL } from "../src/converters/splitters.ts";
 describe("Agreement Splitters", () => {
   it("should split an Agreement business object into Agreement SQL objects", () => {
     const metadataVersion = 1;
-    const agreement = zocker(Agreement).setSeed(0).generate();
+    const agreement = getMockAgreement();
 
     const { agreementSQL, requiredAttributesSQL } =
       splitAgreementIntoObjectsSQL(agreement, metadataVersion);

@@ -31,8 +31,7 @@
     "drizzle-kit": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "zocker": "catalog:"
+    "vitest": "catalog:"
   },
   "exports": {
     ".": "./src/agreement.ts",
