@@ -1,12 +1,12 @@
-import type { LocalizedName } from "@knodia/eservice-models";
+import type { API_LocalizedName } from "@knodia/eservice-models/api";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
+  API_ConsumerCatalogEserviceSearchResult,
   API_ProducerEservice,
   API_ProducerEserviceDetails,
 } from "./api.ts";
-import type { API_CatalogEserviceSearchResult } from "./remoteResourcesManagerApi.ts";
 
 export const toAPI_ProducerEservice = ({
   activeAgreements,
@@ -74,10 +74,10 @@ export const toAPI_ProducerEserviceDetails = ({
   },
 });
 
-export const toAPI_CatalogEserviceSearchResult = (
+export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,
-  producerName: LocalizedName,
-): API_CatalogEserviceSearchResult => ({
+  producerName: API_LocalizedName, // TODO: update with producer process API_LocalizedName
+): API_ConsumerCatalogEserviceSearchResult => ({
   categories: catalogEserviceSearchResult.categories,
   description: catalogEserviceSearchResult.description,
   id: catalogEserviceSearchResult.id,

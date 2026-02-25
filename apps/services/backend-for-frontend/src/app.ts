@@ -4,15 +4,14 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { serviceName } from "@knodia/fastify-zod-api-commons/models";
 import { initFileManager } from "@knodia/file-manager";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { eserviceRouter } from "./routers/eserviceRouter.ts";
-import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
+import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
+import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   return buildApp({ config });
@@ -49,16 +48,16 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     loggerConfig: config,
     makeApiProblem,
     readCorrelationIdFromHeader: false,
-    serviceName: serviceName.BACKEND_FOR_FRONTEND,
+    serviceName: "backend-for-frontend",
   });
 
   app.register(authenticationPlugin, config);
   app.register(healthRouter);
-  app.register(eserviceRouter, {
+  app.register(eserviceProducerRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
   });
-  app.register(remoteResourcesManagerRouter, {
+  app.register(eserviceConsumerRouter, {
     remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
   });
 

@@ -10,7 +10,7 @@ import {
 import { getOrganizationInitials } from "@/utils/getOrganizationInitials";
 
 export function toCatalogSearchResultUI(
-  result: bffApi.CatalogEserviceSearchResult,
+  result: bffApi.ConsumerCatalogEserviceSearchResult,
 ): ConsumptionEserviceSearchResult {
   return {
     categories: result.categories,

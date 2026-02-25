@@ -8,9 +8,11 @@
   },
   "exports": {
     ".": "./src/logger.ts",
-    "./config": "./src/config.ts"
+    "./config": "./src/config.ts",
+    "./models": "./src/models/models.ts"
   },
   "devDependencies": {
+    "@knodia/common-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",

@@ -10,3 +10,7 @@ export const createEserviceProcessApiClient = (
     ...config,
     throwOnError: true,
   } satisfies Config);
+
+export type EserviceProcessClient = ReturnType<
+  typeof createEserviceProcessApiClient
+>;
