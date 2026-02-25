@@ -2,32 +2,15 @@ import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
+import { zocker } from "zocker";
 
-import type { Agreement } from "../src/agreement.ts";
-
+import { Agreement } from "../src/agreement.ts";
 import { AgreementEventV1 } from "../src/agreementEvent.ts";
 import { toAgreementV1 } from "../src/agreementProtobufConverterToV1.ts";
 import { AgreementActivatedV1 } from "../src/generated/v1/agreementEvents.js";
 
 describe("AgreementEventV1 codec", () => {
-  const agreement: Agreement = {
-    consumerId: generateId(),
-    createdAt: new Date(1),
-    eserviceId: generateId(),
-    eserviceVersionId: generateId(),
-    id: generateId(),
-    producerId: generateId(),
-    requiredAttributes: [
-      [
-        {
-          code: "CODE",
-          scheme: "ATTR",
-        },
-      ],
-    ],
-    state: "Active",
-    updatedAt: new Date(1),
-  };
+  const agreement = zocker(Agreement).generate();
 
   it("encodes and decodes an AgreementActivatedV1 payload (AgreementEventV1 full codec)", () => {
     const event: AgreementEventV1 = {

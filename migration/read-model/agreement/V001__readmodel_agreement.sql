@@ -4,6 +4,7 @@ CREATE SCHEMA IF NOT EXISTS ${NAMESPACE}_agreement;
 
 CREATE TABLE IF NOT EXISTS ${NAMESPACE}_agreement."agreement" (
 	"consumer_id" uuid NOT NULL,
+	"consumer_knode_id" uuid NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,

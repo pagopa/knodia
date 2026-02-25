@@ -1,10 +1,16 @@
 import type { RequiredAttributeGroup } from "@knodia/attribute-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
+import { throwIfMissing } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
-import { Agreement, AgreementState } from "./agreement.ts";
 import {
+  Agreement,
+  type AgreementConsumer,
+  AgreementState,
+} from "./agreement.ts";
+import {
+  AgreementConsumerV1,
   AgreementRequiredAttributeGroupV1,
   AgreementStateV1,
   type AgreementV1,
@@ -12,7 +18,11 @@ import {
 
 const fromAgreementV1 = (input: AgreementV1): Agreement => ({
   ...input,
-  consumerId: unsafeBrandId(input.consumerId),
+  consumer: throwIfMissing(
+    input.consumer,
+    "Agreement consumer is undefined",
+    fromAgreementConsumerV1,
+  ),
   createdAt: new Date(input.createdAt),
   eserviceId: unsafeBrandId(input.eserviceId),
   eserviceVersionId: unsafeBrandId(input.eserviceVersionId),
@@ -41,3 +51,10 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
 const fromAgreementRequiredAttributeGroupV1 = (
   input: AgreementRequiredAttributeGroupV1,
 ): RequiredAttributeGroup => input.attributes;
+
+const fromAgreementConsumerV1 = (
+  input: AgreementConsumerV1,
+): AgreementConsumer => ({
+  id: unsafeBrandId(input.id),
+  knodeId: unsafeBrandId(input.knodeId),
+});

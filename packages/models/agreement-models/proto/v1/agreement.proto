@@ -6,7 +6,7 @@ message AgreementV1 {
   string id = 1;
   string eserviceId = 2;
   string eserviceVersionId = 3;
-  string consumerId = 4;
+  AgreementConsumerV1 consumer = 4;
   string producerId = 5;
   AgreementStateV1 state = 6;
   repeated AgreementRequiredAttributeGroupV1 requiredAttributes = 7;
@@ -28,4 +28,9 @@ message AgreementRequiredAttributeGroupV1 {
 message AgreementAttributeV1 {
   string scheme = 1;
   string code = 2;
+}
+
+message AgreementConsumerV1 {
+  string id = 1;
+  string knodeId = 2;
 }

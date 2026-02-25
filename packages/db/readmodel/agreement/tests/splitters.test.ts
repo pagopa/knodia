@@ -17,7 +17,8 @@ describe("Agreement Splitters", () => {
       splitAgreementIntoObjectsSQL(agreement, metadataVersion);
 
     const expectedAgreementSQL: AgreementSQL = {
-      consumerId: agreement.consumerId,
+      consumerId: agreement.consumer.id,
+      consumerKnodeId: agreement.consumer.knodeId,
       createdAt: agreement.createdAt,
       eserviceId: agreement.eserviceId,
       eserviceVersionId: agreement.eserviceVersionId,

@@ -36,7 +36,10 @@ const buildAgreement = ({
   );
 
   const agreement: Agreement = {
-    consumerId: unsafeBrandId(agreementSQL.consumerId),
+    consumer: {
+      id: unsafeBrandId(agreementSQL.consumerId),
+      knodeId: unsafeBrandId(agreementSQL.consumerKnodeId),
+    },
     createdAt: new Date(agreementSQL.createdAt),
     eserviceId: unsafeBrandId(agreementSQL.eserviceId),
     eserviceVersionId: unsafeBrandId(agreementSQL.eserviceVersionId),

@@ -18,7 +18,8 @@
     "./localization": "./src/localization.ts",
     "./protobuf": "./src/protobuf.ts",
     "./services": "./src/services.ts",
-    "./types": "./src/types.ts"
+    "./types": "./src/types.ts",
+    "./utils": "./src/utils/utils.ts"
   },
   "dependencies": {
     "zod": "catalog:"
