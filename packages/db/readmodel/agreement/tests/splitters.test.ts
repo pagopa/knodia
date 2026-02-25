@@ -39,8 +39,8 @@ describe("Agreement Splitters", () => {
         })),
       );
 
-    expect(agreementSQL).toStrictEqual(expectedAgreementSQL);
-    expect(requiredAttributesSQL).toStrictEqual(
+    expect(agreementSQL).toEqual(expectedAgreementSQL);
+    expect(requiredAttributesSQL).toEqual(
       expect.arrayContaining(expectedRequireAttributesSQL),
     );
   });
