@@ -3,14 +3,18 @@
   "includeEntryExports": true,
   "ignoreWorkspaces": [
     "packages/models/keychain-models",
-    "packages/db/readmodel/keychain"
+    "packages/db/readmodel/keychain",
+    "packages/db/event-store/keychain"
   ],
   "ignoreIssues": {
     "packages/models/common-models/src/brandedIds.ts": ["exports", "types"]
   },
   "workspaces": {
     ".": {
-      "ignore": ["scripts/local-kms/kms-setup.mjs", "scripts/local-kms/local-cognito.mjs"]
+      "ignore": [
+        "scripts/local-kms/kms-setup.mjs",
+        "scripts/local-kms/local-cognito.mjs"
+      ]
     },
     "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],
