@@ -7,7 +7,7 @@ import { zocker } from "zocker";
 import { Agreement } from "../src/agreement.ts";
 import { AgreementEventV1 } from "../src/agreementEvent.ts";
 import { toAgreementV1 } from "../src/agreementProtobufConverterToV1.ts";
-import { AgreementActivatedV1 } from "../src/generated/v1/agreementEvents.js";
+import { AgreementActivatedV1 } from "../src/generated/v1/agreementEvents.ts";
 
 describe("AgreementEventV1 codec", () => {
   const agreement = zocker(Agreement).generate();

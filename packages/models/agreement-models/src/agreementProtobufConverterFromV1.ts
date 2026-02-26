@@ -14,7 +14,7 @@ import {
   AgreementRequiredAttributeGroupV1,
   AgreementStateV1,
   type AgreementV1,
-} from "./generated/v1/agreement.js";
+} from "./generated/v1/agreement.ts";
 
 const fromAgreementV1 = (input: AgreementV1): Agreement => {
   assertRequired(input.consumer, "Agreement consumer");

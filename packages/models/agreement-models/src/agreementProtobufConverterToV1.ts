@@ -8,7 +8,7 @@ import {
   AgreementRequiredAttributeGroupV1,
   AgreementStateV1,
   AgreementV1,
-} from "./generated/v1/agreement.js";
+} from "./generated/v1/agreement.ts";
 
 const toAgreementStateV1 = (state: AgreementState): AgreementStateV1 =>
   match(state)
