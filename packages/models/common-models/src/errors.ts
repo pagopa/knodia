@@ -1,5 +1,6 @@
 type CommonInternalErrors =
   | "GENERIC_INTERNAL_ERROR"
+  | "KAFKA_MESSAGE_PROCESS_ERROR"
   | "MISSING_KAFKA_MESSAGE_DATA";
 export class InternalError<T> extends Error {
   public code: T;
@@ -18,6 +19,17 @@ export function genericInternalError(
   return new InternalError({
     code: "GENERIC_INTERNAL_ERROR",
     detail: message,
+  });
+}
+
+export function kafkaMessageProcessError(
+  topic: string,
+  partition: number,
+  offset: string,
+): InternalError<CommonInternalErrors> {
+  return new InternalError({
+    code: "KAFKA_MESSAGE_PROCESS_ERROR",
+    detail: `Error handling Kafka message. Topic: ${topic}. Partition number: ${partition}. Offset: ${offset}`,
   });
 }
 
