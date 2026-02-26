@@ -8,7 +8,7 @@ services:
   event-store:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:1090bc3a8ccfb0b55f78a494d76f8d603434f7e4553543d6e807bc7bd6bbd17f
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
     container_name: knodia-multi-node-event-store
     ports:
       - 6001:5432
@@ -29,7 +29,7 @@ services:
   readmodel:
     security_opt:
       - no-new-privileges:true
-    image: postgres:18@sha256:1090bc3a8ccfb0b55f78a494d76f8d603434f7e4553543d6e807bc7bd6bbd17f
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
     container_name: knodia-multi-node-readmodel
     ports:
       - 6002:5432
@@ -183,7 +183,7 @@ services:
   kafka:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:7.6.9@sha256:652f4017a6389f22930eb27ad02ce730622ebe145efa442625d7f439f1bc111e
+    image: confluentinc/cp-kafka:8.1.1
     container_name: knodia-multi-node-kafka
     ports:
       - 9092:9092
@@ -219,6 +219,23 @@ services:
       timeout: 5s
       retries: 30
 
+  kafka-ui:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multi-node-kafka-ui
+    image: kafbat/kafka-ui:v1.4.2@sha256:8dd62c9b18a01b732824cae91c6fe5203fac8e931448a2a639bd20270b8fed2b
+    ports:
+      - 8084:8080
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: multinode
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+
+  # ============================================================
+  # Debezium and connectors
+  # ============================================================
+
   debezium-connect:
     security_opt:
       - no-new-privileges:true
@@ -248,19 +265,56 @@ services:
         condition: service_healthy
       event-store:
         condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8083/connectors || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
 
-  kafka-ui:
+  debezium-setup-orion:
     security_opt:
       - no-new-privileges:true
-    container_name: knodia-multi-node-kafka-ui
-    image: kafbat/kafka-ui:v1.4.2@sha256:8dd62c9b18a01b732824cae91c6fe5203fac8e931448a2a639bd20270b8fed2b
-    ports:
-      - 8084:8080
+    container_name: knodia-multi-node-debezium-setup-orion
+    image: curlimages/curl:8.12.1@sha256:94e9e444bcba979c2ea12e27ae39bee4cd10bc7041a472c4727a558e213744e6
     depends_on:
-      - kafka
-    environment:
-      KAFKA_CLUSTERS_0_NAME: multinode
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      debezium-connect:
+        condition: service_healthy
+    volumes:
+      - ./multinode/event-store-connector-orion.json:/connector.json:ro
+    entrypoint: >
+      /bin/sh -c "
+      response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
+      -H 'Accept:application/json'
+      -H 'Content-Type:application/json'
+      -d @/connector.json
+      http://debezium-connect:8083/connectors);
+      if [ \"$$response\" -eq 201 ]; then echo 'Connector orion registered'; exit 0; fi;
+      if [ \"$$response\" -eq 409 ]; then echo 'Connector orion already exists'; exit 0; fi;
+      echo \"Failed to register connector orion: HTTP $$response\"; exit 1;
+      "
+
+  debezium-setup-lynx:
+    security_opt:
+      - no-new-privileges:true
+    container_name: knodia-multi-node-debezium-setup-lynx
+    image: curlimages/curl:8.12.1@sha256:94e9e444bcba979c2ea12e27ae39bee4cd10bc7041a472c4727a558e213744e6
+    depends_on:
+      debezium-connect:
+        condition: service_healthy
+    volumes:
+      - ./multinode/event-store-connector-lynx.json:/connector.json:ro
+    entrypoint: >
+      /bin/sh -c "
+      response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
+      -H 'Accept:application/json'
+      -H 'Content-Type:application/json'
+      -d @/connector.json
+      http://debezium-connect:8083/connectors);
+      if [ \"$$response\" -eq 201 ]; then echo 'Connector lynx registered'; exit 0; fi;
+      if [ \"$$response\" -eq 409 ]; then echo 'Connector lynx already exists'; exit 0; fi;
+      echo \"Failed to register connector lynx: HTTP $$response\"; exit 1;
+      "
 
   # ============================================================
   # MinIO (S3-compatible storage)
@@ -351,15 +405,15 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
-      EVENTSTORE_DB_USER: root
-      EVENTSTORE_DB_PASSWORD: root
+      EVENTSTORE_DB_USER: local_eservice_process_user
+      EVENTSTORE_DB_PASSWORD: local_eservice_process_user
       EVENTSTORE_DB_HOST: event-store
       EVENTSTORE_DB_PORT: "5432"
       EVENTSTORE_DB_NAME: orion
       EVENTSTORE_DB_USE_SSL: "false"
       EVENTSTORE_DB_ESERVICE_SCHEMA: local_eservice
-      READMODEL_DB_USER: root
-      READMODEL_DB_PASSWORD: root
+      READMODEL_DB_USER: local_eservice_process_user
+      READMODEL_DB_PASSWORD: local_eservice_process_user
       READMODEL_DB_HOST: readmodel
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion
@@ -459,8 +513,8 @@ services:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
-      READMODEL_DB_USER: root
-      READMODEL_DB_PASSWORD: root
+      READMODEL_DB_USER: local_eservice_rmw_user
+      READMODEL_DB_PASSWORD: local_eservice_rmw_user
       READMODEL_DB_HOST: readmodel
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion
@@ -495,15 +549,15 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
-      EVENTSTORE_DB_USER: root
-      EVENTSTORE_DB_PASSWORD: root
+      EVENTSTORE_DB_USER: local_eservice_process_user
+      EVENTSTORE_DB_PASSWORD: local_eservice_process_user
       EVENTSTORE_DB_HOST: event-store
       EVENTSTORE_DB_PORT: "5432"
       EVENTSTORE_DB_NAME: lynx
       EVENTSTORE_DB_USE_SSL: "false"
       EVENTSTORE_DB_ESERVICE_SCHEMA: local_eservice
-      READMODEL_DB_USER: root
-      READMODEL_DB_PASSWORD: root
+      READMODEL_DB_USER: local_eservice_process_user
+      READMODEL_DB_PASSWORD: local_eservice_process_user
       READMODEL_DB_HOST: readmodel
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx
@@ -603,8 +657,8 @@ services:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
-      READMODEL_DB_USER: root
-      READMODEL_DB_PASSWORD: root
+      READMODEL_DB_USER: local_eservice_rmw_user
+      READMODEL_DB_PASSWORD: local_eservice_rmw_user
       READMODEL_DB_HOST: readmodel
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx
