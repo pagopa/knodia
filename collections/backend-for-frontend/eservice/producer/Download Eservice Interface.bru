@@ -12,3 +12,7 @@ get {
 params:path {
   eserviceId: {{eserviceId}}
 }
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
