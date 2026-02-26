@@ -201,17 +201,17 @@ createServer(async (req, res) => {
 
     // Logout endpoint — redirect to logout_uri
     if (req.method === "GET" && url.pathname === "/logout") {
-      const postLogoutRedirectUri = url.searchParams.get("logout_uri");
+      const logoutUri = url.searchParams.get("logout_uri");
 
-      if (!postLogoutRedirectUri) {
+      if (!logoutUri) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "logout_uri is required" }));
         return;
       }
 
-      console.log(`[logout] Redirecting to ${postLogoutRedirectUri}`);
+      console.log(`[logout] Redirecting to ${logoutUri}`);
 
-      res.writeHead(302, { Location: postLogoutRedirectUri });
+      res.writeHead(302, { Location: logoutUri });
       res.end();
       return;
     }
