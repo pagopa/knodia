@@ -28,7 +28,6 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
     <OidcProvider
       authority={config.cognito.authority}
       client_id={config.cognito.clientId}
-      post_logout_redirect_uri={config.cognito.postLogoutRedirectUri}
       redirect_uri={config.cognito.redirectUri}
       scope="openid"
     >

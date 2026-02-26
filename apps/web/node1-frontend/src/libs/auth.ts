@@ -19,8 +19,8 @@ export function getRefreshToken(): null | string {
 // Cognito does not support OIDC RP-Initiated Logout (end_session_endpoint),
 // so we perform logout by redirecting to Cognito's proprietary /logout endpoint via window.location
 export function redirectToLogout(): void {
-  const { clientId, domain, postLogoutRedirectUri } = config.cognito;
-  window.location.href = `${domain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(postLogoutRedirectUri)}`;
+  const { clientId, domain, logoutUri } = config.cognito;
+  window.location.href = `${domain}/logout?client_id=${clientId}&logout_uri=${encodeURIComponent(logoutUri)}`;
 }
 
 export function setAuthToken(token: string): void {

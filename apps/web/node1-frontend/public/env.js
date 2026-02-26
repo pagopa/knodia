@@ -3,6 +3,6 @@ window.env = {
   COGNITO_AUTHORITY: "http://localhost:4567",
   COGNITO_CLIENT_ID: "local-dev-client",
   COGNITO_DOMAIN: "http://localhost:4567",
-  COGNITO_POST_LOGOUT_REDIRECT_URI: "http://localhost:5175/ui/",
+  COGNITO_LOGOUT_URI: "http://localhost:5175/ui/",
   COGNITO_REDIRECT_URI: "http://localhost:5175/ui/login/",
 };
