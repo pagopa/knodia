@@ -5,15 +5,19 @@ const { logLevel } = KafkaJS;
 
 export const KafkaConfig = z
   .object({
+    AWS_REGION: z.string(),
     KAFKA_BROKERS: z.string(),
     KAFKA_CLIENT_ID: z.string(),
+    KAFKA_DISABLE_AWS_IAM_AUTH: z.stringbool().default(false),
     KAFKA_LOG_LEVEL: z
       .enum(["NOTHING", "ERROR", "WARN", "INFO", "DEBUG"])
       .default("INFO"),
   })
   .transform((c) => ({
+    awsRegion: c.AWS_REGION,
     kafkaBrokers: c.KAFKA_BROKERS,
     kafkaClientId: c.KAFKA_CLIENT_ID,
+    kafkaDisableAwsIamAuth: c.KAFKA_DISABLE_AWS_IAM_AUTH,
     kafkaLogLevel: logLevel[c.KAFKA_LOG_LEVEL],
   }));
 export type KafkaConfig = z.infer<typeof KafkaConfig>;
