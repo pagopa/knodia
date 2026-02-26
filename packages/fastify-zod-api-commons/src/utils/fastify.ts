@@ -20,15 +20,12 @@ import openapiZodPlugin, {
   docsRoutePrefix,
   type OpenapiZodPluginOptions,
 } from "./openapi-zod-plugin/openapiZodPlugin.ts";
-import {
-  makeApiProblemBuilder,
-  type MakeApiProblemFn,
-} from "./problemBuilder.ts";
+import { type MakeApiProblemFn } from "./problemBuilder.ts";
 
 export const createFastifyApp = ({
   fastifyOptions,
   loggerConfig,
-  makeApiProblem = makeApiProblemBuilder({}),
+  makeApiProblem,
   readCorrelationIdFromHeader = true,
   serviceName,
 }: {
@@ -56,7 +53,6 @@ export const createFastifyApp = ({
       return {
         correlationId,
         logger,
-        serviceName,
       };
     },
   });

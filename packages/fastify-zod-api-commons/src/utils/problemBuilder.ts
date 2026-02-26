@@ -8,12 +8,11 @@ import {
 } from "fastify-type-provider-zod";
 import { constants } from "http2";
 import { match, P } from "ts-pattern";
-import { ZodError } from "zod";
+import z from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import type { API_Problem } from "../models/api.ts";
-
 import { getContextValues } from "../context/context.ts";
+import { API_Problem } from "../models/api.ts";
 import { ApiError } from "../models/errors/apiError.ts";
 import {
   commonErrorCodes,
@@ -39,6 +38,10 @@ const makeProblemLogString = (
   return `- title: ${problem.title} ${errorsString} - original error: ${originalError}`;
 };
 
+type MakeProblemFn<T extends string> = (
+  e: ApiError<CommonErrorCodes | T>,
+) => API_Problem;
+
 interface ProblemBuilderOptions {
   /**
    * If true, return a generic problem whenever an error status code is HTTP 500, hiding the underlying error info.
@@ -54,27 +57,30 @@ interface ProblemBuilderOptions {
    * @default true
    */
   problemErrorsPassthrough?: boolean;
+  serviceName: HTTPServiceName;
+}
+
+interface ResolvedApiProblem {
+  apiProblem: API_Problem;
+  logLevel: "error" | "warn";
+  logString: string;
+  shouldForceGenericProblem?: boolean;
 }
 
 export function makeApiProblemBuilder<T extends string>(
   errors: Record<T, string>,
-  options: ProblemBuilderOptions = {},
+  options: ProblemBuilderOptions,
 ): MakeApiProblemFn {
-  const { forceGenericProblemOn500 = false, problemErrorsPassthrough = true } =
-    options;
+  const {
+    forceGenericProblemOn500 = false,
+    problemErrorsPassthrough = true,
+    serviceName,
+  } = options;
   const allErrors = { ...commonErrorCodes, ...errors };
-
-  function retrieveServiceErrorCode(serviceName: HTTPServiceName): string {
-    const serviceNameParsed = HTTPServiceName.safeParse(serviceName);
-    return serviceNameParsed.success
-      ? serviceErrorCode[serviceNameParsed.data]
-      : "000";
-  }
+  const resolvedServiceErrorCode = retrieveServiceErrorCode(serviceName);
 
   return (error) => {
-    const { correlationId, logger, serviceName } =
-      getContextValues(requestContext);
-    const serviceErrorCode = retrieveServiceErrorCode(serviceName);
+    const { correlationId, logger } = getContextValues(requestContext);
 
     const makeProblem = ({
       errors,
@@ -83,7 +89,7 @@ export function makeApiProblemBuilder<T extends string>(
     }: ApiError<CommonErrorCodes | T>): API_Problem => ({
       correlationId,
       errors: errors.map(({ code, detail }) => ({
-        code: `${serviceErrorCode}-${allErrors[code]}`,
+        code: `${resolvedServiceErrorCode}-${allErrors[code]}`,
         detail,
       })),
       status,
@@ -92,125 +98,143 @@ export function makeApiProblemBuilder<T extends string>(
 
     const genericProblem = makeProblem(genericError("Unexpected error"));
 
-    return match<unknown, API_Problem>(error)
-      .with(
-        P.when((e) => hasZodFastifySchemaValidationErrors(e)),
-        (e) => {
-          const problem = makeProblem(zodFastifySchemaValidationError(e));
-          const problemLogString = makeProblemLogString(problem, e);
+    const { apiProblem, logLevel, logString, shouldForceGenericProblem } =
+      resolveApiProblem<T>({
+        error,
+        genericProblem,
+        makeProblem,
+        problemErrorsPassthrough,
+      });
 
-          logger.warn(problemLogString);
-          return problem;
-        },
-      )
-      .with(
-        P.when((e) => isResponseSerializationError(e)),
-        (e) => {
-          const problem = makeProblem(responseSerializationError(e));
-          const problemLogString = makeProblemLogString(problem, e);
+    if (forceGenericProblemOn500 && shouldForceGenericProblem) {
+      logger[logLevel](
+        `${logString}. forceGenericProblemOn500 is set to true, returning generic problem`,
+      );
+      return genericProblem;
+    }
 
-          logger.warn(problemLogString);
-          return problem;
-        },
-      )
-      .with(P.instanceOf(ApiError<CommonErrorCodes | T>), (e) => {
-        const isInternalServerError =
-          e.status === HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    logger[logLevel](logString);
 
-        const problem = makeProblem(e);
-        const problemLogString = makeProblemLogString(problem, e);
+    return apiProblem;
+  };
+}
 
-        if (forceGenericProblemOn500 && isInternalServerError) {
-          logger.warn(
-            `${problemLogString}. forceGenericProblemOn500 is set to true, returning generic problem`,
-          );
-          return genericProblem;
-        }
+const isPassThroughResponseError = (
+  errorResponse: unknown,
+): errorResponse is AxiosError<API_Problem> & {
+  response: { data: API_Problem };
+} =>
+  isAxiosError(errorResponse) &&
+  API_Problem.safeParse(errorResponse?.response?.data).success;
 
-        logger.warn(problemLogString);
-        return problem;
-      })
-      .with(P.instanceOf(FastifyError), (e) => {
-        const httpStatus = e.statusCode ?? HTTP_STATUS_INTERNAL_SERVER_ERROR;
+function resolveApiProblem<T extends string>(params: {
+  error: unknown;
+  genericProblem: API_Problem;
+  makeProblem: MakeProblemFn<T>;
+  problemErrorsPassthrough: boolean;
+}): ResolvedApiProblem {
+  const { error, genericProblem, makeProblem, problemErrorsPassthrough } =
+    params;
 
-        const problem = makeProblem(fastifyError(httpStatus, e.message));
-        const problemLogString = makeProblemLogString(problem, e);
+  return match<unknown, ResolvedApiProblem>(error)
+    .with(
+      P.when((e) => hasZodFastifySchemaValidationErrors(e)),
+      (e) => {
+        const apiProblem = makeProblem(zodFastifySchemaValidationError(e));
+        const problemLogString = makeProblemLogString(apiProblem, e);
+        return {
+          apiProblem,
+          logLevel: "warn",
+          logString: problemLogString,
+        };
+      },
+    )
+    .with(
+      P.when((e) => isResponseSerializationError(e)),
+      (e) => {
+        const apiProblem = makeProblem(responseSerializationError(e));
+        const problemLogString = makeProblemLogString(apiProblem, e);
+        return {
+          apiProblem,
+          logLevel: "warn",
+          logString: problemLogString,
+        };
+      },
+    )
+    .with(P.instanceOf(ApiError<CommonErrorCodes | T>), (e) => {
+      const apiProblem = makeProblem(e);
+      const problemLogString = makeProblemLogString(apiProblem, e);
+      return {
+        apiProblem,
+        logLevel: "warn",
+        logString: problemLogString,
+        shouldForceGenericProblem:
+          e.status === HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      };
+    })
+    .with(P.instanceOf(FastifyError), (e) => {
+      const httpStatus = e.statusCode ?? HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
-        if (
-          forceGenericProblemOn500 &&
-          httpStatus === HTTP_STATUS_INTERNAL_SERVER_ERROR
-        ) {
-          logger.warn(
-            `${problemLogString}. forceGenericProblemOn500 is set to true, returning generic problem`,
-          );
-          return genericProblem;
-        }
+      const apiProblem = makeProblem(fastifyError(httpStatus, e.message));
+      const problemLogString = makeProblemLogString(apiProblem, e);
 
-        logger.warn(problemLogString);
-        return problem;
-      })
-      .with(
-        /* this case is to allow a passthrough of API_Problem errors, so that
+      return {
+        apiProblem,
+        logLevel: "warn",
+        logString: problemLogString,
+        shouldForceGenericProblem:
+          httpStatus === HTTP_STATUS_INTERNAL_SERVER_ERROR,
+      };
+    })
+    .with(
+      /* this case is to allow a passthrough of API_Problem errors, so that
            services that call other interop services can forward API_Problem errors
            as they are, without the need to explicitly handle them */
-        P.intersection(
-          P.when((e): e is AxiosError<API_Problem> => isAxiosError(e)),
-          {
-            response: {
-              data: {
-                correlationId: P.string.optional(),
-                errors: P.array({
-                  code: P.string,
-                  detail: P.string,
-                }),
-                status: P.number,
-                title: P.string,
-              },
-              // Also matching AxiosError content to ensure data matches API_Problem type
-              status: P.number,
-            },
-          },
-        ),
-        (e) => {
-          const receivedProblem: API_Problem = e.response.data;
-          if (problemErrorsPassthrough) {
-            const problemLogString = makeProblemLogString(receivedProblem, e);
+      P.when((e) => isPassThroughResponseError(e)),
+      (e) => {
+        const receivedProblem = e.response.data;
+        if (problemErrorsPassthrough) {
+          return {
+            apiProblem: receivedProblem,
+            logLevel: "warn",
+            logString: makeProblemLogString(receivedProblem, e),
+            shouldForceGenericProblem:
+              e.response.status === HTTP_STATUS_INTERNAL_SERVER_ERROR ||
+              receivedProblem.status === HTTP_STATUS_INTERNAL_SERVER_ERROR,
+          };
+        }
 
-            if (
-              forceGenericProblemOn500 &&
-              (e.response.status === HTTP_STATUS_INTERNAL_SERVER_ERROR ||
-                receivedProblem.status === HTTP_STATUS_INTERNAL_SERVER_ERROR)
-            ) {
-              logger.warn(
-                `${problemLogString}. forceGenericProblemOn500 is set to true, returning generic problem`,
-              );
-              return genericProblem;
-            }
+        return {
+          apiProblem: genericProblem,
+          logLevel: "warn",
+          logString: makeProblemLogString(
+            genericProblem,
+            `${receivedProblem.title} - status ${receivedProblem.status}`,
+          ),
+        };
+      },
+    )
+    .with(P.instanceOf(z.ZodError), (e) =>
+      // Zod errors shall always be caught and handled throwing
+      // an ApiError. If a ZodError arrives here we log it and
+      // return a generic problem
+      ({
+        apiProblem: genericProblem,
+        logLevel: "error",
+        logString: makeProblemLogString(genericProblem, fromZodError(e)),
+      }),
+    )
+    .otherwise((e: unknown) => ({
+      apiProblem: genericProblem,
+      logLevel: "error",
+      logString: makeProblemLogString(genericProblem, e),
+    }));
+}
 
-            logger.warn(problemLogString);
-            return receivedProblem;
-          } else {
-            logger.warn(
-              makeProblemLogString(
-                genericProblem,
-                `${receivedProblem.title} - status ${receivedProblem.status}`,
-              ),
-            );
-            return genericProblem;
-          }
-        },
-      )
-      .with(P.instanceOf(ZodError), (e) => {
-        // Zod errors shall always be caught and handled throwing
-        // an ApiError. If a ZodError arrives here we log it and
-        // return a generic problem
-        const zodError = fromZodError(e);
-        logger.error(makeProblemLogString(genericProblem, zodError));
-        return genericProblem;
-      })
-      .otherwise((e: unknown): API_Problem => {
-        logger.error(makeProblemLogString(genericProblem, e));
-        return genericProblem;
-      });
-  };
+function retrieveServiceErrorCode(serviceName: string): string {
+  return HTTPServiceName.transform(
+    (serviceName) => serviceErrorCode[serviceName],
+  )
+    .catch("000")
+    .parse(serviceName);
 }
