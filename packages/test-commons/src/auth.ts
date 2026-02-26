@@ -32,7 +32,7 @@ export function createTestTokenPayload(
   return new UnsecuredJWT(claims).encode();
 }
 
-function getTestInternalTokenClaims(): InternalTokenClaims {
+export function getTestInternalTokenClaims(): InternalTokenClaims {
   return {
     aud: "test-audience",
     exp: 9999999999,
@@ -44,7 +44,7 @@ function getTestInternalTokenClaims(): InternalTokenClaims {
   };
 }
 
-function getTestUISessionTokenClaims(): UISessionTokenClaims {
+export function getTestUISessionTokenClaims(): UISessionTokenClaims {
   return {
     aud: "test-audience",
     exp: 9999999999,

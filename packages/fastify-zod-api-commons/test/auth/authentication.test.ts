@@ -1,11 +1,10 @@
-import type {
-  InternalTokenClaims,
-  UISessionTokenClaims,
-} from "@knodia/common-models/auth";
-
 import fastifyRequestContext from "@fastify/request-context";
 import { requestContext } from "@fastify/request-context";
-import { generateId, OrganizationId, UserId } from "@knodia/common-models/ids";
+import { generateId } from "@knodia/common-models/ids";
+import {
+  getTestInternalTokenClaims,
+  getTestUISessionTokenClaims,
+} from "@knodia/test-commons/auth";
 import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
@@ -79,30 +78,8 @@ describe("parseAuthHeaderToken", () => {
   });
 });
 
-const userId = generateId<UserId>();
-const organizationId = generateId<OrganizationId>();
-
-const validUISessionPayload: UISessionTokenClaims = {
-  aud: "test-audience",
-  exp: 9999999999,
-  iat: 0,
-  iss: "test-issuer",
-  jti: "test-jti",
-  organizationId,
-  roles: ["administrative"],
-  sub: userId,
-  type: "ui-session",
-};
-
-const validInternalPayload: InternalTokenClaims = {
-  aud: "test-audience",
-  exp: 9999999999,
-  iat: 0,
-  iss: "test-issuer",
-  jti: "test-jti",
-  sub: "test-internal-service",
-  type: "internal",
-};
+const validUISessionPayload = getTestUISessionTokenClaims();
+const validInternalPayload = getTestInternalTokenClaims();
 
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
@@ -180,7 +157,7 @@ describe("authenticationPlugin", () => {
 
     it("returns 401 when the verified payload does not match KnodiaTokenClaims", async () => {
       jwtVerify.mockResolvedValueOnce({
-        payload: { sub: userId, tokenType: "unknown" },
+        payload: { sub: "some-user", tokenType: "unknown" },
       });
 
       const response = await app.inject({
@@ -237,9 +214,9 @@ describe("authenticationPlugin", () => {
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
         authData: {
-          organizationId,
-          tokenType: "ui-session",
-          userId,
+          organizationId: validUISessionPayload.organizationId,
+          tokenType: validUISessionPayload.type,
+          userId: validUISessionPayload.sub,
           userRoles: ["administrative"],
         },
       });
@@ -257,7 +234,7 @@ describe("authenticationPlugin", () => {
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
         authData: {
-          tokenType: "internal",
+          tokenType: validInternalPayload.type,
         },
       });
     });
@@ -285,9 +262,9 @@ describe("authenticationPlugin", () => {
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
         authData: {
-          organizationId,
-          tokenType: "ui-session",
-          userId,
+          organizationId: validUISessionPayload.organizationId,
+          tokenType: validUISessionPayload.type,
+          userId: validUISessionPayload.sub,
           userRoles: ["administrative"],
         },
       });
