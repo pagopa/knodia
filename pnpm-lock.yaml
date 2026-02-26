@@ -1611,9 +1611,6 @@ importers:
       '@confluentinc/kafka-javascript':
         specifier: 'catalog:'
         version: 1.7.0
-      '@fastify/request-context':
-        specifier: 'catalog:'
-        version: 6.2.1
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../models/agreement-models
@@ -1629,9 +1626,6 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@knodia/fastify-zod-api-commons':
-        specifier: workspace:*
-        version: link:../fastify-zod-api-commons
       '@knodia/kafka-commons':
         specifier: workspace:*
         version: link:../kafka-commons
@@ -1656,9 +1650,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      fastify-plugin:
-        specifier: 'catalog:'
-        version: 5.1.0
       jose:
         specifier: 'catalog:'
         version: 6.1.3

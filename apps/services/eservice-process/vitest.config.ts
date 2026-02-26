@@ -5,6 +5,6 @@ const require = createRequire(import.meta.url);
 
 export default defineProject({
   test: {
-    setupFiles: [require.resolve("@knodia/test-commons/authMock")],
+    setupFiles: [require.resolve("@knodia/fastify-zod-api-commons/authMock")],
   },
 });
