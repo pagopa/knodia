@@ -30,7 +30,6 @@ export function remoteResourcesManagerServiceBuilder(
       eserviceId: string,
       knodeId: string,
       { correlationId, logger }: RequestContextData,
-      authorization: string | undefined,
     ): Promise<API_CatalogEserviceDetail> {
       logger.info(
         { eserviceId, knodeId },
@@ -40,7 +39,6 @@ export function remoteResourcesManagerServiceBuilder(
       const { data } = await k2kGatewayApi.getCatalogEserviceDetail({
         client: k2kGatewayClient,
         headers: {
-          Authorization: authorization,
           [CORRELATION_ID_HEADER]: correlationId,
         },
         path: { eserviceId },

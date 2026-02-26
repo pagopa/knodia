@@ -89,7 +89,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       const { data } = await remoteResourcesManagerApi.getCatalogEserviceDetail(
         {
           client: remoteResourcesManagerClient,
-          headers: getProcessHeaders(req, correlationId),
+          headers: getKnodiaServiceHeaders(req, correlationId),
           path: { eserviceId: req.params.eserviceId },
           query: { knodeId: req.query.knodeId },
         },

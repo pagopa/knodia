@@ -99,10 +99,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         `Getting catalog E-service detail with ID ${req.params.eserviceId}`,
       );
 
-      const headers = {
-        Authorization: req.headers.authorization,
-        [CORRELATION_ID_HEADER]: correlationId,
-      };
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
 
       const path = { eserviceId: req.params.eserviceId };
 
