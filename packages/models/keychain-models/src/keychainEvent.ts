@@ -7,7 +7,7 @@ import { KeychainCreatedV1 } from "./generated/v1/keychainEvents.ts";
 export const KeychainEventV1 = z.discriminatedUnion("type", [
   z.object({
     data: protobufBinaryCodec(KeychainCreatedV1),
-    type: z.literal("KeychainCreated"),
+    type: z.literal("KeychainCreatedV1"),
   }),
 ]);
 export type KeychainEventV1 = z.infer<typeof KeychainEventV1>;
