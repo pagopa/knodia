@@ -83,7 +83,7 @@ describe("EserviceEventV1 codec", () => {
     expect(codec.decode(bytes)).toEqual(value);
   });
 
-  it("decodes a KafkaKafkaMessageEnvelope with EserviceEventV1 data", () => {
+  it("decodes a KafkaMessageEnvelope with EserviceEventV1 data", () => {
     const toHex = (value: Uint8Array) => Buffer.from(value).toString("hex");
 
     const event: EserviceEventV1 = {

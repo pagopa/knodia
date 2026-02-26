@@ -37,7 +37,7 @@ describe("AgreementEventV1 codec", () => {
     expect(codec.decode(bytes)).toEqual(value);
   });
 
-  it("decodes a KafkaKafkaMessageEnvelope with AgreementEventV1 data", () => {
+  it("decodes a KafkaMessageEnvelope with AgreementEventV1 data", () => {
     const toHex = (value: Uint8Array) => Buffer.from(value).toString("hex");
 
     const event: AgreementEventV1 = {
