@@ -4,8 +4,11 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { match } from "ts-pattern";
 
-// Future union member: | InternalAuthData
-export type AuthData = UISessionAuthData;
+export type AuthData = InternalAuthData | UISessionAuthData;
+
+export interface InternalAuthData {
+  tokenType: "internal";
+}
 
 export interface UISessionAuthData {
   organizationId: OrganizationId;
@@ -23,6 +26,12 @@ export function extractAuthDataFromToken(claims: KnodiaTokenClaims): AuthData {
         tokenType: "ui-session",
         userId: c.sub,
         userRoles: c.roles,
+      }),
+    )
+    .with(
+      { type: "internal" },
+      (): InternalAuthData => ({
+        tokenType: "internal",
       }),
     )
     .exhaustive();

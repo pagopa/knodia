@@ -5,8 +5,8 @@ import {
 } from "@knodia/common-models/ids";
 
 export interface HTTPServiceLoggerMetadata extends LoggerMetadataCommon {
-  organizationId: OrganizationId;
-  userId: UserId;
+  organizationId?: OrganizationId;
+  userId?: UserId;
 }
 
 export interface KafkaConsumerLoggerMetadata extends LoggerMetadataCommon {
