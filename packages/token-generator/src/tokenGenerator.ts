@@ -22,7 +22,7 @@ export interface InternalTokenInput extends TokenParams {
   subject: string;
 }
 
-export interface RefreshTokenInput extends TokenParams {
+interface RefreshTokenInput extends TokenParams {
   organizationId: OrganizationId;
   roles: NonEmptyArray<z.infer<typeof UserRole>>;
   subject: UserId;
