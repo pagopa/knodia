@@ -19,10 +19,12 @@ export function getMockEservice({
   latestVersionState,
   maxArrayLength,
   minArrayLength = 1,
+  seed = 0,
 }: {
   latestVersionState?: EserviceVersionState;
   maxArrayLength?: number;
   minArrayLength?: number;
+  seed?: number;
 } = {}): Eservice {
   return {
     ...zocker(Eservice)
@@ -30,7 +32,7 @@ export function getMockEservice({
         max: maxArrayLength,
         min: minArrayLength,
       })
-      .setSeed(0)
+      .setSeed(seed)
       .generate(),
     ...(latestVersionState !== undefined
       ? {
@@ -41,7 +43,7 @@ export function getMockEservice({
                 min: minArrayLength,
               })
               .supply(EserviceVersion.shape.state, latestVersionState)
-              .setSeed(0)
+              .setSeed(seed)
               .generate(),
           ],
         }
