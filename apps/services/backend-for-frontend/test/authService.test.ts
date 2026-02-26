@@ -3,6 +3,7 @@ import type {
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
 
+import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -77,7 +78,7 @@ function makeRefreshPayload(
     exp: Math.floor(Date.now() / 1000) + 86400,
     iat: Math.floor(Date.now() / 1000),
     iss: "test-issuer",
-    jti: "some-jti",
+    jti: crypto.randomUUID(),
     organizationId: TEST_ORG_ID,
     roles: ["administrative", "technical"],
     sub: TEST_USER_ID,
@@ -166,7 +167,9 @@ describe("generateTokenPair", () => {
 
     const service = buildService();
 
-    await expect(service.generateTokenPair("bad-token")).rejects.toThrow();
+    await expect(service.generateTokenPair("bad-token")).rejects.toThrow(
+      unauthorizedError("Cognito token verification failed"),
+    );
   });
 
   it("throws unauthorized when cognito:groups is missing", async () => {
@@ -174,51 +177,45 @@ describe("generateTokenPair", () => {
       payload: { sub: TEST_USER_ID },
       protectedHeader: { alg: "RS256" },
     });
-
     const service = buildService();
-
-    await expect(
-      service.generateTokenPair("token-no-groups"),
-    ).rejects.toThrow();
+    await expect(service.generateTokenPair("token")).rejects.toThrow(
+      unauthorizedError("Invalid Cognito token payload"),
+    );
   });
 
   it("throws unauthorized when no org: group is present", async () => {
-    setupValidCognitoToken({
-      "cognito:groups": ["role:administrative"],
-    });
-
+    setupValidCognitoToken({ "cognito:groups": ["role:administrative"] });
     const service = buildService();
-
-    await expect(service.generateTokenPair("token-no-org")).rejects.toThrow();
+    await expect(service.generateTokenPair("token")).rejects.toThrow(
+      unauthorizedError("Missing organization claim in cognito token"),
+    );
   });
 
   it("throws unauthorized when no role: group is present", async () => {
-    setupValidCognitoToken({
-      "cognito:groups": [`org:${TEST_ORG_ID}`],
-    });
-
+    setupValidCognitoToken({ "cognito:groups": [`org:${TEST_ORG_ID}`] });
     const service = buildService();
-
-    await expect(service.generateTokenPair("token-no-roles")).rejects.toThrow();
+    await expect(service.generateTokenPair("token")).rejects.toThrow(
+      unauthorizedError("Missing role claims in cognito token"),
+    );
   });
 
   it("throws unauthorized when role is not a valid UserRole value", async () => {
     setupValidCognitoToken({
       "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
     });
-
     const service = buildService();
-
-    await expect(service.generateTokenPair("token-bad-role")).rejects.toThrow();
+    await expect(service.generateTokenPair("token")).rejects.toThrow(
+      unauthorizedError("Missing role claims in cognito token"),
+    );
   });
 
-  it("throws unauthorized when KMS returns no signature", async () => {
+  it("throws error when KMS returns no signature", async () => {
     setupValidCognitoToken();
     mockKmsSend.mockResolvedValue({ Signature: undefined });
-
     const service = buildService();
-
-    await expect(service.generateTokenPair("token")).rejects.toThrow();
+    await expect(service.generateTokenPair("token")).rejects.toThrow(
+      new Error("KMS sign returned no signature"),
+    );
   });
 
   it("extracts org ID by stripping the 'org:' prefix", async () => {
@@ -285,7 +282,9 @@ describe("refreshTokenPair", () => {
   it("throws when refresh token verification fails", async () => {
     mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
     const service = buildService();
-    await expect(service.refreshTokenPair("bad-jwt")).rejects.toThrow();
+    await expect(service.refreshTokenPair("bad-jwt")).rejects.toThrow(
+      unauthorizedError("Refresh token verification failed"),
+    );
   });
 
   it("throws when refresh token has invalid claims", async () => {
@@ -294,17 +293,22 @@ describe("refreshTokenPair", () => {
       protectedHeader: { alg: "RS256" },
     });
     const service = buildService();
-    await expect(service.refreshTokenPair("jwt")).rejects.toThrow();
+    await expect(service.refreshTokenPair("jwt")).rejects.toThrow(
+      unauthorizedError("Invalid refresh token claims"),
+    );
   });
 
   it("throws when refresh token has wrong type", async () => {
     setupValidRefreshToken({ type: "ui-session" });
     const service = buildService();
-    await expect(service.refreshTokenPair("jwt")).rejects.toThrow();
+    await expect(service.refreshTokenPair("jwt")).rejects.toThrow(
+      unauthorizedError("Invalid refresh token claims"),
+    );
   });
 
   it("throws when the same refresh token is used twice", async () => {
-    setupValidRefreshToken();
+    const fixedJti = "reuse-test-jti";
+    setupValidRefreshToken({ jti: fixedJti });
     mockKmsSend.mockResolvedValue({
       Signature: new Uint8Array([1, 2, 3, 4]),
     });
@@ -312,9 +316,9 @@ describe("refreshTokenPair", () => {
     const service = buildService();
     await service.refreshTokenPair("refresh-jwt");
 
-    setupValidRefreshToken();
+    setupValidRefreshToken({ jti: fixedJti });
     await expect(service.refreshTokenPair("refresh-jwt")).rejects.toThrow(
-      /already used/,
+      unauthorizedError("Refresh token already used"),
     );
   });
 
