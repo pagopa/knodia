@@ -10,8 +10,6 @@ const USER_ID = "00000000-0000-4000-8000-000000000001";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
 
-// --- RSA key pair generated in memory at startup ---
-
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   modulusLength: 2048,
 });
@@ -22,8 +20,6 @@ const JWKS = {
 
 // Auth codes for the authorization code flow (consumed immediately by /token)
 const authCodes = new Map();
-
-// --- JWT helpers ---
 
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
@@ -41,8 +37,6 @@ function signJwt(payload) {
   return `${message}.${signature}`;
 }
 
-// --- Request body parser ---
-
 function readBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -52,15 +46,22 @@ function readBody(req) {
   });
 }
 
-// --- CORS helpers ---
-
 function setCorsHeaders(res) {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
-// --- HTTP server ---
+function isAllowedRedirect(target) {
+  try {
+    const parsed = new URL(target);
+    const allowedOrigin = new URL(ALLOWED_ORIGIN).origin;
+    const issuerOrigin = new URL(ISSUER).origin;
+    return parsed.origin === allowedOrigin || parsed.origin === issuerOrigin;
+  } catch {
+    return false;
+  }
+}
 
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
@@ -206,6 +207,14 @@ createServer(async (req, res) => {
       if (!logoutUri) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "logout_uri is required" }));
+        return;
+      }
+
+      if (!isAllowedRedirect(logoutUri)) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({ error: "logout_uri is not an allowed redirect" }),
+        );
         return;
       }
 
