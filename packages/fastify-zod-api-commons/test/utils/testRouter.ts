@@ -7,7 +7,7 @@ import {
 import z from "zod";
 
 import { API_Problem } from "../../src/models/api.ts";
-import { processHeaders } from "../../src/models/index.ts";
+import { KnodiaServiceHeaders } from "../../src/models/index.ts";
 
 export const testTags = {
   test: "test",
@@ -39,7 +39,7 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
     method: "GET",
     schema: {
       description: "Test GET endpoint",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "getTest",
       querystring: z
         .strictObject({
@@ -65,7 +65,7 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
     schema: {
       body: API_Test,
       description: "Test POST endpoint",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "createTest",
       response: {
         201: API_Test.meta({ description: "Resource created successfully" }),
