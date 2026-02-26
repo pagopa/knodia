@@ -3,14 +3,14 @@ import { z } from "zod";
 export const EventStoreConfig = z
   .object({
     EVENTSTORE_DB_HOST: z.string().default("localhost"),
-    EVENTSTORE_DB_NAME: z.string().default("root"),
+    EVENTSTORE_DB_NAME: z.string().default("event_store"),
     EVENTSTORE_DB_PASSWORD: z.string().default("root"),
     EVENTSTORE_DB_PORT: z.coerce
       .number()
       .int()
       .min(1024)
       .max(65535)
-      .default(6001),
+      .default(5432),
     EVENTSTORE_DB_USE_SSL: z.stringbool().default(false),
     EVENTSTORE_DB_USER: z.string().default("root"),
   })
