@@ -1,8 +1,10 @@
-interface Attribute {
-  code: string;
-  name: string;
-  scheme: string;
-}
+const Attribute = z.strictObject({
+  code: z.string(),
+  scheme: z.string(),
+});
+export type Attribute = z.infer<typeof Attribute>;
+export const AttributeGroup = z.array(Attribute).min(1);
+export type AttributeGroup = z.infer<typeof AttributeGroup>;
 
 export const attributes: Record<string, Record<string, string>> = {
   vc_territorial_units: {
@@ -20,5 +22,7 @@ export function getAttribute(
   if (name === undefined) {
     return undefined;
   }
-  return { code, name, scheme };
+  return { code, scheme };
 }
+
+import { z } from "zod";

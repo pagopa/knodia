@@ -1,4 +1,4 @@
-import type { RequiredAttributeGroup } from "@knodia/attribute-models";
+import type { AttributeGroup } from "@knodia/attribute-models";
 
 import { match } from "ts-pattern";
 
@@ -28,7 +28,7 @@ export const toAgreementV1 = (agreement: Agreement): AgreementV1 => ({
 });
 
 const toAgreementRequiredAttributeGroupV1 = (
-  group: RequiredAttributeGroup,
+  group: AttributeGroup,
   index: number,
 ): AgreementRequiredAttributeGroupV1 => ({
   attributes: group,

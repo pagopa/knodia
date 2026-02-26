@@ -1,4 +1,4 @@
-import type { RequiredAttribute } from "@knodia/attribute-models";
+import type { Attribute } from "@knodia/attribute-models";
 import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
 import type {
   EserviceCategorySQL,
@@ -119,7 +119,7 @@ const splitEserviceVersionIntoObjectsSQL = (
 });
 
 const toEserviceVersionRequiredAttributeSQL = (
-  group: RequiredAttribute[],
+  group: Attribute[],
   groupId: number,
   eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,

@@ -1,5 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type { RequiredAttribute } from "@knodia/attribute-models";
+import type { Attribute } from "@knodia/attribute-models";
 import type { AgreementId } from "@knodia/common-models/ids";
 
 import type {
@@ -30,7 +30,7 @@ export const splitAgreementIntoObjectsSQL = (
 };
 
 const toAgreementRequiredAttributeSQL = (
-  group: RequiredAttribute[],
+  group: Attribute[],
   groupId: number,
   agreementId: AgreementId,
   metadataVersion: number,

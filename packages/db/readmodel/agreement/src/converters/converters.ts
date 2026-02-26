@@ -1,14 +1,11 @@
-import type {
-  RequiredAttribute,
-  RequiredAttributeGroup,
-} from "@knodia/attribute-models";
+import type { Attribute, AttributeGroup } from "@knodia/attribute-models";
 
 import type { AgreementRequiredAttributeSQL } from "../agreement.ts";
 
 export const toGroupedRequiredAttributes = (
   requiredAttributesSQL: AgreementRequiredAttributeSQL[],
-): RequiredAttributeGroup[] => {
-  const groupsMap = new Map<number, RequiredAttribute[]>();
+): AttributeGroup[] => {
+  const groupsMap = new Map<number, Attribute[]>();
 
   for (const attribute of requiredAttributesSQL) {
     const group = groupsMap.get(attribute.groupId) ?? [];

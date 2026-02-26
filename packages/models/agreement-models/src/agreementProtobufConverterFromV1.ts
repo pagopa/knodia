@@ -1,4 +1,4 @@
-import type { RequiredAttributeGroup } from "@knodia/attribute-models";
+import type { AttributeGroup } from "@knodia/attribute-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
@@ -50,7 +50,7 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
 
 const fromAgreementRequiredAttributeGroupV1 = (
   input: AgreementRequiredAttributeGroupV1,
-): RequiredAttributeGroup => input.attributes;
+): AttributeGroup => input.attributes;
 
 const fromAgreementConsumerV1 = (
   input: AgreementConsumerV1,
