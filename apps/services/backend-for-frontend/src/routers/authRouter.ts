@@ -4,10 +4,10 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
 import { apiTags } from "../models/apiTags.ts";
-import { type authorizationServiceBuilder } from "../services/authorizationService.ts";
+import { type authServiceBuilder } from "../services/authService.ts";
 
 interface AuthRouterOptions {
-  authorizationService: ReturnType<typeof authorizationServiceBuilder>;
+  authService: ReturnType<typeof authServiceBuilder>;
 }
 
 const API_SessionRequest = z
@@ -24,14 +24,14 @@ const API_SessionResponse = z
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
-  { authorizationService },
+  { authService },
 ) => {
   fastify.route({
     handler: async (req, res) => {
       const { oidcToken } = req.body;
 
       const uiSessionToken =
-        await authorizationService.generateUISessionToken(oidcToken);
+        await authService.generateUISessionToken(oidcToken);
 
       res.send({
         uiSessionToken,
