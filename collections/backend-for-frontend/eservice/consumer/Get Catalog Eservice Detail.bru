@@ -1,0 +1,22 @@
+meta {
+  name: Get Catalog Eservice Detail
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/catalog/:eserviceId?knodeId=Lynx
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+params:query {
+  knodeId: Lynx
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+}

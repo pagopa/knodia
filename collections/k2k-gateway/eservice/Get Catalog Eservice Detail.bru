@@ -1,0 +1,15 @@
+meta {
+  name: Get Catalog Eservice Detail
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/catalog/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
