@@ -34,7 +34,11 @@ export const Route = createFileRoute(
   loaderDeps: ({ search }) => search,
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
-    const body = buildCatalogSearchBody(deps);
+    const body = buildCatalogSearchBody({
+      category: deps.category,
+      keywords: deps.keywords,
+      knodeId: deps.knode,
+    });
     if (body) {
       queryClient.prefetchQuery(catalogQuery(body, deps.offset));
     }
@@ -53,7 +57,7 @@ function RouteComponent() {
   const body = buildCatalogSearchBody({
     category: search.category,
     keywords: search.keywords,
-    knode: search.knode,
+    knodeId: search.knode,
   });
 
   const { data, isLoading } = useQuery({
