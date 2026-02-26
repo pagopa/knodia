@@ -34,9 +34,11 @@ type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
 export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
-  const bffJwks = config.wellKnownUrls.map((url) =>
-    createRemoteJWKSet(new URL(url)),
-  );
+  const bffWellKnownUrl = config.wellKnownUrls[0];
+  if (!bffWellKnownUrl) {
+    throw new Error("wellKnownUrls must contain at least one URL");
+  }
+  const bffJwks = createRemoteJWKSet(new URL(bffWellKnownUrl));
 
   const tokenParams = {
     audience: config.uiSessionJwt.audience,
@@ -124,22 +126,11 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   }
 
   async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
-    let rawPayload: unknown = null;
-    for (const jwks of bffJwks) {
-      try {
-        const { payload } = await jwtVerify(token, jwks, {
-          audience: config.acceptedAudiences,
-        });
-        rawPayload = payload;
-        break;
-      } catch {
-        // Try next JWKS set
-      }
-    }
-
-    if (rawPayload === null) {
+    const { payload: rawPayload } = await jwtVerify(token, bffJwks, {
+      audience: config.acceptedAudiences,
+    }).catch(() => {
       throw unauthorizedError("Refresh token verification failed");
-    }
+    });
 
     const parsed = RefreshTokenClaims.safeParse(rawPayload);
     if (!parsed.success) {

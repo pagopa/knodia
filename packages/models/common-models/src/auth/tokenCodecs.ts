@@ -29,6 +29,7 @@ export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 export const RefreshTokenClaims = BaseJwtClaims.extend({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
+  sub: UserId,
   type: z.literal("refresh"),
 });
 export type RefreshTokenClaims = z.infer<typeof RefreshTokenClaims>;

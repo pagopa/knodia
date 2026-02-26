@@ -3,6 +3,7 @@ import axios, { isAxiosError } from "axios";
 
 import { config } from "@/config/config";
 import {
+  clearAllTokens,
   getAuthToken,
   getRefreshToken,
   redirectToLogout,
@@ -64,6 +65,7 @@ axios.interceptors.response.use(
         return axios.request(error.config);
       }
 
+      clearAllTokens();
       redirectToLogout();
     }
 
