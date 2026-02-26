@@ -35,7 +35,7 @@ describe("Keychain read model writer tests", async () => {
     const metadataVersion = 0;
     await sendTestEvent({
       data: eventData,
-      eventType: "KeychainCreated",
+      eventType: "KeychainCreatedV1",
       metadataVersion,
       producer,
       streamId: keychain.id,

@@ -12,7 +12,7 @@ export async function handleKeychainEvent(
   assertDataExistsInEvent(message, "keychain");
 
   return match(message)
-    .with({ type: "KeychainCreated" }, async (msg) => {
+    .with({ type: "KeychainCreatedV1" }, async (msg) => {
       await writerService.upsertKeychain(
         fromKeychainV1(msg.data.keychain),
         message.version,
