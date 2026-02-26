@@ -4,7 +4,7 @@ import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  processHeaders,
+  KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import type { AgreementService } from "../services/agreementService.ts";
@@ -33,7 +33,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_AgreementSeed,
       description: "Create a new Agreement",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "createAgreement",
       response: {
         201: API_Agreement.meta({

@@ -15,7 +15,9 @@ const errorCodes = {
 
 type ErrorCodes = keyof typeof errorCodes;
 
-export const makeApiProblem = makeApiProblemBuilder(errorCodes);
+export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
+  serviceName: "agreement-process",
+});
 
 // TODO: copied from eservice-process, consider centralizing
 export function eserviceNotFound(id: EserviceId) {
