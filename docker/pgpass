@@ -1,2 +1,1 @@
-event-store:5432:root:root:root
-readmodel:5432:root:root:root
+postgres:5432:*:root:root
