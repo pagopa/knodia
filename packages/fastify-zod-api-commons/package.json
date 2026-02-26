@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
