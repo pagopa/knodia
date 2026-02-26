@@ -1,13 +1,11 @@
 import type { EserviceProcessClient } from "@knodia/eservice-process-client";
+import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import {
-  API_Problem,
-  CORRELATION_ID_HEADER,
-} from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import {
   API_CatalogEserviceSearchResults,
@@ -16,14 +14,16 @@ import {
 } from "../models/api.ts";
 import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverters.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface EserviceRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
+  tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
-> = async (fastify, { eserviceProcessClient }) => {
+> = async (fastify, { eserviceProcessClient, tokenProvider }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -33,10 +33,8 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         "Getting catalog E-services with query parameters and body data",
       );
 
-      const headers = {
-        Authorization: req.headers.authorization,
-        [CORRELATION_ID_HEADER]: correlationId,
-      };
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
 
       const { data } = await eserviceProcessApi.getCatalogEservices({
         body: req.body,
