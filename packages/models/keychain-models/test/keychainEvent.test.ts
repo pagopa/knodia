@@ -34,15 +34,15 @@ describe("KeychainEventV1 codec", () => {
     users: [generateId()],
   };
 
-  it("encodes and decodes a KeychainCreated payload (KeychainEventV1 full codec)", () => {
+  it("encodes and decodes a KeychainCreatedV1 payload (KeychainEventV1 full codec)", () => {
     const event: KeychainEventV1 = {
       data: {
         keychain: toKeychainV1(keychain),
       },
-      type: "KeychainCreated",
+      type: "KeychainCreatedV1",
     };
     const encoded = KeychainEventV1.encode(event);
-    expect(encoded).toMatchObject({ type: "KeychainCreated" });
+    expect(encoded).toMatchObject({ type: "KeychainCreatedV1" });
     expect(encoded.data).toBeInstanceOf(Uint8Array);
 
     const decoded = KeychainEventV1.decode(encoded);
@@ -66,7 +66,7 @@ describe("KeychainEventV1 codec", () => {
       data: {
         keychain: toKeychainV1(keychain),
       },
-      type: "KeychainCreated",
+      type: "KeychainCreatedV1",
     };
 
     // This the encoding we perform when writing into the event store DB
