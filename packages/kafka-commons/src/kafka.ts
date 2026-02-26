@@ -1,4 +1,4 @@
-import type { CommonConstructorConfig } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { CommonConstructorConfig } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { Logger } from "pino";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";

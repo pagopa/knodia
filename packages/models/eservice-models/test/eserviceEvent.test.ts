@@ -7,7 +7,7 @@ import type { Eservice } from "../src/eservice.ts";
 import { KafkaMessageEnvelope } from "../../common-models/src/events.ts";
 import { EserviceEventV1 } from "../src/eserviceEvent.ts";
 import { toEserviceV1 } from "../src/eserviceProtobufConverterToV1.ts";
-import { EserviceVersionActivatedV1 } from "../src/generated/v1/eserviceEvents.js";
+import { EserviceVersionActivatedV1 } from "../src/generated/v1/eserviceEvents.ts";
 
 describe("EserviceEventV1 codec", () => {
   const eservice: Eservice = {

@@ -1,4 +1,4 @@
-import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { KafkaConsumerLoggerMetadata } from "@knodia/logger/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { Logger } from "pino";
