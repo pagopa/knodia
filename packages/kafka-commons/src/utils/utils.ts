@@ -1,4 +1,5 @@
 import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { Logger } from "pino";
 import type z from "zod";
 
 import {
@@ -49,4 +50,15 @@ export function decodeKafkaMessageEvent<TEvent extends EventSchema>(
   } catch (error) {
     throw new Error("Invalid message: " + JSON.stringify(error));
   }
+}
+
+export function processExit({
+  exitStatusCode = 1,
+  logger,
+}: {
+  exitStatusCode?: number;
+  logger: Logger;
+}): never {
+  logger.debug(`Process exit with code ${exitStatusCode}`);
+  process.exit(exitStatusCode);
 }

@@ -2,6 +2,7 @@ import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
 
 import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { createTestLogger } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { createProcessMessage } from "../src/utils/utils.ts";
@@ -21,11 +22,8 @@ beforeAll(async () => {
     inject("KAFKA_BROKER"),
   ));
 
-  processMessage = createProcessMessage(readmodelDb, {
-    isProduction: false,
-    logLevel: "silent",
-    nodeEnv: "test",
-  });
+  const { logger } = createTestLogger();
+  processMessage = createProcessMessage(readmodelDb, logger);
 });
 
 beforeEach(async () => {

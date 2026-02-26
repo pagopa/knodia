@@ -1,16 +1,13 @@
-export function throwIfMissing<T>(value: T | undefined, message: string): T;
-export function throwIfMissing<T, R>(
+import { genericInternalError } from "../errors.ts";
+
+/**
+ * Used in Protobuf converters to assert that a value is defined.
+ */
+export function assertRequired<T>(
   value: T | undefined,
-  message: string,
-  converter: (value: T) => R,
-): R;
-export function throwIfMissing<T, R>(
-  value: T | undefined,
-  message: string,
-  converter?: (value: T) => R,
-): R | T {
+  propertyName: string,
+): asserts value is T {
   if (value === undefined) {
-    throw new Error(message);
+    throw genericInternalError(`${propertyName} is undefined`);
   }
-  return converter ? converter(value) : value;
 }
