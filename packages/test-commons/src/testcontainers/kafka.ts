@@ -1,15 +1,23 @@
 import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
-import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
+import type {
+  KafkaConfig,
+  KafkaConsumerConfig,
+} from "@knodia/kafka-commons/config";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 import { generateId } from "@knodia/common-models/ids";
 import { initKafka, runConsumer } from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
 
+import { createTestLogger } from "../utilities/logger.ts";
+
 const { logLevel } = KafkaJS;
 
 const TEST_KAFKA_PORT = 9093;
 const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:8.1.1";
+const AWS_REGION = "eu-south-1";
+
+const { logger } = createTestLogger();
 
 /**
  * !!! Intended to be called once in global test setup !!!
@@ -40,11 +48,19 @@ export async function setupKafkaTestProducer(broker: string) {
   const randomId = crypto.randomUUID();
   const topicName = `test_kafka_topic_worker_${randomId}`;
 
-  const kafka = await initKafka({
+  const kafkaCommonConfig: Omit<KafkaConfig, "kafkaClientId"> = {
+    awsRegion: AWS_REGION,
     kafkaBrokers: broker,
-    kafkaClientId: `test-client-${randomId}`,
+    kafkaDisableAwsIamAuth: true,
     kafkaLogLevel: logLevel.INFO,
-  });
+  };
+  const kafka = await initKafka(
+    {
+      kafkaClientId: `test-client-${randomId}`,
+      ...kafkaCommonConfig,
+    },
+    logger,
+  );
 
   const producer = kafka.producer({
     "allow.auto.create.topics": true,
@@ -53,11 +69,10 @@ export async function setupKafkaTestProducer(broker: string) {
   await producer.connect();
 
   const kafkaConfig: KafkaConsumerConfig = {
-    kafkaBrokers: broker,
     kafkaClientId: `test-consumer-client-${randomId}`,
     kafkaGroupId: `test-consumer-group-${randomId}`,
-    kafkaLogLevel: logLevel.INFO,
     topicStartingOffset: "earliest",
+    ...kafkaCommonConfig,
   };
 
   return { kafkaConfig, producer, topicName };
@@ -86,6 +101,7 @@ export async function runTestConsumer(
         }
       },
       kafkaConfig,
+      logger,
     );
   });
 }
