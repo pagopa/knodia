@@ -46,7 +46,7 @@ services:
   kafka:
     security_opt:
       - no-new-privileges:true
-    image: confluentinc/cp-kafka:7.6.9@sha256:652f4017a6389f22930eb27ad02ce730622ebe145efa442625d7f439f1bc111e
+    image: confluentinc/cp-kafka:8.1.1
     container_name: knodia-kafka
     ports:
       - 9092:9092
@@ -81,6 +81,29 @@ services:
       interval: 5s
       timeout: 5s
       retries: 30
+
+  kafka-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: confluentinc/cp-kafka:8.1.1
+    container_name: knodia-kafka-setup
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./kafka-topics:/kafka-topics:ro
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        while IFS=: read -r topic partitions; do
+          kafka-topics --bootstrap-server kafka:9092 \
+            --create --if-not-exists \
+            --topic "$$topic" \
+            --partitions "$$partitions" \
+            --replication-factor 1
+        done < /kafka-topics
+        echo 'All topics created'
 
   debezium-connect:
     security_opt:
@@ -250,7 +273,6 @@ services:
     command: node scripts/local-kms/kms-setup.mjs
 
   # Serves JWKS endpoints for local token validation
-  # - http://localhost:4500/cognito/.well-known/jwks.json
   # - http://localhost:4500/knodia/.well-known/jwks.json
   local-jwks:
     security_opt:
@@ -261,6 +283,18 @@ services:
       - 4500:80
     volumes:
       - jwks-data:/usr/share/nginx/html:ro
+
+  local-cognito:
+    security_opt:
+      - no-new-privileges:true
+    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
+    container_name: knodia-local-cognito
+    ports:
+      - 4567:3000
+    volumes:
+      - ../scripts/local-kms:/app/scripts/local-kms:ro
+    working_dir: /app
+    command: node scripts/local-kms/local-cognito.mjs
 
 volumes:
   postgres-data:

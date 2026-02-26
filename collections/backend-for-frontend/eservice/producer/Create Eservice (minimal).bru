@@ -1,13 +1,16 @@
 meta {
   name: Create Eservice (minimal)
   type: http
-  seq: 2
 }
 
 post {
   url: {{host-backend-for-frontend}}/producer/eservices
   body: json
   auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
 }
 
 body:json {

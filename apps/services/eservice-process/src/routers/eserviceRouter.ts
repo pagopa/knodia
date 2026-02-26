@@ -6,7 +6,7 @@ import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  processHeaders,
+  KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import type { EserviceService } from "../services/eserviceService.ts";
@@ -17,6 +17,8 @@ import {
   API_EserviceSeed,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
+  API_GetCatalogEserviceSearchParams,
+  API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
 } from "../models/api.ts";
 import {
@@ -34,6 +36,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     handler: async (req, res) => {
       const { results, totalCount } = await eserviceService.getEservices(
         req.query,
+        getContextValues(requestContext),
       );
 
       res.status(200).send({
@@ -48,7 +51,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     method: "GET",
     schema: {
       description: "Retrieve a list of E-services",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "getEservices",
       querystring: API_GetEservicesQueryParams,
       response: {
@@ -64,15 +67,17 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const ctx = getContextValues(requestContext);
-      const eservice = await eserviceService.createEservice(req.body, ctx);
+      const eservice = await eserviceService.createEservice(
+        req.body,
+        getContextValues(requestContext),
+      );
       res.status(201).send(toAPI_Eservice(eservice));
     },
     method: "POST",
     schema: {
       body: API_EserviceSeed,
       description: "Create a new E-service",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "createEservice",
       response: {
         201: API_Eservice.meta({
@@ -88,14 +93,17 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const eservice = await eserviceService.getEservice(req.params.eserviceId);
+      const eservice = await eserviceService.getEservice(
+        req.params.eserviceId,
+        getContextValues(requestContext),
+      );
 
       res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "GET",
     schema: {
       description: "Retrieve an E-service by its ID",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "getEservice",
       params: API_EserviceIdPathParam,
       response: {
@@ -114,6 +122,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     handler: async (req, res) => {
       const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
+        getContextValues(requestContext),
       );
 
       res.status(200).send(toAPI_EserviceVersion(eserviceVersion));
@@ -121,7 +130,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     method: "GET",
     schema: {
       description: "Retrieve the latest version of an E-service",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "getEserviceLatestVersion",
       params: API_EserviceIdPathParam,
       response: {
@@ -140,6 +149,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const eserviceVersionInterface =
         await eserviceService.getEserviceLatestVersionInterface(
           unsafeBrandId(req.params.eserviceId),
+          getContextValues(requestContext),
         );
       res
         .status(200)
@@ -149,7 +159,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     schema: {
       description:
         "Retrieve the interface document of the latest E-service version",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "getEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       response: {
@@ -163,5 +173,41 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { results, totalCount } = await eserviceService.getCatalogEservices(
+        req.body,
+        req.query,
+        getContextValues(requestContext),
+      );
+
+      res.status(200).send({
+        items: results.map(toAPI_Eservice),
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+      });
+    },
+    method: "POST",
+    schema: {
+      body: API_GetCatalogEserviceSearchParams,
+      description:
+        "Retrieve a list of E-services based on complex search criteria contained in the request body",
+      headers: KnodiaServiceHeaders,
+      operationId: "getCatalogEservices",
+      querystring: API_GetCatalogEservicesQueryParams,
+      response: {
+        200: API_Eservices.meta({
+          description: "E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/catalog",
   });
 };

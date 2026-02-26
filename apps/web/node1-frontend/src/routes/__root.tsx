@@ -1,6 +1,5 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
-import { type QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
@@ -10,11 +9,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { RouterProvider } from "react-aria-components";
 
-import { AppLayout } from "@/layouts/AppLayout";
-
-interface RouterContext {
-  queryClient: QueryClient;
-}
+import { type RouterContext } from "@/libs/router";
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
@@ -33,9 +28,7 @@ function RootLayout() {
         return router.buildLocation(href).href;
       }}
     >
-      <AppLayout>
-        <Outlet />
-      </AppLayout>
+      <Outlet />
       <TanStackDevtools
         plugins={[
           {

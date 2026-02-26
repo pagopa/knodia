@@ -1,0 +1,31 @@
+meta {
+  name: Get Catalog Eservices
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/consumer/catalog?offset=0&limit=50
+  body: json
+  auth: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "knodeId": "Orion",
+    "keywords": "test"
+  }
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  eservices: res.body.results
+}

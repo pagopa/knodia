@@ -1,7 +1,6 @@
 meta {
   name: Get Eservices
   type: http
-  seq: 1
 }
 
 get {
@@ -17,4 +16,8 @@ params:query {
   ~mode: ProvideData
   ~sortBy: name
   ~sortOrder: asc
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
 }

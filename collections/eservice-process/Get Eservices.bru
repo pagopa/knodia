@@ -1,7 +1,6 @@
 meta {
   name: Get Eservices
   type: http
-  seq: 2
 }
 
 get {
@@ -23,6 +22,7 @@ params:query {
 
 headers {
   X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
 }
 
 vars:post-response {

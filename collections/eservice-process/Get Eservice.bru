@@ -1,7 +1,6 @@
 meta {
   name: Get Eservice
   type: http
-  seq: 3
 }
 
 get {
@@ -16,4 +15,5 @@ params:path {
 
 headers {
   X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
 }

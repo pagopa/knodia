@@ -1,23 +1,27 @@
 meta {
-  name: Search Eservices
+  name: Get Catalog Eservices
   type: http
-  seq: 1
 }
 
 post {
-  url: {{host-k2k-gateway}}/catalog
+  url: {{host-k2k-gateway}}/catalog?offset=0&limit=50
   body: json
+  auth: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  ~Authorization:
 }
 
 body:json {
   {
     "keywords": "test"
   }
-}
-
-params:query {
-  offset: 0
-  limit: 50
 }
 
 vars:post-response {

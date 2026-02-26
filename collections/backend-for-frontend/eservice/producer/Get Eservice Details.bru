@@ -1,7 +1,6 @@
 meta {
   name: Get Eservice Details
   type: http
-  seq: 2
 }
 
 get {
@@ -12,4 +11,8 @@ get {
 
 params:path {
   eserviceId: {{eserviceId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
 }

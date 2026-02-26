@@ -1,7 +1,11 @@
+import type { HTTPServiceLoggerMetadata } from "@knodia/logger/models";
+
 import { requestContext } from "@fastify/request-context";
 import { KnodiaTokenClaims } from "@knodia/common-models/auth";
+import { type CorrelationId, unsafeBrandId } from "@knodia/common-models/ids";
 import fastifyPlugin from "fastify-plugin";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { match } from "ts-pattern";
 
 import { unauthorizedError } from "../models/errors/errors.ts";
 import { healthRouterUrl } from "../routers/healthRouter.ts";
@@ -61,7 +65,23 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
         throw unauthorizedError("Invalid token claims");
       }
 
-      requestContext.set("authData", extractAuthDataFromToken(parsed.data));
+      const authData = extractAuthDataFromToken(parsed.data);
+      requestContext.set("authData", authData);
+
+      const correlationId = unsafeBrandId<CorrelationId>(request.id);
+      const loggerMetadata: HTTPServiceLoggerMetadata = match(authData)
+        .with({ tokenType: "ui-session" }, (a) => ({
+          correlationId,
+          organizationId: a.organizationId,
+          userId: a.userId,
+        }))
+        .with({ tokenType: "internal" }, () => ({
+          correlationId,
+        }))
+        .exhaustive();
+      const logger = request.log.child(loggerMetadata);
+      request.log = logger;
+      requestContext.set("logger", logger);
     });
   },
 );
