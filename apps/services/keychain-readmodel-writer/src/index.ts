@@ -1,4 +1,5 @@
 import { runConsumer } from "@knodia/kafka-commons";
+import { createLogger } from "@knodia/logger";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -16,8 +17,14 @@ const pool = new Pool({
 
 const readmodelDb = drizzle(pool);
 
+const logger = createLogger({
+  config,
+  serviceName: "keychain-readmodel-writer",
+});
+
 await runConsumer(
   [config.keychainTopic],
   createProcessMessage(readmodelDb, config),
   config,
+  logger,
 );
