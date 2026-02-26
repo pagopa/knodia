@@ -199,7 +199,7 @@ createServer(async (req, res) => {
       return;
     }
 
-    // Logout endpoint — redirect to post_logout_redirect_uri
+    // Logout endpoint — redirect to logout_uri
     if (req.method === "GET" && url.pathname === "/logout") {
       const postLogoutRedirectUri = url.searchParams.get("logout_uri");
 
