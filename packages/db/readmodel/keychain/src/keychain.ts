@@ -99,7 +99,7 @@ export const readmodelKeychainKey = keychainSchema.table(
       mode: "date",
       withTimezone: true,
     }).notNull(),
-    encodedPem: text().notNull(),
+    encodedPem: text("encoded_pem").notNull(),
     format: text().notNull(),
     keychainId: uuid("keychain_id").notNull(),
     kid: text().notNull(),

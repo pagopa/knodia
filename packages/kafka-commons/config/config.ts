@@ -41,3 +41,12 @@ export const EserviceTopicConfig = z
     eserviceTopic: c.ESERVICE_TOPIC,
   }));
 export type EserviceTopicConfig = z.infer<typeof EserviceTopicConfig>;
+
+export const KeychainTopicConfig = z
+  .object({
+    KEYCHAIN_TOPIC: z.string(),
+  })
+  .transform((c) => ({
+    keychainTopic: c.KEYCHAIN_TOPIC,
+  }));
+export type KeychainTopicConfig = z.infer<typeof KeychainTopicConfig>;

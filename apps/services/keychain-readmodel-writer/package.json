@@ -1,0 +1,36 @@
+{
+  "name": "@knodia/keychain-readmodel-writer",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/keychain-readmodel-writer",
+    "test:watch": "pnpm test --watch"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@confluentinc/kafka-javascript": "catalog:",
+    "@knodia/db-readmodel-commons": "workspace:*",
+    "@knodia/db-readmodel-keychain": "workspace:*",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
+    "@knodia/kafka-commons": "workspace:*",
+    "@knodia/logger": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "ts-pattern": "catalog:",
+    "zod": "catalog:"
+  }
+}
