@@ -1,0 +1,22 @@
+meta {
+  name: Get Keychains
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/keychains?offset=0&limit=50
+  body: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+}
+
+vars:post-response {
+  eserviceId: res.body.items[0].id
+}

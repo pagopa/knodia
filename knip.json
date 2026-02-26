@@ -4,10 +4,15 @@
   "ignoreWorkspaces": [
     "packages/models/keychain-models",
     "packages/db/readmodel/keychain",
-    "packages/db/event-store/keychain"
+    "packages/db/event-store/keychain",
+    "apps/services/keychain-process"
   ],
   "ignoreIssues": {
-    "packages/models/common-models/src/brandedIds.ts": ["exports", "types"]
+    "packages/models/common-models/src/brandedIds.ts": ["exports", "types"],
+    "packages/db/event-store/writer/src/keychainEventWriter.ts": [
+      "exports",
+      "types"
+    ]
   },
   "workspaces": {
     ".": {

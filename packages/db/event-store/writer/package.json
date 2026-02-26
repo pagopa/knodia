@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@knodia/db-event-store-eservice": "workspace:*",
+    "@knodia/db-event-store-keychain": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "zod": "catalog:"
   },
@@ -24,6 +26,7 @@
     "vitest": "catalog:"
   },
   "exports": {
-    "./eservice": "./src/eserviceEventWriter.ts"
+    "./eservice": "./src/eserviceEventWriter.ts",
+    "./keychain": "./src/keychainEventWriter.ts"
   }
 }
