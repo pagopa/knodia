@@ -1,5 +1,5 @@
 import { createBffApiClient } from "@knodia/bff-client";
-import axios, { isAxiosError } from "axios";
+import axios, { type InternalAxiosRequestConfig, isAxiosError } from "axios";
 
 import { config } from "@/config/config";
 import {
@@ -11,18 +11,39 @@ import {
   setRefreshToken,
 } from "@/libs/auth";
 
-axios.interceptors.request.use((axiosConfig) => {
+let refreshPromise: null | Promise<boolean> = null;
+
+function addAuthHeader(axiosConfig: InternalAxiosRequestConfig) {
   const token = getAuthToken();
   if (token) {
-    axiosConfig.headers = axiosConfig.headers ?? {};
     axiosConfig.headers.Authorization = `Bearer ${token}`;
   }
   return axiosConfig;
-});
+}
 
-let refreshPromise: null | Promise<boolean> = null;
+async function handleUnauthorized(error: unknown): Promise<unknown> {
+  if (
+    !isAxiosError(error) ||
+    error.response?.status !== 401 ||
+    !error.config ||
+    error.config.url?.includes("/auth/ui-session")
+  ) {
+    return Promise.reject(error);
+  }
 
-function handleRefresh(): Promise<boolean> {
+  const refreshed = await refreshOnce();
+
+  if (refreshed) {
+    error.config.headers.Authorization = `Bearer ${getAuthToken()}`;
+    return axios.request(error.config);
+  }
+
+  clearAllTokens();
+  redirectToLogout();
+  return Promise.reject(error);
+}
+
+function refreshOnce(): Promise<boolean> {
   if (!refreshPromise) {
     refreshPromise = tryRefreshToken().finally(() => {
       refreshPromise = null;
@@ -49,29 +70,8 @@ async function tryRefreshToken(): Promise<boolean> {
   }
 }
 
-axios.interceptors.response.use(
-  (response) => response,
-  async (error: unknown) => {
-    if (
-      isAxiosError(error) &&
-      error.response?.status === 401 &&
-      error.config &&
-      !error.config.url?.includes("/auth/ui-session")
-    ) {
-      const refreshed = await handleRefresh();
-
-      if (refreshed) {
-        error.config.headers.Authorization = `Bearer ${getAuthToken()}`;
-        return axios.request(error.config);
-      }
-
-      clearAllTokens();
-      redirectToLogout();
-    }
-
-    return Promise.reject(error);
-  },
-);
+axios.interceptors.request.use(addAuthHeader);
+axios.interceptors.response.use((response) => response, handleUnauthorized);
 
 export const client = createBffApiClient({
   axios,
