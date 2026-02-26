@@ -1,29 +1,27 @@
-import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
-import { UISessionTokenClaims, UserRole } from "@knodia/common-models/auth";
+import { UserRole } from "@knodia/common-models/auth";
+import { OrganizationId, UserId } from "@knodia/common-models/ids";
+import { NonEmptyArray } from "@knodia/common-models/types";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
+import { type TokenGenerator } from "@knodia/token-generator";
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { randomUUID } from "node:crypto";
 import z from "zod";
 
 import { config } from "../config/config.ts";
 
 const CognitoPayload = z.object({
-  "cognito:groups": z.array(z.string()),
+  "cognito:groups": NonEmptyArray(z.string()),
   sub: z.string(),
 });
 
-interface CognitoClaims {
-  organizationId: string;
-  roles: z.infer<typeof UserRole>[];
-  sub: string;
-}
+const ClaimsFromCognito = z.object({
+  organizationId: OrganizationId,
+  roles: NonEmptyArray(UserRole),
+  sub: UserId,
+});
+type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
-const b64url = (data: string): string =>
-  Buffer.from(data).toString("base64url");
-
-export function authorizationServiceBuilder() {
+export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
-  const kmsClient = new KMSClient();
 
   async function verifyCognitoJwt(token: string): Promise<unknown> {
     try {
@@ -37,7 +35,9 @@ export function authorizationServiceBuilder() {
     }
   }
 
-  async function validateCognitoToken(token: string): Promise<CognitoClaims> {
+  async function validateCognitoToken(
+    token: string,
+  ): Promise<ClaimsFromCognito> {
     const rawPayload = await verifyCognitoJwt(token);
 
     const payloadParsed = CognitoPayload.safeParse(rawPayload);
@@ -64,59 +64,30 @@ export function authorizationServiceBuilder() {
       throw unauthorizedError("Missing role claims in cognito token");
     }
 
-    return {
+    const claimsParsed = ClaimsFromCognito.safeParse({
       organizationId: orgGroup.slice("org:".length),
-      roles,
+      roles: roles,
       sub: cognitoPayload.sub,
-    };
+    });
+
+    if (!claimsParsed.success) {
+      throw unauthorizedError("Invalid claims in cognito token");
+    }
+
+    return claimsParsed.data;
   }
 
   return {
     async generateUISessionToken(cognitoToken: string): Promise<string> {
       const cognitoClaims = await validateCognitoToken(cognitoToken);
 
-      const header = b64url(
-        JSON.stringify({
-          alg: "RS256",
-          kid: config.uiSessionJwt.kid,
-          typ: "JWT",
-        }),
-      );
-
-      const now = Math.floor(Date.now() / 1000);
-      const claimsParsed = UISessionTokenClaims.safeParse({
-        aud: config.uiSessionJwt.audience,
-        exp: now + config.uiSessionJwt.secondsDuration,
-        iat: now,
-        iss: config.uiSessionJwt.issuer,
-        jti: randomUUID(),
+      const token = await tokenGenerator.generateUISessionToken({
+        ...config.uiSessionJwt,
         organizationId: cognitoClaims.organizationId,
         roles: cognitoClaims.roles,
-        sub: cognitoClaims.sub,
-        type: "ui-session",
+        subject: cognitoClaims.sub,
       });
-
-      if (!claimsParsed.success) {
-        throw unauthorizedError("Failed to build ui session token claims");
-      }
-      const payload = b64url(JSON.stringify(claimsParsed.data));
-
-      const message = `${header}.${payload}`;
-
-      const { Signature } = await kmsClient.send(
-        new SignCommand({
-          KeyId: `alias/${config.uiSessionJwt.kid}`,
-          Message: new TextEncoder().encode(message),
-          SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
-        }),
-      );
-
-      if (!Signature) {
-        throw unauthorizedError("KMS sign returned no signature");
-      }
-
-      const signature = Buffer.from(Signature).toString("base64url");
-      return `${message}.${signature}`;
+      return token.serialized;
     },
   };
 }

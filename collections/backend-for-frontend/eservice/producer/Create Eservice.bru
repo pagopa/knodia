@@ -9,6 +9,10 @@ post {
   auth: none
 }
 
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
 body:json {
   {
     "name": {

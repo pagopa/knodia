@@ -1,4 +1,9 @@
-import { KeychainId, PurposeId, UserId } from "@knodia/common-models/ids";
+import {
+  KeychainId,
+  OrganizationId,
+  PurposeId,
+  UserId,
+} from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";
 import { z } from "zod";
 
@@ -45,7 +50,7 @@ export const Keychain = z.object({
   keys: z.array(KeychainKey),
   kind: KeychainKind,
   name: LocalizedName,
-  ownerId: UserId,
+  ownerId: OrganizationId,
   purposes: z.array(PurposeId),
   updatedAt: z.coerce.date(),
   users: z.array(UserId),
