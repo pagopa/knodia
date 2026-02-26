@@ -43,7 +43,7 @@ export const createLogger = ({
   serviceName,
 }: {
   config: LoggerConfig;
-  loggerMetadata: LoggerMetadata;
+  loggerMetadata?: LoggerMetadata;
   serviceName: ServiceName;
 }): Logger =>
-  pino(createLoggerOptions(config, serviceName)).child(loggerMetadata);
+  pino(createLoggerOptions(config, serviceName)).child(loggerMetadata ?? {});

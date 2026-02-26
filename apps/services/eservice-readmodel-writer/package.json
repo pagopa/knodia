@@ -29,6 +29,7 @@
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",
+    "pino": "catalog:",
     "pg": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
