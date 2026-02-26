@@ -1,7 +1,7 @@
 import type { RequiredAttributeGroup } from "@knodia/attribute-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { throwIfMissing } from "@knodia/common-models/utils";
+import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import {
@@ -16,24 +16,24 @@ import {
   type AgreementV1,
 } from "./generated/v1/agreement.js";
 
-const fromAgreementV1 = (input: AgreementV1): Agreement => ({
-  ...input,
-  consumer: throwIfMissing(
-    input.consumer,
-    "Agreement consumer is undefined",
-    fromAgreementConsumerV1,
-  ),
-  createdAt: new Date(input.createdAt),
-  eserviceId: unsafeBrandId(input.eserviceId),
-  eserviceVersionId: unsafeBrandId(input.eserviceVersionId),
-  id: unsafeBrandId(input.id),
-  producerId: unsafeBrandId(input.producerId),
-  requiredAttributes: input.requiredAttributes.map(
-    fromAgreementRequiredAttributeGroupV1,
-  ),
-  state: fromAgreementStateV1(input.state),
-  updatedAt: new Date(input.updatedAt),
-});
+const fromAgreementV1 = (input: AgreementV1): Agreement => {
+  assertRequired(input.consumer, "Agreement consumer");
+
+  return {
+    ...input,
+    consumer: fromAgreementConsumerV1(input.consumer),
+    createdAt: new Date(input.createdAt),
+    eserviceId: unsafeBrandId(input.eserviceId),
+    eserviceVersionId: unsafeBrandId(input.eserviceVersionId),
+    id: unsafeBrandId(input.id),
+    producerId: unsafeBrandId(input.producerId),
+    requiredAttributes: input.requiredAttributes.map(
+      fromAgreementRequiredAttributeGroupV1,
+    ),
+    state: fromAgreementStateV1(input.state),
+    updatedAt: new Date(input.updatedAt),
+  };
+};
 
 // TODO: knip workaround
 console.log("🚀 ~ fromAgreementV1:", fromAgreementV1);
