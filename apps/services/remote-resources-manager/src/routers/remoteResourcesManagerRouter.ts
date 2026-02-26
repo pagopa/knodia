@@ -26,7 +26,6 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         req.body,
         req.query,
         getContextValues(requestContext),
-        req.headers.authorization,
       );
 
       res.send(eservices);
