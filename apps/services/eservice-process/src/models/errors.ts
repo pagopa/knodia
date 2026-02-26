@@ -25,7 +25,9 @@ const errorCodes = {
 
 type ErrorCodes = keyof typeof errorCodes;
 
-export const makeApiProblem = makeApiProblemBuilder(errorCodes);
+export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
+  serviceName: "eservice-process",
+});
 
 export function duplicateInterfaceId(interfaceId: EserviceInterfaceId) {
   return createApiError<ErrorCodes>({

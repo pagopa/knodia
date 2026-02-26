@@ -1,0 +1,29 @@
+{
+  "name": "@knodia/token-generator",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/token-generator",
+    "test:watch": "pnpm test --watch"
+  },
+  "dependencies": {
+    "@aws-sdk/client-kms": "catalog:",
+    "@knodia/common-models": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": "./src/tokenGenerator.ts",
+    "./models": "./src/models.ts",
+    "./refreshable": "./src/refreshableInternalTokenGenerator.ts"
+  }
+}

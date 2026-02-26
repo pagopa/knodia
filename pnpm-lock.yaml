@@ -384,9 +384,6 @@ importers:
 
   apps/services/backend-for-frontend:
     dependencies:
-      '@aws-sdk/client-kms':
-        specifier: 'catalog:'
-        version: 3.992.0
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
@@ -414,6 +411,9 @@ importers:
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       fastify:
         specifier: 'catalog:'
         version: 5.7.3
@@ -633,6 +633,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       fastify:
         specifier: 'catalog:'
         version: 5.7.3
@@ -1318,6 +1321,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -1671,6 +1677,34 @@ importers:
       zocker:
         specifier: 'catalog:'
         version: 3.0.0(zod@4.2.0)
+
+  packages/token-generator:
+    dependencies:
+      '@aws-sdk/client-kms':
+        specifier: 'catalog:'
+        version: 3.992.0
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../models/common-models
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/typescript-config:
     devDependencies:
