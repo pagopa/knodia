@@ -2,6 +2,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
   type KeychainId,
+  OrganizationId,
   type PurposeId,
   unsafeBrandId,
   type UserId,
@@ -55,7 +56,7 @@ const buildKeychain = ({
     keys: keychainKeysSQL.map(buildKeychainKey),
     kind: KeychainKind.parse(keychainSQL.kind),
     name: LocalizedName.parse(keychainSQL.name),
-    ownerId: unsafeBrandId<UserId>(keychainSQL.ownerId),
+    ownerId: unsafeBrandId<OrganizationId>(keychainSQL.ownerId),
     purposes: keychainPurposesSQL.map((purposeSQL) =>
       unsafeBrandId<PurposeId>(purposeSQL.purposeId),
     ),
