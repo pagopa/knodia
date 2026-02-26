@@ -10,18 +10,24 @@ const BaseJwtClaims = z.object({
   iat: z.number().int(),
   iss: z.string(),
   jti: z.string(),
-  sub: UserId,
+  sub: z.string(),
 });
 
 export const UISessionTokenClaims = BaseJwtClaims.extend({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
+  sub: UserId,
   type: z.literal("ui-session"),
 });
 export type UISessionTokenClaims = z.infer<typeof UISessionTokenClaims>;
 
-// Future token types (e.g. z.literal("internal")) can be added to this union
+export const InternalTokenClaims = BaseJwtClaims.extend({
+  type: z.literal("internal"),
+});
+export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
+
 export const KnodiaTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
+  InternalTokenClaims,
 ]);
 export type KnodiaTokenClaims = z.infer<typeof KnodiaTokenClaims>;
