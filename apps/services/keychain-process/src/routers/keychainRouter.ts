@@ -4,7 +4,7 @@ import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  processHeaders,
+  KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import type { KeychainService } from "../services/keychainService.ts";
@@ -36,7 +36,7 @@ export const keychainRouter: FastifyPluginAsyncZod<KeychainService> = async (
     method: "GET",
     schema: {
       description: "Retrieve a list of Keychains",
-      headers: processHeaders,
+      headers: KnodiaServiceHeaders,
       operationId: "getKeychains",
       querystring: API_GetKeychainsQueryParams,
       response: {
