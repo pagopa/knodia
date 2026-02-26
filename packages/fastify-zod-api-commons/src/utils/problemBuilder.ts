@@ -12,7 +12,7 @@ import z from "zod";
 import { fromZodError } from "zod-validation-error";
 
 import { getContextValues } from "../context/context.ts";
-import { API_Problem } from "../models/api.js";
+import { API_Problem } from "../models/api.ts";
 import { ApiError } from "../models/errors/apiError.ts";
 import {
   commonErrorCodes,
