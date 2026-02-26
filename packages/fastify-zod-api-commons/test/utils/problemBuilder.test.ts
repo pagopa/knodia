@@ -49,7 +49,10 @@ const mockedIsResponseSerializationError = vi.mocked(
 
 const mockedGetContextValues = vi.mocked(contextModule.getContextValues);
 const defaultServiceName: HTTPServiceName = "backend-for-frontend";
+const correlationIdMock = generateId<CorrelationId>();
+
 const genericProblemExpectation = {
+  correlationId: correlationIdMock,
   detail: "Unexpected error",
   errorCode: commonErrorCodes.GENERIC_ERROR,
   serviceName: defaultServiceName,
@@ -60,12 +63,11 @@ const genericProblemExpectation = {
 function mockContextValues(overrides?: Partial<RequestContextData>) {
   const defaultValues: RequestContextData = {
     authData: undefined,
-    correlationId: generateId(),
+    correlationId: correlationIdMock,
     logger: {
       error: vi.fn(),
       warn: vi.fn(),
     } as never,
-    serviceName: "backend-for-frontend",
   };
 
   mockedGetContextValues.mockReturnValue({ ...defaultValues, ...overrides });
@@ -73,19 +75,20 @@ function mockContextValues(overrides?: Partial<RequestContextData>) {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  mockContextValues();
   mockedHasZodFastifySchemaValidationErrors.mockReturnValue(false);
   mockedIsResponseSerializationError.mockReturnValue(false);
 });
 
+const serviceName: HTTPServiceName = "backend-for-frontend";
+
 // eslint-disable-next-line max-lines-per-function
 describe("makeApiProblemBuilder", () => {
-  const makeApiProblem = makeApiProblemBuilder({}, {});
+  const makeApiProblem = makeApiProblemBuilder({}, { serviceName });
   describe("error code mapping", () => {
     it("prefixes error codes with serviceErrorCode when serviceName is valid", () => {
       const serviceName: HTTPServiceName = defaultServiceName;
       const serviceNameCode = serviceErrorCode[serviceName];
-
-      mockContextValues({ serviceName });
 
       const error = makeApiProblem(new Error());
 
@@ -98,9 +101,10 @@ describe("makeApiProblemBuilder", () => {
       );
     });
     it("uses the fallback serviceErrorCode '000' when serviceName is invalid", () => {
-      mockContextValues({
-        serviceName: "invalid-service-name" as HTTPServiceName,
-      });
+      const makeApiProblem = makeApiProblemBuilder(
+        {},
+        { serviceName: "invalid-service-name" as HTTPServiceName },
+      );
 
       const error = makeApiProblem(new Error());
 
@@ -118,7 +122,7 @@ describe("makeApiProblemBuilder", () => {
       };
       const makeApiProblemWithCustomErrors = makeApiProblemBuilder(
         customErrors,
-        {},
+        { serviceName },
       );
 
       const error = makeApiProblemWithCustomErrors(
@@ -185,9 +189,7 @@ describe("makeApiProblemBuilder", () => {
 
   describe("ApiError branch", () => {
     it("returns problem derived from ApiError when status != 500", () => {
-      mockContextValues();
-
-      const makeApiProblem = makeApiProblemBuilder({}, {});
+      const makeApiProblem = makeApiProblemBuilder({}, { serviceName });
       const inputError = new ApiError({
         errors: [{ code: "GENERIC_ERROR", detail: "conflict detail" }],
         status: 409,
@@ -197,6 +199,7 @@ describe("makeApiProblemBuilder", () => {
       const problem = makeApiProblem(inputError);
 
       expectToMatchProblem(problem, {
+        correlationId: correlationIdMock,
         detail: "conflict detail",
         errorCode: commonErrorCodes.GENERIC_ERROR,
         serviceName: defaultServiceName,
@@ -206,11 +209,12 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("returns problem derived from ApiError when status = 500 and forceGenericProblemOn500=false", () => {
-      mockContextValues();
-
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { forceGenericProblemOn500: false },
+        {
+          forceGenericProblemOn500: false,
+          serviceName,
+        },
       );
       const inputError = new ApiError({
         errors: [
@@ -223,6 +227,7 @@ describe("makeApiProblemBuilder", () => {
       const problem = makeApiProblem(inputError);
 
       expectToMatchProblem(problem, {
+        correlationId: correlationIdMock,
         detail: "sensitive internal detail",
         errorCode: commonErrorCodes.GENERIC_ERROR,
         serviceName: defaultServiceName,
@@ -232,11 +237,9 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("returns genericProblem when status = 500 and forceGenericProblemOn500=true", () => {
-      mockContextValues();
-
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { forceGenericProblemOn500: true },
+        { forceGenericProblemOn500: true, serviceName },
       );
       const inputError = new ApiError({
         errors: [{ code: "GENERIC_ERROR", detail: "should be hidden" }],
@@ -261,14 +264,13 @@ describe("makeApiProblemBuilder", () => {
     };
 
     it("uses statusCode from FastifyError if present", () => {
-      mockContextValues();
-
       const testStatusCode = 418;
       const inputError = makeFastifyError(testStatusCode, "teapot exploded");
 
       const problem = makeApiProblem(inputError);
 
       expectToMatchProblem(problem, {
+        correlationId: correlationIdMock,
         detail: "teapot exploded",
         errorCode: commonErrorCodes.FASTIFY_ERROR,
         serviceName: defaultServiceName,
@@ -278,14 +280,13 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("uses 500 when statusCode from FastifyError is undefined", () => {
-      mockContextValues();
-
       // in @fastify/error, passing 0 makes statusCode undefined internally
       const inputError = makeFastifyError(0, "no status code");
 
       const problem = makeApiProblem(inputError);
 
       expectToMatchProblem(problem, {
+        correlationId: correlationIdMock,
         detail: "no status code",
         errorCode: commonErrorCodes.FASTIFY_ERROR,
         serviceName: defaultServiceName,
@@ -295,11 +296,9 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("returns genericProblem on status 500 when forceGenericProblemOn500=true", () => {
-      mockContextValues();
-
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { forceGenericProblemOn500: true },
+        { forceGenericProblemOn500: true, serviceName },
       );
 
       const inputError = makeFastifyError(500, "should be hidden");
@@ -309,17 +308,16 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("returns specific problem on non-500 status even with forceGenericProblemOn500=true", () => {
-      mockContextValues();
-
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { forceGenericProblemOn500: true },
+        { forceGenericProblemOn500: true, serviceName },
       );
 
       const inputError = makeFastifyError(400, "bad request detail");
       const problem = makeApiProblem(inputError);
 
       expectToMatchProblem(problem, {
+        correlationId: correlationIdMock,
         detail: "bad request detail",
         errorCode: commonErrorCodes.FASTIFY_ERROR,
         serviceName: defaultServiceName,
@@ -352,16 +350,14 @@ describe("makeApiProblemBuilder", () => {
         toJSON: () => ({}),
       }) as unknown;
 
-    it("returns receivedProblem unchanged when problemErrorsPassthrough=true", () => {
-      mockContextValues();
-
+    it.only("returns receivedProblem unchanged when problemErrorsPassthrough=true", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { problemErrorsPassthrough: true },
+        { problemErrorsPassthrough: true, serviceName },
       );
 
       const receivedProblem: API_Problem = {
-        correlationId: "downstream-correlation-id",
+        correlationId: correlationIdMock,
         errors: [{ code: "EXT-1001", detail: "downstream detail" }],
         status: 404,
         title: "Downstream Not Found",
@@ -378,11 +374,13 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("returns genericProblem when problemErrorsPassthrough=true and response.status=500 with forceGenericProblemOn500=true", () => {
-      mockContextValues();
-
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { forceGenericProblemOn500: true, problemErrorsPassthrough: true },
+        {
+          forceGenericProblemOn500: true,
+          problemErrorsPassthrough: true,
+          serviceName,
+        },
       );
 
       const receivedProblem: API_Problem = {
@@ -403,11 +401,13 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("returns genericProblem when problemErrorsPassthrough=true and receivedProblem.status=500 with forceGenericProblemOn500=true", () => {
-      mockContextValues();
-
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { forceGenericProblemOn500: true, problemErrorsPassthrough: true },
+        {
+          forceGenericProblemOn500: true,
+          problemErrorsPassthrough: true,
+          serviceName,
+        },
       );
 
       const receivedProblem: API_Problem = {
@@ -428,11 +428,9 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("returns genericProblem when problemErrorsPassthrough=false", () => {
-      mockContextValues();
-
       const makeApiProblem = makeApiProblemBuilder(
         {},
-        { problemErrorsPassthrough: false },
+        { problemErrorsPassthrough: false, serviceName },
       );
 
       const receivedProblem: API_Problem = {
@@ -455,8 +453,6 @@ describe("makeApiProblemBuilder", () => {
 
   describe("AxiosError not conform a API_Problem", () => {
     it("does not enter the passthrough branch and falls back to generic", () => {
-      mockContextValues();
-
       const nonConformingAxiosError = {
         isAxiosError: true,
         message: "Request failed",
@@ -476,20 +472,14 @@ describe("makeApiProblemBuilder", () => {
 
   describe("ZodError branch", () => {
     it("returns genericProblem", () => {
-      mockContextValues();
-
       const problem = makeApiProblem(new ZodError([]));
-
       expectToMatchProblem(problem, genericProblemExpectation);
     });
   });
 
   describe("fallback unknown error", () => {
     it("returns genericProblem on unmatched error", () => {
-      mockContextValues();
-
       const problem = makeApiProblem({ something: "unexpected" });
-
       expectToMatchProblem(problem, genericProblemExpectation);
     });
   });
@@ -505,8 +495,6 @@ describe("makeApiProblemBuilder", () => {
     });
 
     it("includes status, title and errors mapped in the API_Problem format", () => {
-      mockContextValues();
-
       const inputError = new ApiError({
         errors: [{ code: "GENERIC_ERROR", detail: "shape detail" }],
         status: 409,
@@ -530,12 +518,14 @@ describe("makeApiProblemBuilder", () => {
 function expectToMatchProblem(
   problem: API_Problem,
   {
+    correlationId,
     detail,
     errorCode,
     serviceName,
     status,
     title,
   }: {
+    correlationId: CorrelationId;
     detail: string;
     errorCode: string;
     serviceName: HTTPServiceName;
@@ -543,7 +533,8 @@ function expectToMatchProblem(
     title: string;
   },
 ) {
-  expect(problem).toMatchObject({
+  expect(problem).toEqual({
+    correlationId,
     errors: [
       {
         code: `${serviceErrorCode[serviceName]}-${errorCode}`,

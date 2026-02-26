@@ -8,12 +8,11 @@ import {
 } from "fastify-type-provider-zod";
 import { constants } from "http2";
 import { match, P } from "ts-pattern";
-import z, { ZodError } from "zod";
+import z from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import type { API_Problem } from "../models/api.ts";
-
 import { getContextValues } from "../context/context.ts";
+import { API_Problem } from "../models/api.js";
 import { ApiError } from "../models/errors/apiError.ts";
 import {
   commonErrorCodes,
@@ -58,6 +57,7 @@ interface ProblemBuilderOptions {
    * @default true
    */
   problemErrorsPassthrough?: boolean;
+  serviceName: HTTPServiceName;
 }
 
 interface ResolvedApiProblem {
@@ -69,16 +69,18 @@ interface ResolvedApiProblem {
 
 export function makeApiProblemBuilder<T extends string>(
   errors: Record<T, string>,
-  options: ProblemBuilderOptions = {},
+  options: ProblemBuilderOptions,
 ): MakeApiProblemFn {
-  const { forceGenericProblemOn500 = false, problemErrorsPassthrough = true } =
-    options;
+  const {
+    forceGenericProblemOn500 = false,
+    problemErrorsPassthrough = true,
+    serviceName,
+  } = options;
   const allErrors = { ...commonErrorCodes, ...errors };
+  const resolvedServiceErrorCode = retrieveServiceErrorCode(serviceName);
 
   return (error) => {
-    const { correlationId, logger, serviceName } =
-      getContextValues(requestContext);
-    const serviceErrorCode = retrieveServiceErrorCode(serviceName);
+    const { correlationId, logger } = getContextValues(requestContext);
 
     const makeProblem = ({
       errors,
@@ -87,7 +89,7 @@ export function makeApiProblemBuilder<T extends string>(
     }: ApiError<CommonErrorCodes | T>): API_Problem => ({
       correlationId,
       errors: errors.map(({ code, detail }) => ({
-        code: `${serviceErrorCode}-${allErrors[code]}`,
+        code: `${resolvedServiceErrorCode}-${allErrors[code]}`,
         detail,
       })),
       status,
@@ -116,6 +118,14 @@ export function makeApiProblemBuilder<T extends string>(
     return apiProblem;
   };
 }
+
+const isPassThroughResponseError = (
+  errorResponse: unknown,
+): errorResponse is AxiosError<API_Problem> & {
+  response: { data: API_Problem };
+} =>
+  isAxiosError(errorResponse) &&
+  API_Problem.safeParse(errorResponse?.response?.data).success;
 
 function resolveApiProblem<T extends string>(params: {
   error: unknown;
@@ -180,9 +190,9 @@ function resolveApiProblem<T extends string>(params: {
       /* this case is to allow a passthrough of API_Problem errors, so that
            services that call other interop services can forward API_Problem errors
            as they are, without the need to explicitly handle them */
-      P.when((e) => isPassThroughError(e)),
+      P.when((e) => isPassThroughResponseError(e)),
       (e) => {
-        const receivedProblem: API_Problem = e.response.data;
+        const receivedProblem = e.response.data;
         if (problemErrorsPassthrough) {
           return {
             apiProblem: receivedProblem,
@@ -204,7 +214,7 @@ function resolveApiProblem<T extends string>(params: {
         };
       },
     )
-    .with(P.instanceOf(ZodError), (e) =>
+    .with(P.instanceOf(z.ZodError), (e) =>
       // Zod errors shall always be caught and handled throwing
       // an ApiError. If a ZodError arrives here we log it and
       // return a generic problem
@@ -227,27 +237,4 @@ function retrieveServiceErrorCode(serviceName: string): string {
   )
     .catch("000")
     .parse(serviceName);
-}
-
-const problemSchema = z.object({
-  response: z.object({
-    data: z.object({
-      correlationId: z.string().optional(),
-      errors: z.array(
-        z.object({
-          code: z.string(),
-          detail: z.string(),
-        }),
-      ),
-      status: z.number(),
-      title: z.string(),
-    }),
-    status: z.number(),
-  }),
-});
-
-function isPassThroughError(
-  error: unknown,
-): error is AxiosError<API_Problem> & z.infer<typeof problemSchema> {
-  return isAxiosError(error) && problemSchema.safeParse(error).success;
 }
