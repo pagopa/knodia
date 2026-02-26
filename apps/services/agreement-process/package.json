@@ -1,0 +1,50 @@
+{
+  "name": "@knodia/agreement-process",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
+    "typecheck": "tsc",
+    "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
+    "test": "pnpm -w test --project @knodia/agreement-process",
+    "test:watch": "pnpm test --watch"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/db-event-store-agreement": "workspace:*",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/spectral-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@stoplight/spectral-cli": "catalog:",
+    "@types/node": "catalog:",
+    "@types/pg": "catalog:",
+    "concurrently": "catalog:",
+    "eslint": "catalog:",
+    "fastify-plugin": "catalog:",
+    "jose": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "dependencies": {
+    "@fastify/request-context": "catalog:",
+    "@knodia/agreement-models": "workspace:*",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-event-store-agreement": "workspace:*",
+    "@knodia/db-event-store-writer": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
+    "@knodia/db-readmodel-agreement": "workspace:*",
+    "@knodia/db-readmodel-eservice": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
+    "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/logger": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "fastify": "catalog:",
+    "fastify-type-provider-zod": "catalog:",
+    "pg": "catalog:",
+    "pino-pretty": "catalog:",
+    "zod": "catalog:"
+  }
+}

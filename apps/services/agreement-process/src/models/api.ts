@@ -1,0 +1,34 @@
+import {
+  API_AgreementAttribute,
+  API_AgreementConsumer,
+  API_AgreementState,
+} from "@knodia/agreement-models/api";
+import { API_KnodeId } from "@knodia/common-models/api";
+import { z } from "zod";
+
+export const API_Agreement = z
+  .strictObject({
+    consumer: API_AgreementConsumer,
+    createdAt: z.iso.datetime(),
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+    id: z.uuid(),
+    producerId: z.uuid(),
+    requiredAttributes: z
+      .array(z.array(API_AgreementAttribute))
+      .meta({ description: "Required attributes for the Agreement" }),
+    state: API_AgreementState,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "Agreement" });
+export type API_Agreement = z.infer<typeof API_Agreement>;
+
+export const API_AgreementSeed = z
+  .strictObject({
+    consumerId: z.uuid(),
+    consumerKnodeId: API_KnodeId,
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+  })
+  .meta({ id: "AgreementSeed" });
+export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
