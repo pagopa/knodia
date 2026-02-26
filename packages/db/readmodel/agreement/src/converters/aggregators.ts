@@ -12,34 +12,34 @@ import {
 } from "@knodia/db-readmodel-commons/utils";
 
 import {
+  type AgreementAttributeSQL,
   type AgreementItemsSQL,
-  type AgreementRequiredAttributeSQL,
   type AgreementSQL,
   readmodelAgreement,
-  readmodelAgreementRequiredAttribute,
+  readmodelAgreementAttribute,
 } from "../agreement.ts";
-import { toGroupedRequiredAttributes } from "./converters.ts";
+import { toAgreementAttribute } from "./converters.ts";
 
 type AgreementAggregatorInput = {
   agreement: AgreementSQL;
-  requiredAttribute?: AgreementRequiredAttributeSQL | null;
+  attribute?: AgreementAttributeSQL | null;
 }[];
 
 const buildAgreement = ({
   agreementSQL,
-  requiredAttributesSQL,
+  attributesSQL,
 }: AgreementItemsSQL): WithMetadata<Agreement> => {
-  const requiredAttributesSQLByAgreementId = requiredAttributesSQL.reduce(
-    (acc, a) => {
-      const attributes = acc.get(a.agreementId) || [];
-      attributes.push(a);
-      acc.set(a.agreementId, attributes);
-      return acc;
-    },
-    new Map<string, AgreementRequiredAttributeSQL[]>(),
-  );
+  const attributesSQLByAgreementId = attributesSQL.reduce((acc, a) => {
+    const attributes = acc.get(a.agreementId) || [];
+    attributes.push(a);
+    acc.set(a.agreementId, attributes);
+    return acc;
+  }, new Map<string, AgreementAttributeSQL[]>());
 
   const agreement: Agreement = {
+    attributes: (attributesSQLByAgreementId.get(agreementSQL.id) || []).map(
+      toAgreementAttribute,
+    ),
     consumer: {
       id: unsafeBrandId(agreementSQL.consumerId),
       knodeId: KnodeId.parse(agreementSQL.consumerKnodeId),
@@ -49,9 +49,6 @@ const buildAgreement = ({
     eserviceVersionId: unsafeBrandId(agreementSQL.eserviceVersionId),
     id: unsafeBrandId(agreementSQL.id),
     producerId: unsafeBrandId(agreementSQL.producerId),
-    requiredAttributes: toGroupedRequiredAttributes(
-      requiredAttributesSQLByAgreementId.get(agreementSQL.id) || [],
-    ),
     state: AgreementState.parse(agreementSQL.state),
     updatedAt: new Date(agreementSQL.updatedAt),
   };
@@ -72,31 +69,28 @@ export const aggregateAgreement = (
 
   return buildAgreement({
     agreementSQL: aggregatedAgreement.agreementSQL,
-    requiredAttributesSQL: aggregatedAgreement.requiredAttributesSQL,
+    attributesSQL: aggregatedAgreement.attributesSQL,
   });
 };
 
 export const aggregateAgreements = (
   queryRes: AgreementAggregatorInput,
 ): WithMetadata<Agreement>[] => {
-  const { agreementsSQL, requiredAttributesSQL } =
-    toAgreementsAggregator(queryRes);
+  const { agreementsSQL, attributesSQL } = toAgreementsAggregator(queryRes);
 
-  const requiredAttributesSQLByAgreementId = createAgreementSQLPropertyMap(
-    requiredAttributesSQL,
-  );
+  const attributesSQLByAgreementId =
+    createAgreementSQLPropertyMap(attributesSQL);
 
   return agreementsSQL.map((agreementSQL) => {
     const agreementId = unsafeBrandId<AgreementId>(agreementSQL.id);
     return buildAgreement({
       agreementSQL,
-      requiredAttributesSQL:
-        requiredAttributesSQLByAgreementId.get(agreementId) || [],
+      attributesSQL: attributesSQLByAgreementId.get(agreementId) || [],
     });
   });
 };
 
-const createAgreementSQLPropertyMap = <T extends AgreementRequiredAttributeSQL>(
+const createAgreementSQLPropertyMap = <T extends AgreementAttributeSQL>(
   items: T[],
 ): Map<AgreementId, T[]> =>
   items.reduce((acc, item) => {
@@ -111,14 +105,13 @@ const createAgreementSQLPropertyMap = <T extends AgreementRequiredAttributeSQL>(
 const toAgreementAggregator = (
   queryRes: AgreementAggregatorInput,
 ): AgreementItemsSQL => {
-  const { agreementsSQL, requiredAttributesSQL } =
-    toAgreementsAggregator(queryRes);
+  const { agreementsSQL, attributesSQL } = toAgreementsAggregator(queryRes);
 
   const agreementSQL = throwIfMultipleOrEmpty(agreementsSQL, "agreement");
 
   return {
     agreementSQL,
-    requiredAttributesSQL,
+    attributesSQL,
   };
 };
 
@@ -126,13 +119,13 @@ const toAgreementsAggregator = (
   queryRes: AgreementAggregatorInput,
 ): {
   agreementsSQL: AgreementSQL[];
-  requiredAttributesSQL: AgreementRequiredAttributeSQL[];
+  attributesSQL: AgreementAttributeSQL[];
 } => {
   const agreementPKSet = new Set<string>();
   const agreementsSQL: AgreementSQL[] = [];
 
-  const requiredAttributePKSet = new Set<string>();
-  const requiredAttributesSQL: AgreementRequiredAttributeSQL[] = [];
+  const attributePKSet = new Set<string>();
+  const attributesSQL: AgreementAttributeSQL[] = [];
 
   queryRes.forEach((row) => {
     aggregateByPKString(
@@ -142,15 +135,15 @@ const toAgreementsAggregator = (
       readmodelAgreement,
     );
     aggregateByPKString(
-      row.requiredAttribute ?? null,
-      requiredAttributePKSet,
-      requiredAttributesSQL,
-      readmodelAgreementRequiredAttribute,
+      row.attribute ?? null,
+      attributePKSet,
+      attributesSQL,
+      readmodelAgreementAttribute,
     );
   });
 
   return {
     agreementsSQL,
-    requiredAttributesSQL,
+    attributesSQL,
   };
 };

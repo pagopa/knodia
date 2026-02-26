@@ -1,10 +1,7 @@
 import { getMockAgreement } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type {
-  AgreementRequiredAttributeSQL,
-  AgreementSQL,
-} from "../src/agreement.ts";
+import type { AgreementAttributeSQL, AgreementSQL } from "../src/agreement.ts";
 
 import { splitAgreementIntoObjectsSQL } from "../src/converters/splitters.ts";
 
@@ -13,8 +10,10 @@ describe("Agreement Splitters", () => {
     const metadataVersion = 1;
     const agreement = getMockAgreement();
 
-    const { agreementSQL, requiredAttributesSQL } =
-      splitAgreementIntoObjectsSQL(agreement, metadataVersion);
+    const { agreementSQL, attributesSQL } = splitAgreementIntoObjectsSQL(
+      agreement,
+      metadataVersion,
+    );
 
     const expectedAgreementSQL: AgreementSQL = {
       consumerId: agreement.consumer.id,
@@ -29,20 +28,17 @@ describe("Agreement Splitters", () => {
       updatedAt: agreement.updatedAt,
     };
 
-    const expectedRequireAttributesSQL: AgreementRequiredAttributeSQL[] =
-      agreement.requiredAttributes.flatMap((group, groupId) =>
-        group.map((attribute) => ({
-          agreementId: agreement.id,
-          code: attribute.code,
-          groupId,
-          metadataVersion,
-          scheme: attribute.scheme,
-        })),
-      );
+    const expectedAttributesSQL: AgreementAttributeSQL[] =
+      agreement.attributes.map((attribute) => ({
+        agreementId: agreement.id,
+        code: attribute.code,
+        metadataVersion,
+        scheme: attribute.scheme,
+      }));
 
     expect(agreementSQL).toEqual(expectedAgreementSQL);
-    expect(requiredAttributesSQL).toEqual(
-      expect.arrayContaining(expectedRequireAttributesSQL),
+    expect(attributesSQL).toEqual(
+      expect.arrayContaining(expectedAttributesSQL),
     );
   });
 });

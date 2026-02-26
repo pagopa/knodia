@@ -9,7 +9,7 @@ message AgreementV1 {
   AgreementConsumerV1 consumer = 4;
   string producerId = 5;
   AgreementStateV1 state = 6;
-  repeated AgreementRequiredAttributeGroupV1 requiredAttributes = 7;
+  repeated AgreementAttributeV1 attributes = 7;
   int64 createdAt = 8;
   int64 updatedAt = 9;
 }
@@ -18,11 +18,6 @@ enum AgreementStateV1 {
   ACTIVE = 0;
   SUSPENDED = 1;
   ARCHIVED = 2;
-}
-
-message AgreementRequiredAttributeGroupV1 {
-  int32 groupId = 1;
-  repeated AgreementAttributeV1 attributes = 2;
 }
 
 message AgreementAttributeV1 {

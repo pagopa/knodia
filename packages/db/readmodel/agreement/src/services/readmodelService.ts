@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 
 import {
   readmodelAgreement,
-  readmodelAgreementRequiredAttribute,
+  readmodelAgreementAttribute,
 } from "../agreement.ts";
 import { aggregateAgreement } from "../converters/aggregators.ts";
 
@@ -19,15 +19,12 @@ function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       const queryRes = await readmodelDb
         .select({
           agreement: readmodelAgreement,
-          requiredAttribute: readmodelAgreementRequiredAttribute,
+          attribute: readmodelAgreementAttribute,
         })
         .from(readmodelAgreement)
         .leftJoin(
-          readmodelAgreementRequiredAttribute,
-          eq(
-            readmodelAgreementRequiredAttribute.agreementId,
-            readmodelAgreement.id,
-          ),
+          readmodelAgreementAttribute,
+          eq(readmodelAgreementAttribute.agreementId, readmodelAgreement.id),
         )
         .where(eq(readmodelAgreement.id, agreementId));
 

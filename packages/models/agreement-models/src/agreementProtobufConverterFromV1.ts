@@ -1,5 +1,3 @@
-import type { AttributeGroup } from "@knodia/attribute-models";
-
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
@@ -11,7 +9,6 @@ import {
 } from "./agreement.ts";
 import {
   AgreementConsumerV1,
-  AgreementRequiredAttributeGroupV1,
   AgreementStateV1,
   type AgreementV1,
 } from "./generated/v1/agreement.ts";
@@ -27,9 +24,6 @@ const fromAgreementV1 = (input: AgreementV1): Agreement => {
     eserviceVersionId: unsafeBrandId(input.eserviceVersionId),
     id: unsafeBrandId(input.id),
     producerId: unsafeBrandId(input.producerId),
-    requiredAttributes: input.requiredAttributes.map(
-      fromAgreementRequiredAttributeGroupV1,
-    ),
     state: fromAgreementStateV1(input.state),
     updatedAt: new Date(input.updatedAt),
   };
@@ -47,10 +41,6 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
       throw new Error("Unrecognized AgreementStateV1 value");
     })
     .exhaustive();
-
-const fromAgreementRequiredAttributeGroupV1 = (
-  input: AgreementRequiredAttributeGroupV1,
-): AttributeGroup => input.attributes;
 
 const fromAgreementConsumerV1 = (
   input: AgreementConsumerV1,

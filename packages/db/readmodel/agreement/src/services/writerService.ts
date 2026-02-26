@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 
 import {
   readmodelAgreement,
-  readmodelAgreementRequiredAttribute,
+  readmodelAgreementAttribute,
 } from "../agreement.ts";
 import { splitAgreementIntoObjectsSQL } from "../converters/splitters.ts";
 
@@ -16,8 +16,10 @@ function agreementWriterServiceBuilder(db: NodePgDatabase) {
       agreement: Agreement,
       metadataVersion: number,
     ): Promise<void> {
-      const { agreementSQL, requiredAttributesSQL } =
-        splitAgreementIntoObjectsSQL(agreement, metadataVersion);
+      const { agreementSQL, attributesSQL } = splitAgreementIntoObjectsSQL(
+        agreement,
+        metadataVersion,
+      );
 
       await db.transaction(async (tx) => {
         const shouldUpsert = await checkMetadataVersion(
@@ -37,10 +39,8 @@ function agreementWriterServiceBuilder(db: NodePgDatabase) {
 
         await tx.insert(readmodelAgreement).values(agreementSQL);
 
-        if (requiredAttributesSQL.length > 0) {
-          await tx
-            .insert(readmodelAgreementRequiredAttribute)
-            .values(requiredAttributesSQL);
+        if (attributesSQL.length > 0) {
+          await tx.insert(readmodelAgreementAttribute).values(attributesSQL);
         }
       });
     },

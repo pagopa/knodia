@@ -1,7 +1,6 @@
 import {
   bigint,
   foreignKey,
-  integer,
   pgSchema,
   primaryKey,
   text,
@@ -43,12 +42,11 @@ export const readmodelAgreement = agreementSchema.table(
   ],
 );
 
-export const readmodelAgreementRequiredAttribute = agreementSchema.table(
-  "agreement_required_attribute",
+export const readmodelAgreementAttribute = agreementSchema.table(
+  "agreement_attribute",
   {
     agreementId: uuid("agreement_id").notNull(),
     code: text().notNull(),
-    groupId: integer("group_id").notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     scheme: text().notNull(),
   },
@@ -56,7 +54,7 @@ export const readmodelAgreementRequiredAttribute = agreementSchema.table(
     foreignKey({
       columns: [table.agreementId],
       foreignColumns: [readmodelAgreement.id],
-      name: "agreement_req_attribute_agreement_id_fk",
+      name: "agreement_attribute_agreement_id_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [table.agreementId, table.metadataVersion],
@@ -64,19 +62,21 @@ export const readmodelAgreementRequiredAttribute = agreementSchema.table(
         readmodelAgreement.id,
         readmodelAgreement.metadataVersion,
       ],
-      name: "agreement_req_attribute_agreement_id_metadata_v_fkey",
+      name: "agreement_attribute_agreement_id_metadata_v_fkey",
     }),
     primaryKey({
-      columns: [table.code, table.agreementId, table.groupId, table.scheme],
-      name: "agreement_req_attribute_pk",
+      columns: [table.code, table.agreementId, table.scheme],
+      name: "agreement_attribute_pk",
     }),
   ],
 );
 
+export type AgreementAttributeSQL =
+  typeof readmodelAgreementAttribute.$inferSelect;
+
 export interface AgreementItemsSQL {
   agreementSQL: AgreementSQL;
-  requiredAttributesSQL: AgreementRequiredAttributeSQL[];
+  attributesSQL: AgreementAttributeSQL[];
 }
-export type AgreementRequiredAttributeSQL =
-  typeof readmodelAgreementRequiredAttribute.$inferSelect;
+
 export type AgreementSQL = typeof readmodelAgreement.$inferSelect;

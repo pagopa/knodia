@@ -1,4 +1,4 @@
-const Attribute = z.strictObject({
+export const Attribute = z.strictObject({
   code: z.string(),
   scheme: z.string(),
 });
@@ -17,12 +17,12 @@ export const attributes: Record<string, Record<string, string>> = {
 export function getAttribute(
   scheme: string,
   code: string,
-): Attribute | undefined {
+): (Attribute & { name: string }) | undefined {
   const name = attributes[scheme]?.[code];
   if (name === undefined) {
     return undefined;
   }
-  return { code, scheme };
+  return { code, name, scheme };
 }
 
 import { z } from "zod";
