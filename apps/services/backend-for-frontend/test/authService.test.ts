@@ -1,4 +1,7 @@
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { authServiceBuilder } from "../src/services/authService.ts";
 
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 const mockKmsSend = vi.hoisted(() => vi.fn());
@@ -19,7 +22,9 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
-vi.mock("../config/config.ts", () => ({
+const tokenGenerator = tokenGeneratorBuilder();
+
+vi.mock("../src/config/config.ts", () => ({
   config: {
     cognitoIssuer: "https://cognito-idp.eu-west-1.amazonaws.com/pool-id",
     cognitoJwksUrl:
@@ -27,14 +32,11 @@ vi.mock("../config/config.ts", () => ({
     uiSessionJwt: {
       audience: "test-audience",
       issuer: "test-issuer",
-      kid: "test-kid",
+      kid: "alias/test-kid",
       secondsDuration: 3600,
     },
   },
 }));
-
-const { authorizationServiceBuilder } =
-  await import("./authorizationService.ts");
 
 const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
@@ -62,7 +64,7 @@ function setupValidCognitoToken(
   });
 }
 
-describe("authorizationService", () => {
+describe("authService", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -74,7 +76,7 @@ describe("authorizationService", () => {
         Signature: new Uint8Array([1, 2, 3, 4]),
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
       const token = await service.generateUISessionToken("valid-cognito-token");
 
       const parts = token.split(".");
@@ -86,8 +88,9 @@ describe("authorizationService", () => {
       );
       expect(header).toEqual({
         alg: "RS256",
-        kid: "test-kid",
-        typ: "JWT",
+        kid: "alias/test-kid",
+        typ: "at+jwt",
+        use: "sig",
       });
 
       const payload = JSON.parse(
@@ -109,7 +112,7 @@ describe("authorizationService", () => {
         Signature: new Uint8Array([5, 6, 7, 8]),
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
       await service.generateUISessionToken("token");
 
       expect(mockKmsSend).toHaveBeenCalledOnce();
@@ -123,7 +126,7 @@ describe("authorizationService", () => {
     it("throws unauthorized when Cognito JWT verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
 
       await expect(
         service.generateUISessionToken("bad-token"),
@@ -136,7 +139,7 @@ describe("authorizationService", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
 
       await expect(
         service.generateUISessionToken("token-no-groups"),
@@ -148,7 +151,7 @@ describe("authorizationService", () => {
         "cognito:groups": ["role:administrative"],
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
 
       await expect(
         service.generateUISessionToken("token-no-org"),
@@ -160,7 +163,7 @@ describe("authorizationService", () => {
         "cognito:groups": [`org:${TEST_ORG_ID}`],
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
 
       await expect(
         service.generateUISessionToken("token-no-roles"),
@@ -172,7 +175,7 @@ describe("authorizationService", () => {
         "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
 
       await expect(
         service.generateUISessionToken("token-bad-role"),
@@ -183,7 +186,7 @@ describe("authorizationService", () => {
       setupValidCognitoToken();
       mockKmsSend.mockResolvedValue({ Signature: undefined });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
 
       await expect(service.generateUISessionToken("token")).rejects.toThrow();
     });
@@ -197,7 +200,7 @@ describe("authorizationService", () => {
         Signature: new Uint8Array([1]),
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
       const token = await service.generateUISessionToken("token");
 
       const payload = JSON.parse(
@@ -219,7 +222,7 @@ describe("authorizationService", () => {
         Signature: new Uint8Array([1]),
       });
 
-      const service = authorizationServiceBuilder();
+      const service = authServiceBuilder(tokenGenerator);
       const token = await service.generateUISessionToken("token");
 
       const payload = JSON.parse(

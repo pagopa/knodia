@@ -21,7 +21,7 @@ import {
   toAPI_ConsumerCatalogEserviceSearchResult,
 } from "../../models/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
-import { getProcessHeaders } from "../../utils/headers.ts";
+import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface RemoteResourcesManagerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
@@ -42,7 +42,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       const { data } = await remoteResourcesManagerApi.getCatalogEservices({
         body: req.body,
         client: remoteResourcesManagerClient,
-        headers: getProcessHeaders(req, correlationId),
+        headers: getKnodiaServiceHeaders(req, correlationId),
         query: req.query,
       });
 
