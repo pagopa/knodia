@@ -20,7 +20,7 @@ export const readmodelAgreement = agreementSchema.table(
   "agreement",
   {
     consumerId: uuid("consumer_id").notNull(),
-    consumerKnodeId: uuid("consumer_knode_id").notNull(),
+    consumerKnodeId: text("consumer_knode_id").notNull(),
     createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
       .defaultNow()
       .notNull(),
