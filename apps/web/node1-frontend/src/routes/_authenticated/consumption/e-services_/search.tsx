@@ -34,14 +34,14 @@ export const Route = createFileRoute(
   loaderDeps: ({ search }) => search,
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
+    if (!deps.knode) return;
+
     const body = buildCatalogSearchBody({
       category: deps.category,
       keywords: deps.keywords,
       knodeId: deps.knode,
     });
-    if (body) {
-      queryClient.prefetchQuery(catalogQuery(body, deps.offset));
-    }
+    queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],
@@ -54,6 +54,8 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
+  const canSearch = !!search.knode;
+
   const body = buildCatalogSearchBody({
     category: search.category,
     keywords: search.keywords,
@@ -62,7 +64,8 @@ function RouteComponent() {
 
   const { data, isLoading } = useQuery({
     ...catalogQuery(body, search.offset),
-    placeholderData: body ? keepPreviousData : undefined,
+    enabled: canSearch,
+    placeholderData: canSearch ? keepPreviousData : undefined,
   });
 
   const results = data
