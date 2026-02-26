@@ -2,4 +2,6 @@ import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBu
 
 const errorCodes = {} as const;
 
-export const makeApiProblem = makeApiProblemBuilder(errorCodes);
+export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
+  serviceName: "keychain-process",
+});
