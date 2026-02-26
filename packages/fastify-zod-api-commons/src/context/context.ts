@@ -3,7 +3,6 @@ import type {
   RequestContextData,
 } from "@fastify/request-context";
 import type { CorrelationId } from "@knodia/common-models/ids";
-import type { HTTPServiceName } from "@knodia/common-models/services";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import { type FastifyBaseLogger } from "fastify";
@@ -16,7 +15,6 @@ declare module "@fastify/request-context" {
     authData?: AuthData;
     correlationId: CorrelationId;
     logger: FastifyBaseLogger;
-    serviceName: HTTPServiceName;
   }
 }
 
@@ -26,7 +24,6 @@ export const getContextValues = (
   authData: requestContext.get("authData"),
   correlationId: getRequiredContextItem(requestContext, "correlationId"),
   logger: getRequiredContextItem(requestContext, "logger"),
-  serviceName: getRequiredContextItem(requestContext, "serviceName"),
 });
 
 const getRequiredContextItem = <K extends keyof RequestContextData>(

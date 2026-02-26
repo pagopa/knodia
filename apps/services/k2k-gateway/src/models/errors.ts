@@ -5,4 +5,5 @@ const errorCodes = {} as const;
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   forceGenericProblemOn500: true,
+  serviceName: "k2k-gateway",
 });
