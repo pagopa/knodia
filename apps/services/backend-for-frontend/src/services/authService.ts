@@ -8,6 +8,18 @@ import z from "zod";
 
 import { config } from "../config/config.ts";
 
+// In-memory store of consumed refresh token JTIs to prevent reuse.
+// Entries are auto-purged once the token's exp has passed.
+const usedRefreshJtis = new Map<string, number>();
+
+const cleanupTimer = setInterval(() => {
+  const now = Math.floor(Date.now() / 1000);
+  for (const [jti, exp] of usedRefreshJtis) {
+    if (exp <= now) usedRefreshJtis.delete(jti);
+  }
+}, 600_000);
+cleanupTimer.unref();
+
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
   sub: z.string(),
@@ -133,6 +145,11 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
     if (!parsed.success) {
       throw unauthorizedError("Invalid refresh token claims");
     }
+
+    if (usedRefreshJtis.has(parsed.data.jti)) {
+      throw unauthorizedError("Refresh token already used");
+    }
+    usedRefreshJtis.set(parsed.data.jti, parsed.data.exp);
 
     return ClaimsFromCognito.parse({
       organizationId: parsed.data.organizationId,

@@ -303,6 +303,36 @@ describe("refreshTokenPair", () => {
     await expect(service.refreshTokenPair("jwt")).rejects.toThrow();
   });
 
+  it("throws when the same refresh token is used twice", async () => {
+    setupValidRefreshToken();
+    mockKmsSend.mockResolvedValue({
+      Signature: new Uint8Array([1, 2, 3, 4]),
+    });
+
+    const service = buildService();
+    await service.refreshTokenPair("refresh-jwt");
+
+    setupValidRefreshToken();
+    await expect(service.refreshTokenPair("refresh-jwt")).rejects.toThrow(
+      /already used/,
+    );
+  });
+
+  it("allows different refresh tokens with distinct JTIs", async () => {
+    mockKmsSend.mockResolvedValue({
+      Signature: new Uint8Array([1, 2, 3, 4]),
+    });
+
+    setupValidRefreshToken({ jti: "jti-1" });
+    const service = buildService();
+    await service.refreshTokenPair("refresh-jwt-1");
+
+    setupValidRefreshToken({ jti: "jti-2" });
+    await expect(
+      service.refreshTokenPair("refresh-jwt-2"),
+    ).resolves.toBeDefined();
+  });
+
   it("preserves claims from the refresh token in the new pair", async () => {
     const customOrgId = "30000000-3000-1000-8000-000000000003";
     setupValidRefreshToken({
