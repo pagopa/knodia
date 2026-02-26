@@ -50,6 +50,13 @@ const mockedIsResponseSerializationError = vi.mocked(
 const mockedGetContextValues = vi.mocked(contextModule.getContextValues);
 const defaultServiceName: HTTPServiceName = "backend-for-frontend";
 const correlationIdMock = generateId<CorrelationId>();
+const forceGenericSuffix =
+  "forceGenericProblemOn500 is set to true, returning generic problem";
+
+let loggerMock: {
+  error: ReturnType<typeof vi.fn>;
+  warn: ReturnType<typeof vi.fn>;
+};
 
 const genericProblemExpectation = {
   correlationId: correlationIdMock,
@@ -61,13 +68,15 @@ const genericProblemExpectation = {
 };
 
 function mockContextValues(overrides?: Partial<RequestContextData>) {
+  loggerMock = {
+    error: vi.fn(),
+    warn: vi.fn(),
+  };
+
   const defaultValues: RequestContextData = {
     authData: undefined,
     correlationId: correlationIdMock,
-    logger: {
-      error: vi.fn(),
-      warn: vi.fn(),
-    } as never,
+    logger: loggerMock as never,
   };
 
   mockedGetContextValues.mockReturnValue({ ...defaultValues, ...overrides });
@@ -85,8 +94,8 @@ const serviceName: HTTPServiceName = "backend-for-frontend";
 // eslint-disable-next-line max-lines-per-function
 describe("makeApiProblemBuilder", () => {
   const makeApiProblem = makeApiProblemBuilder({}, { serviceName });
-  describe("error code mapping", () => {
-    it("prefixes error codes with serviceErrorCode when serviceName is valid", () => {
+  describe("mapping error codes", () => {
+    it("should prefix error codes with the service code when serviceName is valid", () => {
       const serviceName: HTTPServiceName = defaultServiceName;
       const serviceNameCode = serviceErrorCode[serviceName];
 
@@ -100,7 +109,7 @@ describe("makeApiProblemBuilder", () => {
         ]),
       );
     });
-    it("uses the fallback serviceErrorCode '000' when serviceName is invalid", () => {
+    it("should use fallback service code '000' when serviceName is invalid", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         { serviceName: "invalid-service-name" as HTTPServiceName },
@@ -116,7 +125,7 @@ describe("makeApiProblemBuilder", () => {
         ]),
       );
     });
-    it("resolves codes from custom mapping passed in errors", () => {
+    it("should resolve error codes from the provided custom mapping", () => {
       const customErrors = {
         CUSTOM_ERROR: "CUSTOM_ERROR_CODE",
       };
@@ -145,8 +154,8 @@ describe("makeApiProblemBuilder", () => {
     });
   });
 
-  describe("zod fastify schema validation error", () => {
-    it("returns problem from zodFastifySchemaValidationError", () => {
+  describe("handling zod fastify schema validation errors", () => {
+    it("should return a validation problem and log with warn level", () => {
       mockedHasZodFastifySchemaValidationErrors.mockReturnValue(true);
       const error = makeApiProblem({ validation: [{}] });
 
@@ -160,11 +169,13 @@ describe("makeApiProblemBuilder", () => {
         ],
         status: 400,
       });
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
     });
   });
 
-  describe("response serialization error", () => {
-    it("returns problem from responseSerializationError", () => {
+  describe("handling response serialization errors", () => {
+    it("should return a serialization problem and log with warn level", () => {
       mockedIsResponseSerializationError.mockReturnValue(true);
 
       const testStatusCode = 418;
@@ -184,11 +195,13 @@ describe("makeApiProblemBuilder", () => {
         ],
         status: testStatusCode,
       });
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
     });
   });
 
-  describe("ApiError branch", () => {
-    it("returns problem derived from ApiError when status != 500", () => {
+  describe("handling ApiError", () => {
+    it("should return a specific problem and log warn for non-500 status", () => {
       const makeApiProblem = makeApiProblemBuilder({}, { serviceName });
       const inputError = new ApiError({
         errors: [{ code: "GENERIC_ERROR", detail: "conflict detail" }],
@@ -206,9 +219,11 @@ describe("makeApiProblemBuilder", () => {
         status: 409,
         title: "Conflict",
       });
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
     });
 
-    it("returns problem derived from ApiError when status = 500 and forceGenericProblemOn500=false", () => {
+    it("should return a specific 500 problem when forceGenericProblemOn500 is disabled", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         {
@@ -236,7 +251,7 @@ describe("makeApiProblemBuilder", () => {
       });
     });
 
-    it("returns genericProblem when status = 500 and forceGenericProblemOn500=true", () => {
+    it("should return a generic problem and append forceGenericProblemOn500 suffix when enabled", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         { forceGenericProblemOn500: true, serviceName },
@@ -250,10 +265,15 @@ describe("makeApiProblemBuilder", () => {
       const problem = makeApiProblem(inputError);
 
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        expect.stringContaining(forceGenericSuffix),
+      );
     });
   });
 
-  describe("FastifyError branch", () => {
+  describe("handling FastifyError", () => {
     const makeFastifyError = (statusCode: number, message: string) => {
       const FastifySpecificError = createError(
         "FST_TEST_ERROR",
@@ -263,7 +283,7 @@ describe("makeApiProblemBuilder", () => {
       return new FastifySpecificError(message);
     };
 
-    it("uses statusCode from FastifyError if present", () => {
+    it("should use FastifyError statusCode when present", () => {
       const testStatusCode = 418;
       const inputError = makeFastifyError(testStatusCode, "teapot exploded");
 
@@ -279,7 +299,7 @@ describe("makeApiProblemBuilder", () => {
       });
     });
 
-    it("uses 500 when statusCode from FastifyError is undefined", () => {
+    it("should default to 500 when FastifyError statusCode is undefined", () => {
       // in @fastify/error, passing 0 makes statusCode undefined internally
       const inputError = makeFastifyError(0, "no status code");
 
@@ -295,7 +315,7 @@ describe("makeApiProblemBuilder", () => {
       });
     });
 
-    it("returns genericProblem on status 500 when forceGenericProblemOn500=true", () => {
+    it("should return a generic problem and append forceGenericProblemOn500 suffix on status 500 when enabled", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         { forceGenericProblemOn500: true, serviceName },
@@ -305,9 +325,14 @@ describe("makeApiProblemBuilder", () => {
       const problem = makeApiProblem(inputError);
 
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        expect.stringContaining(forceGenericSuffix),
+      );
     });
 
-    it("returns specific problem on non-500 status even with forceGenericProblemOn500=true", () => {
+    it("should return a specific problem on non-500 status even when forceGenericProblemOn500 is enabled", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         { forceGenericProblemOn500: true, serviceName },
@@ -327,7 +352,8 @@ describe("makeApiProblemBuilder", () => {
     });
   });
 
-  describe("AxiosError<API_Problem> passthrough", () => {
+  // eslint-disable-next-line max-lines-per-function
+  describe("handling AxiosError with API_Problem payload", () => {
     const makeAxiosProblemError = ({
       problem,
       responseStatus,
@@ -350,7 +376,7 @@ describe("makeApiProblemBuilder", () => {
         toJSON: () => ({}),
       }) as unknown;
 
-    it.only("returns receivedProblem unchanged when problemErrorsPassthrough=true", () => {
+    it("should passthrough the received problem when problemErrorsPassthrough is enabled", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         { problemErrorsPassthrough: true, serviceName },
@@ -371,9 +397,11 @@ describe("makeApiProblemBuilder", () => {
       );
 
       expect(problem).toBe(receivedProblem);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
     });
 
-    it("returns genericProblem when problemErrorsPassthrough=true and response.status=500 with forceGenericProblemOn500=true", () => {
+    it("should passthrough the received problem when forceGenericProblemOn500 is enabled but both statuses are non-500", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         {
@@ -384,7 +412,39 @@ describe("makeApiProblemBuilder", () => {
       );
 
       const receivedProblem: API_Problem = {
-        correlationId: "downstream-correlation-id",
+        correlationId: correlationIdMock,
+        errors: [{ code: "EXT-1001", detail: "downstream detail" }],
+        status: 404,
+        title: "Downstream Not Found",
+      };
+
+      const problem = makeApiProblem(
+        makeAxiosProblemError({
+          problem: receivedProblem,
+          responseStatus: 400,
+        }),
+      );
+
+      expect(problem).toBe(receivedProblem);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
+      expect(loggerMock.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(forceGenericSuffix),
+      );
+    });
+
+    it("should return generic problem and append forceGenericProblemOn500 suffix when response.status is 500", () => {
+      const makeApiProblem = makeApiProblemBuilder(
+        {},
+        {
+          forceGenericProblemOn500: true,
+          problemErrorsPassthrough: true,
+          serviceName,
+        },
+      );
+
+      const receivedProblem: API_Problem = {
+        correlationId: correlationIdMock,
         errors: [{ code: "EXT-1002", detail: "downstream detail" }],
         status: 400,
         title: "Downstream Bad Request",
@@ -398,9 +458,14 @@ describe("makeApiProblemBuilder", () => {
       );
 
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        expect.stringContaining(forceGenericSuffix),
+      );
     });
 
-    it("returns genericProblem when problemErrorsPassthrough=true and receivedProblem.status=500 with forceGenericProblemOn500=true", () => {
+    it("should return generic problem and append forceGenericProblemOn500 suffix when received problem status is 500", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         {
@@ -411,7 +476,7 @@ describe("makeApiProblemBuilder", () => {
       );
 
       const receivedProblem: API_Problem = {
-        correlationId: "downstream-correlation-id",
+        correlationId: correlationIdMock,
         errors: [{ code: "EXT-1003", detail: "downstream exploded" }],
         status: 500,
         title: "Downstream Internal Error",
@@ -425,16 +490,21 @@ describe("makeApiProblemBuilder", () => {
       );
 
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
+      expect(loggerMock.warn).toHaveBeenCalledWith(
+        expect.stringContaining(forceGenericSuffix),
+      );
     });
 
-    it("returns genericProblem when problemErrorsPassthrough=false", () => {
+    it("should return a generic problem when problemErrorsPassthrough is disabled", () => {
       const makeApiProblem = makeApiProblemBuilder(
         {},
         { problemErrorsPassthrough: false, serviceName },
       );
 
       const receivedProblem: API_Problem = {
-        correlationId: "downstream-correlation-id",
+        correlationId: correlationIdMock,
         errors: [{ code: "EXT-1004", detail: "downstream detail" }],
         status: 404,
         title: "Downstream Not Found",
@@ -448,11 +518,48 @@ describe("makeApiProblemBuilder", () => {
       );
 
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
+      expect(loggerMock.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(forceGenericSuffix),
+      );
+    });
+
+    it("should return a generic problem when problemErrorsPassthrough is disabled even if forceGenericProblemOn500 is enabled", () => {
+      const makeApiProblem = makeApiProblemBuilder(
+        {},
+        {
+          forceGenericProblemOn500: true,
+          problemErrorsPassthrough: false,
+          serviceName,
+        },
+      );
+
+      const receivedProblem: API_Problem = {
+        correlationId: correlationIdMock,
+        errors: [{ code: "EXT-1005", detail: "downstream detail" }],
+        status: 500,
+        title: "Downstream Internal Error",
+      };
+
+      const problem = makeApiProblem(
+        makeAxiosProblemError({
+          problem: receivedProblem,
+          responseStatus: 500,
+        }),
+      );
+
+      expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.warn).toHaveBeenCalledTimes(1);
+      expect(loggerMock.error).not.toHaveBeenCalled();
+      expect(loggerMock.warn).not.toHaveBeenCalledWith(
+        expect.stringContaining(forceGenericSuffix),
+      );
     });
   });
 
-  describe("AxiosError not conform a API_Problem", () => {
-    it("does not enter the passthrough branch and falls back to generic", () => {
+  describe("handling AxiosError without API_Problem payload", () => {
+    it("should fallback to a generic problem when isAxiosError is true but payload schema does not match API_Problem", () => {
       const nonConformingAxiosError = {
         isAxiosError: true,
         message: "Request failed",
@@ -461,31 +568,62 @@ describe("makeApiProblemBuilder", () => {
           data: { foo: "bar" },
           status: 400,
         },
-        toJSON: () => ({}),
       } as unknown;
 
       const problem = makeApiProblem(nonConformingAxiosError);
 
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+      expect(loggerMock.warn).not.toHaveBeenCalled();
     });
   });
 
-  describe("ZodError branch", () => {
-    it("returns genericProblem", () => {
+  describe("handling API_Problem-like payloads that are not AxiosError", () => {
+    it("should fallback to a generic problem when payload matches API_Problem schema but isAxiosError is false", () => {
+      const problemLikePayload = {
+        isAxiosError: false,
+        response: {
+          data: {
+            correlationId: correlationIdMock,
+            errors: [{ code: "EXT-2001", detail: "downstream detail" }],
+            status: 404,
+            title: "Downstream Not Found",
+          },
+          status: 404,
+        },
+      } as unknown;
+
+      const problem = makeApiProblem(problemLikePayload);
+
+      expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+      expect(loggerMock.warn).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("handling ZodError", () => {
+    it("should return a generic problem and log with error level", () => {
       const problem = makeApiProblem(new ZodError([]));
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+      expect(loggerMock.warn).not.toHaveBeenCalled();
+      expect(loggerMock.error).toHaveBeenCalledWith(
+        expect.stringContaining("title: Unexpected Error"),
+      );
     });
   });
 
-  describe("fallback unknown error", () => {
-    it("returns genericProblem on unmatched error", () => {
+  describe("handling unknown errors", () => {
+    it("should return a generic problem and log with error level", () => {
       const problem = makeApiProblem({ something: "unexpected" });
       expectToMatchProblem(problem, genericProblemExpectation);
+      expect(loggerMock.error).toHaveBeenCalledTimes(1);
+      expect(loggerMock.warn).not.toHaveBeenCalled();
     });
   });
 
-  describe("shape of the returned problem", () => {
-    it("includes correlationId from the request context in locally constructed problems", () => {
+  describe("building the returned API_Problem shape", () => {
+    it("should include correlationId from request context", () => {
       const correlationId = generateId<CorrelationId>();
       mockContextValues({ correlationId });
 
@@ -494,7 +632,7 @@ describe("makeApiProblemBuilder", () => {
       expect(problem.correlationId).toBe(correlationId);
     });
 
-    it("includes status, title and errors mapped in the API_Problem format", () => {
+    it("should include status, title and mapped errors in API_Problem format", () => {
       const inputError = new ApiError({
         errors: [{ code: "GENERIC_ERROR", detail: "shape detail" }],
         status: 409,
