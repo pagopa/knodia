@@ -7,11 +7,7 @@ import {
   toKeychainV1,
 } from "@knodia/keychain-models";
 import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
-import {
-  getAllKeychains,
-  getMockKeychain,
-  toExpectKeychain,
-} from "@knodia/test-commons/utils";
+import { getMockKeychain, toExpectKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -21,6 +17,7 @@ import {
   readmodelDb,
   topicName,
 } from "./setup.ts";
+import { getAllKeychains } from "./utils.ts";
 
 describe("Keychain read model writer tests", async () => {
   it("KeychainCreatedV1", async () => {
