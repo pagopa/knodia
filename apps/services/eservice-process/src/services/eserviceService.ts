@@ -9,13 +9,14 @@ import type {
 import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";
 import { getCategory } from "@knodia/category-models";
+import { genericInternalError } from "@knodia/common-models/errors";
 import {
   EserviceId,
   EserviceVersionId,
   generateId,
-  OrganizationId,
-  unsafeBrandId,
+  type OrganizationId,
 } from "@knodia/common-models/ids";
+import { getTenant } from "@knodia/tenant-models";
 
 import type {
   API_EserviceSeed,
@@ -33,6 +34,7 @@ import {
   interfaceNotFound,
   invalidAttribute,
   invalidCategory,
+  tenantNotFound,
 } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 
@@ -79,17 +81,14 @@ export function eserviceServiceBuilder(
   return {
     async createEservice(
       seed: API_EserviceSeed,
-      { correlationId, logger }: RequestContextData,
+      contextData: RequestContextData,
     ): Promise<Eservice> {
+      const producerId = getProducerId(contextData);
+      const { correlationId, logger } = contextData;
       const eserviceId = generateId<EserviceId>();
 
-      // TODO: get real producerId from auth context
-      const producerId = unsafeBrandId<OrganizationId>(
-        "00000000-0000-0000-0000-000000000000",
-      );
-
       logger.info(
-        `Creating E-service ${eserviceId} for producer ${producerId} `,
+        `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
 
       for (const attr of seed.requiredAttributes.flat()) {
@@ -180,37 +179,59 @@ export function eserviceServiceBuilder(
 
     async getEservice(
       eserviceId: EserviceId,
-      { logger }: RequestContextData,
+      contextData: RequestContextData,
     ): Promise<Eservice> {
-      logger.info(`Getting E-service with ID ${eserviceId}`);
+      const producerId = getProducerId(contextData);
+      contextData.logger.info(
+        `Getting E-service ${eserviceId} for producer ${producerId}`,
+      );
 
       return await retrieveEservice(eserviceId);
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
-      { logger }: RequestContextData,
+      contextData: RequestContextData,
     ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
-      logger.info(`Getting latest version of E-service with ID ${eserviceId}`);
+      const producerId = getProducerId(contextData);
+      contextData.logger.info(
+        `Getting latest version of E-service ${eserviceId} for producer ${producerId}`,
+      );
 
       return await retrieveEserviceLatestVersion(eserviceId);
     },
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
-      { logger }: RequestContextData,
+      contextData: RequestContextData,
     ): Promise<EserviceInterface> {
-      logger.info(
-        `Getting latest version interface of E-service with ID ${eserviceId}`,
+      const producerId = getProducerId(contextData);
+      contextData.logger.info(
+        `Getting latest version interface of E-service ${eserviceId} for producer ${producerId}`,
       );
 
       return await retrieveEserviceLatestVersionInterface(eserviceId);
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
-      { logger }: RequestContextData,
+      contextData: RequestContextData,
     ): Promise<ListResult<Eservice>> {
-      logger.info({ params }, "Getting E-services with params");
+      const producerId = getProducerId(contextData);
+      contextData.logger.info({ params, producerId }, "Getting E-services");
 
-      return await readmodelService.getEservices(params);
+      return await readmodelService.getEservices({ ...params, producerId });
     },
   };
+}
+
+function assertTenantExists(organizationId: OrganizationId): void {
+  if (!getTenant(organizationId)) {
+    throw tenantNotFound(organizationId);
+  }
+}
+
+function getProducerId({ authData }: RequestContextData): OrganizationId {
+  if (authData?.tokenType !== "ui-session") {
+    throw genericInternalError("Expected UI session authentication");
+  }
+  assertTenantExists(authData.organizationId);
+  return authData.organizationId;
 }

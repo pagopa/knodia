@@ -2,6 +2,7 @@ import type {
   EserviceId,
   EserviceInterfaceId,
   EserviceVersionId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -20,6 +21,7 @@ const errorCodes = {
   INTERFACE_NOT_FOUND: "0005",
   DUPLICATE_INTERFACE_ID: "0006",
   INCONSISTENT_DAILY_CALLS: "0007",
+  TENANT_NOT_FOUND: "0008",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -101,5 +103,14 @@ export function invalidCategory(scheme: string, code: string) {
     detail: `Invalid category: scheme=${scheme}, code=${code}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Invalid Category",
+  });
+}
+
+export function tenantNotFound(organizationId: OrganizationId) {
+  return createApiError<ErrorCodes>({
+    code: "TENANT_NOT_FOUND",
+    detail: `Tenant with organization id ${organizationId} not found`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Tenant Not Found",
   });
 }

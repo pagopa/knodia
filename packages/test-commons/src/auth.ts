@@ -12,7 +12,7 @@ import { match } from "ts-pattern";
 const TEST_USER_ID = unsafeBrandId<UserId>(
   "10000000-1000-1000-8000-000000000001",
 );
-const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
+export const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
   "20000000-2000-1000-8000-000000000002",
 );
 

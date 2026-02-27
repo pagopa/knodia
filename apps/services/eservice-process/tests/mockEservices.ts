@@ -1,4 +1,4 @@
-import { generateId, OrganizationId } from "@knodia/common-models/ids";
+import { generateId } from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceCategory,
@@ -6,9 +6,8 @@ import {
   EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { zocker } from "zocker";
-
-export const producerId = generateId<OrganizationId>();
 
 const zockerEservices = zocker(Eservice).setSeed(0).generateMany(10);
 
@@ -42,7 +41,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 1",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -62,7 +61,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 2",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -88,7 +87,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 3",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -108,7 +107,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 4",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -128,7 +127,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 5",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -148,7 +147,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 6",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -168,7 +167,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 7",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -188,7 +187,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 8",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),
@@ -208,7 +207,7 @@ export const mockEservices: Eservice[] = [
     name: {
       en: "other name 9",
     },
-    producerId,
+    producerId: TEST_ORGANIZATION_ID,
     versions: [
       {
         ...zocker(EserviceVersion).generate(),

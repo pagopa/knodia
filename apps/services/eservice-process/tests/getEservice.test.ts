@@ -35,13 +35,15 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
   });
 
   it("should return the same e-service as the list endpoint", async () => {
+    const ownedEservice = mockEservices[1]!;
+
     const listResponse = await injectAppRequest()
       .get("/eservices")
       .query({ limit: "50", offset: "0" });
     const listBody = listResponse.json<{ items: API_Eservice[] }>();
-    const expectedItem = listBody.items.find((i) => i.id === VALID_ESERVICE_ID);
+    const expectedItem = listBody.items.find((i) => i.id === ownedEservice.id);
 
-    const response = await getEservice(VALID_ESERVICE_ID);
+    const response = await getEservice(ownedEservice.id);
     const body = response.json<API_Eservice>();
 
     expect(body).toEqual(toExpectAPI_Eservice(expectedItem!));

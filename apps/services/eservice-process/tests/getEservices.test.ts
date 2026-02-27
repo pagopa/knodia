@@ -8,7 +8,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
 
-import { mockEservices, producerId } from "./mockEservices.ts";
+import { mockEservices } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
@@ -29,43 +29,32 @@ describe("GET /eservices (getEservices)", () => {
   it.each([
     {
       expectedResult: [
-        mockEservices[0],
-        mockEservices[1],
-        mockEservices[2],
-        mockEservices[3],
-      ] as Eservice[],
-      query: { ...defaultQuery },
-      testCase: "pagination only (1st page), sort by name asc by default",
-      totalCount: mockEservices.length,
-    },
-    {
-      expectedResult: [
         mockEservices[1],
         mockEservices[2],
         mockEservices[3],
         mockEservices[4],
       ] as Eservice[],
-      query: { ...defaultQuery, producerId },
+      query: { ...defaultQuery },
       testCase: "pagination only (1st page), sort by name asc by default",
       totalCount: 9,
     },
     {
       expectedResult: [
-        mockEservices[4],
         mockEservices[5],
         mockEservices[6],
         mockEservices[7],
+        mockEservices[8],
       ] as Eservice[],
       query: {
         limit: "4",
         offset: "4",
       },
       testCase: "pagination only (2nd page), sort by name asc by default",
-      totalCount: mockEservices.length,
+      totalCount: 9,
     },
     {
       expectedResult: [mockEservices[1], mockEservices[3]] as Eservice[],
-      query: { ...defaultQuery, producerId, q: "KNODIA" },
+      query: { ...defaultQuery, q: "KNODIA" },
       testCase: "search query",
       totalCount: 2,
     },
@@ -78,7 +67,6 @@ describe("GET /eservices (getEservices)", () => {
       query: {
         ...defaultQuery,
         mode: EserviceMode.enum.ProvideData,
-        producerId,
       },
       testCase: "filter by mode",
       totalCount: 3,
@@ -92,7 +80,6 @@ describe("GET /eservices (getEservices)", () => {
       ] as Eservice[],
       query: {
         ...defaultQuery,
-        producerId,
         state: [
           API_EserviceVersionState.enum.Active,
           API_EserviceVersionState.enum.Suspended,
@@ -110,7 +97,6 @@ describe("GET /eservices (getEservices)", () => {
       ] as Eservice[],
       query: {
         ...defaultQuery,
-        producerId,
         sortBy: "name",
         sortOrder: SortDirection.enum.desc,
       },
@@ -122,7 +108,6 @@ describe("GET /eservices (getEservices)", () => {
       query: {
         ...defaultQuery,
         mode: EserviceMode.enum.ProvideData,
-        producerId,
         q: "KNODIA",
         sortBy: "name",
         sortOrder: SortDirection.enum.desc,
