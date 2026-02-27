@@ -31,7 +31,9 @@ describe("POST /agreements (createAgreement)", async () => {
   it("should correctly create agreement creation event", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
-    const response = await injectAppRequest().post("/agreements").body(body);
+    const response = await injectAppRequest("internal")
+      .post("/agreements")
+      .body(body);
     expect(response.statusCode).toBe(201);
 
     const responseBody = response.json<API_Agreement>();
@@ -87,7 +89,7 @@ describe("POST /agreements (createAgreement)", async () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await injectAppRequest()
+      const response = await injectAppRequest("internal")
         .post("/agreements")
         .body(body as never);
       expect(response.statusCode).toBe(400);
@@ -95,7 +97,7 @@ describe("POST /agreements (createAgreement)", async () => {
   );
 
   it("should return 404 if the e-service does not exist", async () => {
-    const response = await injectAppRequest()
+    const response = await injectAppRequest("internal")
       .post("/agreements")
       .body({
         ...body,
@@ -107,7 +109,7 @@ describe("POST /agreements (createAgreement)", async () => {
   it("should return 404 if the e-service version does not exist", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
-    const response = await injectAppRequest()
+    const response = await injectAppRequest("internal")
       .post("/agreements")
       .body({
         ...body,

@@ -1,3 +1,5 @@
+import type { KnodiaTokenClaims } from "@knodia/common-models/auth";
+
 import { generateId } from "@knodia/common-models/ids";
 import { eventStoreAgreementEvents } from "@knodia/db-event-store-agreement";
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
@@ -9,9 +11,11 @@ export async function getAllAgreementEvents() {
   return await eventStoreDb.select().from(eventStoreAgreementEvents);
 }
 
-export function injectAppRequest() {
+export function injectAppRequest(
+  tokenType: KnodiaTokenClaims["type"] = "ui-session",
+) {
   return app.inject().headers({
-    authorization: `Bearer ${createTestTokenPayload("ui-session")}`, // TODO: internal token
+    authorization: `Bearer ${createTestTokenPayload(tokenType)}`, // TODO: internal token
     [CORRELATION_ID_HEADER]: generateId(),
   });
 }
