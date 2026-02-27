@@ -1,4 +1,4 @@
-import { CaretUpIcon } from "@phosphor-icons/react";
+import { CaretUpIcon, MinusIcon } from "@phosphor-icons/react";
 import {
   Cell as AriaCell,
   Column as AriaColumn,
@@ -66,12 +66,17 @@ export function Column(props: ColumnProps) {
               <span className="truncate">{children}</span>
               {allowsSorting && (
                 <span
-                  className={`w-4 h-4 flex items-center justify-center transition ${
+                  className={`ml-1 flex items-center justify-center transition ${
                     sortDirection === "descending" ? "rotate-180" : ""
                   }`}
                 >
-                  {sortDirection && (
+                  {sortDirection ? (
                     <CaretUpIcon
+                      aria-hidden
+                      className="w-4 h-4 text-primary-light-low-contrast"
+                    />
+                  ) : (
+                    <MinusIcon
                       aria-hidden
                       className="w-4 h-4 text-primary-light-low-contrast"
                     />
