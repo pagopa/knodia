@@ -28,7 +28,7 @@ describe("POST /agreements (createAgreement)", async () => {
     eserviceVersionId: eservice.versions[0]!.id,
   };
 
-  it("should correctly create eservice creation event", async () => {
+  it("should correctly create agreement creation event", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
     const response = await injectAppRequest().post("/agreements").body(body);
