@@ -31,7 +31,12 @@ export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/search",
 )({
   component: RouteComponent,
-  loaderDeps: ({ search }) => search,
+  loaderDeps: ({ search: { category, keywords, knode, offset } }) => ({
+    category,
+    keywords,
+    knode,
+    offset,
+  }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
     if (!deps.knode) return;
@@ -41,7 +46,9 @@ export const Route = createFileRoute(
       keywords: deps.keywords,
       knodeId: deps.knode,
     });
-    queryClient.prefetchQuery(catalogQuery(body, deps.offset));
+    if (body) {
+      queryClient.prefetchQuery(catalogQuery(body, deps.offset));
+    }
   },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],
@@ -54,26 +61,22 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
-  const canSearch = !!search.knode;
-
-  const body = buildCatalogSearchBody({
-    category: search.category,
-    keywords: search.keywords,
-    knodeId: search.knode,
-  });
-
-  const { data, isLoading } = useQuery({
-    ...catalogQuery(body, search.offset),
-    enabled: canSearch,
-    placeholderData: canSearch ? keepPreviousData : undefined,
-  });
-
-  const results = data
-    ? {
-        items: data.results.map(toCatalogSearchResultUI),
-        pagination: data.pagination,
-      }
+  const body = search.knode
+    ? buildCatalogSearchBody({
+        category: search.category,
+        keywords: search.keywords,
+        knodeId: search.knode,
+      })
     : null;
+
+  const { data: results, isLoading } = useQuery({
+    ...catalogQuery(body, search.offset),
+    placeholderData: body ? keepPreviousData : undefined,
+    select: (data) => ({
+      items: data.results.map(toCatalogSearchResultUI),
+      pagination: data.pagination,
+    }),
+  });
 
   const handleSearch = (params: Omit<typeof search, "offset">) => {
     if (hasValidationError) setHasValidationError(false);
@@ -114,7 +117,7 @@ function RouteComponent() {
         hasValidationError={hasValidationError}
         isLoading={isLoading}
         onOffsetChange={handleOffsetChange}
-        results={results}
+        results={results ?? null}
       />
     </div>
   );
