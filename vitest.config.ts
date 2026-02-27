@@ -1,19 +1,19 @@
 import { defineConfig } from "vitest/config";
-import { existsSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 function loadEnvFile(filePath: string): Record<string, string> {
   const fullPath = resolve(process.cwd(), filePath);
   if (!existsSync(fullPath)) return {};
 
-  const content = readFileSync(fullPath, 'utf-8');
+  const content = readFileSync(fullPath, "utf-8");
   const env: Record<string, string> = {};
 
-  for (const line of content.split('\n')) {
+  for (const line of content.split("\n")) {
     const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) continue;
-    const [key, ...valueParts] = trimmed.split('=');
-    if (key) env[key] = valueParts.join('=');
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const [key, ...valueParts] = trimmed.split("=");
+    if (key) env[key] = valueParts.join("=");
   }
 
   return env;
@@ -22,7 +22,12 @@ function loadEnvFile(filePath: string): Record<string, string> {
 export default defineConfig({
   test: {
     globalSetup: ["./globalTestSetup.ts"],
-    projects: ["apps/services/*", "apps/web/*", "packages/*"],
-    env: loadEnvFile('.env.test'),
-  }
-})
+    projects: [
+      "apps/services/*",
+      "apps/web/*",
+      "packages/*",
+      "packages/db/readmodel/*",
+    ],
+    env: loadEnvFile(".env.test"),
+  },
+});

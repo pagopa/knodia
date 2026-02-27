@@ -10,8 +10,6 @@
     "@aws-sdk/client-s3": "catalog:",
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/common-models": "workspace:*",
-    "@knodia/db-readmodel-eservice": "workspace:*",
-    "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
