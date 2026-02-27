@@ -1,4 +1,4 @@
-import type { RequiredAttributeGroup } from "@knodia/attribute-models";
+import type { AttributeGroup } from "@knodia/attribute-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
@@ -23,8 +23,8 @@ import {
 } from "./generated/v1/eservice.ts";
 
 export const fromEserviceV1 = (input: EserviceV1): Eservice => {
-  assertRequired(input.description, "Eservice description");
-  assertRequired(input.name, "Eservice name");
+  assertRequired(input.description, "Eservice description is undefined");
+  assertRequired(input.name, "Eservice name is undefined");
 
   return {
     ...input,
@@ -49,7 +49,10 @@ const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
     .exhaustive();
 
 const fromEserviceVersionV1 = (input: EserviceVersionV1): EserviceVersion => {
-  assertRequired(input.interfaceDocument, "EserviceVersion interfaceDocument");
+  assertRequired(
+    input.interfaceDocument,
+    "EserviceVersion interfaceDocument is undefined",
+  );
 
   return {
     ...input,
@@ -69,7 +72,7 @@ const fromEserviceVersionV1 = (input: EserviceVersionV1): EserviceVersion => {
 
 const fromEserviceVersionRequiredAttributeGroupV1 = (
   input: EserviceVersionRequiredAttributeGroupV1,
-): RequiredAttributeGroup => input.attributes;
+): AttributeGroup => input.attributes;
 
 const fromEserviceVersionAccessTokenTypeV1 = (
   input: EserviceAccessTokenTypeV1,
@@ -109,7 +112,7 @@ const fromEserviceVersionStateV1 = (
 const fromEserviceVersionInterfaceV1 = (
   input: EserviceInterfaceV1,
 ): EserviceInterface => {
-  assertRequired(input.prettyName, "EserviceInterface prettyName");
+  assertRequired(input.prettyName, "EserviceInterface prettyName is undefined");
 
   return {
     ...input,

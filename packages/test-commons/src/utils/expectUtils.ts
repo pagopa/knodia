@@ -10,9 +10,7 @@ import { expect } from "vitest";
 export function toExpectAgreement(agreement: Agreement) {
   return {
     ...agreement,
-    requiredAttributes: agreement.requiredAttributes.map((group) =>
-      expect.arrayContaining(group),
-    ),
+    attributes: expect.arrayContaining(agreement.attributes),
   };
 }
 

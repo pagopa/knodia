@@ -8,14 +8,16 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/attributes.ts"
+  },
+  "dependencies": {
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:",
-    "zod": "catalog:"
+    "typescript": "catalog:"
   }
 }

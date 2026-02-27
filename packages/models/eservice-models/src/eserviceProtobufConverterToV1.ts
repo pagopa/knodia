@@ -1,4 +1,4 @@
-import type { RequiredAttributeGroup } from "@knodia/attribute-models";
+import type { AttributeGroup } from "@knodia/attribute-models";
 
 import { match } from "ts-pattern";
 
@@ -45,7 +45,7 @@ const toEserviceVersionStateV1 = (
     .exhaustive();
 
 const toEserviceVersionRequiredAttributeGroupV1 = (
-  group: RequiredAttributeGroup,
+  group: AttributeGroup,
   index: number,
 ): EserviceVersionRequiredAttributeGroupV1 => ({
   attributes: group,

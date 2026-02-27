@@ -5,9 +5,9 @@ import { genericInternalError } from "../errors.ts";
  */
 export function assertRequired<T>(
   value: T | undefined,
-  propertyName: string,
+  message: string,
 ): asserts value is T {
   if (value === undefined) {
-    throw genericInternalError(`${propertyName} is undefined`);
+    throw genericInternalError(message);
   }
 }

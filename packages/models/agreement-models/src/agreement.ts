@@ -1,4 +1,4 @@
-import { RequiredAttributeGroup } from "@knodia/attribute-models";
+import { Attribute } from "@knodia/attribute-models";
 import {
   AgreementId,
   EserviceId,
@@ -19,13 +19,13 @@ const AgreementConsumer = z.strictObject({
 export type AgreementConsumer = z.infer<typeof AgreementConsumer>;
 
 export const Agreement = z.strictObject({
+  attributes: z.array(Attribute).min(1),
   consumer: AgreementConsumer,
   createdAt: z.coerce.date(),
   eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,
   id: AgreementId,
   producerId: OrganizationId,
-  requiredAttributes: z.array(RequiredAttributeGroup).min(1),
   state: AgreementState,
   updatedAt: z.coerce.date(),
 });

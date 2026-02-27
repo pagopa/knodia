@@ -1,4 +1,4 @@
-import { RequiredAttributeGroup } from "@knodia/attribute-models";
+import { AttributeGroup } from "@knodia/attribute-models";
 import {
   EserviceId,
   EserviceInterfaceId,
@@ -66,7 +66,7 @@ export const EserviceVersion = z.strictObject({
   interfaceDocument: EserviceInterface,
   maxDailyCallsPerConsumer: z.int().min(minDailyCalls).max(maxDailyCalls),
   maxDailyCallsPerKnode: z.int().min(minDailyCalls).max(maxDailyCalls),
-  requiredAttributes: z.array(RequiredAttributeGroup).min(1),
+  requiredAttributes: z.array(AttributeGroup).min(1),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),
   versionNumber: z.int().min(minEserviceVersionNumber).max(INT32_MAX),

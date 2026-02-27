@@ -22,13 +22,15 @@ describe("Agreement Aggregators", () => {
       },
     };
 
-    const { agreementSQL, requiredAttributesSQL } =
-      splitAgreementIntoObjectsSQL(agreement.data, agreement.metadata.version);
+    const { agreementSQL, attributesSQL } = splitAgreementIntoObjectsSQL(
+      agreement.data,
+      agreement.metadata.version,
+    );
 
     const aggregatedAgreement = aggregateAgreement(
-      requiredAttributesSQL.map((requiredAttribute) => ({
+      attributesSQL.map((attribute) => ({
         agreement: agreementSQL,
-        requiredAttribute,
+        attribute,
       })),
     );
 
@@ -52,29 +54,25 @@ describe("Agreement Aggregators", () => {
       },
     };
 
-    const {
-      agreementSQL: agreementSQL1,
-      requiredAttributesSQL: requiredAttributesSQL1,
-    } = splitAgreementIntoObjectsSQL(
-      agreement1.data,
-      agreement1.metadata.version,
-    );
-    const {
-      agreementSQL: agreementSQL2,
-      requiredAttributesSQL: requiredAttributesSQL2,
-    } = splitAgreementIntoObjectsSQL(
-      agreement2.data,
-      agreement2.metadata.version,
-    );
+    const { agreementSQL: agreementSQL1, attributesSQL: attributesSQL1 } =
+      splitAgreementIntoObjectsSQL(
+        agreement1.data,
+        agreement1.metadata.version,
+      );
+    const { agreementSQL: agreementSQL2, attributesSQL: attributesSQL2 } =
+      splitAgreementIntoObjectsSQL(
+        agreement2.data,
+        agreement2.metadata.version,
+      );
 
     const aggregatedAgreements = aggregateAgreements([
-      ...requiredAttributesSQL1.map((requiredAttribute) => ({
+      ...attributesSQL1.map((attribute) => ({
         agreement: agreementSQL1,
-        requiredAttribute,
+        attribute,
       })),
-      ...requiredAttributesSQL2.map((requiredAttribute) => ({
+      ...attributesSQL2.map((attribute) => ({
         agreement: agreementSQL2,
-        requiredAttribute,
+        attribute,
       })),
     ]);
 
