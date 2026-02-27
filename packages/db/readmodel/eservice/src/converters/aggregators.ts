@@ -111,14 +111,9 @@ const toEserviceVersionAggregator = (
   const { requiredAttributesSQL, versionsSQL } =
     toEserviceVersionsAggregator(queryRes);
 
-  const eserviceVersion = throwIfMultipleOrEmpty(
-    versionsSQL,
-    "e-service version",
-  );
-
   return {
     requiredAttributesSQL: requiredAttributesSQL,
-    versionSQL: eserviceVersion,
+    versionSQL: throwIfMultipleOrEmpty(versionsSQL, "e-service version"),
   };
 };
 
@@ -286,12 +281,10 @@ const toEserviceAggregator = (
     versionsSQL: versionsSQL,
   } = toEservicesAggregator(queryRes);
 
-  const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
-
   return {
     eserviceCategoriesSQL: categoriesSQL,
     eserviceInterfacesSQL: interfacesSQL,
-    eserviceSQL,
+    eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service"),
     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
     eserviceVersionsSQL: versionsSQL,
   };
