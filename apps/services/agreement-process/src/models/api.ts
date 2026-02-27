@@ -8,15 +8,15 @@ import { z } from "zod";
 
 export const API_Agreement = z
   .strictObject({
+    attributes: z
+      .array(API_AgreementAttribute)
+      .meta({ description: "Attributes for the Agreement" }),
     consumer: API_AgreementConsumer,
     createdAt: z.iso.datetime(),
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
     id: z.uuid(),
     producerId: z.uuid(),
-    requiredAttributes: z
-      .array(z.array(API_AgreementAttribute))
-      .meta({ description: "Required attributes for the Agreement" }),
     state: API_AgreementState,
     updatedAt: z.iso.datetime(),
   })

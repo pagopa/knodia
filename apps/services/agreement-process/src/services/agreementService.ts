@@ -56,7 +56,7 @@ export function agreementServiceBuilder(
       }
       assertAuthDataExists(authData);
       const eservice = await retrieveEservice(eserviceId, readmodelService);
-      const eserviceVersion = await validateCreationOnEserviceVersion(
+      await validateCreationOnEserviceVersion(
         eservice,
         eserviceVersionId,
         readmodelService,
@@ -66,6 +66,7 @@ export function agreementServiceBuilder(
 
       const now = new Date();
       const agreement: Agreement = {
+        attributes: [],
         consumer: {
           id: consumerId,
           knodeId: KnodeId.parse(consumerKnodeId),
@@ -75,7 +76,6 @@ export function agreementServiceBuilder(
         eserviceVersionId,
         id: agreementId,
         producerId: eservice.producerId,
-        requiredAttributes: eserviceVersion.requiredAttributes,
         state: "Active",
         updatedAt: now,
       };

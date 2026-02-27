@@ -25,6 +25,4 @@ export const validateCreationOnEserviceVersion = async (
       allowedStates,
     );
   }
-
-  return eserviceVersion;
 };

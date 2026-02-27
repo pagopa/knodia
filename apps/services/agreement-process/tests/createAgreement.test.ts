@@ -37,6 +37,7 @@ describe("POST /agreements (createAgreement)", async () => {
     const responseBody = response.json<API_Agreement>();
 
     const expectedAgreement: Agreement = {
+      attributes: [],
       consumer: {
         id: consumerId,
         knodeId: KnodeId.parse(body.consumerKnodeId),
@@ -46,7 +47,6 @@ describe("POST /agreements (createAgreement)", async () => {
       eserviceVersionId: eserviceVersion.id,
       id: expect.any(String),
       producerId: eservice.producerId,
-      requiredAttributes: eserviceVersion.requiredAttributes,
       state: "Active",
       updatedAt: new Date(responseBody.updatedAt),
     };
