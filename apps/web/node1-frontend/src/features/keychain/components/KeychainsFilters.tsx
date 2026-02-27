@@ -4,7 +4,10 @@ import { useForm } from "@tanstack/react-form";
 
 import { type KeychainSearchParams } from "../models/search-params";
 
-type KeychainFiltersValues = Omit<KeychainSearchParams, "offset">;
+type KeychainFiltersValues = Omit<
+  KeychainSearchParams,
+  "offset" | "sortBy" | "sortDirection"
+>;
 
 const typeOptions = [
   { id: "all", label: "All types" },

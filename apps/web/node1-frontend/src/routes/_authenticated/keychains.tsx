@@ -1,5 +1,3 @@
-import type { SortDescriptor } from "react-aria-components";
-
 import { Button, Pagination } from "@knodia/ui-kit/ui";
 import {
   keepPreviousData,
@@ -18,7 +16,6 @@ import {
   keychainSearchSchema,
 } from "@/features/keychain/models/search-params";
 
-// TODO: This is a mock
 const keychainsQuery = (offset: number) =>
   queryOptions({
     queryFn: async () =>
@@ -36,7 +33,9 @@ const keychainsQuery = (offset: number) =>
 
 export const Route = createFileRoute("/_authenticated/keychains")({
   component: RouteComponent,
-  loaderDeps: ({ search: { offset } }) => ({ offset }),
+  loaderDeps: ({ search: { offset } }) => ({
+    offset,
+  }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps: { offset } }) => {
     queryClient.prefetchQuery(keychainsQuery(offset));
@@ -49,15 +48,10 @@ export const Route = createFileRoute("/_authenticated/keychains")({
 
 function RouteComponent() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [sortDescriptor, setSortDescriptor] = useState<SortDescriptor>({
-    column: "name",
-    direction: "descending",
-  });
-
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
-  const { offset, ...filterDefaultValues } = search;
+  const { offset, sortBy, sortDirection, ...filterDefaultValues } = search;
 
   const { data, isLoading } = useQuery({
     ...keychainsQuery(offset),
@@ -101,8 +95,8 @@ function RouteComponent() {
         hasAppliedFilters={hasAppliedFilters}
         isLoading={isLoading}
         keychains={data?.items ?? []}
-        onSortChange={setSortDescriptor}
-        sortDescriptor={sortDescriptor}
+        onSortChange={handleSearchChange}
+        sortDescriptor={{ sortBy, sortDirection }}
       />
 
       <Pagination

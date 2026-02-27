@@ -17,6 +17,8 @@ import {
   SelectionPlusIcon,
 } from "@phosphor-icons/react";
 
+import type { KeychainSearchParams } from "../models/search-params";
+
 interface KeychainTableProps {
   hasAppliedFilters: boolean;
   isLoading: boolean;
@@ -26,8 +28,13 @@ interface KeychainTableProps {
     numKeys: number;
     type: string;
   }[];
-  onSortChange?: (descriptor: SortDescriptor) => void;
-  sortDescriptor?: SortDescriptor;
+  onSortChange: (sortDescriptor: KeychainTableSortDescriptor) => void;
+  sortDescriptor: KeychainTableSortDescriptor;
+}
+
+interface KeychainTableSortDescriptor {
+  sortBy: KeychainSearchParams["sortBy"];
+  sortDirection: KeychainSearchParams["sortDirection"];
 }
 
 export function KeychainTable({
@@ -45,11 +52,22 @@ export function KeychainTable({
     return <EmptyState hasAppliedFilters={hasAppliedFilters} />;
   }
 
+  const handleSortChange = (newSortDescriptor: SortDescriptor) => {
+    onSortChange({
+      sortBy: newSortDescriptor.column as KeychainSearchParams["sortBy"],
+      sortDirection:
+        newSortDescriptor.direction as KeychainSearchParams["sortDirection"],
+    });
+  };
+
   return (
     <Table
       aria-label="Keychains table"
-      onSortChange={onSortChange}
-      sortDescriptor={sortDescriptor}
+      onSortChange={handleSortChange}
+      sortDescriptor={{
+        column: sortDescriptor.sortBy,
+        direction: sortDescriptor.sortDirection,
+      }}
     >
       <TableHeader>
         <Column allowsSorting id="name" isRowHeader>
