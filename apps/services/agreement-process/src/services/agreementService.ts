@@ -1,6 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
-import type { AuthData } from "@knodia/fastify-zod-api-commons/auth";
 
 import { type RequestContextData } from "@fastify/request-context";
 import {
@@ -29,7 +28,7 @@ export function agreementServiceBuilder(
   return {
     async createAgreement(
       seed: API_AgreementSeed,
-      { authData, correlationId, logger }: RequestContextData,
+      { correlationId, logger }: RequestContextData,
     ): Promise<Agreement> {
       const {
         consumerId: seedConsumerId,
@@ -46,15 +45,6 @@ export function agreementServiceBuilder(
       const agreementId = generateId<AgreementId>();
       logger.info({ requestBody: seed }, `Creating Agreement ${agreementId}`);
 
-      // TODO: move in a shared place and create error
-      function assertAuthDataExists(
-        authData: AuthData | undefined,
-      ): asserts authData is AuthData {
-        if (!authData) {
-          throw new Error("Auth data is required to create an agreement");
-        }
-      }
-      assertAuthDataExists(authData);
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await validateCreationOnEserviceVersion(
         eservice,
