@@ -19,36 +19,33 @@ const kmsClient = new KMSClient({
 
 // KMS key for knodia services (ui-session, internal, etc.)
 // JWKS is written to disk and served by the local-jwks nginx container.
-const keysets = ["knodia"];
-
-for (const name of keysets) {
-  const aliasName = `alias/local-${name}-key`;
+const KID = "alias/local-knodia-key";
 
   try {
-    await kmsClient.send(new DescribeKeyCommand({ KeyId: aliasName }));
-    console.log(`Key "${name}" already exists.`);
+    await kmsClient.send(new DescribeKeyCommand({ KeyId: KID }));
+    console.log(`Key "${KID}" already exists.`);
   } catch {
-    console.log(`Creating KMS key for "${name}"...`);
+    console.log(`Creating KMS key "${KID}"...`);
 
     const { KeyMetadata } = await kmsClient.send(
       new CreateKeyCommand({
         KeySpec: "RSA_2048",
         KeyUsage: "SIGN_VERIFY",
-        Description: `Local development key for ${name}`,
+        Description: `Local development key ${KID}`,
       })
     );
 
     await kmsClient.send(
       new CreateAliasCommand({
-        AliasName: aliasName,
+        AliasName: KID,
         TargetKeyId: KeyMetadata.KeyId,
       })
     );
-    console.log(`Key "${name}" created.`);
+    console.log(`Key "${KID}" created.`);
   }
 
   const { PublicKey: publicKeyDer } = await kmsClient.send(
-    new GetPublicKeyCommand({ KeyId: aliasName })
+    new GetPublicKeyCommand({ KeyId: KID })
   );
 
   const publicKey = createPublicKey({
@@ -59,13 +56,12 @@ for (const name of keysets) {
   const jwk = publicKey.export({ format: "jwk" });
 
   const jwks = {
-    keys: [{ ...jwk, kid: `local-${name}-key`, use: "sig", alg: "RS256" }],
+    keys: [{ ...jwk, kid: KID, use: "sig", alg: "RS256" }],
   };
 
-  const jwksDir = `${JWKS_OUTPUT_DIR}/${name}/.well-known`;
+  const jwksDir = `${JWKS_OUTPUT_DIR}/knodia/.well-known`;
   mkdirSync(jwksDir, { recursive: true });
   writeFileSync(`${jwksDir}/jwks.json`, JSON.stringify(jwks, null, 2));
-  console.log(`JWKS written for "${name}"`);
-}
+  console.log(`JWKS written for "${KID}"`);
 
 console.log("KMS setup complete.");

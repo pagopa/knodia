@@ -5,7 +5,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 export default defineConfig([
   ...config,
   ...storybook.configs["flat/recommended"],
-  globalIgnores(["dist"]),
+  globalIgnores(["storybook-static"]),
   /**
    * This rule is disabled because it causes problems with sorting
    * object properties in the tailwind-variants function. The ordering

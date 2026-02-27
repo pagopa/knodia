@@ -1,6 +1,9 @@
 import { generateId } from "@knodia/common-models/ids";
 import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
+import {
+  AUTHORIZATION_HEADER,
+  CORRELATION_ID_HEADER,
+} from "@knodia/fastify-zod-api-commons/models";
 import { createTestTokenPayload } from "@knodia/test-commons/auth";
 
 import { app, eventStoreDb } from "./setup.ts";
@@ -11,7 +14,7 @@ export async function getAllEserviceEvents() {
 
 export function injectAppRequest() {
   return app.inject().headers({
-    authorization: `Bearer ${createTestTokenPayload("ui-session")}`,
+    [AUTHORIZATION_HEADER]: `Bearer ${createTestTokenPayload("ui-session")}`,
     [CORRELATION_ID_HEADER]: generateId(),
   });
 }
