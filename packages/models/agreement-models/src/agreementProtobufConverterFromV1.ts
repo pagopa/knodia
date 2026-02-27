@@ -14,7 +14,7 @@ import {
 } from "./generated/v1/agreement.ts";
 
 const fromAgreementV1 = (input: AgreementV1): Agreement => {
-  assertRequired(input.consumer, "Agreement consumer");
+  assertRequired(input.consumer, "Agreement consumer is undefined");
 
   return {
     ...input,
