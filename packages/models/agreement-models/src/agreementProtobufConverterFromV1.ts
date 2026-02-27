@@ -1,4 +1,4 @@
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
@@ -13,7 +13,7 @@ import {
   type AgreementV1,
 } from "./generated/v1/agreement.ts";
 
-const fromAgreementV1 = (input: AgreementV1): Agreement => {
+export const fromAgreementV1 = (input: AgreementV1): Agreement => {
   assertRequired(input.consumer, "Agreement consumer is undefined");
 
   return {
@@ -28,9 +28,6 @@ const fromAgreementV1 = (input: AgreementV1): Agreement => {
     updatedAt: new Date(input.updatedAt),
   };
 };
-
-// TODO: knip workaround
-console.log("🚀 ~ fromAgreementV1:", fromAgreementV1);
 
 const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
   match(input)
