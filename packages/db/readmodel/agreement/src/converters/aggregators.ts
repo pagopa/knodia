@@ -44,13 +44,13 @@ const buildAgreement = ({
       id: unsafeBrandId(agreementSQL.consumerId),
       knodeId: KnodeId.parse(agreementSQL.consumerKnodeId),
     },
-    createdAt: new Date(agreementSQL.createdAt),
+    createdAt: agreementSQL.createdAt,
     eserviceId: unsafeBrandId(agreementSQL.eserviceId),
     eserviceVersionId: unsafeBrandId(agreementSQL.eserviceVersionId),
     id: unsafeBrandId(agreementSQL.id),
     producerId: unsafeBrandId(agreementSQL.producerId),
     state: AgreementState.parse(agreementSQL.state),
-    updatedAt: new Date(agreementSQL.updatedAt),
+    updatedAt: agreementSQL.updatedAt,
   };
   return {
     data: agreement,

@@ -142,15 +142,33 @@ const toEserviceVersionSQL = ({
   eserviceVersion: EserviceVersion;
   metadataVersion: number;
 }): EserviceVersionSQL => ({
-  ...eserviceVersion,
+  accessTokenAudience: eserviceVersion.accessTokenAudience,
+  accessTokenDuration: eserviceVersion.accessTokenDuration,
+  accessTokenType: eserviceVersion.accessTokenType,
+  createdAt: eserviceVersion.createdAt,
   eserviceId,
+  id: eserviceVersion.id,
+  maxDailyCallsPerConsumer: eserviceVersion.maxDailyCallsPerConsumer,
+  maxDailyCallsPerKnode: eserviceVersion.maxDailyCallsPerKnode,
   metadataVersion,
+  state: eserviceVersion.state,
+  updatedAt: eserviceVersion.updatedAt,
+  versionNumber: eserviceVersion.versionNumber,
 });
 
 const toEserviceSQL = (
   eservice: Eservice,
   metadataVersion: number,
 ): EserviceSQL => ({
-  ...eservice,
+  createdAt: eservice.createdAt,
+  description: eservice.description,
+  id: eservice.id,
+  isConsumerOperatorIdentificationRequired:
+    eservice.isConsumerOperatorIdentificationRequired,
+  isSignalHubEnabled: eservice.isSignalHubEnabled,
   metadataVersion,
+  mode: eservice.mode,
+  name: eservice.name,
+  producerId: eservice.producerId,
+  updatedAt: eservice.updatedAt,
 });
