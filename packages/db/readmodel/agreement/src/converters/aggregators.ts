@@ -22,7 +22,7 @@ import { toAgreementAttribute } from "./converters.ts";
 
 type AgreementAggregatorInput = {
   agreement: AgreementSQL;
-  attribute?: AgreementAttributeSQL | null;
+  attribute: AgreementAttributeSQL | null;
 }[];
 
 const buildAgreement = ({

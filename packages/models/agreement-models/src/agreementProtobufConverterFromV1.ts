@@ -46,5 +46,5 @@ const fromAgreementConsumerV1 = (
   input: AgreementConsumerV1,
 ): AgreementConsumer => ({
   id: unsafeBrandId(input.id),
-  knodeId: unsafeBrandId(input.knodeId),
+  knodeId: KnodeId.parse(input.knodeId),
 });
