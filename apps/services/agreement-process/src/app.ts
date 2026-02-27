@@ -37,7 +37,7 @@ export function buildApp({
           title: "Knodia Agreement Process API",
           version: "1.0.0",
         },
-        servers: [{ description: "E-service Process API", url: "/" }],
+        servers: [{ description: "Agreement Process API", url: "/" }],
         tags: [
           healthRouterTag,
           {

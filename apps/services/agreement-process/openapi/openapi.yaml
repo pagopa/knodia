@@ -237,7 +237,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
-  - description: E-service Process API
+  - description: Agreement Process API
     url: /
 tags:
   - description: Health check routes
