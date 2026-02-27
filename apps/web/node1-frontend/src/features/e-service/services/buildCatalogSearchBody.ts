@@ -6,7 +6,7 @@ export function buildCatalogSearchBody(params: {
   category: string;
   keywords: string;
   knodeId: string;
-}): bffApi.GetConsumerCatalogEserviceSearchParams | null {
+}): bffApi.GetConsumerCatalogEserviceSearchParams {
   const knodeId = params.knodeId as bffApi.KnodeId;
   const category = params.category
     ? parseSchemeRefKeys([params.category])[0]
@@ -25,5 +25,5 @@ export function buildCatalogSearchBody(params: {
     return { keywords, knodeId };
   }
 
-  return null;
+  throw new Error("At least one of category or keywords is required");
 }

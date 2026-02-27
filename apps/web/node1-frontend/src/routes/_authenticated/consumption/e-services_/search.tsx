@@ -17,8 +17,21 @@ import { client } from "@/libs/axios";
 
 const CATALOG_SEARCH_LIMIT = 4;
 
+const buildBody = (params: {
+  category: string;
+  keywords: string;
+  knode: string;
+}) =>
+  params.knode && (params.category || params.keywords)
+    ? buildCatalogSearchBody({
+        category: params.category,
+        keywords: params.keywords,
+        knodeId: params.knode,
+      })
+    : null;
+
 const catalogQuery = (
-  body: ReturnType<typeof buildCatalogSearchBody>,
+  body: null | ReturnType<typeof buildCatalogSearchBody>,
   offset: number,
 ) =>
   getConsumerCatalogEservicesQueryOptions({
@@ -39,16 +52,8 @@ export const Route = createFileRoute(
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
-    if (!deps.knode) return;
-
-    const body = buildCatalogSearchBody({
-      category: deps.category,
-      keywords: deps.keywords,
-      knodeId: deps.knode,
-    });
-    if (body) {
-      queryClient.prefetchQuery(catalogQuery(body, deps.offset));
-    }
+    const body = buildBody(deps);
+    if (body) queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],
@@ -61,13 +66,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
-  const body = search.knode
-    ? buildCatalogSearchBody({
-        category: search.category,
-        keywords: search.keywords,
-        knodeId: search.knode,
-      })
-    : null;
+  const body = buildBody(search);
 
   const { data: results, isLoading } = useQuery({
     ...catalogQuery(body, search.offset),
