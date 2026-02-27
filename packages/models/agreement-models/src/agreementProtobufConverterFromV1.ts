@@ -1,4 +1,4 @@
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
