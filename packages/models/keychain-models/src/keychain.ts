@@ -43,7 +43,7 @@ export const KeychainKey = z.object({
 });
 export type KeychainKey = z.infer<typeof KeychainKey>;
 
-export const Keychain = z.object({
+export const Keychain = z.strictObject({
   createdAt: z.coerce.date(),
   description: LocalizedDescription.optional(),
   id: KeychainId,
