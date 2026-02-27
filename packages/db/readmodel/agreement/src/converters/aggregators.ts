@@ -65,12 +65,7 @@ export const aggregateAgreement = (
     return undefined;
   }
 
-  const aggregatedAgreement = toAgreementAggregator(queryRes);
-
-  return buildAgreement({
-    agreementSQL: aggregatedAgreement.agreementSQL,
-    attributesSQL: aggregatedAgreement.attributesSQL,
-  });
+  return buildAgreement(toAgreementAggregator(queryRes));
 };
 
 export const aggregateAgreements = (

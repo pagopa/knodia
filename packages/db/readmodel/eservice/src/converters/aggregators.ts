@@ -54,12 +54,7 @@ export const aggregateEserviceVersion = (
     return undefined;
   }
 
-  const aggregatedEserviceVersion = toEserviceVersionAggregator(queryRes);
-
-  return buildEserviceVersion({
-    requiredAttributesSQL: aggregatedEserviceVersion.requiredAttributesSQL,
-    versionSQL: aggregatedEserviceVersion.versionSQL,
-  });
+  return buildEserviceVersion(toEserviceVersionAggregator(queryRes));
 };
 
 function buildEserviceVersion({
@@ -226,16 +221,7 @@ export const aggregateEservice = (
     return undefined;
   }
 
-  const aggregatedEservice = toEserviceAggregator(queryRes);
-
-  return buildEservice({
-    eserviceCategoriesSQL: aggregatedEservice.eserviceCategoriesSQL,
-    eserviceInterfacesSQL: aggregatedEservice.eserviceInterfacesSQL,
-    eserviceSQL: aggregatedEservice.eserviceSQL,
-    eserviceVersionRequiredAttributesSQL:
-      aggregatedEservice.eserviceVersionRequiredAttributesSQL,
-    eserviceVersionsSQL: aggregatedEservice.eserviceVersionsSQL,
-  });
+  return buildEservice(toEserviceAggregator(queryRes));
 };
 
 export const aggregateEservices = (
