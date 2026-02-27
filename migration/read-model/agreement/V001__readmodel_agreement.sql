@@ -40,3 +40,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_agreem
 -- Grant privileges to ${NAMESPACE}_agreement_process_user
 GRANT USAGE ON SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_agreement_process_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_agreement_process_user;
+
+GRANT USAGE ON SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_agreement_process_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_eservice TO ${NAMESPACE}_agreement_process_user;
