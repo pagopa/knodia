@@ -1,0 +1,25 @@
+meta {
+  name: Create Agreement
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host-agreement-process}}/agreements
+  body: json
+  auth: none
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "consumerId": "{{consumerId}}",
+    "consumerKnodeId": "Orion",
+    "eserviceId": "{{eserviceId}}",
+    "eserviceVersionId": "{{eserviceVersionId}}"
+  }
+}
