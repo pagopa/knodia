@@ -1,3 +1,5 @@
+import { genericInternalError } from "./errors.ts";
+
 /**
  * Used in profobuf converters to assert that a value is defined.
  */
@@ -6,6 +8,6 @@ export function assertRequired<T>(
   message: string,
 ): asserts value is T {
   if (value === undefined) {
-    throw new Error(message);
+    throw genericInternalError(message);
   }
 }
