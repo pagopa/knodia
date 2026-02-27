@@ -908,7 +908,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/db/event-store/eservice:
+  packages/db/event-store/consumer-keychain:
     dependencies:
       '@knodia/db-event-store-config':
         specifier: workspace:*
@@ -942,7 +942,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/db/event-store/keychain:
+  packages/db/event-store/eservice:
     dependencies:
       '@knodia/db-event-store-config':
         specifier: workspace:*
@@ -1060,6 +1060,52 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  packages/db/readmodel/consumer-keychain:
+    dependencies:
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../models/common-models
+      '@knodia/consumer-keychain-models':
+        specifier: workspace:*
+        version: link:../../../models/consumer-keychain-models
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../commons
+      '@knodia/db-readmodel-config':
+        specifier: workspace:*
+        version: link:../config
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      pg:
+        specifier: 'catalog:'
+        version: 8.16.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../typescript-config
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.16.0
+      drizzle-kit:
+        specifier: 'catalog:'
+        version: 0.31.8
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/db/readmodel/eservice:
     dependencies:
       '@knodia/common-models':
@@ -1111,52 +1157,6 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
-
-  packages/db/readmodel/keychain:
-    dependencies:
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../models/common-models
-      '@knodia/db-readmodel-commons':
-        specifier: workspace:*
-        version: link:../commons
-      '@knodia/db-readmodel-config':
-        specifier: workspace:*
-        version: link:../config
-      '@knodia/keychain-models':
-        specifier: workspace:*
-        version: link:../../../models/keychain-models
-      drizzle-orm:
-        specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
-      pg:
-        specifier: 'catalog:'
-        version: 8.16.3
-      zod:
-        specifier: 'catalog:'
-        version: 4.2.0
-    devDependencies:
-      '@dotenvx/dotenvx':
-        specifier: 'catalog:'
-        version: 1.51.4
-      '@knodia/eslint-config':
-        specifier: workspace:*
-        version: link:../../../eslint-config
-      '@knodia/typescript-config':
-        specifier: workspace:*
-        version: link:../../../typescript-config
-      '@types/pg':
-        specifier: 'catalog:'
-        version: 8.16.0
-      drizzle-kit:
-        specifier: 'catalog:'
-        version: 0.31.8
-      eslint:
-        specifier: 'catalog:'
-        version: 9.39.2(jiti@2.6.1)
-      typescript:
-        specifier: 'catalog:'
-        version: 5.9.3
 
   packages/eslint-config:
     devDependencies:
@@ -1400,7 +1400,7 @@ importers:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/models/eservice-models:
+  packages/models/consumer-keychain-models:
     dependencies:
       '@knodia/common-models':
         specifier: workspace:*
@@ -1437,7 +1437,7 @@ importers:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/models/keychain-models:
+  packages/models/eservice-models:
     dependencies:
       '@knodia/common-models':
         specifier: workspace:*
