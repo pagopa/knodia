@@ -11,7 +11,6 @@
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
-    "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",

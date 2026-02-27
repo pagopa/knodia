@@ -11,11 +11,11 @@ export function getMockAgreement(seed = 0): Agreement {
     .generate();
 }
 
-export function getMockEservice(): Eservice {
+export function getMockEservice(seed = 0): Eservice {
   return zocker(Eservice)
     .array({
       min: 1,
     })
-    .setSeed(0)
+    .setSeed(seed)
     .generate();
 }
