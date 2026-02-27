@@ -47,7 +47,7 @@ const buildKeychain = ({
   keychainUsersSQL,
 }: KeychainItemsSQL): WithMetadata<Keychain> => {
   const keychain: Keychain = {
-    createdAt: new Date(keychainSQL.createdAt),
+    createdAt: keychainSQL.createdAt,
     description:
       keychainSQL.description == null
         ? undefined
@@ -60,7 +60,7 @@ const buildKeychain = ({
     purposes: keychainPurposesSQL.map((purposeSQL) =>
       unsafeBrandId<PurposeId>(purposeSQL.purposeId),
     ),
-    updatedAt: new Date(keychainSQL.updatedAt),
+    updatedAt: keychainSQL.updatedAt,
     users: keychainUsersSQL.map((userSQL) =>
       unsafeBrandId<UserId>(userSQL.userId),
     ),
@@ -75,7 +75,7 @@ const buildKeychain = ({
 function buildKeychainKey(keySQL: KeychainKeySQL): KeychainKey {
   return {
     algorithm: keySQL.algorithm,
-    createdAt: new Date(keySQL.createdAt),
+    createdAt: keySQL.createdAt,
     encodedPem: keySQL.encodedPem,
     format: KeyFormat.parse(keySQL.format),
     kid: keySQL.kid,
