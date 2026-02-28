@@ -18,6 +18,10 @@ declare module "@fastify/request-context" {
   }
 }
 
+// Separate from RequestContextData because Fastify's request context type
+// cannot be refined per-route: authData is always `AuthData | undefined`.
+// AuthorizedContext captures the result of a successful authorization check
+// with authData narrowed to the specific allowed type.
 export interface AuthorizedContext<A extends AuthData = AuthData> {
   authData: A;
   correlationId: CorrelationId;
