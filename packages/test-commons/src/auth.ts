@@ -26,7 +26,7 @@ export function createTestTokenPayload(
   type: KnodiaTokenClaims["type"],
 ): string {
   const claims = match(type)
-    .with("ui-session", getTestUISessionTokenClaims)
+    .with("ui-session", () => getTestUISessionTokenClaims())
     .with("internal", getTestInternalTokenClaims)
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
@@ -44,7 +44,9 @@ export function getTestInternalTokenClaims(): InternalTokenClaims {
   };
 }
 
-export function getTestUISessionTokenClaims(): UISessionTokenClaims {
+export function getTestUISessionTokenClaims(
+  props: Partial<Pick<UISessionTokenClaims, "roles">> = {},
+): UISessionTokenClaims {
   return {
     aud: "test-audience",
     exp: 9999999999,
@@ -52,7 +54,7 @@ export function getTestUISessionTokenClaims(): UISessionTokenClaims {
     iss: "test-issuer",
     jti: "test-jti",
     organizationId: TEST_ORGANIZATION_ID,
-    roles: ["administrative"],
+    roles: props.roles ?? ["administrative"],
     sub: TEST_USER_ID,
     type: "ui-session",
   };
