@@ -1,4 +1,4 @@
-import type { TestTokenSpec } from "@knodia/test-commons/auth";
+import type { TestToken } from "@knodia/test-commons/auth";
 
 import { generateId } from "@knodia/common-models/ids";
 import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
@@ -14,7 +14,7 @@ export async function getAllEserviceEvents() {
   return await eventStoreDb.select().from(eventStoreEserviceEvents);
 }
 
-export function injectAppRequest(spec: TestTokenSpec) {
+export function injectAppRequest(spec: TestToken) {
   return app.inject().headers({
     [AUTHORIZATION_HEADER]: `Bearer ${createTestTokenPayload(spec)}`,
     [CORRELATION_ID_HEADER]: generateId(),

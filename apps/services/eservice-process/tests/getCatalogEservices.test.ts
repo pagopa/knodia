@@ -8,6 +8,7 @@ import {
   EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
@@ -20,6 +21,8 @@ import type {
 import { mockEservices } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
+
+const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 describe("POST /catalog (getCatalogEservices)", () => {
   const defaultQuery = {
@@ -137,7 +140,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
     async ({ body, expectedResult, query, seedData, totalCount }) => {
       await seedEservices(seedData);
 
-      const response = await injectAppRequest({ type: "internal" })
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/catalog")
         .query(query)
         .body(body);
@@ -181,7 +184,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
         (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
       );
 
-      const response = await injectAppRequest({ type: "internal" })
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/catalog")
         .query(defaultQuery)
         .body({ keywords: "other name" });
@@ -206,6 +209,17 @@ describe("POST /catalog (getCatalogEservices)", () => {
           expectedResult.map((e) => toExpectAPI_Eservice(e)),
         ),
       );
+    },
+  );
+
+  it.each(forbiddenTestTokens(allowedTestTokens))(
+    "should return 403 for unauthorized token ($type, $roles)",
+    async (spec) => {
+      const response = await injectAppRequest(spec)
+        .post("/catalog")
+        .query(defaultQuery)
+        .body({ keywords: "test" });
+      expect(response.statusCode).toBe(403);
     },
   );
 
@@ -243,7 +257,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
   ])(
     "should return 400 if query/body parameters are formatted incorrectly (%o)",
     async ({ body, query }) => {
-      const response = await injectAppRequest({ type: "internal" })
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/catalog")
         .query(query as never)
         .body(body as never);

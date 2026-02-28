@@ -3,8 +3,8 @@ import type {
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import type { NonEmptyArray } from "@knodia/common-models/types";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
+import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { UnsecuredJWT } from "jose";
@@ -17,15 +17,15 @@ const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
   "20000000-2000-1000-8000-000000000002",
 );
 
-export type TestTokenSpec =
-  | { type: "internal" }
-  | { type: "ui-session"; roles?: NonEmptyArray<UserRole> };
+export type TestToken =
+  | { roles?: NonEmptyArray<UserRole>; type: "ui-session" }
+  | { type: "internal" };
 
 /**
  * Creates an unsecured JWT (`alg: "none"`) from test claims.
  * The auth mock decodes it with `decodeJwt` (no signature verification).
  */
-export function createTestTokenPayload(spec: TestTokenSpec): string {
+export function createTestTokenPayload(spec: TestToken): string {
   const claims = match(spec)
     .with({ type: "ui-session" }, ({ roles }) =>
       getTestUISessionTokenClaims({ roles }),
