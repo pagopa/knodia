@@ -7,7 +7,7 @@ import type { TestToken } from "./auth.ts";
  * All atomic test tokens: one per role + internal.
  * Derived from the `UserRole` enum so new roles are automatically covered.
  */
-export const allTestTokens: TestToken[] = [
+const allTestTokens: TestToken[] = [
   { type: "internal" },
   ...UserRole.options.map(
     (role): TestToken => ({ roles: [role], type: "ui-session" }),
