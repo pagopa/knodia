@@ -19,8 +19,10 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-const getEserviceLatestVersion = (eserviceId: string, token: TestToken = allowedTestTokens[0]!) =>
-  injectAppRequest(token).get(`/eservices/${eserviceId}/versions/latest`);
+const getEserviceLatestVersion = (
+  eserviceId: string,
+  token: TestToken = allowedTestTokens[0]!,
+) => injectAppRequest(token).get(`/eservices/${eserviceId}/versions/latest`);
 
 describe("GET /eservices/:eserviceId/versions/latest (getEserviceLatestVersion)", () => {
   beforeAll(async () => {

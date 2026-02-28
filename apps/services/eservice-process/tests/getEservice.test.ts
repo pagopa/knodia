@@ -19,8 +19,10 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-const getEservice = (eserviceId: string, token: TestToken = allowedTestTokens[0]!) =>
-  injectAppRequest(token).get(`/eservices/${eserviceId}`);
+const getEservice = (
+  eserviceId: string,
+  token: TestToken = allowedTestTokens[0]!,
+) => injectAppRequest(token).get(`/eservices/${eserviceId}`);
 
 describe("GET /eservices/:eserviceId (getEservice)", () => {
   beforeAll(async () => {
