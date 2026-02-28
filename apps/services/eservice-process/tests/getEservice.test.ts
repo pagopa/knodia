@@ -19,6 +19,9 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
+const getEservice = (eserviceId: string, token: TestToken = allowedTestTokens[0]!) =>
+  injectAppRequest(token).get(`/eservices/${eserviceId}`);
+
 describe("GET /eservices/:eserviceId (getEservice)", () => {
   beforeAll(async () => {
     await Promise.all(
@@ -31,9 +34,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
   it.each(allowedTestTokens)(
     "should return the e-service with correct shape ($type, $roles)",
     async (token) => {
-      const response = await injectAppRequest(token).get(
-        `/eservices/${VALID_ESERVICE_ID}`,
-      );
+      const response = await getEservice(VALID_ESERVICE_ID, token);
 
       expect(response.statusCode).toBe(200);
 
@@ -49,9 +50,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const listBody = listResponse.json<{ items: API_Eservice[] }>();
     const expectedItem = listBody.items.find((i) => i.id === VALID_ESERVICE_ID);
 
-    const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      `/eservices/${VALID_ESERVICE_ID}`,
-    );
+    const response = await getEservice(VALID_ESERVICE_ID);
     const body = response.json<API_Eservice>();
 
     expect(body).toEqual(toExpectAPI_Eservice(expectedItem!));
@@ -60,24 +59,18 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
-      const response = await injectAppRequest(token).get(
-        `/eservices/${VALID_ESERVICE_ID}`,
-      );
+      const response = await getEservice(VALID_ESERVICE_ID, token);
       expect(response.statusCode).toBe(403);
     },
   );
 
   it("should return 404 for non-existent e-service id", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      `/eservices/${NON_EXISTENT_ESERVICE_ID}`,
-    );
+    const response = await getEservice(NON_EXISTENT_ESERVICE_ID);
     expect(response.statusCode).toBe(404);
   });
 
   it("should return 400 for invalid e-service id format", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      "/eservices/not-a-uuid",
-    );
+    const response = await getEservice("not-a-uuid");
     expect(response.statusCode).toBe(400);
   });
 });

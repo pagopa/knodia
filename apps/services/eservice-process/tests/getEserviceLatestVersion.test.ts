@@ -19,6 +19,9 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
+const getEserviceLatestVersion = (eserviceId: string, token: TestToken = allowedTestTokens[0]!) =>
+  injectAppRequest(token).get(`/eservices/${eserviceId}/versions/latest`);
+
 describe("GET /eservices/:eserviceId/versions/latest (getEserviceLatestVersion)", () => {
   beforeAll(async () => {
     await Promise.all(
@@ -31,9 +34,7 @@ describe("GET /eservices/:eserviceId/versions/latest (getEserviceLatestVersion)"
   it.each(allowedTestTokens)(
     "should return the latest version with correct shape ($type, $roles)",
     async (token) => {
-      const response = await injectAppRequest(token).get(
-        `/eservices/${VALID_ESERVICE_ID}/versions/latest`,
-      );
+      const response = await getEserviceLatestVersion(VALID_ESERVICE_ID, token);
 
       expect(response.statusCode).toBe(200);
 
@@ -45,24 +46,18 @@ describe("GET /eservices/:eserviceId/versions/latest (getEserviceLatestVersion)"
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
-      const response = await injectAppRequest(token).get(
-        `/eservices/${VALID_ESERVICE_ID}/versions/latest`,
-      );
+      const response = await getEserviceLatestVersion(VALID_ESERVICE_ID, token);
       expect(response.statusCode).toBe(403);
     },
   );
 
   it("should return 404 for non-existent e-service id", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      `/eservices/${NON_EXISTENT_ESERVICE_ID}/versions/latest`,
-    );
+    const response = await getEserviceLatestVersion(NON_EXISTENT_ESERVICE_ID);
     expect(response.statusCode).toBe(404);
   });
 
   it("should return 400 for invalid e-service id format", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      "/eservices/not-a-uuid/versions/latest",
-    );
+    const response = await getEserviceLatestVersion("not-a-uuid");
     expect(response.statusCode).toBe(400);
   });
 });
