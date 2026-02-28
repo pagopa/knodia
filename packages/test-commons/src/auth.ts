@@ -24,9 +24,10 @@ const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
  */
 export function createTestTokenPayload(
   type: KnodiaTokenClaims["type"],
+  props: Partial<Pick<UISessionTokenClaims, "roles">> = {},
 ): string {
   const claims = match(type)
-    .with("ui-session", () => getTestUISessionTokenClaims())
+    .with("ui-session", () => getTestUISessionTokenClaims(props))
     .with("internal", getTestInternalTokenClaims)
     .exhaustive();
   return new UnsecuredJWT(claims).encode();

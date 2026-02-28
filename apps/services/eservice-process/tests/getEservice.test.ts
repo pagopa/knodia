@@ -14,7 +14,7 @@ const VALID_ESERVICE_ID = eservice.id;
 const NON_EXISTENT_ESERVICE_ID = generateId<EserviceId>();
 
 const getEservice = (eserviceId: string) =>
-  injectAppRequest().get(`/eservices/${eserviceId}`);
+  injectAppRequest(["administrative"]).get(`/eservices/${eserviceId}`);
 
 describe("GET /eservices/:eserviceId (getEservice)", () => {
   beforeAll(async () => {
@@ -35,7 +35,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
   });
 
   it("should return the same e-service as the list endpoint", async () => {
-    const listResponse = await injectAppRequest()
+    const listResponse = await injectAppRequest(["administrative"])
       .get("/eservices")
       .query({ limit: "50", offset: "0" });
     const listBody = listResponse.json<{ items: API_Eservice[] }>();

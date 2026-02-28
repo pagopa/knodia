@@ -14,7 +14,9 @@ const VALID_ESERVICE_ID = eservice.id;
 const NON_EXISTENT_ESERVICE_ID = generateId<EserviceId>();
 
 const getEserviceLatestVersionInterface = (eserviceId: string) =>
-  injectAppRequest().get(`/eservices/${eserviceId}/versions/latest/interface`);
+  injectAppRequest(["administrative"]).get(
+    `/eservices/${eserviceId}/versions/latest/interface`,
+  );
 
 describe("GET /eservices/:eserviceId/versions/latest/interface (getEserviceLatestVersionInterface)", () => {
   beforeAll(async () => {

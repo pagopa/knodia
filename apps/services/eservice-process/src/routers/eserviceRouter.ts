@@ -3,6 +3,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
+import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -28,15 +29,22 @@ import {
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
+const authorizeBothRoles = () =>
+  validateAuthorization(getContextValues(requestContext), [
+    { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+  ]);
+
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify,
   eserviceService,
 ) => {
   fastify.route({
     handler: async (req, res) => {
+      const ctx = authorizeBothRoles();
+
       const { results, totalCount } = await eserviceService.getEservices(
         req.query,
-        getContextValues(requestContext),
+        ctx,
       );
 
       res.status(200).send({
@@ -67,10 +75,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const eservice = await eserviceService.createEservice(
-        req.body,
-        getContextValues(requestContext),
-      );
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
+
+      const eservice = await eserviceService.createEservice(req.body, ctx);
       res.status(201).send(toAPI_Eservice(eservice));
     },
     method: "POST",
@@ -93,9 +102,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
+      const ctx = authorizeBothRoles();
+
       const eservice = await eserviceService.getEservice(
         req.params.eserviceId,
-        getContextValues(requestContext),
+        ctx,
       );
 
       res.status(200).send(toAPI_Eservice(eservice));
@@ -120,9 +131,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
+      const ctx = authorizeBothRoles();
+
       const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
-        getContextValues(requestContext),
+        ctx,
       );
 
       res.status(200).send(toAPI_EserviceVersion(eserviceVersion));
@@ -146,10 +159,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
   fastify.route({
     handler: async (req, res) => {
+      const ctx = authorizeBothRoles();
+
       const eserviceVersionInterface =
         await eserviceService.getEserviceLatestVersionInterface(
           unsafeBrandId(req.params.eserviceId),
-          getContextValues(requestContext),
+          ctx,
         );
       res
         .status(200)
@@ -177,10 +192,14 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
       const { results, totalCount } = await eserviceService.getCatalogEservices(
         req.body,
         req.query,
-        getContextValues(requestContext),
+        ctx,
       );
 
       res.status(200).send({

@@ -137,7 +137,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
     async ({ body, expectedResult, query, seedData, totalCount }) => {
       await seedEservices(seedData);
 
-      const response = await injectAppRequest()
+      const response = await injectAppRequest(["administrative"])
         .post("/catalog")
         .query(query)
         .body(body);
@@ -181,7 +181,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
         (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
       );
 
-      const response = await injectAppRequest()
+      const response = await injectAppRequest(["administrative"])
         .post("/catalog")
         .query(defaultQuery)
         .body({ keywords: "other name" });
@@ -243,7 +243,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
   ])(
     "should return 400 if query/body parameters are formatted incorrectly (%o)",
     async ({ body, query }) => {
-      const response = await injectAppRequest()
+      const response = await injectAppRequest(["administrative"])
         .post("/catalog")
         .query(query as never)
         .body(body as never);
