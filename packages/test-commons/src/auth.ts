@@ -1,8 +1,9 @@
 import type {
   InternalTokenClaims,
-  KnodiaTokenClaims,
   UISessionTokenClaims,
+  UserRole,
 } from "@knodia/common-models/auth";
+import type { NonEmptyArray } from "@knodia/common-models/types";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
@@ -16,24 +17,20 @@ const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
   "20000000-2000-1000-8000-000000000002",
 );
 
+export type TestTokenSpec =
+  | { type: "internal" }
+  | { type: "ui-session"; roles?: NonEmptyArray<UserRole> };
+
 /**
  * Creates an unsecured JWT (`alg: "none"`) from test claims.
  * The auth mock decodes it with `decodeJwt` (no signature verification).
- *
- * Call with no args to get a token with the default test claims.
  */
-export function createTestTokenPayload(type: "internal"): string;
-export function createTestTokenPayload(
-  type: "ui-session",
-  props?: Partial<Pick<UISessionTokenClaims, "roles">>,
-): string;
-export function createTestTokenPayload(
-  type: KnodiaTokenClaims["type"],
-  props?: Partial<Pick<UISessionTokenClaims, "roles">>,
-): string {
-  const claims = match(type)
-    .with("ui-session", () => getTestUISessionTokenClaims(props))
-    .with("internal", getTestInternalTokenClaims)
+export function createTestTokenPayload(spec: TestTokenSpec): string {
+  const claims = match(spec)
+    .with({ type: "ui-session" }, ({ roles }) =>
+      getTestUISessionTokenClaims({ roles }),
+    )
+    .with({ type: "internal" }, getTestInternalTokenClaims)
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
 }
@@ -51,7 +48,7 @@ export function getTestInternalTokenClaims(): InternalTokenClaims {
 }
 
 export function getTestUISessionTokenClaims(
-  props: Partial<Pick<UISessionTokenClaims, "roles">> = {},
+  props: { roles?: NonEmptyArray<UserRole> } = {},
 ): UISessionTokenClaims {
   return {
     aud: "test-audience",

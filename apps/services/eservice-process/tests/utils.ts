@@ -1,5 +1,4 @@
-import type { UserRole } from "@knodia/common-models/auth";
-import type { NonEmptyArray } from "@knodia/common-models/types";
+import type { TestTokenSpec } from "@knodia/test-commons/auth";
 
 import { generateId } from "@knodia/common-models/ids";
 import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
@@ -15,11 +14,9 @@ export async function getAllEserviceEvents() {
   return await eventStoreDb.select().from(eventStoreEserviceEvents);
 }
 
-export function injectAppRequest(
-  roles: NonEmptyArray<UserRole> = ["administrative"],
-) {
+export function injectAppRequest(spec: TestTokenSpec) {
   return app.inject().headers({
-    [AUTHORIZATION_HEADER]: `Bearer ${createTestTokenPayload("ui-session", { roles })}`,
+    [AUTHORIZATION_HEADER]: `Bearer ${createTestTokenPayload(spec)}`,
     [CORRELATION_ID_HEADER]: generateId(),
   });
 }

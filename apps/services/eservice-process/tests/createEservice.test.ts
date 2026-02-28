@@ -31,7 +31,7 @@ describe("POST /eservices (createEservice)", () => {
   };
 
   it("should correctly create eservice creation event", async () => {
-    const response = await injectAppRequest(["technical"])
+    const response = await injectAppRequest({ type: "ui-session", roles: ["technical"] })
       .post("/eservices")
       .body(body);
     expect(response.statusCode).toBe(201);
@@ -108,7 +108,7 @@ describe("POST /eservices (createEservice)", () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await injectAppRequest(["technical"])
+      const response = await injectAppRequest({ type: "ui-session", roles: ["technical"] })
         .post("/eservices")
         .body(body as never);
       expect(response.statusCode).toBe(400);
@@ -116,7 +116,7 @@ describe("POST /eservices (createEservice)", () => {
   );
 
   it("should return 400 if an attribute is invalid", async () => {
-    const response = await injectAppRequest(["technical"])
+    const response = await injectAppRequest({ type: "ui-session", roles: ["technical"] })
       .post("/eservices")
       .body({
         ...body,
@@ -128,7 +128,7 @@ describe("POST /eservices (createEservice)", () => {
   });
 
   it("should return 400 if the maxDailyCallsPerConsumer is greater than maxDailyCallsPerKnode", async () => {
-    const response = await injectAppRequest(["technical"])
+    const response = await injectAppRequest({ type: "ui-session", roles: ["technical"] })
       .post("/eservices")
       .body({
         ...body,
@@ -139,7 +139,7 @@ describe("POST /eservices (createEservice)", () => {
   });
 
   it("should return 400 if a category is invalid", async () => {
-    const response = await injectAppRequest(["technical"])
+    const response = await injectAppRequest({ type: "ui-session", roles: ["technical"] })
       .post("/eservices")
       .body({
         ...body,
@@ -153,7 +153,7 @@ describe("POST /eservices (createEservice)", () => {
   it("should return 409 if an interface with the same ID already exists", async () => {
     await eserviceWriterService.upsertEservice(mockEservices[0]!, 0);
 
-    const response = await injectAppRequest(["technical"])
+    const response = await injectAppRequest({ type: "ui-session", roles: ["technical"] })
       .post("/eservices")
       .body({
         ...body,

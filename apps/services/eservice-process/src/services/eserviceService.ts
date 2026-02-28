@@ -5,7 +5,10 @@ import type {
   EserviceInterface,
   EserviceVersion,
 } from "@knodia/eservice-models";
-import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { getAttribute } from "@knodia/attribute-models";
@@ -173,7 +176,7 @@ export function eserviceServiceBuilder(
     async getCatalogEservices(
       body: API_GetCatalogEserviceSearchParams,
       params: API_GetCatalogEservicesQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<ListResult<Eservice>> {
       logger.info({ body, params }, "Getting catalog E-services with params");
       return await readmodelService.getCatalogEservices(body, params);

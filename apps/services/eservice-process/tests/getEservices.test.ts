@@ -139,7 +139,7 @@ describe("GET /eservices (getEservices)", () => {
   }[])(
     "should return e-services with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
-      const response = await injectAppRequest(["administrative"])
+      const response = await injectAppRequest({ type: "ui-session", roles: ["administrative"] })
         .get("/eservices")
 
         .query(query);
@@ -184,7 +184,7 @@ describe("GET /eservices (getEservices)", () => {
   ])(
     "should return 400 if query parameters are formatted incorrectly (%o)",
     async (query) => {
-      const response = await injectAppRequest(["administrative"])
+      const response = await injectAppRequest({ type: "ui-session", roles: ["administrative"] })
         .get("/eservices")
         .query(query as never);
       expect(response.statusCode).toBe(400);

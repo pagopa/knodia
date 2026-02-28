@@ -29,18 +29,16 @@ import {
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
-const authorizeBothRoles = () =>
-  validateAuthorization(getContextValues(requestContext), [
-    { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
-  ]);
-
+// eslint-disable-next-line max-lines-per-function
 export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify,
   eserviceService,
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const ctx = authorizeBothRoles();
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
 
       const { results, totalCount } = await eserviceService.getEservices(
         req.query,
@@ -102,7 +100,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const ctx = authorizeBothRoles();
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
 
       const eservice = await eserviceService.getEservice(
         req.params.eserviceId,
@@ -131,7 +131,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const ctx = authorizeBothRoles();
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
 
       const eserviceVersion = await eserviceService.getEserviceLatestVersion(
         req.params.eserviceId,
@@ -159,7 +161,9 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   });
   fastify.route({
     handler: async (req, res) => {
-      const ctx = authorizeBothRoles();
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
 
       const eserviceVersionInterface =
         await eserviceService.getEserviceLatestVersionInterface(
@@ -193,7 +197,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative"] },
+        { tokenType: "internal" },
       ]);
 
       const { results, totalCount } = await eserviceService.getCatalogEservices(

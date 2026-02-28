@@ -14,7 +14,7 @@ const VALID_ESERVICE_ID = eservice.id;
 const NON_EXISTENT_ESERVICE_ID = generateId<EserviceId>();
 
 const getEserviceLatestVersionInterface = (eserviceId: string) =>
-  injectAppRequest(["administrative"]).get(
+  injectAppRequest({ type: "ui-session", roles: ["administrative"] }).get(
     `/eservices/${eserviceId}/versions/latest/interface`,
   );
 
