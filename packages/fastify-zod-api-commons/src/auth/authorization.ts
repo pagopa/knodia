@@ -18,13 +18,42 @@ export type AuthorizationRule =
   | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
 
 type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
+  // If there's a rule with tokenType "internal", add InternalAuthData
   | (Extract<Rules[number], { tokenType: "internal" }> extends never
       ? never
       : InternalAuthData)
+  // If there's a rule with tokenType "ui-session", add UISessionAuthData
   | (Extract<Rules[number], { tokenType: "ui-session" }> extends never
       ? never
       : UISessionAuthData);
 
+/**
+  ---- EXAMPLE USAGE: ----
+  const ctx = validateAuthorization(getContextValues(requestContext), [
+    { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+  ]);
+  // ^ It will throw a forbiddenError if the request does not have a ui-session token
+  // with at least one of the roles "administrative" or "technical".
+  // If the function succeeds, ctx.authData is narrowed to UISessionAuthData.
+
+  const userId = ctx.authData.userId;
+      // ^ compiles, because userId is present in UISessionAuthData
+  const tokenType = ctx.authData.tokenType;
+      // ^ TS refines this to "ui-session"
+
+  ---- MIXED RULES EXAMPLE: ----
+  const ctx = validateAuthorization(getContextValues(requestContext), [
+    { tokenType: "internal" },
+    { tokenType: "ui-session", userRoles: ["administrative"] },
+  ]);
+  // ^ ctx.authData is narrowed to InternalAuthData | UISessionAuthData
+
+  const tokenType = ctx.authData.tokenType;
+      // ^ TS refines this to "internal" | "ui-session"
+  const userId = ctx.authData.userId;
+      // ^ TS error: userId is not present in InternalAuthData
+  -------------------------------------------------------
+ */
 export function validateAuthorization<
   const Rules extends NonEmptyArray<AuthorizationRule>,
 >(
