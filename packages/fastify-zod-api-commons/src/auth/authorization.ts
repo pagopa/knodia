@@ -4,7 +4,7 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { match } from "ts-pattern";
 
-import type { AppContext } from "../context/context.ts";
+import type { AuthorizedContext } from "../context/context.ts";
 import type {
   AuthData,
   InternalAuthData,
@@ -30,7 +30,7 @@ export function validateAuthorization<
 >(
   ctx: RequestContextData,
   admittedRules: Rules,
-): AppContext<AllowedAuthData<Rules>> {
+): AuthorizedContext<AllowedAuthData<Rules>> {
   const { authData } = ctx;
 
   if (authData === undefined) {

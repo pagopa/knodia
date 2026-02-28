@@ -18,7 +18,7 @@ declare module "@fastify/request-context" {
   }
 }
 
-export interface AppContext<A extends AuthData = AuthData> {
+export interface AuthorizedContext<A extends AuthData = AuthData> {
   authData: A;
   correlationId: CorrelationId;
   logger: FastifyBaseLogger;

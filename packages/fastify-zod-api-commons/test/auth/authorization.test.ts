@@ -203,7 +203,7 @@ describe("validateAuthorization", () => {
     });
   });
 
-  it("returns AppContext with correlationId and logger", () => {
+  it("returns AuthorizedContext with correlationId and logger", () => {
     const ctx = buildCtx(internalAuthData);
 
     const result = validateAuthorization(ctx, [{ tokenType: "internal" }]);
