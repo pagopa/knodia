@@ -22,9 +22,14 @@ const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
  *
  * Call with no args to get a token with the default test claims.
  */
+export function createTestTokenPayload(type: "internal"): string;
+export function createTestTokenPayload(
+  type: "ui-session",
+  props?: Partial<Pick<UISessionTokenClaims, "roles">>,
+): string;
 export function createTestTokenPayload(
   type: KnodiaTokenClaims["type"],
-  props: Partial<Pick<UISessionTokenClaims, "roles">> = {},
+  props?: Partial<Pick<UISessionTokenClaims, "roles">>,
 ): string {
   const claims = match(type)
     .with("ui-session", () => getTestUISessionTokenClaims(props))
