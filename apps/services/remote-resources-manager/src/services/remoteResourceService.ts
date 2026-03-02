@@ -5,7 +5,7 @@ import { and, eq } from "drizzle-orm";
 
 import type { RemoteAgreement } from "../models/agreement.ts";
 
-import { remoteResourceAgreement } from "../db/schema.ts";
+import { agreement } from "../db/schema.ts";
 
 export type RemoteResourceService = ReturnType<
   typeof remoteResourceServiceBuilder
@@ -16,26 +16,29 @@ export function remoteResourceServiceBuilder(db: NodePgDatabase) {
     async getByAgreementId(agreementId: AgreementId, knodeId: KnodeId) {
       const [result] = await db
         .select()
-        .from(remoteResourceAgreement)
+        .from(agreement)
         .where(
           and(
-            eq(remoteResourceAgreement.agreementId, agreementId),
-            eq(remoteResourceAgreement.knodeId, knodeId),
+            eq(agreement.agreementId, agreementId),
+            eq(agreement.knodeId, knodeId),
           ),
         )
         .limit(1);
       return result ?? undefined;
     },
-    async upsertAgreement(agreement: RemoteAgreement): Promise<void> {
+    async upsertAgreement(remoteAgreement: RemoteAgreement): Promise<void> {
       await db
-        .delete(remoteResourceAgreement)
-        .where(eq(remoteResourceAgreement.id, agreement.id));
+        .delete(agreement)
+        .where(eq(agreement.agreementId, remoteAgreement.agreementId));
 
-      await db.insert(remoteResourceAgreement).values({
-        agreementId: agreement.agreementId,
-        id: agreement.id,
-        knodeId: agreement.knodeId,
-        updatedAt: agreement.updatedAt,
+      await db.insert(agreement).values({
+        agreementId: remoteAgreement.agreementId,
+        consumerId: remoteAgreement.consumerId,
+        eserviceId: remoteAgreement.eserviceId,
+        eserviceVersionId: remoteAgreement.eserviceVersionId,
+        knodeId: remoteAgreement.knodeId,
+        producerId: remoteAgreement.producerId,
+        updatedAt: remoteAgreement.updatedAt,
       });
     },
   };
