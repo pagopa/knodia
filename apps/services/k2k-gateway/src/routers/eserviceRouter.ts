@@ -7,13 +7,13 @@ import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
+import { apiTags } from "../models/apiTags.ts";
 import {
   API_CatalogEserviceSearchResults,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
-} from "../models/api.ts";
-import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverters.ts";
-import { apiTags } from "../models/apiTags.ts";
+} from "../models/eservice/api.ts";
+import { toAPI_CatalogEserviceSearchResult } from "../models/eservice/apiConverters.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface EserviceRouterOptions {
