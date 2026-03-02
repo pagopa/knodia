@@ -59,6 +59,14 @@ function buildApp({
             description: "Ad-hoc routes to simplify frequent use cases",
             name: apiTags.operation,
           },
+          {
+            description: "Routes related to Agreements",
+            name: apiTags.agreement,
+          },
+          {
+            description: "Routes related to E-services",
+            name: apiTags.eservice,
+          },
         ],
       },
     },
