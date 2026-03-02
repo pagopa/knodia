@@ -1,6 +1,6 @@
 import type {
   InternalTokenClaims,
-  RefreshTokenClaims,
+  UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
 
@@ -9,9 +9,9 @@ export interface InternalToken extends BaseToken {
   type: "internal";
 }
 
-export interface RefreshToken extends BaseToken {
-  payload: RefreshTokenClaims;
-  type: "refresh";
+export interface UISessionRefreshToken extends BaseToken {
+  payload: UISessionRefreshTokenClaims;
+  type: "refresh-ui-session";
 }
 
 export interface UISessionToken extends BaseToken {

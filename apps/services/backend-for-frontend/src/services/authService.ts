@@ -1,4 +1,7 @@
-import { RefreshTokenClaims, UserRole } from "@knodia/common-models/auth";
+import {
+  UISessionRefreshTokenClaims,
+  UserRole,
+} from "@knodia/common-models/auth";
 import { OrganizationId, UserId } from "@knodia/common-models/ids";
 import { NonEmptyArray } from "@knodia/common-models/types";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
@@ -55,7 +58,7 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
         secondsDuration: config.uiSessionJwt.secondsDuration,
         subject: claims.sub,
       }),
-      tokenGenerator.generateRefreshToken({
+      tokenGenerator.generateUIRefreshToken({
         ...tokenParams,
         organizationId: claims.organizationId,
         roles: claims.roles,
@@ -137,7 +140,7 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
 
     const rawPayload = fulfilled.value.payload;
 
-    const parsed = RefreshTokenClaims.safeParse(rawPayload);
+    const parsed = UISessionRefreshTokenClaims.safeParse(rawPayload);
     if (!parsed.success) {
       throw unauthorizedError("Invalid refresh token claims");
     }
@@ -155,7 +158,7 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   }
 
   return {
-    async generateUiSessionTokenPair(cognitoToken: string): Promise<{
+    async generateUISessionTokenPair(cognitoToken: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {
@@ -163,7 +166,7 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
       return generateTokenPairFromClaims(claims);
     },
 
-    async refreshUiSessionTokenPair(refreshTokenJwt: string): Promise<{
+    async refreshUISessionTokenPair(refreshTokenJwt: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {

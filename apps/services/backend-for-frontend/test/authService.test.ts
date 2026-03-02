@@ -1,5 +1,5 @@
 import type {
-  RefreshTokenClaims,
+  UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
 
@@ -82,14 +82,14 @@ function makeRefreshPayload(
     organizationId: TEST_ORG_ID,
     roles: ["administrative", "technical"],
     sub: TEST_USER_ID,
-    type: "refresh",
+    type: "refresh-ui-session",
     ...overrides,
   };
 }
 
-function parseJwtPayload<T extends RefreshTokenClaims | UISessionTokenClaims>(
-  jwt: string,
-): T {
+function parseJwtPayload<
+  T extends UISessionRefreshTokenClaims | UISessionTokenClaims,
+>(jwt: string): T {
   return JSON.parse(
     Buffer.from(jwt.split(".")[1] ?? "", "base64url").toString(),
   ) as T;
@@ -123,7 +123,7 @@ describe("generateTokenPair", () => {
     });
 
     const service = buildService();
-    const result = await service.generateUiSessionTokenPair(
+    const result = await service.generateUISessionTokenPair(
       "valid-cognito-token",
     );
 
@@ -140,11 +140,11 @@ describe("generateTokenPair", () => {
     expect(uiPayload.roles).toEqual(["administrative", "technical"]);
     expect(uiPayload.type).toBe("ui-session");
 
-    const refreshPayload = parseJwtPayload<RefreshTokenClaims>(
+    const refreshPayload = parseJwtPayload<UISessionRefreshTokenClaims>(
       result.refreshToken,
     );
     expect(refreshPayload.sub).toBe(TEST_USER_ID);
-    expect(refreshPayload.type).toBe("refresh");
+    expect(refreshPayload.type).toBe("refresh-ui-session");
   });
 
   it("calls KMS with the correct key alias and signing algorithm", async () => {
@@ -154,7 +154,7 @@ describe("generateTokenPair", () => {
     });
 
     const service = buildService();
-    await service.generateUiSessionTokenPair("token");
+    await service.generateUISessionTokenPair("token");
 
     expect(mockKmsSend).toHaveBeenCalledTimes(2);
     const sendArg = mockKmsSend.mock.calls[0]?.[0] as Record<string, unknown>;
@@ -170,7 +170,7 @@ describe("generateTokenPair", () => {
     const service = buildService();
 
     await expect(
-      service.generateUiSessionTokenPair("bad-token"),
+      service.generateUISessionTokenPair("bad-token"),
     ).rejects.toThrow(unauthorizedError("Cognito token verification failed"));
   });
 
@@ -180,7 +180,7 @@ describe("generateTokenPair", () => {
       protectedHeader: { alg: "RS256" },
     });
     const service = buildService();
-    await expect(service.generateUiSessionTokenPair("token")).rejects.toThrow(
+    await expect(service.generateUISessionTokenPair("token")).rejects.toThrow(
       unauthorizedError("Invalid Cognito token payload"),
     );
   });
@@ -188,7 +188,7 @@ describe("generateTokenPair", () => {
   it("throws unauthorized when no org: group is present", async () => {
     setupValidCognitoToken({ "cognito:groups": ["role:administrative"] });
     const service = buildService();
-    await expect(service.generateUiSessionTokenPair("token")).rejects.toThrow(
+    await expect(service.generateUISessionTokenPair("token")).rejects.toThrow(
       unauthorizedError("Missing organization claim in cognito token"),
     );
   });
@@ -196,7 +196,7 @@ describe("generateTokenPair", () => {
   it("throws unauthorized when no role: group is present", async () => {
     setupValidCognitoToken({ "cognito:groups": [`org:${TEST_ORG_ID}`] });
     const service = buildService();
-    await expect(service.generateUiSessionTokenPair("token")).rejects.toThrow(
+    await expect(service.generateUISessionTokenPair("token")).rejects.toThrow(
       unauthorizedError("Missing role claims in cognito token"),
     );
   });
@@ -206,7 +206,7 @@ describe("generateTokenPair", () => {
       "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
     });
     const service = buildService();
-    await expect(service.generateUiSessionTokenPair("token")).rejects.toThrow(
+    await expect(service.generateUISessionTokenPair("token")).rejects.toThrow(
       unauthorizedError("Missing role claims in cognito token"),
     );
   });
@@ -215,7 +215,7 @@ describe("generateTokenPair", () => {
     setupValidCognitoToken();
     mockKmsSend.mockResolvedValue({ Signature: undefined });
     const service = buildService();
-    await expect(service.generateUiSessionTokenPair("token")).rejects.toThrow(
+    await expect(service.generateUISessionTokenPair("token")).rejects.toThrow(
       new Error("KMS sign returned no signature"),
     );
   });
@@ -229,7 +229,7 @@ describe("generateTokenPair", () => {
 
     const service = buildService();
     const { uiSessionToken } =
-      await service.generateUiSessionTokenPair("token");
+      await service.generateUISessionTokenPair("token");
     expect(
       parseJwtPayload<UISessionTokenClaims>(uiSessionToken).organizationId,
     ).toBe(customOrgId);
@@ -248,7 +248,7 @@ describe("generateTokenPair", () => {
 
     const service = buildService();
     const { uiSessionToken } =
-      await service.generateUiSessionTokenPair("token");
+      await service.generateUISessionTokenPair("token");
     const payload = parseJwtPayload<UISessionTokenClaims>(uiSessionToken);
     expect(payload.roles).toEqual(["administrative"]);
     expect(payload.organizationId).toBe(TEST_ORG_ID);
@@ -263,7 +263,7 @@ describe("refreshTokenPair", () => {
     });
 
     const service = buildService();
-    const result = await service.refreshUiSessionTokenPair("valid-refresh-jwt");
+    const result = await service.refreshUISessionTokenPair("valid-refresh-jwt");
 
     expect(result.uiSessionToken).toBeDefined();
     expect(result.refreshToken).toBeDefined();
@@ -276,28 +276,28 @@ describe("refreshTokenPair", () => {
     expect(uiPayload.roles).toEqual(["administrative", "technical"]);
     expect(uiPayload.type).toBe("ui-session");
 
-    const refreshPayload = parseJwtPayload<RefreshTokenClaims>(
+    const refreshPayload = parseJwtPayload<UISessionRefreshTokenClaims>(
       result.refreshToken,
     );
     expect(refreshPayload.sub).toBe(TEST_USER_ID);
-    expect(refreshPayload.type).toBe("refresh");
+    expect(refreshPayload.type).toBe("refresh-ui-session");
   });
 
   it("throws when refresh token verification fails", async () => {
     mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
     const service = buildService();
-    await expect(service.refreshUiSessionTokenPair("bad-jwt")).rejects.toThrow(
+    await expect(service.refreshUISessionTokenPair("bad-jwt")).rejects.toThrow(
       unauthorizedError("Refresh token verification failed"),
     );
   });
 
   it("throws when refresh token has invalid claims", async () => {
     mockJwtVerify.mockResolvedValue({
-      payload: { sub: TEST_USER_ID, type: "refresh" },
+      payload: { sub: TEST_USER_ID, type: "refresh-ui-session" },
       protectedHeader: { alg: "RS256" },
     });
     const service = buildService();
-    await expect(service.refreshUiSessionTokenPair("jwt")).rejects.toThrow(
+    await expect(service.refreshUISessionTokenPair("jwt")).rejects.toThrow(
       unauthorizedError("Invalid refresh token claims"),
     );
   });
@@ -305,7 +305,7 @@ describe("refreshTokenPair", () => {
   it("throws when refresh token has wrong type", async () => {
     setupValidRefreshToken({ type: "ui-session" });
     const service = buildService();
-    await expect(service.refreshUiSessionTokenPair("jwt")).rejects.toThrow(
+    await expect(service.refreshUISessionTokenPair("jwt")).rejects.toThrow(
       unauthorizedError("Invalid refresh token claims"),
     );
   });
@@ -318,11 +318,11 @@ describe("refreshTokenPair", () => {
     });
 
     const service = buildService();
-    await service.refreshUiSessionTokenPair("refresh-jwt");
+    await service.refreshUISessionTokenPair("refresh-jwt");
 
     setupValidRefreshToken({ jti: fixedJti });
     await expect(
-      service.refreshUiSessionTokenPair("refresh-jwt"),
+      service.refreshUISessionTokenPair("refresh-jwt"),
     ).rejects.toThrow(unauthorizedError("Refresh token already used"));
   });
 
@@ -333,11 +333,11 @@ describe("refreshTokenPair", () => {
 
     setupValidRefreshToken({ jti: "jti-1" });
     const service = buildService();
-    await service.refreshUiSessionTokenPair("refresh-jwt-1");
+    await service.refreshUISessionTokenPair("refresh-jwt-1");
 
     setupValidRefreshToken({ jti: "jti-2" });
     await expect(
-      service.refreshUiSessionTokenPair("refresh-jwt-2"),
+      service.refreshUISessionTokenPair("refresh-jwt-2"),
     ).resolves.toBeDefined();
   });
 
@@ -351,7 +351,7 @@ describe("refreshTokenPair", () => {
 
     const service = buildService();
     const { uiSessionToken } =
-      await service.refreshUiSessionTokenPair("refresh-jwt");
+      await service.refreshUISessionTokenPair("refresh-jwt");
     const payload = parseJwtPayload<UISessionTokenClaims>(uiSessionToken);
     expect(payload.organizationId).toBe(customOrgId);
     expect(payload.roles).toEqual(["technical"]);

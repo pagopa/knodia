@@ -1,6 +1,6 @@
 import type {
   InternalTokenClaims,
-  RefreshTokenClaims,
+  UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
@@ -11,7 +11,11 @@ import type z from "zod";
 import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
 import { randomUUID } from "node:crypto";
 
-import type { InternalToken, RefreshToken, UISessionToken } from "./models.ts";
+import type {
+  InternalToken,
+  UISessionRefreshToken,
+  UISessionToken,
+} from "./models.ts";
 
 const JWT_HEADER_ALG = "RS256";
 const JWT_HEADER_TYPE = "at+jwt";
@@ -22,12 +26,6 @@ export interface InternalTokenInput extends TokenParams {
   subject: string;
 }
 
-interface RefreshTokenInput extends TokenParams {
-  organizationId: OrganizationId;
-  roles: NonEmptyArray<z.infer<typeof UserRole>>;
-  subject: UserId;
-}
-
 interface TokenParams {
   audience: string;
   issuer: string;
@@ -35,7 +33,7 @@ interface TokenParams {
   secondsDuration: number;
 }
 
-interface UISessionInput extends TokenParams {
+interface UISessionTokenInput extends TokenParams {
   organizationId: OrganizationId;
   roles: NonEmptyArray<z.infer<typeof UserRole>>;
   subject: UserId;
@@ -81,13 +79,32 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
 
   async function buildAndSignToken(
     kid: string,
-    claims: InternalTokenClaims | RefreshTokenClaims | UISessionTokenClaims,
+    claims:
+      | InternalTokenClaims
+      | UISessionRefreshTokenClaims
+      | UISessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
     const header = buildHeader(kid);
     const payload = b64url(JSON.stringify(claims));
     const message = `${header}.${payload}`;
     const signature = await signWithKms(kid, message);
     return { header, serialized: `${message}.${signature}` };
+  }
+
+  function buildUserTokenClaims(
+    input: UISessionTokenInput,
+  ): Omit<UISessionTokenClaims, "type"> {
+    const now = getNowInSeconds();
+    return {
+      aud: input.audience,
+      exp: now + input.secondsDuration,
+      iat: now,
+      iss: input.issuer,
+      jti: randomUUID(),
+      organizationId: input.organizationId,
+      roles: input.roles,
+      sub: input.subject,
+    };
   }
 
   return {
@@ -108,38 +125,27 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       return { header, payload: claims, serialized, type: "internal" };
     },
 
-    async generateRefreshToken(
-      input: RefreshTokenInput,
-    ): Promise<RefreshToken> {
-      const now = getNowInSeconds();
-      const claims: RefreshTokenClaims = {
-        aud: input.audience,
-        exp: now + input.secondsDuration,
-        iat: now,
-        iss: input.issuer,
-        jti: randomUUID(),
-        organizationId: input.organizationId,
-        roles: input.roles,
-        sub: input.subject,
-        type: "refresh",
+    async generateUIRefreshToken(
+      input: UISessionTokenInput,
+    ): Promise<UISessionRefreshToken> {
+      const claims: UISessionRefreshTokenClaims = {
+        ...buildUserTokenClaims(input),
+        type: "refresh-ui-session",
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);
-      return { header, payload: claims, serialized, type: "refresh" };
+      return {
+        header,
+        payload: claims,
+        serialized,
+        type: "refresh-ui-session",
+      };
     },
 
     async generateUISessionToken(
-      input: UISessionInput,
+      input: UISessionTokenInput,
     ): Promise<UISessionToken> {
-      const now = getNowInSeconds();
       const claims: UISessionTokenClaims = {
-        aud: input.audience,
-        exp: now + input.secondsDuration,
-        iat: now,
-        iss: input.issuer,
-        jti: randomUUID(),
-        organizationId: input.organizationId,
-        roles: input.roles,
-        sub: input.subject,
+        ...buildUserTokenClaims(input),
         type: "ui-session",
       };
       const { header, serialized } = await buildAndSignToken(input.kid, claims);

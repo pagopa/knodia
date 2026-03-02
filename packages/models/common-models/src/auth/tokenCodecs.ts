@@ -13,10 +13,13 @@ const BaseJwtClaims = z.object({
   sub: z.string(),
 });
 
-export const UISessionTokenClaims = BaseJwtClaims.extend({
+const UserTokenClaims = BaseJwtClaims.extend({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
   sub: UserId,
+});
+
+export const UISessionTokenClaims = UserTokenClaims.extend({
   type: z.literal("ui-session"),
 });
 export type UISessionTokenClaims = z.infer<typeof UISessionTokenClaims>;
@@ -26,13 +29,12 @@ export const InternalTokenClaims = BaseJwtClaims.extend({
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
-export const RefreshTokenClaims = BaseJwtClaims.extend({
-  organizationId: OrganizationId,
-  roles: NonEmptyArray(UserRole),
-  sub: UserId,
-  type: z.literal("refresh"),
+export const UISessionRefreshTokenClaims = UserTokenClaims.extend({
+  type: z.literal("refresh-ui-session"),
 });
-export type RefreshTokenClaims = z.infer<typeof RefreshTokenClaims>;
+export type UISessionRefreshTokenClaims = z.infer<
+  typeof UISessionRefreshTokenClaims
+>;
 
 export const KnodiaTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,

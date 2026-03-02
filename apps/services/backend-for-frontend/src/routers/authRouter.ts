@@ -35,7 +35,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const tokens = await authService.generateUiSessionTokenPair(
+      const tokens = await authService.generateUISessionTokenPair(
         req.body.oidcToken,
       );
       res.send(tokens);
@@ -59,7 +59,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const tokens = await authService.refreshUiSessionTokenPair(
+      const tokens = await authService.refreshUISessionTokenPair(
         req.body.refreshToken,
       );
       res.send(tokens);
