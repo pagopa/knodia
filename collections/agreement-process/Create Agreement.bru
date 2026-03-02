@@ -1,6 +1,7 @@
 meta {
   name: Create Agreement
   type: http
+  seq: 1
 }
 
 post {
@@ -16,8 +17,10 @@ headers {
 
 body:json {
   {
-    "consumerId": "{{consumerId}}",
-    "consumerKnodeId": "Orion",
+    "consumer": {
+      "id":"{{consumerId}}",
+      "knodeId": "Orion"
+    },
     "eserviceId": "{{eserviceId}}",
     "eserviceVersionId": "{{eserviceVersionId}}"
   }
