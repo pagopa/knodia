@@ -22,8 +22,10 @@ describe("POST /agreements (createAgreement)", async () => {
   const consumerId = generateId<OrganizationId>();
 
   const body: API_AgreementSeed = {
-    consumerId,
-    consumerKnodeId: "Orion",
+    consumer: {
+      id: consumerId,
+      knodeId: "Orion",
+    },
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
   };
@@ -42,7 +44,7 @@ describe("POST /agreements (createAgreement)", async () => {
       attributes: [],
       consumer: {
         id: consumerId,
-        knodeId: KnodeId.parse(body.consumerKnodeId),
+        knodeId: KnodeId.parse(body.consumer.knodeId),
       },
       createdAt: new Date(responseBody.createdAt),
       eserviceId: eservice.id,
