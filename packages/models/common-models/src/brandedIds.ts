@@ -24,19 +24,12 @@ export type KnodeId = z.infer<typeof KnodeId>;
 export const AgreementId = z.uuid().brand<"AgreementId">();
 export type AgreementId = z.infer<typeof AgreementId>;
 
-export const ExternalId = <T extends string>() =>
-  z.uuid().brand<`ExternalId:${T}`>();
-export type ExternalId<T extends string> = z.infer<
-  ReturnType<typeof ExternalId<T>>
->;
-
-type IDS =
+export type IDS =
   | AgreementId
   | CorrelationId
   | EserviceId
   | EserviceInterfaceId
   | EserviceVersionId
-  | ExternalId<string>
   | KnodeId
   | OrganizationId
   | UserId;

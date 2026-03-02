@@ -1,12 +1,14 @@
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+
+import {
+  KnodeId,
+  OrganizationId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
-import {
-  Agreement,
-  type AgreementConsumer,
-  AgreementState,
-} from "./agreement.ts";
+import { Agreement, AgreementState } from "./agreement.ts";
 import {
   AgreementConsumerV1,
   AgreementStateV1,
@@ -41,7 +43,7 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
 
 const fromAgreementConsumerV1 = (
   input: AgreementConsumerV1,
-): AgreementConsumer => ({
+): ExternalResource<OrganizationId> => ({
   id: unsafeBrandId(input.id),
   knodeId: KnodeId.parse(input.knodeId),
 });

@@ -65,12 +65,7 @@ export const aggregateAgreement = (
     return undefined;
   }
 
-  const aggregatedAgreement = toAgreementAggregator(queryRes);
-
-  return buildAgreement({
-    agreementSQL: aggregatedAgreement.agreementSQL,
-    attributesSQL: aggregatedAgreement.attributesSQL,
-  });
+  return buildAgreement(toAgreementAggregator(queryRes));
 };
 
 export const aggregateAgreements = (
@@ -107,10 +102,8 @@ const toAgreementAggregator = (
 ): AgreementItemsSQL => {
   const { agreementsSQL, attributesSQL } = toAgreementsAggregator(queryRes);
 
-  const agreementSQL = throwIfMultipleOrEmpty(agreementsSQL, "agreement");
-
   return {
-    agreementSQL,
+    agreementSQL: throwIfMultipleOrEmpty(agreementsSQL, "agreement"),
     attributesSQL,
   };
 };

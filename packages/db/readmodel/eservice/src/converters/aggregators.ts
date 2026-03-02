@@ -54,12 +54,7 @@ export const aggregateEserviceVersion = (
     return undefined;
   }
 
-  const aggregatedEserviceVersion = toEserviceVersionAggregator(queryRes);
-
-  return buildEserviceVersion({
-    requiredAttributesSQL: aggregatedEserviceVersion.requiredAttributesSQL,
-    versionSQL: aggregatedEserviceVersion.versionSQL,
-  });
+  return buildEserviceVersion(toEserviceVersionAggregator(queryRes));
 };
 
 function buildEserviceVersion({
@@ -116,14 +111,9 @@ const toEserviceVersionAggregator = (
   const { requiredAttributesSQL, versionsSQL } =
     toEserviceVersionsAggregator(queryRes);
 
-  const eserviceVersion = throwIfMultipleOrEmpty(
-    versionsSQL,
-    "e-service version",
-  );
-
   return {
     requiredAttributesSQL: requiredAttributesSQL,
-    versionSQL: eserviceVersion,
+    versionSQL: throwIfMultipleOrEmpty(versionsSQL, "e-service version"),
   };
 };
 
@@ -226,16 +216,7 @@ export const aggregateEservice = (
     return undefined;
   }
 
-  const aggregatedEservice = toEserviceAggregator(queryRes);
-
-  return buildEservice({
-    eserviceCategoriesSQL: aggregatedEservice.eserviceCategoriesSQL,
-    eserviceInterfacesSQL: aggregatedEservice.eserviceInterfacesSQL,
-    eserviceSQL: aggregatedEservice.eserviceSQL,
-    eserviceVersionRequiredAttributesSQL:
-      aggregatedEservice.eserviceVersionRequiredAttributesSQL,
-    eserviceVersionsSQL: aggregatedEservice.eserviceVersionsSQL,
-  });
+  return buildEservice(toEserviceAggregator(queryRes));
 };
 
 export const aggregateEservices = (
@@ -300,12 +281,10 @@ const toEserviceAggregator = (
     versionsSQL: versionsSQL,
   } = toEservicesAggregator(queryRes);
 
-  const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
-
   return {
     eserviceCategoriesSQL: categoriesSQL,
     eserviceInterfacesSQL: interfacesSQL,
-    eserviceSQL,
+    eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service"),
     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
     eserviceVersionsSQL: versionsSQL,
   };
