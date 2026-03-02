@@ -29,7 +29,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
-        { query: req.query, requestBody: req.body },
+        { requestBody: req.body, requestQuery: req.query },
         "Getting catalog E-services with query parameters and body data",
       );
 
