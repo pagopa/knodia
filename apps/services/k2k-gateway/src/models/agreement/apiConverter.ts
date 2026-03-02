@@ -30,8 +30,7 @@ export function toProcessAPI_AgreementSeed(
   agreementSeed: API_AgreementSeed,
 ): agreementProcessApi.AgreementSeed {
   return {
-    consumerId: agreementSeed.consumerId,
-    consumerKnodeId: toProcessAPI_KnodeId(agreementSeed.consumerKnodeId),
+    consumer: toProcessAPI_AgreementConsumer(agreementSeed.consumer),
     eserviceId: agreementSeed.eserviceId,
     eserviceVersionId: agreementSeed.eserviceVersionId,
   };
@@ -60,6 +59,15 @@ function toAPI_KnodeId(knodeId: agreementProcessApi.KnodeId): API_KnodeId {
     .with("Orion", () => "ORION" as const)
     .with("Lynx", () => "LYNX" as const)
     .exhaustive();
+}
+
+function toProcessAPI_AgreementConsumer(
+  consumer: API_AgreementConsumer,
+): agreementProcessApi.AgreementConsumer {
+  return {
+    id: consumer.id,
+    knodeId: toProcessAPI_KnodeId(consumer.knodeId),
+  };
 }
 
 function toProcessAPI_KnodeId(

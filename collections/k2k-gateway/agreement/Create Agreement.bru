@@ -9,13 +9,15 @@ post {
 }
 
 headers {
-  ~Authorization:
+  ~Authorization: 
 }
 
 body:json {
   {
-    "consumerId": "{{consumerId}}",
-    "consumerKnodeId": "Orion",
+    "consumer": {
+      "id": "{{consumerId}}",
+      "knodeId": "ORION"
+    },
     "eserviceId": "{{eserviceId}}",
     "eserviceVersionId": "{{eserviceVersionId}}"
   }

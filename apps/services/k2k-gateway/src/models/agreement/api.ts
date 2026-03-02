@@ -54,8 +54,7 @@ export type API_Agreement = z.infer<typeof API_Agreement>;
 
 export const API_AgreementSeed = z
   .strictObject({
-    consumerId: z.uuid(),
-    consumerKnodeId: API_KnodeId,
+    consumer: API_AgreementConsumer,
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
   })
