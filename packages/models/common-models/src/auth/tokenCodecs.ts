@@ -36,8 +36,10 @@ export type UISessionRefreshTokenClaims = z.infer<
   typeof UISessionRefreshTokenClaims
 >;
 
-export const KnodiaTokenClaims = z.discriminatedUnion("type", [
+// Token types accepted as authentication credentials by API services.
+// Does NOT include refresh tokens, which are only used for token renewal.
+export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,
 ]);
-export type KnodiaTokenClaims = z.infer<typeof KnodiaTokenClaims>;
+export type KnodiaAuthTokenClaims = z.infer<typeof KnodiaAuthTokenClaims>;

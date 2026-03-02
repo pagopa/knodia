@@ -1,6 +1,6 @@
 import type {
   InternalTokenClaims,
-  KnodiaTokenClaims,
+  KnodiaAuthTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
@@ -23,7 +23,7 @@ const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
  * Call with no args to get a token with the default test claims.
  */
 export function createTestTokenPayload(
-  type: KnodiaTokenClaims["type"],
+  type: KnodiaAuthTokenClaims["type"],
 ): string {
   const claims = match(type)
     .with("ui-session", getTestUISessionTokenClaims)

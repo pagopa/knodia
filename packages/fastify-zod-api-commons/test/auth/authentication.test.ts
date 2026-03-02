@@ -155,7 +155,7 @@ describe("authenticationPlugin", () => {
       expect(response.body).toContain("Token verification failed");
     });
 
-    it("returns 401 when the verified payload does not match KnodiaTokenClaims", async () => {
+    it("returns 401 when the verified payload does not match KnodiaAuthTokenClaims", async () => {
       jwtVerify.mockResolvedValueOnce({
         payload: { sub: "some-user", tokenType: "unknown" },
       });

@@ -1,8 +1,7 @@
-import type {
+import {
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
-
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -87,12 +86,10 @@ function makeRefreshPayload(
   };
 }
 
-function parseJwtPayload<
-  T extends UISessionRefreshTokenClaims | UISessionTokenClaims,
->(jwt: string): T {
+function parseJwtPayload(jwt: string): unknown {
   return JSON.parse(
     Buffer.from(jwt.split(".")[1] ?? "", "base64url").toString(),
-  ) as T;
+  );
 }
 
 function setupValidCognitoToken(
@@ -132,16 +129,16 @@ describe("generateTokenPair", () => {
     expect(result.uiSessionToken.split(".")).toHaveLength(3);
     expect(result.refreshToken.split(".")).toHaveLength(3);
 
-    const uiPayload = parseJwtPayload<UISessionTokenClaims>(
-      result.uiSessionToken,
+    const uiPayload = UISessionTokenClaims.parse(
+      parseJwtPayload(result.uiSessionToken),
     );
     expect(uiPayload.sub).toBe(TEST_USER_ID);
     expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
     expect(uiPayload.roles).toEqual(["administrative", "technical"]);
     expect(uiPayload.type).toBe("ui-session");
 
-    const refreshPayload = parseJwtPayload<UISessionRefreshTokenClaims>(
-      result.refreshToken,
+    const refreshPayload = UISessionRefreshTokenClaims.parse(
+      parseJwtPayload(result.refreshToken),
     );
     expect(refreshPayload.sub).toBe(TEST_USER_ID);
     expect(refreshPayload.type).toBe("refresh-ui-session");
@@ -230,9 +227,8 @@ describe("generateTokenPair", () => {
     const service = buildService();
     const { uiSessionToken } =
       await service.generateUISessionTokenPair("token");
-    expect(
-      parseJwtPayload<UISessionTokenClaims>(uiSessionToken).organizationId,
-    ).toBe(customOrgId);
+    const payload = UISessionTokenClaims.parse(parseJwtPayload(uiSessionToken));
+    expect(payload.organizationId).toBe(customOrgId);
   });
 
   it("ignores groups that do not start with 'org:' or 'role:'", async () => {
@@ -249,9 +245,11 @@ describe("generateTokenPair", () => {
     const service = buildService();
     const { uiSessionToken } =
       await service.generateUISessionTokenPair("token");
-    const payload = parseJwtPayload<UISessionTokenClaims>(uiSessionToken);
-    expect(payload.roles).toEqual(["administrative"]);
-    expect(payload.organizationId).toBe(TEST_ORG_ID);
+    const uiPayload = UISessionTokenClaims.parse(
+      parseJwtPayload(uiSessionToken),
+    );
+    expect(uiPayload.roles).toEqual(["administrative"]);
+    expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
   });
 });
 
@@ -268,16 +266,16 @@ describe("refreshTokenPair", () => {
     expect(result.uiSessionToken).toBeDefined();
     expect(result.refreshToken).toBeDefined();
 
-    const uiPayload = parseJwtPayload<UISessionTokenClaims>(
-      result.uiSessionToken,
+    const uiPayload = UISessionTokenClaims.parse(
+      parseJwtPayload(result.uiSessionToken),
     );
     expect(uiPayload.sub).toBe(TEST_USER_ID);
     expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
     expect(uiPayload.roles).toEqual(["administrative", "technical"]);
     expect(uiPayload.type).toBe("ui-session");
 
-    const refreshPayload = parseJwtPayload<UISessionRefreshTokenClaims>(
-      result.refreshToken,
+    const refreshPayload = UISessionRefreshTokenClaims.parse(
+      parseJwtPayload(result.refreshToken),
     );
     expect(refreshPayload.sub).toBe(TEST_USER_ID);
     expect(refreshPayload.type).toBe("refresh-ui-session");
@@ -352,7 +350,7 @@ describe("refreshTokenPair", () => {
     const service = buildService();
     const { uiSessionToken } =
       await service.refreshUISessionTokenPair("refresh-jwt");
-    const payload = parseJwtPayload<UISessionTokenClaims>(uiSessionToken);
+    const payload = UISessionTokenClaims.parse(parseJwtPayload(uiSessionToken));
     expect(payload.organizationId).toBe(customOrgId);
     expect(payload.roles).toEqual(["technical"]);
   });

@@ -129,7 +129,10 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
     const results = await Promise.allSettled(
       bffJwksSets.map((jwks) =>
-        jwtVerify(token, jwks, { audience: config.acceptedAudiences }),
+        jwtVerify(token, jwks, {
+          audience: config.acceptedAudiences,
+          issuer: config.uiSessionJwt.issuer,
+        }),
       ),
     );
 

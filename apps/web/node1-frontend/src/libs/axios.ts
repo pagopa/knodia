@@ -28,7 +28,7 @@ async function handleUnauthorized(error: unknown): Promise<unknown> {
     !isAxiosError(error) ||
     error.response?.status !== 401 ||
     !error.config ||
-    authUrls.some((u) => error.config?.url?.endsWith(u))
+    authUrls.some((u) => error.config?.url?.includes(u))
   ) {
     return Promise.reject(error);
   }

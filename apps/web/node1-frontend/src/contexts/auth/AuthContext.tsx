@@ -56,7 +56,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   } = useMutation({
     ...createSessionMutation({ client }),
     onError: () => {
-      void redirectToLogout();
+      redirectToLogout();
     },
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
