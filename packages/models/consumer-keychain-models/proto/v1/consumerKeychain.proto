@@ -6,12 +6,12 @@ message ConsumerKeychainV1 {
   string id = 1;
   LocalizedTextV1 name = 2;
   optional LocalizedTextV1 description = 3;
-  string ownerId = 5;
-  repeated string users = 6;
-  repeated string purposes = 7;
-  repeated ConsumerKeychainKeyV1 keys = 8;
-  int64 createdAt = 9;
-  int64 updatedAt = 10;
+  string ownerId = 4;
+  repeated string users = 5;
+  repeated string purposes = 6;
+  repeated ConsumerKeychainKeyV1 keys = 7;
+  int64 createdAt = 8;
+  int64 updatedAt = 9;
 }
 
 message ConsumerKeychainKeyV1 {
