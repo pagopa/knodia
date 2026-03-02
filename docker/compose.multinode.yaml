@@ -441,12 +441,12 @@ services:
       local-kms-setup:
         condition: service_completed_successfully
 
-  readmodel-writer-orion:
+  eservice-readmodel-writer-orion:
     security_opt:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    container_name: knodia-multi-node-readmodel-writer-orion
+    container_name: knodia-multi-node-eservice-readmodel-writer-orion
     build:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
@@ -593,12 +593,12 @@ services:
       local-kms-setup:
         condition: service_completed_successfully
 
-  readmodel-writer-lynx:
+  eservice-readmodel-writer-lynx:
     security_opt:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    container_name: knodia-multi-node-readmodel-writer-lynx
+    container_name: knodia-multi-node-eservice-readmodel-writer-lynx
     build:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
