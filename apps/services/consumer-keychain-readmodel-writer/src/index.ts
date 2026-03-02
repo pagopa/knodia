@@ -24,7 +24,7 @@ const logger = createLogger({
 
 await runConsumer(
   [config.consumerKeychainTopic],
-  createProcessMessage(readmodelDb, config),
+  createProcessMessage(readmodelDb, logger),
   config,
   logger,
 );
