@@ -13,6 +13,8 @@ import {
 
 let refreshPromise: null | Promise<boolean> = null;
 
+const authUrls = ["/auth/ui-session", "/auth/ui-session/refresh"];
+
 function addAuthHeader(axiosConfig: InternalAxiosRequestConfig) {
   const token = getAuthToken();
   if (token) {
@@ -26,7 +28,7 @@ async function handleUnauthorized(error: unknown): Promise<unknown> {
     !isAxiosError(error) ||
     error.response?.status !== 401 ||
     !error.config ||
-    error.config.url?.includes("/auth/ui-session")
+    authUrls.some((u) => error.config?.url?.endsWith(u))
   ) {
     return Promise.reject(error);
   }
