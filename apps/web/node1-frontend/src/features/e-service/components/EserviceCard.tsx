@@ -44,11 +44,13 @@ export function EserviceCardFooter({
 export function EserviceCardHeader({
   description,
   id,
+  search,
   title,
   to,
 }: {
   description?: string;
   id: string;
+  search?: Record<string, string>;
   title: string;
   to: string;
 }) {
@@ -69,6 +71,7 @@ export function EserviceCardHeader({
         hierarchy="neutral"
         kind="outlined"
         params={{ id }}
+        search={search}
         size="icon-md"
         to={to}
       >

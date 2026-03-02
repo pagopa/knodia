@@ -1,3 +1,6 @@
+import type { bffApi } from "@knodia/bff-client";
+
+import { getConsumerCatalogEserviceDetailOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Avatar,
   Banner,
@@ -10,6 +13,7 @@ import {
 import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
+import { z } from "zod";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -25,13 +29,32 @@ import {
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { Section } from "@/features/e-service/components/Section";
-import { mockConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail.mock";
+import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
+import { client } from "@/libs/axios";
+
+const eserviceDetailSearchSchema = z.object({
+  knodeId: z.string(),
+});
+
+const eserviceQuery = (eserviceId: string, knodeId: string) =>
+  getConsumerCatalogEserviceDetailOptions({
+    client,
+    path: { eserviceId },
+    query: { knodeId: knodeId as bffApi.KnodeId },
+  });
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/$id",
 )({
   component: RouteComponent,
-  // TODO: Add loader to fetch consumption e-service detail from BFF
+  loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),
+  // eslint-disable-next-line perfectionist/sort-objects
+  loader: async ({
+    context: { queryClient },
+    deps: { knodeId },
+    params: { id },
+  }) => await queryClient.ensureQueryData(eserviceQuery(id, knodeId)),
+  validateSearch: eserviceDetailSearchSchema,
 });
 
 function ConsumptionRequirementsSection({
@@ -142,8 +165,8 @@ function ProducerContactPopover({
 }
 
 function RouteComponent() {
-  // TODO: Use Route.useParams() to fetch consumption e-service detail once the BFF endpoint is available
-  const eservice = mockConsumptionEserviceDetail;
+  const bffDetail = Route.useLoaderData();
+  const eservice = toConsumptionEserviceDetail(bffDetail);
 
   return (
     <>
