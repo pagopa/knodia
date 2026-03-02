@@ -179,33 +179,26 @@ export function eserviceServiceBuilder(
 
     async getEservice(
       eserviceId: EserviceId,
-      contextData: RequestContextData,
+      { logger }: RequestContextData,
     ): Promise<Eservice> {
-      const producerId = getProducerId(contextData);
-      contextData.logger.info(
-        `Getting E-service ${eserviceId} for producer ${producerId}`,
-      );
+      logger.info(`Getting E-service with ID ${eserviceId}`);
 
       return await retrieveEservice(eserviceId);
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
-      contextData: RequestContextData,
+      { logger }: RequestContextData,
     ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
-      const producerId = getProducerId(contextData);
-      contextData.logger.info(
-        `Getting latest version of E-service ${eserviceId} for producer ${producerId}`,
-      );
+      logger.info(`Getting latest version of E-service with ID ${eserviceId}`);
 
       return await retrieveEserviceLatestVersion(eserviceId);
     },
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
-      contextData: RequestContextData,
+      { logger }: RequestContextData,
     ): Promise<EserviceInterface> {
-      const producerId = getProducerId(contextData);
-      contextData.logger.info(
-        `Getting latest version interface of E-service ${eserviceId} for producer ${producerId}`,
+      logger.info(
+        `Getting latest version interface of E-service with ID ${eserviceId}`,
       );
 
       return await retrieveEserviceLatestVersionInterface(eserviceId);

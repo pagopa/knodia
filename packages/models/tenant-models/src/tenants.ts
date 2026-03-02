@@ -1,7 +1,5 @@
 import type { OrganizationId } from "@knodia/common-models/ids";
 
-import { unsafeBrandId } from "@knodia/common-models/ids";
-
 interface Tenant {
   id: OrganizationId;
   name: string;
@@ -19,5 +17,5 @@ export function getTenant(id: OrganizationId): Tenant | undefined {
   if (name === undefined) {
     return undefined;
   }
-  return { id: unsafeBrandId<OrganizationId>(id), name };
+  return { id, name };
 }
