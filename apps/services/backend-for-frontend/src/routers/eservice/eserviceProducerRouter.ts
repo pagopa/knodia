@@ -104,7 +104,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       const { logger } = getContextValues(requestContext);
 
       logger.info(
-        { query: req.query },
+        { requestQuery: req.query },
         "Getting Producer E-services with query parameters",
       );
 
