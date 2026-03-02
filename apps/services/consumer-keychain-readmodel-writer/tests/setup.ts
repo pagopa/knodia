@@ -21,11 +21,8 @@ beforeAll(async () => {
     inject("KAFKA_BROKER"),
   ));
 
-  processMessage = createProcessMessage(readmodelDb, {
-    isProduction: false,
-    logLevel: "silent",
-    nodeEnv: "test",
-  });
+  const { logger } = createTestLogger();
+  processMessage = createProcessMessage(readmodelDb, logger);
 });
 
 beforeEach(async () => {
