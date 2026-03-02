@@ -1,10 +1,9 @@
 import { Attribute } from "@knodia/attribute-models";
+import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   AgreementId,
   EserviceId,
   EserviceVersionId,
-  ExternalId,
-  KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
 import z from "zod";
@@ -12,15 +11,9 @@ import z from "zod";
 export const AgreementState = z.enum(["Active", "Suspended", "Archived"]);
 export type AgreementState = z.infer<typeof AgreementState>;
 
-const AgreementConsumer = z.strictObject({
-  id: ExternalId<OrganizationId>(),
-  knodeId: KnodeId,
-});
-export type AgreementConsumer = z.infer<typeof AgreementConsumer>;
-
 export const Agreement = z.strictObject({
   attributes: z.array(Attribute).min(1),
-  consumer: AgreementConsumer,
+  consumer: ExternalResource<OrganizationId>(),
   createdAt: z.coerce.date(),
   eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,
