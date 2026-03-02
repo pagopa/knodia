@@ -19,8 +19,7 @@ export function AttributeGroupContainer({
             </span>
           )}
           <span className="flex gap-1">
-            {getAttribute(attribute.scheme, attribute.code)?.name ??
-              attribute.code}
+            {getAttribute(attribute)?.name ?? attribute.code}
             <BookOpenTextIcon size={20} />
           </span>
         </Fragment>

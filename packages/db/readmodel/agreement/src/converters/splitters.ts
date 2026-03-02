@@ -1,5 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type { Attribute } from "@knodia/attribute-models";
+import type { AttributeId } from "@knodia/attribute-models";
 import type { AgreementId } from "@knodia/common-models/ids";
 
 import type {
@@ -13,8 +13,8 @@ export const splitAgreementIntoObjectsSQL = (
   metadataVersion: number,
 ): AgreementItemsSQL => {
   const agreementSQL = toAgreementSQL(agreement, metadataVersion);
-  const attributesSQL = agreement.attributes.flatMap((attribute) =>
-    toAgreementAttributeSQL(attribute, agreement.id, metadataVersion),
+  const attributesSQL = agreement.attributes.flatMap((attributeId) =>
+    toAgreementAttributeSQL(attributeId, agreement.id, metadataVersion),
   );
 
   return {
@@ -24,14 +24,14 @@ export const splitAgreementIntoObjectsSQL = (
 };
 
 const toAgreementAttributeSQL = (
-  attribute: Attribute,
+  attributeId: AttributeId,
   agreementId: AgreementId,
   metadataVersion: number,
 ): AgreementAttributeSQL => ({
   agreementId: agreementId,
-  code: attribute.code,
+  code: attributeId.code,
   metadataVersion,
-  scheme: attribute.scheme,
+  scheme: attributeId.scheme,
 });
 
 const toAgreementSQL = (
