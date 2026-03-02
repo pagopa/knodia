@@ -117,7 +117,6 @@ export const readmodelConsumerKeychainKey = consumerKeychainSchema.table(
     kid: text().notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: jsonb().notNull(),
-    use: text().notNull(),
     userId: uuid("user_id").notNull(),
   },
   (table) => [

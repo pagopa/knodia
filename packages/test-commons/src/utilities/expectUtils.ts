@@ -1,4 +1,5 @@
 import { unsafeBrandId } from "@knodia/common-models/ids";
+import { type ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import {
   type Eservice,
   type EserviceInterface,
@@ -68,6 +69,15 @@ export function toExpectAPI_EserviceVersionInterfaceDocument(
     prettyName: doc.prettyName,
     updatedAt: doc.updatedAt.toISOString(),
   };
+}
+
+export function toExpectConsumerKeychain(consumerKeychain: ConsumerKeychain) {
+  return expect.objectContaining({
+    ...consumerKeychain,
+    keys: expect.arrayContaining(consumerKeychain.keys),
+    purposes: expect.arrayContaining(consumerKeychain.purposes),
+    users: expect.arrayContaining(consumerKeychain.users),
+  });
 }
 
 export function toExpectEservice(eservice: Eservice) {

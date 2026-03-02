@@ -5,12 +5,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eq } from "drizzle-orm";
 
-import {
-  readmodelConsumerKeychain,
-  readmodelConsumerKeychainKey,
-  readmodelConsumerKeychainPurpose,
-  readmodelConsumerKeychainUser,
-} from "../consumerKeychain.ts";
+import { readmodelConsumerKeychain } from "../consumerKeychain.ts";
 import { aggregateConsumerKeychain } from "../converters/aggregators.ts";
 
 export function consumerKeychainReadmodelServiceBuilder(
@@ -23,32 +18,8 @@ export function consumerKeychainReadmodelServiceBuilder(
       const queryRes = await readmodelDb
         .select({
           consumerKeychain: readmodelConsumerKeychain,
-          key: readmodelConsumerKeychainKey,
-          purpose: readmodelConsumerKeychainPurpose,
-          user: readmodelConsumerKeychainUser,
         })
         .from(readmodelConsumerKeychain)
-        .leftJoin(
-          readmodelConsumerKeychainKey,
-          eq(
-            readmodelConsumerKeychainKey.consumerKeychainId,
-            readmodelConsumerKeychain.id,
-          ),
-        )
-        .leftJoin(
-          readmodelConsumerKeychainPurpose,
-          eq(
-            readmodelConsumerKeychainPurpose.consumerKeychainId,
-            readmodelConsumerKeychain.id,
-          ),
-        )
-        .leftJoin(
-          readmodelConsumerKeychainUser,
-          eq(
-            readmodelConsumerKeychainUser.consumerKeychainId,
-            readmodelConsumerKeychain.id,
-          ),
-        )
         .where(eq(readmodelConsumerKeychain.id, consumerKeychainId));
 
       return aggregateConsumerKeychain(queryRes);

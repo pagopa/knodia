@@ -22,7 +22,6 @@ describe("ConsumerKeychainEventV1 codec", () => {
         format: "jwk",
         kid: "kid-1",
         name: { en: "Primary key" },
-        use: "sig",
         userId: generateId(),
       },
     ],

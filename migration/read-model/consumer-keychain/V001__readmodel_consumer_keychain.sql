@@ -36,7 +36,6 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_consumer_keychain."consumer_keychain_key
 	"kid" text NOT NULL,
 	"metadata_version" bigint NOT NULL,
 	"name" jsonb NOT NULL,
-	"use" text NOT NULL,
 	"user_id" uuid NOT NULL,
 	CONSTRAINT "consumer_keychain_key_pkey" PRIMARY KEY("consumer_keychain_id","kid")
 );

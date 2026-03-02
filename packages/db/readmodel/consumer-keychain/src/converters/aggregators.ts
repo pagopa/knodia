@@ -2,19 +2,9 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
   type ConsumerKeychainId,
-  OrganizationId,
-  type PurposeId,
   unsafeBrandId,
-  type UserId,
 } from "@knodia/common-models/ids";
-import {
-  ConsumerKeychain,
-  ConsumerKeychainKey,
-  KeyFormat,
-  KeyUse,
-  LocalizedDescription,
-  LocalizedName,
-} from "@knodia/consumer-keychain-models";
+import { ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import {
   aggregateByPKString,
   throwIfMultipleOrEmpty,
@@ -31,6 +21,7 @@ import {
   readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
+import { buildConsumerKeychain } from "./converters.ts";
 
 type ConsumerKeychainAggregatorInput = {
   consumerKeychain: ConsumerKeychainSQL;
@@ -38,52 +29,6 @@ type ConsumerKeychainAggregatorInput = {
   purpose?: ConsumerKeychainPurposeSQL | null;
   user?: ConsumerKeychainUserSQL | null;
 }[];
-
-const buildConsumerKeychain = ({
-  consumerKeychainKeysSQL,
-  consumerKeychainPurposesSQL,
-  consumerKeychainSQL,
-  consumerKeychainUsersSQL,
-}: ConsumerKeychainItemsSQL): WithMetadata<ConsumerKeychain> => {
-  const consumerKeychain: ConsumerKeychain = {
-    createdAt: consumerKeychainSQL.createdAt,
-    description:
-      consumerKeychainSQL.description == null
-        ? undefined
-        : LocalizedDescription.parse(consumerKeychainSQL.description),
-    id: unsafeBrandId(consumerKeychainSQL.id),
-    keys: consumerKeychainKeysSQL.map(buildConsumerKeychainKey),
-    name: LocalizedName.parse(consumerKeychainSQL.name),
-    ownerId: unsafeBrandId<OrganizationId>(consumerKeychainSQL.ownerId),
-    purposes: consumerKeychainPurposesSQL.map((purposeSQL) =>
-      unsafeBrandId<PurposeId>(purposeSQL.purposeId),
-    ),
-    updatedAt: consumerKeychainSQL.updatedAt,
-    users: consumerKeychainUsersSQL.map((userSQL) =>
-      unsafeBrandId<UserId>(userSQL.userId),
-    ),
-  };
-
-  return {
-    data: consumerKeychain,
-    metadata: { version: consumerKeychainSQL.metadataVersion },
-  };
-};
-
-function buildConsumerKeychainKey(
-  keySQL: ConsumerKeychainKeySQL,
-): ConsumerKeychainKey {
-  return {
-    algorithm: keySQL.algorithm,
-    createdAt: keySQL.createdAt,
-    encodedPem: keySQL.encodedPem,
-    format: KeyFormat.parse(keySQL.format),
-    kid: keySQL.kid,
-    name: LocalizedName.parse(keySQL.name),
-    use: KeyUse.parse(keySQL.use),
-    userId: unsafeBrandId<UserId>(keySQL.userId),
-  };
-}
 
 export const aggregateConsumerKeychain = (
   queryRes: ConsumerKeychainAggregatorInput,

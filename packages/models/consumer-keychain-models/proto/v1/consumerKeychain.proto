@@ -17,12 +17,11 @@ message ConsumerKeychainV1 {
 message ConsumerKeychainKeyV1 {
   string kid = 1;
   LocalizedTextV1 name = 2;
-  string algorithm = 3;
+  KeyAlgorithmV1 algorithm = 3;
   string encodedPem = 4;
   KeyFormatV1 format = 5;
-  KeyUseV1 use = 6;
-  string userId = 7;
-  int64 createdAt = 8;
+  string userId = 6;
+  int64 createdAt = 7;
 }
 
 enum KeyFormatV1 {
@@ -30,9 +29,8 @@ enum KeyFormatV1 {
   X509 = 1;
 }
 
-enum KeyUseV1 {
-  SIG = 0;
-  ENC = 1;
+enum KeyAlgorithmV1 {
+  RS256 = 0;
 }
 
 message LocalizedTextV1 {

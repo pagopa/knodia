@@ -25,17 +25,16 @@ export type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 export const KeyFormat = z.enum(["jwk", "x509"]);
 export type KeyFormat = z.infer<typeof KeyFormat>;
 
-export const KeyUse = z.enum(["sig", "enc"]);
-export type KeyUse = z.infer<typeof KeyUse>;
+export const KeyAlgorithm = z.enum(["RS256"]);
+export type KeyAlgorithm = z.infer<typeof KeyAlgorithm>;
 
 export const ConsumerKeychainKey = z.object({
-  algorithm: z.string(),
+  algorithm: KeyAlgorithm,
   createdAt: z.coerce.date(),
   encodedPem: z.string(),
   format: KeyFormat,
   kid: z.string(),
   name: LocalizedName,
-  use: KeyUse,
   userId: UserId,
 });
 export type ConsumerKeychainKey = z.infer<typeof ConsumerKeychainKey>;

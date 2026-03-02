@@ -5,14 +5,14 @@ import { match } from "ts-pattern";
 import {
   ConsumerKeychain,
   ConsumerKeychainKey,
+  KeyAlgorithm,
   KeyFormat,
-  KeyUse,
 } from "./consumerKeychain.ts";
 import {
   ConsumerKeychainKeyV1,
   ConsumerKeychainV1,
+  KeyAlgorithmV1,
   KeyFormatV1,
-  KeyUseV1,
 } from "./generated/v1/consumerKeychain.ts";
 
 export const fromConsumerKeychainV1 = (
@@ -39,23 +39,21 @@ const fromConsumerKeychainKeyV1 = (
   assertRequired(input.name, "Key name is undefined");
 
   return {
-    algorithm: input.algorithm,
+    algorithm: fromKeyAlgorithmV1(input.algorithm),
     createdAt: new Date(input.createdAt),
     encodedPem: input.encodedPem,
     format: fromKeyFormatV1(input.format),
     kid: input.kid,
     name: input.name,
-    use: fromKeyUseV1(input.use),
     userId: unsafeBrandId(input.userId),
   };
 };
 
-const fromKeyUseV1 = (input: KeyUseV1): KeyUse =>
+const fromKeyAlgorithmV1 = (input: KeyAlgorithmV1): KeyAlgorithm =>
   match(input)
-    .with(KeyUseV1.ENC, () => KeyUse.enum.enc)
-    .with(KeyUseV1.SIG, () => KeyUse.enum.sig)
-    .with(KeyUseV1.UNRECOGNIZED, () => {
-      throw new Error("Unrecognized KeyUseV1 value");
+    .with(KeyAlgorithmV1.RS256, () => KeyAlgorithm.enum.RS256)
+    .with(KeyAlgorithmV1.UNRECOGNIZED, () => {
+      throw new Error("Unrecognized KeyAlgorithmV1 value");
     })
     .exhaustive();
 

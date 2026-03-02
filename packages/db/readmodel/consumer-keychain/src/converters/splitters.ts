@@ -29,18 +29,21 @@ export const splitConsumerKeychainIntoObjectsSQL = (
     }),
   );
 
-  const consumerKeychainUsersSQL = consumerKeychain.users.map((userId) => ({
-    consumerKeychainId: consumerKeychain.id,
-    metadataVersion,
-    userId,
-  }));
-
-  const consumerKeychainPurposesSQL = consumerKeychain.purposes.map(
-    (purposeId) => ({
+  const consumerKeychainUsersSQL = consumerKeychain.users.map((userId) =>
+    toConsumerKeychainUserSQL({
       consumerKeychainId: consumerKeychain.id,
       metadataVersion,
-      purposeId,
+      userId,
     }),
+  );
+
+  const consumerKeychainPurposesSQL = consumerKeychain.purposes.map(
+    (purposeId) =>
+      toConsumerKeychainPurposeSQL({
+        consumerKeychainId: consumerKeychain.id,
+        metadataVersion,
+        purposeId,
+      }),
   );
 
   return {
@@ -81,7 +84,6 @@ const toConsumerKeychainKeySQL = ({
   kid: key.kid,
   metadataVersion,
   name: key.name,
-  use: key.use,
   userId: key.userId,
 });
 

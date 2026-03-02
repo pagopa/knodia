@@ -1090,6 +1090,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../typescript-config
@@ -1505,6 +1508,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+      '@knodia/consumer-keychain-models':
+        specifier: workspace:*
+        version: link:../models/consumer-keychain-models
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../models/eservice-models
