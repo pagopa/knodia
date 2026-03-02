@@ -1,6 +1,41 @@
 #!/bin/bash
 
+# --wait exits 1 when init containers (flyway, debezium-setup, etc.) exit,
+# even with exit code 0. This is expected, so we suppress it.
+# See: https://github.com/docker/compose/issues/10596.
 docker compose -f docker/compose.multinode.yaml up -d --wait --build || true
+
+# Verify that all long-running services (labeled knodia.check.on.startup=true)
+# are in a running state. Init containers (flyway, debezium-setup, minio-setup,
+# local-kms-setup) are expected to exit and are not checked.
+failed=0
+while IFS= read -r line; do
+  [ -z "$line" ] && continue
+  name=$(echo "$line" | awk -F'\t' '{print $1}')
+  status=$(echo "$line" | awk -F'\t' '{print $2}')
+
+  if echo "$status" | grep -qi "^Up"; then
+    continue
+  else
+    echo "ERROR: service $name is not healthy ($status)"
+    failed=1
+  fi
+done < <(docker ps -a \
+  --filter "label=com.docker.compose.project=knodia-multinode" \
+  --filter "label=knodia.check.on.startup=true" \
+  --format '{{.Label "com.docker.compose.service"}}\t{{.Status}}')
+
+if [ "$failed" -ne 0 ]; then
+  echo ""
+  echo "==========================================="
+  echo "  Knodia Multinode Infrastructure FAILED"
+  echo "==========================================="
+  echo ""
+  echo "  Some services did not start correctly."
+  echo "  Run 'docker compose -f docker/compose.multinode.yaml ps -a' for details."
+  echo "==========================================="
+  exit 1
+fi
 
 echo ""
 echo "==========================================="

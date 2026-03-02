@@ -8,6 +8,8 @@ services:
   postgres:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
     container_name: knodia-multi-node-postgres
     ports:
@@ -79,6 +81,8 @@ services:
   kafka:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     image: confluentinc/cp-kafka:8.1.1
     container_name: knodia-multi-node-kafka
     ports:
@@ -118,6 +122,8 @@ services:
   kafka-ui:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-kafka-ui
     image: kafbat/kafka-ui:v1.4.2@sha256:8dd62c9b18a01b732824cae91c6fe5203fac8e931448a2a639bd20270b8fed2b
     ports:
@@ -135,6 +141,8 @@ services:
   debezium-connect:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     image: quay.io/debezium/connect:3.4.1.Final
     container_name: knodia-multi-node-debezium-connect
     ports:
@@ -219,6 +227,8 @@ services:
   minio:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-minio
     image: minio/minio:RELEASE.2025-09-07T16-13-09Z@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e
     entrypoint: >
@@ -267,6 +277,8 @@ services:
   pgadmin:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-pgadmin
     image: dpage/pgadmin4:9
     ports:
@@ -290,6 +302,8 @@ services:
   eservice-process-orion:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-eservice-process-orion
     build:
       context: ..
@@ -325,6 +339,8 @@ services:
   k2k-gateway-orion:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-k2k-gateway-orion
     build:
       context: ..
@@ -343,6 +359,8 @@ services:
   remote-resources-manager-orion:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-remote-resources-manager-orion
     build:
       context: ..
@@ -365,6 +383,8 @@ services:
   bff-orion:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-bff-orion
     build:
       context: ..
@@ -401,6 +421,8 @@ services:
   readmodel-writer-orion:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-readmodel-writer-orion
     build:
       context: ..
@@ -432,6 +454,8 @@ services:
   eservice-process-lynx:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-eservice-process-lynx
     build:
       context: ..
@@ -467,6 +491,8 @@ services:
   k2k-gateway-lynx:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-k2k-gateway-lynx
     build:
       context: ..
@@ -485,6 +511,8 @@ services:
   remote-resources-manager-lynx:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-remote-resources-manager-lynx
     build:
       context: ..
@@ -507,6 +535,8 @@ services:
   bff-lynx:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-bff-lynx
     build:
       context: ..
@@ -543,6 +573,8 @@ services:
   readmodel-writer-lynx:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     container_name: knodia-multi-node-readmodel-writer-lynx
     build:
       context: ..
@@ -574,6 +606,8 @@ services:
   local-kms:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     image: nsmithuk/local-kms:3.11.7@sha256:360d7377b6f3687c89a622236791e4fa3f7316366267b437829edbdfa8a5fc60
     container_name: knodia-multi-node-local-kms
     ports:
@@ -610,6 +644,8 @@ services:
   local-jwks:
     security_opt:
       - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
     image: nginx:1.28-alpine@sha256:15e96e59aa3b0aada3a121296e3bce117721f42d88f5f64217ef4b18f458c6ab
     container_name: knodia-multi-node-local-jwks
     ports:
