@@ -79,7 +79,7 @@ export const toAPI_ConsumerCatalogEserviceDetail = (
   detail: remoteResourcesManagerApi.CatalogEserviceDetail,
 ): API_ConsumerCatalogEserviceDetail => ({
   accessToken: {
-    audience: detail.latestVersion.accessTokenAudience.join(", "),
+    audience: detail.latestVersion.accessTokenAudience,
     duration: detail.latestVersion.accessTokenDuration,
     type: detail.latestVersion.accessTokenType,
   },

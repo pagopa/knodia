@@ -382,7 +382,7 @@ export const API_ConsumerCatalogEserviceDetail = z
   .strictObject({
     accessToken: z
       .strictObject({
-        audience: z.string(),
+        audience: z.array(z.string()),
         duration: z.number().int().meta({
           description: "Duration of the access token in seconds",
           format: "int32",

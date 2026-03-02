@@ -673,7 +673,9 @@ components:
       type: object
       properties:
         audience:
-          type: string
+          type: array
+          items:
+            type: string
         duration:
           description: Duration of the access token in seconds
           format: int32
