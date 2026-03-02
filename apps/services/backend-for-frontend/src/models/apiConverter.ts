@@ -3,6 +3,7 @@ import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
+  API_ConsumerCatalogEserviceDetail,
   API_ConsumerCatalogEserviceSearchResult,
   API_ProducerEservice,
   API_ProducerEserviceDetails,
@@ -74,15 +75,55 @@ export const toAPI_ProducerEserviceDetails = ({
   },
 });
 
+export const toAPI_ConsumerCatalogEserviceDetail = (
+  detail: remoteResourcesManagerApi.CatalogEserviceDetail,
+): API_ConsumerCatalogEserviceDetail => ({
+  accessToken: {
+    audience: detail.latestVersion.accessTokenAudience,
+    duration: detail.latestVersion.accessTokenDuration,
+    type: detail.latestVersion.accessTokenType,
+  },
+  categories: detail.categories,
+  description: detail.description,
+  id: detail.id,
+  identificationRequired: detail.isConsumerOperatorIdentificationRequired,
+  interfaceDocument: {
+    checksum: detail.interfaceDocument.checksum,
+    name: detail.interfaceDocument.prettyName.en,
+  },
+  isSignalHubEnabled: detail.isSignalHubEnabled,
+  maxDailyCalls: {
+    perConsumer: detail.latestVersion.maxDailyCallsPerConsumer,
+    perKnode: detail.latestVersion.maxDailyCallsPerKnode,
+  },
+  mode: detail.mode,
+  name: detail.name,
+  producer: {
+    email: "info@example.com", // TODO: retrieve real data
+    id: detail.producerId,
+    knodeName: "Knode", // TODO: retrieve real data
+    name: { en: "Producer name" }, // TODO: retrieve real data
+    notes: "Notes", // TODO: retrieve real data
+  },
+  requiredAttributes: detail.latestVersion.requiredAttributes.map(
+    (group: remoteResourcesManagerApi.EserviceAttribute[]) =>
+      group.map((attr: remoteResourcesManagerApi.EserviceAttribute) => ({
+        ...attr,
+        possessed: Math.random() >= 0.5, // TODO: check actual attribute possession
+      })),
+  ),
+  state: detail.latestVersion.state,
+});
+
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,
+  hasRequiredAttributes: boolean,
   producerName: API_LocalizedName, // TODO: update with producer process API_LocalizedName
 ): API_ConsumerCatalogEserviceSearchResult => ({
   categories: catalogEserviceSearchResult.categories,
   description: catalogEserviceSearchResult.description,
+  hasRequiredAttributes,
   id: catalogEserviceSearchResult.id,
-  latestVersionRequiredAttributes:
-    catalogEserviceSearchResult.latestVersionRequiredAttributes,
   latestVersionState: catalogEserviceSearchResult.latestVersionState,
   mode: catalogEserviceSearchResult.mode,
   name: catalogEserviceSearchResult.name,

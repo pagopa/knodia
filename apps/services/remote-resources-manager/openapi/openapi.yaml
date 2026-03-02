@@ -137,6 +137,11 @@ components:
         - code
         - scheme
       additionalProperties: false
+    AccessTokenType:
+      type: string
+      enum:
+        - Bearer
+        - DPoP
     EserviceAttribute:
       type: object
       properties:
@@ -237,6 +242,107 @@ components:
         - pagination
         - results
       additionalProperties: false
+    EserviceId:
+      description: Unique identifier of the E-Service
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CatalogEserviceDetailLatestVersion:
+      type: object
+      properties:
+        accessTokenAudience:
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        accessTokenType:
+          $ref: "#/components/schemas/AccessTokenType"
+        maxDailyCallsPerConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        maxDailyCallsPerKnode:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
+        - requiredAttributes
+        - state
+      additionalProperties: false
+    CatalogEserviceDetailInterfaceDocument:
+      type: object
+      properties:
+        checksum:
+          type: string
+        name:
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - checksum
+        - name
+        - prettyName
+      additionalProperties: false
+    CatalogEserviceDetail:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        interfaceDocument:
+          $ref: "#/components/schemas/CatalogEserviceDetailInterfaceDocument"
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        latestVersion:
+          $ref: "#/components/schemas/CatalogEserviceDetailLatestVersion"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - categories
+        - description
+        - id
+        - interfaceDocument
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - latestVersion
+        - mode
+        - name
+        - producerId
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -302,6 +408,48 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}:
+    get:
+      operationId: getCatalogEserviceDetail
+      summary: Get E-service detail
+      tags:
+        - k2k-gateway
+      description: Retrieve an E-service with all its details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service detail retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/CatalogEserviceDetail"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

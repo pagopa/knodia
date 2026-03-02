@@ -7,12 +7,16 @@ import {
 } from "@knodia/k2k-gateway-client";
 
 import type {
+  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResults,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
 
-import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
+import {
+  toAPI_CatalogEserviceDetail,
+  toAPI_CatalogEserviceSearchResult,
+} from "../models/apiConverter.ts";
 
 export type RemoteResourcesManagerService = ReturnType<
   typeof remoteResourcesManagerServiceBuilder
@@ -22,6 +26,42 @@ export function remoteResourcesManagerServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
 ) {
   return {
+    async getCatalogEserviceDetail(
+      eserviceId: string,
+      // TODO: use knodeId to route to the correct K2K Gateway instance
+      knodeId: string,
+      { correlationId, logger }: RequestContextData,
+    ): Promise<API_CatalogEserviceDetail> {
+      logger.info(
+        { eserviceId, knodeId },
+        `Getting E-service detail ${eserviceId} from Knode ${knodeId}`,
+      );
+
+      const headers = { [CORRELATION_ID_HEADER]: correlationId };
+      const path = { eserviceId };
+
+      const [{ data: eservice }, { data: version }, { data: interfaceDoc }] =
+        await Promise.all([
+          k2kGatewayApi.getEservice({
+            client: k2kGatewayClient,
+            headers,
+            path,
+          }),
+          k2kGatewayApi.getEserviceLatestVersion({
+            client: k2kGatewayClient,
+            headers,
+            path,
+          }),
+          k2kGatewayApi.getEserviceLatestVersionInterface({
+            client: k2kGatewayClient,
+            headers,
+            path,
+          }),
+        ]);
+
+      return toAPI_CatalogEserviceDetail(eservice, version, interfaceDoc);
+    },
+
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,

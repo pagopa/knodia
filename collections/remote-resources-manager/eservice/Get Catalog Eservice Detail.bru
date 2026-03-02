@@ -1,0 +1,23 @@
+meta {
+  name: Get Catalog Eservice Detail
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/eservices/:eserviceId?knodeId=Lynx
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+params:query {
+  knodeId: Lynx
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

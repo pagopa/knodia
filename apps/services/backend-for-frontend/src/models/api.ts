@@ -325,8 +325,8 @@ const API_ConsumerCatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
+    hasRequiredAttributes: z.boolean(),
     id: z.uuid(),
-    latestVersionRequiredAttributes: z.array(z.array(API_EserviceAttribute)),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: API_LocalizedName,
@@ -351,4 +351,69 @@ export const API_GetConsumerCatalogEservicesQueryParams =
   API_PaginationQueryParams;
 export type API_GetConsumerCatalogEservicesQueryParams = z.infer<
   typeof API_GetConsumerCatalogEservicesQueryParams
+>;
+
+export const API_GetConsumerCatalogEserviceDetailQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetConsumerCatalogEserviceDetailQueryParams = z.infer<
+  typeof API_GetConsumerCatalogEserviceDetailQueryParams
+>;
+
+const API_ConsumerCatalogEserviceDetailProducer = z
+  .strictObject({
+    email: z.string(),
+    id: z.uuid(),
+    knodeName: z.string(),
+    name: API_LocalizedName,
+    notes: z.string(),
+  })
+  .meta({ id: "ConsumerCatalogEserviceDetailProducer" });
+
+const API_ConsumerRequiredAttribute = z
+  .strictObject({
+    code: z.string(),
+    possessed: z.boolean(),
+    scheme: z.string(),
+  })
+  .meta({ id: "ConsumerRequiredAttribute" });
+
+export const API_ConsumerCatalogEserviceDetail = z
+  .strictObject({
+    accessToken: z
+      .strictObject({
+        audience: z.array(z.string()),
+        duration: z.number().int().meta({
+          description: "Duration of the access token in seconds",
+          format: "int32",
+        }),
+        type: API_AccessTokenType,
+      })
+      .meta({ id: "ConsumerCatalogEserviceDetailAccessToken" }),
+    categories: z.array(API_EserviceCategory),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    identificationRequired: z.boolean(),
+    interfaceDocument: z
+      .strictObject({
+        checksum: z.string(),
+        name: z.string(),
+      })
+      .meta({ id: "ConsumerCatalogEserviceDetailInterfaceDocument" }),
+    isSignalHubEnabled: z.boolean(),
+    maxDailyCalls: z
+      .strictObject({
+        perConsumer: z.number().int().meta({ format: "int32" }),
+        perKnode: z.number().int().meta({ format: "int32" }),
+      })
+      .meta({ id: "ConsumerCatalogEserviceDetailMaxDailyCalls" }),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producer: API_ConsumerCatalogEserviceDetailProducer,
+    requiredAttributes: z.array(z.array(API_ConsumerRequiredAttribute)),
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "ConsumerCatalogEserviceDetail" });
+export type API_ConsumerCatalogEserviceDetail = z.infer<
+  typeof API_ConsumerCatalogEserviceDetail
 >;

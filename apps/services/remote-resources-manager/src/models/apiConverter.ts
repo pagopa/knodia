@@ -1,12 +1,16 @@
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import {
+  API_AccessTokenType,
   API_EserviceMode,
   API_EserviceVersionState,
 } from "@knodia/eservice-models/api";
 import { match } from "ts-pattern";
 
-import type { API_CatalogEserviceSearchResult } from "./api.ts";
+import type {
+  API_CatalogEserviceDetail,
+  API_CatalogEserviceSearchResult,
+} from "./api.ts";
 
 export const toAPI_CatalogEserviceSearchResult = (
   catalogEservice: k2kGatewayApi.CatalogEserviceSearchResult,
@@ -17,6 +21,44 @@ export const toAPI_CatalogEserviceSearchResult = (
   ),
   mode: toAPI_EserviceMode(catalogEservice.mode),
 });
+
+export const toAPI_CatalogEserviceDetail = (
+  eservice: k2kGatewayApi.Eservice,
+  version: k2kGatewayApi.EserviceVersion,
+  interfaceDoc: k2kGatewayApi.EserviceVersionInterfaceDocument,
+): API_CatalogEserviceDetail => ({
+  categories: eservice.categories,
+  description: eservice.description,
+  id: eservice.id,
+  interfaceDocument: {
+    checksum: interfaceDoc.checksum,
+    name: interfaceDoc.name,
+    prettyName: interfaceDoc.prettyName,
+  },
+  isConsumerOperatorIdentificationRequired:
+    eservice.isConsumerOperatorIdentificationRequired,
+  isSignalHubEnabled: eservice.isSignalHubEnabled,
+  latestVersion: {
+    accessTokenAudience: version.accessTokenAudience,
+    accessTokenDuration: version.accessTokenDuration,
+    accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
+    maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
+    maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
+    requiredAttributes: version.requiredAttributes,
+    state: toAPI_EserviceVersionState(version.state),
+  },
+  mode: toAPI_EserviceMode(eservice.mode),
+  name: eservice.name,
+  producerId: eservice.producerId,
+});
+
+const toAPI_AccessTokenType = (
+  accessTokenType: k2kGatewayApi.AccessTokenType,
+): API_AccessTokenType =>
+  match(accessTokenType)
+    .with("BEARER", () => API_AccessTokenType.enum.Bearer)
+    .with("DPOP", () => API_AccessTokenType.enum.DPoP)
+    .exhaustive();
 
 const toAPI_EserviceVersionState = (
   versionState: k2kGatewayApi.EserviceVersionState,

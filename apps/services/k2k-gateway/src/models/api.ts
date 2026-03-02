@@ -54,6 +54,12 @@ export const API_EserviceVersionState = z
   .meta({ id: "EserviceVersionState" });
 export type API_EserviceVersionState = z.infer<typeof API_EserviceVersionState>;
 
+export const API_AccessTokenType = z.enum(["BEARER", "DPOP"]).meta({
+  description: "Type of the access token",
+  id: "AccessTokenType",
+});
+export type API_AccessTokenType = z.infer<typeof API_AccessTokenType>;
+
 export const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
   description:
     "Indicates if the E-Service is intended to provide or receive data",
@@ -118,3 +124,66 @@ export const API_CatalogEserviceSearchResults = z
   .meta({ id: "CatalogEserviceSearchResults" });
 
 export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
+
+export const API_EserviceIdPathParam = z.strictObject({
+  eserviceId: API_EserviceId,
+});
+
+export const API_Eservice = z
+  .strictObject({
+    categories: z.array(API_EserviceCategory),
+    createdAt: z.iso.datetime(),
+    description: API_LocalizedText,
+    id: API_EserviceId,
+    isConsumerOperatorIdentificationRequired: z.boolean(),
+    isSignalHubEnabled: z.boolean(),
+    mode: API_EserviceMode,
+    name: API_LocalizedText,
+    producerId: API_OrganizationId,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "Eservice" });
+
+export type API_Eservice = z.infer<typeof API_Eservice>;
+
+export const API_EserviceVersion = z
+  .strictObject({
+    accessTokenAudience: z.array(z.string()),
+    accessTokenDuration: z.number().int().meta({
+      description: "Duration of the access token in seconds",
+      format: "int32",
+    }),
+    accessTokenType: API_AccessTokenType,
+    createdAt: z.iso.datetime(),
+    id: z
+      .uuid()
+      .meta({ description: "Unique identifier of the E-service version" }),
+    maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
+    maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
+    requiredAttributes: API_RequiredAttributes,
+    state: API_EserviceVersionState,
+    updatedAt: z.iso.datetime(),
+    versionNumber: z.number().int().meta({ format: "int32" }),
+  })
+  .meta({ id: "EserviceVersion" });
+
+export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
+
+export const API_EserviceVersionInterfaceDocument = z
+  .strictObject({
+    checksum: z.string(),
+    contentType: z.string(),
+    createdAt: z.iso.datetime(),
+    id: z
+      .uuid()
+      .meta({ description: "Unique identifier of the interface document" }),
+    name: z.string(),
+    path: z.string(),
+    prettyName: API_LocalizedText,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "EserviceVersionInterfaceDocument" });
+
+export type API_EserviceVersionInterfaceDocument = z.infer<
+  typeof API_EserviceVersionInterfaceDocument
+>;
