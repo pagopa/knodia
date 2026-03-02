@@ -18,18 +18,18 @@ export type OrganizationId = z.infer<typeof OrganizationId>;
 export const UserId = z.uuid().brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 
-export const KeychainId = z.uuid().brand<"KeychainId">();
-export type KeychainId = z.infer<typeof KeychainId>;
+export const ConsumerKeychainId = z.uuid().brand<"ConsumerKeychainId">();
+export type ConsumerKeychainId = z.infer<typeof ConsumerKeychainId>;
 
 export const PurposeId = z.uuid().brand<"PurposeId">();
 export type PurposeId = z.infer<typeof PurposeId>;
 
 type IDS =
+  | ConsumerKeychainId
   | CorrelationId
   | EserviceId
   | EserviceInterfaceId
   | EserviceVersionId
-  | KeychainId
   | OrganizationId
   | PurposeId
   | UserId;

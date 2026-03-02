@@ -17,7 +17,6 @@
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
     "./protobuf": "./src/protobuf.ts",
-    "./auth": "./src/auth/index.ts",
     "./types": "./src/types.ts",
     "./services": "./src/services.ts",
     "./utils": "./src/utils.ts"

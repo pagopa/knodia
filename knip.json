@@ -1,10 +1,11 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
+  "tags": ["-knipignore"],
   "includeEntryExports": true,
   "ignoreWorkspaces": [
-    "packages/models/keychain-models",
-    "packages/db/readmodel/keychain",
-    "packages/db/event-store/keychain",
+    "packages/models/consumer-keychain-models",
+    "packages/db/readmodel/consumer-keychain",
+    "packages/db/event-store/consumer-keychain",
     "apps/services/keychain-process"
   ],
   "ignoreIssues": {

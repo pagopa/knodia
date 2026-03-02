@@ -1,9 +1,10 @@
+import { ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import { Eservice } from "@knodia/eservice-models";
-import { Keychain } from "@knodia/keychain-models";
 import { zocker } from "zocker";
 
-export function getMockEservice(seed = 0): Eservice {
-  return zocker(Eservice)
+/** @knipignore */
+export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
+  return zocker(ConsumerKeychain)
     .array({
       min: 1,
     })
@@ -11,11 +12,11 @@ export function getMockEservice(seed = 0): Eservice {
     .generate();
 }
 
-export function getMockKeychain(): Keychain {
-  return zocker(Keychain)
+export function getMockEservice(seed = 0): Eservice {
+  return zocker(Eservice)
     .array({
       min: 1,
     })
-    .setSeed(0)
+    .setSeed(seed)
     .generate();
 }
