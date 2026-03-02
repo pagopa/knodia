@@ -80,6 +80,6 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
       summary: "Get E-service detail",
       tags: [apiTags.k2kGateway],
     },
-    url: "/catalog/:eserviceId",
+    url: "/eservices/:eserviceId",
   });
 };

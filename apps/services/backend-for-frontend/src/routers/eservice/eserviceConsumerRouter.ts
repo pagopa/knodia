@@ -113,6 +113,6 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       summary: "Get consumer catalog E-service detail",
       tags: [apiTags.eservice],
     },
-    url: "/consumer/catalog/:eserviceId",
+    url: "/consumer/eservices/:eserviceId",
   });
 };

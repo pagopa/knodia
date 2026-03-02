@@ -410,7 +410,7 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /catalog/{eserviceId}:
+  /eservices/{eserviceId}:
     get:
       operationId: getCatalogEserviceDetail
       summary: Get E-service detail

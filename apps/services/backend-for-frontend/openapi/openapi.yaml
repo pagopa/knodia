@@ -1059,7 +1059,7 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer/catalog/{eserviceId}:
+  /consumer/eservices/{eserviceId}:
     get:
       operationId: getConsumerCatalogEserviceDetail
       summary: Get consumer catalog E-service detail
