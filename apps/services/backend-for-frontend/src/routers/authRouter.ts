@@ -17,7 +17,7 @@ const API_SessionRequest = z
   .meta({ id: "SessionRequest" });
 
 const API_SessionResponse = z
-  .object({
+  .strictObject({
     refreshToken: z.string(),
     uiSessionToken: z.string(),
   })
