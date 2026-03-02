@@ -34,11 +34,9 @@ type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
 export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
-  const bffWellKnownUrl = config.wellKnownUrls[0];
-  if (!bffWellKnownUrl) {
-    throw new Error("wellKnownUrls must contain at least one URL");
-  }
-  const bffJwks = createRemoteJWKSet(new URL(bffWellKnownUrl));
+  const bffJwksSets = config.wellKnownUrls.map((url) =>
+    createRemoteJWKSet(new URL(url)),
+  );
 
   const tokenParams = {
     audience: config.uiSessionJwt.audience,
@@ -126,11 +124,18 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   }
 
   async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
-    const { payload: rawPayload } = await jwtVerify(token, bffJwks, {
-      audience: config.acceptedAudiences,
-    }).catch(() => {
+    const results = await Promise.allSettled(
+      bffJwksSets.map((jwks) =>
+        jwtVerify(token, jwks, { audience: config.acceptedAudiences }),
+      ),
+    );
+
+    const fulfilled = results.find((r) => r.status === "fulfilled");
+    if (!fulfilled) {
       throw unauthorizedError("Refresh token verification failed");
-    });
+    }
+
+    const rawPayload = fulfilled.value.payload;
 
     const parsed = RefreshTokenClaims.safeParse(rawPayload);
     if (!parsed.success) {
@@ -150,7 +155,7 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   }
 
   return {
-    async generateTokenPair(cognitoToken: string): Promise<{
+    async generateUiSessionTokenPair(cognitoToken: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {
@@ -158,7 +163,7 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
       return generateTokenPairFromClaims(claims);
     },
 
-    async refreshTokenPair(refreshTokenJwt: string): Promise<{
+    async refreshUiSessionTokenPair(refreshTokenJwt: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {
