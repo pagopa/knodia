@@ -16,7 +16,7 @@ import { makeApiProblem } from "./models/errors.ts";
 import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
 import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
 
-export function buildApp({
+function buildApp({
   config,
   knodeUrl,
 }: {
