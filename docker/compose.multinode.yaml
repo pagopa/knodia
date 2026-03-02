@@ -5,41 +5,21 @@ services:
   # Infrastructure : related services
   # ============================================================
 
-  event-store:
+  postgres:
     security_opt:
       - no-new-privileges:true
     image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
-    container_name: knodia-multi-node-event-store
+    container_name: knodia-multi-node-postgres
     ports:
-      - 6001:5432
+      - 5432:5432
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: root
     command: -c 'max_connections=512' -c 'wal_level=logical'
     volumes:
-      - multi-node-event-store-data:/var/lib/postgresql
-      - ./multinode/init-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  readmodel:
-    security_opt:
-      - no-new-privileges:true
-    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
-    container_name: knodia-multi-node-readmodel
-    ports:
-      - 6002:5432
-    environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: root
-    volumes:
-      - multi-node-readmodel-data:/var/lib/postgresql
-      - ./multinode/init-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh:ro
+      - multi-node-postgres-data:/var/lib/postgresql
+      - ./multinode/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U root"]
       interval: 5s
@@ -47,133 +27,49 @@ services:
       retries: 5
 
   # ============================================================
-  # Flyway Roles (cluster-wide, run once per PG instance)
+  # Flyway Migrations
   # ============================================================
 
-  flyway-roles-event-store:
+  flyway-orion:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11
-    container_name: knodia-multi-node-flyway-roles-event-store
-    command: migrate
+    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
+    container_name: knodia-multi-node-flyway-orion
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-databases.sh"]
     volumes:
-      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
+      - ../migration/event-store:/flyway/databases/orion_event_store:ro
+      - ../migration/read-model:/flyway/databases/orion_readmodel:ro
+      - ../migration/roles:/flyway/roles:ro
+      - ../scripts/flyway:/flyway/scripts:ro
     environment:
-      FLYWAY_URL: jdbc:postgresql://event-store:5432/orion
       FLYWAY_USER: root
       FLYWAY_PASSWORD: root
       FLYWAY_CONNECT_RETRIES: "5"
       FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_SCHEMAS: public
-      FLYWAY_DEFAULT_SCHEMA: public
       FLYWAY_PLACEHOLDERS_NAMESPACE: local
     depends_on:
-      event-store:
+      postgres:
         condition: service_healthy
 
-  flyway-roles-readmodel:
+  flyway-lynx:
     security_opt:
       - no-new-privileges:true
-    image: flyway/flyway:11
-    container_name: knodia-multi-node-flyway-roles-readmodel
-    command: migrate
+    image: flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
+    container_name: knodia-multi-node-flyway-lynx
+    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-databases.sh"]
     volumes:
-      - ../migration/roles/R__roles.sql:/flyway/sql/R__roles.sql:ro
-    environment:
-      FLYWAY_URL: jdbc:postgresql://readmodel:5432/orion
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_SCHEMAS: public
-      FLYWAY_DEFAULT_SCHEMA: public
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      readmodel:
-        condition: service_healthy
-
-  # ============================================================
-  # Flyway Schema Migrations (per database)
-  # ============================================================
-
-  flyway-event-store-orion:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11
-    container_name: knodia-multi-node-flyway-event-store-orion
-    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
-    volumes:
-      - ../migration/event-store:/flyway/schemas:ro
+      - ../migration/event-store:/flyway/databases/lynx_event_store:ro
+      - ../migration/read-model:/flyway/databases/lynx_readmodel:ro
+      - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
-      FLYWAY_URL: jdbc:postgresql://event-store:5432/orion
       FLYWAY_USER: root
       FLYWAY_PASSWORD: root
       FLYWAY_CONNECT_RETRIES: "5"
       FLYWAY_BASELINE_ON_MIGRATE: "true"
       FLYWAY_PLACEHOLDERS_NAMESPACE: local
     depends_on:
-      flyway-roles-event-store:
-        condition: service_completed_successfully
-
-  flyway-event-store-lynx:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11
-    container_name: knodia-multi-node-flyway-event-store-lynx
-    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
-    volumes:
-      - ../migration/event-store:/flyway/schemas:ro
-      - ../scripts/flyway:/flyway/scripts:ro
-    environment:
-      FLYWAY_URL: jdbc:postgresql://event-store:5432/lynx
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      flyway-roles-event-store:
-        condition: service_completed_successfully
-
-  flyway-readmodel-orion:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11
-    container_name: knodia-multi-node-flyway-readmodel-orion
-    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
-    volumes:
-      - ../migration/read-model:/flyway/schemas:ro
-      - ../scripts/flyway:/flyway/scripts:ro
-    environment:
-      FLYWAY_URL: jdbc:postgresql://readmodel:5432/orion
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      flyway-roles-readmodel:
-        condition: service_completed_successfully
-
-  flyway-readmodel-lynx:
-    security_opt:
-      - no-new-privileges:true
-    image: flyway/flyway:11
-    container_name: knodia-multi-node-flyway-readmodel-lynx
-    entrypoint: ["/bin/sh", "/flyway/scripts/migrate-all-schemas.sh"]
-    volumes:
-      - ../migration/read-model:/flyway/schemas:ro
-      - ../scripts/flyway:/flyway/scripts:ro
-    environment:
-      FLYWAY_URL: jdbc:postgresql://readmodel:5432/lynx
-      FLYWAY_USER: root
-      FLYWAY_PASSWORD: root
-      FLYWAY_CONNECT_RETRIES: "5"
-      FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
-    depends_on:
-      flyway-roles-readmodel:
+      flyway-orion:
         condition: service_completed_successfully
 
   # ============================================================
@@ -263,7 +159,7 @@ services:
     depends_on:
       kafka:
         condition: service_healthy
-      event-store:
+      postgres:
         condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8083/connectors || exit 1"]
@@ -385,8 +281,7 @@ services:
       - ./multinode/pgadmin-servers.json:/pgadmin4/servers.json:ro
       - ./multinode/pgpass:/pgadmin4/pgpass:ro
     depends_on:
-      - event-store
-      - readmodel
+      - postgres
 
   # ============================================================
   # Orion Node
@@ -407,24 +302,22 @@ services:
       PORT: "3000"
       EVENTSTORE_DB_USER: local_eservice_process_user
       EVENTSTORE_DB_PASSWORD: local_eservice_process_user
-      EVENTSTORE_DB_HOST: event-store
+      EVENTSTORE_DB_HOST: postgres
       EVENTSTORE_DB_PORT: "5432"
-      EVENTSTORE_DB_NAME: orion
+      EVENTSTORE_DB_NAME: orion_event_store
       EVENTSTORE_DB_USE_SSL: "false"
       EVENTSTORE_DB_ESERVICE_SCHEMA: local_eservice
       READMODEL_DB_USER: local_eservice_process_user
       READMODEL_DB_PASSWORD: local_eservice_process_user
-      READMODEL_DB_HOST: readmodel
+      READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
-      READMODEL_DB_NAME: orion
+      READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_eservice
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
-      flyway-event-store-orion:
-        condition: service_completed_successfully
-      flyway-readmodel-orion:
+      flyway-orion:
         condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
@@ -515,9 +408,9 @@ services:
     environment:
       READMODEL_DB_USER: local_eservice_rmw_user
       READMODEL_DB_PASSWORD: local_eservice_rmw_user
-      READMODEL_DB_HOST: readmodel
+      READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
-      READMODEL_DB_NAME: orion
+      READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_eservice
       KAFKA_BROKERS: kafka:9092
@@ -527,7 +420,7 @@ services:
       TOPIC_STARTING_OFFSET: earliest
       ESERVICE_TOPIC: event-store-orion.local_eservice.events
     depends_on:
-      flyway-readmodel-orion:
+      flyway-orion:
         condition: service_completed_successfully
       kafka:
         condition: service_healthy
@@ -551,24 +444,22 @@ services:
       PORT: "3000"
       EVENTSTORE_DB_USER: local_eservice_process_user
       EVENTSTORE_DB_PASSWORD: local_eservice_process_user
-      EVENTSTORE_DB_HOST: event-store
+      EVENTSTORE_DB_HOST: postgres
       EVENTSTORE_DB_PORT: "5432"
-      EVENTSTORE_DB_NAME: lynx
+      EVENTSTORE_DB_NAME: lynx_event_store
       EVENTSTORE_DB_USE_SSL: "false"
       EVENTSTORE_DB_ESERVICE_SCHEMA: local_eservice
       READMODEL_DB_USER: local_eservice_process_user
       READMODEL_DB_PASSWORD: local_eservice_process_user
-      READMODEL_DB_HOST: readmodel
+      READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
-      READMODEL_DB_NAME: lynx
+      READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_eservice
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
-      flyway-event-store-lynx:
-        condition: service_completed_successfully
-      flyway-readmodel-lynx:
+      flyway-lynx:
         condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
@@ -659,9 +550,9 @@ services:
     environment:
       READMODEL_DB_USER: local_eservice_rmw_user
       READMODEL_DB_PASSWORD: local_eservice_rmw_user
-      READMODEL_DB_HOST: readmodel
+      READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
-      READMODEL_DB_NAME: lynx
+      READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_eservice
       KAFKA_BROKERS: kafka:9092
@@ -671,7 +562,7 @@ services:
       TOPIC_STARTING_OFFSET: earliest
       ESERVICE_TOPIC: event-store-lynx.local_eservice.events
     depends_on:
-      flyway-readmodel-lynx:
+      flyway-lynx:
         condition: service_completed_successfully
       kafka:
         condition: service_healthy
@@ -727,8 +618,7 @@ services:
       - multi-node-jwks-data:/usr/share/nginx/html:ro
 
 volumes:
-  multi-node-event-store-data:
-  multi-node-readmodel-data:
+  multi-node-postgres-data:
   multi-node-kafka-data:
   multi-node-minio-data:
   multi-node-pgadmin-data:
