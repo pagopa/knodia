@@ -5,14 +5,14 @@ export const ResourceManagerDbConfig = z
   .object({
     RESOURCE_MANAGER_DB_AGREEMENT_SCHEMA: z.string().default("agreement"),
     RESOURCE_MANAGER_DB_HOST: z.string().default("localhost"),
-    RESOURCE_MANAGER_DB_NAME: z.string().default("root"),
+    RESOURCE_MANAGER_DB_NAME: z.string().default("resource_manager"),
     RESOURCE_MANAGER_DB_PASSWORD: z.string().default("root"),
     RESOURCE_MANAGER_DB_PORT: z.coerce
       .number()
       .int()
       .min(1024)
       .max(65535)
-      .default(6003),
+      .default(5432),
     RESOURCE_MANAGER_DB_USE_SSL: z.stringbool().default(false),
     RESOURCE_MANAGER_DB_USER: z.string().default("root"),
   })

@@ -41,6 +41,7 @@ services:
     volumes:
       - ../migration/event-store:/flyway/databases/orion_event_store:ro
       - ../migration/read-model:/flyway/databases/orion_readmodel:ro
+      - ../migration/resource-manager:/flyway/databases/orion_resource_manager:ro
       - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
@@ -62,6 +63,7 @@ services:
     volumes:
       - ../migration/event-store:/flyway/databases/lynx_event_store:ro
       - ../migration/read-model:/flyway/databases/lynx_readmodel:ro
+      - ../migration/resource-manager:/flyway/databases/lynx_resource_manager:ro
       - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
@@ -384,9 +386,18 @@ services:
       KNODE_URL: "http://k2k-gateway-lynx:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      RESOURCE_MANAGER_DB_USER: local_remote_resource_manager_user
+      RESOURCE_MANAGER_DB_PASSWORD: local_remote_resource_manager_user
+      RESOURCE_MANAGER_DB_HOST: postgres
+      RESOURCE_MANAGER_DB_PORT: "5432"
+      RESOURCE_MANAGER_DB_NAME: orion_resource_manager
+      RESOURCE_MANAGER_DB_USE_SSL: "false"
+      RESOURCE_MANAGER_DB_AGREEMENT_SCHEMA: local_agreement
     depends_on:
       k2k-gateway-lynx:
         condition: service_started
+      flyway-orion:
+        condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
 
@@ -543,9 +554,18 @@ services:
       KNODE_URL: "http://k2k-gateway-orion:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+      RESOURCE_MANAGER_DB_USER: local_remote_resource_manager_user
+      RESOURCE_MANAGER_DB_PASSWORD: local_remote_resource_manager_user
+      RESOURCE_MANAGER_DB_HOST: postgres
+      RESOURCE_MANAGER_DB_PORT: "5432"
+      RESOURCE_MANAGER_DB_NAME: lynx_resource_manager
+      RESOURCE_MANAGER_DB_USE_SSL: "false"
+      RESOURCE_MANAGER_DB_AGREEMENT_SCHEMA: local_agreement
     depends_on:
       k2k-gateway-orion:
         condition: service_started
+      flyway-lynx:
+        condition: service_completed_successfully
       local-kms-setup:
         condition: service_completed_successfully
 
