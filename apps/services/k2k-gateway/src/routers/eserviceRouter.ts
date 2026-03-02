@@ -80,7 +80,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
       },
       summary: "Search for E-services",
-      tags: [apiTags.operation],
+      tags: [apiTags.operation, apiTags.eservice],
     },
     url: "/catalog",
   });
