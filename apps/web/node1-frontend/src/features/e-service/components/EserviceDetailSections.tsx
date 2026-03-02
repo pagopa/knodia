@@ -1,5 +1,3 @@
-import { match } from "ts-pattern";
-
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { SettingsCard } from "@/components/SettingCard";
 import { formatNumber } from "@/utils/formatters";
@@ -73,10 +71,9 @@ export function SignalHubSection({
   return (
     <Section className="mb-6" title="Signal hub">
       <p className="body-lg text-primary-dark">
-        {match(isSignalHubEnabled)
-          .with(true, () => "This E-Service is available on Signal Hub.")
-          .with(false, () => "This E-Service is not available on Signal Hub.")
-          .exhaustive()}
+        {isSignalHubEnabled
+          ? "This E-Service is available on Signal Hub."
+          : "This E-Service is not available on Signal Hub."}
       </p>
     </Section>
   );
