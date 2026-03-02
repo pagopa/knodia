@@ -2,6 +2,7 @@ import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
 
 import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { createTestLogger } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { createProcessMessage } from "../src/utilities/utils.ts";

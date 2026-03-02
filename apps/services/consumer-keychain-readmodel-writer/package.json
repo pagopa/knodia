@@ -22,14 +22,15 @@
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
-    "@knodia/db-readmodel-commons": "workspace:*",
-    "@knodia/db-readmodel-consumer-keychain": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/consumer-keychain-models": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
+    "@knodia/db-readmodel-consumer-keychain": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
+    "pino": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   }

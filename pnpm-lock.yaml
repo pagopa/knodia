@@ -393,6 +393,9 @@ importers:
       pg:
         specifier: 'catalog:'
         version: 8.16.3
+      pino:
+        specifier: 'catalog:'
+        version: 10.2.1
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
