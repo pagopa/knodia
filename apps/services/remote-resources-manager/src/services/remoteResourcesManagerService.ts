@@ -28,6 +28,7 @@ export function remoteResourcesManagerServiceBuilder(
   return {
     async getCatalogEserviceDetail(
       eserviceId: string,
+      // TODO: use knodeId to route to the correct K2K Gateway instance
       knodeId: string,
       { correlationId, logger }: RequestContextData,
     ): Promise<API_CatalogEserviceDetail> {
