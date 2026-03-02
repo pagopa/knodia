@@ -3,4 +3,6 @@ import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBu
 const errorCodes = {};
 // export type ErrorCodes = keyof typeof errorCodes;
 
-export const makeApiProblem = makeApiProblemBuilder(errorCodes);
+export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
+  serviceName: "remote-resources-manager",
+});
