@@ -12,7 +12,6 @@
     "@knodia/common-models": "workspace:*",
     "@knodia/consumer-keychain-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
-    "@knodia/keychain-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",

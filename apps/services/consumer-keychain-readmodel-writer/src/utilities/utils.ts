@@ -4,24 +4,25 @@ import type { KafkaConsumerLoggerMetadata } from "@knodia/logger/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { keychainWriterServiceBuilder } from "@knodia/db-readmodel-keychain/writer";
+import { ConsumerKeychainEventV1 } from "@knodia/consumer-keychain-models";
+import { consumerKeychainWriterServiceBuilder } from "@knodia/db-readmodel-consumer-keychain/writer";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
-import { KeychainEventV1 } from "@knodia/keychain-models";
 import { createLogger } from "@knodia/logger";
 
-import { handleKeychainEvent } from "../services/consumerService.ts";
+import { handleConsumerKeychainEvent } from "../services/consumerService.ts";
 
 export const createProcessMessage = (
   readmodelDb: NodePgDatabase,
   loggerConfig: LoggerConfig,
 ) => {
-  const keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
+  const consumerKeychainWriterService =
+    consumerKeychainWriterServiceBuilder(readmodelDb);
 
   return async function processMessage({
     message,
     partition,
   }: EachMessagePayload) {
-    const event = decodeKafkaMessageEvent(message, KeychainEventV1);
+    const event = decodeKafkaMessageEvent(message, ConsumerKeychainEventV1);
 
     const loggerMetadata: KafkaConsumerLoggerMetadata = {
       correlationId: unsafeBrandId(event.correlation_id),
@@ -33,10 +34,10 @@ export const createProcessMessage = (
     const logger = createLogger({
       config: loggerConfig,
       loggerMetadata,
-      serviceName: "keychain-readmodel-writer",
+      serviceName: "consumer-keychain-readmodel-writer",
     });
 
-    await handleKeychainEvent(event, keychainWriterService);
+    await handleConsumerKeychainEvent(event, consumerKeychainWriterService);
 
     logger.info(
       `Read model was updated. Partition number: ${partition}. Offset: ${message.offset}`,

@@ -1,6 +1,6 @@
 ARG NODE_REGISTRY="docker.io"
-ARG SERVICE_NAME="keychain-readmodel-writer"
-ARG SERVICE_PATH="apps/services/keychain-readmodel-writer"
+ARG SERVICE_NAME="consumer-keychain-readmodel-writer"
+ARG SERVICE_PATH="apps/services/consumer-keychain-readmodel-writer"
 
 FROM ${NODE_REGISTRY}/node:24-slim@sha256:a81a03dd965b4052269a57fac857004022b522a4bf06e7a739e25e18bce45af2 AS pruner
 ARG SERVICE_NAME

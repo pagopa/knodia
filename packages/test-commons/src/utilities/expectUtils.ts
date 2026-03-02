@@ -1,5 +1,3 @@
-import type { Keychain } from "@knodia/keychain-models";
-
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { type ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import {
@@ -91,21 +89,6 @@ export function toExpectEservice(eservice: Eservice) {
       eservice.versions.map(toExpectEserviceVersion),
     ),
   };
-}
-
-export function toExpectKeychain(keychain: Keychain) {
-  return expect.objectContaining({
-    createdAt: keychain.createdAt,
-    description: keychain.description,
-    id: keychain.id,
-    keys: expect.arrayContaining(keychain.keys),
-    kind: keychain.kind,
-    name: keychain.name,
-    ownerId: keychain.ownerId,
-    purposes: expect.arrayContaining(keychain.purposes),
-    updatedAt: keychain.updatedAt,
-    users: expect.arrayContaining(keychain.users),
-  });
 }
 
 function toExpectEserviceVersion(eserviceVersion: EserviceVersion) {
