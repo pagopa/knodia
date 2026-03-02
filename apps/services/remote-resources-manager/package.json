@@ -17,7 +17,8 @@
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "ts-pattern": "catalog:"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:",
@@ -30,7 +31,6 @@
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
-    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
