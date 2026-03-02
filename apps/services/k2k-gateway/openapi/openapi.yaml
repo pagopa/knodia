@@ -245,7 +245,60 @@ components:
         - pagination
         - results
       additionalProperties: false
-    CatalogEserviceDetailLatestVersion:
+    Eservice:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        id:
+          $ref: "#/components/schemas/EserviceId"
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        producerId:
+          $ref: "#/components/schemas/OrganizationId"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - categories
+        - createdAt
+        - description
+        - id
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - mode
+        - name
+        - producerId
+        - updatedAt
+      additionalProperties: false
+    EserviceVersion:
       type: object
       properties:
         accessTokenAudience:
@@ -260,6 +313,15 @@ components:
           maximum: 9007199254740991
         accessTokenType:
           $ref: "#/components/schemas/AccessTokenType"
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        id:
+          description: Unique identifier of the E-service version
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         maxDailyCallsPerConsumer:
           format: int32
           type: integer
@@ -274,21 +336,47 @@ components:
           $ref: "#/components/schemas/RequiredAttributes"
         state:
           $ref: "#/components/schemas/EserviceVersionState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        versionNumber:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
       required:
         - accessTokenAudience
         - accessTokenDuration
         - accessTokenType
+        - createdAt
+        - id
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - requiredAttributes
         - state
+        - updatedAt
+        - versionNumber
       additionalProperties: false
-    CatalogEserviceDetailInterfaceDocument:
+    EserviceVersionInterfaceDocument:
       type: object
       properties:
         checksum:
           type: string
+        contentType:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        id:
+          description: Unique identifier of the interface document
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         name:
+          type: string
+        path:
           type: string
         prettyName:
           type: object
@@ -298,59 +386,19 @@ components:
           required:
             - en
           additionalProperties: false
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - checksum
-        - name
-        - prettyName
-      additionalProperties: false
-    CatalogEserviceDetail:
-      type: object
-      properties:
-        categories:
-          type: array
-          items:
-            $ref: "#/components/schemas/EserviceCategory"
-        description:
-          type: object
-          properties:
-            en:
-              type: string
-          required:
-            - en
-          additionalProperties: false
-        id:
-          $ref: "#/components/schemas/EserviceId"
-        interfaceDocument:
-          $ref: "#/components/schemas/CatalogEserviceDetailInterfaceDocument"
-        isConsumerOperatorIdentificationRequired:
-          type: boolean
-        isSignalHubEnabled:
-          type: boolean
-        latestVersion:
-          $ref: "#/components/schemas/CatalogEserviceDetailLatestVersion"
-        mode:
-          $ref: "#/components/schemas/EserviceMode"
-        name:
-          type: object
-          properties:
-            en:
-              type: string
-          required:
-            - en
-          additionalProperties: false
-        producerId:
-          $ref: "#/components/schemas/OrganizationId"
-      required:
-        - categories
-        - description
+        - contentType
+        - createdAt
         - id
-        - interfaceDocument
-        - isConsumerOperatorIdentificationRequired
-        - isSignalHubEnabled
-        - latestVersion
-        - mode
         - name
-        - producerId
+        - path
+        - prettyName
+        - updatedAt
       additionalProperties: false
 paths:
   /status:
@@ -419,13 +467,13 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /catalog/{eserviceId}:
+  /eservices/{eserviceId}:
     get:
-      operationId: getCatalogEserviceDetail
-      summary: Get E-service detail
+      operationId: getEservice
+      summary: Get E-service
       tags:
-        - operation
-      description: Retrieve an E-service with all its details
+        - resource
+      description: Retrieve an E-service
       parameters:
         - schema:
             $ref: "#/components/schemas/EserviceId"
@@ -434,13 +482,89 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service detail retrieved successfully
+          description: E-service retrieved successfully
           content:
             application/json:
               schema:
-                description: E-service detail retrieved successfully
+                description: E-service retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/CatalogEserviceDetail"
+                  - $ref: "#/components/schemas/Eservice"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/versions/latest:
+    get:
+      operationId: getEserviceLatestVersion
+      summary: Get E-service latest version
+      tags:
+        - resource
+      description: Retrieve the latest version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service latest version retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service latest version retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceVersion"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/versions/latest/interface:
+    get:
+      operationId: getEserviceLatestVersionInterface
+      summary: Get E-service latest version interface
+      tags:
+        - resource
+      description: Retrieve the interface document of the latest version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service latest version interface document retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service latest version interface document retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceVersionInterfaceDocument"
         "400":
           description: Bad Request
           content:

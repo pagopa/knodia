@@ -1,0 +1,14 @@
+meta {
+  name: Get Eservice Latest Version Interface
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/eservices/:eserviceId/versions/latest/interface
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}

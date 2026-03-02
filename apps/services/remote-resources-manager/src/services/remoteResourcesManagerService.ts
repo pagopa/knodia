@@ -36,15 +36,29 @@ export function remoteResourcesManagerServiceBuilder(
         `Getting E-service detail ${eserviceId} from Knode ${knodeId}`,
       );
 
-      const { data } = await k2kGatewayApi.getCatalogEserviceDetail({
-        client: k2kGatewayClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
-        path: { eserviceId },
-      });
+      const headers = { [CORRELATION_ID_HEADER]: correlationId };
+      const path = { eserviceId };
 
-      return toAPI_CatalogEserviceDetail(data);
+      const [{ data: eservice }, { data: version }, { data: interfaceDoc }] =
+        await Promise.all([
+          k2kGatewayApi.getEservice({
+            client: k2kGatewayClient,
+            headers,
+            path,
+          }),
+          k2kGatewayApi.getEserviceLatestVersion({
+            client: k2kGatewayClient,
+            headers,
+            path,
+          }),
+          k2kGatewayApi.getEserviceLatestVersionInterface({
+            client: k2kGatewayClient,
+            headers,
+            path,
+          }),
+        ]);
+
+      return toAPI_CatalogEserviceDetail(eservice, version, interfaceDoc);
     },
 
     async getCatalogEservices(

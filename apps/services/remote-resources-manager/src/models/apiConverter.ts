@@ -23,20 +23,33 @@ export const toAPI_CatalogEserviceSearchResult = (
 });
 
 export const toAPI_CatalogEserviceDetail = (
-  detail: k2kGatewayApi.CatalogEserviceDetail,
+  eservice: k2kGatewayApi.Eservice,
+  version: k2kGatewayApi.EserviceVersion,
+  interfaceDoc: k2kGatewayApi.EserviceVersionInterfaceDocument,
 ): API_CatalogEserviceDetail => ({
-  ...detail,
+  categories: eservice.categories,
+  description: eservice.description,
+  id: eservice.id,
   interfaceDocument: {
-    ...detail.interfaceDocument,
+    checksum: interfaceDoc.checksum,
+    name: interfaceDoc.name,
+    prettyName: interfaceDoc.prettyName,
   },
+  isConsumerOperatorIdentificationRequired:
+    eservice.isConsumerOperatorIdentificationRequired,
+  isSignalHubEnabled: eservice.isSignalHubEnabled,
   latestVersion: {
-    ...detail.latestVersion,
-    accessTokenType: toAPI_AccessTokenType(
-      detail.latestVersion.accessTokenType,
-    ),
-    state: toAPI_EserviceVersionState(detail.latestVersion.state),
+    accessTokenAudience: version.accessTokenAudience,
+    accessTokenDuration: version.accessTokenDuration,
+    accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
+    maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
+    maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
+    requiredAttributes: version.requiredAttributes,
+    state: toAPI_EserviceVersionState(version.state),
   },
-  mode: toAPI_EserviceMode(detail.mode),
+  mode: toAPI_EserviceMode(eservice.mode),
+  name: eservice.name,
+  producerId: eservice.producerId,
 });
 
 const toAPI_AccessTokenType = (

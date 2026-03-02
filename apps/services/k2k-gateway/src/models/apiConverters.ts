@@ -3,9 +3,11 @@ import { match } from "ts-pattern";
 
 import type {
   API_AccessTokenType,
-  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResult,
+  API_Eservice,
   API_EserviceMode,
+  API_EserviceVersion,
+  API_EserviceVersionInterfaceDocument,
   API_EserviceVersionState,
 } from "./api.ts";
 
@@ -51,32 +53,47 @@ export const toAPI_CatalogEserviceSearchResult = (
   producerId: eservice.producerId,
 });
 
-export const toAPI_CatalogEserviceDetail = (
+export const toAPI_Eservice = (
   eservice: eserviceProcessApi.Eservice,
-  latestVersion: eserviceProcessApi.EserviceVersion,
-  interfaceDocument: eserviceProcessApi.EserviceVersionInterfaceDocument,
-): API_CatalogEserviceDetail => ({
+): API_Eservice => ({
   categories: eservice.categories,
+  createdAt: eservice.createdAt,
   description: eservice.description,
   id: eservice.id,
-  interfaceDocument: {
-    checksum: interfaceDocument.checksum,
-    name: interfaceDocument.name,
-    prettyName: interfaceDocument.prettyName,
-  },
   isConsumerOperatorIdentificationRequired:
     eservice.isConsumerOperatorIdentificationRequired,
   isSignalHubEnabled: eservice.isSignalHubEnabled,
-  latestVersion: {
-    accessTokenAudience: latestVersion.accessTokenAudience,
-    accessTokenDuration: latestVersion.accessTokenDuration,
-    accessTokenType: toAPI_AccessTokenType(latestVersion.accessTokenType),
-    maxDailyCallsPerConsumer: latestVersion.maxDailyCallsPerConsumer,
-    maxDailyCallsPerKnode: latestVersion.maxDailyCallsPerKnode,
-    requiredAttributes: latestVersion.requiredAttributes,
-    state: toAPI_EserviceVersionState(latestVersion.state),
-  },
   mode: toAPI_EserviceMode(eservice.mode),
   name: eservice.name,
   producerId: eservice.producerId,
+  updatedAt: eservice.updatedAt,
+});
+
+export const toAPI_EserviceVersion = (
+  version: eserviceProcessApi.EserviceVersion,
+): API_EserviceVersion => ({
+  accessTokenAudience: version.accessTokenAudience,
+  accessTokenDuration: version.accessTokenDuration,
+  accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
+  createdAt: version.createdAt,
+  id: version.id,
+  maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
+  maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
+  requiredAttributes: version.requiredAttributes,
+  state: toAPI_EserviceVersionState(version.state),
+  updatedAt: version.updatedAt,
+  versionNumber: version.versionNumber,
+});
+
+export const toAPI_EserviceVersionInterfaceDocument = (
+  doc: eserviceProcessApi.EserviceVersionInterfaceDocument,
+): API_EserviceVersionInterfaceDocument => ({
+  checksum: doc.checksum,
+  contentType: doc.contentType,
+  createdAt: doc.createdAt,
+  id: doc.id,
+  name: doc.name,
+  path: doc.path,
+  prettyName: doc.prettyName,
+  updatedAt: doc.updatedAt,
 });
