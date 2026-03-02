@@ -5,4 +5,5 @@ const errorCodes = {};
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   forceGenericProblemOn500: true,
+  serviceName: "backend-for-frontend",
 });

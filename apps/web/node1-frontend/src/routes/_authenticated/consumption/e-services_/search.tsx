@@ -17,8 +17,21 @@ import { client } from "@/libs/axios";
 
 const CATALOG_SEARCH_LIMIT = 4;
 
+const buildBody = (params: {
+  category: string;
+  keywords: string;
+  knode: string;
+}) =>
+  params.knode && (params.category || params.keywords)
+    ? buildCatalogSearchBody({
+        category: params.category,
+        keywords: params.keywords,
+        knodeId: params.knode,
+      })
+    : null;
+
 const catalogQuery = (
-  body: ReturnType<typeof buildCatalogSearchBody>,
+  body: null | ReturnType<typeof buildCatalogSearchBody>,
   offset: number,
 ) =>
   getConsumerCatalogEservicesQueryOptions({
@@ -31,13 +44,16 @@ export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/search",
 )({
   component: RouteComponent,
-  loaderDeps: ({ search }) => search,
+  loaderDeps: ({ search: { category, keywords, knode, offset } }) => ({
+    category,
+    keywords,
+    knode,
+    offset,
+  }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
-    const body = buildCatalogSearchBody(deps);
-    if (body) {
-      queryClient.prefetchQuery(catalogQuery(body, deps.offset));
-    }
+    const body = buildBody(deps);
+    if (body) queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],
@@ -50,23 +66,16 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
-  const body = buildCatalogSearchBody({
-    category: search.category,
-    keywords: search.keywords,
-    knode: search.knode,
-  });
+  const body = buildBody(search);
 
-  const { data, isLoading } = useQuery({
+  const { data: results, isLoading } = useQuery({
     ...catalogQuery(body, search.offset),
     placeholderData: body ? keepPreviousData : undefined,
+    select: (data) => ({
+      items: data.results.map(toCatalogSearchResultUI),
+      pagination: data.pagination,
+    }),
   });
-
-  const results = data
-    ? {
-        items: data.results.map(toCatalogSearchResultUI),
-        pagination: data.pagination,
-      }
-    : null;
 
   const handleSearch = (params: Omit<typeof search, "offset">) => {
     if (hasValidationError) setHasValidationError(false);
@@ -107,7 +116,7 @@ function RouteComponent() {
         hasValidationError={hasValidationError}
         isLoading={isLoading}
         onOffsetChange={handleOffsetChange}
-        results={results}
+        results={results ?? null}
       />
     </div>
   );

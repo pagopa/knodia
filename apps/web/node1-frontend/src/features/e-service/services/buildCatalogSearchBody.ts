@@ -5,11 +5,9 @@ import { parseSchemeRefKeys } from "@/features/e-service/utils/schemeRef";
 export function buildCatalogSearchBody(params: {
   category: string;
   keywords: string;
-  knode: string;
-}): bffApi.GetConsumerCatalogEserviceSearchParams | null {
-  if (!params.knode) return null;
-
-  const knodeId = params.knode as bffApi.KnodeId;
+  knodeId: string;
+}): bffApi.GetConsumerCatalogEserviceSearchParams {
+  const knodeId = params.knodeId as bffApi.KnodeId;
   const category = params.category
     ? parseSchemeRefKeys([params.category])[0]
     : null;
@@ -27,5 +25,5 @@ export function buildCatalogSearchBody(params: {
     return { keywords, knodeId };
   }
 
-  return null;
+  throw new Error("At least one of category or keywords is required");
 }
