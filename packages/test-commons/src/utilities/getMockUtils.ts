@@ -2,6 +2,7 @@ import { ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import { Eservice } from "@knodia/eservice-models";
 import { zocker } from "zocker";
 
+/** @knipignore */
 export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
   return zocker(ConsumerKeychain)
     .array({
