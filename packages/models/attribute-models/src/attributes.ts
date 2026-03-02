@@ -1,16 +1,4 @@
-export const AttributeId = z.strictObject({
-  code: z.string(),
-  scheme: z.string(),
-});
-export type AttributeId = z.infer<typeof AttributeId>;
-export const AttributeGroup = z.array(AttributeId).min(1);
-export type AttributeGroup = z.infer<typeof AttributeGroup>;
-
-export const Attribute = z.strictObject({
-  id: AttributeId,
-  name: z.string(),
-});
-export type Attribute = z.infer<typeof Attribute>;
+import z from "zod";
 
 export const attributes: Record<string, Record<string, string>> = {
   vc_territorial_units: {
@@ -31,4 +19,16 @@ export function getAttribute({
   return { id: { code, scheme }, name };
 }
 
-import { z } from "zod";
+export const AttributeId = z.strictObject({
+  code: z.string(),
+  scheme: z.string(),
+});
+export type AttributeId = z.infer<typeof AttributeId>;
+export const AttributeGroup = z.array(AttributeId).min(1);
+export type AttributeGroup = z.infer<typeof AttributeGroup>;
+
+export const Attribute = z.strictObject({
+  id: AttributeId,
+  name: z.string(),
+});
+export type Attribute = z.infer<typeof Attribute>;
