@@ -13,17 +13,19 @@ import { DialogTrigger } from "react-aria-components";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
-import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
-import { SettingsCard } from "@/components/SettingCard";
 import { AttributeGroupContainer } from "@/features/e-service/components/AttributeGroupContainer";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
-import { DocumentRecap } from "@/features/e-service/components/DocumentRecap";
+import {
+  AccessTokenSettingsSection,
+  DocumentsSection,
+  MaxAPICallsPerDaySection,
+  SignalHubSection,
+} from "@/features/e-service/components/EserviceDetailSections";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { Section } from "@/features/e-service/components/Section";
 import { mockConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail.mock";
-import { formatNumber } from "@/utils/formatters";
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/$id",
@@ -31,24 +33,6 @@ export const Route = createFileRoute(
   component: RouteComponent,
   // TODO: Add loader to fetch consumption e-service detail from BFF
 });
-
-function AccessTokenSettingsSection({
-  accessToken,
-}: {
-  accessToken: ConsumptionEserviceDetail["accessToken"];
-}) {
-  return (
-    <Section title="Access token settings">
-      <div className="grid grid-cols-3 gap-4">
-        <SettingsCard label="Duration">
-          {accessToken.durationInMinutes} minutes
-        </SettingsCard>
-        <SettingsCard label="Audience">{accessToken.audience}</SettingsCard>
-        <SettingsCard label="Type">{accessToken.type}</SettingsCard>
-      </div>
-    </Section>
-  );
-}
 
 function ConsumptionRequirementsSection({
   identificationRequired,
@@ -113,43 +97,6 @@ function ConsumptionRequirementsSection({
               : "Identification not required"}
           </Banner>
         </div>
-      </div>
-    </Section>
-  );
-}
-
-function DocumentsSection({
-  interfaceDocument,
-}: {
-  interfaceDocument: ConsumptionEserviceDetail["interfaceDocument"];
-}) {
-  return (
-    <Section title="Documents">
-      {/* TODO: Add onDownload handler once the BFF endpoint is available */}
-      <DocumentRecap name={interfaceDocument.name} showDownloadButton />
-      <CopyableValueField
-        className="mt-6"
-        label="Checksum:"
-        value={interfaceDocument.checksum}
-      />
-    </Section>
-  );
-}
-
-function MaxAPICallsPerDaySection({
-  maxDailyCalls,
-}: {
-  maxDailyCalls: ConsumptionEserviceDetail["maxDailyCalls"];
-}) {
-  return (
-    <Section title="Max API calls per day">
-      <div className="grid grid-cols-2 gap-4">
-        <SettingsCard label="Per Knode">
-          {formatNumber(maxDailyCalls.perKnode)}
-        </SettingsCard>
-        <SettingsCard label="Per Consumer">
-          {formatNumber(maxDailyCalls.perConsumer)}
-        </SettingsCard>
       </div>
     </Section>
   );
@@ -247,35 +194,29 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
-      <DocumentsSection interfaceDocument={eservice.interfaceDocument} />
+      <DocumentsSection
+        checksum={eservice.interfaceDocument.checksum}
+        name={eservice.interfaceDocument.name}
+      />
 
       <Divider className="my-10" />
 
-      <AccessTokenSettingsSection accessToken={eservice.accessToken} />
+      <AccessTokenSettingsSection
+        audience={eservice.accessToken.audience}
+        durationInMinutes={eservice.accessToken.durationInMinutes}
+        type={eservice.accessToken.type}
+      />
 
       <Divider className="my-10" />
 
-      <MaxAPICallsPerDaySection maxDailyCalls={eservice.maxDailyCalls} />
+      <MaxAPICallsPerDaySection
+        perConsumer={eservice.maxDailyCalls.perConsumer}
+        perKnode={eservice.maxDailyCalls.perKnode}
+      />
 
       <Divider className="my-10" />
 
       <SignalHubSection isSignalHubEnabled={eservice.isSignalHubEnabled} />
     </>
-  );
-}
-
-function SignalHubSection({
-  isSignalHubEnabled,
-}: {
-  isSignalHubEnabled: boolean;
-}) {
-  return (
-    <Section className="mb-6" title="Signal hub">
-      <p className="body-lg text-primary-dark">
-        {isSignalHubEnabled
-          ? "This E-Service is available on Signal Hub."
-          : "This E-Service is not available on Signal Hub."}
-      </p>
-    </Section>
   );
 }
