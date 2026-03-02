@@ -31,8 +31,7 @@ export function agreementServiceBuilder(
       { correlationId, logger }: RequestContextData,
     ): Promise<Agreement> {
       const {
-        consumerId: seedConsumerId,
-        consumerKnodeId,
+        consumer: { id: seedConsumerId, knodeId: consumerKnodeId },
         eserviceId: seedEserviceId,
         eserviceVersionId: seedEserviceVersionId,
       } = seed;

@@ -3,7 +3,6 @@ import {
   API_AgreementConsumer,
   API_AgreementState,
 } from "@knodia/agreement-models/api";
-import { API_KnodeId } from "@knodia/common-models/api";
 import { z } from "zod";
 
 export const API_Agreement = z
@@ -25,8 +24,7 @@ export type API_Agreement = z.infer<typeof API_Agreement>;
 
 export const API_AgreementSeed = z
   .strictObject({
-    consumerId: z.uuid(),
-    consumerKnodeId: API_KnodeId,
+    consumer: API_AgreementConsumer,
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
   })
