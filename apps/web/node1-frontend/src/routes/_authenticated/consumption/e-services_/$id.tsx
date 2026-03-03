@@ -1,5 +1,4 @@
-import type { bffApi } from "@knodia/bff-client";
-
+import { bffApi } from "@knodia/bff-client";
 import { getConsumerCatalogEserviceDetailOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Avatar,
@@ -31,6 +30,7 @@ import { Section } from "@/features/e-service/components/Section";
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { client } from "@/libs/axios";
+import { downloadFile } from "@/utils/downloadFile";
 
 const eserviceQuery = (eserviceId: string, knodeId: string) =>
   getConsumerCatalogEserviceDetailOptions({
@@ -162,7 +162,22 @@ function ProducerContactPopover({
 
 function RouteComponent() {
   const bffDetail = Route.useLoaderData();
+  const { knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
+
+  async function downloadInterfaceDocument() {
+    const response = await bffApi.getConsumerEserviceLatestVersionInterface({
+      client,
+      path: { eserviceId: bffDetail.id },
+      query: { knodeId: knodeId as bffApi.KnodeId },
+    });
+
+    const file = new File([response.data], eservice.interfaceDocument.name, {
+      type: response.headers["content-type"],
+    });
+
+    downloadFile(file);
+  }
 
   return (
     <>
@@ -216,6 +231,7 @@ function RouteComponent() {
       <DocumentsSection
         checksum={eservice.interfaceDocument.checksum}
         name={eservice.interfaceDocument.name}
+        onDownload={downloadInterfaceDocument}
       />
 
       <Divider className="my-10" />
