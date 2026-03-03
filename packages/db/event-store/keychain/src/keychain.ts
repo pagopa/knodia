@@ -9,13 +9,13 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { eventStoreConsumerKeychainConfig } from "../config/config.ts";
+import { eventStoreKeychainConfig } from "../config/config.ts";
 
-export const consumerKeychainSchema = pgSchema(
-  eventStoreConsumerKeychainConfig.eventStoreDbConsumerKeychainSchema,
+export const keychainSchema = pgSchema(
+  eventStoreKeychainConfig.eventStoreDbKeychainSchema,
 );
 
-export const eventStoreConsumerKeychainEvents = consumerKeychainSchema.table(
+export const eventStoreKeychainEvents = keychainSchema.table(
   "events",
   {
     correlationId: text("correlation_id").notNull(),
