@@ -4,6 +4,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { Logger } from "pino";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
+/* eslint-disable no-restricted-imports */
 import { consumerKeychainWriterServiceBuilder } from "@knodia/db-readmodel-consumer-keychain/writer";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { KeychainEventV1 } from "@knodia/keychain-models";

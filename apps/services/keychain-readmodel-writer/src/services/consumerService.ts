@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-imports */
 import type { ConsumerKeychainWriterService } from "@knodia/db-readmodel-consumer-keychain/writer";
 import type { KeychainEventEnvelopeV1 } from "@knodia/keychain-models";
 
