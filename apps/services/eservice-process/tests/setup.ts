@@ -1,3 +1,5 @@
+import type { FileManager } from "@knodia/file-manager";
+
 import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
@@ -13,6 +15,14 @@ let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
 let eserviceWriterService: EserviceWriterService;
 
+const stubFileManager: FileManager = {
+  getBytes: async () => ({
+    content: Buffer.from("stub"),
+    contentType: "application/octet-stream",
+  }),
+  storeBytes: async (s3File) => s3File.key,
+};
+
 beforeAll(async () => {
   const connectionString = inject("POSTGRES_CONNECTION_STRING");
 
@@ -22,12 +32,14 @@ beforeAll(async () => {
   app = buildApp({
     config: {
       acceptedAudiences: ["test-audience"],
+      eserviceInterfacesS3Bucket: "test-bucket",
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
     eventStoreDb,
+    fileManager: stubFileManager,
     readmodelDb,
   });
 
