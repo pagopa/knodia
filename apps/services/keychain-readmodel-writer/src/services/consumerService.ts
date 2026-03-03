@@ -13,12 +13,11 @@ export async function handleKeychainEvent(
     consumerKeychainWriterService: ConsumerKeychainWriterService;
   },
 ): Promise<void> {
-  assertDataExistsInEvent(message, "keychain");
-
   return match(message)
     .with({ type: "ConsumerKeychainCreatedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "consumerKeychain");
       await consumerKeychainWriterService.upsertConsumerKeychain(
-        fromConsumerKeychainV1(msg.data.keychain),
+        fromConsumerKeychainV1(msg.data.consumerKeychain),
         message.version,
       );
     })

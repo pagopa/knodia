@@ -3,9 +3,9 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   ConsumerKeychain,
-  consumerKeychainEvents,
+  keychainEvents,
   toConsumerKeychainV1,
-} from "@knodia/consumer-keychain-models";
+} from "@knodia/keychain-models";
 import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockConsumerKeychain,
@@ -27,7 +27,7 @@ describe("Consumer keychain read model writer tests", async () => {
     const consumerKeychain = getMockConsumerKeychain();
 
     const eventData = protobufBinaryCodec(
-      consumerKeychainEvents.ConsumerKeychainCreatedV1,
+      keychainEvents.ConsumerKeychainCreatedV1,
     ).encode({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
     });
