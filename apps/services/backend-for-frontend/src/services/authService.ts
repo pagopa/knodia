@@ -130,6 +130,7 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
     const results = await Promise.allSettled(
       bffJwksSets.map((jwks) =>
         jwtVerify(token, jwks, {
+          algorithms: ["RS256"],
           audience: config.acceptedAudiences,
           issuer: config.uiSessionJwt.issuer,
         }),

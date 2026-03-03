@@ -178,23 +178,6 @@ describe("axios interceptors", () => {
         .mockReturnValue("new-session-token");
 
       let refreshCallCount = 0;
-      server.use(
-        http.get(`${BFF_URL}/api/data`, () =>
-          HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
-        ),
-        http.get(`${BFF_URL}/api/other`, () =>
-          HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
-        ),
-        http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
-          refreshCallCount++;
-          return HttpResponse.json({
-            refreshToken: "new-refresh",
-            uiSessionToken: "new-session-token",
-          });
-        }),
-      );
-
-      // Override so retries succeed
       let retryCount = 0;
       server.use(
         http.get(`${BFF_URL}/api/data`, () => {
@@ -216,6 +199,13 @@ describe("axios interceptors", () => {
             { message: "Unauthorized" },
             { status: 401 },
           );
+        }),
+        http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
+          refreshCallCount++;
+          return HttpResponse.json({
+            refreshToken: "new-refresh",
+            uiSessionToken: "new-session-token",
+          });
         }),
       );
 
