@@ -27,8 +27,5 @@ export const API_Agreement = z
     state: API_AgreementState,
     updatedAt: z.iso.datetime(),
   })
-  .meta({
-    description: "Agreement between a consumer and a producer for an e-service",
-    id: "Agreement",
-  });
+  .meta({ id: "Agreement" });
 export type API_Agreement = z.infer<typeof API_Agreement>;

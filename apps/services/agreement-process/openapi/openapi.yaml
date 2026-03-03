@@ -103,7 +103,6 @@ components:
         - knodeId
       additionalProperties: false
     Agreement:
-      description: Agreement between a consumer and a producer for an e-service
       type: object
       properties:
         attributes:
