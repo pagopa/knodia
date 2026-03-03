@@ -219,12 +219,12 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
+        "409":
+          description: Conflict
           content:
             application/problem+json:
               schema:
-                description: Not Found
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
