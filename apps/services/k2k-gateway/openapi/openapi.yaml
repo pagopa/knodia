@@ -66,6 +66,20 @@ components:
         - status
         - title
       additionalProperties: false
+    Attribute:
+      description: Identifies an Attribute standardized within Knodia
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        scheme:
+          type: string
+          minLength: 1
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     ExternalKnodeId:
       description: Unique identifier for an external Knode
       type: string
@@ -92,27 +106,14 @@ components:
         - id
         - knodeId
       additionalProperties: false
-    AgreementAttribute:
-      description: Attribute associated to the agreement
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     Agreement:
       description: Agreement between a consumer and a producer for an e-service
       type: object
       properties:
         attributes:
-          description: Attributes for the Agreement
           type: array
           items:
-            $ref: "#/components/schemas/AgreementAttribute"
+            $ref: "#/components/schemas/Attribute"
         consumer:
           $ref: "#/components/schemas/AgreementConsumer"
         createdAt:
@@ -251,20 +252,6 @@ components:
       enum:
         - PROVIDE_DATA
         - RECEIVE_DATA
-    Attribute:
-      description: Identifies an Attribute standardized within Knodia
-      type: object
-      properties:
-        code:
-          type: string
-          minLength: 1
-        scheme:
-          type: string
-          minLength: 1
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     RequiredAttributeGroup:
       description: Describes a group of required Attributes (consumers must possess at
         least one Attribute among them in order to satisfy the requirement)

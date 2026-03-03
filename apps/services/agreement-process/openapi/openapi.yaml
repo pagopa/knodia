@@ -91,7 +91,7 @@ components:
         - id
         - knodeId
       additionalProperties: false
-    AgreementAttribute:
+    Attribute:
       type: object
       properties:
         code:
@@ -106,10 +106,10 @@ components:
       type: object
       properties:
         attributes:
-          description: Attributes for the Agreement
+          description: Agreement attributes
           type: array
           items:
-            $ref: "#/components/schemas/AgreementAttribute"
+            $ref: "#/components/schemas/Attribute"
         consumer:
           $ref: "#/components/schemas/AgreementConsumer"
         createdAt:
