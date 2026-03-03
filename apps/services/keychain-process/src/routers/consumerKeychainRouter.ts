@@ -50,6 +50,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.consumerKeychain],
     },
-    url: "/consumerKeychains",
+    url: "/consumer-keychains",
   });
 };

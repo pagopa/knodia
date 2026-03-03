@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-describe("GET /consumerKeychains (getConsumerKeychains)", () => {
+describe("GET /consumer-keychains (getConsumerKeychains)", () => {
   const defaultQuery = {
     limit: "4",
     offset: "0",

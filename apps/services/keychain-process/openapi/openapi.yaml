@@ -87,14 +87,8 @@ components:
         - offset
         - total
       additionalProperties: false
-    KeychainKind:
-      type: string
-      enum:
-        - Producer
-        - Consumer
-        - Api
     LocalizedName:
-      description: Name of the Keychain
+      description: Name of the Consumer Keychain
       type: object
       properties:
         en:
@@ -105,7 +99,7 @@ components:
         - en
       additionalProperties: false
     LocalizedDescription:
-      description: Description of the Keychain
+      description: Description of the Consumer Keychain
       type: object
       properties:
         en:
@@ -133,8 +127,6 @@ components:
             - $ref: "#/components/schemas/LocalizedDescription"
         id:
           $ref: "#/components/schemas/KeychainId"
-        kind:
-          $ref: "#/components/schemas/KeychainKind"
         name:
           $ref: "#/components/schemas/LocalizedName"
         ownerId:
@@ -145,7 +137,6 @@ components:
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - id
-        - kind
         - name
         - ownerId
         - updatedAt
@@ -179,12 +170,12 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /keychains:
+  /consumer-keychains:
     get:
-      operationId: getKeychains
+      operationId: getConsumerKeychains
       tags:
-        - keychain
-      description: Retrieve a list of Keychains
+        - consumerKeychain
+      description: Retrieve a list of Consumer Keychains
       parameters:
         - schema:
             format: int32
@@ -212,11 +203,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Keychains retrieved successfully
+          description: Consumer keychains retrieved successfully
           content:
             application/json:
               schema:
-                description: Keychains retrieved successfully
+                description: Consumer keychains retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Keychains"
         "400":
@@ -233,5 +224,5 @@ servers:
 tags:
   - description: Health check routes
     name: health
-  - description: Keychain routes
-    name: keychain
+  - description: Consumer keychain routes
+    name: consumerKeychain
