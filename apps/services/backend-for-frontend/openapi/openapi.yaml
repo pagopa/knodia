@@ -1105,6 +1105,50 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/eservices/{eserviceId}/interface:
+    get:
+      operationId: getConsumerEserviceLatestVersionInterface
+      summary: Download consumer E-service latest version interface
+      tags:
+        - eservice
+      description: Download the interface document for the latest version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service interface document downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                description: E-service interface document downloaded successfully
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /

@@ -12,6 +12,7 @@ import {
 import {
   API_ConsumerCatalogEserviceDetail,
   API_ConsumerCatalogEserviceSearchResults,
+  API_FileDownload,
   API_GetConsumerCatalogEserviceDetailQueryParams,
   API_GetConsumerCatalogEserviceSearchParams,
   API_GetConsumerCatalogEservicesQueryParams,
@@ -114,5 +115,62 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { params: req.params, query: req.query },
+        `Downloading interface of consumer E-service with ID ${req.params.eserviceId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+      const path = { eserviceId: req.params.eserviceId };
+      const query = { knodeId: req.query.knodeId };
+
+      const [{ data: detail }, { data: blob }] = await Promise.all([
+        remoteResourcesManagerApi.getCatalogEserviceDetail({
+          client: remoteResourcesManagerClient,
+          headers,
+          path,
+          query,
+        }),
+        remoteResourcesManagerApi.downloadEserviceLatestVersionInterface({
+          client: remoteResourcesManagerClient,
+          headers,
+          path,
+          query,
+        }),
+      ]);
+
+      const buffer = Buffer.from(await blob.arrayBuffer());
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="${detail.interfaceDocument.name}"`,
+        "Content-Type": blob.type || "application/octet-stream",
+      });
+      res.raw.end(buffer);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Download the interface document for the latest version of an E-service",
+      operationId: "getConsumerEserviceLatestVersionInterface",
+      params: API_EserviceIdPathParam,
+      produces: ["application/octet-stream"],
+      querystring: API_GetConsumerCatalogEserviceDetailQueryParams,
+      response: {
+        200: API_FileDownload.meta({
+          description: "E-service interface document downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Download consumer E-service latest version interface",
+      tags: [apiTags.eservice],
+    },
+    url: "/consumer/eservices/:eserviceId/interface",
   });
 };
