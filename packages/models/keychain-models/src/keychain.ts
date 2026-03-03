@@ -28,7 +28,7 @@ export type KeyFormat = z.infer<typeof KeyFormat>;
 export const KeyAlgorithm = z.enum(["RS256"]);
 export type KeyAlgorithm = z.infer<typeof KeyAlgorithm>;
 
-export const ConsumerKeychainKey = z.object({
+export const ConsumerKeychainKey = z.strictObject({
   algorithm: KeyAlgorithm,
   createdAt: z.coerce.date(),
   encodedPem: z.string(),

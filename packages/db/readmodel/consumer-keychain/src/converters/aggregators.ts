@@ -134,19 +134,19 @@ const toConsumerKeychainsAggregator = (
       readmodelConsumerKeychain,
     );
     aggregateByPKString(
-      row.key ?? null,
+      row.key,
       keyPKSet,
       keysSQL,
       readmodelConsumerKeychainKey,
     );
     aggregateByPKString(
-      row.purpose ?? null,
+      row.purpose,
       purposePKSet,
       purposesSQL,
       readmodelConsumerKeychainPurpose,
     );
     aggregateByPKString(
-      row.user ?? null,
+      row.user,
       userPKSet,
       usersSQL,
       readmodelConsumerKeychainUser,

@@ -1,9 +1,9 @@
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
-
 import type {
   ConsumerKeychain,
   ConsumerKeychainKey,
-} from "../../../../../models/keychain-models/src/index.ts";
+} from "@knodia/keychain-models";
+
 import type {
   ConsumerKeychainItemsSQL,
   ConsumerKeychainKeySQL,
