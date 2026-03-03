@@ -82,6 +82,7 @@ function DocumentsSectionAdapter() {
     version: { interfaceDocument },
   } = useProductionEserviceDetailsContext();
 
+  // TODO: add user-visible error feedback
   async function downloadInterfaceDocument() {
     const response = await bffApi.getProducerEserviceLatestVersionInterface({
       client,

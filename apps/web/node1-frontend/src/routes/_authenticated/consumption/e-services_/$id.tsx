@@ -165,6 +165,7 @@ function RouteComponent() {
   const { knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
 
+  // TODO: add user-visible error feedback
   async function downloadInterfaceDocument() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
       client,
