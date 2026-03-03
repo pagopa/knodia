@@ -14,7 +14,7 @@ const RemoteResourcesManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
-        KNODE_URL: z.url().default("http://localhost:3100"),
+        KNODE_URL: z.url(),
       })
       .transform((c) => ({
         knodeUrl: c.KNODE_URL,
