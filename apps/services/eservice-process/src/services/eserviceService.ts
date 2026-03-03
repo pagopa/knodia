@@ -17,9 +17,8 @@ import {
   EserviceId,
   EserviceVersionId,
   generateId,
-  OrganizationId,
-  unsafeBrandId,
 } from "@knodia/common-models/ids";
+import { getTenant } from "@knodia/tenant-models";
 
 import type {
   API_EserviceSeed,
@@ -34,6 +33,7 @@ import {
   inconsistentDailyCalls,
   invalidAttribute,
   invalidCategory,
+  tenantNotFound,
 } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 import {
@@ -51,18 +51,18 @@ export function eserviceServiceBuilder(
   return {
     async createEservice(
       seed: API_EserviceSeed,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<Eservice> {
       const eserviceId = generateId<EserviceId>();
-
-      // TODO: get real producerId from auth context
-      const producerId = unsafeBrandId<OrganizationId>(
-        "00000000-0000-0000-0000-000000000000",
-      );
+      const { organizationId: producerId } = authData;
 
       logger.info(
         `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
+
+      if (getTenant(producerId) === undefined) {
+        throw tenantNotFound(producerId);
+      }
 
       for (const attr of seed.requiredAttributes.flat()) {
         if (getAttribute(attr) === undefined) {
