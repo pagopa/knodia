@@ -50,7 +50,7 @@ export function EserviceCardHeader({
 }: {
   description?: string;
   id: string;
-  search?: Record<string, string>;
+  search?: { knodeId: string };
   title: string;
   to: string;
 }) {
