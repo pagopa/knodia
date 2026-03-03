@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/db-event-store-consumer-keychain",
+  "name": "@knodia/db-event-store-keychain",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
@@ -25,7 +25,7 @@
     "typescript": "catalog:"
   },
   "exports": {
-    ".": "./src/consumerKeychain.ts",
+    ".": "./src/keychain.ts",
     "./config": "./config/config.ts"
   }
 }

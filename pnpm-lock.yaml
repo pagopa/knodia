@@ -975,7 +975,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/db/event-store/consumer-keychain:
+  packages/db/event-store/eservice:
     dependencies:
       '@knodia/db-event-store-config':
         specifier: workspace:*
@@ -1009,7 +1009,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  packages/db/event-store/eservice:
+  packages/db/event-store/keychain:
     dependencies:
       '@knodia/db-event-store-config':
         specifier: workspace:*
