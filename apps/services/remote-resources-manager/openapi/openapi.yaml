@@ -66,6 +66,17 @@ components:
         - status
         - title
       additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -111,17 +122,6 @@ components:
       required:
         - id
         - knodeId
-      additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
       additionalProperties: false
     Agreement:
       description: Agreement between a consumer and a producer for an e-service
