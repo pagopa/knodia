@@ -128,7 +128,7 @@ const toAgreementsAggregator = (
       readmodelAgreement,
     );
     aggregateByPKString(
-      row.attribute ?? null,
+      row.attribute,
       attributePKSet,
       attributesSQL,
       readmodelAgreementAttribute,

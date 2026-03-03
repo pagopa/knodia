@@ -131,13 +131,13 @@ const toEserviceVersionsAggregator = (
 
   queryRes.forEach((row) => {
     aggregateByPKString(
-      row.version ?? null,
+      row.version,
       versionPKSet,
       versionsSQL,
       readmodelEserviceVersion,
     );
     aggregateByPKString(
-      row.requiredAttribute ?? null,
+      row.requiredAttribute,
       requiredAttributePKSet,
       requiredAttributesSQL,
       readmodelEserviceVersionRequiredAttribute,
@@ -322,25 +322,25 @@ const toEservicesAggregator = (
       readmodelEservice,
     );
     aggregateByPKString(
-      row.category ?? null,
+      row.category,
       categoryPKSet,
       categoriesSQL,
       readmodelEserviceCategory,
     );
     aggregateByPKString(
-      row.version ?? null,
+      row.version,
       versionPKSet,
       versionsSQL,
       readmodelEserviceVersion,
     );
     aggregateByPKString(
-      row.interface ?? null,
+      row.interface,
       interfacePKSet,
       interfacesSQL,
       readmodelEserviceInterface,
     );
     aggregateByPKString(
-      row.requiredAttribute ?? null,
+      row.requiredAttribute,
       requiredAttributePKSet,
       requiredAttributesSQL,
       readmodelEserviceVersionRequiredAttribute,
