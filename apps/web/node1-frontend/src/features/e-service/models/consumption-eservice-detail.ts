@@ -1,28 +1,19 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { EserviceId } from "@knodia/common-models/ids";
 
-import type { SchemeRef } from "../types/schemeRef";
-
 export interface ConsumptionEserviceDetail {
   accessToken: {
     audience: string[];
-    // TODO: BFF API returns seconds — convert in the api-converter.
     durationInMinutes: number;
     type: bffApi.AccessTokenType;
   };
-  categories: SchemeRef[];
+  categories: bffApi.EserviceCategory[];
   description: string;
   id: EserviceId;
   identificationRequired: boolean;
-  interfaceDocument: {
-    checksum: string;
-    name: string;
-  };
+  interfaceDocument: bffApi.ConsumerCatalogEserviceDetailInterfaceDocument;
   isSignalHubEnabled: boolean;
-  maxDailyCalls: {
-    perConsumer: number;
-    perKnode: number;
-  };
+  maxDailyCalls: bffApi.ConsumerCatalogEserviceDetailMaxDailyCalls;
   mode: bffApi.EserviceMode;
   name: string;
   producer: {
@@ -34,9 +25,6 @@ export interface ConsumptionEserviceDetail {
   };
   // Each inner array is a group of alternatives (OR): the consumer needs at least one.
   // All groups must be satisfied (AND) to meet the requirements.
-  requiredAttributes: ConsumptionRequiredAttribute[][];
+  requiredAttributes: bffApi.ConsumerRequiredAttribute[][];
   state: bffApi.EserviceVersionState;
 }
-
-// TODO: Replace with the auto-generated type from bffApi when the BFF endpoint provides per-attribute possession info
-type ConsumptionRequiredAttribute = SchemeRef & { possessed: boolean };
