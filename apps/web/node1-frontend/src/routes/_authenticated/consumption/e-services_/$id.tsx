@@ -13,7 +13,6 @@ import {
 import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
-import { z } from "zod";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -29,12 +28,9 @@ import {
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { Section } from "@/features/e-service/components/Section";
+import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { client } from "@/libs/axios";
-
-const eserviceDetailSearchSchema = z.object({
-  knodeId: z.string(),
-});
 
 const eserviceQuery = (eserviceId: string, knodeId: string) =>
   getConsumerCatalogEserviceDetailOptions({

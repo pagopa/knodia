@@ -66,3 +66,7 @@ export const consumptionEserviceSearchSchema = z.object({
 export type ConsumptionEserviceSearchParams = z.infer<
   typeof consumptionEserviceSearchSchema
 >;
+
+export const eserviceDetailSearchSchema = z.object({
+  knodeId: z.string(),
+});
