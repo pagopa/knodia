@@ -26,6 +26,40 @@ export function remoteResourcesManagerServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
 ) {
   return {
+    async downloadEserviceLatestVersionInterface(
+      eserviceId: string,
+      // TODO: use knodeId to route to the correct K2K Gateway instance
+      knodeId: string,
+      { correlationId, logger }: RequestContextData,
+    ): Promise<{ buffer: Buffer; contentType: string; fileName: string }> {
+      logger.info(
+        { eserviceId, knodeId },
+        `Downloading interface of E-service ${eserviceId} from Knode ${knodeId}`,
+      );
+
+      const headers = { [CORRELATION_ID_HEADER]: correlationId };
+      const path = { eserviceId };
+
+      const [{ data: metadata }, { data: blob }] = await Promise.all([
+        k2kGatewayApi.getEserviceLatestVersionInterface({
+          client: k2kGatewayClient,
+          headers,
+          path,
+        }),
+        k2kGatewayApi.downloadEserviceLatestVersionInterface({
+          client: k2kGatewayClient,
+          headers,
+          path,
+        }),
+      ]);
+
+      return {
+        buffer: Buffer.from(await blob.arrayBuffer()),
+        contentType: metadata.contentType,
+        fileName: metadata.name,
+      };
+    },
+
     async getCatalogEserviceDetail(
       eserviceId: string,
       // TODO: use knodeId to route to the correct K2K Gateway instance

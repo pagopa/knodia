@@ -10,6 +10,7 @@ import {
   API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResults,
   API_EserviceIdPathParam,
+  API_FileDownload,
   API_GetCatalogEserviceDetailQueryParams,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
@@ -81,5 +82,41 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.k2kGateway],
     },
     url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { buffer, contentType, fileName } =
+        await remoteResourcesManagerService.downloadEserviceLatestVersionInterface(
+          req.params.eserviceId,
+          req.query.knodeId,
+          getContextValues(requestContext),
+        );
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Type": contentType,
+      });
+      res.raw.end(buffer);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Download the interface document for the latest version of an E-service",
+      operationId: "downloadEserviceLatestVersionInterface",
+      params: API_EserviceIdPathParam,
+      produces: ["application/octet-stream"],
+      querystring: API_GetCatalogEserviceDetailQueryParams,
+      response: {
+        200: API_FileDownload.meta({
+          description: "E-service interface document downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Download E-service latest version interface",
+      tags: [apiTags.k2kGateway],
+    },
+    url: "/eservices/:eserviceId/interface",
   });
 };

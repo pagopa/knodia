@@ -452,6 +452,48 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/interface:
+    get:
+      operationId: downloadEserviceLatestVersionInterface
+      summary: Download E-service latest version interface
+      tags:
+        - k2k-gateway
+      description: Download the interface document for the latest version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service interface document downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                format: binary
+                description: E-service interface document downloaded successfully
+                type: string
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Remote Resources Manager API
     url: /
