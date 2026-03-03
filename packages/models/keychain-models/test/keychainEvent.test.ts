@@ -3,13 +3,13 @@ import { generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
 
-import type { ConsumerKeychain } from "../src/consumerKeychain.ts";
+import type { ConsumerKeychain } from "../src/keychain.ts";
 
-import { ConsumerKeychainEventV1 } from "../src/consumerKeychainEvent.ts";
-import { toConsumerKeychainV1 } from "../src/consumerKeychainProtobufConverterToV1.ts";
-import { ConsumerKeychainCreatedV1 } from "../src/generated/v1/consumerKeychainEvents.ts";
+import { ConsumerKeychainCreatedV1 } from "../src/generated/v1/keychainEvents.ts";
+import { KeychainEventV1 } from "../src/keychainEvent.ts";
+import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
 
-describe("ConsumerKeychainEventV1 codec", () => {
+describe("KeychainEventV1 codec", () => {
   const consumerKeychain: ConsumerKeychain = {
     createdAt: new Date(1),
     description: { en: "Consumer keychain description" },
@@ -32,18 +32,18 @@ describe("ConsumerKeychainEventV1 codec", () => {
     users: [generateId()],
   };
 
-  it("encodes and decodes a ConsumerKeychainCreatedV1 payload (ConsumerKeychainEventV1 full codec)", () => {
-    const event: ConsumerKeychainEventV1 = {
+  it("encodes and decodes a ConsumerKeychainCreatedV1 payload (KeychainEventV1 full codec)", () => {
+    const event: KeychainEventV1 = {
       data: {
         consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       },
       type: "ConsumerKeychainCreatedV1",
     };
-    const encoded = ConsumerKeychainEventV1.encode(event);
+    const encoded = KeychainEventV1.encode(event);
     expect(encoded).toMatchObject({ type: "ConsumerKeychainCreatedV1" });
     expect(encoded.data).toBeInstanceOf(Uint8Array);
 
-    const decoded = ConsumerKeychainEventV1.decode(encoded);
+    const decoded = KeychainEventV1.decode(encoded);
     expect(decoded).toMatchObject(event);
   });
 
@@ -57,10 +57,10 @@ describe("ConsumerKeychainEventV1 codec", () => {
     expect(codec.decode(bytes)).toEqual(value);
   });
 
-  it("decodes a KafkaMessageEnvelope with ConsumerKeychainEventV1 data", () => {
+  it("decodes a KafkaMessageEnvelope with KeychainEventV1 data", () => {
     const toHex = (value: Uint8Array) => Buffer.from(value).toString("hex");
 
-    const event: ConsumerKeychainEventV1 = {
+    const event: KeychainEventV1 = {
       data: {
         consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       },
@@ -68,7 +68,7 @@ describe("ConsumerKeychainEventV1 codec", () => {
     };
 
     // This the encoding we perform when writing into the event store DB
-    const { data, type } = ConsumerKeychainEventV1.encode(event);
+    const { data, type } = KeychainEventV1.encode(event);
 
     // This is the envelope as produced in Kafka by Debezium from the event store DB
     const envelope = {
@@ -85,9 +85,7 @@ describe("ConsumerKeychainEventV1 codec", () => {
       }),
     };
 
-    const decoded = KafkaMessageEnvelope(ConsumerKeychainEventV1).decode(
-      envelope,
-    );
+    const decoded = KafkaMessageEnvelope(KeychainEventV1).decode(envelope);
     expect(decoded).toMatchObject(event);
   });
 });

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package consumerKeychain.v1;
+package keychain.v1;
 
 message ConsumerKeychainV1 {
   string id = 1;

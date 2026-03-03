@@ -1,7 +1,7 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { type ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
+import { type ConsumerKeychain } from "@knodia/keychain-models";
 import { eq } from "drizzle-orm";
 
 import {
