@@ -13,6 +13,7 @@ import {
   API_EserviceIdPathParam,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
+  API_FileDownload,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
@@ -32,6 +33,7 @@ interface EserviceRouterOptions {
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, tokenProvider }) => {
   fastify.route({
     handler: async (req, res) => {
@@ -209,5 +211,58 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Downloading interface of E-service with ID ${req.params.eserviceId}`,
+      );
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const [{ data: metadata }, { data: blob }] = await Promise.all([
+        eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path: { eserviceId: req.params.eserviceId },
+        }),
+        eserviceProcessApi.downloadEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path: { eserviceId: req.params.eserviceId },
+        }),
+      ]);
+
+      const buffer = Buffer.from(await blob.arrayBuffer());
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="${metadata.name}"`,
+        "Content-Type": metadata.contentType,
+      });
+      res.raw.end(buffer);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Download the interface document for the latest version of an E-service",
+      operationId: "downloadEserviceLatestVersionInterface",
+      params: API_EserviceIdPathParam,
+      produces: ["application/octet-stream"],
+      response: {
+        200: API_FileDownload.meta({
+          description: "E-service interface document downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Download E-service latest version interface",
+      tags: [apiTags.resource],
+    },
+    url: "/eservices/:eserviceId/versions/latest/interface/download",
   });
 };
