@@ -1,4 +1,4 @@
-import { OrganizationId } from "@knodia/common-models/ids";
+import type { OrganizationId } from "@knodia/common-models/ids";
 
 interface Tenant {
   id: OrganizationId;
