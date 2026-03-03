@@ -98,17 +98,17 @@ describe("POST /agreements (createAgreement)", async () => {
     },
   );
 
-  it("should return 404 if the e-service does not exist", async () => {
+  it("should return 409 if the e-service does not exist", async () => {
     const response = await injectAppRequest("internal")
       .post("/agreements")
       .body({
         ...body,
         eserviceId: generateId(),
       } satisfies API_AgreementSeed);
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(409);
   });
 
-  it("should return 404 if the e-service version does not exist", async () => {
+  it("should return 409 if the e-service version does not exist", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
     const response = await injectAppRequest("internal")
@@ -118,6 +118,6 @@ describe("POST /agreements (createAgreement)", async () => {
         eserviceId: eservice.id,
         eserviceVersionId: generateId(),
       } satisfies API_AgreementSeed);
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(409);
   });
 });
