@@ -19,7 +19,7 @@ const readmodelDb = drizzle(pool);
 
 const logger = createLogger({
   config,
-  serviceName: "consumer-keychain-readmodel-writer",
+  serviceName: "keychain-readmodel-writer",
 });
 
 await runConsumer(

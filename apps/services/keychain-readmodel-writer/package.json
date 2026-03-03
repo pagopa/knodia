@@ -1,12 +1,12 @@
 {
-  "name": "@knodia/consumer-keychain-readmodel-writer",
+  "name": "@knodia/keychain-readmodel-writer",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/consumer-keychain-readmodel-writer",
+    "test": "pnpm -w test --project @knodia/keychain-readmodel-writer",
     "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
@@ -23,7 +23,7 @@
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/common-models": "workspace:*",
-    "@knodia/consumer-keychain-models": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-consumer-keychain": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
