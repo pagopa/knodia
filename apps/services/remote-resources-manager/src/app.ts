@@ -36,10 +36,6 @@ function buildApp({ config }: { config: RemoteResourcesManagerConfig }) {
         tags: [
           healthRouterTag,
           {
-            description: "K2K Gateway routes",
-            name: apiTags.k2kGateway,
-          },
-          {
             description: "Routes related to Agreements",
             name: apiTags.agreement,
           },

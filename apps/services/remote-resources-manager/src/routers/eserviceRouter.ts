@@ -45,7 +45,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
       },
       summary: "Search for E-services",
-      tags: [apiTags.k2kGateway, apiTags.eservice],
+      tags: [apiTags.eservice],
     },
     url: "/catalog",
   });
