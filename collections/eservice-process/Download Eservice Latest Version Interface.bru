@@ -1,0 +1,19 @@
+meta {
+  name: Download Eservice Latest Version Interface
+  type: http
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/:eserviceId/versions/latest/interface/download
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
