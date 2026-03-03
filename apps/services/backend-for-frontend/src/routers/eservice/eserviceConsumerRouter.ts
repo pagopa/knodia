@@ -130,26 +130,31 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       const path = { eserviceId: req.params.eserviceId };
       const query = { knodeId: req.query.knodeId };
 
-      const [{ data: detail }, { data: blob }] = await Promise.all([
-        remoteResourcesManagerApi.getCatalogEserviceDetail({
-          client: remoteResourcesManagerClient,
-          headers,
-          path,
-          query,
-        }),
-        remoteResourcesManagerApi.downloadEserviceLatestVersionInterface({
-          client: remoteResourcesManagerClient,
-          headers,
-          path,
-          query,
-        }),
-      ]);
+      const [{ data: detail }, { data: blob, headers: downloadHeaders }] =
+        await Promise.all([
+          remoteResourcesManagerApi.getCatalogEserviceDetail({
+            client: remoteResourcesManagerClient,
+            headers,
+            path,
+            query,
+          }),
+          remoteResourcesManagerApi.downloadEserviceLatestVersionInterface({
+            client: remoteResourcesManagerClient,
+            headers,
+            path,
+            query,
+          }),
+        ]);
 
-      const buffer = Buffer.from(await blob.arrayBuffer());
+      const buffer =
+        typeof blob === "string"
+          ? Buffer.from(blob)
+          : Buffer.from(await blob.arrayBuffer());
 
       res.raw.writeHead(200, {
         "Content-Disposition": `attachment; filename="${detail.interfaceDocument.name}"`,
-        "Content-Type": blob.type || "application/octet-stream",
+        "Content-Type":
+          downloadHeaders["content-type"] ?? "application/octet-stream",
       });
       res.raw.end(buffer);
     },

@@ -238,7 +238,10 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         }),
       ]);
 
-      const buffer = Buffer.from(await blob.arrayBuffer());
+      const buffer =
+        typeof blob === "string"
+          ? Buffer.from(blob)
+          : Buffer.from(await blob.arrayBuffer());
 
       res.raw.writeHead(200, {
         "Content-Disposition": `attachment; filename="${metadata.name}"`,

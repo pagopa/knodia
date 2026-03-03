@@ -54,7 +54,10 @@ export function remoteResourcesManagerServiceBuilder(
       ]);
 
       return {
-        buffer: Buffer.from(await blob.arrayBuffer()),
+        buffer:
+          typeof blob === "string"
+            ? Buffer.from(blob)
+            : Buffer.from(await blob.arrayBuffer()),
         contentType: metadata.contentType,
         fileName: metadata.name,
       };
