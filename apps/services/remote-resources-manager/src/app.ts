@@ -9,7 +9,9 @@ import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { type RemoteResourcesManagerConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { agreementServiceBuilder } from "./services/agreementService.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
@@ -55,6 +57,9 @@ function buildApp({ config }: { config: RemoteResourcesManagerConfig }) {
   app.register(healthRouter);
   app.register(eserviceRouter, {
     eserviceService: eserviceServiceBuilder(k2kGatewayClient),
+  });
+  app.register(agreementRouter, {
+    agreementService: agreementServiceBuilder(k2kGatewayClient),
   });
 
   return app;

@@ -93,6 +93,105 @@ components:
       enum:
         - Orion
         - Lynx
+    AgreementState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
+    AgreementConsumer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    Agreement:
+      description: Agreement between a consumer and a producer for an e-service
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        consumer:
+          $ref: "#/components/schemas/AgreementConsumer"
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        eserviceVersionId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producerId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - attributes
+        - consumer
+        - createdAt
+        - eserviceId
+        - eserviceVersionId
+        - id
+        - producerId
+        - state
+        - updatedAt
+      additionalProperties: false
+    AgreementSeed:
+      description: Seed data to create a new agreement
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/AgreementConsumer"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        eserviceVersionId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - consumer
+        - eserviceId
+        - eserviceVersionId
+        - knodeId
+      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
@@ -127,17 +226,6 @@ components:
         - ProvideData
         - ReceiveData
     EserviceCategory:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    EserviceAttribute:
       type: object
       properties:
         code:
@@ -203,7 +291,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
@@ -258,7 +346,7 @@ paths:
       operationId: getCatalogEservices
       summary: Search for E-services
       tags:
-        - k2k-gateway
+        - eservice
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
@@ -304,11 +392,42 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /agreements:
+    post:
+      operationId: createAgreement
+      tags:
+        - agreement
+      description: Create a new Agreement
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgreementSeed"
+        required: true
+      responses:
+        "201":
+          description: Agreement created successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Agreement"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Remote Resources Manager API
     url: /
 tags:
   - description: Health check routes
     name: health
-  - description: K2K Gateway routes
-    name: k2k-gateway
+  - description: Routes related to Agreements
+    name: agreement
+  - description: Routes related to E-services
+    name: eservice
