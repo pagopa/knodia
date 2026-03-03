@@ -5,34 +5,34 @@ import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
-import { readmodelKeychain } from "@knodia/db-readmodel-keychain";
-import { aggregateKeychains } from "@knodia/db-readmodel-keychain/converters";
-import { type Keychain } from "@knodia/keychain-models";
+import { readmodelConsumerKeychain } from "@knodia/db-readmodel-consumer-keychain";
+import { aggregateConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
+import { type ConsumerKeychain } from "@knodia/keychain-models";
 import { eq } from "drizzle-orm";
 
-import type { API_GetKeychainsQueryParams } from "../models/api.ts";
+import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
-    async getKeychains(
-      params: API_GetKeychainsQueryParams,
-    ): Promise<ListResult<Keychain>> {
+    async getConsumerKeychains(
+      params: API_GetConsumerKeychainsQueryParams,
+    ): Promise<ListResult<ConsumerKeychain>> {
       const { limit, offset } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
           sortBy: "createdAt",
           sortOrder: "asc",
-          table: readmodelKeychain,
+          table: readmodelConsumerKeychain,
         });
 
         const createFilterQuery = () =>
           tx
-            .select({ keychainId: readmodelKeychain.id })
-            .from(readmodelKeychain)
-            .groupBy(readmodelKeychain.id)
+            .select({ keychainId: readmodelConsumerKeychain.id })
+            .from(readmodelConsumerKeychain)
+            .groupBy(readmodelConsumerKeychain.id)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
@@ -43,18 +43,18 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
-              keychain: readmodelKeychain,
+              consumerKeychain: readmodelConsumerKeychain,
             })
-            .from(readmodelKeychain)
+            .from(readmodelConsumerKeychain)
             .innerJoin(
               paginatedIds,
-              eq(readmodelKeychain.id, paginatedIds.keychainId),
+              eq(readmodelConsumerKeychain.id, paginatedIds.keychainId),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const keychains = aggregateKeychains(queryRes);
+        const keychains = aggregateConsumerKeychains(queryRes);
 
         return {
           results: keychains.map((e) => e.data),

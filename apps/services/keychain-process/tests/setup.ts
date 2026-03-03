@@ -1,7 +1,7 @@
 import {
-  type KeychainWriterService,
-  keychainWriterServiceBuilder,
-} from "@knodia/db-readmodel-keychain/writer";
+  type ConsumerKeychainWriterService,
+  consumerKeychainWriterServiceBuilder,
+} from "@knodia/db-readmodel-consumer-keychain/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
@@ -11,7 +11,7 @@ import { buildApp } from "../src/app.ts";
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
 let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
-let keychainWriterService: KeychainWriterService;
+let consumerKeychainWriterService: ConsumerKeychainWriterService;
 
 beforeAll(async () => {
   const connectionString = inject("POSTGRES_CONNECTION_STRING");
@@ -31,7 +31,8 @@ beforeAll(async () => {
     readmodelDb,
   });
 
-  keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
+  consumerKeychainWriterService =
+    consumerKeychainWriterServiceBuilder(readmodelDb);
 });
 
 beforeEach(async () => {
@@ -52,4 +53,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eventStoreDb, keychainWriterService };
+export { app, consumerKeychainWriterService, eventStoreDb };

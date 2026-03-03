@@ -16,8 +16,8 @@ import type { KeychainProcessConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { keychainRouter } from "./routers/keychainRouter.ts";
-import { keychainServiceBuilder } from "./services/keychainService.ts";
+import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
+import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
@@ -41,8 +41,8 @@ export function buildApp({
         tags: [
           healthRouterTag,
           {
-            description: "Keychain routes",
-            name: apiTags.keychain,
+            description: "Consumer keychain routes",
+            name: apiTags.consumerKeychain,
           },
         ],
       },
@@ -55,8 +55,8 @@ export function buildApp({
   app.register(authenticationPlugin, config);
   app.register(healthRouter);
   app.register(
-    keychainRouter,
-    keychainServiceBuilder(
+    consumerKeychainRouter,
+    consumerKeychainServiceBuilder(
       keychainEventStoreWriterBuilder(eventStoreDb),
       readmodelServiceBuilder(readmodelDb),
     ),

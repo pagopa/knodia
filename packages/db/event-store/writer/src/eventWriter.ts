@@ -1,9 +1,10 @@
 import type {
+  ConsumerKeychainId,
   CorrelationId,
   EserviceId,
-  KeychainId,
 } from "@knodia/common-models/ids";
 import type { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
+import type { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { EserviceEventV1 } from "@knodia/eservice-models";
@@ -23,10 +24,11 @@ export interface NewEventStoreEvent<
 
 const EventStoreEvents = z.union([EserviceEventV1, KeychainEventV1]);
 type EventStoreEvents = z.infer<typeof EventStoreEvents>;
-type EventStoreStreamIds = EserviceId | KeychainId;
+type EventStoreStreamIds = ConsumerKeychainId | EserviceId;
 
 type EventStoreTables =
-  typeof eventStoreEserviceEvents; /* | typeof eventStoreAgreementEvents | ... */
+  | typeof eventStoreEserviceEvents
+  | typeof eventStoreKeychainEvents; /* | typeof eventStoreAgreementEvents | ... */
 
 export const computeNextMetadataVersion = <
   TStreamId extends EventStoreStreamIds,

@@ -7,22 +7,25 @@ import {
   KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 
-import type { KeychainService } from "../services/keychainService.ts";
+import type { ConsumerKeychainService } from "../services/consumerKeychainService.ts";
 
-import { API_GetKeychainsQueryParams, API_Keychains } from "../models/api.ts";
+import {
+  API_GetConsumerKeychainsQueryParams,
+  API_Keychains,
+} from "../models/api.ts";
 import { toAPI_Keychain } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
-export const keychainRouter: FastifyPluginAsyncZod<KeychainService> = async (
-  fastify,
-  keychainService,
-) => {
+export const consumerKeychainRouter: FastifyPluginAsyncZod<
+  ConsumerKeychainService
+> = async (fastify, consumerKeychainService) => {
   fastify.route({
     handler: async (req, res) => {
-      const { results, totalCount } = await keychainService.getKeychains(
-        req.query,
-        getContextValues(requestContext),
-      );
+      const { results, totalCount } =
+        await consumerKeychainService.getConsumerKeychains(
+          req.query,
+          getContextValues(requestContext),
+        );
 
       res.status(200).send({
         items: results.map(toAPI_Keychain),
@@ -35,18 +38,18 @@ export const keychainRouter: FastifyPluginAsyncZod<KeychainService> = async (
     },
     method: "GET",
     schema: {
-      description: "Retrieve a list of Keychains",
+      description: "Retrieve a list of Consumer Keychains",
       headers: KnodiaServiceHeaders,
-      operationId: "getKeychains",
-      querystring: API_GetKeychainsQueryParams,
+      operationId: "getConsumerKeychains",
+      querystring: API_GetConsumerKeychainsQueryParams,
       response: {
         200: API_Keychains.meta({
-          description: "Keychains retrieved successfully",
+          description: "Consumer keychains retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
-      tags: [apiTags.keychain],
+      tags: [apiTags.consumerKeychain],
     },
-    url: "/keychains",
+    url: "/consumerKeychains",
   });
 };
