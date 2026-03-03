@@ -4,11 +4,11 @@ import {
   type ConsumerKeychainId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
-import { ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import {
   aggregateByPKString,
   throwIfMultipleOrEmpty,
 } from "@knodia/db-readmodel-commons/utils";
+import { ConsumerKeychain } from "@knodia/keychain-models";
 
 import {
   type ConsumerKeychainItemsSQL,
@@ -134,19 +134,19 @@ const toConsumerKeychainsAggregator = (
       readmodelConsumerKeychain,
     );
     aggregateByPKString(
-      row.key ?? null,
+      row.key,
       keyPKSet,
       keysSQL,
       readmodelConsumerKeychainKey,
     );
     aggregateByPKString(
-      row.purpose ?? null,
+      row.purpose,
       purposePKSet,
       purposesSQL,
       readmodelConsumerKeychainPurpose,
     );
     aggregateByPKString(
-      row.user ?? null,
+      row.user,
       userPKSet,
       usersSQL,
       readmodelConsumerKeychainUser,

@@ -16,7 +16,7 @@
     "@knodia/common-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",
-    "@knodia/consumer-keychain-models": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"

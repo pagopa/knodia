@@ -2,7 +2,7 @@ import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type {
   ConsumerKeychain,
   ConsumerKeychainKey,
-} from "@knodia/consumer-keychain-models";
+} from "@knodia/keychain-models";
 
 import type {
   ConsumerKeychainItemsSQL,

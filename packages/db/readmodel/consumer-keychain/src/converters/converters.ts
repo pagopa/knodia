@@ -13,7 +13,7 @@ import {
   KeyFormat,
   LocalizedDescription,
   LocalizedName,
-} from "@knodia/consumer-keychain-models";
+} from "@knodia/keychain-models";
 
 import type {
   ConsumerKeychainItemsSQL,

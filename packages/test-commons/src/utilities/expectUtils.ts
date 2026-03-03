@@ -1,10 +1,10 @@
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { type ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import {
   type Eservice,
   type EserviceInterface,
   type EserviceVersion,
 } from "@knodia/eservice-models";
+import { type ConsumerKeychain } from "@knodia/keychain-models";
 import { expect } from "vitest";
 
 export function toExpectAPI_Eservice(

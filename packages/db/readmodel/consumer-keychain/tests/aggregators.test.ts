@@ -1,5 +1,5 @@
-import type { ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type { ConsumerKeychain } from "@knodia/keychain-models";
 
 import {
   getMockConsumerKeychain,
