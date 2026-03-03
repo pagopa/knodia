@@ -62,9 +62,9 @@ ALTER TABLE ${NAMESPACE}_consumer_keychain."consumer_keychain_key" DROP CONSTRAI
 ALTER TABLE ${NAMESPACE}_consumer_keychain."consumer_keychain_key" ADD CONSTRAINT "consumer_keychain_key_consumer_keychain_id_metadata_v_fkey" FOREIGN KEY ("consumer_keychain_id","metadata_version") REFERENCES ${NAMESPACE}_consumer_keychain."consumer_keychain"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
 
 -- Grant privileges to _consumer_keychain_rmw_user
-GRANT USAGE ON SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_consumer_keychain_rmw_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_consumer_keychain_rmw_user;
+GRANT USAGE ON SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_keychain_rmw_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_keychain_rmw_user;
 
 -- Grant privileges to ${NAMESPACE}_consumer_keychain_process_user
-GRANT USAGE ON SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_consumer_keychain_process_user;
-GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_consumer_keychain_process_user;
+GRANT USAGE ON SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_keychain_process_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_consumer_keychain TO ${NAMESPACE}_keychain_process_user;
