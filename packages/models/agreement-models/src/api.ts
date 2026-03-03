@@ -12,11 +12,3 @@ export const API_AgreementConsumer = z
     knodeId: API_KnodeId,
   })
   .meta({ id: "AgreementConsumer" });
-
-export const API_AgreementAttribute = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({ id: "AgreementAttribute" });
-export type API_AgreementAttribute = z.infer<typeof API_AgreementAttribute>;

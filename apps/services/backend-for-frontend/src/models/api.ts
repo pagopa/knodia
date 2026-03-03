@@ -1,3 +1,4 @@
+import { API_Attribute } from "@knodia/attribute-models/api";
 import {
   API_KnodeId,
   API_Pagination,
@@ -11,7 +12,6 @@ import {
 } from "@knodia/eservice-models";
 import {
   API_AccessTokenType,
-  API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
   API_EserviceVersionState,
@@ -101,7 +101,7 @@ export const API_EserviceSeed = z
     }).optional(),
     name: API_LocalizedName,
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
   })
   .meta({ id: "EserviceSeed" });
@@ -220,7 +220,7 @@ const API_ProducerEserviceVersionDetails = z
         format: "int32",
       }),
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
     state: API_EserviceVersionState.meta({
       description: "State of the version",
@@ -326,7 +326,7 @@ const API_ConsumerCatalogEserviceSearchResult = z
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
-    latestVersionRequiredAttributes: z.array(z.array(API_EserviceAttribute)),
+    latestVersionRequiredAttributes: z.array(z.array(API_Attribute)),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: API_LocalizedName,

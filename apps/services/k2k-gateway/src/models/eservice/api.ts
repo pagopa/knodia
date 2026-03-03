@@ -4,6 +4,8 @@ import {
 } from "@knodia/common-models/api";
 import { z } from "zod";
 
+import { API_Attribute } from "../attribute/api.ts";
+
 const API_EserviceCategory = z
   .strictObject({
     code: z.string(),
@@ -60,16 +62,6 @@ export const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
   id: "EserviceMode",
 });
 export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
-
-const API_Attribute = z
-  .strictObject({
-    code: z.string().min(1),
-    scheme: z.string().min(1),
-  })
-  .meta({
-    description: "Identifies an Attribute standardized within Knodia",
-    id: "Attribute",
-  });
 
 const API_RequiredAttributeGroup = z.array(API_Attribute).meta({
   description:

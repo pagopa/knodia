@@ -1,15 +1,15 @@
 import {
-  API_AgreementAttribute,
   API_AgreementConsumer,
   API_AgreementState,
 } from "@knodia/agreement-models/api";
+import { API_Attribute } from "@knodia/attribute-models/api";
 import { z } from "zod";
 
 export const API_Agreement = z
   .strictObject({
     attributes: z
-      .array(API_AgreementAttribute)
-      .meta({ description: "Attributes for the Agreement" }),
+      .array(API_Attribute)
+      .meta({ description: "Agreement attributes" }),
     consumer: API_AgreementConsumer,
     createdAt: z.iso.datetime(),
     eserviceId: z.uuid(),

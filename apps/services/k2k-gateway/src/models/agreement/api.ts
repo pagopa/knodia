@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { API_Attribute } from "../attribute/api.ts";
+
 export const API_KnodeId = z.enum(["ORION", "LYNX"]).meta({
   description: "Unique identifier for an external Knode",
   id: "ExternalKnodeId",
@@ -22,21 +24,9 @@ export const API_AgreementConsumer = z
   });
 export type API_AgreementConsumer = z.infer<typeof API_AgreementConsumer>;
 
-const API_AgreementAttribute = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({
-    description: "Attribute associated to the agreement",
-    id: "AgreementAttribute",
-  });
-
 export const API_Agreement = z
   .strictObject({
-    attributes: z
-      .array(API_AgreementAttribute)
-      .meta({ description: "Attributes for the Agreement" }),
+    attributes: z.array(API_Attribute),
     consumer: API_AgreementConsumer,
     createdAt: z.iso.datetime(),
     eserviceId: z.uuid(),
