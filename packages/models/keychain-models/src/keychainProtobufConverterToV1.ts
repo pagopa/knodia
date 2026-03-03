@@ -5,14 +5,14 @@ import type {
   ConsumerKeychainKey,
   KeyAlgorithm,
   KeyFormat,
-} from "./consumerKeychain.ts";
+} from "./keychain.ts";
 
 import {
   type ConsumerKeychainKeyV1,
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
-} from "./generated/v1/consumerKeychain.ts";
+} from "./generated/v1/keychain.ts";
 
 const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
   match(format)

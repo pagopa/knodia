@@ -3,17 +3,17 @@ import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import {
-  ConsumerKeychain,
-  ConsumerKeychainKey,
-  KeyAlgorithm,
-  KeyFormat,
-} from "./consumerKeychain.ts";
-import {
   ConsumerKeychainKeyV1,
   ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
-} from "./generated/v1/consumerKeychain.ts";
+} from "./generated/v1/keychain.ts";
+import {
+  ConsumerKeychain,
+  ConsumerKeychainKey,
+  KeyAlgorithm,
+  KeyFormat,
+} from "./keychain.ts";
 
 export const fromConsumerKeychainV1 = (
   input: ConsumerKeychainV1,

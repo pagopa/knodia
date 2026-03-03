@@ -1,5 +1,5 @@
-import { ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import { Eservice } from "@knodia/eservice-models";
+import { ConsumerKeychain } from "@knodia/keychain-models";
 import { zocker } from "zocker";
 
 /** @knipignore */

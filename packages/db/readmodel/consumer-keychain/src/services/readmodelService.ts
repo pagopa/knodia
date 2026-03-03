@@ -1,6 +1,6 @@
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
-import type { ConsumerKeychain } from "@knodia/consumer-keychain-models";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type { ConsumerKeychain } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eq } from "drizzle-orm";

@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/consumer-keychain-models",
+  "name": "@knodia/keychain-models",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
@@ -7,7 +7,7 @@
     "generate-protobuf": "buf generate --template ../../../buf.gen.yaml",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/consumer-keychain-models",
+    "test": "pnpm -w test --project @knodia/keychain-models",
     "test:watch": "pnpm test --watch"
   },
   "dependencies": {

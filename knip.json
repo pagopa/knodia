@@ -3,7 +3,7 @@
   "tags": ["-knipignore"],
   "includeEntryExports": true,
   "ignoreWorkspaces": [
-    "packages/models/consumer-keychain-models",
+    "packages/models/keychain-models",
     "packages/db/readmodel/consumer-keychain",
     "packages/db/event-store/consumer-keychain"
   ],

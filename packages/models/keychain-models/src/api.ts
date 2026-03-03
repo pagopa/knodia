@@ -7,7 +7,7 @@ import {
   maxNameLength,
   minDescriptionLength,
   minNameLength,
-} from "./consumerKeychain.ts";
+} from "./keychain.ts";
 
 export const API_ConsumerKeychainIdPathParam = z.strictObject({
   consumerKeychainId: ConsumerKeychainId,

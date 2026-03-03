@@ -6,6 +6,12 @@ import {
   unsafeBrandId,
   UserId,
 } from "@knodia/common-models/ids";
+
+import type {
+  ConsumerKeychainItemsSQL,
+  ConsumerKeychainKeySQL,
+} from "../consumerKeychain.ts";
+
 import {
   ConsumerKeychain,
   type ConsumerKeychainKey,
@@ -13,12 +19,7 @@ import {
   KeyFormat,
   LocalizedDescription,
   LocalizedName,
-} from "@knodia/consumer-keychain-models";
-
-import type {
-  ConsumerKeychainItemsSQL,
-  ConsumerKeychainKeySQL,
-} from "../consumerKeychain.ts";
+} from "../../../../../models/keychain-models/src/index.ts";
 
 export const buildConsumerKeychain = ({
   consumerKeychainKeysSQL,
