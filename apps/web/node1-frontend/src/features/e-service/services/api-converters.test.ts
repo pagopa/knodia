@@ -1,11 +1,50 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { describe, expect, it } from "vitest";
 
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
-import { toEserviceSeed } from "./api-converters";
+import { toConsumptionEserviceDetail, toEserviceSeed } from "./api-converters";
 
 const TEST_CHECKSUM =
   "80bb7a41804be0601bbff2f0019045657757c29e5995e8eb221317cf757ba89e";
+
+function createBffDetail(
+  overrides?: Partial<bffApi.ConsumerCatalogEserviceDetail>,
+): bffApi.ConsumerCatalogEserviceDetail {
+  return {
+    accessToken: {
+      audience: ["https://api.example.com"],
+      duration: 3600,
+      type: "Bearer",
+    },
+    categories: [{ code: "birth-place", scheme: "eu-categories" }],
+    description: { en: "Test description" },
+    id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    identificationRequired: false,
+    interfaceDocument: {
+      checksum: "abc123",
+      name: "API Specs",
+    },
+    isSignalHubEnabled: false,
+    maxDailyCalls: {
+      perConsumer: 1000,
+      perKnode: 10000,
+    },
+    mode: "ProvideData",
+    name: { en: "Test E-Service" },
+    producer: {
+      email: "info@ursa.com",
+      id: "00000000-0000-4000-8000-000000000099",
+      knodeName: "Lynx Knode",
+      name: { en: "Ursa Major" },
+      notes: "Open Mon-Fri",
+    },
+    requiredAttributes: [[{ code: "NUTS3", possessed: true, scheme: "eu" }]],
+    state: "Active",
+    ...overrides,
+  };
+}
 
 function createFormData(
   overrides?: Partial<EServiceFormData>,
@@ -28,6 +67,89 @@ function createFormData(
     ...overrides,
   };
 }
+
+describe("toConsumptionEserviceDetail", () => {
+  it("flattens localized name and description to .en", () => {
+    const result = toConsumptionEserviceDetail(createBffDetail());
+
+    expect(result.name).toBe("Test E-Service");
+    expect(result.description).toBe("Test description");
+  });
+
+  it("converts accessToken duration from seconds to minutes", () => {
+    const result = toConsumptionEserviceDetail(
+      createBffDetail({
+        accessToken: { audience: [], duration: 5400, type: "Bearer" },
+      }),
+    );
+
+    expect(result.accessToken.durationInMinutes).toBe(90);
+  });
+
+  it("floors accessToken duration for non-exact minute values", () => {
+    const result = toConsumptionEserviceDetail(
+      createBffDetail({
+        accessToken: { audience: [], duration: 125, type: "Bearer" },
+      }),
+    );
+
+    expect(result.accessToken.durationInMinutes).toBe(2);
+  });
+
+  it("passes accessToken audience as array", () => {
+    const result = toConsumptionEserviceDetail(
+      createBffDetail({
+        accessToken: {
+          audience: ["aud1", "aud2"],
+          duration: 3600,
+          type: "DPoP",
+        },
+      }),
+    );
+
+    expect(result.accessToken.audience).toEqual(["aud1", "aud2"]);
+    expect(result.accessToken.type).toBe("DPoP");
+  });
+
+  it("derives producer initials from name", () => {
+    const result = toConsumptionEserviceDetail(createBffDetail());
+
+    expect(result.producer.initials).toBe("UM");
+    expect(result.producer.name).toBe("Ursa Major");
+  });
+
+  it("brands the eservice id", () => {
+    const result = toConsumptionEserviceDetail(createBffDetail());
+
+    expect(result.id).toBe("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+  });
+
+  it("passes through fields unchanged", () => {
+    const result = toConsumptionEserviceDetail(createBffDetail());
+
+    expect(result.categories).toEqual([
+      { code: "birth-place", scheme: "eu-categories" },
+    ]);
+    expect(result.identificationRequired).toBe(false);
+    expect(result.interfaceDocument).toEqual({
+      checksum: "abc123",
+      name: "API Specs",
+    });
+    expect(result.isSignalHubEnabled).toBe(false);
+    expect(result.maxDailyCalls).toEqual({
+      perConsumer: 1000,
+      perKnode: 10000,
+    });
+    expect(result.mode).toBe("ProvideData");
+    expect(result.producer.email).toBe("info@ursa.com");
+    expect(result.producer.knodeName).toBe("Lynx Knode");
+    expect(result.producer.notes).toBe("Open Mon-Fri");
+    expect(result.requiredAttributes).toEqual([
+      [{ code: "NUTS3", possessed: true, scheme: "eu" }],
+    ]);
+    expect(result.state).toBe("Active");
+  });
+});
 
 describe("toEserviceSeed", () => {
   it("wraps name and description in localized objects", async () => {
