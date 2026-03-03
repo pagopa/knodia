@@ -9,8 +9,8 @@ import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { type RemoteResourcesManagerConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
-import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
+import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
   const app = buildApp({
@@ -39,6 +39,14 @@ function buildApp({ config }: { config: RemoteResourcesManagerConfig }) {
             description: "K2K Gateway routes",
             name: apiTags.k2kGateway,
           },
+          {
+            description: "Routes related to Agreements",
+            name: apiTags.agreement,
+          },
+          {
+            description: "Routes related to E-services",
+            name: apiTags.eservice,
+          },
         ],
       },
     },
@@ -49,9 +57,8 @@ function buildApp({ config }: { config: RemoteResourcesManagerConfig }) {
 
   app.register(authenticationPlugin, config);
   app.register(healthRouter);
-  app.register(remoteResourcesManagerRouter, {
-    remoteResourcesManagerService:
-      remoteResourcesManagerServiceBuilder(k2kGatewayClient),
+  app.register(eserviceRouter, {
+    eserviceService: eserviceServiceBuilder(k2kGatewayClient),
   });
 
   return app;
