@@ -17,6 +17,7 @@ import {
   EserviceId,
   EserviceVersionId,
   generateId,
+  type OrganizationId,
 } from "@knodia/common-models/ids";
 import { getTenant } from "@knodia/tenant-models";
 
@@ -48,6 +49,13 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
 ) {
+  const assertTenantExists = (tenantId: OrganizationId): void => {
+    const tenant = getTenant(tenantId);
+    if (tenant === undefined) {
+      throw tenantNotFound(tenantId);
+    }
+  };
+
   return {
     async createEservice(
       seed: API_EserviceSeed,
@@ -60,9 +68,7 @@ export function eserviceServiceBuilder(
         `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
 
-      if (getTenant(producerId) === undefined) {
-        throw tenantNotFound(producerId);
-      }
+      assertTenantExists(producerId);
 
       for (const attr of seed.requiredAttributes.flat()) {
         if (getAttribute(attr) === undefined) {
