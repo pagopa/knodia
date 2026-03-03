@@ -3,6 +3,7 @@ import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_FileDownload } from "@knodia/common-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -13,7 +14,6 @@ import {
   API_EserviceIdPathParam,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
-  API_FileDownload,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";

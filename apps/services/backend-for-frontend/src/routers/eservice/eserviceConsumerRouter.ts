@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_FileDownload } from "@knodia/common-models/api";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -12,7 +13,6 @@ import {
 import {
   API_ConsumerCatalogEserviceDetail,
   API_ConsumerCatalogEserviceSearchResults,
-  API_FileDownload,
   API_GetConsumerCatalogEserviceDetailQueryParams,
   API_GetConsumerCatalogEserviceSearchParams,
   API_GetConsumerCatalogEservicesQueryParams,

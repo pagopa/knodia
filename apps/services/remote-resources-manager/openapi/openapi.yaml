@@ -87,6 +87,10 @@ components:
         - offset
         - total
       additionalProperties: false
+    FileDownload:
+      description: Binary file content
+      format: binary
+      type: string
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -475,9 +479,10 @@ paths:
           content:
             application/octet-stream:
               schema:
-                format: binary
                 description: E-service interface document downloaded successfully
-                type: string
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
         "400":
           description: Bad Request
           content:

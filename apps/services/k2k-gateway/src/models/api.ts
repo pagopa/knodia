@@ -187,5 +187,3 @@ export const API_EserviceVersionInterfaceDocument = z
 export type API_EserviceVersionInterfaceDocument = z.infer<
   typeof API_EserviceVersionInterfaceDocument
 >;
-
-export const API_FileDownload = z.string().meta({ format: "binary" });

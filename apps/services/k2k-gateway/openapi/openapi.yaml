@@ -87,6 +87,10 @@ components:
         - offset
         - total
       additionalProperties: false
+    FileDownload:
+      description: Binary file content
+      format: binary
+      type: string
     EserviceCategory:
       description: Identifies a category of data, standardized within Knodia, which
         the E-Service provides or receives
@@ -600,9 +604,10 @@ paths:
           content:
             application/octet-stream:
               schema:
-                format: binary
                 description: E-service interface document downloaded successfully
-                type: string
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
         "400":
           description: Bad Request
           content:

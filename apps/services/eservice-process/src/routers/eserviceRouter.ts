@@ -2,6 +2,7 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_FileDownload } from "@knodia/common-models/api";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
@@ -18,7 +19,6 @@ import {
   API_EserviceSeed,
   API_EserviceVersion,
   API_EserviceVersionInterfaceDocument,
-  API_FileDownload,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,

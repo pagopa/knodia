@@ -24,6 +24,12 @@ export type API_PaginationQueryParams = z.infer<
   typeof API_PaginationQueryParams
 >;
 
+export const API_FileDownload = z.string().meta({
+  description: "Binary file content",
+  format: "binary",
+  id: "FileDownload",
+});
+
 export const API_KnodeId = z
   .enum(["Orion", "Lynx"])
   .meta({ description: "Unique Knode identifier", id: "KnodeId" });

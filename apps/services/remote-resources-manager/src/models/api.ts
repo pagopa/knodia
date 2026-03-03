@@ -125,5 +125,3 @@ export const API_CatalogEserviceDetail = z
 export type API_CatalogEserviceDetail = z.infer<
   typeof API_CatalogEserviceDetail
 >;
-
-export const API_FileDownload = z.string().meta({ format: "binary" });

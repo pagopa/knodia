@@ -274,5 +274,3 @@ export const API_GetCatalogEservicesQueryParams = API_PaginationQueryParams;
 export type API_GetCatalogEservicesQueryParams = z.infer<
   typeof API_GetCatalogEservicesQueryParams
 >;
-
-export const API_FileDownload = z.string().meta({ format: "binary" });

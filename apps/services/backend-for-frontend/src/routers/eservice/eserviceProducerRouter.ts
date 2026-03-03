@@ -2,6 +2,7 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_FileDownload } from "@knodia/common-models/api";
 import {
   EserviceInterfaceId,
   generateId,
@@ -20,7 +21,6 @@ import { config } from "../../config/config.ts";
 import {
   API_CreatedResource,
   API_EserviceSeed,
-  API_FileDownload,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
