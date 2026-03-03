@@ -1,6 +1,6 @@
 import { pgSchema, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { resourceManagerDbConfig } from "../config/resourceManagerDbConfig.ts";
+import { resourceManagerDbConfig } from "../../config/config.ts";
 
 const agreementSchema = pgSchema(
   resourceManagerDbConfig.resourceManagerDbAgreementSchema,

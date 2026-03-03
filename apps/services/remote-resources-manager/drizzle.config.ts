@@ -1,6 +1,6 @@
 import { defineConfig } from "drizzle-kit";
 
-import { resourceManagerDbConfig } from "./src/config/resourceManagerDbConfig.ts";
+import { resourceManagerDbConfig } from "./config/config.ts";
 
 export default defineConfig({
   dbCredentials: {
