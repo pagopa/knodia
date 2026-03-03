@@ -6,7 +6,7 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import { eserviceVersionNotInExpectedState } from "../models/errors.ts";
 import { retrieveEserviceVersion } from "./readmodelUtils.ts";
 
-export const validateCreationOnEserviceVersion = async (
+export const assertEserviceVersionIsActive = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,

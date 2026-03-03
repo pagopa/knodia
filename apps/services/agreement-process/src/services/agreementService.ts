@@ -17,7 +17,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
 import { retrieveEservice } from "../utils/readmodelUtils.ts";
-import { validateCreationOnEserviceVersion } from "../utils/validators.ts";
+import { assertEserviceVersionIsActive } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -45,7 +45,7 @@ export function agreementServiceBuilder(
       logger.info({ requestBody: seed }, `Creating Agreement ${agreementId}`);
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
-      await validateCreationOnEserviceVersion(
+      await assertEserviceVersionIsActive(
         eservice,
         eserviceVersionId,
         readmodelService,
