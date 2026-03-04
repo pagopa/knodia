@@ -9,7 +9,7 @@
     "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
     "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
     "db:schema-normalize": "node ../../../../scripts/normalize-drizzle-output.ts",
-    "test": "pnpm -w test --project @knodia/db-readmodel-eservice",
+    "test": "pnpm -w test --project @knodia/db-readmodel-consumer-keychain",
     "test:watch": "pnpm test --watch"
   },
   "dependencies": {
