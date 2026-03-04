@@ -1,7 +1,8 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
+import type { InternalAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { type RequestContextData } from "@fastify/request-context";
 import {
   AgreementId,
   EserviceId,
@@ -37,7 +38,7 @@ export function agreementServiceBuilder(
         eserviceId: EserviceId;
         eserviceVersionId: EserviceVersionId;
       },
-      { correlationId, logger }: RequestContextData,
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<Agreement> {
       const agreementId = generateId<AgreementId>();
       logger.info(

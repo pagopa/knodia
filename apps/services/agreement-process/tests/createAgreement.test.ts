@@ -5,6 +5,7 @@ import {
   toAgreementV1,
 } from "@knodia/agreement-models";
 import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -12,6 +13,8 @@ import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
 import { eserviceWriterService } from "./setup.ts";
 import { getAllAgreementEvents, injectAppRequest } from "./utils.ts";
+
+const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 describe("POST /agreements (createAgreement)", async () => {
   const eservice = getMockEservice({
@@ -32,7 +35,7 @@ describe("POST /agreements (createAgreement)", async () => {
   it("should correctly create agreement creation event", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
-    const response = await injectAppRequest("internal")
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/agreements")
       .body(body);
     expect(response.statusCode).toBe(201);
@@ -99,7 +102,7 @@ describe("POST /agreements (createAgreement)", async () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await injectAppRequest("internal")
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/agreements")
         .body(body as never);
       expect(response.statusCode).toBe(400);
@@ -107,7 +110,7 @@ describe("POST /agreements (createAgreement)", async () => {
   );
 
   it("should return 404 if the e-service does not exist", async () => {
-    const response = await injectAppRequest("internal")
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/agreements")
       .body({
         ...body,
@@ -119,7 +122,7 @@ describe("POST /agreements (createAgreement)", async () => {
   it("should return 404 if the e-service version does not exist", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
-    const response = await injectAppRequest("internal")
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/agreements")
       .body({
         ...body,
@@ -136,9 +139,19 @@ describe("POST /agreements (createAgreement)", async () => {
 
     await eserviceWriterService.upsertEservice(eservice, 1);
 
-    const response = await injectAppRequest("internal")
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/agreements")
       .body(body);
     expect(response.statusCode).toBe(409);
   });
+
+  it.each(forbiddenTestTokens(allowedTestTokens))(
+    "should return 403 for unauthorized token ($type, $roles)",
+    async (spec) => {
+      const response = await injectAppRequest(spec)
+        .post("/agreements")
+        .body(body);
+      expect(response.statusCode).toBe(403);
+    },
+  );
 });
