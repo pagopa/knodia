@@ -1,4 +1,4 @@
-import type { KnodiaTokenClaims } from "@knodia/common-models/auth";
+import type { KnodiaAuthTokenClaims } from "@knodia/common-models/auth";
 
 import { generateId } from "@knodia/common-models/ids";
 import { eventStoreAgreementEvents } from "@knodia/db-event-store-agreement";
@@ -12,7 +12,7 @@ export async function getAllAgreementEvents() {
 }
 
 export function injectAppRequest(
-  tokenType: KnodiaTokenClaims["type"] = "ui-session",
+  tokenType: KnodiaAuthTokenClaims["type"] = "ui-session",
 ) {
   return app.inject().headers({
     authorization: `Bearer ${createTestTokenPayload(tokenType)}`,
