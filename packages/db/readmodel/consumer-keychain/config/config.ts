@@ -2,7 +2,7 @@ import { ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import { env } from "node:process";
 import { z } from "zod";
 
-const ReadmodelConsumerKeychainConfig = ReadmodelConfig.and(
+export const ReadmodelConsumerKeychainConfig = ReadmodelConfig.and(
   z
     .object({
       READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: z
