@@ -113,10 +113,7 @@ describe("POST /eservices (createEservice)", () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await injectAppRequest({
-        roles: ["technical"],
-        type: "ui-session",
-      })
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/eservices")
         .body(body as never);
       expect(response.statusCode).toBe(400);
