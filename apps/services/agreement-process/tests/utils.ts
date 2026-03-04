@@ -15,7 +15,7 @@ export function injectAppRequest(
   tokenType: KnodiaTokenClaims["type"] = "ui-session",
 ) {
   return app.inject().headers({
-    authorization: `Bearer ${createTestTokenPayload(tokenType)}`, // TODO: internal token
+    authorization: `Bearer ${createTestTokenPayload(tokenType)}`,
     [CORRELATION_ID_HEADER]: generateId(),
   });
 }
