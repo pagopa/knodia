@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package keychain.v1;
+
+import "v1/keychain.proto";
+
+message ConsumerKeychainCreatedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+}
