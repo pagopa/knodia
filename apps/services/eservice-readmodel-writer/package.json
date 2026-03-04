@@ -18,7 +18,6 @@
     "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "pino-pretty": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
@@ -31,6 +30,7 @@
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",
     "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "pg": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
