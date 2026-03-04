@@ -4,7 +4,7 @@ import { useStepsContext } from "@/contexts/steps";
 import { useDocsStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { Footer } from "../components/Footer";
+import { ModalFooter } from "../../ModalFooter";
 import { RemovableDocumentRecap } from "../components/RemovableDocumentRecap";
 import { StepHeader } from "../components/StepHeader";
 
@@ -58,7 +58,7 @@ export function DocsStep() {
 
       <form.Subscribe selector={(state) => state.canSubmit}>
         {(canSubmit) => (
-          <Footer
+          <ModalFooter
             isDisabled={!canSubmit}
             onCancel={prevStep}
             onConfirm={form.handleSubmit}

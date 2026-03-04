@@ -11,7 +11,7 @@ import {
   toSchemeRefKey,
 } from "@/features/e-service/utils/schemeRef";
 
-import { Footer } from "../components/Footer";
+import { ModalFooter } from "../../ModalFooter";
 import { StepHeader } from "../components/StepHeader";
 
 export function AttributesStep() {
@@ -118,7 +118,7 @@ export function AttributesStep() {
 
       <form.Subscribe selector={(state) => state.canSubmit}>
         {(canSubmit) => (
-          <Footer
+          <ModalFooter
             isDisabled={!canSubmit}
             onCancel={prevStep}
             onConfirm={form.handleSubmit}

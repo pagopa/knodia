@@ -6,6 +6,7 @@ import {
   Breadcrumb,
   Breadcrumbs,
   Button,
+  ButtonLink,
   Divider,
   Popover,
 } from "@knodia/ui-kit/ui";
@@ -54,12 +55,14 @@ export const Route = createFileRoute(
 });
 
 function ConsumptionRequirementsSection({
+  eserviceId,
   identificationRequired,
+  knodeId,
   requiredAttributes,
 }: Pick<
   ConsumptionEserviceDetail,
   "identificationRequired" | "requiredAttributes"
->) {
+> & { eserviceId: string; knodeId: string }) {
   const hasRequiredAttributes =
     requiredAttributes.length > 0 &&
     requiredAttributes.every((group) => group.some((attr) => attr.possessed));
@@ -78,10 +81,6 @@ function ConsumptionRequirementsSection({
             ))}
           </ul>
 
-          {/* TODO: "Request Agreement" button behavior:
-              - Has required attributes + e-service available: redirect to Request Agreement flow
-              - Has required attributes + e-service unavailable: show message that user can't proceed
-              - Lacks required attributes: show informative message (button already disabled) */}
           <Banner
             className="mt-6 [&>div:last-child]:flex-1"
             icon={<SealCheckIcon />}
@@ -93,15 +92,19 @@ function ConsumptionRequirementsSection({
                   ? "Your organization has the required attributes."
                   : "Your organization does not have the required attributes."}
               </span>
-              <Button
+              <ButtonLink
                 className="shrink-0"
                 hierarchy="brand"
+                href={{
+                  search: { eserviceId, knodeId },
+                  to: "/consumption/e-services/request-agreement",
+                }}
                 isDisabled={!hasRequiredAttributes}
                 kind="filled"
                 size="md"
               >
                 Request Agreement
-              </Button>
+              </ButtonLink>
             </div>
           </Banner>
         </div>
@@ -223,7 +226,9 @@ function RouteComponent() {
       <Divider className="my-10" />
 
       <ConsumptionRequirementsSection
+        eserviceId={eservice.id}
         identificationRequired={eservice.identificationRequired}
+        knodeId={knodeId}
         requiredAttributes={eservice.requiredAttributes}
       />
 

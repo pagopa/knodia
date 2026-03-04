@@ -14,7 +14,7 @@ import { downloadFile } from "@/utils/downloadFile";
 
 import { AttributeGroupContainer } from "../../AttributeGroupContainer";
 import { DocumentRecap } from "../../DocumentRecap";
-import { Footer } from "../components/Footer";
+import { ModalFooter } from "../../ModalFooter";
 import { StepHeader } from "../components/StepHeader";
 
 // TODO: use real Knode name
@@ -80,7 +80,7 @@ export function RecapStep() {
         </Banner>
       )}
 
-      <Footer
+      <ModalFooter
         confirmLabel="Publish"
         isDisabled={isPending}
         onCancel={prevStep}

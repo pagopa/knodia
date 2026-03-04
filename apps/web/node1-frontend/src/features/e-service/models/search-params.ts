@@ -70,3 +70,8 @@ export type ConsumptionEserviceSearchParams = z.infer<
 export const eserviceDetailSearchSchema = z.object({
   knodeId: z.string(),
 });
+
+export const requestAgreementSearchSchema = z.object({
+  eserviceId: z.string(),
+  knodeId: z.string(),
+});

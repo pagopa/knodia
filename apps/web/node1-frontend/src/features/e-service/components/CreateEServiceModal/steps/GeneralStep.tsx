@@ -11,7 +11,7 @@ import {
   toSchemeRefKey,
 } from "@/features/e-service/utils/schemeRef";
 
-import { Footer } from "../components/Footer";
+import { ModalFooter } from "../../ModalFooter";
 import { StepHeader } from "../components/StepHeader";
 
 interface Props {
@@ -96,7 +96,7 @@ export function GeneralStep({ onCancel }: Props) {
 
       <form.Subscribe selector={(state) => state.canSubmit}>
         {(canSubmit) => (
-          <Footer
+          <ModalFooter
             cancelLabel="Back"
             isDisabled={!canSubmit}
             onCancel={onCancel}
