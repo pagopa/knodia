@@ -1,4 +1,5 @@
-import type { RequestContextData } from "@fastify/request-context";
+import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -25,7 +26,7 @@ export function remoteResourcesManagerServiceBuilder(
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,
-      { correlationId, logger }: RequestContextData,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CatalogEserviceSearchResults> {
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
 
