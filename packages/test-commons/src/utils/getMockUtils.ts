@@ -17,19 +17,16 @@ export function getMockAgreement(seed = 0): Agreement {
 
 export function getMockEservice({
   latestVersionState,
-  maxArrayLength,
   minArrayLength = 1,
   seed = 0,
 }: {
   latestVersionState?: EserviceVersionState;
-  maxArrayLength?: number;
   minArrayLength?: number;
   seed?: number;
 } = {}): Eservice {
   return {
     ...zocker(Eservice)
       .array({
-        ...(maxArrayLength !== undefined ? { max: maxArrayLength } : {}),
         min: minArrayLength,
       })
       .setSeed(seed)
@@ -39,9 +36,6 @@ export function getMockEservice({
           versions: [
             zocker(EserviceVersion)
               .array({
-                ...(maxArrayLength !== undefined
-                  ? { max: maxArrayLength }
-                  : {}),
                 min: minArrayLength,
               })
               .supply(EserviceVersion.shape.state, latestVersionState)

@@ -5,7 +5,7 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT } = constants;
+const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 
 const errorCodes = {
   ESERVICE_NOT_FOUND: "0001",
@@ -23,7 +23,7 @@ export function eserviceNotFound(id: EserviceId) {
   return createApiError<ErrorCodes>({
     code: "ESERVICE_NOT_FOUND",
     detail: `E-service with id ${id} not found`,
-    status: HTTP_STATUS_CONFLICT,
+    status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Not Found",
   });
 }
@@ -39,7 +39,7 @@ export function eserviceVersionNotFound(
   return createApiError<ErrorCodes>({
     code: "ESERVICE_VERSION_NOT_FOUND",
     detail,
-    status: HTTP_STATUS_CONFLICT,
+    status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Version Not Found",
   });
 }
@@ -52,7 +52,7 @@ export function eserviceVersionNotInExpectedState(
   return createApiError<ErrorCodes>({
     code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATE",
     detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: ${allowedStates}`,
-    status: HTTP_STATUS_BAD_REQUEST,
+    status: HTTP_STATUS_CONFLICT,
     title: "E-service Version Not in Expected State",
   });
 }

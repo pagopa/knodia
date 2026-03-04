@@ -18,7 +18,6 @@ import { getAllAgreementEvents, injectAppRequest } from "./utils.ts";
 describe("POST /agreements (createAgreement)", async () => {
   const eservice = getMockEservice({
     latestVersionState: "Active",
-    maxArrayLength: 1,
   });
   const eserviceVersion = eservice.versions[0]!;
   const consumerId = generateId<OrganizationId>();
@@ -100,17 +99,17 @@ describe("POST /agreements (createAgreement)", async () => {
     },
   );
 
-  it("should return 409 if the e-service does not exist", async () => {
+  it("should return 404 if the e-service does not exist", async () => {
     const response = await injectAppRequest("internal")
       .post("/agreements")
       .body({
         ...body,
         eserviceId: generateId(),
       } satisfies API_AgreementSeed);
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(404);
   });
 
-  it("should return 409 if the e-service version does not exist", async () => {
+  it("should return 404 if the e-service version does not exist", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
     const response = await injectAppRequest("internal")
@@ -120,6 +119,19 @@ describe("POST /agreements (createAgreement)", async () => {
         eserviceId: eservice.id,
         eserviceVersionId: generateId(),
       } satisfies API_AgreementSeed);
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 409 if the e-service version latest version is not active", async () => {
+    const eservice = getMockEservice({
+      latestVersionState: "Suspended",
+    });
+
+    await eserviceWriterService.upsertEservice(eservice, 1);
+
+    const response = await injectAppRequest("internal")
+      .post("/agreements")
+      .body(body);
     expect(response.statusCode).toBe(409);
   });
 });
