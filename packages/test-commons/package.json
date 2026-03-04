@@ -11,6 +11,7 @@
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
@@ -29,7 +30,7 @@
     "zocker": "catalog:"
   },
   "exports": {
-    "./auth": "./src/auth.ts",
+    "./auth": "./src/auth/index.ts",
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",

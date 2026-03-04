@@ -23,8 +23,8 @@ import {
 } from "./generated/v1/eservice.ts";
 
 export const fromEserviceV1 = (input: EserviceV1): Eservice => {
-  assertRequired(input.description, "Eservice description is undefined");
   assertRequired(input.name, "Eservice name is undefined");
+  assertRequired(input.description, "Eservice description is undefined");
 
   return {
     ...input,

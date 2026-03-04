@@ -1,7 +1,7 @@
-import { genericInternalError } from "../errors.ts";
+import { genericInternalError } from "./errors.ts";
 
 /**
- * Used in Protobuf converters to assert that a value is defined.
+ * Used in protobuf converters to assert that a value is defined.
  */
 export function assertRequired<T>(
   value: T | undefined,

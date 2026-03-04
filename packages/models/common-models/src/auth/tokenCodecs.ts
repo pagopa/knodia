@@ -13,10 +13,13 @@ const BaseJwtClaims = z.object({
   sub: z.string(),
 });
 
-export const UISessionTokenClaims = BaseJwtClaims.extend({
+const UserTokenClaims = BaseJwtClaims.extend({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
   sub: UserId,
+});
+
+export const UISessionTokenClaims = UserTokenClaims.extend({
   type: z.literal("ui-session"),
 });
 export type UISessionTokenClaims = z.infer<typeof UISessionTokenClaims>;
@@ -26,8 +29,17 @@ export const InternalTokenClaims = BaseJwtClaims.extend({
 });
 export type InternalTokenClaims = z.infer<typeof InternalTokenClaims>;
 
-export const KnodiaTokenClaims = z.discriminatedUnion("type", [
+export const UISessionRefreshTokenClaims = UserTokenClaims.extend({
+  type: z.literal("refresh-ui-session"),
+});
+export type UISessionRefreshTokenClaims = z.infer<
+  typeof UISessionRefreshTokenClaims
+>;
+
+// Token types accepted as authentication credentials by API services.
+// Does NOT include refresh tokens, which are only used for token renewal.
+export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,
 ]);
-export type KnodiaTokenClaims = z.infer<typeof KnodiaTokenClaims>;
+export type KnodiaAuthTokenClaims = z.infer<typeof KnodiaAuthTokenClaims>;
