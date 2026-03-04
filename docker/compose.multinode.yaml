@@ -213,15 +213,15 @@ services:
     entrypoint: >
       /bin/sh -c "
       for node in orion lynx; do
-        response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
-        -H 'Accept:application/json'
-        -H 'Content-Type:application/json'
-        -d @/connectors/$$node.json
-        http://debezium-connect:8083/connectors);
-        if [ \"$$response\" -eq 201 ]; then echo \"Connector $$node registered\";
-        elif [ \"$$response\" -eq 409 ]; then echo \"Connector $$node already exists\";
-        else echo \"Failed to register connector $$node: HTTP $$response\"; exit 1;
-        fi;
+      response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
+      -H 'Accept:application/json'
+      -H 'Content-Type:application/json'
+      -d @/connectors/$$node.json
+      http://debezium-connect:8083/connectors);
+      if [ \"$$response\" -eq 201 ]; then echo \"Connector $$node registered\";
+      elif [ \"$$response\" -eq 409 ]; then echo \"Connector $$node already exists\";
+      else echo \"Failed to register connector $$node: HTTP $$response\"; exit 1;
+      fi;
       done
       "
 
