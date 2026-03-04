@@ -5,8 +5,12 @@ import type {
   EserviceInterface,
   EserviceVersion,
 } from "@knodia/eservice-models";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
+import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { type RequestContextData } from "@fastify/request-context";
 import { getAttribute } from "@knodia/attribute-models";
 import { getCategory } from "@knodia/category-models";
 import {
@@ -79,7 +83,7 @@ export function eserviceServiceBuilder(
   return {
     async createEservice(
       seed: API_EserviceSeed,
-      { correlationId, logger }: RequestContextData,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<Eservice> {
       const eserviceId = generateId<EserviceId>();
 
@@ -172,7 +176,7 @@ export function eserviceServiceBuilder(
     async getCatalogEservices(
       body: API_GetCatalogEserviceSearchParams,
       params: API_GetCatalogEservicesQueryParams,
-      { logger }: RequestContextData,
+      { logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<ListResult<Eservice>> {
       logger.info({ body, params }, "Getting catalog E-services with params");
       return await readmodelService.getCatalogEservices(body, params);
@@ -180,7 +184,7 @@ export function eserviceServiceBuilder(
 
     async getEservice(
       eserviceId: EserviceId,
-      { logger }: RequestContextData,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<Eservice> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
 
@@ -188,7 +192,7 @@ export function eserviceServiceBuilder(
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
-      { logger }: RequestContextData,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
       logger.info(`Getting latest version of E-service with ID ${eserviceId}`);
 
@@ -196,7 +200,7 @@ export function eserviceServiceBuilder(
     },
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
-      { logger }: RequestContextData,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<EserviceInterface> {
       logger.info(
         `Getting latest version interface of E-service with ID ${eserviceId}`,
@@ -206,7 +210,7 @@ export function eserviceServiceBuilder(
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
-      { logger }: RequestContextData,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<ListResult<Eservice>> {
       logger.info({ params }, "Getting E-services with params");
 
