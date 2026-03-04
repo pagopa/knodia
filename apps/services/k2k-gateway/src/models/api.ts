@@ -132,7 +132,6 @@ export const API_EserviceIdPathParam = z.strictObject({
 export const API_Eservice = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
-    createdAt: z.iso.datetime(),
     description: API_LocalizedText,
     id: API_EserviceId,
     isConsumerOperatorIdentificationRequired: z.boolean(),
@@ -154,7 +153,6 @@ export const API_EserviceVersion = z
       format: "int32",
     }),
     accessTokenType: API_AccessTokenType,
-    createdAt: z.iso.datetime(),
     id: z
       .uuid()
       .meta({ description: "Unique identifier of the E-service Version" }),
@@ -173,7 +171,6 @@ export const API_EserviceVersionInterfaceDocument = z
   .strictObject({
     checksum: z.string(),
     contentType: z.string(),
-    createdAt: z.iso.datetime(),
     id: z
       .uuid()
       .meta({ description: "Unique identifier of the Interface Document" }),

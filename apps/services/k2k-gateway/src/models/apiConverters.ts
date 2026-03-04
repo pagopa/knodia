@@ -57,7 +57,6 @@ export const toAPI_Eservice = (
   eservice: eserviceProcessApi.Eservice,
 ): API_Eservice => ({
   categories: eservice.categories,
-  createdAt: eservice.createdAt,
   description: eservice.description,
   id: eservice.id,
   isConsumerOperatorIdentificationRequired:
@@ -75,7 +74,6 @@ export const toAPI_EserviceVersion = (
   accessTokenAudience: version.accessTokenAudience,
   accessTokenDuration: version.accessTokenDuration,
   accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
-  createdAt: version.createdAt,
   id: version.id,
   maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
   maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
@@ -90,7 +88,6 @@ export const toAPI_EserviceVersionInterfaceDocument = (
 ): API_EserviceVersionInterfaceDocument => ({
   checksum: doc.checksum,
   contentType: doc.contentType,
-  createdAt: doc.createdAt,
   id: doc.id,
   name: doc.name,
   path: doc.path,
