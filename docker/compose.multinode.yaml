@@ -619,6 +619,50 @@ services:
         condition: service_healthy
 
   # ============================================================
+  # Frontends
+  # ============================================================
+
+  node1-frontend-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-node1-frontend-orion
+    build:
+      context: ..
+      dockerfile: apps/web/node1-frontend/Dockerfile
+    ports:
+      - 5001:80
+    volumes:
+      - ./multinode/nginx-frontend.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./multinode/env-orion.js:/usr/share/nginx/html/ui/env.js:ro
+    environment:
+      BFF_UPSTREAM: "http://bff-orion:3000"
+    depends_on:
+      bff-orion:
+        condition: service_started
+
+  node1-frontend-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-node1-frontend-lynx
+    build:
+      context: ..
+      dockerfile: apps/web/node1-frontend/Dockerfile
+    ports:
+      - 5002:80
+    volumes:
+      - ./multinode/nginx-frontend.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./multinode/env-lynx.js:/usr/share/nginx/html/ui/env.js:ro
+    environment:
+      BFF_UPSTREAM: "http://bff-lynx:3000"
+    depends_on:
+      bff-lynx:
+        condition: service_started
+
+  # ============================================================
   # Local KMS & JWKS (authentication)
   # ============================================================
 
