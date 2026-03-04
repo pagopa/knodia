@@ -10,7 +10,11 @@ import {
 } from "../agreement.ts";
 import { splitAgreementIntoObjectsSQL } from "../converters/splitters.ts";
 
-function agreementWriterServiceBuilder(db: NodePgDatabase) {
+export type AgreementWriterService = ReturnType<
+  typeof agreementWriterServiceBuilder
+>;
+
+export function agreementWriterServiceBuilder(db: NodePgDatabase) {
   return {
     async upsertAgreement(
       agreement: Agreement,
@@ -46,9 +50,3 @@ function agreementWriterServiceBuilder(db: NodePgDatabase) {
     },
   };
 }
-
-// TODO: knip workaround
-console.log(
-  "🚀 ~ agreementWriterServiceBuilder ~ agreementWriterServiceBuilder:",
-  agreementWriterServiceBuilder,
-);
