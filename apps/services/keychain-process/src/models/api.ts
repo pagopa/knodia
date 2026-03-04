@@ -19,6 +19,7 @@ const API_OwnerId = z.uuid().meta({
 
 export const API_Keychain = z
   .strictObject({
+    createdAt: z.iso.datetime(),
     description: API_LocalizedDescription.optional(),
     id: API_KeychainId,
     name: API_LocalizedName,
@@ -40,3 +41,11 @@ export const API_GetConsumerKeychainsQueryParams = API_PaginationQueryParams;
 export type API_GetConsumerKeychainsQueryParams = z.infer<
   typeof API_GetConsumerKeychainsQueryParams
 >;
+
+export const API_ConsumerKeychainSeed = z
+  .strictObject({
+    description: API_LocalizedDescription.optional(),
+    name: API_LocalizedName,
+  })
+  .meta({ id: "ConsumerKeychainSeed" });
+export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;

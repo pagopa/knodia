@@ -122,6 +122,10 @@ components:
     Keychain:
       type: object
       properties:
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         description:
           allOf:
             - $ref: "#/components/schemas/LocalizedDescription"
@@ -136,6 +140,7 @@ components:
           format: date-time
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
+        - createdAt
         - id
         - name
         - ownerId
@@ -153,6 +158,17 @@ components:
       required:
         - items
         - pagination
+      additionalProperties: false
+    ConsumerKeychainSeed:
+      type: object
+      properties:
+        description:
+          allOf:
+            - $ref: "#/components/schemas/LocalizedDescription"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - name
       additionalProperties: false
 paths:
   /status:
@@ -210,6 +226,42 @@ paths:
                 description: Consumer keychains retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Keychains"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    post:
+      operationId: createConsumerKeychain
+      tags:
+        - consumerKeychain
+      description: Create a new Consumer Keychain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsumerKeychainSeed"
+        required: true
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "201":
+          description: Consumer Keychain created successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychain"
         "400":
           description: Bad Request
           content:
