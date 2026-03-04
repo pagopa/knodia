@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package agreement.v1;
+
+import "v1/agreement.proto";
+
+message AgreementActivatedV1 {
+  AgreementV1 agreement = 1;
+}

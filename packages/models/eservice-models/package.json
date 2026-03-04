@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@bufbuild/protobuf": "catalog:",
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "ts-pattern": "catalog:",
     "zod": "catalog:"

@@ -64,10 +64,10 @@ message EserviceInterfaceV1 {
 }
 message EserviceVersionRequiredAttributeGroupV1 {
   int32 groupId = 1;
-  repeated EserviceDescriptorAttributeV1 attributes = 2;
+  repeated EserviceVersionAttributeV1 attributes = 2;
 }
 
-message EserviceDescriptorAttributeV1 {
+message EserviceVersionAttributeV1 {
   string scheme = 1;
   string code = 2;
 }
