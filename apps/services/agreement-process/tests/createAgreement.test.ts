@@ -81,11 +81,20 @@ describe("POST /agreements (createAgreement)", async () => {
     ["eserviceVersionId is empty", { ...body, eserviceVersionId: "" }],
     [
       "consumerKnodeId is unknown",
-      { ...body, consumerKnodeId: "UnknownKnodeId" },
+      { ...body, consumer: { ...body.consumer, knodeId: "UnknownKnodeId" } },
     ],
-    ["consumerKnodeId is empty", { ...body, consumerKnodeId: "" }],
-    ["consumerId is not a uuid", { ...body, consumerId: 99 }],
-    ["consumerId is empty", { ...body, consumerId: "" }],
+    [
+      "consumerKnodeId is empty",
+      { ...body, consumer: { ...body.consumer, knodeId: "" } },
+    ],
+    [
+      "consumerId is not a uuid",
+      { ...body, consumer: { ...body.consumer, id: 99 } },
+    ],
+    [
+      "consumerId is empty",
+      { ...body, consumer: { ...body.consumer, id: "" } },
+    ],
     ["empty body", {}],
   ])(
     "should return 400 if the body is not correctly formatted - %s",
