@@ -5,6 +5,7 @@ import {
   type EserviceInterface,
   type EserviceVersion,
 } from "@knodia/eservice-models";
+import { type ConsumerKeychain } from "@knodia/keychain-models";
 import { expect } from "vitest";
 
 export function toExpectAgreement(agreement: Agreement) {
@@ -76,6 +77,16 @@ export function toExpectAPI_EserviceVersionInterfaceDocument(
     prettyName: doc.prettyName,
     updatedAt: doc.updatedAt.toISOString(),
   };
+}
+
+/** @knipignore */
+export function toExpectConsumerKeychain(consumerKeychain: ConsumerKeychain) {
+  return expect.objectContaining({
+    ...consumerKeychain,
+    keys: expect.arrayContaining(consumerKeychain.keys),
+    purposes: expect.arrayContaining(consumerKeychain.purposes),
+    users: expect.arrayContaining(consumerKeychain.users),
+  });
 }
 
 export function toExpectEservice(eservice: Eservice) {
