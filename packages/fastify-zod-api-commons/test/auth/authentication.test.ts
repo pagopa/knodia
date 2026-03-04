@@ -24,7 +24,10 @@ const { createRemoteJWKSet, jwtVerify } = vi.hoisted(() => ({
 
 vi.mock("jose", () => ({ createRemoteJWKSet, jwtVerify }));
 
-const makeApiProblem = makeApiProblemBuilder({});
+const makeApiProblem = makeApiProblemBuilder(
+  {},
+  { serviceName: "backend-for-frontend" },
+);
 
 const buildTestApp = async (wellKnownUrls: string[]) => {
   const app = Fastify({ genReqId: () => generateId(), logger: false });
@@ -33,7 +36,6 @@ const buildTestApp = async (wellKnownUrls: string[]) => {
     defaultStoreValues: (request) => ({
       correlationId: generateId(),
       logger: request.log,
-      serviceName: "backend-for-frontend" as const,
     }),
   });
 

@@ -1,0 +1,31 @@
+{
+  "name": "@knodia/db-event-store-keychain",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
+    "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
+    "db:schema-normalize": "node ../../../../scripts/normalize-drizzle-output.ts"
+  },
+  "dependencies": {
+    "@knodia/db-event-store-config": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/pg": "catalog:",
+    "drizzle-kit": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": "./src/keychain.ts",
+    "./config": "./config/config.ts"
+  }
+}

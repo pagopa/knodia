@@ -1,4 +1,5 @@
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { AttributeId } from "@knodia/attribute-models";
+import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
 import type {
   EserviceCategorySQL,
   EserviceInterfaceSQL,
@@ -11,7 +12,6 @@ import type {
   Eservice,
   EserviceCategory,
   EserviceVersion,
-  RequiredAttribute,
 } from "@knodia/eservice-models";
 
 export const splitEserviceIntoObjectsSQL = (
@@ -119,10 +119,10 @@ const splitEserviceVersionIntoObjectsSQL = (
 });
 
 const toEserviceVersionRequiredAttributeSQL = (
-  group: RequiredAttribute[],
+  group: AttributeId[],
   groupId: number,
   eserviceId: EserviceId,
-  eserviceVersionId: string,
+  eserviceVersionId: EserviceVersionId,
   metadataVersion: number,
 ): EserviceVersionRequiredAttributeSQL[] =>
   group.map((attribute) => ({
@@ -142,15 +142,33 @@ const toEserviceVersionSQL = ({
   eserviceVersion: EserviceVersion;
   metadataVersion: number;
 }): EserviceVersionSQL => ({
-  ...eserviceVersion,
+  accessTokenAudience: eserviceVersion.accessTokenAudience,
+  accessTokenDuration: eserviceVersion.accessTokenDuration,
+  accessTokenType: eserviceVersion.accessTokenType,
+  createdAt: eserviceVersion.createdAt,
   eserviceId,
+  id: eserviceVersion.id,
+  maxDailyCallsPerConsumer: eserviceVersion.maxDailyCallsPerConsumer,
+  maxDailyCallsPerKnode: eserviceVersion.maxDailyCallsPerKnode,
   metadataVersion,
+  state: eserviceVersion.state,
+  updatedAt: eserviceVersion.updatedAt,
+  versionNumber: eserviceVersion.versionNumber,
 });
 
 const toEserviceSQL = (
   eservice: Eservice,
   metadataVersion: number,
 ): EserviceSQL => ({
-  ...eservice,
+  createdAt: eservice.createdAt,
+  description: eservice.description,
+  id: eservice.id,
+  isConsumerOperatorIdentificationRequired:
+    eservice.isConsumerOperatorIdentificationRequired,
+  isSignalHubEnabled: eservice.isSignalHubEnabled,
   metadataVersion,
+  mode: eservice.mode,
+  name: eservice.name,
+  producerId: eservice.producerId,
+  updatedAt: eservice.updatedAt,
 });
