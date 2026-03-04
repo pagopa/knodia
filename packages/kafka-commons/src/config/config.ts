@@ -60,6 +60,6 @@ export const KeychainTopicConfig = z
     KEYCHAIN_TOPIC: z.string(),
   })
   .transform((c) => ({
-    consumerKeychainTopic: c.KEYCHAIN_TOPIC,
+    keychainTopic: c.KEYCHAIN_TOPIC,
   }));
 export type KeychainTopicConfig = z.infer<typeof KeychainTopicConfig>;
