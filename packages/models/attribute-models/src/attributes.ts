@@ -1,8 +1,4 @@
-interface Attribute {
-  code: string;
-  name: string;
-  scheme: string;
-}
+import z from "zod";
 
 export const attributes: Record<string, Record<string, string>> = {
   vc_territorial_units: {
@@ -12,13 +8,27 @@ export const attributes: Record<string, Record<string, string>> = {
   },
 };
 
-export function getAttribute(
-  scheme: string,
-  code: string,
-): Attribute | undefined {
+export function getAttribute({
+  code,
+  scheme,
+}: AttributeId): Attribute | undefined {
   const name = attributes[scheme]?.[code];
   if (name === undefined) {
     return undefined;
   }
-  return { code, name, scheme };
+  return { id: { code, scheme }, name };
 }
+
+export const AttributeId = z.strictObject({
+  code: z.string(),
+  scheme: z.string(),
+});
+export type AttributeId = z.infer<typeof AttributeId>;
+export const AttributeGroup = z.array(AttributeId).min(1);
+export type AttributeGroup = z.infer<typeof AttributeGroup>;
+
+export const Attribute = z.strictObject({
+  id: AttributeId,
+  name: z.string(),
+});
+export type Attribute = z.infer<typeof Attribute>;

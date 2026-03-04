@@ -1,3 +1,5 @@
+import type { AttributeGroup } from "@knodia/attribute-models";
+
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
@@ -9,7 +11,6 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
-  type RequiredAttributeGroup,
 } from "./eservice.ts";
 import {
   EserviceAccessTokenTypeV1,
@@ -71,7 +72,7 @@ const fromEserviceVersionV1 = (input: EserviceVersionV1): EserviceVersion => {
 
 const fromEserviceVersionRequiredAttributeGroupV1 = (
   input: EserviceVersionRequiredAttributeGroupV1,
-): RequiredAttributeGroup => input.attributes;
+): AttributeGroup => input.attributes;
 
 const fromEserviceVersionAccessTokenTypeV1 = (
   input: EserviceAccessTokenTypeV1,
@@ -111,7 +112,7 @@ const fromEserviceVersionStateV1 = (
 const fromEserviceVersionInterfaceV1 = (
   input: EserviceInterfaceV1,
 ): EserviceInterface => {
-  assertRequired(input.prettyName, "EserviceInterface name is undefined");
+  assertRequired(input.prettyName, "EserviceInterface prettyName is undefined");
 
   return {
     ...input,
