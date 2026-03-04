@@ -554,6 +554,9 @@ importers:
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
+      '@knodia/db-readmodel-organization':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/organization
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../packages/models/eservice-models
@@ -563,9 +566,6 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
-      '@knodia/organization-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)

@@ -28,6 +28,7 @@ import {
   toEserviceVersionInterface,
 } from "@knodia/db-readmodel-eservice/converters";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
+import { organizationReadmodelServiceBuilder } from "@knodia/db-readmodel-organization/services";
 import {
   type Eservice,
   EserviceInterface,
@@ -45,6 +46,8 @@ export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
+  const organizationReadmodelService =
+    organizationReadmodelServiceBuilder(readmodelDb);
 
   const latestVersionSubquery = (
     tx: NodePgDatabase,
@@ -304,6 +307,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     ): Promise<EserviceInterface | undefined> {
       return await eserviceReadmodelService.getEserviceVersionInterfaceById(
         interfaceId,
+      );
+    },
+    async getOrganizationById(organizationId: string) {
+      return await organizationReadmodelService.getOrganizationById(
+        organizationId,
       );
     },
   };

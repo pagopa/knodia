@@ -2,6 +2,8 @@ import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
+import { readmodelOrganization } from "@knodia/db-readmodel-organization";
+import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
@@ -32,6 +34,12 @@ beforeAll(async () => {
   });
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
+
+  await readmodelDb.insert(readmodelOrganization).values({
+    id: TEST_ORGANIZATION_ID,
+    metadataVersion: 0,
+    name: "Test Organization",
+  });
 });
 
 beforeEach(async () => {

@@ -15,6 +15,18 @@ export function organizationReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
 ) {
   return {
+    async getOrganizationById(
+      organizationId: string,
+    ): Promise<Organization | undefined> {
+      const row = await readmodelDb
+        .select()
+        .from(readmodelOrganization)
+        .where(eq(readmodelOrganization.id, organizationId))
+        .limit(1)
+        .then((rows) => rows.at(0));
+
+      return row ? toOrganization(row) : undefined;
+    },
     async getOrganizations(params: {
       limit: number;
       offset: number;
