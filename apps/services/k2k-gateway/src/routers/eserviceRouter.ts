@@ -252,19 +252,19 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Download the interface document for the latest version of an E-service",
+        "Download the Interface Document for the latest Version of an E-service",
       operationId: "downloadEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
       response: {
         200: API_FileDownload.meta({
-          description: "E-service interface document downloaded successfully",
+          description: "E-service Interface Document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
       summary: "Download E-service latest version interface",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest/interface/download",
   });

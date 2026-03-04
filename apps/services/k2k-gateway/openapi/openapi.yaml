@@ -595,7 +595,8 @@ paths:
       summary: Download E-service latest version interface
       tags:
         - resource
-      description: Download the interface document for the latest version of an E-service
+        - eservice
+      description: Download the Interface Document for the latest Version of an E-service
       parameters:
         - schema:
             $ref: "#/components/schemas/EserviceId"
@@ -604,11 +605,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service interface document downloaded successfully
+          description: E-service Interface Document downloaded successfully
           content:
             application/octet-stream:
               schema:
-                description: E-service interface document downloaded successfully
+                description: E-service Interface Document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
