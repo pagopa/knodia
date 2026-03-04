@@ -1,4 +1,4 @@
-import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type {
   KafkaConfig,
   KafkaConsumerConfig,

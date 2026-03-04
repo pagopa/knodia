@@ -1,3 +1,4 @@
+import { Agreement } from "@knodia/agreement-models";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   type Eservice,
@@ -6,6 +7,13 @@ import {
 } from "@knodia/eservice-models";
 import { type ConsumerKeychain } from "@knodia/keychain-models";
 import { expect } from "vitest";
+
+export function toExpectAgreement(agreement: Agreement) {
+  return {
+    ...agreement,
+    attributes: expect.arrayContaining(agreement.attributes),
+  };
+}
 
 export function toExpectAPI_Eservice(
   eservice: Omit<
