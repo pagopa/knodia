@@ -18,7 +18,6 @@ import type {
 } from "./models.ts";
 
 const JWT_HEADER_ALG = "RS256";
-const JWT_HEADER_TYPE = "at+jwt";
 const JWT_HEADER_USE = "sig";
 const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
@@ -50,12 +49,12 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
     return Math.floor(Date.now() / 1000);
   }
 
-  function buildHeader(kid: string): string {
+  function buildHeader(kid: string, typ: string): string {
     return b64url(
       JSON.stringify({
         alg: JWT_HEADER_ALG,
         kid,
-        typ: JWT_HEADER_TYPE,
+        typ,
         use: JWT_HEADER_USE,
       }),
     );
@@ -84,7 +83,8 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       | UISessionRefreshTokenClaims
       | UISessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
-    const header = buildHeader(kid);
+    const typ = claims.type === "refresh-ui-session" ? "JWT" : "at+jwt";
+    const header = buildHeader(kid, typ);
     const payload = b64url(JSON.stringify(claims));
     const message = `${header}.${payload}`;
     const signature = await signWithKms(kid, message);
