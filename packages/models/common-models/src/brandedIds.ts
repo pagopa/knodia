@@ -18,11 +18,19 @@ export type OrganizationId = z.infer<typeof OrganizationId>;
 export const UserId = z.uuid().brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 
-type IDS =
+export const KnodeId = z.enum(["Orion", "Lynx"]).brand<"KnodeId">();
+export type KnodeId = z.infer<typeof KnodeId>;
+
+export const AgreementId = z.uuid().brand<"AgreementId">();
+export type AgreementId = z.infer<typeof AgreementId>;
+
+export type IDS =
+  | AgreementId
   | CorrelationId
   | EserviceId
   | EserviceInterfaceId
   | EserviceVersionId
+  | KnodeId
   | OrganizationId
   | UserId;
 

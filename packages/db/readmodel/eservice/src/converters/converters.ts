@@ -1,10 +1,7 @@
+import type { AttributeGroup, AttributeId } from "@knodia/attribute-models";
+
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import {
-  EserviceInterface,
-  LocalizedName,
-  type RequiredAttribute,
-  type RequiredAttributeGroup,
-} from "@knodia/eservice-models";
+import { EserviceInterface, LocalizedName } from "@knodia/eservice-models";
 
 import type {
   EserviceInterfaceSQL,
@@ -13,8 +10,8 @@ import type {
 
 export const toGroupedRequiredAttributes = (
   requiredAttributesSQL: EserviceVersionRequiredAttributeSQL[],
-): RequiredAttributeGroup[] => {
-  const groupsMap = new Map<number, RequiredAttribute[]>();
+): AttributeGroup[] => {
+  const groupsMap = new Map<number, AttributeId[]>();
 
   for (const attribute of requiredAttributesSQL) {
     const group = groupsMap.get(attribute.groupId) ?? [];

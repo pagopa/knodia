@@ -1,0 +1,33 @@
+{
+  "name": "@knodia/agreement-models",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "generate-protobuf": "buf generate --template ../../../buf.gen.yaml",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/agreement-models",
+    "test:watch": "pnpm test --watch"
+  },
+  "dependencies": {
+    "@knodia/attribute-models": "workspace:*",
+    "@knodia/common-models": "workspace:*",
+    "ts-pattern": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@bufbuild/protobuf": "catalog:",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "zocker": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
