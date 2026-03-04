@@ -89,7 +89,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
       },
       summary: "Search for E-services",
-      tags: [apiTags.operation],
+      tags: [apiTags.operation, apiTags.eservice],
     },
     url: "/catalog",
   });
@@ -127,7 +127,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
   });
@@ -165,7 +165,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service latest version",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest",
   });
@@ -206,7 +206,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service latest version interface",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
   });
