@@ -1,5 +1,26 @@
+import { Agreement } from "@knodia/agreement-models";
 import { Eservice } from "@knodia/eservice-models";
+import { ConsumerKeychain } from "@knodia/keychain-models";
 import { zocker } from "zocker";
+
+export function getMockAgreement(seed = 0): Agreement {
+  return zocker(Agreement)
+    .array({
+      min: 1,
+    })
+    .setSeed(seed)
+    .generate();
+}
+
+/** @knipignore */
+export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
+  return zocker(ConsumerKeychain)
+    .array({
+      min: 1,
+    })
+    .setSeed(seed)
+    .generate();
+}
 
 export function getMockEservice(seed = 0): Eservice {
   return zocker(Eservice)

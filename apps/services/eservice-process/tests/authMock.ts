@@ -8,7 +8,7 @@ vi.mock("@knodia/fastify-zod-api-commons/auth", async (importOriginal) => {
     >();
 
   const { requestContext } = await import("@fastify/request-context");
-  const { KnodiaTokenClaims } = await import("@knodia/common-models/auth");
+  const { KnodiaAuthTokenClaims } = await import("@knodia/common-models/auth");
   const { default: fastifyPlugin } = await import("fastify-plugin");
   const { decodeJwt } = await import("jose");
 
@@ -20,7 +20,7 @@ vi.mock("@knodia/fastify-zod-api-commons/auth", async (importOriginal) => {
 
       const rawPayload: unknown = decodeJwt(token);
 
-      const parsed = KnodiaTokenClaims.safeParse(rawPayload);
+      const parsed = KnodiaAuthTokenClaims.safeParse(rawPayload);
       if (!parsed.success) {
         throw new Error(`Invalid test token claims: ${parsed.error.message}`);
       }

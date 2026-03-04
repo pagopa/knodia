@@ -1,3 +1,4 @@
+import { AttributeGroup } from "@knodia/attribute-models";
 import {
   EserviceId,
   EserviceInterfaceId,
@@ -53,15 +54,6 @@ export const EserviceInterface = z.strictObject({
 });
 export type EserviceInterface = z.infer<typeof EserviceInterface>;
 
-const RequiredAttribute = z.strictObject({
-  code: z.string(),
-  scheme: z.string(),
-});
-export type RequiredAttribute = z.infer<typeof RequiredAttribute>;
-
-const RequiredAttributeGroup = z.array(RequiredAttribute).min(1);
-export type RequiredAttributeGroup = z.infer<typeof RequiredAttributeGroup>;
-
 export const EserviceVersion = z.strictObject({
   accessTokenAudience: z.array(z.string()),
   accessTokenDuration: z
@@ -74,7 +66,7 @@ export const EserviceVersion = z.strictObject({
   interfaceDocument: EserviceInterface,
   maxDailyCallsPerConsumer: z.int().min(minDailyCalls).max(maxDailyCalls),
   maxDailyCallsPerKnode: z.int().min(minDailyCalls).max(maxDailyCalls),
-  requiredAttributes: z.array(RequiredAttributeGroup).min(1),
+  requiredAttributes: z.array(AttributeGroup).min(1),
   state: EserviceVersionState,
   updatedAt: z.coerce.date(),
   versionNumber: z.int().min(minEserviceVersionNumber).max(INT32_MAX),

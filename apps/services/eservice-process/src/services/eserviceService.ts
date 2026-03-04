@@ -97,7 +97,7 @@ export function eserviceServiceBuilder(
       );
 
       for (const attr of seed.requiredAttributes.flat()) {
-        if (getAttribute(attr.scheme, attr.code) === undefined) {
+        if (getAttribute(attr) === undefined) {
           throw invalidAttribute(attr.scheme, attr.code);
         }
       }

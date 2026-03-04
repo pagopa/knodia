@@ -1,1 +1,3 @@
 event-store.local_eservice.events:3
+event-store.local_agreement.events:3
+event-store.local_keychain.events:3

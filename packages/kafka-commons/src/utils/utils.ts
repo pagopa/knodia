@@ -1,4 +1,4 @@
-import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { Logger } from "pino";
 import type z from "zod";
 
