@@ -16,7 +16,11 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { createConsumerKeychainCreatedV1Event } from "../models/keychainEventFactory.ts";
+import { consumerKeychainNotFound } from "../models/errors.ts";
+import {
+  createConsumerKeychainCreatedV1Event,
+  createConsumerKeychainDeletedV1Event,
+} from "../models/keychainEventFactory.ts";
 
 export type ConsumerKeychainService = ReturnType<
   typeof consumerKeychainServiceBuilder
@@ -26,6 +30,19 @@ export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
 ) {
+  const retrieveConsumerKeychain = async (
+    consumerKeychainId: ConsumerKeychainId,
+  ) => {
+    const consumerKeychain =
+      await readmodelService.getConsumerKeychainById(consumerKeychainId);
+
+    if (!consumerKeychain) {
+      throw consumerKeychainNotFound(consumerKeychainId);
+    }
+
+    return consumerKeychain;
+  };
+
   return {
     async createConsumerKeychain(
       seed: API_ConsumerKeychainSeed,
@@ -61,6 +78,23 @@ export function consumerKeychainServiceBuilder(
       );
 
       return consumerKeychain;
+    },
+    async deleteConsumerKeychain(
+      consumerKeychainId: ConsumerKeychainId,
+      { correlationId, logger }: RequestContextData,
+    ): Promise<void> {
+      logger.info(`Deleting Consumer Keychain ${consumerKeychainId}`);
+
+      const consumerKeychain =
+        await retrieveConsumerKeychain(consumerKeychainId);
+
+      await eventStoreWriter.insertEvent(
+        createConsumerKeychainDeletedV1Event(
+          consumerKeychain.data,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
     },
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
