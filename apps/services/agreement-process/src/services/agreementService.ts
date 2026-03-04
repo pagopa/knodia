@@ -9,10 +9,8 @@ import {
   generateId,
   KnodeId,
   OrganizationId,
-  unsafeBrandId,
 } from "@knodia/common-models/ids";
 
-import type { API_AgreementSeed } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
@@ -27,22 +25,25 @@ export function agreementServiceBuilder(
 ) {
   return {
     async createAgreement(
-      seed: API_AgreementSeed,
+      {
+        consumer,
+        eserviceId,
+        eserviceVersionId,
+      }: {
+        consumer: {
+          id: OrganizationId;
+          knodeId: KnodeId;
+        };
+        eserviceId: EserviceId;
+        eserviceVersionId: EserviceVersionId;
+      },
       { correlationId, logger }: RequestContextData,
     ): Promise<Agreement> {
-      const {
-        consumer: { id: seedConsumerId, knodeId: consumerKnodeId },
-        eserviceId: seedEserviceId,
-        eserviceVersionId: seedEserviceVersionId,
-      } = seed;
-      const consumerId = unsafeBrandId<OrganizationId>(seedConsumerId);
-      const eserviceId = unsafeBrandId<EserviceId>(seedEserviceId);
-      const eserviceVersionId = unsafeBrandId<EserviceVersionId>(
-        seedEserviceVersionId,
-      );
-
       const agreementId = generateId<AgreementId>();
-      logger.info({ requestBody: seed }, `Creating Agreement ${agreementId}`);
+      logger.info(
+        { requestBody: { consumer, eserviceId, eserviceVersionId } },
+        `Creating Agreement ${agreementId}`,
+      );
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await assertEserviceVersionIsActive(
@@ -57,8 +58,8 @@ export function agreementServiceBuilder(
       const agreement: Agreement = {
         attributes: [],
         consumer: {
-          id: consumerId,
-          knodeId: KnodeId.parse(consumerKnodeId),
+          id: consumer.id,
+          knodeId: consumer.knodeId,
         },
         createdAt: now,
         eserviceId,

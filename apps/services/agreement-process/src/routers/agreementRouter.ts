@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -23,7 +24,14 @@ export const agreementRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const agreement = await agreementService.createAgreement(
-        req.body,
+        {
+          consumer: {
+            id: unsafeBrandId(req.body.consumer.id),
+            knodeId: KnodeId.parse(req.body.consumer.knodeId),
+          },
+          eserviceId: unsafeBrandId(req.body.eserviceId),
+          eserviceVersionId: unsafeBrandId(req.body.eserviceVersionId),
+        },
         getContextValues(requestContext),
       );
 
