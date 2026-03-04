@@ -31,8 +31,7 @@ export function AttributeGroupContainer({
           <span
             className={`flex gap-1 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
           >
-            {getAttribute(attribute.scheme, attribute.code)?.name ??
-              attribute.code}
+            {getAttribute(attribute)?.name ?? attribute.code}
             <BookOpenTextIcon size={20} />
           </span>
         </Fragment>

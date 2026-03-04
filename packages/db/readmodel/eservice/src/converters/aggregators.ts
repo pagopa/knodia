@@ -54,12 +54,7 @@ export const aggregateEserviceVersion = (
     return undefined;
   }
 
-  const aggregatedEserviceVersion = toEserviceVersionAggregator(queryRes);
-
-  return buildEserviceVersion({
-    requiredAttributesSQL: aggregatedEserviceVersion.requiredAttributesSQL,
-    versionSQL: aggregatedEserviceVersion.versionSQL,
-  });
+  return buildEserviceVersion(toEserviceVersionAggregator(queryRes));
 };
 
 function buildEserviceVersion({
@@ -93,13 +88,13 @@ function buildEserviceVersion({
     accessTokenAudience: versionSQL.accessTokenAudience,
     accessTokenDuration: versionSQL.accessTokenDuration,
     accessTokenType: EserviceAccessTokenType.parse(versionSQL.accessTokenType),
-    createdAt: new Date(versionSQL.createdAt),
+    createdAt: versionSQL.createdAt,
     id: unsafeBrandId(versionSQL.id),
     maxDailyCallsPerConsumer: versionSQL.maxDailyCallsPerConsumer,
     maxDailyCallsPerKnode: versionSQL.maxDailyCallsPerKnode,
     requiredAttributes: toGroupedRequiredAttributes(requiredAttributesSQL),
     state: EserviceVersionState.parse(versionSQL.state),
-    updatedAt: new Date(versionSQL.updatedAt),
+    updatedAt: versionSQL.updatedAt,
     versionNumber: versionSQL.versionNumber,
     ...(interfaceSQL
       ? { interfaceDocument: toEserviceVersionInterface(interfaceSQL) }
@@ -116,14 +111,9 @@ const toEserviceVersionAggregator = (
   const { requiredAttributesSQL, versionsSQL } =
     toEserviceVersionsAggregator(queryRes);
 
-  const eserviceVersion = throwIfMultipleOrEmpty(
-    versionsSQL,
-    "e-service version",
-  );
-
   return {
     requiredAttributesSQL: requiredAttributesSQL,
-    versionSQL: eserviceVersion,
+    versionSQL: throwIfMultipleOrEmpty(versionsSQL, "e-service version"),
   };
 };
 
@@ -141,13 +131,13 @@ const toEserviceVersionsAggregator = (
 
   queryRes.forEach((row) => {
     aggregateByPKString(
-      row.version ?? null,
+      row.version,
       versionPKSet,
       versionsSQL,
       readmodelEserviceVersion,
     );
     aggregateByPKString(
-      row.requiredAttribute ?? null,
+      row.requiredAttribute,
       requiredAttributePKSet,
       requiredAttributesSQL,
       readmodelEserviceVersionRequiredAttribute,
@@ -201,7 +191,7 @@ const buildEservice = ({
 
   const eservice: Eservice = {
     categories,
-    createdAt: new Date(eserviceSQL.createdAt),
+    createdAt: eserviceSQL.createdAt,
     description: LocalizedDescription.parse(eserviceSQL.description),
     id: unsafeBrandId(eserviceSQL.id),
     isConsumerOperatorIdentificationRequired:
@@ -210,7 +200,7 @@ const buildEservice = ({
     mode: EserviceMode.parse(eserviceSQL.mode),
     name: LocalizedName.parse(eserviceSQL.name),
     producerId: unsafeBrandId(eserviceSQL.producerId),
-    updatedAt: new Date(eserviceSQL.updatedAt),
+    updatedAt: eserviceSQL.updatedAt,
     versions: eserviceVersions,
   };
   return {
@@ -226,16 +216,7 @@ export const aggregateEservice = (
     return undefined;
   }
 
-  const aggregatedEservice = toEserviceAggregator(queryRes);
-
-  return buildEservice({
-    eserviceCategoriesSQL: aggregatedEservice.eserviceCategoriesSQL,
-    eserviceInterfacesSQL: aggregatedEservice.eserviceInterfacesSQL,
-    eserviceSQL: aggregatedEservice.eserviceSQL,
-    eserviceVersionRequiredAttributesSQL:
-      aggregatedEservice.eserviceVersionRequiredAttributesSQL,
-    eserviceVersionsSQL: aggregatedEservice.eserviceVersionsSQL,
-  });
+  return buildEservice(toEserviceAggregator(queryRes));
 };
 
 export const aggregateEservices = (
@@ -300,12 +281,10 @@ const toEserviceAggregator = (
     versionsSQL: versionsSQL,
   } = toEservicesAggregator(queryRes);
 
-  const eserviceSQL = throwIfMultipleOrEmpty(eservicesSQL, "e-service");
-
   return {
     eserviceCategoriesSQL: categoriesSQL,
     eserviceInterfacesSQL: interfacesSQL,
-    eserviceSQL,
+    eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service"),
     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
     eserviceVersionsSQL: versionsSQL,
   };
@@ -343,25 +322,25 @@ const toEservicesAggregator = (
       readmodelEservice,
     );
     aggregateByPKString(
-      row.category ?? null,
+      row.category,
       categoryPKSet,
       categoriesSQL,
       readmodelEserviceCategory,
     );
     aggregateByPKString(
-      row.version ?? null,
+      row.version,
       versionPKSet,
       versionsSQL,
       readmodelEserviceVersion,
     );
     aggregateByPKString(
-      row.interface ?? null,
+      row.interface,
       interfacePKSet,
       interfacesSQL,
       readmodelEserviceInterface,
     );
     aggregateByPKString(
-      row.requiredAttribute ?? null,
+      row.requiredAttribute,
       requiredAttributePKSet,
       requiredAttributesSQL,
       readmodelEserviceVersionRequiredAttribute,

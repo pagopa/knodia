@@ -13,6 +13,7 @@
     "test:watch": "pnpm test --watch"
   },
   "dependencies": {
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",

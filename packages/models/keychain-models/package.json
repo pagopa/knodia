@@ -1,0 +1,32 @@
+{
+  "name": "@knodia/keychain-models",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "generate-protobuf": "buf generate --template ../../../buf.gen.yaml",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/keychain-models",
+    "test:watch": "pnpm test --watch"
+  },
+  "dependencies": {
+    "@knodia/common-models": "workspace:*",
+    "ts-pattern": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@bufbuild/protobuf": "catalog:",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./api": "./src/api.ts"
+  }
+}
