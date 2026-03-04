@@ -14,11 +14,13 @@
     "./auth": "./src/auth/index.ts",
     "./errors": "./src/errors.ts",
     "./event": "./src/events.ts",
+    "./externalResource": "./src/externalResource.ts",
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
     "./protobuf": "./src/protobuf.ts",
+    "./types": "./src/types.ts",
     "./services": "./src/services.ts",
-    "./types": "./src/types.ts"
+    "./utils": "./src/utils.ts"
   },
   "dependencies": {
     "zod": "catalog:"

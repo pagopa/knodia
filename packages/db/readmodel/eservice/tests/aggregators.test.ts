@@ -43,7 +43,7 @@ describe("E-service Aggregators", () => {
       },
     };
     const eservice2: WithMetadata<Eservice> = {
-      data: getMockEservice(1),
+      data: getMockEservice({ seed: 1 }),
       metadata: {
         version: 1,
       },

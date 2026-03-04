@@ -1,4 +1,7 @@
+import type { AttributeGroup } from "@knodia/attribute-models";
+
 import { unsafeBrandId } from "@knodia/common-models/ids";
+import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import {
@@ -8,7 +11,6 @@ import {
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
-  type RequiredAttributeGroup,
 } from "./eservice.ts";
 import {
   EserviceAccessTokenTypeV1,
@@ -20,38 +22,22 @@ import {
   EserviceVersionV1,
 } from "./generated/v1/eservice.ts";
 
-// TODO: move to a shared utilities package
-function throwIfMissing<T>(value: T | undefined, message: string): T;
-function throwIfMissing<T, R>(
-  value: T | undefined,
-  message: string,
-  converter: (value: T) => R,
-): R;
-function throwIfMissing<T, R>(
-  value: T | undefined,
-  message: string,
-  converter?: (value: T) => R,
-): R | T {
-  if (value === undefined) {
-    throw new Error(message);
-  }
-  return converter ? converter(value) : value;
-}
+export const fromEserviceV1 = (input: EserviceV1): Eservice => {
+  assertRequired(input.name, "Eservice name is undefined");
+  assertRequired(input.description, "Eservice description is undefined");
 
-export const fromEserviceV1 = (input: EserviceV1): Eservice => ({
-  ...input,
-  createdAt: new Date(input.createdAt),
-  description: throwIfMissing(
-    input.description,
-    "Eservice description is undefined",
-  ),
-  id: unsafeBrandId(input.id),
-  mode: fromEserviceModeV1(input.mode),
-  name: throwIfMissing(input.name, "Eservice name is undefined"),
-  producerId: unsafeBrandId(input.producerId),
-  updatedAt: new Date(input.updatedAt),
-  versions: input.versions.map(fromEserviceVersionV1),
-});
+  return {
+    ...input,
+    createdAt: new Date(input.createdAt),
+    description: input.description,
+    id: unsafeBrandId(input.id),
+    mode: fromEserviceModeV1(input.mode),
+    name: input.name,
+    producerId: unsafeBrandId(input.producerId),
+    updatedAt: new Date(input.updatedAt),
+    versions: input.versions.map(fromEserviceVersionV1),
+  };
+};
 
 const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
   match(input)
@@ -62,26 +48,31 @@ const fromEserviceModeV1 = (input: EserviceModeV1): EserviceMode =>
     })
     .exhaustive();
 
-const fromEserviceVersionV1 = (input: EserviceVersionV1): EserviceVersion => ({
-  ...input,
-  accessTokenType: fromEserviceVersionAccessTokenTypeV1(input.accessTokenType),
-  createdAt: new Date(input.createdAt),
-  id: unsafeBrandId(input.id),
-  interfaceDocument: throwIfMissing(
+const fromEserviceVersionV1 = (input: EserviceVersionV1): EserviceVersion => {
+  assertRequired(
     input.interfaceDocument,
     "EserviceVersion interfaceDocument is undefined",
-    fromEserviceVersionInterfaceV1,
-  ),
-  requiredAttributes: input.requiredAttributes.map(
-    fromEserviceVersionRequiredAttributeGroupV1,
-  ),
-  state: fromEserviceVersionStateV1(input.state),
-  updatedAt: new Date(input.updatedAt),
-});
+  );
+
+  return {
+    ...input,
+    accessTokenType: fromEserviceVersionAccessTokenTypeV1(
+      input.accessTokenType,
+    ),
+    createdAt: new Date(input.createdAt),
+    id: unsafeBrandId(input.id),
+    interfaceDocument: fromEserviceVersionInterfaceV1(input.interfaceDocument),
+    requiredAttributes: input.requiredAttributes.map(
+      fromEserviceVersionRequiredAttributeGroupV1,
+    ),
+    state: fromEserviceVersionStateV1(input.state),
+    updatedAt: new Date(input.updatedAt),
+  };
+};
 
 const fromEserviceVersionRequiredAttributeGroupV1 = (
   input: EserviceVersionRequiredAttributeGroupV1,
-): RequiredAttributeGroup => input.attributes;
+): AttributeGroup => input.attributes;
 
 const fromEserviceVersionAccessTokenTypeV1 = (
   input: EserviceAccessTokenTypeV1,
@@ -120,13 +111,14 @@ const fromEserviceVersionStateV1 = (
 
 const fromEserviceVersionInterfaceV1 = (
   input: EserviceInterfaceV1,
-): EserviceInterface => ({
-  ...input,
-  createdAt: new Date(input.createdAt),
-  id: unsafeBrandId(input.id),
-  prettyName: throwIfMissing(
-    input.prettyName,
-    "EserviceInterface prettyName is undefined",
-  ),
-  updatedAt: new Date(input.updatedAt),
-});
+): EserviceInterface => {
+  assertRequired(input.prettyName, "EserviceInterface prettyName is undefined");
+
+  return {
+    ...input,
+    createdAt: new Date(input.createdAt),
+    id: unsafeBrandId(input.id),
+    prettyName: input.prettyName,
+    updatedAt: new Date(input.updatedAt),
+  };
+};

@@ -1,4 +1,4 @@
-import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { EachMessagePayload } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type {
   KafkaConfig,
   KafkaConsumerConfig,
@@ -9,7 +9,7 @@ import { generateId } from "@knodia/common-models/ids";
 import { initKafka, runConsumer } from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
 
-import { createTestLogger } from "../utilities/logger.ts";
+import { createTestLogger } from "../utils/logger.ts";
 
 const { logLevel } = KafkaJS;
 

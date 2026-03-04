@@ -1,4 +1,4 @@
-import type { Kafka } from "@confluentinc/kafka-javascript/types/kafkajs.js";
+import type { Kafka } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { Logger } from "pino";
 
 export async function checkTopicsExist(

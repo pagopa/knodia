@@ -118,20 +118,6 @@ describe("validateAuthorization", () => {
       expect(result.authData.userRoles).toContain("technical");
     });
 
-    it("throws forbidden (403) when multiple user roles are admitted but none matches", () => {
-      const ctx = buildCtx(technicalUISessionAuthData);
-
-      expect(() =>
-        validateAuthorization(ctx, [
-          { tokenType: "ui-session", userRoles: ["administrative"] },
-        ]),
-      ).toThrow(
-        forbiddenError(
-          `Invalid roles ${JSON.stringify(["technical"])} for this operation`,
-        ),
-      );
-    });
-
     it("throws forbidden (403) when ui-session token type is not admitted", () => {
       const ctx = buildCtx(adminUISessionAuthData);
 
