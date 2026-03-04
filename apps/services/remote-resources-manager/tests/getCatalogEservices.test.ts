@@ -6,6 +6,7 @@ import {
   API_EserviceMode,
   API_EserviceVersionState,
 } from "@knodia/eservice-models/api";
+import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { match } from "ts-pattern";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -32,7 +33,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   };
 });
 
-const toK2kVersionState = (
+const toK2KVersionState = (
   state: API_EserviceVersionState,
 ): k2kGatewayApi.EserviceVersionState =>
   match(state)
@@ -41,18 +42,18 @@ const toK2kVersionState = (
     .with("Archived", () => "ARCHIVED" as const)
     .exhaustive();
 
-const toK2kMode = (mode: API_EserviceMode): k2kGatewayApi.EserviceMode =>
+const toK2KMode = (mode: API_EserviceMode): k2kGatewayApi.EserviceMode =>
   match(mode)
     .with("ProvideData", () => "PROVIDE_DATA" as const)
     .with("ReceiveData", () => "RECEIVE_DATA" as const)
     .exhaustive();
 
-const toK2kResult = (
+const toK2KResult = (
   apiResult: API_CatalogEserviceSearchResultType,
 ): k2kGatewayApi.CatalogEserviceSearchResult => ({
   ...apiResult,
-  latestVersionState: toK2kVersionState(apiResult.latestVersionState),
-  mode: toK2kMode(apiResult.mode),
+  latestVersionState: toK2KVersionState(apiResult.latestVersionState),
+  mode: toK2KMode(apiResult.mode),
 });
 
 const allowedTestTokens: TestToken[] = [
@@ -64,9 +65,13 @@ describe("POST /catalog (getCatalogEservices)", () => {
     limit: "10",
     offset: "0",
   };
+  const parsedDefaultQuery = {
+    limit: 10,
+    offset: 0,
+  };
 
   const expectedApiResult = zocker(API_CatalogEserviceSearchResult).generate();
-  const k2kResult = toK2kResult(expectedApiResult);
+  const k2kResult = toK2KResult(expectedApiResult);
 
   const mockK2kResponse: k2kGatewayApi.CatalogEserviceSearchResults = {
     pagination: { limit: 10, offset: 0, total: 1 },
@@ -93,9 +98,9 @@ describe("POST /catalog (getCatalogEservices)", () => {
       expect.objectContaining({
         body: { keywords: "test" },
         headers: expect.objectContaining({
-          "x-correlation-id": expect.any(String),
+          [CORRELATION_ID_HEADER]: expect.any(String),
         }),
-        query: { limit: 10, offset: 0 },
+        query: parsedDefaultQuery,
       }),
     );
 

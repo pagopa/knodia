@@ -20,10 +20,7 @@
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "fastify-plugin": "catalog:",
-    "jose": "catalog:",
     "typescript": "catalog:",
-    "ts-pattern": "catalog:",
     "vitest": "catalog:",
     "zocker": "catalog:"
   },
@@ -38,6 +35,7 @@
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }
