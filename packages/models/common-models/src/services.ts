@@ -13,5 +13,6 @@ export type ServiceName = HTTPServiceName | KafkaConsumerServiceName;
 const KafkaConsumerServiceName = z.enum([
   "eservice-readmodel-writer",
   "agreement-readmodel-writer",
+  "keychain-readmodel-writer",
 ]);
 type KafkaConsumerServiceName = z.infer<typeof KafkaConsumerServiceName>;
