@@ -19,7 +19,7 @@ export type API_ConsumerKeychainIdPathParam = z.infer<
 export const API_LocalizedName = LocalizedText(
   minNameLength,
   maxNameLength,
-).meta({ description: "Name of the Keychain", id: "LocalizedName" });
+).meta({ description: "Name of the Keychain", id: "KeychainLocalizedName" });
 export type API_LocalizedName = z.infer<typeof API_LocalizedName>;
 
 export const API_LocalizedDescription = LocalizedText(
@@ -27,7 +27,7 @@ export const API_LocalizedDescription = LocalizedText(
   maxDescriptionLength,
 ).meta({
   description: "Description of the Keychain",
-  id: "LocalizedDescription",
+  id: "KeychainLocalizedDescription",
 });
 export type API_LocalizedDescription = z.infer<typeof API_LocalizedDescription>;
 

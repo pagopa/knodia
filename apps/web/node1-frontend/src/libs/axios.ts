@@ -1,34 +1,79 @@
 import { createBffApiClient } from "@knodia/bff-client";
-import axios, { isAxiosError } from "axios";
-import { match } from "ts-pattern";
+import axios, { type InternalAxiosRequestConfig, isAxiosError } from "axios";
 
 import { config } from "@/config/config";
-import { getAuthToken } from "@/libs/auth";
+import {
+  clearAllTokens,
+  getAuthToken,
+  getRefreshToken,
+  redirectToLogout,
+  setAuthToken,
+  setRefreshToken,
+} from "@/libs/auth";
 
-axios.interceptors.request.use((axiosConfig) => {
+let refreshPromise: null | Promise<boolean> = null;
+
+const authUrls = ["/auth/ui-session", "/auth/ui-session/refresh"];
+
+function addAuthHeader(axiosConfig: InternalAxiosRequestConfig) {
   const token = getAuthToken();
   if (token) {
-    axiosConfig.headers = axiosConfig.headers ?? {};
     axiosConfig.headers.Authorization = `Bearer ${token}`;
   }
   return axiosConfig;
-});
+}
 
-axios.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (isAxiosError(error)) {
-      match(error.response?.status)
-        .with(401, () => {
-          // Do something when unauthorized, e.g., redirect to login
-        })
-        .otherwise(() => {
-          // ... other error handling
-        });
-    }
+async function handleUnauthorized(error: unknown): Promise<unknown> {
+  if (
+    !isAxiosError(error) ||
+    error.response?.status !== 401 ||
+    !error.config ||
+    authUrls.some((u) => error.config?.url?.includes(u))
+  ) {
     return Promise.reject(error);
-  },
-);
+  }
+
+  const refreshed = await refreshOnce();
+
+  if (refreshed) {
+    error.config.headers.Authorization = `Bearer ${getAuthToken()}`;
+    return axios.request(error.config);
+  }
+
+  clearAllTokens();
+  redirectToLogout();
+  return Promise.reject(error);
+}
+
+function refreshOnce(): Promise<boolean> {
+  if (!refreshPromise) {
+    refreshPromise = tryRefreshToken().finally(() => {
+      refreshPromise = null;
+    });
+  }
+  return refreshPromise;
+}
+
+async function tryRefreshToken(): Promise<boolean> {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) return false;
+
+  try {
+    const { data } = await axios.post<{
+      refreshToken: string;
+      uiSessionToken: string;
+    }>(`${config.bffUrl}/auth/ui-session/refresh`, { refreshToken });
+
+    setAuthToken(data.uiSessionToken);
+    setRefreshToken(data.refreshToken);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+axios.interceptors.request.use(addAuthHeader);
+axios.interceptors.response.use((response) => response, handleUnauthorized);
 
 export const client = createBffApiClient({
   axios,
