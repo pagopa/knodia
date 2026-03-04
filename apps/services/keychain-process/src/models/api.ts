@@ -1,4 +1,5 @@
 import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -12,17 +13,12 @@ const API_KeychainId = z
   .uuid()
   .meta({ description: "Unique identifier of the Keychain", id: "KeychainId" });
 
-const API_OwnerId = z.uuid().meta({
-  description: "Unique identifier of the keychain owner",
-  id: "OwnerId",
-});
-
 export const API_Keychain = z
   .strictObject({
     description: API_LocalizedDescription.optional(),
     id: API_KeychainId,
     name: API_LocalizedName,
-    ownerId: API_OwnerId,
+    ownerId: API_OrganizationId,
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Keychain" });

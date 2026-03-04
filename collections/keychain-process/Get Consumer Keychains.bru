@@ -1,10 +1,10 @@
 meta {
-  name: Get Keychains
+  name: Get Consumer Keychains
   type: http
 }
 
 get {
-  url: {{host-keychain-process}}/keychains?offset=0&limit=50
+  url: {{host-keychain-process}}/consumer-keychains?offset=0&limit=50
   body: none
 }
 
@@ -15,4 +15,5 @@ params:query {
 
 headers {
   X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
 }

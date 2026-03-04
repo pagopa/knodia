@@ -23,8 +23,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
-          sortBy: "createdAt",
-          sortOrder: "asc",
+          sortBy: "updatedAt",
+          sortOrder: "desc",
           table: readmodelConsumerKeychain,
         });
 
