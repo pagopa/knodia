@@ -14,6 +14,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         COGNITO_JWKS_URL: z.url(),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
+        KEYCHAIN_PROCESS_URL: z.url(),
         REMOTE_RESOURCES_MANAGER_URL: z.url(),
         UI_SESSION_JWT_AUDIENCE: z.string(),
         UI_SESSION_JWT_ISSUER: z.string(),
@@ -29,6 +30,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
+        keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         remoteResourcesManagerUrl: c.REMOTE_RESOURCES_MANAGER_URL,
         uiSessionJwt: {
           audience: c.UI_SESSION_JWT_AUDIENCE,

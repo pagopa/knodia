@@ -29,6 +29,8 @@
     "@knodia/file-manager": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
+    "@knodia/keychain-process-client": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
     "@knodia/token-generator": "workspace:*",

@@ -381,6 +381,12 @@ importers:
       '@knodia/file-manager':
         specifier: workspace:*
         version: link:../../../packages/file-manager
+      '@knodia/keychain-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/keychain-models
+      '@knodia/keychain-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/keychain-process-client
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
@@ -1056,6 +1062,28 @@ importers:
         version: 5.9.3
 
   packages/clients/k2k-gateway:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/keychain-process-client:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*
