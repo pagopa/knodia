@@ -14,7 +14,7 @@
     "slot.name": "event_store_slot_orion",
     "publication.name": "event_store_pub_orion",
     "publication.autocreate.mode": "filtered",
-    "table.include.list": "local_.*.events",
+    "table.include.list": "local_orion_.*.events",
     "tombstones.on.delete": true,
     "message.key.columns": "(.*).events:stream_id",
     "key.converter": "org.apache.kafka.connect.json.JsonConverter",

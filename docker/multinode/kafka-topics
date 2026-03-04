@@ -1,2 +1,2 @@
-event-store-orion.local_eservice.events:3
-event-store-lynx.local_eservice.events:3
+event-store-orion.local_orion_eservice.events:3
+event-store-lynx.local_lynx_eservice.events:3

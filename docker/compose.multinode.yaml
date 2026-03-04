@@ -48,7 +48,7 @@ services:
       FLYWAY_PASSWORD: root
       FLYWAY_CONNECT_RETRIES: "5"
       FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local_orion
     depends_on:
       postgres:
         condition: service_healthy
@@ -69,7 +69,7 @@ services:
       FLYWAY_PASSWORD: root
       FLYWAY_CONNECT_RETRIES: "5"
       FLYWAY_BASELINE_ON_MIGRATE: "true"
-      FLYWAY_PLACEHOLDERS_NAMESPACE: local
+      FLYWAY_PLACEHOLDERS_NAMESPACE: local_lynx
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -319,20 +319,20 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
-      EVENTSTORE_DB_USER: local_eservice_process_user
-      EVENTSTORE_DB_PASSWORD: local_eservice_process_user
+      EVENTSTORE_DB_USER: local_orion_eservice_process_user
+      EVENTSTORE_DB_PASSWORD: local_orion_eservice_process_user
       EVENTSTORE_DB_HOST: postgres
       EVENTSTORE_DB_PORT: "5432"
       EVENTSTORE_DB_NAME: orion_event_store
       EVENTSTORE_DB_USE_SSL: "false"
-      EVENTSTORE_DB_ESERVICE_SCHEMA: local_eservice
-      READMODEL_DB_USER: local_eservice_process_user
-      READMODEL_DB_PASSWORD: local_eservice_process_user
+      EVENTSTORE_DB_ESERVICE_SCHEMA: local_orion_eservice
+      READMODEL_DB_USER: local_orion_eservice_process_user
+      READMODEL_DB_PASSWORD: local_orion_eservice_process_user
       READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_ESERVICE_SCHEMA: local_eservice
+      READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -438,19 +438,19 @@ services:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
-      READMODEL_DB_USER: local_eservice_rmw_user
-      READMODEL_DB_PASSWORD: local_eservice_rmw_user
+      READMODEL_DB_USER: local_orion_eservice_rmw_user
+      READMODEL_DB_PASSWORD: local_orion_eservice_rmw_user
       READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_ESERVICE_SCHEMA: local_eservice
+      READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
       KAFKA_BROKERS: kafka:9092
       KAFKA_LOG_LEVEL: INFO
       KAFKA_CLIENT_ID: kafka-eservice-client-orion
       KAFKA_GROUP_ID: kafka-eservice-readmodel-writer-orion
       TOPIC_STARTING_OFFSET: earliest
-      ESERVICE_TOPIC: event-store-orion.local_eservice.events
+      ESERVICE_TOPIC: event-store-orion.local_orion_eservice.events
       AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
@@ -478,20 +478,20 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
-      EVENTSTORE_DB_USER: local_eservice_process_user
-      EVENTSTORE_DB_PASSWORD: local_eservice_process_user
+      EVENTSTORE_DB_USER: local_lynx_eservice_process_user
+      EVENTSTORE_DB_PASSWORD: local_lynx_eservice_process_user
       EVENTSTORE_DB_HOST: postgres
       EVENTSTORE_DB_PORT: "5432"
       EVENTSTORE_DB_NAME: lynx_event_store
       EVENTSTORE_DB_USE_SSL: "false"
-      EVENTSTORE_DB_ESERVICE_SCHEMA: local_eservice
-      READMODEL_DB_USER: local_eservice_process_user
-      READMODEL_DB_PASSWORD: local_eservice_process_user
+      EVENTSTORE_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      READMODEL_DB_USER: local_lynx_eservice_process_user
+      READMODEL_DB_PASSWORD: local_lynx_eservice_process_user
       READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_ESERVICE_SCHEMA: local_eservice
+      READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -597,19 +597,19 @@ services:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
-      READMODEL_DB_USER: local_eservice_rmw_user
-      READMODEL_DB_PASSWORD: local_eservice_rmw_user
+      READMODEL_DB_USER: local_lynx_eservice_rmw_user
+      READMODEL_DB_PASSWORD: local_lynx_eservice_rmw_user
       READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_ESERVICE_SCHEMA: local_eservice
+      READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
       KAFKA_BROKERS: kafka:9092
       KAFKA_LOG_LEVEL: INFO
       KAFKA_CLIENT_ID: kafka-eservice-client-lynx
       KAFKA_GROUP_ID: kafka-eservice-readmodel-writer-lynx
       TOPIC_STARTING_OFFSET: earliest
-      ESERVICE_TOPIC: event-store-lynx.local_eservice.events
+      ESERVICE_TOPIC: event-store-lynx.local_lynx_eservice.events
       AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
