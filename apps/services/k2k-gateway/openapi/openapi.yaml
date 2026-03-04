@@ -595,3 +595,5 @@ tags:
     name: resource
   - description: Ad-hoc routes to simplify frequent use cases
     name: operation
+  - description: Routes related to E-services
+    name: eservice
