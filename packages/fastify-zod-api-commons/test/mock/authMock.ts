@@ -1,6 +1,5 @@
 import { vi } from "vitest";
 
-// TODO move to test-commons when we have more than one service test using it
 vi.mock("@knodia/fastify-zod-api-commons/auth", async (importOriginal) => {
   const original =
     await importOriginal<

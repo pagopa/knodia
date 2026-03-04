@@ -163,6 +163,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     },
     url: "/eservices/:eserviceId/versions/latest",
   });
+
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [

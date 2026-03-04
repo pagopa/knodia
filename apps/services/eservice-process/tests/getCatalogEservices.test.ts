@@ -39,7 +39,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
 
   const withLatestVersionState = (
     eservice: Eservice,
-    state: EserviceVersion["state"],
+    state: EserviceVersionState,
   ): Eservice => ({
     ...eservice,
     versions: [
