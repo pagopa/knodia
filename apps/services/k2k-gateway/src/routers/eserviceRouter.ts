@@ -154,12 +154,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve the latest version of an E-service",
+      description: "Retrieve the latest Version of an E-service",
       operationId: "getEserviceLatestVersion",
       params: API_EserviceIdPathParam,
       response: {
         200: API_EserviceVersion.meta({
-          description: "E-service latest version retrieved successfully",
+          description: "E-service latest Version retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "E-service not found" }),
@@ -194,13 +194,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the interface document of the latest version of an E-service",
+        "Retrieve the Interface Document of the latest Version of an E-service",
       operationId: "getEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       response: {
         200: API_EserviceVersionInterfaceDocument.meta({
           description:
-            "E-service latest version interface document retrieved successfully",
+            "E-service latest Version Interface Document retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "E-service not found" }),

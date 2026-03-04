@@ -90,7 +90,7 @@ const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
 });
 
 const API_EserviceId = z.uuid().meta({
-  description: "Unique identifier of the E-Service",
+  description: "Unique identifier of the E-service",
   id: "EserviceId",
 });
 
@@ -157,7 +157,7 @@ export const API_EserviceVersion = z
     createdAt: z.iso.datetime(),
     id: z
       .uuid()
-      .meta({ description: "Unique identifier of the E-service version" }),
+      .meta({ description: "Unique identifier of the E-service Version" }),
     maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
     maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
     requiredAttributes: API_RequiredAttributes,
@@ -176,7 +176,7 @@ export const API_EserviceVersionInterfaceDocument = z
     createdAt: z.iso.datetime(),
     id: z
       .uuid()
-      .meta({ description: "Unique identifier of the interface document" }),
+      .meta({ description: "Unique identifier of the Interface Document" }),
     name: z.string(),
     path: z.string(),
     prettyName: API_LocalizedText,
