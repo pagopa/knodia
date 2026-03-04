@@ -1,0 +1,19 @@
+meta {
+  name: Dekete Consumer Keychain
+  type: http
+}
+
+delete {
+  url: {{host-eservice-process}}/consumer-keychains/:consumerKeychainId
+  body: none
+  auth: none
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

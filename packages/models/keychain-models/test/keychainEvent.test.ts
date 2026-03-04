@@ -5,7 +5,10 @@ import { describe, expect, it } from "vitest";
 
 import type { ConsumerKeychain } from "../src/keychain.ts";
 
-import { ConsumerKeychainCreatedV1 } from "../src/generated/v1/keychainEvents.ts";
+import {
+  ConsumerKeychainCreatedV1,
+  ConsumerKeychainDeletedV1,
+} from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
 import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
 
@@ -49,6 +52,31 @@ describe("KeychainEventV1 codec", () => {
 
   it("encodes and decodes a ConsumerKeychainCreatedV1 payload (protobufBinaryCodec-only)", () => {
     const codec = protobufBinaryCodec(ConsumerKeychainCreatedV1);
+    const value = {
+      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+    };
+    const bytes = codec.encode(value);
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(codec.decode(bytes)).toEqual(value);
+  });
+
+  it("encodes and decodes a ConsumerKeychainDeletedV1 payload (KeychainEventV1 full codec)", () => {
+    const event: KeychainEventV1 = {
+      data: {
+        consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+      },
+      type: "ConsumerKeychainDeletedV1",
+    };
+    const encoded = KeychainEventV1.encode(event);
+    expect(encoded).toMatchObject({ type: "ConsumerKeychainDeletedV1" });
+    expect(encoded.data).toBeInstanceOf(Uint8Array);
+
+    const decoded = KeychainEventV1.decode(encoded);
+    expect(decoded).toMatchObject(event);
+  });
+
+  it("encodes and decodes a ConsumerKeychainDeletedV1 payload (protobufBinaryCodec-only)", () => {
+    const codec = protobufBinaryCodec(ConsumerKeychainDeletedV1);
     const value = {
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
     };

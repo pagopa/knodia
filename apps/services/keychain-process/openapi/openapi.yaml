@@ -7,13 +7,6 @@ info:
   title: Knodia Keychain Process API
   version: 1.0.0
 components:
-  securitySchemes:
-    bearerAuth:
-      bearerFormat: JWT
-      description: A JWT bearer token conforming to the best practices defined in RFC
-        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
-      scheme: bearer
-      type: http
   schemas:
     ProblemError:
       type: object
@@ -73,6 +66,28 @@ components:
         - status
         - title
       additionalProperties: false
+    LocalizedName:
+      description: Name of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedDescription:
+      description: Description of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -99,28 +114,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    KeychainLocalizedName:
-      description: Name of the Keychain
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 5
-          maxLength: 60
-      required:
-        - en
-      additionalProperties: false
-    KeychainLocalizedDescription:
-      description: Description of the Keychain
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
-      additionalProperties: false
     KeychainId:
       description: Unique identifier of the Keychain
       type: string
@@ -135,11 +128,11 @@ components:
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         description:
           allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+            - $ref: "#/components/schemas/LocalizedDescription"
         id:
           $ref: "#/components/schemas/KeychainId"
         name:
-          $ref: "#/components/schemas/KeychainLocalizedName"
+          $ref: "#/components/schemas/LocalizedName"
         ownerId:
           $ref: "#/components/schemas/OrganizationId"
         updatedAt:
@@ -171,9 +164,9 @@ components:
       properties:
         description:
           allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+            - $ref: "#/components/schemas/LocalizedDescription"
         name:
-          $ref: "#/components/schemas/KeychainLocalizedName"
+          $ref: "#/components/schemas/LocalizedName"
       required:
         - name
       additionalProperties: false
@@ -184,7 +177,6 @@ paths:
       tags:
         - health
       description: Check the health status of the service
-      security: []
       responses:
         "200":
           description: Service status OK
@@ -194,7 +186,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains:
+  /consumer-keychains:
     get:
       operationId: getConsumerKeychains
       tags:
@@ -242,33 +234,17 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
     post:
       operationId: createConsumerKeychain
       tags:
         - consumerKeychain
       description: Create a new Consumer Keychain
       requestBody:
-        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/ConsumerKeychainSeed"
+        required: true
       parameters:
         - schema:
             allOf:
@@ -294,27 +270,49 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
+  /consumer-keychain/{consumerKeychainId}:
+    delete:
+      operationId: deleteConsumerKeychain
+      tags:
+        - consumerKeychain
+      description: Delete a Consumer Keychain
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "204":
+          description: Consumer Keychain deleted successfully
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
-                description: Unauthorized
+                description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
+        "404":
+          description: Consumer Keychain not found
           content:
             application/problem+json:
               schema:
-                description: Forbidden
+                description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
   - description: Keychain Process API
     url: /
-security:
-  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

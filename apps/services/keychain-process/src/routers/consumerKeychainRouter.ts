@@ -7,6 +7,8 @@ import {
   API_Problem,
   KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
+import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
+import { z } from "zod";
 
 import type { ConsumerKeychainService } from "../services/consumerKeychainService.ts";
 
@@ -86,5 +88,31 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      await consumerKeychainService.deleteConsumerKeychain(
+        req.params.consumerKeychainId,
+        getContextValues(requestContext),
+      );
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Delete a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "deleteConsumerKeychain",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Consumer Keychain deleted successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumer-keychain/:consumerKeychainId",
   });
 };
