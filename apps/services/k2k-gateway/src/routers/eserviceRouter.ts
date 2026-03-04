@@ -91,7 +91,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
       },
       summary: "Search for E-services",
-      tags: [apiTags.operation],
+      tags: [apiTags.operation, apiTags.eservice],
     },
     url: "/catalog",
   });
@@ -129,7 +129,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
   });
@@ -156,18 +156,18 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve the latest version of an E-service",
+      description: "Retrieve the latest Version of an E-service",
       operationId: "getEserviceLatestVersion",
       params: API_EserviceIdPathParam,
       response: {
         200: API_EserviceVersion.meta({
-          description: "E-service latest version retrieved successfully",
+          description: "E-service latest Version retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service latest version",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest",
   });
@@ -196,19 +196,19 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the interface document of the latest version of an E-service",
+        "Retrieve the Interface Document of the latest Version of an E-service",
       operationId: "getEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       response: {
         200: API_EserviceVersionInterfaceDocument.meta({
           description:
-            "E-service latest version interface document retrieved successfully",
+            "E-service latest Version Interface Document retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service latest version interface",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
   });
