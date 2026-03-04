@@ -119,8 +119,13 @@ export const throwIfMultipleOrEmpty = <T extends { id: string }>(
 export function aggregateByPKString<
   Table extends AnyPgTable,
   T extends InferSelectModel<Table> & Record<string, unknown>,
->(subRow: null | T, pkSet: Set<string>, subRows: T[], table: Table): void {
-  if (subRow !== null) {
+>(
+  subRow: null | T | undefined,
+  pkSet: Set<string>,
+  subRows: T[],
+  table: Table,
+): void {
+  if (subRow !== null && subRow !== undefined) {
     const key = getTablePKString(subRow, table);
     if (!pkSet.has(key)) {
       pkSet.add(key);

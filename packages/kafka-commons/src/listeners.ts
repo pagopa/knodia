@@ -1,7 +1,7 @@
 import type {
   Consumer,
   Producer,
-} from "@confluentinc/kafka-javascript/types/kafkajs.js";
+} from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { Logger } from "pino";
 
 import { processExit } from "./utils/utils.ts";
