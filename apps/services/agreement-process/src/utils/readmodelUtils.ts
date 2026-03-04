@@ -28,7 +28,7 @@ export const retrieveEserviceVersion = async (
   );
 
   if (!eserviceVersion) {
-    throw eserviceVersionNotFound(eserviceId);
+    throw eserviceVersionNotFound(eserviceId, eserviceVersionId);
   }
 
   return eserviceVersion;

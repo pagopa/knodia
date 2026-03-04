@@ -30,7 +30,7 @@ export function eserviceNotFound(id: EserviceId) {
 
 export function eserviceVersionNotFound(
   eserviceId: EserviceId,
-  versionId?: EserviceVersionId,
+  versionId: EserviceVersionId,
 ) {
   const detail = versionId
     ? `E-service version '${versionId}' not found for e-service '${eserviceId}'`
