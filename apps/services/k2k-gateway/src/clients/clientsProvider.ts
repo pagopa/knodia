@@ -1,11 +1,14 @@
-import { createAgreementProcessApiClient } from "@knodia/agreement-process-client";
+import {
+  type AgreementProcessClient,
+  createAgreementProcessApiClient,
+} from "@knodia/agreement-process-client";
 import {
   createEserviceProcessApiClient,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 
 interface KnodiaClients {
-  agreementProcessClient: ReturnType<typeof createAgreementProcessApiClient>;
+  agreementProcessClient: AgreementProcessClient;
   eserviceProcessClient: EserviceProcessClient;
 }
 
