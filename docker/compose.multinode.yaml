@@ -199,48 +199,30 @@ services:
       retries: 30
       start_period: 30s
 
-  debezium-setup-orion:
+  debezium-setup:
     security_opt:
       - no-new-privileges:true
-    container_name: knodia-multinode-debezium-setup-orion
+    container_name: knodia-multinode-debezium-setup
     image: curlimages/curl:8.12.1@sha256:94e9e444bcba979c2ea12e27ae39bee4cd10bc7041a472c4727a558e213744e6
     depends_on:
       debezium-connect:
         condition: service_healthy
     volumes:
-      - ./multinode/event-store-connector-orion.json:/connector.json:ro
+      - ./multinode/event-store-connector-orion.json:/connectors/orion.json:ro
+      - ./multinode/event-store-connector-lynx.json:/connectors/lynx.json:ro
     entrypoint: >
       /bin/sh -c "
-      response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
-      -H 'Accept:application/json'
-      -H 'Content-Type:application/json'
-      -d @/connector.json
-      http://debezium-connect:8083/connectors);
-      if [ \"$$response\" -eq 201 ]; then echo 'Connector orion registered'; exit 0; fi;
-      if [ \"$$response\" -eq 409 ]; then echo 'Connector orion already exists'; exit 0; fi;
-      echo \"Failed to register connector orion: HTTP $$response\"; exit 1;
-      "
-
-  debezium-setup-lynx:
-    security_opt:
-      - no-new-privileges:true
-    container_name: knodia-multinode-debezium-setup-lynx
-    image: curlimages/curl:8.12.1@sha256:94e9e444bcba979c2ea12e27ae39bee4cd10bc7041a472c4727a558e213744e6
-    depends_on:
-      debezium-connect:
-        condition: service_healthy
-    volumes:
-      - ./multinode/event-store-connector-lynx.json:/connector.json:ro
-    entrypoint: >
-      /bin/sh -c "
-      response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
-      -H 'Accept:application/json'
-      -H 'Content-Type:application/json'
-      -d @/connector.json
-      http://debezium-connect:8083/connectors);
-      if [ \"$$response\" -eq 201 ]; then echo 'Connector lynx registered'; exit 0; fi;
-      if [ \"$$response\" -eq 409 ]; then echo 'Connector lynx already exists'; exit 0; fi;
-      echo \"Failed to register connector lynx: HTTP $$response\"; exit 1;
+      for node in orion lynx; do
+        response=$$(curl -s -o /dev/null -w '%{http_code}' -X POST
+        -H 'Accept:application/json'
+        -H 'Content-Type:application/json'
+        -d @/connectors/$$node.json
+        http://debezium-connect:8083/connectors);
+        if [ \"$$response\" -eq 201 ]; then echo \"Connector $$node registered\";
+        elif [ \"$$response\" -eq 409 ]; then echo \"Connector $$node already exists\";
+        else echo \"Failed to register connector $$node: HTTP $$response\"; exit 1;
+        fi;
+      done
       "
 
   # ============================================================
