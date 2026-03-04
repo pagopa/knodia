@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
-    "@knodia/db-event-store-agreement": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
     "@knodia/test-commons": "workspace:*",
