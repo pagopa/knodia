@@ -93,6 +93,17 @@ components:
       required:
         - refreshToken
       additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -180,17 +191,6 @@ components:
       enum:
         - Bearer
         - DPoP
-    EserviceAttribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -280,7 +280,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
       required:
         - accessTokenAudience
         - accessTokenDuration
@@ -413,7 +413,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
         state:
           description: State of the version
           allOf:
@@ -616,7 +616,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
