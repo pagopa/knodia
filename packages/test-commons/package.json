@@ -9,6 +9,7 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "catalog:",
     "@confluentinc/kafka-javascript": "catalog:",
+    "@knodia/agreement-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
