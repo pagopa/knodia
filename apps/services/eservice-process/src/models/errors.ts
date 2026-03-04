@@ -21,7 +21,7 @@ const errorCodes = {
   INTERFACE_NOT_FOUND: "0005",
   DUPLICATE_INTERFACE_ID: "0006",
   INCONSISTENT_DAILY_CALLS: "0007",
-  TENANT_NOT_FOUND: "0008",
+  ORGANIZATION_NOT_FOUND: "0008",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -106,11 +106,11 @@ export function invalidCategory(scheme: string, code: string) {
   });
 }
 
-export function tenantNotFound(tenantId: OrganizationId) {
+export function organizationNotFound(organizationId: OrganizationId) {
   return createApiError<ErrorCodes>({
-    code: "TENANT_NOT_FOUND",
-    detail: `Tenant with id ${tenantId} not found`,
+    code: "ORGANIZATION_NOT_FOUND",
+    detail: `Organization with id ${organizationId} not found`,
     status: HTTP_STATUS_BAD_REQUEST,
-    title: "Tenant Not Found",
+    title: "Organization Not Found",
   });
 }

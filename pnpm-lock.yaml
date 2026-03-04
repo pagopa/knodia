@@ -557,9 +557,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
-      '@knodia/tenant-models':
+      '@knodia/organization-models':
         specifier: workspace:*
-        version: link:../../../packages/models/tenant-models
+        version: link:../../../packages/models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
@@ -1953,7 +1953,7 @@ importers:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
-  packages/models/tenant-models:
+  packages/models/organization-models:
     dependencies:
       '@knodia/common-models':
         specifier: workspace:*

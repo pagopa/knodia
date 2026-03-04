@@ -1,11 +1,11 @@
 import type { OrganizationId } from "@knodia/common-models/ids";
 
-interface Tenant {
+interface Organization {
   id: OrganizationId;
   name: string;
 }
 
-const tenants: Record<string, string> = {
+const organizations: Record<string, string> = {
   "00000000-0000-4000-8000-000000000002": "Local Development Organization",
   "10000000-0000-4000-8000-000000000010": "Comune di Milano",
   "10000000-0000-4000-8000-000000000020": "Regione Lombardia",
@@ -13,10 +13,12 @@ const tenants: Record<string, string> = {
   "20000000-2000-1000-8000-000000000002": "Test Organization",
 };
 
-export function getTenant(tenantId: OrganizationId): Tenant | undefined {
-  const name = tenants[tenantId];
+export function getOrganization(
+  organizationId: OrganizationId,
+): Organization | undefined {
+  const name = organizations[organizationId];
   if (name === undefined) {
     return undefined;
   }
-  return { id: tenantId, name };
+  return { id: organizationId, name };
 }

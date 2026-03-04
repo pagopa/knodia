@@ -187,7 +187,7 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("should return 400 if the tenant does not exist", async () => {
+  it("should return 400 if the organization does not exist", async () => {
     const response = await injectAppRequestWithOrganizationId(generateId())
       .post("/eservices")
       .body(body);

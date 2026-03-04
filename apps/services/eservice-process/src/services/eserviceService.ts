@@ -19,7 +19,7 @@ import {
   generateId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
-import { getTenant } from "@knodia/tenant-models";
+import { getOrganization } from "@knodia/organization-models";
 
 import type {
   API_EserviceSeed,
@@ -34,7 +34,7 @@ import {
   inconsistentDailyCalls,
   invalidAttribute,
   invalidCategory,
-  tenantNotFound,
+  organizationNotFound,
 } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 import {
@@ -49,10 +49,10 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
 ) {
-  const assertTenantExists = (tenantId: OrganizationId): void => {
-    const tenant = getTenant(tenantId);
-    if (tenant === undefined) {
-      throw tenantNotFound(tenantId);
+  const assertOrganizationExists = (organizationId: OrganizationId): void => {
+    const organization = getOrganization(organizationId);
+    if (organization === undefined) {
+      throw organizationNotFound(organizationId);
     }
   };
 
@@ -68,7 +68,7 @@ export function eserviceServiceBuilder(
         `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
 
-      assertTenantExists(producerId);
+      assertOrganizationExists(producerId);
 
       for (const attr of seed.requiredAttributes.flat()) {
         if (getAttribute(attr) === undefined) {
