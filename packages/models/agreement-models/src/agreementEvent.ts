@@ -1,4 +1,4 @@
-// import { EventEnvelope } from "@knodia/common-models/event";
+import { EventEnvelope } from "@knodia/common-models/event";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { z } from "zod";
 
@@ -12,5 +12,5 @@ export const AgreementEventV1 = z.discriminatedUnion("type", [
 ]);
 export type AgreementEventV1 = z.infer<typeof AgreementEventV1>;
 
-// const AgreementEventEnvelopeV1 = EventEnvelope(AgreementEventV1);
-// export type AgreementEventEnvelopeV1 = z.infer<typeof AgreementEventEnvelopeV1>;
+const AgreementEventEnvelopeV1 = EventEnvelope(AgreementEventV1);
+export type AgreementEventEnvelopeV1 = z.infer<typeof AgreementEventEnvelopeV1>;
