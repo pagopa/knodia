@@ -1,9 +1,21 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
+  "tags": ["-knipignore"],
   "includeEntryExports": true,
+  "ignoreWorkspaces": [
+    "packages/models/keychain-models",
+    "packages/db/readmodel/consumer-keychain",
+    "packages/db/event-store/keychain"
+  ],
+  "ignoreIssues": {
+    "packages/models/common-models/src/brandedIds.ts": ["exports", "types"]
+  },
   "workspaces": {
     ".": {
-      "ignore": ["scripts/local-kms/kms-setup.mjs", "scripts/local-kms/local-cognito.mjs"]
+      "ignore": [
+        "scripts/local-kms/kms-setup.mjs",
+        "scripts/local-kms/local-cognito.mjs"
+      ]
     },
     "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],

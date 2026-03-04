@@ -1,4 +1,7 @@
-import type { KnodiaTokenClaims, UserRole } from "@knodia/common-models/auth";
+import type {
+  KnodiaAuthTokenClaims,
+  UserRole,
+} from "@knodia/common-models/auth";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
@@ -17,7 +20,9 @@ export interface UISessionAuthData {
   userRoles: NonEmptyArray<UserRole>;
 }
 
-export function extractAuthDataFromToken(claims: KnodiaTokenClaims): AuthData {
+export function extractAuthDataFromToken(
+  claims: KnodiaAuthTokenClaims,
+): AuthData {
   return match(claims)
     .with(
       { type: "ui-session" },

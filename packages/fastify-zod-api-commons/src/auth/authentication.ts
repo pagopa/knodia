@@ -1,7 +1,7 @@
 import type { HTTPServiceLoggerMetadata } from "@knodia/logger/models";
 
 import { requestContext } from "@fastify/request-context";
-import { KnodiaTokenClaims } from "@knodia/common-models/auth";
+import { KnodiaAuthTokenClaims } from "@knodia/common-models/auth";
 import { type CorrelationId, unsafeBrandId } from "@knodia/common-models/ids";
 import fastifyPlugin from "fastify-plugin";
 import { createRemoteJWKSet, jwtVerify } from "jose";
@@ -60,7 +60,7 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
         throw unauthorizedError("Token verification failed");
       }
 
-      const parsed = KnodiaTokenClaims.safeParse(rawPayload);
+      const parsed = KnodiaAuthTokenClaims.safeParse(rawPayload);
       if (!parsed.success) {
         throw unauthorizedError("Invalid token claims");
       }

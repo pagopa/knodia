@@ -18,9 +18,9 @@
     "./ids": "./src/brandedIds.ts",
     "./localization": "./src/localization.ts",
     "./protobuf": "./src/protobuf.ts",
-    "./services": "./src/services.ts",
     "./types": "./src/types.ts",
-    "./utils": "./src/utils/utils.ts"
+    "./services": "./src/services.ts",
+    "./utils": "./src/utils.ts"
   },
   "dependencies": {
     "zod": "catalog:"
