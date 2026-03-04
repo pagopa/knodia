@@ -19,20 +19,17 @@ export type API_ConsumerKeychainIdPathParam = z.infer<
 export const API_LocalizedName = LocalizedText(
   minNameLength,
   maxNameLength,
-).meta({ description: "Name of the Consumer Keychain", id: "LocalizedName" });
+).meta({ description: "Name of the Keychain", id: "LocalizedName" });
 export type API_LocalizedName = z.infer<typeof API_LocalizedName>;
 
 export const API_LocalizedDescription = LocalizedText(
   minDescriptionLength,
   maxDescriptionLength,
 ).meta({
-  description: "Description of the Consumer Keychain",
+  description: "Description of the Keychain",
   id: "LocalizedDescription",
 });
 export type API_LocalizedDescription = z.infer<typeof API_LocalizedDescription>;
 
 export const API_KeyFormat = z.enum(["jwk", "x509"]).meta({ id: "KeyFormat" });
 export type API_KeyFormat = z.infer<typeof API_KeyFormat>;
-
-export const API_KeyUse = z.enum(["sig", "enc"]).meta({ id: "KeyUse" });
-export type API_KeyUse = z.infer<typeof API_KeyUse>;

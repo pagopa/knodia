@@ -87,8 +87,13 @@ components:
         - offset
         - total
       additionalProperties: false
+    OrganizationId:
+      description: Unique identifier of the Organization
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     LocalizedName:
-      description: Name of the Consumer Keychain
+      description: Name of the Keychain
       type: object
       properties:
         en:
@@ -99,7 +104,7 @@ components:
         - en
       additionalProperties: false
     LocalizedDescription:
-      description: Description of the Consumer Keychain
+      description: Description of the Keychain
       type: object
       properties:
         en:
@@ -111,11 +116,6 @@ components:
       additionalProperties: false
     KeychainId:
       description: Unique identifier of the Keychain
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    OwnerId:
-      description: Unique identifier of the keychain owner
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
@@ -134,7 +134,7 @@ components:
         name:
           $ref: "#/components/schemas/LocalizedName"
         ownerId:
-          $ref: "#/components/schemas/OwnerId"
+          $ref: "#/components/schemas/OrganizationId"
         updatedAt:
           type: string
           format: date-time

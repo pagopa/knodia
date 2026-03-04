@@ -1,7 +1,7 @@
 import type {
   Consumer,
   EachMessagePayload,
-} from "@confluentinc/kafka-javascript/types/kafkajs.js";
+} from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { Logger } from "pino";
 
 import { kafkaMessageProcessError } from "@knodia/common-models/errors";
