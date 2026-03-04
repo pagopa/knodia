@@ -8,6 +8,6 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "remote-resources-manager": "004",
   "agreement-process": "005",
   "keychain-process": "006",
-  "tenant-process": "007",
+  "organization-process": "007",
 };
 /* eslint-enable perfectionist/sort-objects */

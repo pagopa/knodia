@@ -11,15 +11,15 @@ import {
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import type { TenantProcessConfig } from "./config/config.ts";
+import type { OrganizationProcessConfig } from "./config/config.ts";
 
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { tenantRouter } from "./routers/tenantRouter.ts";
+import { organizationRouter } from "./routers/organizationRouter.ts";
+import { organizationServiceBuilder } from "./services/organizationService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
-import { tenantServiceBuilder } from "./services/tenantService.ts";
 
-export function buildAppFromConfig(config: TenantProcessConfig) {
+export function buildAppFromConfig(config: OrganizationProcessConfig) {
   const readmodelPool = new Pool({
     database: config.readmodelDbName,
     host: config.readmodelDbHost,
@@ -53,30 +53,30 @@ function buildApp({
     fastifyOptions: {
       openapi: {
         info: {
-          description: "API for managing Knodia Tenants",
-          title: "Knodia Tenant Process API",
+          description: "API for managing Knodia Organizations",
+          title: "Knodia Organization Process API",
           version: "1.0.0",
         },
-        servers: [{ description: "Tenant Process API", url: "/" }],
+        servers: [{ description: "Organization Process API", url: "/" }],
         tags: [
           healthRouterTag,
           {
-            description: "Tenant routes",
-            name: apiTags.tenant,
+            description: "Organization routes",
+            name: apiTags.organization,
           },
         ],
       },
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "tenant-process",
+    serviceName: "organization-process",
   });
 
   app.register(authenticationPlugin, config);
   app.register(healthRouter);
   app.register(
-    tenantRouter,
-    tenantServiceBuilder(readmodelServiceBuilder(readmodelDb)),
+    organizationRouter,
+    organizationServiceBuilder(readmodelServiceBuilder(readmodelDb)),
   );
 
   return app;

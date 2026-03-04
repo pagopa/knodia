@@ -1,5 +1,5 @@
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
-import type { Tenant } from "@knodia/tenant-models";
+import type { Organization } from "@knodia/organization-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
@@ -9,31 +9,33 @@ import {
 } from "@knodia/db-readmodel-commons/utils";
 import { eq, ilike } from "drizzle-orm";
 
-import { readmodelTenant } from "../tenant.ts";
+import { readmodelOrganization } from "../organization.ts";
 
-export function tenantReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+export function organizationReadmodelServiceBuilder(
+  readmodelDb: NodePgDatabase,
+) {
   return {
-    async getTenants(params: {
+    async getOrganizations(params: {
       limit: number;
       offset: number;
       q?: string;
       sortBy: string;
       sortOrder: string;
-    }): Promise<ListResult<Tenant>> {
+    }): Promise<ListResult<Organization>> {
       const { limit, offset, q, sortBy, sortOrder } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
           sortBy,
           sortOrder,
-          table: readmodelTenant,
+          table: readmodelOrganization,
         });
 
         const createFilterQuery = () => {
           const query = tx
-            .select({ tenantId: readmodelTenant.id })
-            .from(readmodelTenant)
-            .where(q ? ilike(readmodelTenant.name, `%${q}%`) : undefined)
+            .select({ organizationId: readmodelOrganization.id })
+            .from(readmodelOrganization)
+            .where(q ? ilike(readmodelOrganization.name, `%${q}%`) : undefined)
             .$dynamic();
 
           return query;
@@ -48,19 +50,19 @@ export function tenantReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
-              tenant: readmodelTenant,
+              organization: readmodelOrganization,
             })
-            .from(readmodelTenant)
+            .from(readmodelOrganization)
             .innerJoin(
               paginatedIds,
-              eq(readmodelTenant.id, paginatedIds.tenantId),
+              eq(readmodelOrganization.id, paginatedIds.organizationId),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
         return {
-          results: queryRes.map((row) => toTenant(row.tenant)),
+          results: queryRes.map((row) => toOrganization(row.organization)),
           totalCount,
         };
       });
@@ -68,7 +70,9 @@ export function tenantReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   };
 }
 
-const toTenant = (row: typeof readmodelTenant.$inferSelect): Tenant => ({
+const toOrganization = (
+  row: typeof readmodelOrganization.$inferSelect,
+): Organization => ({
   createdAt: row.createdAt,
   id: unsafeBrandId(row.id),
   name: row.name,

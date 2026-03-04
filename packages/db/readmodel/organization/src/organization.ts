@@ -7,12 +7,14 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { readmodelTenantConfig } from "../config/config.ts";
+import { readmodelOrganizationConfig } from "../config/config.ts";
 
-const tenantSchema = pgSchema(readmodelTenantConfig.readmodelDbTenantSchema);
+const organizationSchema = pgSchema(
+  readmodelOrganizationConfig.readmodelDbOrganizationSchema,
+);
 
-export const readmodelTenant = tenantSchema.table(
-  "tenant",
+export const readmodelOrganization = organizationSchema.table(
+  "organization",
   {
     createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
       .defaultNow()
@@ -22,6 +24,9 @@ export const readmodelTenant = tenantSchema.table(
     name: text().notNull(),
   },
   (table) => [
-    unique("tenant_id_metadata_v_unique").on(table.metadataVersion, table.id),
+    unique("organization_id_metadata_v_unique").on(
+      table.metadataVersion,
+      table.id,
+    ),
   ],
 );

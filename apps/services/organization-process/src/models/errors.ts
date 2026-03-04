@@ -3,5 +3,5 @@ import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBu
 const errorCodes = {} as const;
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
-  serviceName: "tenant-process",
+  serviceName: "organization-process",
 });

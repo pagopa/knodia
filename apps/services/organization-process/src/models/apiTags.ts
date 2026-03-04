@@ -1,3 +1,3 @@
 export const apiTags = {
-  tenant: "tenant",
+  organization: "organization",
 } as const;

@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/tenant-process",
+  "name": "@knodia/organization-process",
   "type": "module",
   "scripts": {
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' ' dotenvx run -- node --watch ./src/index.ts'",
@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
-    "test": "pnpm -w test --project @knodia/tenant-process",
+    "test": "pnpm -w test --project @knodia/organization-process",
     "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
@@ -27,10 +27,10 @@
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
-    "@knodia/db-readmodel-tenant": "workspace:*",
+    "@knodia/db-readmodel-organization": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
-    "@knodia/tenant-models": "workspace:*",
+    "@knodia/organization-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
