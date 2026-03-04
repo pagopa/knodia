@@ -1,9 +1,10 @@
 import type {
   InternalTokenClaims,
-  KnodiaAuthTokenClaims,
   UISessionTokenClaims,
+  UserRole,
 } from "@knodia/common-models/auth";
 import type { OrganizationId, UserId } from "@knodia/common-models/ids";
+import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { UnsecuredJWT } from "jose";
@@ -16,18 +17,20 @@ const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
   "20000000-2000-1000-8000-000000000002",
 );
 
+export type TestToken =
+  | { roles?: NonEmptyArray<UserRole>; type: "ui-session" }
+  | { type: "internal" };
+
 /**
  * Creates an unsecured JWT (`alg: "none"`) from test claims.
  * The auth mock decodes it with `decodeJwt` (no signature verification).
- *
- * Call with no args to get a token with the default test claims.
  */
-export function createTestTokenPayload(
-  type: KnodiaAuthTokenClaims["type"],
-): string {
-  const claims = match(type)
-    .with("ui-session", getTestUISessionTokenClaims)
-    .with("internal", getTestInternalTokenClaims)
+export function createTestTokenPayload(spec: TestToken): string {
+  const claims = match(spec)
+    .with({ type: "ui-session" }, ({ roles }) =>
+      getTestUISessionTokenClaims({ roles }),
+    )
+    .with({ type: "internal" }, getTestInternalTokenClaims)
     .exhaustive();
   return new UnsecuredJWT(claims).encode();
 }
@@ -44,7 +47,9 @@ export function getTestInternalTokenClaims(): InternalTokenClaims {
   };
 }
 
-export function getTestUISessionTokenClaims(): UISessionTokenClaims {
+export function getTestUISessionTokenClaims(
+  props: { roles?: NonEmptyArray<UserRole> } = {},
+): UISessionTokenClaims {
   return {
     aud: "test-audience",
     exp: 9999999999,
@@ -52,7 +57,7 @@ export function getTestUISessionTokenClaims(): UISessionTokenClaims {
     iss: "test-issuer",
     jti: "test-jti",
     organizationId: TEST_ORGANIZATION_ID,
-    roles: ["administrative"],
+    roles: props.roles ?? ["administrative"],
     sub: TEST_USER_ID,
     type: "ui-session",
   };
