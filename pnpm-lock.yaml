@@ -965,6 +965,9 @@ importers:
       '@knodia/spectral-config':
         specifier: workspace:*
         version: link:../../../packages/spectral-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config

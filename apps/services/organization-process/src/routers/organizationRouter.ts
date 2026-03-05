@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -21,11 +22,12 @@ export const organizationRouter: FastifyPluginAsyncZod<
 > = async (fastify, organizationService) => {
   fastify.route({
     handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
       const { results, totalCount } =
-        await organizationService.getOrganizations(
-          req.query,
-          getContextValues(requestContext),
-        );
+        await organizationService.getOrganizations(req.query, ctx);
 
       res.status(200).send({
         items: results.map(toAPI_Organization),
@@ -47,6 +49,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
           description: "Organizations retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.organization],
     },

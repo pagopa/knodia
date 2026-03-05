@@ -19,30 +19,7 @@ import { organizationRouter } from "./routers/organizationRouter.ts";
 import { organizationServiceBuilder } from "./services/organizationService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
-export function buildAppFromConfig(config: OrganizationProcessConfig) {
-  const readmodelPool = new Pool({
-    database: config.readmodelDbName,
-    host: config.readmodelDbHost,
-    password: config.readmodelDbPassword,
-    port: config.readmodelDbPort,
-    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
-    user: config.readmodelDbUser,
-  });
-  const readmodelDb = drizzle(readmodelPool);
-
-  const app = buildApp({
-    config,
-    readmodelDb,
-  });
-
-  app.addHook("onClose", async () => {
-    await readmodelPool.end();
-  });
-
-  return app;
-}
-
-function buildApp({
+export function buildApp({
   config,
   readmodelDb,
 }: {
@@ -78,6 +55,29 @@ function buildApp({
     organizationRouter,
     organizationServiceBuilder(readmodelServiceBuilder(readmodelDb)),
   );
+
+  return app;
+}
+
+export function buildAppFromConfig(config: OrganizationProcessConfig) {
+  const readmodelPool = new Pool({
+    database: config.readmodelDbName,
+    host: config.readmodelDbHost,
+    password: config.readmodelDbPassword,
+    port: config.readmodelDbPort,
+    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.readmodelDbUser,
+  });
+  const readmodelDb = drizzle(readmodelPool);
+
+  const app = buildApp({
+    config,
+    readmodelDb,
+  });
+
+  app.addHook("onClose", async () => {
+    await readmodelPool.end();
+  });
 
   return app;
 }

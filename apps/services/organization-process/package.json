@@ -14,6 +14,7 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
