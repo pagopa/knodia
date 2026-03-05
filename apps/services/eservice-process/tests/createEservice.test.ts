@@ -191,12 +191,12 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("should return 400 if the organization does not exist", async () => {
+  it("should return 403 if the organization does not exist", async () => {
     const response = await injectAppRequestWithOrganizationId(
       generateId<OrganizationId>(),
     )
       .post("/eservices")
       .body(body);
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(403);
   });
 });
