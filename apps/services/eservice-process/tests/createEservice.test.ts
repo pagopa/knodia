@@ -21,11 +21,7 @@ import { API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";
-import {
-  getAllEserviceEvents,
-  injectAppRequest,
-  injectAppRequestWithOrganizationId,
-} from "./utils.ts";
+import { getAllEserviceEvents, injectAppRequest } from "./utils.ts";
 
 const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
 const validCategory = {
@@ -192,9 +188,11 @@ describe("POST /eservices (createEservice)", () => {
   });
 
   it("should return 403 if the organization does not exist", async () => {
-    const response = await injectAppRequestWithOrganizationId(
-      generateId<OrganizationId>(),
-    )
+    const response = await injectAppRequest({
+      organizationId: generateId<OrganizationId>(),
+      roles: ["technical"],
+      type: "ui-session",
+    })
       .post("/eservices")
       .body(body);
     expect(response.statusCode).toBe(403);
