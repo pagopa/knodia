@@ -125,6 +125,14 @@ const expectedCorrelationIdSchema = {
 };
 
 export const expectedOpenapiComponents = {
+  schemas: {
+    CorrelationId: expectedCorrelationIdSchema,
+    Pagination: expectedPaginationSchema,
+    Problem: expectedProblemSchema,
+    ProblemError: expectedProblemErrorSchema,
+    Test: expectedTestSchema,
+    Tests: expectedTestsSchema,
+  },
   securitySchemes: {
     bearerAuth: {
       bearerFormat: "JWT",
@@ -133,14 +141,6 @@ export const expectedOpenapiComponents = {
       scheme: "bearer",
       type: "http",
     },
-  },
-  schemas: {
-    CorrelationId: expectedCorrelationIdSchema,
-    Pagination: expectedPaginationSchema,
-    Problem: expectedProblemSchema,
-    ProblemError: expectedProblemErrorSchema,
-    Test: expectedTestSchema,
-    Tests: expectedTestsSchema,
   },
 };
 
