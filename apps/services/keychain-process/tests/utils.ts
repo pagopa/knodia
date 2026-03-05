@@ -7,4 +7,4 @@ export async function getAllKeychainEvents() {
   return await eventStoreDb.select().from(eventStoreKeychainEvents);
 }
 
-export const injectAppRequest = createInjectAppRequest(app);
+export const injectAppRequest = createInjectAppRequest(() => app);

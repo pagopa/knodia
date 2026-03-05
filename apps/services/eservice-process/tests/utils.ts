@@ -7,4 +7,4 @@ export async function getAllEserviceEvents() {
   return await eventStoreDb.select().from(eventStoreEserviceEvents);
 }
 
-export const injectAppRequest = createInjectAppRequest(app);
+export const injectAppRequest = createInjectAppRequest(() => app);

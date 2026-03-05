@@ -7,4 +7,4 @@ export async function getAllAgreementEvents() {
   return await eventStoreDb.select().from(eventStoreAgreementEvents);
 }
 
-export const injectAppRequest = createInjectAppRequest(app);
+export const injectAppRequest = createInjectAppRequest(() => app);

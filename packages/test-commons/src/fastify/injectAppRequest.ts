@@ -4,9 +4,9 @@ import { generateId } from "@knodia/common-models/ids";
 
 import { createTestTokenPayload, type TestToken } from "../auth/auth.ts";
 
-export function createInjectAppRequest(app: FastifyInstance) {
+export function createInjectAppRequest(getApp: () => FastifyInstance) {
   return (spec: TestToken) =>
-    app.inject().headers({
+    getApp().inject().headers({
       authorization: `Bearer ${createTestTokenPayload(spec)}`,
       "x-correlation-id": generateId(),
     });
