@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
@@ -25,10 +26,14 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
 > = async (fastify, { remoteResourcesManagerService }) => {
   fastify.route({
     handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
       const eservices = await remoteResourcesManagerService.getCatalogEservices(
         req.body,
         req.query,
-        getContextValues(requestContext),
+        ctx,
       );
 
       res.send(eservices);
@@ -46,6 +51,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
             "E-service search results retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       summary: "Search for E-services",
       tags: [apiTags.k2kGateway],

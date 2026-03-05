@@ -39,14 +39,12 @@ export const Route = createFileRoute(
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
-    if (!deps.knode || (!deps.category && !deps.keywords)) return;
-
     const body = buildCatalogSearchBody({
       category: deps.category,
       keywords: deps.keywords,
       knodeId: deps.knode,
     });
-    queryClient.prefetchQuery(catalogQuery(body, deps.offset));
+    if (body) queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],
@@ -59,14 +57,11 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
-  const body =
-    search.knode && (search.category || search.keywords)
-      ? buildCatalogSearchBody({
-          category: search.category,
-          keywords: search.keywords,
-          knodeId: search.knode,
-        })
-      : null;
+  const body = buildCatalogSearchBody({
+    category: search.category,
+    keywords: search.keywords,
+    knodeId: search.knode,
+  });
 
   const { data: results, isLoading } = useQuery({
     ...catalogQuery(body, search.offset),

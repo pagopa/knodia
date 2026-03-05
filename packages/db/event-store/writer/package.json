@@ -10,8 +10,10 @@
     "test:watch": "pnpm test --watch"
   },
   "dependencies": {
-    "@knodia/db-event-store-eservice": "workspace:*",
+    "@knodia/agreement-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-event-store-agreement": "workspace:*",
+    "@knodia/db-event-store-eservice": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "zod": "catalog:"
@@ -24,6 +26,7 @@
     "vitest": "catalog:"
   },
   "exports": {
+    "./agreement": "./src/agreementEventWriter.ts",
     "./eservice": "./src/eserviceEventWriter.ts"
   }
 }

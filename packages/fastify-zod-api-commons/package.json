@@ -11,6 +11,7 @@
   },
   "exports": {
     "./auth": "./src/auth/index.ts",
+    "./authMock": "./test/mock/authMock.ts",
     "./config": "./src/config/config.ts",
     "./context": "./src/context/context.ts",
     "./fastify": "./src/utils/fastify.ts",
