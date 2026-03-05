@@ -430,6 +430,7 @@ paths:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
+          required: true
         - schema:
             $ref: "#/components/schemas/EserviceId"
           in: path

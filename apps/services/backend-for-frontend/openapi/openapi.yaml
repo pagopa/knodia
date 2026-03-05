@@ -1121,6 +1121,7 @@ paths:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
+          required: true
         - schema:
             type: string
             format: uuid
