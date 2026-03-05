@@ -1,6 +1,5 @@
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
-  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -13,10 +12,12 @@ import {
 } from "@knodia/eservice-models/api";
 import { z } from "zod";
 
+import { API_KnodeId } from "../api.ts";
+
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
   keywords: z.string().min(1),
-  knodeId: API_KnodeId(),
+  knodeId: API_KnodeId,
 });
 
 const API_EserviceSearchByCategory =

@@ -1,5 +1,4 @@
 import type { RequestContextData } from "@fastify/request-context";
-import type { API_Agreement } from "@knodia/agreement-models/api";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -7,7 +6,10 @@ import {
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 
-import type { API_AgreementSeed } from "../models/agreement/api.ts";
+import type {
+  API_Agreement,
+  API_AgreementSeed,
+} from "../models/agreement/api.ts";
 
 import {
   toAPI_Agreement,

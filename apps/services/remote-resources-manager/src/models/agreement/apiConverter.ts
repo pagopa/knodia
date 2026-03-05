@@ -1,14 +1,13 @@
 import type {
-  API_Agreement,
   API_AgreementConsumer,
   API_AgreementState,
 } from "@knodia/agreement-models/api";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { API_KnodeId } from "@knodia/common-models/api";
 import { match } from "ts-pattern";
 
-import type { API_AgreementSeed } from "./api.ts";
+import type { API_KnodeId } from "../api.ts";
+import type { API_Agreement, API_AgreementSeed } from "./api.ts";
 
 export function toAPI_Agreement(
   agreement: k2kGatewayApi.Agreement,
@@ -16,7 +15,6 @@ export function toAPI_Agreement(
   return {
     attributes: agreement.attributes,
     consumer: toAPI_AgreementConsumer(agreement.consumer),
-    createdAt: agreement.createdAt,
     eserviceId: agreement.eserviceId,
     eserviceVersionId: agreement.eserviceVersionId,
     id: agreement.id,
@@ -55,7 +53,7 @@ function toAPI_AgreementState(
     .exhaustive();
 }
 
-function toAPI_KnodeId(knodeId: k2kGatewayApi.ExternalKnodeId): API_KnodeId {
+function toAPI_KnodeId(knodeId: k2kGatewayApi.KnodeId): API_KnodeId {
   return match(knodeId)
     .with("ORION", () => "Orion" as const)
     .with("LYNX", () => "Lynx" as const)
@@ -67,13 +65,11 @@ function toK2KAPI_AgreementConsumer(
 ): k2kGatewayApi.AgreementConsumer {
   return {
     id: consumer.id,
-    knodeId: toK2KAPI_ExternalKnodeId(consumer.knodeId),
+    knodeId: toK2KAPI_KnodeId(consumer.knodeId),
   };
 }
 
-function toK2KAPI_ExternalKnodeId(
-  knodeId: API_KnodeId,
-): k2kGatewayApi.ExternalKnodeId {
+function toK2KAPI_KnodeId(knodeId: API_KnodeId): k2kGatewayApi.KnodeId {
   return match(knodeId)
     .with("Orion", () => "ORION" as const)
     .with("Lynx", () => "LYNX" as const)

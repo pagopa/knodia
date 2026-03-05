@@ -1,13 +1,12 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_Agreement } from "@knodia/agreement-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import type { AgreementService } from "../services/agreementService.ts";
 
-import { API_AgreementSeed } from "../models/agreement/api.ts";
+import { API_Agreement, API_AgreementSeed } from "../models/agreement/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface AgreementRouterOptions {
@@ -24,7 +23,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         getContextValues(requestContext),
       );
 
-      res.send(agreement);
+      res.status(201).send(agreement);
     },
     method: "POST",
     schema: {
