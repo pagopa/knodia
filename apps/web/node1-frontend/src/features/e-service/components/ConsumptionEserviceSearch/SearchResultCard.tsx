@@ -1,7 +1,7 @@
 import { Avatar, Banner } from "@knodia/ui-kit/ui";
 import { SealCheckIcon, WarningDiamondIcon } from "@phosphor-icons/react";
 
-import type { ConsumptionEserviceSearchResult } from "@/features/e-service/consumption-eservice-search.mock";
+import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 
 import {
   CategoryChip,
