@@ -32,7 +32,7 @@ export const API_AgreementConsumer = z
   });
 export type API_AgreementConsumer = z.infer<typeof API_AgreementConsumer>;
 
-export const API_AgreementId = z.uuid().meta({
+const API_AgreementId = z.uuid().meta({
   description: "Unique identifier of the Agreement",
   id: "AgreementId",
 });
