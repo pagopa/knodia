@@ -22,6 +22,7 @@
     "@testcontainers/postgresql": "catalog:",
     "testcontainers": "catalog:",
     "drizzle-orm": "catalog:",
+    "fastify": "catalog:",
     "eslint": "catalog:",
     "jose": "catalog:",
     "ts-pattern": "catalog:",
@@ -31,6 +32,7 @@
   },
   "exports": {
     "./auth": "./src/auth/index.ts",
+    "./fastify": "./src/fastify/index.ts",
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",
