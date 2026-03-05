@@ -1,6 +1,5 @@
 meta {
   name: Get Catalog Eservices
-  seq: 6
   type: http
 }
 
@@ -16,7 +15,7 @@ params:query {
 
 headers {
   X-Correlation-Id: {{correlation-id}}
-  Authorization: {{ui-session-jwt}}
+  Authorization: {{internal-jwt}}
 }
 
 body:json {
