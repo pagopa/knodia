@@ -1,4 +1,5 @@
 import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -86,11 +87,6 @@ const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
 const API_EserviceId = z.uuid().meta({
   description: "Unique identifier of the E-Service",
   id: "EserviceId",
-});
-
-const API_OrganizationId = z.uuid().meta({
-  description: "Unique identifier of the Organization",
-  id: "OrganizationId",
 });
 
 export const API_CatalogEserviceSearchResult = z
