@@ -6,14 +6,12 @@ import {
   agreementProcessApi,
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
+import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import { API_Agreement, API_AgreementSeed } from "../models/agreement/api.ts";
-import {
-  toAPI_Agreement,
-  toProcessAPI_AgreementSeed,
-} from "../models/agreement/apiConverter.ts";
+import { API_AgreementSeed } from "../models/agreement/api.ts";
+import { toProcessAPI_AgreementSeed } from "../models/agreement/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
@@ -43,7 +41,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      res.status(201).send(toAPI_Agreement(data));
+      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
     },
     method: "POST",
     schema: {
@@ -52,7 +50,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         "Create a new Agreement for a Consumer to access a Producer's E-service",
       operationId: "createAgreement",
       response: {
-        201: API_Agreement.meta({
+        201: API_CreatedResource.meta({
           description: "Agreement created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
