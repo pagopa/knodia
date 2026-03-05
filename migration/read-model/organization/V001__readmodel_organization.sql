@@ -27,3 +27,9 @@ ALTER TABLE ${NAMESPACE}_organization."organization_attribute" ADD CONSTRAINT "o
 -- Grant privileges to ${NAMESPACE}_organization_process_user
 GRANT USAGE ON SCHEMA ${NAMESPACE}_organization TO ${NAMESPACE}_organization_process_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_organization TO ${NAMESPACE}_organization_process_user;
+
+GRANT USAGE ON SCHEMA ${NAMESPACE}_organization TO ${NAMESPACE}_agreement_process_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_organization TO ${NAMESPACE}_agreement_process_user;
+
+GRANT USAGE ON SCHEMA ${NAMESPACE}_organization TO ${NAMESPACE}_eservice_process_user;
+GRANT SELECT ON ALL TABLES IN SCHEMA ${NAMESPACE}_organization TO ${NAMESPACE}_eservice_process_user;
