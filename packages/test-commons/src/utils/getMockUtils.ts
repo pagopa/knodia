@@ -16,7 +16,6 @@ export function getMockAgreement(seed = 0): Agreement {
     .generate();
 }
 
-/** @knipignore */
 export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
   return zocker(ConsumerKeychain)
     .array({
