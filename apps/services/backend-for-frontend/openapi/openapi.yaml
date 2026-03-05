@@ -704,11 +704,11 @@ paths:
         - auth
       description: Validate a Cognito token and generate a session token
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/SessionRequest"
-        required: true
       responses:
         "200":
           description: Session created successfully
@@ -741,11 +741,11 @@ paths:
         - auth
       description: Refresh an expired UI session token using a refresh token
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/RefreshRequest"
-        required: true
       responses:
         "200":
           description: Session refreshed successfully
@@ -778,11 +778,11 @@ paths:
         - eservice
       description: Create a new E-service
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/EserviceSeed"
-        required: true
       responses:
         "201":
           description: E-service created successfully
@@ -997,11 +997,11 @@ paths:
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GetConsumerCatalogEserviceSearchParams"
-        required: true
       parameters:
         - schema:
             format: int32
