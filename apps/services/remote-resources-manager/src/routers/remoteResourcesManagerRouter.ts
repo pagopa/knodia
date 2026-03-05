@@ -5,6 +5,7 @@ import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
+import type { RemoteResourceService } from "../services/remoteResourceService.ts";
 import type { RemoteResourcesManagerService } from "../services/remoteResourcesManagerService.ts";
 
 import {
@@ -15,6 +16,7 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 
 interface RemoteResourcesManagerRouterOptions {
+  remoteResourceService: RemoteResourceService;
   remoteResourcesManagerService: RemoteResourcesManagerService;
 }
 
