@@ -13,6 +13,8 @@ const organizations: Record<string, string> = {
   "20000000-2000-1000-8000-000000000002": "Test Organization",
 };
 
+// This is a mock function to simulate fetching organization data.
+// It will be replaced with a real implementation of data fetching from readmodel in the future.
 export function getOrganization(
   organizationId: OrganizationId,
 ): Organization | undefined {
