@@ -21,11 +21,11 @@
       "PassFile": "/pgadmin4/pgpass"
     },
     "3": {
-      "Name": "Resource Manager (orion)",
+      "Name": "Remote Resource (orion)",
       "Group": "Knodia Multinode",
       "Host": "postgres",
       "Port": 5432,
-      "MaintenanceDB": "orion_resource_manager",
+      "MaintenanceDB": "orion_remote_resource",
       "Username": "root",
       "SSLMode": "prefer",
       "PassFile": "/pgadmin4/pgpass"
@@ -51,11 +51,11 @@
       "PassFile": "/pgadmin4/pgpass"
     },
     "6": {
-      "Name": "Resource Manager (lynx)",
+      "Name": "Remote Resource (lynx)",
       "Group": "Knodia Multinode",
       "Host": "postgres",
       "Port": 5432,
-      "MaintenanceDB": "lynx_resource_manager",
+      "MaintenanceDB": "lynx_remote_resource",
       "Username": "root",
       "SSLMode": "prefer",
       "PassFile": "/pgadmin4/pgpass"

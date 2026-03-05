@@ -31,7 +31,7 @@ services:
     volumes:
       - ../migration/event-store:/flyway/databases/event_store:ro
       - ../migration/read-model:/flyway/databases/readmodel:ro
-      - ../migration/resource-manager:/flyway/databases/resource_manager:ro
+      - ../migration/remote-resource:/flyway/databases/remote_resource:ro
       - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:

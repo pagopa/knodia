@@ -1,9 +1,9 @@
 import { pgSchema, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { resourceManagerDbConfig } from "../../config/config.ts";
+import { remoteResourceDbConfig } from "../../config/config.ts";
 
 const agreementSchema = pgSchema(
-  resourceManagerDbConfig.resourceManagerDbAgreementSchema,
+  remoteResourceDbConfig.remoteResourceDbAgreementSchema,
 );
 
 export const agreement = agreementSchema.table("agreement", {

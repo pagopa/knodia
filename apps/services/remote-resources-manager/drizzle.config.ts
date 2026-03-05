@@ -1,18 +1,18 @@
 import { defineConfig } from "drizzle-kit";
 
-import { resourceManagerDbConfig } from "./config/config.ts";
+import { remoteResourceDbConfig } from "./config/config.ts";
 
 export default defineConfig({
   dbCredentials: {
-    database: resourceManagerDbConfig.resourceManagerDbName,
-    host: resourceManagerDbConfig.resourceManagerDbHost,
-    password: resourceManagerDbConfig.resourceManagerDbPassword,
-    port: resourceManagerDbConfig.resourceManagerDbPort,
-    ssl: resourceManagerDbConfig.resourceManagerDbUseSsl,
-    user: resourceManagerDbConfig.resourceManagerDbUser,
+    database: remoteResourceDbConfig.remoteResourceDbName,
+    host: remoteResourceDbConfig.remoteResourceDbHost,
+    password: remoteResourceDbConfig.remoteResourceDbPassword,
+    port: remoteResourceDbConfig.remoteResourceDbPort,
+    ssl: remoteResourceDbConfig.remoteResourceDbUseSsl,
+    user: remoteResourceDbConfig.remoteResourceDbUser,
   },
   dialect: "postgresql",
   out: "./generated",
-  schemaFilter: [resourceManagerDbConfig.resourceManagerDbAgreementSchema],
+  schemaFilter: [remoteResourceDbConfig.remoteResourceDbAgreementSchema],
   tablesFilter: ["!flyway_schema_history"],
 });

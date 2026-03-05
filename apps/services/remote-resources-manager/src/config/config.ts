@@ -6,11 +6,11 @@ import { LoggerConfig } from "@knodia/logger/config";
 import { env } from "node:process";
 import { z } from "zod";
 
-import { ResourceManagerDbConfig } from "../../config/config.ts";
+import { RemoteResourceDbConfig } from "../../config/config.ts";
 
 const RemoteResourcesManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
-  .and(ResourceManagerDbConfig)
+  .and(RemoteResourceDbConfig)
   .and(
     z
       .object({

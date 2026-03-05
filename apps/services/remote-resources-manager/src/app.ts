@@ -23,16 +23,16 @@ import { remoteResourcesManagerServiceBuilder } from "./services/remoteResources
 export function buildApp({
   config,
   knodeUrl,
-  resourceManagerDb,
+  remoteResourceDb,
 }: {
   config: AuthConfig & LoggerConfig;
   knodeUrl: string;
-  resourceManagerDb: NodePgDatabase;
+  remoteResourceDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
     knodeUrl,
   });
-  const remoteResourceService = remoteResourceServiceBuilder(resourceManagerDb);
+  const remoteResourceService = remoteResourceServiceBuilder(remoteResourceDb);
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -68,26 +68,26 @@ export function buildApp({
 }
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
-  const resourceManagerPool = new Pool({
-    database: config.resourceManagerDbName,
-    host: config.resourceManagerDbHost,
-    password: config.resourceManagerDbPassword,
-    port: config.resourceManagerDbPort,
-    ssl: config.resourceManagerDbUseSsl
+  const remoteResourcePool = new Pool({
+    database: config.remoteResourceDbName,
+    host: config.remoteResourceDbHost,
+    password: config.remoteResourceDbPassword,
+    port: config.remoteResourceDbPort,
+    ssl: config.remoteResourceDbUseSsl
       ? { rejectUnauthorized: false }
       : undefined,
-    user: config.resourceManagerDbUser,
+    user: config.remoteResourceDbUser,
   });
-  const resourceManagerDb = drizzle(resourceManagerPool);
+  const remoteResourceDb = drizzle(remoteResourcePool);
 
   const app = buildApp({
     config,
     knodeUrl: config.knodeUrl,
-    resourceManagerDb,
+    remoteResourceDb,
   });
 
   app.addHook("onClose", async () => {
-    await resourceManagerPool.end();
+    await remoteResourcePool.end();
   });
 
   return app;
