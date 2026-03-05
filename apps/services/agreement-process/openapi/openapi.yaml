@@ -66,18 +66,18 @@ components:
         - status
         - title
       additionalProperties: false
-    AgreementState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
     KnodeId:
       description: Unique Knode identifier
       type: string
       enum:
         - Orion
         - Lynx
+    AgreementState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     AgreementConsumer:
       type: object
       properties:

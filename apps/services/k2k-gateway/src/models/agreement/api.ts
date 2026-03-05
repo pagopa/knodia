@@ -1,11 +1,8 @@
+import { API_OrganizationId } from "@knodia/common-models/api";
 import { z } from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
-import {
-  API_EserviceId,
-  API_EserviceVersionId,
-  API_OrganizationId,
-} from "../eservice/api.ts";
+import { API_EserviceId, API_EserviceVersionId } from "../eservice/api.ts";
 
 export const API_KnodeId = z.enum(["ORION", "LYNX"]).meta({
   description: "Unique Knode identifier",
