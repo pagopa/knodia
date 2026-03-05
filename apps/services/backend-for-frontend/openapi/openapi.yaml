@@ -966,11 +966,11 @@ paths:
         - keychain
       description: Create a new Consumer Keychain
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/ConsumerKeychainSeed"
-        required: true
       responses:
         "201":
           description: Consumer Keychain created successfully

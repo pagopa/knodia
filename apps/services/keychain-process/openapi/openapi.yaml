@@ -234,17 +234,26 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer-keychains:
     post:
       operationId: createConsumerKeychain
       tags:
         - consumerKeychain
       description: Create a new Consumer Keychain
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/ConsumerKeychainSeed"
-        required: true
       parameters:
         - schema:
             allOf:
@@ -268,6 +277,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
