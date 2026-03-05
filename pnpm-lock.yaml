@@ -2014,6 +2014,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      fastify:
+        specifier: 'catalog:'
+        version: 5.7.3
       jose:
         specifier: 'catalog:'
         version: 6.1.3
