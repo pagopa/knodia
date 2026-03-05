@@ -86,8 +86,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Consumer Keychain not found" }),
       },
-      tags: [apiTags.keychain],
+      tags: [apiTags.consumerKeychain],
     },
-    url: "/consumer-keychains/:consumerKeychainId",
+    url: "/consumerKeychains/:consumerKeychainId",
   });
 };
