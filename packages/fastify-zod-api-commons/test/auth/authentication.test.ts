@@ -273,7 +273,6 @@ describe("authenticationPlugin", () => {
 
       await multiJwksApp.close();
     });
-
   });
 });
 
