@@ -244,7 +244,6 @@ describe("authenticationPlugin", () => {
         },
       });
     });
-
   });
 });
 

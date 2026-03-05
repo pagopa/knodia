@@ -5,8 +5,8 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { agreementEventStoreWriterBuilder } from "@knodia/db-event-store-writer/agreement";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
-  requireCorrelationIdHeaderPlugin,
   createFastifyApp,
+  requireCorrelationIdHeaderPlugin,
 } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
