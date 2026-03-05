@@ -4,13 +4,8 @@ import type {
   API_EserviceVersionState,
 } from "@knodia/eservice-models/api";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
-import type { TestToken } from "@knodia/test-commons/auth";
 
 import { match } from "ts-pattern";
-
-export const allowedTestTokens: TestToken[] = [
-  { roles: ["administrative"], type: "ui-session" },
-];
 
 export const toK2KVersionState = (
   state: API_EserviceVersionState,

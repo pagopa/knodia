@@ -3,7 +3,7 @@
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
-import { forbiddenTestTokens } from "@knodia/test-commons/auth";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
@@ -11,11 +11,7 @@ import {
   API_CatalogEserviceSearchResult,
   type API_CatalogEserviceSearchResult as API_CatalogEserviceSearchResultType,
 } from "../src/models/api.ts";
-import {
-  allowedTestTokens,
-  toK2KMode,
-  toK2KVersionState,
-} from "./k2kConverters.ts";
+import { toK2KMode, toK2KVersionState } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getCatalogEservicesMock = vi.hoisted(() => vi.fn());
@@ -40,6 +36,10 @@ const toK2KResult = (
   latestVersionState: toK2KVersionState(apiResult.latestVersionState),
   mode: toK2KMode(apiResult.mode),
 });
+
+const allowedTestTokens: TestToken[] = [
+  { roles: ["administrative"], type: "ui-session" },
+];
 
 describe("POST /catalog (getCatalogEservices)", () => {
   const defaultQuery = {
