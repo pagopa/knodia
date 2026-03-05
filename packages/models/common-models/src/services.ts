@@ -6,6 +6,7 @@ export const HTTPServiceName = z.enum([
   "k2k-gateway",
   "remote-resources-manager",
   "agreement-process",
+  "keychain-process",
 ]);
 export type HTTPServiceName = z.infer<typeof HTTPServiceName>;
 
