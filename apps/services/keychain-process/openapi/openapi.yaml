@@ -170,7 +170,6 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer-keychains:
   /consumerKeychains:
     get:
       operationId: getConsumerKeychains
