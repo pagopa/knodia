@@ -14,7 +14,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-describe("POST /consumer-keychains (createConsumerKeychain)", () => {
+describe("POST /consumerKeychains (createConsumerKeychain)", () => {
   const body: API_ConsumerKeychainSeed = {
     description: { en: "Consumer keychain description" },
     name: { en: "Test Consumer keychain" },
