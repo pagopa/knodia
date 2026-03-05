@@ -1,4 +1,6 @@
-import type { RequestContextData } from "@fastify/request-context";
+import type { API_CreatedResource } from "@knodia/common-models/api";
+import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -6,15 +8,9 @@ import {
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 
-import type {
-  API_Agreement,
-  API_AgreementSeed,
-} from "../models/agreement/api.ts";
+import type { API_AgreementSeed } from "../models/agreement/api.ts";
 
-import {
-  toAPI_Agreement,
-  toK2KAPI_AgreementSeed,
-} from "../models/agreement/apiConverter.ts";
+import { toK2KAPI_AgreementSeed } from "../models/agreement/apiConverter.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -24,8 +20,8 @@ export function agreementServiceBuilder(
   return {
     async createAgreement(
       reqBody: API_AgreementSeed,
-      { correlationId, logger }: RequestContextData,
-    ): Promise<API_Agreement> {
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_CreatedResource> {
       logger.info(
         { requestBody: reqBody },
         `Creating agreement for e-service owned by Knode ${reqBody.knodeId} with body data`,
@@ -41,7 +37,7 @@ export function agreementServiceBuilder(
 
       // TODO: save the remote agreement in the remote resources database
 
-      return toAPI_Agreement(data);
+      return data;
     },
   };
 }

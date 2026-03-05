@@ -1,12 +1,14 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_CreatedResource } from "@knodia/common-models/api";
+import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import type { AgreementService } from "../services/agreementService.ts";
 
-import { API_Agreement, API_AgreementSeed } from "../models/agreement/api.ts";
+import { API_AgreementSeed } from "../models/agreement/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface AgreementRouterOptions {
@@ -18,12 +20,13 @@ export const agreementRouter: FastifyPluginAsyncZod<
 > = async (fastify, { agreementService }) => {
   fastify.route({
     handler: async (req, res) => {
-      const agreement = await agreementService.createAgreement(
-        req.body,
-        getContextValues(requestContext),
-      );
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
 
-      res.status(201).send(agreement);
+      const data = await agreementService.createAgreement(req.body, ctx);
+
+      res.status(201).send(data);
     },
     method: "POST",
     schema: {
@@ -31,10 +34,12 @@ export const agreementRouter: FastifyPluginAsyncZod<
       description: "Create a new Agreement",
       operationId: "createAgreement",
       response: {
-        201: API_Agreement.meta({
+        201: API_CreatedResource.meta({
           description: "Agreement created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
       tags: [apiTags.agreement],
     },
