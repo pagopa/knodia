@@ -271,6 +271,7 @@ const expectedStatusGet = {
     responses: {
       "200": expectedHealthResponse,
     },
+    security: [],
     tags: [healthRouterTag.name],
   },
 };
