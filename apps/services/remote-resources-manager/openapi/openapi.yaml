@@ -401,11 +401,11 @@ paths:
         - agreement
       description: Create a new Agreement
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/AgreementSeed"
-        required: true
       responses:
         "201":
           description: Agreement created successfully
