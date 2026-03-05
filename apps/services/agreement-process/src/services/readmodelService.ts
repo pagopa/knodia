@@ -102,7 +102,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 state ? eq(readmodelAgreement.state, state) : undefined,
               ),
             )
-            // .groupBy(readmodelAgreement.id)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
