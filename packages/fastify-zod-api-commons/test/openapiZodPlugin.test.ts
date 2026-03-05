@@ -1,23 +1,24 @@
 import type { OpenAPIV3 } from "openapi-types";
 
-import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
-import openapiZodPlugin from "../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
+import { createFastifyApp } from "../src/utils/fastify.ts";
+import { makeApiProblemBuilder } from "../src/utils/problemBuilder.ts";
 import {
   expectedOpenapiComponents,
   expectedOpenapiPaths,
 } from "./utils/expectedTestOpenapi.ts";
 import { testRouter, testTags } from "./utils/testRouter.ts";
 
-describe("openapiZodPlugin", () => {
-  const fastify = Fastify({
-    logger: false,
-  });
+const makeApiProblem = makeApiProblemBuilder(
+  {},
+  { serviceName: "eservice-process" },
+);
 
-  beforeAll(async () => {
-    await fastify.register(openapiZodPlugin, {
+describe("openapiZodPlugin", () => {
+  const fastify = createFastifyApp({
+    fastifyOptions: {
       openapi: {
         info: {
           description: "API for testing openapiZodPlugin",
@@ -33,8 +34,13 @@ describe("openapiZodPlugin", () => {
           },
         ],
       },
-    });
+    },
+    loggerConfig: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
+    makeApiProblem,
+    serviceName: "eservice-process",
+  });
 
+  beforeAll(async () => {
     await fastify.register(healthRouter);
     await fastify.register(testRouter);
     await fastify.ready();

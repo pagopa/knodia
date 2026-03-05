@@ -1,19 +1,13 @@
-import fastifyRequestContext, {
-  requestContext,
-} from "@fastify/request-context";
-import {
-  CorrelationId,
-  generateId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
-import Fastify, { type FastifyRequest } from "fastify";
+import { requestContext } from "@fastify/request-context";
+import { generateId } from "@knodia/common-models/ids";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-// Import for the RequestContextData module augmentation side-effect
-import "../../src/context/context.ts";
 import { CORRELATION_ID_HEADER } from "../../src/models/headers.ts";
 import { healthRouterUrl } from "../../src/routers/healthRouter.ts";
-import { requireCorrelationIdHeaderPlugin } from "../../src/utils/fastify.ts";
+import {
+  createFastifyApp,
+  requireCorrelationIdHeaderPlugin,
+} from "../../src/utils/fastify.ts";
 import { docsRoutePrefix } from "../../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import { makeApiProblemBuilder } from "../../src/utils/problemBuilder.ts";
 
@@ -22,27 +16,30 @@ const makeApiProblem = makeApiProblemBuilder(
   { serviceName: "eservice-process" },
 );
 
+const buildTestApp = () =>
+  createFastifyApp({
+    fastifyOptions: {
+      openapi: { info: { title: "Test", version: "0.0.0" } },
+    },
+    loggerConfig: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
+    makeApiProblem,
+    serviceName: "eservice-process",
+  });
+
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
 describe("requireCorrelationIdHeaderPlugin", () => {
-  let app: ReturnType<typeof Fastify>;
+  let app: ReturnType<typeof buildTestApp>;
 
   beforeAll(async () => {
-    app = Fastify({ genReqId: () => generateId(), logger: false });
-
-    await app.register(fastifyRequestContext, {
-      defaultStoreValues: (request: FastifyRequest) => ({
-        correlationId: unsafeBrandId<CorrelationId>(request.id),
-        logger: request.log,
-      }),
-    });
+    app = buildTestApp();
 
     // Public routes — outside the encapsulated context
     app.get(healthRouterUrl, async () => ({ ok: true }));
     app.get(docsTestRoute, async () => ({ ok: true }));
 
     // Protected routes — requireCorrelationIdHeaderPlugin scoped via encapsulation
-    app.register(async (protectedApp: typeof app) => {
+    app.register(async (protectedApp) => {
       protectedApp.register(requireCorrelationIdHeaderPlugin, {
         makeApiProblem,
       });
@@ -111,19 +108,12 @@ describe("requireCorrelationIdHeaderPlugin", () => {
 });
 
 describe("correlation ID header injection prevention", () => {
-  let app: ReturnType<typeof Fastify>;
+  let app: ReturnType<typeof buildTestApp>;
 
   beforeAll(async () => {
     // Simulates a frontier service (BFF, k2k-gateway):
     // no requireCorrelationIdHeaderPlugin registered
-    app = Fastify({ genReqId: () => generateId(), logger: false });
-
-    await app.register(fastifyRequestContext, {
-      defaultStoreValues: (request: FastifyRequest) => ({
-        correlationId: unsafeBrandId<CorrelationId>(request.id),
-        logger: request.log,
-      }),
-    });
+    app = buildTestApp();
 
     app.get("/endpoint", async () => ({
       correlationId: requestContext.get("correlationId"),

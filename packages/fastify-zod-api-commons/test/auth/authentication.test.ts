@@ -1,11 +1,8 @@
-import fastifyRequestContext from "@fastify/request-context";
 import { requestContext } from "@fastify/request-context";
-import { generateId } from "@knodia/common-models/ids";
 import {
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
-import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import {
@@ -14,6 +11,7 @@ import {
 } from "../../src/auth/authentication.ts";
 import { ApiError } from "../../src/models/errors/apiError.ts";
 import { healthRouterUrl } from "../../src/routers/healthRouter.ts";
+import { createFastifyApp } from "../../src/utils/fastify.ts";
 import { docsRoutePrefix } from "../../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import { makeApiProblemBuilder } from "../../src/utils/problemBuilder.ts";
 
@@ -29,23 +27,15 @@ const makeApiProblem = makeApiProblemBuilder(
   { serviceName: "backend-for-frontend" },
 );
 
-const buildTestApp = async () => {
-  const app = Fastify({ genReqId: () => generateId(), logger: false });
-
-  await app.register(fastifyRequestContext, {
-    defaultStoreValues: (request) => ({
-      correlationId: generateId(),
-      logger: request.log,
-    }),
+const buildTestApp = () =>
+  createFastifyApp({
+    fastifyOptions: {
+      openapi: { info: { title: "Test", version: "0.0.0" } },
+    },
+    loggerConfig: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
+    makeApiProblem,
+    serviceName: "backend-for-frontend",
   });
-
-  app.setErrorHandler((error, _, reply) => {
-    const problem = makeApiProblem(error);
-    return reply.status(problem.status).send(problem);
-  });
-
-  return app;
-};
 
 describe("parseAuthHeaderToken", () => {
   it("throws ApiError when header is undefined", () => {
@@ -81,10 +71,10 @@ const validInternalPayload = getTestInternalTokenClaims();
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
 describe("authenticationPlugin", () => {
-  let app: Awaited<ReturnType<typeof buildTestApp>>;
+  let app: ReturnType<typeof buildTestApp>;
 
   beforeAll(async () => {
-    app = await buildTestApp();
+    app = buildTestApp();
 
     // Public routes (no auth) — registered outside the protected context
     app.get(healthRouterUrl, async () => ({ ok: true }));
@@ -249,7 +239,7 @@ describe("authenticationPlugin", () => {
 
 describe("authenticationPlugin with multiple JWKS", () => {
   it("succeeds using the first valid JWKS when multiple are configured", async () => {
-    const multiJwksApp = await buildTestApp();
+    const multiJwksApp = buildTestApp();
     multiJwksApp.register(async (protectedApp) => {
       protectedApp.register(authenticationPlugin, {
         acceptedAudiences: ["test-audience"],
