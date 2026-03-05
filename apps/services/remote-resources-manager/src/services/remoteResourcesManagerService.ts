@@ -31,7 +31,7 @@ export function remoteResourcesManagerServiceBuilder(
       eserviceId: string,
       // TODO: use knodeId to route to the correct K2K Gateway instance
       knodeId: string,
-      { correlationId, logger }: RequestContextData,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CatalogEserviceDetail> {
       logger.info(
         { eserviceId, knodeId },

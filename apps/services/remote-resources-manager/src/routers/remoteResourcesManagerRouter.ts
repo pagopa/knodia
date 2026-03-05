@@ -61,11 +61,15 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
       const detail =
         await remoteResourcesManagerService.getCatalogEserviceDetail(
           req.params.eserviceId,
           req.query.knodeId,
-          getContextValues(requestContext),
+          ctx,
         );
 
       res.send(detail);
@@ -81,6 +85,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
           description: "E-service detail retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service detail",
