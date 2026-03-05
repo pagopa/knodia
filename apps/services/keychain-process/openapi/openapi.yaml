@@ -171,6 +171,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer-keychains:
+  /consumerKeychains:
     get:
       operationId: getConsumerKeychains
       tags:
