@@ -31,14 +31,16 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   duplicateInterfaceId,
-  eserviceNotFound,
-  eserviceVersionNotFound,
   inconsistentDailyCalls,
-  interfaceNotFound,
   invalidAttribute,
   invalidCategory,
 } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
+import {
+  retrieveEservice,
+  retrieveEserviceLatestVersion,
+  retrieveEserviceLatestVersionInterface,
+} from "../utils/readmodelUtils.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -46,40 +48,6 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
 ) {
-  const retrieveEservice = async (eserviceId: EserviceId) => {
-    const eservice = await readmodelService.getEservice(eserviceId);
-
-    if (!eservice) {
-      throw eserviceNotFound(eserviceId);
-    }
-
-    return eservice.data;
-  };
-
-  const retrieveEserviceLatestVersion = async (eserviceId: EserviceId) => {
-    const eserviceVersion =
-      await readmodelService.getEserviceLatestVersion(eserviceId);
-
-    if (!eserviceVersion) {
-      throw eserviceVersionNotFound(eserviceId);
-    }
-
-    return eserviceVersion;
-  };
-
-  const retrieveEserviceLatestVersionInterface = async (
-    eserviceId: EserviceId,
-  ) => {
-    const eserviceVersionInterface =
-      await readmodelService.getEserviceLatestVersionInterface(eserviceId);
-
-    if (!eserviceVersionInterface) {
-      throw interfaceNotFound(eserviceId);
-    }
-
-    return eserviceVersionInterface;
-  };
-
   return {
     async createEservice(
       seed: API_EserviceSeed,
@@ -93,7 +61,7 @@ export function eserviceServiceBuilder(
       );
 
       logger.info(
-        `Creating E-service ${eserviceId} for producer ${producerId} `,
+        `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
 
       for (const attr of seed.requiredAttributes.flat()) {
@@ -188,7 +156,7 @@ export function eserviceServiceBuilder(
     ): Promise<Eservice> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
 
-      return await retrieveEservice(eserviceId);
+      return await retrieveEservice(eserviceId, readmodelService);
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
@@ -196,7 +164,7 @@ export function eserviceServiceBuilder(
     ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
       logger.info(`Getting latest version of E-service with ID ${eserviceId}`);
 
-      return await retrieveEserviceLatestVersion(eserviceId);
+      return await retrieveEserviceLatestVersion(eserviceId, readmodelService);
     },
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
@@ -206,7 +174,10 @@ export function eserviceServiceBuilder(
         `Getting latest version interface of E-service with ID ${eserviceId}`,
       );
 
-      return await retrieveEserviceLatestVersionInterface(eserviceId);
+      return await retrieveEserviceLatestVersionInterface(
+        eserviceId,
+        readmodelService,
+      );
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
