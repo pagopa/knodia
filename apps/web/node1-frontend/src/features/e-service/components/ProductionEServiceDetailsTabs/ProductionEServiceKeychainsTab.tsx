@@ -1,7 +1,7 @@
 import { Banner, Button } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 
-import { Section } from "./Section";
+import { Section } from "../Section";
 
 export function ProductionEServiceKeychainsTab() {
   return (

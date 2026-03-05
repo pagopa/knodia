@@ -6,12 +6,10 @@ import type { ConsumptionEserviceSearchParams } from "../../models/search-params
 
 import { toSchemeRefOptions } from "../../utils/schemeRef";
 
-// TODO: Replace with real data
-const knodeOptions = [
-  { id: "knode-1", label: "Knode 1" },
-  { id: "knode-2", label: "Knode 2" },
-  { id: "knode-3", label: "Knode 3" },
-];
+// TODO: the current Knode is Orion, so the only other Knode is Lynx. In the future, the list and the
+// check of available remote Knodes should be dynamic. If this code is reused for the Lynx node, this
+// hardcoded list will need to be replaced.
+const knodeOptions = [{ id: "Lynx", label: "Lynx" }];
 
 const categoryOptions = toSchemeRefOptions(categories);
 
@@ -30,7 +28,7 @@ export function SearchFilters({
     defaultValues,
     onSubmit: ({ value }) => {
       // Knode is required AND (category OR keywords) is required
-      if (!value.knode || (!value.category && !value.keywords)) {
+      if (!value.knodeId || (!value.category && !value.keywords)) {
         onValidationError();
         return;
       }
@@ -68,7 +66,7 @@ export function SearchFilters({
               )}
             </ComboBox>
           )}
-          name="knode"
+          name="knodeId"
         />
 
         <form.Field
