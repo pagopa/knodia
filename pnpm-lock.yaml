@@ -1952,6 +1952,9 @@ importers:
 
   packages/models/organization-models:
     dependencies:
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models

@@ -11,6 +11,7 @@
     ".": "./src/organizations.ts"
   },
   "dependencies": {
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*"
   },
   "devDependencies": {
