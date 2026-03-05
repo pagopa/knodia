@@ -1711,6 +1711,9 @@ importers:
 
   packages/db/readmodel/organization:
     dependencies:
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../models/common-models
@@ -1720,6 +1723,9 @@ importers:
       '@knodia/db-readmodel-config':
         specifier: workspace:*
         version: link:../config
+      '@knodia/organization-models':
+        specifier: workspace:*
+        version: link:../../../models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
@@ -1733,15 +1739,12 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
-      '@knodia/attribute-models':
-        specifier: workspace:*
-        version: link:../../../models/attribute-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../eslint-config
-      '@knodia/organization-models':
+      '@knodia/test-commons':
         specifier: workspace:*
-        version: link:../../../models/organization-models
+        version: link:../../../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../typescript-config
@@ -2238,6 +2241,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../logger
+      '@knodia/organization-models':
+        specifier: workspace:*
+        version: link:../models/organization-models
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

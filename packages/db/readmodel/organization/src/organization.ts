@@ -65,4 +65,9 @@ export const readmodelOrganizationAttribute = organizationSchema.table(
 export type OrganizationAttributeSQL =
   typeof readmodelOrganizationAttribute.$inferSelect;
 
+export interface OrganizationItemsSQL {
+  attributesSQL: OrganizationAttributeSQL[];
+  organizationSQL: OrganizationSQL;
+}
+
 export type OrganizationSQL = typeof readmodelOrganization.$inferSelect;
