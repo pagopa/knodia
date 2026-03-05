@@ -24,6 +24,7 @@ const FrontendNode1Config = z.object({
   COGNITO_DOMAIN: z.string().min(1, "COGNITO_DOMAIN is required"),
   COGNITO_LOGOUT_URI: z.string().min(1, "COGNITO_LOGOUT_URI is required"),
   COGNITO_REDIRECT_URI: z.string().min(1, "COGNITO_REDIRECT_URI is required"),
+  KNODE_NAME: z.string().min(1, "KNODE_NAME is required"),
 });
 
 const parsed = FrontendNode1Config.safeParse(window.env);
@@ -45,6 +46,7 @@ export const config = {
     logoutUri: parsed.data.COGNITO_LOGOUT_URI,
     redirectUri: parsed.data.COGNITO_REDIRECT_URI,
   },
+  knodeName: parsed.data.KNODE_NAME,
 };
 
 declare global {

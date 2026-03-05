@@ -3,6 +3,7 @@ import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
+import { config } from "@/config/config";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
@@ -17,9 +18,6 @@ import { AttributeGroupContainer } from "../../AttributeGroupContainer";
 import { DocumentRecap } from "../../DocumentRecap";
 import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
-
-// TODO: use real Knode name
-const KNODE_NAME = "Orion Knode";
 
 export function RecapStep() {
   const { data } = useEServiceWizardContext();
@@ -247,7 +245,7 @@ function TechnicalDetailsSection({
         </GenericInfoCard>
         {data.isSignalHubEnabled && (
           <DocumentRecap
-            name={`Appoint ${KNODE_NAME} as the data processor`}
+            name={`Appoint ${config.knodeName} as the data processor`}
             showDownloadButton
           />
         )}
