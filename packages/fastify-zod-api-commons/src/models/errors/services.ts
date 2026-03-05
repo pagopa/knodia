@@ -7,5 +7,6 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "k2k-gateway": "003",
   "remote-resources-manager": "004",
   "agreement-process": "005",
+  "keychain-process": "006",
 };
 /* eslint-enable perfectionist/sort-objects */
