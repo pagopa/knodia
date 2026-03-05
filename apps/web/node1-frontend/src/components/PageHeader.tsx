@@ -40,8 +40,8 @@ export function PageHeader({
       </div>
       {(actions || resourceStatusChip) && (
         <div className="flex items-center gap-10 shrink-0">
-          <div>{resourceStatusChip}</div>
-          <div className="flex items-center gap-4">{actions}</div>
+          {resourceStatusChip && <div>{resourceStatusChip}</div>}
+          {actions && <div className="flex items-center gap-4">{actions}</div>}
         </div>
       )}
     </header>

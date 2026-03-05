@@ -1,16 +1,26 @@
 import { getAttribute } from "@knodia/attribute-models";
-import { BookOpenTextIcon } from "@phosphor-icons/react";
+import { BookOpenTextIcon, SealCheckIcon } from "@phosphor-icons/react";
 import { Fragment } from "react";
 
-import type { SchemeRef } from "../types/eserviceCreateForm";
+import type { SchemeRef } from "../types/schemeRef";
+
+interface AttributeWithPossession extends SchemeRef {
+  possessed?: boolean;
+}
 
 export function AttributeGroupContainer({
   attributes,
 }: {
-  attributes: SchemeRef[];
+  attributes: AttributeWithPossession[];
 }) {
+  const isGroupSatisfied = attributes.some((attr) => attr.possessed === true);
+
   return (
-    <div className="flex items-center gap-4 py-3 px-4 bg-secondary-light rounded-lg text-secondary-light-mid-contrast body-md">
+    <div
+      className={`flex items-center gap-4 py-3 px-4 rounded-lg body-md text-secondary-light-mid-contrast ${
+        isGroupSatisfied ? "bg-success-light" : "bg-secondary-light"
+      }`}
+    >
       {attributes.map((attribute, index) => (
         <Fragment key={`${attribute.scheme}$${attribute.code}`}>
           {index > 0 && (
@@ -18,12 +28,21 @@ export function AttributeGroupContainer({
               or
             </span>
           )}
-          <span className="flex gap-1">
+          <span
+            className={`flex gap-1 ${attribute.possessed ? "body-md-em text-primary-dark" : ""}`}
+          >
             {getAttribute(attribute)?.name ?? attribute.code}
             <BookOpenTextIcon size={20} />
           </span>
         </Fragment>
       ))}
+      {isGroupSatisfied && (
+        <SealCheckIcon
+          className="ml-auto shrink-0 text-success-light-low-contrast"
+          size={24}
+          weight="fill"
+        />
+      )}
     </div>
   );
 }

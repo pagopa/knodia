@@ -3,8 +3,8 @@ import { SealCheckIcon, WarningDiamondIcon } from "@phosphor-icons/react";
 
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 
+import { CategoryChip } from "../CategoryChip";
 import {
-  CategoryChip,
   EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,
@@ -32,16 +32,12 @@ export function SearchResultCard({
         mode={eservice.mode}
         state={eservice.state}
         trailing={
-          <div className="flex shrink-0 items-center gap-2">
-            <Avatar
-              className="bg-brand-dark text-white"
-              fallback={eservice.organization.initials}
-              size="sm"
-            />
-            <span className="label-md text-primary-light-high-contrast">
-              {eservice.organization.name}
-            </span>
-          </div>
+          <Avatar
+            className="bg-brand-dark text-white"
+            fallback={eservice.organization.initials}
+            name={eservice.organization.name}
+            size="sm"
+          />
         }
       >
         {eservice.categories.map((category) => (
@@ -49,6 +45,7 @@ export function SearchResultCard({
             code={category.code}
             key={category.code}
             scheme={category.scheme}
+            showIcon={false}
           />
         ))}
       </EserviceCardFooter>

@@ -19,6 +19,7 @@ export * from "./Menu";
 export * from "./Modal";
 export * from "./NumberField";
 export * from "./Pagination";
+export * from "./Popover";
 export * from "./RadioGroup";
 export * from "./Select";
 export * from "./Steps";

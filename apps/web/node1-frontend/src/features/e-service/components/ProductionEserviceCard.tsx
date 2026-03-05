@@ -2,8 +2,8 @@ import type { bffApi } from "@knodia/bff-client";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 
+import { CategoryChip } from "./CategoryChip";
 import {
-  CategoryChip,
   EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,

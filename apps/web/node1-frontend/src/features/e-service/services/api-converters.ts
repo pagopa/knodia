@@ -1,4 +1,5 @@
 import { bffApi } from "@knodia/bff-client";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
@@ -16,7 +17,7 @@ export function toCatalogSearchResultUI(
     categories: result.categories,
     description: result.description.en,
     hasRequiredAttributes: result.hasRequiredAttributes,
-    id: result.id,
+    id: unsafeBrandId(result.id),
     mode: result.mode,
     name: result.name.en,
     organization: {
