@@ -8,6 +8,7 @@ import { SearchContent } from "@/features/e-service/components/ConsumptionEservi
 import { SearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchFilters";
 import {
   consumptionEserviceSearchDefaultValues,
+  type ConsumptionEserviceSearchParams,
   consumptionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
 import { toCatalogSearchResultUI } from "@/features/e-service/services/api-converters";
@@ -17,12 +18,10 @@ import { client } from "@/libs/axios";
 
 const CATALOG_SEARCH_LIMIT = 4;
 
-const isSearchReady = (params: {
-  category: string;
-  keywords: string;
-  knode: string;
-}): boolean =>
-  params.knode !== "" && (params.category !== "" || params.keywords !== "");
+const isSearchReady = (
+  params: Omit<ConsumptionEserviceSearchParams, "offset">,
+): boolean =>
+  params.knodeId !== "" && (params.category !== "" || params.keywords !== "");
 
 const catalogQuery = (
   body: ReturnType<typeof buildCatalogSearchBody>,
@@ -38,10 +37,10 @@ export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/search",
 )({
   component: RouteComponent,
-  loaderDeps: ({ search: { category, keywords, knode, offset } }) => ({
+  loaderDeps: ({ search: { category, keywords, knodeId, offset } }) => ({
     category,
     keywords,
-    knode,
+    knodeId,
     offset,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
@@ -50,7 +49,7 @@ export const Route = createFileRoute(
     const body = buildCatalogSearchBody({
       category: deps.category,
       keywords: deps.keywords,
-      knodeId: deps.knode,
+      knodeId: deps.knodeId,
     });
     queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
@@ -70,7 +69,7 @@ function RouteComponent() {
   const body = buildCatalogSearchBody({
     category: search.category,
     keywords: search.keywords,
-    knodeId: search.knode,
+    knodeId: search.knodeId,
   });
 
   const { data: results, isLoading } = useQuery({
@@ -112,7 +111,7 @@ function RouteComponent() {
         defaultValues={{
           category: search.category,
           keywords: search.keywords,
-          knode: search.knode,
+          knodeId: search.knodeId,
         }}
         onSubmit={handleSearch}
         onValidationError={handleValidationError}

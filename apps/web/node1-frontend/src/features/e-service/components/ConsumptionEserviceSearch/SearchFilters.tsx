@@ -28,7 +28,7 @@ export function SearchFilters({
     defaultValues,
     onSubmit: ({ value }) => {
       // Knode is required AND (category OR keywords) is required
-      if (!value.knode || (!value.category && !value.keywords)) {
+      if (!value.knodeId || (!value.category && !value.keywords)) {
         onValidationError();
         return;
       }
@@ -66,7 +66,7 @@ export function SearchFilters({
               )}
             </ComboBox>
           )}
-          name="knode"
+          name="knodeId"
         />
 
         <form.Field
