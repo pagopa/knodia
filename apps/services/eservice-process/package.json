@@ -23,8 +23,6 @@
     "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
-    "fastify-plugin": "catalog:",
-    "jose": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },
