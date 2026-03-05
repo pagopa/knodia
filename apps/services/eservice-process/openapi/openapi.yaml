@@ -594,11 +594,11 @@ paths:
         - eservice
       description: Create a new E-service
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/EserviceSeed"
-        required: true
       parameters:
         - schema:
             allOf:
@@ -810,11 +810,11 @@ paths:
       description: Retrieve a list of E-services based on complex search criteria
         contained in the request body
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
-        required: true
       parameters:
         - schema:
             format: int32

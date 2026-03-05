@@ -107,13 +107,6 @@ export const API_EserviceSeed = z
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 
-export const API_CreatedResource = z
-  .strictObject({
-    id: z.uuid(),
-  })
-  .meta({ id: "CreatedResource" });
-export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
-
 export const API_ProducerEservice = z
   .strictObject({
     activeAgreements: z
