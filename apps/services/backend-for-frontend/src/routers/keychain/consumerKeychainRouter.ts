@@ -50,8 +50,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
-      tags: [apiTags.keychain],
+      tags: [apiTags.consumerKeychain],
     },
-    url: "/consumer-keychains",
+    url: "/consumerKeychains",
   });
 };

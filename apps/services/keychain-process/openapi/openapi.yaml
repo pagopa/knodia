@@ -242,7 +242,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer-keychains:
     post:
       operationId: createConsumerKeychain
       tags:

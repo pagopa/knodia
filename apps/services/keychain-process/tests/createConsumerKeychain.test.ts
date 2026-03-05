@@ -1,12 +1,18 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { ConsumerKeychain } from "@knodia/keychain-models";
 
 import { KeychainEventV1, toConsumerKeychainV1 } from "@knodia/keychain-models";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
 import { API_ConsumerKeychainSeed, API_Keychain } from "../src/models/api.ts";
 import { toAPI_Keychain } from "../src/models/apiConverter.ts";
 import { getAllKeychainEvents, injectAppRequest } from "./utils.ts";
+
+const allowedTestTokens: TestToken[] = [
+  { roles: ["technical"], type: "ui-session" },
+];
 
 describe("POST /consumer-keychains (createConsumerKeychain)", () => {
   const body: API_ConsumerKeychainSeed = {
@@ -15,8 +21,8 @@ describe("POST /consumer-keychains (createConsumerKeychain)", () => {
   };
 
   it("should correctly create consumer keychain creation event", async () => {
-    const response = await injectAppRequest()
-      .post("/consumer-keychains")
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/consumerKeychains")
       .body(body);
     expect(response.statusCode).toBe(201);
 
@@ -72,10 +78,19 @@ describe("POST /consumer-keychains (createConsumerKeychain)", () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, requestBody) => {
-      const response = await injectAppRequest()
-        .post("/consumer-keychains")
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/consumerKeychains")
         .body(requestBody as never);
       expect(response.statusCode).toBe(400);
+    },
+  );
+  it.each(forbiddenTestTokens(allowedTestTokens))(
+    "should return 403 for unauthorized token ($type)",
+    async (spec) => {
+      const response = await injectAppRequest(spec)
+        .post("/consumerKeychains")
+        .body(body);
+      expect(response.statusCode).toBe(403);
     },
   );
 });

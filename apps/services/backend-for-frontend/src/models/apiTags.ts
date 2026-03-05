@@ -1,5 +1,5 @@
 export const apiTags = {
   auth: "auth",
+  consumerKeychain: "consumerKeychain",
   eservice: "eservice",
-  keychain: "keychain",
 } as const;

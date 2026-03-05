@@ -52,8 +52,8 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             name: apiTags.eservice,
           },
           {
-            description: "Keychains routes",
-            name: apiTags.keychain,
+            description: "Consumer keychains routes",
+            name: apiTags.consumerKeychain,
           },
         ],
       },

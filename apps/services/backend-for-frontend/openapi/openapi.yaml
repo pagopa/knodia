@@ -959,11 +959,11 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer-keychains:
+  /consumerKeychains:
     post:
       operationId: createConsumerKeychain
       tags:
-        - keychain
+        - consumerKeychain
       description: Create a new Consumer Keychain
       requestBody:
         required: true
@@ -1049,5 +1049,5 @@ tags:
     name: auth
   - description: E-services routes
     name: eservice
-  - description: Keychains routes
-    name: keychain
+  - description: Consumer keychains routes
+    name: consumerKeychain

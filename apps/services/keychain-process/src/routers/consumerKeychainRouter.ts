@@ -61,7 +61,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative"] },
+        { tokenType: "ui-session", userRoles: ["technical"] },
       ]);
 
       const consumerKeychain =
@@ -83,6 +83,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.consumerKeychain],
     },
-    url: "/consumer-keychains",
+    url: "/consumerKeychains",
   });
 };
