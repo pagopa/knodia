@@ -92,6 +92,16 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CreatedResource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
     Attribute:
       description: Identifies an Attribute standardized within Knodia
       type: object
@@ -250,13 +260,6 @@ components:
       enum:
         - ORION
         - LYNX
-    AgreementState:
-      description: Describes the states an Agreement can be in
-      type: string
-      enum:
-        - ACTIVE
-        - SUSPENDED
-        - ARCHIVED
     AgreementConsumer:
       description: Consumer Organization of the Agreement
       type: object
@@ -270,49 +273,6 @@ components:
       required:
         - id
         - knodeId
-      additionalProperties: false
-    AgreementId:
-      description: Unique identifier of the Agreement
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    Agreement:
-      description: Agreement between a Consumer and a Producer for an E-service
-      type: object
-      properties:
-        attributes:
-          description: Describes the Attributes of the E-service that the Consumer
-            possesses when the Agreement is activated (must satisfy at least one
-            Attribute for each Required Attribute Group defined by the
-            E-service)
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          $ref: "#/components/schemas/EserviceId"
-        eserviceVersionId:
-          $ref: "#/components/schemas/EserviceVersionId"
-        id:
-          $ref: "#/components/schemas/AgreementId"
-        producerId:
-          $ref: "#/components/schemas/OrganizationId"
-        state:
-          $ref: "#/components/schemas/AgreementState"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - attributes
-        - consumer
-        - eserviceId
-        - eserviceVersionId
-        - id
-        - producerId
-        - state
-        - updatedAt
       additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
@@ -419,7 +379,7 @@ paths:
               schema:
                 description: Agreement created successfully
                 allOf:
-                  - $ref: "#/components/schemas/Agreement"
+                  - $ref: "#/components/schemas/CreatedResource"
         "400":
           description: Bad Request
           content:
