@@ -624,12 +624,12 @@ services:
   # Frontends
   # ============================================================
 
-  node1-frontend-orion:
+  frontend-orion:
     security_opt:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    container_name: knodia-multinode-node1-frontend-orion
+    container_name: knodia-multinode-frontend-orion
     build:
       context: ..
       dockerfile: apps/web/node1-frontend/Dockerfile
@@ -644,12 +644,12 @@ services:
       bff-orion:
         condition: service_started
 
-  node1-frontend-lynx:
+  frontend-lynx:
     security_opt:
       - no-new-privileges:true
     labels:
       knodia.check.on.startup: "true"
-    container_name: knodia-multinode-node1-frontend-lynx
+    container_name: knodia-multinode-frontend-lynx
     build:
       context: ..
       dockerfile: apps/web/node1-frontend/Dockerfile
