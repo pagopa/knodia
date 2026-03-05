@@ -708,22 +708,6 @@ services:
       ISSUER: "http://local-cognito:3000"
     command: node scripts/local-kms/local-cognito.mjs
 
-  local-cognito:
-    security_opt:
-      - no-new-privileges:true
-    labels:
-      knodia.check.on.startup: "true"
-    image: node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03
-    container_name: knodia-multi-node-local-cognito
-    ports:
-      - 4567:3000
-    volumes:
-      - ../scripts/local-kms:/app/scripts/local-kms:ro
-    working_dir: /app
-    environment:
-      ISSUER: "http://local-cognito:3000"
-    command: node scripts/local-kms/local-cognito.mjs
-
 volumes:
   multinode-postgres-data:
   multinode-kafka-data:
