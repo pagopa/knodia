@@ -74,7 +74,7 @@ export function consumerKeychainServiceBuilder(
     },
     async deleteConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
-      { correlationId, logger }: RequestContextData,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<void> {
       logger.info(`Deleting Consumer Keychain ${consumerKeychainId}`);
 
