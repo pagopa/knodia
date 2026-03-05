@@ -6,8 +6,10 @@ import { createTestTokenPayload, type TestToken } from "../auth/auth.ts";
 
 export function createInjectAppRequest(getApp: () => FastifyInstance) {
   return (spec: TestToken) =>
-    getApp().inject().headers({
-      authorization: `Bearer ${createTestTokenPayload(spec)}`,
-      "x-correlation-id": generateId(),
-    });
+    getApp()
+      .inject()
+      .headers({
+        authorization: `Bearer ${createTestTokenPayload(spec)}`,
+        "x-correlation-id": generateId(),
+      });
 }
