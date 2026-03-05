@@ -11,7 +11,7 @@ export async function getAllKeychainEvents() {
 
 export function injectAppRequest() {
   return app.inject().headers({
-    authorization: `Bearer ${createTestTokenPayload("ui-session")}`,
+    authorization: `Bearer ${createTestTokenPayload({ type: "ui-session" })}`,
     [CORRELATION_ID_HEADER]: generateId(),
   });
 }
