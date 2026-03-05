@@ -17,13 +17,13 @@
     "@knodia/common-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",
+    "@knodia/eservice-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
-    "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
