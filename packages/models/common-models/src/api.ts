@@ -23,8 +23,3 @@ export const API_PaginationQueryParams = z.strictObject({
 export type API_PaginationQueryParams = z.infer<
   typeof API_PaginationQueryParams
 >;
-
-export const API_KnodeId = () =>
-  z
-    .enum(["Orion", "Lynx"])
-    .meta({ description: "Unique Knode identifier", id: "KnodeId" });

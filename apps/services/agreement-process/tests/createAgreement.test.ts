@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { API_Agreement } from "@knodia/agreement-models/api";
-
 import {
   Agreement,
   AgreementEventV1,
@@ -11,7 +9,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { API_AgreementSeed } from "../src/models/api.ts";
+import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
 import { eserviceWriterService } from "./setup.ts";
 import { getAllAgreementEvents, injectAppRequest } from "./utils.ts";

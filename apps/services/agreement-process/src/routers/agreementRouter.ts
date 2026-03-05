@@ -1,7 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_Agreement } from "@knodia/agreement-models/api";
 import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
@@ -12,7 +11,7 @@ import {
 
 import type { AgreementService } from "../services/agreementService.ts";
 
-import { API_AgreementSeed } from "../models/api.ts";
+import { API_Agreement, API_AgreementSeed } from "../models/api.ts";
 import { toAPI_Agreement } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 

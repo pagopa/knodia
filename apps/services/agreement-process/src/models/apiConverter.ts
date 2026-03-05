@@ -1,5 +1,6 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type { API_Agreement } from "@knodia/agreement-models/api";
+
+import type { API_Agreement } from "./api.ts";
 
 export const toAPI_Agreement = (agreement: Agreement): API_Agreement => ({
   attributes: agreement.attributes,

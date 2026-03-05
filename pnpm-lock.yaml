@@ -299,6 +299,9 @@ importers:
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../../../packages/models/agreement-models
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
