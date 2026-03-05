@@ -19,6 +19,10 @@ export default [
               group: ["@knodia/db-readmodel-*/writer"],
               message: `@knodia/db-readmodel-*/writer imports are restricted`,
             },
+            {
+              group: ["@knodia/fastify-zod-api-commons/authMock"],
+              message: `@knodia/fastify-zod-api-commons/authMock imports are restricted`,
+            }
           ],
         },
       ],

@@ -2,7 +2,7 @@ import { EventStoreConfig } from "@knodia/db-event-store-config/config";
 import { env } from "node:process";
 import { z } from "zod";
 
-const EventStoreAgreementConfig = EventStoreConfig.and(
+export const EventStoreAgreementConfig = EventStoreConfig.and(
   z
     .object({
       EVENTSTORE_DB_AGREEMENT_SCHEMA: z.string().default("agreement"),
