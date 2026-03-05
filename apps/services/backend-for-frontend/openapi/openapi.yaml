@@ -126,6 +126,7 @@ components:
         - total
       additionalProperties: false
     CreatedResource:
+      description: Unique identifier of the created resource
       type: object
       properties:
         id:
