@@ -173,10 +173,15 @@ const descLower = (column: PgColumn): SQL => {
 };
 
 export const createOrderByFilters = ({
+  defaultSort,
   sortBy,
   sortOrder,
   table,
 }: {
+  defaultSort?: {
+    sortBy: string;
+    sortOrder: SortDirection;
+  };
   sortBy: string;
   sortOrder: string;
   table: PgTable;
@@ -190,13 +195,21 @@ export const createOrderByFilters = ({
       direction: SortDirection.parse(sortOrder),
     },
   ];
-  const pkColumns = getTablePKColumns(table);
-  for (const [colName] of pkColumns) {
-    if (!sorts.some((s) => s.column === colName)) {
-      sorts.push({
-        column: colName,
-        direction: SortDirection.enum.asc,
-      });
+
+  if (defaultSort) {
+    sorts.push({
+      column: defaultSort.sortBy,
+      direction: defaultSort.sortOrder ?? SortDirection.enum.asc,
+    });
+  } else {
+    const pkColumns = getTablePKColumns(table);
+    for (const [colName] of pkColumns) {
+      if (!sorts.some((s) => s.column === colName)) {
+        sorts.push({
+          column: colName,
+          direction: SortDirection.enum.asc,
+        });
+      }
     }
   }
 

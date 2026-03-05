@@ -11,7 +11,12 @@ import {
 
 import type { AgreementService } from "../services/agreementService.ts";
 
-import { API_Agreement, API_AgreementSeed } from "../models/api.ts";
+import {
+  API_Agreement,
+  API_Agreements,
+  API_AgreementSeed,
+  API_GetAgreementsQueryParams,
+} from "../models/api.ts";
 import { toAPI_Agreement } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -56,6 +61,43 @@ export const agreementRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const { results, totalCount } = await agreementService.getAgreements(
+        req.query,
+        ctx,
+      );
+
+      res.status(200).send({
+        items: results.map(toAPI_Agreement),
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Agreements",
+      headers: KnodiaServiceHeaders,
+      operationId: "getAgreements",
+      querystring: API_GetAgreementsQueryParams,
+      response: {
+        200: API_Agreements.meta({
+          description: "Agreements retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [apiTags.agreement],
     },
