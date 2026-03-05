@@ -6,6 +6,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
 import openapiZodPlugin from "../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import {
+  bearerAuthSecurity,
+  bearerAuthSecurityScheme,
+} from "../src/utils/openapi-zod-plugin/security.ts";
+import {
   expectedOpenapiComponents,
   expectedOpenapiPaths,
 } from "./utils/expectedTestOpenapi.ts";
@@ -19,11 +23,13 @@ describe("openapiZodPlugin", () => {
   beforeAll(async () => {
     await fastify.register(openapiZodPlugin, {
       openapi: {
+        components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
           description: "API for testing openapiZodPlugin",
           title: "Test API",
           version: "1.0.0",
         },
+        security: bearerAuthSecurity,
         servers: [{ description: "Test API server", url: "/" }],
         tags: [
           healthRouterTag,
@@ -59,6 +65,7 @@ describe("openapiZodPlugin", () => {
       },
       openapi: "3.0.4",
       paths: expectedOpenapiPaths,
+      security: [{ bearerAuth: [] }],
       servers: [
         {
           description: "Test API server",
