@@ -4,7 +4,10 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
-import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
+import {
+  requireCorrelationIdHeaderPlugin,
+  createFastifyApp,
+} from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -52,15 +55,23 @@ export function buildApp({
     serviceName: "keychain-process",
   });
 
-  app.register(authenticationPlugin, config);
+  // Public routes (no auth required)
   app.register(healthRouter);
-  app.register(
-    consumerKeychainRouter,
-    consumerKeychainServiceBuilder(
-      keychainEventStoreWriterBuilder(eventStoreDb),
-      readmodelServiceBuilder(readmodelDb),
-    ),
-  );
+
+  // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
+  // hooks are scoped to this context only.
+  // See https://fastify.dev/docs/latest/Reference/Encapsulation/
+  app.register(async (protectedApp) => {
+    protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
+    protectedApp.register(
+      consumerKeychainRouter,
+      consumerKeychainServiceBuilder(
+        keychainEventStoreWriterBuilder(eventStoreDb),
+        readmodelServiceBuilder(readmodelDb),
+      ),
+    );
+  });
 
   return app;
 }

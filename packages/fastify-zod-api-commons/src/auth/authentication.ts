@@ -8,8 +8,6 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import { match } from "ts-pattern";
 
 import { unauthorizedError } from "../models/errors/errors.ts";
-import { healthRouterUrl } from "../routers/healthRouter.ts";
-import { docsRoutePrefix } from "../utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import { extractAuthDataFromToken } from "./authData.ts";
 
 const BEARER_PREFIX = "bearer ";
@@ -34,13 +32,6 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
     );
 
     fastify.addHook("onRequest", async (request) => {
-      if (
-        request.url === healthRouterUrl ||
-        request.url.startsWith(docsRoutePrefix)
-      ) {
-        return;
-      }
-
       const token = parseAuthHeaderToken(request.headers.authorization);
 
       let rawPayload: unknown = null;
