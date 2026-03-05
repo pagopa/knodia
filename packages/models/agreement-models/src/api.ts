@@ -1,8 +1,5 @@
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import z from "zod";
-
-const API_KnodeId = z
-  .enum(["Orion", "Lynx"])
-  .meta({ description: "Unique Knode identifier", id: "KnodeId" });
 
 export const API_AgreementState = z
   .enum(["Active", "Suspended", "Archived"])

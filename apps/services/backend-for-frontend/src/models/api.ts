@@ -3,6 +3,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   maxAccessTokenDuration,
   maxDailyCalls,

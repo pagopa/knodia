@@ -66,17 +66,6 @@ components:
         - status
         - title
       additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -98,6 +87,12 @@ components:
         - offset
         - total
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     EserviceVersionState:
       type: string
       enum:
@@ -142,12 +137,17 @@ components:
         - code
         - scheme
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
+    EserviceAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     GetCatalogEserviceSearchParams:
       anyOf:
         - type: object
@@ -203,7 +203,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/Attribute"
+              $ref: "#/components/schemas/EserviceAttribute"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
@@ -258,7 +258,7 @@ paths:
       operationId: getCatalogEservices
       summary: Search for E-services
       tags:
-        - eservice
+        - k2k-gateway
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
@@ -318,7 +318,5 @@ servers:
 tags:
   - description: Health check routes
     name: health
-  - description: Routes related to Agreements
-    name: agreement
-  - description: Routes related to E-services
-    name: eservice
+  - description: K2K Gateway routes
+    name: k2k-gateway
