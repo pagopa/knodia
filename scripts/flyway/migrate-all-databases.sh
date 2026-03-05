@@ -26,10 +26,6 @@ if [ -d "/flyway/roles" ]; then
 fi
 
 # Step 2: Migrate all schemas for each database
-SCHEMA_ORDER="eservice agreement"
-
-echo "Starting Flyway migrations (namespace: $NAMESPACE)..."
-
 for db_dir in /flyway/databases/*/; do
   db_name=$(basename "$db_dir")
 
@@ -42,8 +38,8 @@ for db_dir in /flyway/databases/*/; do
   echo "Database: $db_name"
   echo "========================================"
 
-  for schema_name in $SCHEMA_ORDER; do
-    schema_dir="${db_dir}${schema_name}/"
+  for schema_dir in "$db_dir"*/; do
+    schema_name=$(basename "$schema_dir")
 
     if [ ! -d "$schema_dir" ]; then
       continue
