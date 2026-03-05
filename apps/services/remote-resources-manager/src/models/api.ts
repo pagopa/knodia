@@ -16,7 +16,7 @@ import { z } from "zod";
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
   keywords: z.string().min(1),
-  knodeId: API_KnodeId,
+  knodeId: API_KnodeId(),
 });
 
 const API_EserviceSearchByCategory =

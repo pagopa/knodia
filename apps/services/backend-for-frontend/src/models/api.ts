@@ -288,7 +288,7 @@ export const API_FileDownload = z.string().meta({ format: "binary" });
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
   keywords: z.string().min(1),
-  knodeId: API_KnodeId,
+  knodeId: API_KnodeId(),
 });
 const API_EserviceSearchByCategory =
   API_EserviceSearchByKeywordsAndCategory.pick({
