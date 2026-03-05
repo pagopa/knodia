@@ -21,6 +21,7 @@ export interface AvatarProps
     alt?: string;
     src: string;
   };
+  name?: string;
 }
 
 type AvatarVariants = VariantProps<typeof avatar>;
@@ -30,9 +31,10 @@ export function Avatar({
   fallback = "?",
   size,
   className,
+  name,
   ...props
 }: AvatarProps) {
-  return (
+  const avatarCircle = (
     <span {...props} className={avatar({ size, className })}>
       {image ? (
         <img
@@ -43,6 +45,17 @@ export function Avatar({
       ) : (
         <span>{fallback}</span>
       )}
+    </span>
+  );
+
+  if (!name) {
+    return avatarCircle;
+  }
+
+  return (
+    <span className="inline-flex items-center gap-2">
+      {avatarCircle}
+      <span className="label-md text-primary-light-high-contrast">{name}</span>
     </span>
   );
 }

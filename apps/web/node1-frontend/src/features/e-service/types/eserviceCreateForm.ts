@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
+import { schemeRefSchema } from "@/features/e-service/types/schemeRef";
+
 const ACCEPTED_MIME_TYPES = [
   "application/json",
   "application/yaml",
@@ -9,13 +11,6 @@ const ACCEPTED_MIME_TYPES = [
   "application/x-yaml",
   "text/x-yaml",
 ];
-
-const schemeRefSchema = z.object({
-  code: z.string(),
-  scheme: z.string(),
-});
-
-export type SchemeRef = z.infer<typeof schemeRefSchema>;
 
 const maxDailyCallsFormSchema = z
   .object({
