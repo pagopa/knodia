@@ -1,0 +1,44 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Event Store (orion)",
+      "Group": "Knodia Multinode",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "orion_event_store",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    },
+    "2": {
+      "Name": "Read Model (orion)",
+      "Group": "Knodia Multinode",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "orion_readmodel",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    },
+    "3": {
+      "Name": "Event Store (lynx)",
+      "Group": "Knodia Multinode",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "lynx_event_store",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    },
+    "4": {
+      "Name": "Read Model (lynx)",
+      "Group": "Knodia Multinode",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "lynx_readmodel",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    }
+  }
+}
