@@ -38,7 +38,6 @@ export const API_Agreement = z
       .array(API_AgreementAttribute)
       .meta({ description: "Attributes for the Agreement" }),
     consumer: API_AgreementConsumer,
-    createdAt: z.iso.datetime(),
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
     id: z.uuid(),
