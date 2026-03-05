@@ -31,8 +31,8 @@ catalogs:
       specifier: 6.2.1
       version: 6.2.1
     '@fastify/swagger':
-      specifier: 9.6.1
-      version: 9.6.1
+      specifier: 9.7.0
+      version: 9.7.0
     '@fastify/swagger-ui':
       specifier: 5.2.4
       version: 5.2.4
@@ -334,7 +334,7 @@ importers:
         version: 5.7.3
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -486,7 +486,7 @@ importers:
         version: 5.7.3
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       jose:
         specifier: 'catalog:'
         version: 6.1.3
@@ -565,7 +565,7 @@ importers:
         version: 5.7.3
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -648,6 +648,9 @@ importers:
       pino:
         specifier: 'catalog:'
         version: 10.2.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -708,7 +711,7 @@ importers:
         version: 5.7.3
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       pino-pretty:
         specifier: 'catalog:'
         version: 13.1.3
@@ -746,6 +749,91 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  apps/services/keychain-process:
+    dependencies:
+      '@fastify/request-context':
+        specifier: 'catalog:'
+        version: 6.2.1
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
+      '@knodia/db-event-store-keychain':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/keychain
+      '@knodia/db-event-store-writer':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/writer
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
+      '@knodia/db-readmodel-consumer-keychain':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/consumer-keychain
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/keychain-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/keychain-models
+      '@knodia/logger':
+        specifier: workspace:*
+        version: link:../../../packages/logger
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      fastify:
+        specifier: 'catalog:'
+        version: 5.7.3
+      fastify-type-provider-zod:
+        specifier: 'catalog:'
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+      pg:
+        specifier: 'catalog:'
+        version: 8.16.3
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/spectral-config':
+        specifier: workspace:*
+        version: link:../../../packages/spectral-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@stoplight/spectral-cli':
+        specifier: 'catalog:'
+        version: 6.15.0
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.16.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
   apps/services/keychain-readmodel-writer:
     dependencies:
@@ -842,7 +930,7 @@ importers:
         version: 5.7.3
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       pino-pretty:
         specifier: 'catalog:'
         version: 13.1.3
@@ -1255,9 +1343,15 @@ importers:
       '@knodia/db-event-store-eservice':
         specifier: workspace:*
         version: link:../eservice
+      '@knodia/db-event-store-keychain':
+        specifier: workspace:*
+        version: link:../keychain
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../models/eservice-models
+      '@knodia/keychain-models':
+        specifier: workspace:*
+        version: link:../../../models/keychain-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
@@ -1344,6 +1438,9 @@ importers:
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1357,9 +1454,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      ts-pattern:
-        specifier: 'catalog:'
-        version: 5.9.0
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -1449,6 +1543,9 @@ importers:
       '@knodia/db-readmodel-config':
         specifier: workspace:*
         version: link:../config
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../models/eservice-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
@@ -1462,9 +1559,6 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
-      '@knodia/eservice-models':
-        specifier: workspace:*
-        version: link:../../../models/eservice-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../eslint-config
@@ -1518,7 +1612,7 @@ importers:
         version: 6.2.1
       '@fastify/swagger':
         specifier: 'catalog:'
-        version: 9.6.1
+        version: 9.7.0
       '@fastify/swagger-ui':
         specifier: 'catalog:'
         version: 5.2.4
@@ -1539,7 +1633,7 @@ importers:
         version: 5.1.0
       fastify-type-provider-zod:
         specifier: 'catalog:'
-        version: 6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
+        version: 6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0)
       jose:
         specifier: 'catalog:'
         version: 6.1.3
@@ -1583,10 +1677,10 @@ importers:
       '@aws-sdk/client-s3':
         specifier: 'catalog:'
         version: 3.992.0
-    devDependencies:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+    devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
@@ -1781,6 +1875,9 @@ importers:
 
   packages/models/eservice-models:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: 'catalog:'
+        version: 2.10.2
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../attribute-models
@@ -1797,9 +1894,6 @@ importers:
       '@bufbuild/buf':
         specifier: 'catalog:'
         version: 1.61.0
-      '@bufbuild/protobuf':
-        specifier: 'catalog:'
-        version: 2.10.2
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -1923,6 +2017,9 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
+      fastify:
+        specifier: 'catalog:'
+        version: 5.7.3
       jose:
         specifier: 'catalog:'
         version: 6.1.3
@@ -3053,8 +3150,8 @@ packages:
   '@fastify/swagger-ui@5.2.4':
     resolution: {integrity: sha512-Maw8OYPUDxlOzKQd3VMv7T/fmjf2h6BWR3XHkhk3dD3rIfzO7C/UPnzGuTpOGMqw1HCUnctADBbeTNAzAwzUqA==}
 
-  '@fastify/swagger@9.6.1':
-    resolution: {integrity: sha512-fKlpJqFMWoi4H3EdUkDaMteEYRCfQMEkK0HJJ0eaf4aRlKd8cbq0pVkOfXDXmtvMTXYcnx3E+l023eFDBsA1HA==}
+  '@fastify/swagger@9.7.0':
+    resolution: {integrity: sha512-Vp1SC1GC2Hrkd3faFILv86BzUNyFz5N4/xdExqtCgkGASOzn/x+eMe4qXIGq7cdT6wif/P/oa6r1Ruqx19paZA==}
 
   '@fontsource-variable/inter@5.2.8':
     resolution: {integrity: sha512-kOfP2D+ykbcX/P3IFnokOhVRNoTozo5/JxhAIVYLpea/UBmCQ/YWPBfWIDuBImXX/15KH+eKh4xpEUyS2sQQGQ==}
@@ -9734,7 +9831,7 @@ snapshots:
       rfdc: 1.4.1
       yaml: 2.8.2
 
-  '@fastify/swagger@9.6.1':
+  '@fastify/swagger@9.7.0':
     dependencies:
       fastify-plugin: 5.1.0
       json-schema-resolver: 3.0.0
@@ -13829,10 +13926,10 @@ snapshots:
 
   fastify-plugin@5.1.0: {}
 
-  fastify-type-provider-zod@6.1.0(@fastify/swagger@9.6.1)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0):
+  fastify-type-provider-zod@6.1.0(@fastify/swagger@9.7.0)(fastify@5.7.3)(openapi-types@12.1.3)(zod@4.2.0):
     dependencies:
       '@fastify/error': 4.2.0
-      '@fastify/swagger': 9.6.1
+      '@fastify/swagger': 9.7.0
       fastify: 5.7.3
       openapi-types: 12.1.3
       zod: 4.2.0
