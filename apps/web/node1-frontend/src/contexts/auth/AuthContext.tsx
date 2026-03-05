@@ -7,7 +7,13 @@ import {
 } from "react-oidc-context";
 
 import { config } from "@/config/config";
-import { clearAuthToken, getAuthToken, setAuthToken } from "@/libs/auth";
+import {
+  clearAllTokens,
+  getAuthToken,
+  redirectToLogout,
+  setAuthToken,
+  setRefreshToken,
+} from "@/libs/auth";
 import { client } from "@/libs/axios";
 
 import { AuthContext } from "./useAuthContext";
@@ -50,10 +56,11 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   } = useMutation({
     ...createSessionMutation({ client }),
     onError: () => {
-      void removeUser();
+      redirectToLogout();
     },
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
+      setRefreshToken(data.refreshToken);
       setUiSessionToken(data.uiSessionToken);
     },
   });
@@ -69,10 +76,14 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   }, [signinRedirect]);
 
   const logout = useCallback(async () => {
-    // Must be done in this order to ensure that the OIDC user is removed before the token is cleared
-    await removeUser();
-    clearAuthToken();
-    setUiSessionToken(null);
+    // removeUser() can throw — ensure cleanup and redirect happen regardless
+    try {
+      await removeUser();
+    } finally {
+      clearAllTokens();
+      setUiSessionToken(null);
+      redirectToLogout();
+    }
   }, [removeUser]);
 
   return (

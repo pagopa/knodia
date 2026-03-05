@@ -190,11 +190,11 @@ paths:
         - agreement
       description: Create a new Agreement
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/AgreementSeed"
-        required: true
       parameters:
         - schema:
             allOf:
@@ -218,6 +218,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":

@@ -11,6 +11,7 @@
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
@@ -21,6 +22,7 @@
     "@testcontainers/postgresql": "catalog:",
     "testcontainers": "catalog:",
     "drizzle-orm": "catalog:",
+    "fastify": "catalog:",
     "eslint": "catalog:",
     "jose": "catalog:",
     "ts-pattern": "catalog:",
@@ -29,7 +31,8 @@
     "zocker": "catalog:"
   },
   "exports": {
-    "./auth": "./src/auth.ts",
+    "./auth": "./src/auth/index.ts",
+    "./fastify": "./src/fastify/index.ts",
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",

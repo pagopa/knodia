@@ -6,6 +6,7 @@ export const HTTPServiceName = z.enum([
   "k2k-gateway",
   "remote-resources-manager",
   "agreement-process",
+  "keychain-process",
 ]);
 export type HTTPServiceName = z.infer<typeof HTTPServiceName>;
 
@@ -14,5 +15,6 @@ export type ServiceName = HTTPServiceName | KafkaConsumerServiceName;
 const KafkaConsumerServiceName = z.enum([
   "eservice-readmodel-writer",
   "agreement-readmodel-writer",
+  "keychain-readmodel-writer",
 ]);
 type KafkaConsumerServiceName = z.infer<typeof KafkaConsumerServiceName>;

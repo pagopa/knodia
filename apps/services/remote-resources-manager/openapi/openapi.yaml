@@ -262,11 +262,11 @@ paths:
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
-        required: true
       parameters:
         - schema:
             format: int32
@@ -302,6 +302,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

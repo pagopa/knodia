@@ -87,6 +87,11 @@ components:
         - offset
         - total
       additionalProperties: false
+    OrganizationId:
+      description: Unique identifier of the Organization
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     EserviceCategory:
       description: Identifies a category of data, standardized within Knodia, which
         the E-Service provides or receives
@@ -178,11 +183,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    OrganizationId:
-      description: Unique identifier of the Organization
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -264,11 +264,11 @@ paths:
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
-        required: true
       parameters:
         - schema:
             format: int32

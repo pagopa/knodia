@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type z from "zod";
 
 import { SortDirection } from "@knodia/db-readmodel-commons/models";
 import { Eservice, EserviceMode } from "@knodia/eservice-models";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -11,6 +13,11 @@ import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
 import { mockEservices, producerId } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
+
+const allowedTestTokens: TestToken[] = [
+  { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
+];
 
 describe("GET /eservices (getEservices)", () => {
   const defaultQuery = {
@@ -139,7 +146,7 @@ describe("GET /eservices (getEservices)", () => {
   }[])(
     "should return e-services with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
-      const response = await injectAppRequest()
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/eservices")
 
         .query(query);
@@ -153,6 +160,26 @@ describe("GET /eservices (getEservices)", () => {
           total: totalCount,
         },
       });
+    },
+  );
+
+  it.each(allowedTestTokens)(
+    "should return 200 for authorized token ($type, $roles)",
+    async (token) => {
+      const response = await injectAppRequest(token)
+        .get("/eservices")
+        .query(defaultQuery);
+      expect(response.statusCode).toBe(200);
+    },
+  );
+
+  it.each(forbiddenTestTokens(allowedTestTokens))(
+    "should return 403 for unauthorized token ($type)",
+    async (token) => {
+      const response = await injectAppRequest(token)
+        .get("/eservices")
+        .query(defaultQuery);
+      expect(response.statusCode).toBe(403);
     },
   );
 
@@ -184,7 +211,7 @@ describe("GET /eservices (getEservices)", () => {
   ])(
     "should return 400 if query parameters are formatted incorrectly (%o)",
     async (query) => {
-      const response = await injectAppRequest()
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/eservices")
         .query(query as never);
       expect(response.statusCode).toBe(400);
