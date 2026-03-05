@@ -15,7 +15,7 @@ const allowedTestTokens: TestToken[] = [
 
 const consumerKeychain = getMockConsumerKeychain();
 
-describe("DELETE /consumerKeychain/:consumerKeychainId (deleteConsumerKeychain)", () => {
+describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)", () => {
   it("should correctly create consumer keychain deletion event", async () => {
     await consumerKeychainWriterService.upsertConsumerKeychain(
       consumerKeychain,
@@ -23,7 +23,7 @@ describe("DELETE /consumerKeychain/:consumerKeychainId (deleteConsumerKeychain)"
     );
 
     const deleteResponse = await injectAppRequest(allowedTestTokens[0]!).delete(
-      `/consumerKeychain/${consumerKeychain.id}`,
+      `/consumerKeychains/${consumerKeychain.id}`,
     );
 
     expect(deleteResponse.statusCode).toBe(204);
@@ -46,7 +46,7 @@ describe("DELETE /consumerKeychain/:consumerKeychainId (deleteConsumerKeychain)"
 
   it("should return 404 if the consumer keychain does not exist", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!).delete(
-      `/consumerKeychain/${generateId()}`,
+      `/consumerKeychains/${generateId()}`,
     );
 
     expect(response.statusCode).toBe(404);
@@ -56,7 +56,7 @@ describe("DELETE /consumerKeychain/:consumerKeychainId (deleteConsumerKeychain)"
     "should return 403 for unauthorized token ($type)",
     async (spec) => {
       const response = await injectAppRequest(spec).delete(
-        `/consumerKeychain/${consumerKeychain.id}`,
+        `/consumerKeychains/${consumerKeychain.id}`,
       );
       expect(response.statusCode).toBe(403);
     },
