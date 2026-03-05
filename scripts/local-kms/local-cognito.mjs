@@ -3,7 +3,13 @@ import { createServer } from "node:http";
 
 const PORT = 3000;
 const ISSUER = process.env.ISSUER ?? "http://localhost:4567";
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN ?? "http://localhost:5175";
+const ALLOWED_ORIGINS = (
+  process.env.ALLOWED_ORIGINS ??
+  process.env.ALLOWED_ORIGIN ??
+  "http://localhost:5175"
+)
+  .split(",")
+  .map((s) => s.trim());
 
 // Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
@@ -46,8 +52,12 @@ function readBody(req) {
   });
 }
 
-function setCorsHeaders(res) {
-  res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+function setCorsHeaders(req, res) {
+  const requestOrigin = req.headers.origin;
+  const allowedOrigin = ALLOWED_ORIGINS.find((o) => o === requestOrigin);
+  if (allowedOrigin) {
+    res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
@@ -55,9 +65,11 @@ function setCorsHeaders(res) {
 function isAllowedRedirect(target) {
   try {
     const parsed = new URL(target);
-    const allowedOrigin = new URL(ALLOWED_ORIGIN).origin;
     const issuerOrigin = new URL(ISSUER).origin;
-    return parsed.origin === allowedOrigin || parsed.origin === issuerOrigin;
+    const allowedOrigins = ALLOWED_ORIGINS.map((o) => new URL(o).origin);
+    return (
+      allowedOrigins.includes(parsed.origin) || parsed.origin === issuerOrigin
+    );
   } catch {
     return false;
   }
@@ -66,7 +78,7 @@ function isAllowedRedirect(target) {
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
-  setCorsHeaders(res);
+  setCorsHeaders(req, res);
 
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
