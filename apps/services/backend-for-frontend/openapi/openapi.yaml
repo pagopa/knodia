@@ -114,6 +114,16 @@ components:
         - offset
         - total
       additionalProperties: false
+    CreatedResource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -291,16 +301,6 @@ components:
         - maxDailyCallsPerKnode
         - name
         - requiredAttributes
-      additionalProperties: false
-    CreatedResource:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
       additionalProperties: false
     ProducerEservice:
       type: object

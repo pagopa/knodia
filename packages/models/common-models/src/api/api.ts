@@ -28,3 +28,10 @@ export const API_OrganizationId = z.uuid().meta({
   description: "Unique identifier of the Organization",
   id: "OrganizationId",
 });
+
+export const API_CreatedResource = z
+  .strictObject({
+    id: z.uuid(),
+  })
+  .meta({ id: "CreatedResource" });
+export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
