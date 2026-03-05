@@ -3,9 +3,8 @@ import {
   API_AgreementState,
 } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { z } from "zod";
-
-import { API_KnodeId } from "../api.ts";
 
 export const API_AgreementSeed = z
   .strictObject({

@@ -3,6 +3,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_EserviceCategory,
   API_EserviceMode,
@@ -11,8 +12,6 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { z } from "zod";
-
-import { API_KnodeId } from "../api.ts";
 
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
