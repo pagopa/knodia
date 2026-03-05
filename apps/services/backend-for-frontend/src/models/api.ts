@@ -1,8 +1,8 @@
 import {
-  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   maxAccessTokenDuration,
   maxDailyCalls,
@@ -288,7 +288,7 @@ export const API_FileDownload = z.string().meta({ format: "binary" });
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
   keywords: z.string().min(1),
-  knodeId: API_KnodeId(),
+  knodeId: API_KnodeId,
 });
 const API_EserviceSearchByCategory =
   API_EserviceSearchByKeywordsAndCategory.pick({
