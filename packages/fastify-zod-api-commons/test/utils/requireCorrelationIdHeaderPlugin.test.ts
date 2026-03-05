@@ -4,27 +4,15 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { CORRELATION_ID_HEADER } from "../../src/models/headers.ts";
 import { healthRouterUrl } from "../../src/routers/healthRouter.ts";
-import {
-  createFastifyApp,
-  requireCorrelationIdHeaderPlugin,
-} from "../../src/utils/fastify.ts";
+import { requireCorrelationIdHeaderPlugin } from "../../src/utils/fastify.ts";
 import { docsRoutePrefix } from "../../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import { makeApiProblemBuilder } from "../../src/utils/problemBuilder.ts";
+import { buildTestApp } from "../mock/buildTestApp.ts";
 
 const makeApiProblem = makeApiProblemBuilder(
   {},
   { serviceName: "eservice-process" },
 );
-
-const buildTestApp = () =>
-  createFastifyApp({
-    fastifyOptions: {
-      openapi: { info: { title: "Test", version: "0.0.0" } },
-    },
-    loggerConfig: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
-    makeApiProblem,
-    serviceName: "eservice-process",
-  });
 
 const docsTestRoute = `${docsRoutePrefix}/test`;
 

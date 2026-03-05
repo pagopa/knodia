@@ -3,41 +3,30 @@ import type { OpenAPIV3 } from "openapi-types";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
-import { createFastifyApp } from "../src/utils/fastify.ts";
-import { makeApiProblemBuilder } from "../src/utils/problemBuilder.ts";
+import { buildTestApp } from "./mock/buildTestApp.ts";
 import {
   expectedOpenapiComponents,
   expectedOpenapiPaths,
 } from "./utils/expectedTestOpenapi.ts";
 import { testRouter, testTags } from "./utils/testRouter.ts";
 
-const makeApiProblem = makeApiProblemBuilder(
-  {},
-  { serviceName: "eservice-process" },
-);
-
 describe("openapiZodPlugin", () => {
-  const fastify = createFastifyApp({
-    fastifyOptions: {
-      openapi: {
-        info: {
-          description: "API for testing openapiZodPlugin",
-          title: "Test API",
-          version: "1.0.0",
-        },
-        servers: [{ description: "Test API server", url: "/" }],
-        tags: [
-          healthRouterTag,
-          {
-            description: "Tag 1 for testing",
-            name: testTags.test,
-          },
-        ],
+  const fastify = buildTestApp({
+    openapi: {
+      info: {
+        description: "API for testing openapiZodPlugin",
+        title: "Test API",
+        version: "1.0.0",
       },
+      servers: [{ description: "Test API server", url: "/" }],
+      tags: [
+        healthRouterTag,
+        {
+          description: "Tag 1 for testing",
+          name: testTags.test,
+        },
+      ],
     },
-    loggerConfig: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
-    makeApiProblem,
-    serviceName: "eservice-process",
   });
 
   beforeAll(async () => {

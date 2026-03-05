@@ -11,9 +11,8 @@ import {
 } from "../../src/auth/authentication.ts";
 import { ApiError } from "../../src/models/errors/apiError.ts";
 import { healthRouterUrl } from "../../src/routers/healthRouter.ts";
-import { createFastifyApp } from "../../src/utils/fastify.ts";
 import { docsRoutePrefix } from "../../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
-import { makeApiProblemBuilder } from "../../src/utils/problemBuilder.ts";
+import { buildTestApp } from "../mock/buildTestApp.ts";
 
 const { createRemoteJWKSet, jwtVerify } = vi.hoisted(() => ({
   createRemoteJWKSet: vi.fn().mockReturnValue("mock-jwks-set"),
@@ -21,21 +20,6 @@ const { createRemoteJWKSet, jwtVerify } = vi.hoisted(() => ({
 }));
 
 vi.mock("jose", () => ({ createRemoteJWKSet, jwtVerify }));
-
-const makeApiProblem = makeApiProblemBuilder(
-  {},
-  { serviceName: "backend-for-frontend" },
-);
-
-const buildTestApp = () =>
-  createFastifyApp({
-    fastifyOptions: {
-      openapi: { info: { title: "Test", version: "0.0.0" } },
-    },
-    loggerConfig: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
-    makeApiProblem,
-    serviceName: "backend-for-frontend",
-  });
 
 describe("parseAuthHeaderToken", () => {
   it("throws ApiError when header is undefined", () => {
