@@ -244,7 +244,7 @@ function TechnicalDetailsSection({
         </GenericInfoCard>
         {data.isSignalHubEnabled && (
           <DocumentRecap
-            name={`Appoint ${config.knodeName} as the data processor`}
+            name={`Appoint ${config.knodeId} Knode as the data processor`}
             showDownloadButton
           />
         )}

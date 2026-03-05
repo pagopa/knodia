@@ -5,5 +5,5 @@ window.env = {
   COGNITO_DOMAIN: "http://localhost:4567",
   COGNITO_LOGOUT_URI: "http://localhost:5001/ui/",
   COGNITO_REDIRECT_URI: "http://localhost:5001/ui/login/",
-  KNODE_NAME: "Orion Knode",
+  KNODE_ID: "Orion",
 };

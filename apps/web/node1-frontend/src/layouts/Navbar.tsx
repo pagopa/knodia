@@ -17,7 +17,7 @@ export function Navbar() {
 
   return (
     <UINavbar>
-      <NavbarBrand>{config.knodeName}</NavbarBrand>
+      <NavbarBrand>{`${config.knodeId} Knode`}</NavbarBrand>
       <NavbarUserMenu
         avatar={{ fallback: "JS" }}
         name="John Smith"
