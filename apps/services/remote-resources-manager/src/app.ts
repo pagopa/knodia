@@ -7,6 +7,10 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  bearerAuthSecurity,
+  bearerAuthSecurityScheme,
+} from "@knodia/fastify-zod-api-commons/security";
 
 import type { RemoteResourcesManagerConfig } from "./config/config.ts";
 
@@ -29,11 +33,13 @@ export function buildApp({
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
+        components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
           description: "Knodia remote-resources-manager API",
           title: "Knodia Remote Resources Manager API",
           version: "1.0.0",
         },
+        security: bearerAuthSecurity,
         servers: [{ description: "Remote Resources Manager API", url: "/" }],
         tags: [
           healthRouterTag,

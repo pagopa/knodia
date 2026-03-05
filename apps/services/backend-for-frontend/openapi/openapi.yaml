@@ -7,6 +7,13 @@ info:
   title: Knodia BFF API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://tools.ietf.org/html/RFC8725)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -655,6 +662,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -676,6 +684,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/SessionRequest"
+      security: []
       responses:
         "200":
           description: Session created successfully
@@ -713,6 +722,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/RefreshRequest"
+      security: []
       responses:
         "200":
           description: Session refreshed successfully
@@ -765,6 +775,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     get:
@@ -848,6 +866,14 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}:
     get:
       operationId: getProducerEserviceDetails
@@ -877,6 +903,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -916,6 +950,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -977,9 +1019,19 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

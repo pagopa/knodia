@@ -9,6 +9,10 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  bearerAuthSecurity,
+  bearerAuthSecurityScheme,
+} from "@knodia/fastify-zod-api-commons/security";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
@@ -32,11 +36,13 @@ export function buildApp({
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
+        components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
           description: "API for managing Knodia E-services",
           title: "Knodia E-service Process API",
           version: "1.0.0",
         },
+        security: bearerAuthSecurity,
         servers: [{ description: "E-service Process API", url: "/" }],
         tags: [
           healthRouterTag,

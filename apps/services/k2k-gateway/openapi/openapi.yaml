@@ -246,6 +246,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -287,6 +288,7 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
+      security: []
       responses:
         "200":
           description: E-service search results retrieved (sorted by most recently updated

@@ -48,6 +48,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
             "E-service search results retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
       summary: "Search for E-services",
