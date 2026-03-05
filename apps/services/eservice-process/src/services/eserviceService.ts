@@ -17,9 +17,7 @@ import {
   EserviceId,
   EserviceVersionId,
   generateId,
-  type OrganizationId,
 } from "@knodia/common-models/ids";
-import { getOrganization } from "@knodia/organization-models";
 
 import type {
   API_EserviceSeed,
@@ -34,7 +32,6 @@ import {
   inconsistentDailyCalls,
   invalidAttribute,
   invalidCategory,
-  organizationNotFound,
 } from "../models/errors.ts";
 import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
 import {
@@ -42,6 +39,7 @@ import {
   retrieveEserviceLatestVersion,
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
+import { assertOrganizationExists } from "./validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -49,13 +47,6 @@ export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
 ) {
-  const assertOrganizationExists = (organizationId: OrganizationId): void => {
-    const organization = getOrganization(organizationId);
-    if (organization === undefined) {
-      throw organizationNotFound(organizationId);
-    }
-  };
-
   return {
     async createEservice(
       seed: API_EserviceSeed,
