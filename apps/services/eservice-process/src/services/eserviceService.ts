@@ -160,7 +160,7 @@ export function eserviceServiceBuilder(
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
       logger.info(`Getting latest version of E-service with ID ${eserviceId}`);
 
