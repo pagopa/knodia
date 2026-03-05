@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/organization-models": "workspace:*",
     "@knodia/typescript-config": "workspace:*",

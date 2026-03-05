@@ -2,14 +2,20 @@ import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { Organization } from "@knodia/organization-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
 import { eq, ilike } from "drizzle-orm";
 
-import { readmodelOrganization } from "../organization.ts";
+import {
+  aggregateOrganization,
+  aggregateOrganizations,
+} from "../converters/index.ts";
+import {
+  readmodelOrganization,
+  readmodelOrganizationAttribute,
+} from "../organization.ts";
 
 export function organizationReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
@@ -18,14 +24,22 @@ export function organizationReadmodelServiceBuilder(
     async getOrganizationById(
       organizationId: string,
     ): Promise<Organization | undefined> {
-      const row = await readmodelDb
-        .select()
+      const queryRes = await readmodelDb
+        .select({
+          attribute: readmodelOrganizationAttribute,
+          organization: readmodelOrganization,
+        })
         .from(readmodelOrganization)
-        .where(eq(readmodelOrganization.id, organizationId))
-        .limit(1)
-        .then((rows) => rows.at(0));
+        .leftJoin(
+          readmodelOrganizationAttribute,
+          eq(
+            readmodelOrganizationAttribute.organizationId,
+            readmodelOrganization.id,
+          ),
+        )
+        .where(eq(readmodelOrganization.id, organizationId));
 
-      return row ? toOrganization(row) : undefined;
+      return aggregateOrganization(queryRes);
     },
     async getOrganizations(params: {
       limit: number;
@@ -62,6 +76,7 @@ export function organizationReadmodelServiceBuilder(
         const [queryRes, totalCount] = await Promise.all([
           tx
             .select({
+              attribute: readmodelOrganizationAttribute,
               organization: readmodelOrganization,
             })
             .from(readmodelOrganization)
@@ -69,23 +84,22 @@ export function organizationReadmodelServiceBuilder(
               paginatedIds,
               eq(readmodelOrganization.id, paginatedIds.organizationId),
             )
+            .leftJoin(
+              readmodelOrganizationAttribute,
+              eq(
+                readmodelOrganizationAttribute.organizationId,
+                readmodelOrganization.id,
+              ),
+            )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
         return {
-          results: queryRes.map((row) => toOrganization(row.organization)),
+          results: aggregateOrganizations(queryRes),
           totalCount,
         };
       });
     },
   };
 }
-
-const toOrganization = (
-  row: typeof readmodelOrganization.$inferSelect,
-): Organization => ({
-  createdAt: row.createdAt,
-  id: unsafeBrandId(row.id),
-  name: row.name,
-});

@@ -1730,6 +1730,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: 'catalog:'
         version: 1.51.4
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../models/attribute-models
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../eslint-config
