@@ -21,6 +21,6 @@
   },
   "exports": {
     "./models": "./src/models/index.ts",
-    "./utils": "./src/utilities/utils.ts"
+    "./utils": "./src/utils/utils.ts"
   }
 }

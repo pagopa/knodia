@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -13,8 +14,15 @@ const eservice = mockEservices[0]!;
 const VALID_ESERVICE_ID = eservice.id;
 const NON_EXISTENT_ESERVICE_ID = generateId<EserviceId>();
 
-const getEservice = (eserviceId: string) =>
-  injectAppRequest().get(`/eservices/${eserviceId}`);
+const allowedTestTokens: TestToken[] = [
+  { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
+];
+
+const getEservice = (
+  eserviceId: string,
+  token: TestToken = allowedTestTokens[0]!,
+) => injectAppRequest(token).get(`/eservices/${eserviceId}`);
 
 describe("GET /eservices/:eserviceId (getEservice)", () => {
   beforeAll(async () => {
@@ -25,17 +33,20 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     );
   });
 
-  it("should return the e-service with correct shape", async () => {
-    const response = await getEservice(VALID_ESERVICE_ID);
+  it.each(allowedTestTokens)(
+    "should return the e-service with correct shape ($type, $roles)",
+    async (token) => {
+      const response = await getEservice(VALID_ESERVICE_ID, token);
 
-    expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(200);
 
-    const body = response.json<API_Eservice>();
-    expect(body).toEqual(toExpectAPI_Eservice(eservice));
-  });
+      const body = response.json<API_Eservice>();
+      expect(body).toEqual(toExpectAPI_Eservice(eservice));
+    },
+  );
 
   it("should return the same e-service as the list endpoint", async () => {
-    const listResponse = await injectAppRequest()
+    const listResponse = await injectAppRequest(allowedTestTokens[0]!)
       .get("/eservices")
       .query({ limit: "50", offset: "0" });
     const listBody = listResponse.json<{ items: API_Eservice[] }>();
@@ -46,6 +57,14 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
 
     expect(body).toEqual(toExpectAPI_Eservice(expectedItem!));
   });
+
+  it.each(forbiddenTestTokens(allowedTestTokens))(
+    "should return 403 for unauthorized token ($type)",
+    async (token) => {
+      const response = await getEservice(VALID_ESERVICE_ID, token);
+      expect(response.statusCode).toBe(403);
+    },
+  );
 
   it("should return 404 for non-existent e-service id", async () => {
     const response = await getEservice(NON_EXISTENT_ESERVICE_ID);

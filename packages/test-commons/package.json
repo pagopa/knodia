@@ -30,11 +30,11 @@
     "zocker": "catalog:"
   },
   "exports": {
-    "./auth": "./src/auth.ts",
+    "./auth": "./src/auth/index.ts",
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",
     "./readmodel": "./src/readmodel.ts",
-    "./utils": "./src/utilities/index.ts"
+    "./utils": "./src/utils/index.ts"
   }
 }
