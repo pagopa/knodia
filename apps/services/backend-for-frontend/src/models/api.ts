@@ -22,10 +22,6 @@ import {
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
-const API_KnodeId = z
-  .enum(["Orion", "Lynx"])
-  .meta({ description: "Unique Knode identifier", id: "KnodeId" });
-
 const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z.string().meta({
