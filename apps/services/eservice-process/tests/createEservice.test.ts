@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { type EserviceId, generateId } from "@knodia/common-models/ids";
+import {
+  type EserviceId,
+  generateId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceEventV1,
@@ -188,7 +192,9 @@ describe("POST /eservices (createEservice)", () => {
   });
 
   it("should return 400 if the organization does not exist", async () => {
-    const response = await injectAppRequestWithOrganizationId(generateId())
+    const response = await injectAppRequestWithOrganizationId(
+      generateId<OrganizationId>(),
+    )
       .post("/eservices")
       .body(body);
     expect(response.statusCode).toBe(400);
