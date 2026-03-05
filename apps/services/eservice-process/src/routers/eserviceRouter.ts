@@ -136,6 +136,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "internal" },
       ]);
 
       const eserviceVersion = await eserviceService.getEserviceLatestVersion(
