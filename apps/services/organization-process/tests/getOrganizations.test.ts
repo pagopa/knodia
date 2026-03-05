@@ -36,6 +36,7 @@ const mockOrganizations: Organization[] = [
 ];
 
 const toExpectAPI_Organization = (org: Organization) => ({
+  attributes: expect.arrayContaining(org.attributes),
   createdAt: org.createdAt.toISOString(),
   id: org.id,
   name: org.name,

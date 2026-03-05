@@ -4,8 +4,19 @@ import {
 } from "@knodia/common-models/api";
 import { z } from "zod";
 
+export const API_OrganizationAttribute = z
+  .strictObject({
+    code: z.string(),
+    scheme: z.string(),
+  })
+  .meta({ id: "OrganizationAttribute" });
+export type API_OrganizationAttribute = z.infer<
+  typeof API_OrganizationAttribute
+>;
+
 export const API_Organization = z
   .strictObject({
+    attributes: z.array(API_OrganizationAttribute),
     createdAt: z.iso.datetime(),
     id: z.uuid(),
     name: z.string(),

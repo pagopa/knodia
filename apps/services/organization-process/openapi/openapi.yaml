@@ -87,9 +87,24 @@ components:
         - offset
         - total
       additionalProperties: false
+    OrganizationAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Organization:
       type: object
       properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrganizationAttribute"
         createdAt:
           type: string
           format: date-time
@@ -101,6 +116,7 @@ components:
         name:
           type: string
       required:
+        - attributes
         - createdAt
         - id
         - name
