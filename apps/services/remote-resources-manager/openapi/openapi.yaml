@@ -66,18 +66,44 @@ components:
         - status
         - title
       additionalProperties: false
+    Pagination:
+      type: object
+      properties:
+        limit:
+          format: int32
+          type: number
+          minimum: 1
+          maximum: 50
+        offset:
+          format: int32
+          type: number
+          minimum: 0
+        total:
+          format: int32
+          type: number
+          minimum: 0
+      required:
+        - limit
+        - offset
+        - total
+      additionalProperties: false
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
       enum:
         - Orion
         - Lynx
-    AgreementState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
     AgreementConsumer:
       type: object
       properties:
@@ -90,17 +116,6 @@ components:
       required:
         - id
         - knodeId
-      additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
       additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new agreement
@@ -124,67 +139,16 @@ components:
         - eserviceVersionId
         - knodeId
       additionalProperties: false
-    Agreement:
+    Attribute:
       type: object
       properties:
-        attributes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
+        code:
           type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        eserviceVersionId:
+        scheme:
           type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        producerId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        state:
-          $ref: "#/components/schemas/AgreementState"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
-        - attributes
-        - consumer
-        - eserviceId
-        - eserviceVersionId
-        - id
-        - producerId
-        - state
-        - updatedAt
-      additionalProperties: false
-    Pagination:
-      type: object
-      properties:
-        limit:
-          format: int32
-          type: number
-          minimum: 1
-          maximum: 50
-        offset:
-          format: int32
-          type: number
-          minimum: 0
-        total:
-          format: int32
-          type: number
-          minimum: 0
-      required:
-        - limit
-        - offset
-        - total
+        - code
+        - scheme
       additionalProperties: false
     EserviceVersionState:
       type: string
@@ -414,13 +378,29 @@ paths:
               schema:
                 description: Agreement created successfully
                 allOf:
-                  - $ref: "#/components/schemas/Agreement"
+                  - $ref: "#/components/schemas/CreatedResource"
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
