@@ -48,15 +48,19 @@ export const agreementRouter: FastifyPluginAsyncZod<
     method: "POST",
     schema: {
       body: API_AgreementSeed,
-      description: "Create a new Agreement",
+      description:
+        "Create a new Agreement for a Consumer to access a Producer's E-service",
       operationId: "createAgreement",
       response: {
         201: API_Agreement.meta({
           description: "Agreement created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
-      tags: [apiTags.operation, apiTags.agreement],
+      summary: "Create a new Agreement",
+      tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",
   });

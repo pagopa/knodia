@@ -66,29 +66,18 @@ components:
         - status
         - title
       additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     AgreementState:
       type: string
       enum:
         - Active
         - Suspended
         - Archived
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     AgreementConsumer:
       type: object
       properties:
@@ -102,13 +91,25 @@ components:
         - id
         - knodeId
       additionalProperties: false
+    AgreementAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Agreement:
       type: object
       properties:
         attributes:
+          description: Attributes for the Agreement
           type: array
           items:
-            $ref: "#/components/schemas/Attribute"
+            $ref: "#/components/schemas/AgreementAttribute"
         consumer:
           $ref: "#/components/schemas/AgreementConsumer"
         createdAt:

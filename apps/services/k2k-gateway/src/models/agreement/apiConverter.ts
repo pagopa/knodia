@@ -16,7 +16,6 @@ export function toAPI_Agreement(
   return {
     attributes: agreement.attributes,
     consumer: toAPI_AgreementConsumer(agreement.consumer),
-    createdAt: agreement.createdAt,
     eserviceId: agreement.eserviceId,
     eserviceVersionId: agreement.eserviceVersionId,
     id: agreement.id,
