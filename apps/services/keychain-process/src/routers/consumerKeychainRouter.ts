@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -23,11 +24,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 > = async (fastify, consumerKeychainService) => {
   fastify.route({
     handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
       const { results, totalCount } =
-        await consumerKeychainService.getConsumerKeychains(
-          req.query,
-          getContextValues(requestContext),
-        );
+        await consumerKeychainService.getConsumerKeychains(req.query, ctx);
 
       res.status(200).send({
         items: results.map(toAPI_Keychain),
@@ -49,6 +51,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           description: "Consumer keychains retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -57,11 +60,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
       const consumerKeychain =
-        await consumerKeychainService.createConsumerKeychain(
-          req.body,
-          getContextValues(requestContext),
-        );
+        await consumerKeychainService.createConsumerKeychain(req.body, ctx);
       res.status(201).send(toAPI_Keychain(consumerKeychain));
     },
     method: "POST",
@@ -75,6 +79,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           description: "Consumer Keychain created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.consumerKeychain],
     },
