@@ -17,8 +17,15 @@ import { client } from "@/libs/axios";
 
 const CATALOG_SEARCH_LIMIT = 4;
 
+const isSearchReady = (params: {
+  category: string;
+  keywords: string;
+  knode: string;
+}): boolean =>
+  params.knode !== "" && (params.category !== "" || params.keywords !== "");
+
 const catalogQuery = (
-  body: null | ReturnType<typeof buildCatalogSearchBody>,
+  body: ReturnType<typeof buildCatalogSearchBody>,
   offset: number,
 ) =>
   getConsumerCatalogEservicesQueryOptions({
@@ -39,12 +46,13 @@ export const Route = createFileRoute(
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
+    if (!isSearchReady(deps)) return;
     const body = buildCatalogSearchBody({
       category: deps.category,
       keywords: deps.keywords,
       knodeId: deps.knode,
     });
-    if (body) queryClient.prefetchQuery(catalogQuery(body, deps.offset));
+    queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],
@@ -57,6 +65,8 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
+  const searchReady = isSearchReady(search);
+
   const body = buildCatalogSearchBody({
     category: search.category,
     keywords: search.keywords,
@@ -65,7 +75,8 @@ function RouteComponent() {
 
   const { data: results, isLoading } = useQuery({
     ...catalogQuery(body, search.offset),
-    placeholderData: body ? keepPreviousData : undefined,
+    enabled: searchReady,
+    placeholderData: searchReady ? keepPreviousData : undefined,
     select: (data) => ({
       items: data.results.map(toCatalogSearchResultUI),
       pagination: data.pagination,

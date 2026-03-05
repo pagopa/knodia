@@ -1,10 +1,10 @@
 import { bffApi } from "@knodia/bff-client";
-import { queryOptions, skipToken } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
 import type { client } from "@/libs/axios";
 
 interface CatalogEservicesQueryParams {
-  body: bffApi.GetConsumerCatalogEserviceSearchParams | null;
+  body: bffApi.GetConsumerCatalogEserviceSearchParams;
   client: typeof client;
   query: { limit: number; offset: number };
 }
@@ -15,17 +15,15 @@ export const getConsumerCatalogEservicesQueryOptions = ({
   query,
 }: CatalogEservicesQueryParams) =>
   queryOptions({
-    queryFn: body
-      ? async ({ signal }) => {
-          const { data } = await bffApi.getConsumerCatalogEservices({
-            body,
-            client,
-            query,
-            signal,
-            throwOnError: true,
-          });
-          return data;
-        }
-      : skipToken,
+    queryFn: async ({ signal }) => {
+      const { data } = await bffApi.getConsumerCatalogEservices({
+        body,
+        client,
+        query,
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
     queryKey: ["getConsumerCatalogEservices", { body, query }] as const,
   });
