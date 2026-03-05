@@ -33,5 +33,8 @@ export const API_CreatedResource = z
   .strictObject({
     id: z.uuid(),
   })
-  .meta({ id: "CreatedResource" });
+  .meta({
+    description: "Identifier of the created resource",
+    id: "CreatedResource",
+  });
 export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
