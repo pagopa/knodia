@@ -1,3 +1,4 @@
+import { ExternalId } from "@knodia/common-models/externalResource";
 import {
   AgreementId,
   EserviceId,
@@ -8,12 +9,12 @@ import {
 import z from "zod";
 
 export const RemoteAgreement = z.strictObject({
-  agreementId: AgreementId,
+  agreementId: ExternalId<AgreementId>(),
   consumerId: OrganizationId,
-  eserviceId: EserviceId,
-  eserviceVersionId: EserviceVersionId,
+  createdAt: z.coerce.date(),
+  eserviceId: ExternalId<EserviceId>(),
+  eserviceVersionId: ExternalId<EserviceVersionId>(),
   knodeId: KnodeId,
-  producerId: OrganizationId,
-  updatedAt: z.coerce.date(),
+  producerId: ExternalId<OrganizationId>(),
 });
 export type RemoteAgreement = z.infer<typeof RemoteAgreement>;

@@ -1,3 +1,4 @@
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -7,13 +8,16 @@ import type { RemoteAgreement } from "../models/agreement.ts";
 
 import { agreement } from "../db/schema.ts";
 
-export type RemoteResourceService = ReturnType<
-  typeof remoteResourceServiceBuilder
+export type RemoteResourceDbService = ReturnType<
+  typeof remoteResourceDbServiceBuilder
 >;
 
-export function remoteResourceServiceBuilder(db: NodePgDatabase) {
+export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async getByAgreementId(agreementId: AgreementId, knodeId: KnodeId) {
+    async getByAgreementId(
+      agreementId: ExternalId<AgreementId>,
+      knodeId: KnodeId,
+    ) {
       const [result] = await db
         .select()
         .from(agreement)
@@ -28,18 +32,26 @@ export function remoteResourceServiceBuilder(db: NodePgDatabase) {
     },
     async upsertAgreement(remoteAgreement: RemoteAgreement): Promise<void> {
       await db
-        .delete(agreement)
-        .where(eq(agreement.agreementId, remoteAgreement.agreementId));
-
-      await db.insert(agreement).values({
-        agreementId: remoteAgreement.agreementId,
-        consumerId: remoteAgreement.consumerId,
-        eserviceId: remoteAgreement.eserviceId,
-        eserviceVersionId: remoteAgreement.eserviceVersionId,
-        knodeId: remoteAgreement.knodeId,
-        producerId: remoteAgreement.producerId,
-        updatedAt: remoteAgreement.updatedAt,
-      });
+        .insert(agreement)
+        .values({
+          agreementId: remoteAgreement.agreementId,
+          consumerId: remoteAgreement.consumerId,
+          createdAt: remoteAgreement.createdAt,
+          eserviceId: remoteAgreement.eserviceId,
+          eserviceVersionId: remoteAgreement.eserviceVersionId,
+          knodeId: remoteAgreement.knodeId,
+          producerId: remoteAgreement.producerId,
+        })
+        .onConflictDoUpdate({
+          set: {
+            consumerId: remoteAgreement.consumerId,
+            eserviceId: remoteAgreement.eserviceId,
+            eserviceVersionId: remoteAgreement.eserviceVersionId,
+            knodeId: remoteAgreement.knodeId,
+            producerId: remoteAgreement.producerId,
+          },
+          target: agreement.agreementId,
+        });
     },
   };
 }

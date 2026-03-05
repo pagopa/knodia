@@ -17,7 +17,7 @@ import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
-import { remoteResourceServiceBuilder } from "./services/remoteResourceService.ts";
+import { remoteResourceDbServiceBuilder } from "./services/remoteResourceService.ts";
 import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
 
 export function buildApp({
@@ -32,7 +32,8 @@ export function buildApp({
   const k2kGatewayClient = getK2K2GatewayApiClient({
     knodeUrl,
   });
-  const remoteResourceService = remoteResourceServiceBuilder(remoteResourceDb);
+  const remoteResourceDbService =
+    remoteResourceDbServiceBuilder(remoteResourceDb);
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -59,7 +60,7 @@ export function buildApp({
   app.register(authenticationPlugin, config);
   app.register(healthRouter);
   app.register(remoteResourcesManagerRouter, {
-    remoteResourceService,
+    remoteResourceDbService,
     remoteResourcesManagerService:
       remoteResourcesManagerServiceBuilder(k2kGatewayClient),
   });

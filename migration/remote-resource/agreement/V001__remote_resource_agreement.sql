@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_agreement."agreement" (
 	"consumer_id" uuid NOT NULL,
 	"producer_id" uuid NOT NULL,
 	"knode_id" text NOT NULL,
-	"updated_at" timestamp with time zone NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 
 -- Grant privileges to ${NAMESPACE}_remote_resource_manager_user
