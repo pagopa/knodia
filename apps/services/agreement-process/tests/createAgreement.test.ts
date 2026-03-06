@@ -6,12 +6,12 @@ import {
 } from "@knodia/agreement-models";
 import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockEservice } from "@knodia/test-commons/utils";
+import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
-import { eserviceWriterService } from "./setup.ts";
+import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import { getAllAgreementEvents, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
@@ -138,6 +138,24 @@ describe("POST /agreements (createAgreement)", async () => {
     });
 
     await eserviceWriterService.upsertEservice(eservice, 1);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/agreements")
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 409 if the agreement already exists", async () => {
+    const agreement: Agreement = {
+      ...getMockAgreement(),
+      consumer: {
+        id: consumerId,
+        knodeId: KnodeId.parse(body.consumer.knodeId),
+      },
+      eserviceId: eservice.id,
+    };
+
+    await agreementWriterService.upsertAgreement(agreement, 1);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/agreements")
