@@ -30,7 +30,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
   return {
     async getAgreements(
-      params: API_GetAgreementsQueryParams,
+      requestQuery: API_GetAgreementsQueryParams,
     ): Promise<ListResult<Agreement>> {
       const {
         consumerId,
@@ -41,7 +41,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         sortBy,
         sortOrder,
         state,
-      } = params;
+      } = requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
         const defaultSort: {

@@ -83,15 +83,12 @@ export function agreementServiceBuilder(
       return agreement;
     },
     async getAgreements(
-      params: API_GetAgreementsQueryParams,
+      requestQuery: API_GetAgreementsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<ListResult<Agreement>> {
-      logger.info(
-        { requestQuery: params },
-        "Getting Agreements with query params",
-      );
+      logger.info({ requestQuery }, "Getting Agreements with query params");
 
-      return await readmodelService.getAgreements(params);
+      return await readmodelService.getAgreements(requestQuery);
     },
   };
 }
