@@ -63,25 +63,18 @@ export function LoginPage() {
           </p>
         </div>
 
-        <Banner className="items-start" kind="informative">
-          <div className="flex flex-col gap-1">
-            <p className="title-sm-em text-info-light-high-contrast">
-              You don&apos;t have an account?
-            </p>
-            <p className="body-md text-secondary-light-mid-contrast">
-              Visit the{" "}
-              <Link
-                href={KNODIA_PROJECT_URL}
-                rel="noopener noreferrer"
-                target="_blank"
-                variant="primary"
-              >
-                Knodia project website
-              </Link>{" "}
-              to request an account. Once your account is activated, you can
-              sign in from here.
-            </p>
-          </div>
+        <Banner kind="informative" size="md" title="You don't have an account?">
+          Visit the{" "}
+          <Link
+            href={KNODIA_PROJECT_URL}
+            rel="noopener noreferrer"
+            target="_blank"
+            variant="inline"
+          >
+            Knodia project website
+          </Link>{" "}
+          to request an account. Once your account is activated, you can sign in
+          from here.
         </Banner>
 
         <Divider kind="primary" type="light" />
