@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       devtools(),
       tanstackRouter({
         autoCodeSplitting: true,
+        routeFileIgnorePattern: "\\.test\\.(ts|tsx)$",
         target: "react",
       }),
       react({
