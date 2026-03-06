@@ -58,7 +58,14 @@ const bannerTitle = tv({
   },
 });
 
-export interface BannerProps extends HTMLAttributes<HTMLDivElement> {
+interface BannerAction {
+  label: string;
+  onPress?: () => void;
+}
+
+type BannerKind = VariantProps<typeof banner>["kind"];
+
+interface BannerProps extends HTMLAttributes<HTMLDivElement> {
   action?: BannerAction;
   icon?: ReactNode;
   kind?: BannerKind;
@@ -67,13 +74,6 @@ export interface BannerProps extends HTMLAttributes<HTMLDivElement> {
   size?: "md" | "sm";
   title?: string;
 }
-
-interface BannerAction {
-  label: string;
-  onPress?: () => void;
-}
-
-type BannerKind = VariantProps<typeof banner>["kind"];
 
 export function Banner({
   kind = "informative",
