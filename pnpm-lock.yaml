@@ -457,6 +457,12 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
+      '@knodia/agreement-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/agreement-process-client
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -475,6 +481,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/organization-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/organization-models
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
