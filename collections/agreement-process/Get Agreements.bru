@@ -1,0 +1,26 @@
+meta {
+  name: Get Agreements
+  type: http
+}
+
+get {
+  url: {{host-agreement-process}}/agreements?limit=50&offset=0
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  eserviceId: {{eserviceId}}
+  ~consumerKnodeId: Orion
+  ~consumerId: {{consumerId}}
+  ~sortBy: eserviceName
+  ~sortOrder: asc
+  ~state: Active
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}

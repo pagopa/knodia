@@ -1,5 +1,6 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
   InternalAuthData,
   UISessionAuthData,
@@ -15,6 +16,7 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
+import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
@@ -96,6 +98,14 @@ export function agreementServiceBuilder(
       assertRequesterIsProducer(agreement.producerId, authData);
 
       return agreement;
+    },
+    async getAgreements(
+      requestQuery: API_GetAgreementsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<Agreement>> {
+      logger.info({ requestQuery }, "Getting Agreements with query params");
+
+      return await readmodelService.getAgreements(requestQuery);
     },
   };
 }
