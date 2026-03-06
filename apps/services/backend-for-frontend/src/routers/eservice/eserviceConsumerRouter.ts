@@ -8,13 +8,13 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
+import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerCatalogEserviceSearchResults,
   API_GetConsumerCatalogEserviceSearchParams,
   API_GetConsumerCatalogEservicesQueryParams,
-} from "../../models/api.ts";
-import { toAPI_ConsumerCatalogEserviceSearchResult } from "../../models/apiConverter.ts";
-import { apiTags } from "../../models/apiTags.ts";
+} from "../../models/eservice/api.ts";
+import { toAPI_ConsumerCatalogEserviceSearchResult } from "../../models/eservice/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceConsumerRouterOptions {

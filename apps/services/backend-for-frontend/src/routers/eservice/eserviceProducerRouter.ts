@@ -12,6 +12,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { config } from "../../config/config.ts";
+import { apiTags } from "../../models/apiTags.ts";
 import {
   API_CreatedResource,
   API_EserviceSeed,
@@ -19,12 +20,11 @@ import {
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
-} from "../../models/api.ts";
+} from "../../models/eservice/api.ts";
 import {
   toAPI_ProducerEservice,
   toAPI_ProducerEserviceDetails,
-} from "../../models/apiConverter.ts";
-import { apiTags } from "../../models/apiTags.ts";
+} from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
