@@ -7,6 +7,7 @@ import {
   KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
+import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 
 const createdAt = new Date();
@@ -17,6 +18,7 @@ export const eservice1: Eservice = {
   name: {
     en: "Test Eservice 1",
   },
+  producerId: TEST_ORGANIZATION_ID,
   updatedAt,
 };
 const eserviceVersion1 = eservice1.versions[0]!;
