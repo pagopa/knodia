@@ -17,12 +17,12 @@ import { toAPI_ConsumerCatalogEserviceSearchResult } from "../../models/apiConve
 import { apiTags } from "../../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
-interface RemoteResourcesManagerRouterOptions {
+interface EserviceConsumerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
-  RemoteResourcesManagerRouterOptions
+  EserviceConsumerRouterOptions
 > = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {

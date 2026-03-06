@@ -32,14 +32,14 @@ import {
 import { apiTags } from "../../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
-interface EserviceRouterOptions {
+interface EserviceProducerRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
 }
 
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceProducerRouter: FastifyPluginAsyncZod<
-  EserviceRouterOptions
+  EserviceProducerRouterOptions
   // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({
