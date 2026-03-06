@@ -39,7 +39,7 @@ import {
   retrieveEserviceLatestVersion,
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
-import { assertOrganizationExists } from "./validators.ts";
+import { assertOrganizationExists } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
