@@ -51,6 +51,10 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             description: "E-services routes",
             name: apiTags.eservice,
           },
+          {
+            description: "Agreement routes",
+            name: apiTags.agreement,
+          },
         ],
       },
     },
