@@ -10,7 +10,7 @@ export const toAPI_ProducerAgreement = ({
   eservice,
 }: {
   agreement: agreementProcessApi.Agreement;
-  consumer: Organization; // TODO: update with organizationProcessApi.Organization when available
+  consumer: Organization; // TODO: update with remoteResourcesManagerApi.Organization when available
   eservice: eserviceProcessApi.Eservice;
 }): API_ProducerAgreement => ({
   consumer: {

@@ -78,7 +78,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
             path: { eserviceId: agreement.eserviceId },
           });
 
-          // TODO: fetch this using organization-process once available
+          // TODO: should this use the remote-resources-manager to fetch the consumer organization from agreement.consumer.knodeId?
           const consumer = getOrganization(
             unsafeBrandId(agreement.consumer.id),
           );
