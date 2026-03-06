@@ -1,6 +1,9 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
-import type { InternalAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import {
@@ -15,8 +18,14 @@ import {
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
-import { retrieveEservice } from "../utils/readmodelUtils.ts";
-import { assertEserviceVersionIsActive } from "../utils/validators.ts";
+import {
+  retrieveAgreement,
+  retrieveEservice,
+} from "../utils/readmodelUtils.ts";
+import {
+  assertEserviceVersionIsActive,
+  assertRequesterIsProducer,
+} from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -74,6 +83,17 @@ export function agreementServiceBuilder(
       await eventStoreWriter.insertEvent(
         createAgreementActivatedV1Event(agreement, correlationId),
       );
+
+      return agreement;
+    },
+    async getAgreement(
+      agreementId: AgreementId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<Agreement> {
+      logger.info(`Getting Agreement with ID ${agreementId}`);
+
+      const agreement = await retrieveAgreement(agreementId, readmodelService);
+      assertRequesterIsProducer(agreement.producerId, authData);
 
       return agreement;
     },

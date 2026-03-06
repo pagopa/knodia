@@ -1,4 +1,5 @@
 import { API_KnodeId } from "@knodia/common-models/api";
+import { AgreementId } from "@knodia/common-models/ids";
 import z from "zod";
 
 export const API_AgreementState = z
@@ -20,3 +21,8 @@ export const API_AgreementAttribute = z
   })
   .meta({ id: "AgreementAttribute" });
 export type API_AgreementAttribute = z.infer<typeof API_AgreementAttribute>;
+
+export const API_AgreementIdPathParam = z.strictObject({
+  agreementId: AgreementId,
+});
+export type API_AgreementIdPathParam = z.infer<typeof API_AgreementIdPathParam>;
