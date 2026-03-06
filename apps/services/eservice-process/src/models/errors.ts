@@ -2,14 +2,19 @@ import type {
   EserviceId,
   EserviceInterfaceId,
   EserviceVersionId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } =
-  constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_FORBIDDEN,
+  HTTP_STATUS_NOT_FOUND,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -20,6 +25,7 @@ const errorCodes = {
   INTERFACE_NOT_FOUND: "0005",
   DUPLICATE_INTERFACE_ID: "0006",
   INCONSISTENT_DAILY_CALLS: "0007",
+  ORGANIZATION_NOT_FOUND: "0008",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -101,5 +107,14 @@ export function invalidCategory(scheme: string, code: string) {
     detail: `Invalid category: scheme=${scheme}, code=${code}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Invalid Category",
+  });
+}
+
+export function organizationNotFound(organizationId: OrganizationId) {
+  return createApiError<ErrorCodes>({
+    code: "ORGANIZATION_NOT_FOUND",
+    detail: `Organization with id ${organizationId} not found`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Organization Not Found",
   });
 }
