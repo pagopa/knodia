@@ -24,7 +24,8 @@
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zocker": "catalog:"
   },
   "dependencies": {
     "@fastify/request-context": "catalog:",
@@ -44,7 +45,6 @@
     "fastify-type-provider-zod": "catalog:",
     "pg": "catalog:",
     "pino-pretty": "catalog:",
-    "zocker": "catalog:",
     "zod": "catalog:"
   }
 }

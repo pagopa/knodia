@@ -7,8 +7,7 @@ import {
   KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
-import { getMockEservice } from "@knodia/test-commons/utils";
-import { zocker } from "zocker";
+import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 
 const createdAt = new Date();
 const updatedAt = new Date(createdAt.getTime() + 1000);
@@ -31,117 +30,125 @@ export const eservice2: Eservice = {
 };
 const eserviceVersion2 = eservice2.versions[0]!;
 
-const zockerAgreements = zocker(Agreement).setSeed(0).generateMany(10);
-
 export const consumerId = generateId<OrganizationId>();
 export const mockAgreements: Agreement[] = [
   {
-    ...(zockerAgreements[0] as Agreement),
+    ...getMockAgreement(0),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice1.id,
     eserviceVersionId: eserviceVersion1.id,
+    producerId: eservice1.producerId,
     state: "Active",
     updatedAt,
   },
   {
-    ...(zockerAgreements[1] as Agreement),
+    ...getMockAgreement(1),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice1.id,
     eserviceVersionId: eserviceVersion1.id,
+    producerId: eservice1.producerId,
     state: "Suspended",
     updatedAt: new Date(updatedAt.getTime() + 3000),
   },
   {
-    ...(zockerAgreements[2] as Agreement),
+    ...getMockAgreement(2),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice1.id,
     eserviceVersionId: eserviceVersion1.id,
+    producerId: eservice1.producerId,
     state: "Archived",
     updatedAt: new Date(updatedAt.getTime() + 5000),
   },
   {
-    ...(zockerAgreements[3] as Agreement),
+    ...getMockAgreement(3),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Lynx"),
     },
     eserviceId: eservice1.id,
     eserviceVersionId: eserviceVersion1.id,
+    producerId: eservice1.producerId,
     state: "Archived",
     updatedAt: new Date(updatedAt.getTime() + 7000),
   },
   {
-    ...(zockerAgreements[4] as Agreement),
+    ...getMockAgreement(4),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Lynx"),
     },
     eserviceId: eservice1.id,
     eserviceVersionId: eserviceVersion1.id,
+    producerId: eservice1.producerId,
     state: "Active",
     updatedAt: new Date(updatedAt.getTime() + 9000),
   },
   {
-    ...(zockerAgreements[5] as Agreement),
+    ...getMockAgreement(5),
     consumer: {
       id: generateId(),
       knodeId: KnodeId.parse("Lynx"),
     },
     eserviceId: eservice2.id,
     eserviceVersionId: eserviceVersion2.id,
+    producerId: eservice2.producerId,
     state: "Active",
     updatedAt: new Date(updatedAt.getTime() + 11000),
   },
   {
-    ...(zockerAgreements[6] as Agreement),
+    ...getMockAgreement(6),
     consumer: {
       id: generateId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,
     eserviceVersionId: eserviceVersion2.id,
+    producerId: eservice2.producerId,
     state: "Active",
     updatedAt: new Date(updatedAt.getTime() + 13000),
   },
   {
-    ...(zockerAgreements[7] as Agreement),
+    ...getMockAgreement(7),
     consumer: {
       id: generateId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,
     eserviceVersionId: eserviceVersion2.id,
+    producerId: eservice2.producerId,
     state: "Suspended",
     updatedAt: new Date(updatedAt.getTime() + 15000),
   },
   {
-    ...(zockerAgreements[8] as Agreement),
+    ...getMockAgreement(8),
     consumer: {
       id: generateId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,
     eserviceVersionId: eserviceVersion2.id,
+    producerId: eservice2.producerId,
     state: "Archived",
     updatedAt: new Date(updatedAt.getTime() + 17000),
   },
   {
-    ...(zockerAgreements[9] as Agreement),
+    ...getMockAgreement(9),
     consumer: {
       id: generateId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,
     eserviceVersionId: eserviceVersion2.id,
+    producerId: eservice2.producerId,
     state: "Suspended",
     updatedAt: new Date(updatedAt.getTime() + 19000),
   },

@@ -8,6 +8,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { OrganizationId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
 export const API_Agreement = z
@@ -56,6 +57,9 @@ export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
     .uuid()
     .optional()
     .meta({ description: "Filter by E-service ID" }),
+  producerId: OrganizationId.optional().meta({
+    description: "Filter by Producer Organization ID",
+  }),
   sortBy: z
     .enum(["eserviceName", "state"]) // TODO: add consumerName
     .optional()
