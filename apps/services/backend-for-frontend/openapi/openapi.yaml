@@ -93,17 +93,6 @@ components:
       required:
         - refreshToken
       additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -202,6 +191,17 @@ components:
       enum:
         - Bearer
         - DPoP
+    EserviceAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -291,7 +291,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/Attribute"
+              $ref: "#/components/schemas/EserviceAttribute"
       required:
         - accessTokenAudience
         - accessTokenDuration
@@ -414,7 +414,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/Attribute"
+              $ref: "#/components/schemas/EserviceAttribute"
         state:
           description: State of the version
           allOf:
@@ -608,16 +608,12 @@ components:
             $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
+        hasRequiredAttributes:
+          type: boolean
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        latestVersionRequiredAttributes:
-          type: array
-          items:
-            type: array
-            items:
-              $ref: "#/components/schemas/Attribute"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
@@ -629,8 +625,8 @@ components:
       required:
         - categories
         - description
+        - hasRequiredAttributes
         - id
-        - latestVersionRequiredAttributes
         - latestVersionState
         - mode
         - name
