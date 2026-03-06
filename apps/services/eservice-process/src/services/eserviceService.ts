@@ -17,8 +17,6 @@ import {
   EserviceId,
   EserviceVersionId,
   generateId,
-  OrganizationId,
-  unsafeBrandId,
 } from "@knodia/common-models/ids";
 
 import type {
@@ -41,6 +39,7 @@ import {
   retrieveEserviceLatestVersion,
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
+import { assertOrganizationExists } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -51,18 +50,16 @@ export function eserviceServiceBuilder(
   return {
     async createEservice(
       seed: API_EserviceSeed,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<Eservice> {
       const eserviceId = generateId<EserviceId>();
-
-      // TODO: get real producerId from auth context
-      const producerId = unsafeBrandId<OrganizationId>(
-        "00000000-0000-0000-0000-000000000000",
-      );
+      const { organizationId: producerId } = authData;
 
       logger.info(
         `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
+
+      assertOrganizationExists(producerId);
 
       for (const attr of seed.requiredAttributes.flat()) {
         if (getAttribute(attr) === undefined) {
@@ -160,7 +157,7 @@ export function eserviceServiceBuilder(
     },
     async getEserviceLatestVersion(
       eserviceId: EserviceId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Omit<EserviceVersion, "interfaceDocument">> {
       logger.info(`Getting latest version of E-service with ID ${eserviceId}`);
 
