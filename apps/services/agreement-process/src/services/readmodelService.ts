@@ -38,6 +38,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         eserviceId,
         limit,
         offset,
+        producerId,
         sortBy,
         sortOrder,
         state,
@@ -100,6 +101,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                   ? eq(readmodelAgreement.consumerKnodeId, consumerKnodeId)
                   : undefined,
                 state ? eq(readmodelAgreement.state, state) : undefined,
+                producerId
+                  ? eq(readmodelAgreement.producerId, producerId)
+                  : undefined,
               ),
             )
             .$dynamic();
