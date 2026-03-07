@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -27,6 +28,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     eserviceProcessUrl: config.eserviceProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
+  const knodeId = KnodeId.parse(config.knodeId);
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
@@ -77,6 +79,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       fileManager,
     });
     protectedApp.register(eserviceConsumerRouter, {
+      knodeId,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementProducerRouter, {
