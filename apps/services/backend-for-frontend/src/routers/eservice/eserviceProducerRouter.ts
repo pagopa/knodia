@@ -219,15 +219,15 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve an E-service with all its details",
+      description: "Retrieve a Producer E-service with all its details",
       operationId: "getProducerEserviceDetails",
       params: API_EserviceIdPathParam,
       response: {
         200: API_ProducerEserviceDetails.meta({
-          description: "E-service details retrieved successfully",
+          description: "Producer E-service details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
-        404: API_Problem.meta({ description: "E-service not found" }),
+        404: API_Problem.meta({ description: "Not Found" }),
       },
       tags: [apiTags.eservice],
     },
@@ -266,13 +266,14 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Download the interface document for the latest version of an E-service",
+        "Download the interface document for the latest version of a Producer E-service",
       operationId: "getProducerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
       response: {
         200: API_FileDownload.meta({
-          description: "E-service interface document downloaded successfully",
+          description:
+            "Producer E-service interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
