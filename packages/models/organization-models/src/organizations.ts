@@ -1,7 +1,7 @@
 import type { AttributeId } from "@knodia/attribute-models";
 import type { OrganizationId } from "@knodia/common-models/ids";
 
-interface Organization {
+export interface Organization {
   attributes: AttributeId[];
   id: OrganizationId;
   name: string;

@@ -12,6 +12,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { config } from "../../config/config.ts";
+import { apiTags } from "../../models/apiTags.ts";
 import {
   API_CreatedResource,
   API_EserviceSeed,
@@ -19,23 +20,22 @@ import {
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
-} from "../../models/api.ts";
+} from "../../models/eservice/api.ts";
 import {
   toAPI_ProducerEservice,
   toAPI_ProducerEserviceDetails,
-} from "../../models/apiConverter.ts";
-import { apiTags } from "../../models/apiTags.ts";
+} from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
-interface EserviceRouterOptions {
+interface EserviceProducerRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
 }
 
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceProducerRouter: FastifyPluginAsyncZod<
-  EserviceRouterOptions
+  EserviceProducerRouterOptions
   // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({

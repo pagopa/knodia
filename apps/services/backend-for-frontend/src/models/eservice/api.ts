@@ -22,6 +22,8 @@ import {
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
+import { API_CompactOrganization } from "../organization/api.ts";
+
 const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z.string().meta({
@@ -311,16 +313,6 @@ export type API_GetConsumerCatalogEserviceSearchParams = z.infer<
   typeof API_GetConsumerCatalogEserviceSearchParams
 >;
 
-const API_CompactOrganization = z
-  .strictObject({
-    id: z.uuid(),
-    name: API_LocalizedName,
-  })
-  .meta({
-    description: "Organization with only id and name",
-    id: "CompactOrganization",
-  });
-
 const API_ConsumerCatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -352,3 +344,13 @@ export const API_GetConsumerCatalogEservicesQueryParams =
 export type API_GetConsumerCatalogEservicesQueryParams = z.infer<
   typeof API_GetConsumerCatalogEservicesQueryParams
 >;
+
+export const API_CompactEservice = z
+  .strictObject({
+    id: z.uuid(),
+    name: API_LocalizedName,
+  })
+  .meta({
+    description: "E-service with only id and name",
+    id: "CompactEservice",
+  });
