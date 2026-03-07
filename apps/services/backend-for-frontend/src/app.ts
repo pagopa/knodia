@@ -85,6 +85,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,
+      knodeId,
     });
   });
 

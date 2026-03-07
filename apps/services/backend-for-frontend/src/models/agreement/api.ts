@@ -43,6 +43,7 @@ export const API_ProducerAgreement = z
     consumer: API_CompactOrganization,
     eservice: API_CompactEservice,
     id: z.uuid(),
+    producer: API_CompactOrganization.optional(),
     state: API_AgreementState,
     // TODO: "recent update" boolean
   })
