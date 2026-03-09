@@ -2,13 +2,8 @@
 
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import {
-  API_EserviceMode,
-  API_EserviceVersionState,
-} from "@knodia/eservice-models/api";
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { match } from "ts-pattern";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
@@ -16,6 +11,7 @@ import {
   API_CatalogEserviceSearchResult,
   type API_CatalogEserviceSearchResult as API_CatalogEserviceSearchResultType,
 } from "../src/models/api.ts";
+import { toK2KMode, toK2KVersionState } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getCatalogEservicesMock = vi.hoisted(() => vi.fn());
@@ -32,21 +28,6 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     },
   };
 });
-
-const toK2KVersionState = (
-  state: API_EserviceVersionState,
-): k2kGatewayApi.EserviceVersionState =>
-  match(state)
-    .with("Active", () => "ACTIVE" as const)
-    .with("Suspended", () => "SUSPENDED" as const)
-    .with("Archived", () => "ARCHIVED" as const)
-    .exhaustive();
-
-const toK2KMode = (mode: API_EserviceMode): k2kGatewayApi.EserviceMode =>
-  match(mode)
-    .with("ProvideData", () => "PROVIDE_DATA" as const)
-    .with("ReceiveData", () => "RECEIVE_DATA" as const)
-    .exhaustive();
 
 const toK2KResult = (
   apiResult: API_CatalogEserviceSearchResultType,

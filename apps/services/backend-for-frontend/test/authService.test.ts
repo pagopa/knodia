@@ -42,7 +42,10 @@ vi.mock("../src/config/config.ts", () => ({
       kid: "alias/test-kid",
       secondsDuration: 3600,
     },
-    wellKnownUrls: ["http://localhost:4500/knodia/.well-known/jwks.json"],
+    wellKnownUrls: [
+      "http://localhost:4500/knodia/.well-known/jwks.json",
+      "http://localhost:4501/knodia/.well-known/jwks.json",
+    ],
   },
 }));
 
@@ -337,6 +340,48 @@ describe("refreshTokenPair", () => {
     await expect(
       service.refreshUISessionTokenPair("refresh-jwt-2"),
     ).resolves.toBeDefined();
+  });
+
+  it("succeeds when one of multiple JWKS sets validates the refresh token", async () => {
+    mockJwtVerify
+      .mockRejectedValueOnce(new Error("key not found"))
+      .mockResolvedValueOnce({
+        payload: makeRefreshPayload(),
+        protectedHeader: { alg: "RS256" },
+      });
+    mockKmsSend.mockResolvedValue({
+      Signature: new Uint8Array([1, 2, 3, 4]),
+    });
+
+    const service = buildService();
+    const result = await service.refreshUISessionTokenPair("refresh-jwt");
+
+    expect(result.uiSessionToken).toBeDefined();
+    expect(result.refreshToken).toBeDefined();
+  });
+
+  it("throws when all JWKS sets fail to validate the refresh token", async () => {
+    mockJwtVerify
+      .mockRejectedValueOnce(new Error("key not found"))
+      .mockRejectedValueOnce(new Error("invalid signature"));
+
+    const service = buildService();
+    await expect(service.refreshUISessionTokenPair("bad-jwt")).rejects.toThrow(
+      unauthorizedError("Refresh token verification failed"),
+    );
+  });
+
+  it("validates refresh token against all JWKS sets in parallel", async () => {
+    setupValidRefreshToken();
+    mockKmsSend.mockResolvedValue({
+      Signature: new Uint8Array([1, 2, 3, 4]),
+    });
+
+    const service = buildService();
+    await service.refreshUISessionTokenPair("refresh-jwt");
+
+    // With 2 wellKnownUrls, jwtVerify should be called for both JWKS sets
+    expect(mockJwtVerify).toHaveBeenCalledTimes(2);
   });
 
   it("preserves claims from the refresh token in the new pair", async () => {

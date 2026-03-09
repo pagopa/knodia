@@ -4,7 +4,7 @@ import type { ConsumptionEserviceDetail } from "./consumption-eservice-detail";
 
 export const mockConsumptionEserviceDetail: ConsumptionEserviceDetail = {
   accessToken: {
-    audience: "www.ursa.lynx/birth/v1",
+    audience: ["www.ursa.lynx/birth/v1"],
     durationInMinutes: 30,
     type: "DPoP",
   },

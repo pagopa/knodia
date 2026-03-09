@@ -7,6 +7,13 @@ info:
   title: Knodia Remote Resources Manager API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -137,6 +144,11 @@ components:
         - code
         - scheme
       additionalProperties: false
+    AccessTokenType:
+      type: string
+      enum:
+        - Bearer
+        - DPoP
     EserviceAttribute:
       type: object
       properties:
@@ -237,6 +249,127 @@ components:
         - pagination
         - results
       additionalProperties: false
+    EserviceId:
+      description: Unique identifier of the E-Service
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    EserviceDetailsLatestVersion:
+      type: object
+      properties:
+        accessTokenAudience:
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        accessTokenType:
+          $ref: "#/components/schemas/AccessTokenType"
+        maxDailyCallsPerConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        maxDailyCallsPerKnode:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
+        - requiredAttributes
+        - state
+      additionalProperties: false
+    EserviceDetailsInterfaceDocument:
+      type: object
+      properties:
+        checksum:
+          type: string
+        name:
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - checksum
+        - name
+        - prettyName
+      additionalProperties: false
+    EserviceDetailsProducer:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeName:
+          type: string
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        notes:
+          type: string
+      required:
+        - email
+        - id
+        - knodeName
+        - name
+        - notes
+      additionalProperties: false
+    EserviceDetails:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        interfaceDocument:
+          $ref: "#/components/schemas/EserviceDetailsInterfaceDocument"
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        latestVersion:
+          $ref: "#/components/schemas/EserviceDetailsLatestVersion"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producer:
+          $ref: "#/components/schemas/EserviceDetailsProducer"
+      required:
+        - categories
+        - description
+        - id
+        - interfaceDocument
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - latestVersion
+        - mode
+        - name
+        - producer
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -244,6 +377,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -304,6 +438,14 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "403":
           description: Forbidden
           content:
@@ -312,9 +454,70 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}:
+    get:
+      operationId: getEserviceDetails
+      summary: Get E-service detail
+      tags:
+        - k2k-gateway
+      description: Retrieve an E-service with all its details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service detail retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Remote Resources Manager API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health
