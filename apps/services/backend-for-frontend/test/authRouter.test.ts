@@ -6,6 +6,26 @@ import { type RefreshTokenStore } from "../src/services/refreshTokenStore.ts";
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 const mockDecodeJwt = vi.hoisted(() => vi.fn());
 const mockKmsSend = vi.hoisted(() => vi.fn());
+const mockRefreshTokenStore = vi.hoisted(() => ({
+  current: undefined as RefreshTokenStore | undefined,
+}));
+const createMockRefreshTokenStore = vi.hoisted(
+  (): (() => RefreshTokenStore) => () => {
+    const consumed = new Set<string>();
+    return {
+      consume(jti: string): Promise<boolean> {
+        if (consumed.has(jti)) return Promise.resolve(false);
+        consumed.add(jti);
+        return Promise.resolve(true);
+      },
+      disconnect: () => Promise.resolve(),
+      revoke(jti: string): Promise<void> {
+        consumed.add(jti);
+        return Promise.resolve();
+      },
+    };
+  },
+);
 
 vi.mock("jose", () => ({
   createRemoteJWKSet: vi.fn().mockReturnValue("mock-jwks"),
@@ -22,6 +42,11 @@ vi.mock("@aws-sdk/client-kms", () => ({
   ): Record<string, unknown> {
     return { ...input };
   },
+}));
+
+vi.mock("../src/services/refreshTokenStore.ts", () => ({
+  createRefreshTokenStore: () =>
+    mockRefreshTokenStore.current ?? createMockRefreshTokenStore(),
 }));
 
 vi.mock("../src/config/config.ts", () => ({
@@ -55,29 +80,12 @@ const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
 
 async function buildTestApp(store?: RefreshTokenStore) {
-  const { buildApp } = await import("../src/app.ts");
-  const app = buildApp({
-    config: (await import("../src/config/config.ts")).config,
-    refreshTokenStore: store ?? createMockRefreshTokenStore(),
-  });
+  mockRefreshTokenStore.current = store;
+  const { buildAppFromConfig } = await import("../src/app.ts");
+  const { config } = await import("../src/config/config.ts");
+  const app = buildAppFromConfig(config);
   await app.ready();
   return app;
-}
-
-function createMockRefreshTokenStore(): RefreshTokenStore {
-  const consumed = new Set<string>();
-  return {
-    consume(jti: string): Promise<boolean> {
-      if (consumed.has(jti)) return Promise.resolve(false);
-      consumed.add(jti);
-      return Promise.resolve(true);
-    },
-    disconnect: () => Promise.resolve(),
-    revoke(jti: string): Promise<void> {
-      consumed.add(jti);
-      return Promise.resolve();
-    },
-  };
 }
 
 function makeCognitoPayload(): Record<string, unknown> {
@@ -136,6 +144,7 @@ function parseCookies(
 
 afterEach(() => {
   vi.clearAllMocks();
+  mockRefreshTokenStore.current = undefined;
 });
 
 describe("POST /auth/ui-session", () => {

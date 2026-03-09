@@ -16,15 +16,9 @@ import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
-import { type RefreshTokenStore } from "./services/refreshTokenStore.ts";
+import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
-export function buildApp({
-  config,
-  refreshTokenStore,
-}: {
-  config: BffProcessConfig;
-  refreshTokenStore: RefreshTokenStore;
-}) {
+export function buildAppFromConfig(config: BffProcessConfig) {
   const clients = getKnodiaClients({
     eserviceProcessUrl: config.eserviceProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
@@ -32,6 +26,7 @@ export function buildApp({
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
+  const refreshTokenStore = createRefreshTokenStore(config.redisUrl);
   const authService = authServiceBuilder(tokenGenerator, refreshTokenStore);
 
   const app = createFastifyApp({
