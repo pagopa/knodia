@@ -35,7 +35,7 @@ const toK2KResult = (
 });
 
 const allowedTestTokens: TestToken[] = [
-  { roles: ["technical"], type: "ui-session" },
+  { roles: ["administrative"], type: "ui-session" },
 ];
 
 describe("POST /agreements (createAgreement)", () => {
