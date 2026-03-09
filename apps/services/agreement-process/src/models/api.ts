@@ -4,11 +4,11 @@ import {
   API_AgreementState,
 } from "@knodia/agreement-models/api";
 import {
+  API_KnodeId,
   API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { z } from "zod";
 
 export const API_Agreement = z
