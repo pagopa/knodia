@@ -72,7 +72,6 @@ function buildApp({
     },
     loggerConfig,
     makeApiProblem,
-    readCorrelationIdFromHeader: false,
     serviceName: "k2k-gateway",
   });
 

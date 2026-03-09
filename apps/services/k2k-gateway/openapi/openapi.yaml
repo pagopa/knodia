@@ -170,6 +170,12 @@ components:
         - ACTIVE
         - SUSPENDED
         - ARCHIVED
+    AccessTokenType:
+      description: Type of the access token
+      type: string
+      enum:
+        - BEARER
+        - DPOP
     EserviceMode:
       description: Indicates if the E-service is intended to provide or receive data
       type: string
@@ -255,6 +261,168 @@ components:
         - pagination
         - results
       additionalProperties: false
+    Eservice:
+      type: object
+      properties:
+        categories:
+          description: Categories of data the E-service provides or receives
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          description: Human-readable description of the E-service
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        id:
+          $ref: "#/components/schemas/EserviceId"
+        isConsumerOperatorIdentificationRequired:
+          description: Indicates whether a consumer operator must log in to the producer
+            Knode directly to confirm Agreement submission
+          type: boolean
+        isSignalHubEnabled:
+          description: Whether the E-service supports Signal Hub notifications
+          type: boolean
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          description: Human-readable name of the E-service
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        producerId:
+          $ref: "#/components/schemas/OrganizationId"
+        updatedAt:
+          description: Last update timestamp of the E-service
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - categories
+        - description
+        - id
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - mode
+        - name
+        - producerId
+        - updatedAt
+      additionalProperties: false
+    EserviceVersionInterfaceDocument:
+      type: object
+      properties:
+        checksum:
+          description: SHA-256 integrity checksum of the file
+          type: string
+        contentType:
+          description: The MIME content type of the file
+          type: string
+        id:
+          description: Unique identifier of the Interface Document
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          description: The name of the file
+          type: string
+        prettyName:
+          description: A human-readable name for the file
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        updatedAt:
+          description: Last update timestamp of the Interface Document
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - checksum
+        - contentType
+        - id
+        - name
+        - prettyName
+        - updatedAt
+      additionalProperties: false
+    EserviceVersion:
+      type: object
+      properties:
+        accessTokenAudience:
+          description: List of audiences for the access token
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          description: Duration of the access token in seconds
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        accessTokenType:
+          $ref: "#/components/schemas/AccessTokenType"
+        id:
+          description: Unique identifier of the E-service Version
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        interfaceDocument:
+          description: Metadata of the Interface Document associated with this Version
+          allOf:
+            - $ref: "#/components/schemas/EserviceVersionInterfaceDocument"
+        maxDailyCallsPerConsumer:
+          description: Maximum number of daily calls that this Version can afford per
+            consumer
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        maxDailyCallsPerKnode:
+          description: Maximum number of daily calls that this Version can afford per Knode
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        requiredAttributes:
+          $ref: "#/components/schemas/RequiredAttributes"
+        state:
+          description: Current state of the Version
+          allOf:
+            - $ref: "#/components/schemas/EserviceVersionState"
+        updatedAt:
+          description: Last update timestamp of the Version
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        versionNumber:
+          description: Progressive version number
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+      required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - id
+        - interfaceDocument
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
+        - requiredAttributes
+        - state
+        - updatedAt
+        - versionNumber
+      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -297,6 +465,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -339,6 +508,7 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
+      security: []
       responses:
         "200":
           description: E-service search results retrieved (sorted by most recently updated
@@ -356,6 +526,84 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}:
+    get:
+      operationId: getEservice
+      summary: Get E-service
+      tags:
+        - resource
+        - eservice
+      description: Retrieve an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservice"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/versions/latest:
+    get:
+      operationId: getEserviceLatestVersion
+      summary: Get E-service latest version
+      tags:
+        - resource
+        - eservice
+      description: Retrieve the latest Version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service latest Version retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service latest Version retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/EserviceVersion"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /agreements:

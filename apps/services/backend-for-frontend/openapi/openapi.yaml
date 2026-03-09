@@ -7,6 +7,13 @@ info:
   title: Knodia BFF API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -93,55 +100,6 @@ components:
       required:
         - refreshToken
       additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    Pagination:
-      type: object
-      properties:
-        limit:
-          format: int32
-          type: number
-          minimum: 1
-          maximum: 50
-        offset:
-          format: int32
-          type: number
-          minimum: 0
-        total:
-          format: int32
-          type: number
-          minimum: 0
-      required:
-        - limit
-        - offset
-        - total
-      additionalProperties: false
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     EserviceVersionState:
       type: string
       enum:
@@ -202,6 +160,55 @@ components:
       enum:
         - Bearer
         - DPoP
+    EserviceAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    Pagination:
+      type: object
+      properties:
+        limit:
+          format: int32
+          type: number
+          minimum: 1
+          maximum: 50
+        offset:
+          format: int32
+          type: number
+          minimum: 0
+        total:
+          format: int32
+          type: number
+          minimum: 0
+      required:
+        - limit
+        - offset
+        - total
+      additionalProperties: false
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -291,7 +298,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/Attribute"
+              $ref: "#/components/schemas/EserviceAttribute"
       required:
         - accessTokenAudience
         - accessTokenDuration
@@ -414,7 +421,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/Attribute"
+              $ref: "#/components/schemas/EserviceAttribute"
         state:
           description: State of the version
           allOf:
@@ -645,6 +652,142 @@ components:
         - pagination
         - results
       additionalProperties: false
+    ConsumerEserviceDetailsProducer:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeName:
+          type: string
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        notes:
+          type: string
+      required:
+        - email
+        - id
+        - knodeName
+        - name
+        - notes
+      additionalProperties: false
+    ConsumerRequiredAttribute:
+      type: object
+      properties:
+        code:
+          type: string
+        possessed:
+          type: boolean
+        scheme:
+          type: string
+      required:
+        - code
+        - possessed
+        - scheme
+      additionalProperties: false
+    ConsumerEserviceDetailsAccessToken:
+      type: object
+      properties:
+        audience:
+          type: array
+          items:
+            type: string
+        duration:
+          description: Duration of the access token in seconds
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        type:
+          $ref: "#/components/schemas/AccessTokenType"
+      required:
+        - audience
+        - duration
+        - type
+      additionalProperties: false
+    ConsumerEserviceDetailsInterfaceDocument:
+      type: object
+      properties:
+        checksum:
+          type: string
+        name:
+          type: string
+      required:
+        - checksum
+        - name
+      additionalProperties: false
+    ConsumerEserviceDetailsMaxDailyCalls:
+      type: object
+      properties:
+        perConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        perKnode:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+      required:
+        - perConsumer
+        - perKnode
+      additionalProperties: false
+    ConsumerEserviceDetails:
+      type: object
+      properties:
+        accessToken:
+          $ref: "#/components/schemas/ConsumerEserviceDetailsAccessToken"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        identificationRequired:
+          type: boolean
+        interfaceDocument:
+          $ref: "#/components/schemas/ConsumerEserviceDetailsInterfaceDocument"
+        isSignalHubEnabled:
+          type: boolean
+        maxDailyCalls:
+          $ref: "#/components/schemas/ConsumerEserviceDetailsMaxDailyCalls"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producer:
+          $ref: "#/components/schemas/ConsumerEserviceDetailsProducer"
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/ConsumerRequiredAttribute"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - accessToken
+        - categories
+        - description
+        - id
+        - identificationRequired
+        - interfaceDocument
+        - isSignalHubEnabled
+        - maxDailyCalls
+        - mode
+        - name
+        - producer
+        - requiredAttributes
+        - state
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -652,6 +795,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -673,6 +817,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/SessionRequest"
+      security: []
       responses:
         "200":
           description: Session created successfully
@@ -710,6 +855,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/RefreshRequest"
+      security: []
       responses:
         "200":
           description: Session refreshed successfully
@@ -762,6 +908,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     get:
@@ -845,6 +1007,22 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}:
     get:
       operationId: getProducerEserviceDetails
@@ -874,6 +1052,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -913,6 +1107,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -974,9 +1184,88 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/eservices/{eserviceId}:
+    get:
+      operationId: getConsumerEserviceDetails
+      summary: Get consumer E-service details
+      tags:
+        - eservice
+      description: Retrieve an E-service with all its details for consumers
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service detail retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-service detail retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerEserviceDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

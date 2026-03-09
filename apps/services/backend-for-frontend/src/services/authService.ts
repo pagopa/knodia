@@ -127,22 +127,18 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
   }
 
   async function verifyRefreshToken(token: string): Promise<ClaimsFromCognito> {
-    const results = await Promise.allSettled(
-      bffJwksSets.map((jwks) =>
-        jwtVerify(token, jwks, {
+    const rawPayload = await Promise.any(
+      bffJwksSets.map(async (jwks) => {
+        const { payload } = await jwtVerify(token, jwks, {
           algorithms: ["RS256"],
           audience: config.acceptedAudiences,
           issuer: config.uiSessionJwt.issuer,
-        }),
-      ),
-    );
-
-    const fulfilled = results.find((r) => r.status === "fulfilled");
-    if (!fulfilled) {
+        });
+        return payload;
+      }),
+    ).catch(() => {
       throw unauthorizedError("Refresh token verification failed");
-    }
-
-    const rawPayload = fulfilled.value.payload;
+    });
 
     const parsed = UISessionRefreshTokenClaims.safeParse(rawPayload);
     if (!parsed.success) {
