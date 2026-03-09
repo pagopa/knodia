@@ -49,12 +49,15 @@ export function buildApp({
     serviceName: "organization-process",
   });
 
-  app.register(authenticationPlugin, config);
   app.register(healthRouter);
-  app.register(
-    organizationRouter,
-    organizationServiceBuilder(readmodelServiceBuilder(readmodelDb)),
-  );
+
+  app.register(async (protectedApp) => {
+    protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(
+      organizationRouter,
+      organizationServiceBuilder(readmodelServiceBuilder(readmodelDb)),
+    );
+  });
 
   return app;
 }
