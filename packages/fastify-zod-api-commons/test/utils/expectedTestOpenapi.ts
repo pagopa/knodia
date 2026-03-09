@@ -137,7 +137,7 @@ export const expectedOpenapiComponents = {
     bearerAuth: {
       bearerFormat: "JWT",
       description:
-        "A JWT bearer token conforming to the best practices defined in RFC 8725 (https://tools.ietf.org/html/RFC8725)",
+        "A JWT bearer token conforming to the best practices defined in RFC 8725 (https://www.rfc-editor.org/rfc/rfc8725.html)",
       scheme: "bearer",
       type: "http",
     },
