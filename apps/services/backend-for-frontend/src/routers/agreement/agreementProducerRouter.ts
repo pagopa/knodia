@@ -136,18 +136,15 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         headers: getKnodiaServiceHeaders(req, correlationId),
         path: { agreementId: req.params.agreementId },
       });
-      console.log("🚀 ~ agreementProducerRouter ~ agreement:", agreement);
 
       const { data: eservice } = await eserviceProcessApi.getEservice({
         client: eserviceProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         path: { eserviceId: agreement.eserviceId },
       });
-      console.log("🚀 ~ agreementProducerRouter ~ eservice:", eservice);
 
       // TODO: fetch this with organization-process
       const producer = getOrganization(unsafeBrandId(agreement.producerId));
-      console.log("🚀 ~ agreementProducerRouter ~ producer:", producer);
       if (!producer) {
         throw genericInternalError("Producer organization not found");
       }
