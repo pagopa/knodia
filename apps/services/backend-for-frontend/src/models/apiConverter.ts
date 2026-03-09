@@ -98,13 +98,7 @@ export const toAPI_ConsumerCatalogEserviceDetail = (
   },
   mode: detail.mode,
   name: detail.name,
-  producer: {
-    email: "info@example.com", // TODO: retrieve real data
-    id: detail.producerId,
-    knodeName: "Knode", // TODO: retrieve real data
-    name: { en: "Producer name" }, // TODO: retrieve real data
-    notes: "Notes", // TODO: retrieve real data
-  },
+  producer: detail.producer,
   requiredAttributes: detail.latestVersion.requiredAttributes.map(
     (group: remoteResourcesManagerApi.EserviceAttribute[]) =>
       group.map((attr: remoteResourcesManagerApi.EserviceAttribute) => ({

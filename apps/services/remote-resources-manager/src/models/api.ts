@@ -108,6 +108,16 @@ const API_CatalogEserviceDetailInterfaceDocument = z
   })
   .meta({ id: "CatalogEserviceDetailInterfaceDocument" });
 
+const API_CatalogEserviceDetailProducer = z
+  .strictObject({
+    email: z.string(),
+    id: z.uuid(),
+    knodeName: z.string(),
+    name: API_LocalizedName,
+    notes: z.string(),
+  })
+  .meta({ id: "CatalogEserviceDetailProducer" });
+
 export const API_CatalogEserviceDetail = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -119,7 +129,7 @@ export const API_CatalogEserviceDetail = z
     latestVersion: API_CatalogEserviceDetailLatestVersion,
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producerId: z.uuid(),
+    producer: API_CatalogEserviceDetailProducer,
   })
   .meta({ id: "CatalogEserviceDetail" });
 export type API_CatalogEserviceDetail = z.infer<

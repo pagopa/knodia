@@ -52,7 +52,7 @@ const toK2KEservice = (
   isSignalHubEnabled: apiDetail.isSignalHubEnabled,
   mode: toK2KMode(apiDetail.mode),
   name: apiDetail.name,
-  producerId: apiDetail.producerId,
+  producerId: apiDetail.producer.id,
   updatedAt: new Date().toISOString(),
 });
 
@@ -137,7 +137,16 @@ describe("GET /eservices/:eserviceId (getCatalogEserviceDetail)", () => {
       }),
     );
 
-    expect(response.json()).toEqual(expectedApiDetail);
+    expect(response.json()).toEqual({
+      ...expectedApiDetail,
+      producer: {
+        email: "info@example.com",
+        id: expectedApiDetail.producer.id,
+        knodeName: "Knode",
+        name: { en: "Producer name" },
+        notes: "Notes",
+      },
+    });
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
