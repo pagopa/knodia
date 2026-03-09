@@ -423,38 +423,18 @@ components:
         - updatedAt
         - versionNumber
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - ORION
-        - LYNX
-    AgreementConsumer:
-      description: Consumer Organization of the Agreement
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - id
-        - knodeId
-      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
       properties:
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
+        consumerId:
+          $ref: "#/components/schemas/OrganizationId"
         eserviceId:
           $ref: "#/components/schemas/EserviceId"
         eserviceVersionId:
           $ref: "#/components/schemas/EserviceVersionId"
       required:
-        - consumer
+        - consumerId
         - eserviceId
         - eserviceVersionId
       additionalProperties: false
