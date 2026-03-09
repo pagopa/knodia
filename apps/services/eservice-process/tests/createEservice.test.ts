@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { EserviceId } from "@knodia/common-models/ids";
-
+import {
+  type EserviceId,
+  generateId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
@@ -53,7 +60,7 @@ describe("POST /eservices (createEservice)", () => {
       isSignalHubEnabled: body.isSignalHubEnabled ?? false,
       mode: body.mode ?? "ProvideData",
       name: body.name,
-      producerId: expect.any(String), // TODO: It's random for now
+      producerId: TEST_ORGANIZATION_ID,
       updatedAt: new Date(responseBody.createdAt),
       versions: [
         {
@@ -178,5 +185,16 @@ describe("POST /eservices (createEservice)", () => {
         },
       });
     expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 403 if the organization does not exist", async () => {
+    const response = await injectAppRequest({
+      organizationId: generateId<OrganizationId>(),
+      roles: ["technical"],
+      type: "ui-session",
+    })
+      .post("/eservices")
+      .body(body);
+    expect(response.statusCode).toBe(403);
   });
 });
