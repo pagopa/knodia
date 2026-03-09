@@ -43,9 +43,11 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       res.send({
         pagination: data.pagination,
         results: data.results.map((r) =>
-          toAPI_ConsumerCatalogEserviceSearchResult(r, {
-            en: "Producer name", // TODO: retrieve producer name
-          }),
+          toAPI_ConsumerCatalogEserviceSearchResult(
+            r,
+            Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
+            { en: "Producer name" }, // TODO: retrieve producer name
+          ),
         ),
       });
     },

@@ -325,8 +325,8 @@ const API_ConsumerCatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
+    hasRequiredAttributes: z.boolean(),
     id: z.uuid(),
-    latestVersionRequiredAttributes: z.array(z.array(API_EserviceAttribute)),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: API_LocalizedName,
