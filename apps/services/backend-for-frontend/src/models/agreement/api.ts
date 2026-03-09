@@ -44,7 +44,6 @@ export const API_ProducerAgreement = z
     eservice: API_CompactEservice,
     id: z.uuid(),
     state: API_AgreementState,
-    // TODO: "recent update" boolean
   })
   .meta({ id: "ProducerAgreement" });
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
