@@ -41,26 +41,20 @@ export function remoteResourcesManagerServiceBuilder(
       const headers = { [CORRELATION_ID_HEADER]: correlationId };
       const path = { eserviceId };
 
-      const [{ data: eservice }, { data: version }, { data: interfaceDoc }] =
-        await Promise.all([
-          k2kGatewayApi.getEservice({
-            client: k2kGatewayClient,
-            headers,
-            path,
-          }),
-          k2kGatewayApi.getEserviceLatestVersion({
-            client: k2kGatewayClient,
-            headers,
-            path,
-          }),
-          k2kGatewayApi.getEserviceLatestVersionInterface({
-            client: k2kGatewayClient,
-            headers,
-            path,
-          }),
-        ]);
+      const [{ data: eservice }, { data: version }] = await Promise.all([
+        k2kGatewayApi.getEservice({
+          client: k2kGatewayClient,
+          headers,
+          path,
+        }),
+        k2kGatewayApi.getEserviceLatestVersion({
+          client: k2kGatewayClient,
+          headers,
+          path,
+        }),
+      ]);
 
-      return toAPI_CatalogEserviceDetail(eservice, version, interfaceDoc);
+      return toAPI_CatalogEserviceDetail(eservice, version);
     },
 
     async getCatalogEservices(

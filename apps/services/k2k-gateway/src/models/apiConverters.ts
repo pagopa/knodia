@@ -7,7 +7,6 @@ import type {
   API_Eservice,
   API_EserviceMode,
   API_EserviceVersion,
-  API_EserviceVersionInterfaceDocument,
   API_EserviceVersionState,
 } from "./api.ts";
 
@@ -70,27 +69,24 @@ export const toAPI_Eservice = (
 
 export const toAPI_EserviceVersion = (
   version: eserviceProcessApi.EserviceVersion,
+  interfaceDoc: eserviceProcessApi.EserviceVersionInterfaceDocument,
 ): API_EserviceVersion => ({
   accessTokenAudience: version.accessTokenAudience,
   accessTokenDuration: version.accessTokenDuration,
   accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
   id: version.id,
+  interfaceDocument: {
+    checksum: interfaceDoc.checksum,
+    contentType: interfaceDoc.contentType,
+    id: interfaceDoc.id,
+    name: interfaceDoc.name,
+    prettyName: interfaceDoc.prettyName,
+    updatedAt: interfaceDoc.updatedAt,
+  },
   maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
   maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
   requiredAttributes: version.requiredAttributes,
   state: toAPI_EserviceVersionState(version.state),
   updatedAt: version.updatedAt,
   versionNumber: version.versionNumber,
-});
-
-export const toAPI_EserviceVersionInterfaceDocument = (
-  doc: eserviceProcessApi.EserviceVersionInterfaceDocument,
-): API_EserviceVersionInterfaceDocument => ({
-  checksum: doc.checksum,
-  contentType: doc.contentType,
-  id: doc.id,
-  name: doc.name,
-  path: doc.path,
-  prettyName: doc.prettyName,
-  updatedAt: doc.updatedAt,
 });

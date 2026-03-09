@@ -25,15 +25,14 @@ export const toAPI_CatalogEserviceSearchResult = (
 export const toAPI_CatalogEserviceDetail = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
-  interfaceDoc: k2kGatewayApi.EserviceVersionInterfaceDocument,
 ): API_CatalogEserviceDetail => ({
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,
   interfaceDocument: {
-    checksum: interfaceDoc.checksum,
-    name: interfaceDoc.name,
-    prettyName: interfaceDoc.prettyName,
+    checksum: version.interfaceDocument.checksum,
+    name: version.interfaceDocument.name,
+    prettyName: version.interfaceDocument.prettyName,
   },
   isConsumerOperatorIdentificationRequired:
     eservice.isConsumerOperatorIdentificationRequired,

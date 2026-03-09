@@ -12,7 +12,6 @@ import {
   API_Eservice,
   API_EserviceIdPathParam,
   API_EserviceVersion,
-  API_EserviceVersionInterfaceDocument,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
@@ -20,7 +19,6 @@ import {
   toAPI_CatalogEserviceSearchResult,
   toAPI_Eservice,
   toAPI_EserviceVersion,
-  toAPI_EserviceVersionInterfaceDocument,
 } from "../models/apiConverters.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
@@ -143,14 +141,22 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
+      const path = { eserviceId: req.params.eserviceId };
 
-      const { data } = await eserviceProcessApi.getEserviceLatestVersion({
-        client: eserviceProcessClient,
-        headers,
-        path: { eserviceId: req.params.eserviceId },
-      });
+      const [{ data: version }, { data: interfaceDoc }] = await Promise.all([
+        eserviceProcessApi.getEserviceLatestVersion({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+      ]);
 
-      res.send(toAPI_EserviceVersion(data));
+      res.send(toAPI_EserviceVersion(version, interfaceDoc));
     },
     method: "GET",
     schema: {
@@ -168,46 +174,5 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
-
-      logger.info(
-        { requestParams: req.params },
-        `Getting interface of latest version of E-service with ID ${req.params.eserviceId}`,
-      );
-
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
-
-      const { data } =
-        await eserviceProcessApi.getEserviceLatestVersionInterface({
-          client: eserviceProcessClient,
-          headers,
-          path: { eserviceId: req.params.eserviceId },
-        });
-
-      res.send(toAPI_EserviceVersionInterfaceDocument(data));
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Retrieve the Interface Document of the latest Version of an E-service",
-      operationId: "getEserviceLatestVersionInterface",
-      params: API_EserviceIdPathParam,
-      response: {
-        200: API_EserviceVersionInterfaceDocument.meta({
-          description:
-            "E-service latest Version Interface Document retrieved successfully",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-        404: API_Problem.meta({ description: "E-service not found" }),
-      },
-      summary: "Get E-service latest version interface",
-      tags: [apiTags.resource, apiTags.eservice],
-    },
-    url: "/eservices/:eserviceId/versions/latest/interface",
   });
 };

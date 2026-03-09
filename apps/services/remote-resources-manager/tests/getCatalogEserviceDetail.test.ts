@@ -24,7 +24,6 @@ const allowedTestTokens: TestToken[] = [
 
 const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
-const getEserviceLatestVersionInterfaceMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -36,7 +35,6 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
       ...original.k2kGatewayApi,
       getEservice: getEserviceMock,
       getEserviceLatestVersion: getEserviceLatestVersionMock,
-      getEserviceLatestVersionInterface: getEserviceLatestVersionInterfaceMock,
     },
   };
 });
@@ -65,24 +63,20 @@ const toK2KEserviceVersion = (
     apiDetail.latestVersion.accessTokenType,
   ),
   id: crypto.randomUUID(),
+  interfaceDocument: {
+    checksum: apiDetail.interfaceDocument.checksum,
+    contentType: "application/yaml",
+    id: crypto.randomUUID(),
+    name: apiDetail.interfaceDocument.name,
+    prettyName: apiDetail.interfaceDocument.prettyName,
+    updatedAt: new Date().toISOString(),
+  },
   maxDailyCallsPerConsumer: apiDetail.latestVersion.maxDailyCallsPerConsumer,
   maxDailyCallsPerKnode: apiDetail.latestVersion.maxDailyCallsPerKnode,
   requiredAttributes: apiDetail.latestVersion.requiredAttributes,
   state: toK2KVersionState(apiDetail.latestVersion.state),
   updatedAt: new Date().toISOString(),
   versionNumber: 1,
-});
-
-const toK2KInterfaceDocument = (
-  apiDetail: API_CatalogEserviceDetailType,
-): k2kGatewayApi.EserviceVersionInterfaceDocument => ({
-  checksum: apiDetail.interfaceDocument.checksum,
-  contentType: "application/yaml",
-  id: crypto.randomUUID(),
-  name: apiDetail.interfaceDocument.name,
-  path: "/interfaces/test.yaml",
-  prettyName: apiDetail.interfaceDocument.prettyName,
-  updatedAt: new Date().toISOString(),
 });
 
 describe("GET /eservices/:eserviceId (getCatalogEserviceDetail)", () => {
@@ -92,20 +86,15 @@ describe("GET /eservices/:eserviceId (getCatalogEserviceDetail)", () => {
   const expectedApiDetail = zocker(API_CatalogEserviceDetail).generate();
   const k2kEservice = toK2KEservice(expectedApiDetail);
   const k2kVersion = toK2KEserviceVersion(expectedApiDetail);
-  const k2kInterfaceDoc = toK2KInterfaceDocument(expectedApiDetail);
 
   beforeEach(() => {
     getEserviceMock.mockReset();
     getEserviceLatestVersionMock.mockReset();
-    getEserviceLatestVersionInterfaceMock.mockReset();
   });
 
   it("should return 200 with converted detail on success", async () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
-    getEserviceLatestVersionInterfaceMock.mockResolvedValue({
-      data: k2kInterfaceDoc,
-    });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get(`/eservices/${eserviceId}`)
@@ -125,12 +114,6 @@ describe("GET /eservices/:eserviceId (getCatalogEserviceDetail)", () => {
       }),
     );
     expect(getEserviceLatestVersionMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        headers: expectedHeaders,
-        path: expectedPath,
-      }),
-    );
-    expect(getEserviceLatestVersionInterfaceMock).toHaveBeenCalledWith(
       expect.objectContaining({
         headers: expectedHeaders,
         path: expectedPath,

@@ -154,6 +154,29 @@ export const API_Eservice = z
 
 export type API_Eservice = z.infer<typeof API_Eservice>;
 
+const API_EserviceVersionInterfaceDocument = z
+  .strictObject({
+    checksum: z.string().meta({
+      description: "Integrity checksum of the file",
+    }),
+    contentType: z.string().meta({
+      description: "The content type of the file",
+    }),
+    id: z
+      .uuid()
+      .meta({ description: "Unique identifier of the Interface Document" }),
+    name: z.string().meta({
+      description: "The name of the file",
+    }),
+    prettyName: API_LocalizedText.meta({
+      description: "A human-readable name for the file",
+    }),
+    updatedAt: z.iso.datetime().meta({
+      description: "The date and time when the file was last updated",
+    }),
+  })
+  .meta({ id: "EserviceVersionInterfaceDocument" });
+
 export const API_EserviceVersion = z
   .strictObject({
     accessTokenAudience: z.array(z.string()).meta({
@@ -167,6 +190,10 @@ export const API_EserviceVersion = z
     id: z
       .uuid()
       .meta({ description: "Unique identifier of the E-service Version" }),
+    interfaceDocument: API_EserviceVersionInterfaceDocument.meta({
+      description:
+        "Metadata of the Interface Document associated with this Version",
+    }),
     maxDailyCallsPerConsumer: z.number().int().meta({
       description:
         "Maximum number of daily calls that this Version can afford per consumer",
@@ -192,33 +219,3 @@ export const API_EserviceVersion = z
   .meta({ id: "EserviceVersion" });
 
 export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
-
-export const API_EserviceVersionInterfaceDocument = z
-  .strictObject({
-    checksum: z.string().meta({
-      description: "Integrity checksum of the file",
-    }),
-    contentType: z.string().meta({
-      description: "The content type of the file",
-    }),
-    id: z
-      .uuid()
-      .meta({ description: "Unique identifier of the Interface Document" }),
-    name: z.string().meta({
-      description: "The name of the file",
-    }),
-    path: z.string().meta({
-      description: "Storage path of the file",
-    }),
-    prettyName: API_LocalizedText.meta({
-      description: "A human-readable name for the file",
-    }),
-    updatedAt: z.iso.datetime().meta({
-      description: "The date and time when the file was last updated",
-    }),
-  })
-  .meta({ id: "EserviceVersionInterfaceDocument" });
-
-export type API_EserviceVersionInterfaceDocument = z.infer<
-  typeof API_EserviceVersionInterfaceDocument
->;
