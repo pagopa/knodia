@@ -36,4 +36,5 @@ export const agreement = agreementSchema.table(
   ],
 );
 
+export type AgreementSQL = typeof agreement.$inferSelect;
 export type NewAgreementSQL = typeof agreement.$inferInsert;
