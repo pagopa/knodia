@@ -134,7 +134,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       const [{ data: detail }, { data: blob, headers: downloadHeaders }] =
         await Promise.all([
-          remoteResourcesManagerApi.getCatalogEserviceDetail({
+          remoteResourcesManagerApi.getEserviceDetails({
             client: remoteResourcesManagerClient,
             headers,
             path,
@@ -167,7 +167,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       operationId: "getConsumerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
-      querystring: API_GetConsumerCatalogEserviceDetailQueryParams,
+      querystring: API_GetConsumerEserviceDetailsQueryParams,
       response: {
         200: API_FileDownload.meta({
           description: "E-service interface document downloaded successfully",

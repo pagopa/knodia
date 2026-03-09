@@ -529,6 +529,7 @@ paths:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
+          required: true
         - schema:
             $ref: "#/components/schemas/EserviceId"
           in: path
@@ -550,6 +551,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":

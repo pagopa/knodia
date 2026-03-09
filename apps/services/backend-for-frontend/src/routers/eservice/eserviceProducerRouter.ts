@@ -3,12 +3,7 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_FileDownload } from "@knodia/common-models/api";
-import {
-  EserviceInterfaceId,
-  generateId,
-  OrganizationId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
   eserviceProcessApi,
