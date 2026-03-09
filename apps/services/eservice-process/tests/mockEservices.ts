@@ -1,20 +1,20 @@
 import { generateId, OrganizationId } from "@knodia/common-models/ids";
 import {
   Eservice,
-  EserviceCategory,
   EserviceMode,
-  EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
-import { zocker } from "zocker";
+import {
+  getMockEservice,
+  getMockEserviceCategory,
+  getMockEserviceVersion,
+} from "@knodia/test-commons/utils";
 
 export const producerId = generateId<OrganizationId>();
 
-const zockerEservices = zocker(Eservice).setSeed(0).generateMany(10);
-
 export const mockEservices: Eservice[] = [
   {
-    ...(zockerEservices[0] as Eservice),
+    ...getMockEservice({ seed: 0 }),
     mode: EserviceMode.enum.ProvideData,
     name: {
       en: "1 knodia 1",
@@ -22,19 +22,19 @@ export const mockEservices: Eservice[] = [
     producerId: generateId(),
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(0),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(1),
         state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[1] as Eservice),
+    ...getMockEservice({ seed: 1 }),
     description: {
       en: "2 knodia 2",
     },
@@ -45,19 +45,19 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(2),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(3),
         state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[2] as Eservice),
+    ...getMockEservice({ seed: 2 }),
     mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 2",
@@ -65,22 +65,22 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(4),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(5),
         state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[3] as Eservice),
+    ...getMockEservice({ seed: 3 }),
     categories: [
       {
-        ...zocker(EserviceCategory).generate(),
+        ...getMockEserviceCategory(0),
         code: "3 knodia 3",
       },
     ],
@@ -91,19 +91,19 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(6),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(7),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[4] as Eservice),
+    ...getMockEservice({ seed: 4 }),
     mode: EserviceMode.enum.ProvideData,
     name: {
       en: "other name 4",
@@ -111,19 +111,19 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(8),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(9),
         state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[5] as Eservice),
+    ...getMockEservice({ seed: 5 }),
     mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 5",
@@ -131,19 +131,19 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(10),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(11),
         state: EserviceVersionState.enum.Active,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[6] as Eservice),
+    ...getMockEservice({ seed: 6 }),
     mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 6",
@@ -151,19 +151,19 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(12),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(13),
         state: EserviceVersionState.enum.Active,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[7] as Eservice),
+    ...getMockEservice({ seed: 7 }),
     mode: EserviceMode.enum.ProvideData,
     name: {
       en: "other name 7",
@@ -171,19 +171,19 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(14),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(15),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[8] as Eservice),
+    ...getMockEservice({ seed: 8 }),
     mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 8",
@@ -191,19 +191,19 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(16),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(17),
         state: EserviceVersionState.enum.Suspended,
         versionNumber: 2,
       },
     ],
   },
   {
-    ...(zockerEservices[9] as Eservice),
+    ...getMockEservice({ seed: 9 }),
     mode: EserviceMode.enum.ReceiveData,
     name: {
       en: "other name 9",
@@ -211,12 +211,12 @@ export const mockEservices: Eservice[] = [
     producerId,
     versions: [
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(18),
         state: EserviceVersionState.enum.Archived,
         versionNumber: 1,
       },
       {
-        ...zocker(EserviceVersion).generate(),
+        ...getMockEserviceVersion(19),
         state: EserviceVersionState.enum.Active,
         versionNumber: 2,
       },

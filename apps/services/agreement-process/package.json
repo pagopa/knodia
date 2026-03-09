@@ -23,8 +23,7 @@
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "zocker": "catalog:"
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@fastify/request-context": "catalog:",
