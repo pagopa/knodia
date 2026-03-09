@@ -1,20 +1,58 @@
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { PageHeader } from "@/components/PageHeader";
 import { SearchContent } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchContent";
 import { SearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchFilters";
-import { searchConsumptionEservices } from "@/features/e-service/consumption-eservice-search.mock";
 import {
   consumptionEserviceSearchDefaultValues,
+  type ConsumptionEserviceSearchParams,
   consumptionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
+import { toCatalogSearchResultUI } from "@/features/e-service/services/api-converters";
+import { buildCatalogSearchBody } from "@/features/e-service/services/buildCatalogSearchBody";
+import { getConsumerCatalogEservicesQueryOptions } from "@/features/e-service/services/catalogEservicesQuery";
+import { client } from "@/libs/axios";
+
+const CATALOG_SEARCH_LIMIT = 4;
+
+const isSearchReady = (
+  params: Omit<ConsumptionEserviceSearchParams, "offset">,
+): boolean =>
+  params.knodeId !== "" && (params.category !== "" || params.keywords !== "");
+
+const catalogQuery = (
+  body: ReturnType<typeof buildCatalogSearchBody>,
+  offset: number,
+) =>
+  getConsumerCatalogEservicesQueryOptions({
+    body,
+    client,
+    query: { limit: CATALOG_SEARCH_LIMIT, offset },
+  });
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/search",
 )({
   component: RouteComponent,
+  loaderDeps: ({ search: { category, keywords, knodeId, offset } }) => ({
+    category,
+    keywords,
+    knodeId,
+    offset,
+  }),
+  // eslint-disable-next-line perfectionist/sort-objects
+  loader: ({ context: { queryClient }, deps }) => {
+    if (!isSearchReady(deps)) return;
+    const body = buildCatalogSearchBody({
+      category: deps.category,
+      keywords: deps.keywords,
+      knodeId: deps.knodeId,
+    });
+    queryClient.prefetchQuery(catalogQuery(body, deps.offset));
+  },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],
   },
@@ -26,18 +64,23 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
-  const hasSearched = Boolean(
-    search.knode && (search.category || search.keywords),
-  );
+  const searchReady = isSearchReady(search);
 
-  const results = useMemo(() => {
-    if (!hasSearched) return null;
-    return searchConsumptionEservices({
-      category: search.category,
-      keywords: search.keywords,
-      offset: search.offset,
-    });
-  }, [hasSearched, search.category, search.keywords, search.offset]);
+  const body = buildCatalogSearchBody({
+    category: search.category,
+    keywords: search.keywords,
+    knodeId: search.knodeId,
+  });
+
+  const { data: results, isLoading } = useQuery({
+    ...catalogQuery(body, search.offset),
+    enabled: searchReady,
+    placeholderData: searchReady ? keepPreviousData : undefined,
+    select: (data) => ({
+      items: data.results.map(toCatalogSearchResultUI),
+      pagination: data.pagination,
+    }),
+  });
 
   const handleSearch = (params: Omit<typeof search, "offset">) => {
     if (hasValidationError) setHasValidationError(false);
@@ -68,7 +111,7 @@ function RouteComponent() {
         defaultValues={{
           category: search.category,
           keywords: search.keywords,
-          knode: search.knode,
+          knodeId: search.knodeId,
         }}
         onSubmit={handleSearch}
         onValidationError={handleValidationError}
@@ -76,8 +119,9 @@ function RouteComponent() {
 
       <SearchContent
         hasValidationError={hasValidationError}
+        isLoading={isLoading}
         onOffsetChange={handleOffsetChange}
-        results={results}
+        results={results ?? null}
       />
     </div>
   );

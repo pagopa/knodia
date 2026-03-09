@@ -261,3 +261,52 @@ describe("authenticationPlugin with multiple JWKS", () => {
     await multiJwksApp.close();
   });
 });
+
+describe("authenticationPlugin – multiple JWKS sets", () => {
+  let multiJwksApp: Awaited<ReturnType<typeof buildTestApp>>;
+
+  beforeAll(async () => {
+    multiJwksApp = await buildTestApp([
+      "https://primary.example.com/.well-known/jwks.json",
+      "https://secondary.example.com/.well-known/jwks.json",
+    ]);
+    multiJwksApp.get("/protected", async () => ({
+      authData: requestContext.get("authData"),
+    }));
+    await multiJwksApp.ready();
+  });
+
+  afterAll(async () => {
+    await multiJwksApp.close();
+  });
+
+  it("returns 401 when all JWKS sets fail", async () => {
+    jwtVerify
+      .mockRejectedValueOnce(new Error("key not found"))
+      .mockRejectedValueOnce(new Error("invalid signature"));
+
+    const response = await multiJwksApp.inject({
+      headers: { authorization: "Bearer bad-token" },
+      method: "GET",
+      url: "/protected",
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toContain("Token verification failed");
+  });
+
+  it("validates against all JWKS sets in parallel", async () => {
+    jwtVerify.mockClear();
+    jwtVerify
+      .mockRejectedValueOnce(new Error("key not found"))
+      .mockResolvedValueOnce({ payload: validUISessionPayload });
+
+    await multiJwksApp.inject({
+      headers: { authorization: "Bearer token" },
+      method: "GET",
+      url: "/protected",
+    });
+
+    expect(jwtVerify).toHaveBeenCalledTimes(2);
+  });
+});
