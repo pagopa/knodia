@@ -1,4 +1,7 @@
-import { createSessionMutation } from "@knodia/bff-client/tanstack-query";
+import {
+  createSessionMutation,
+  refreshSessionMutation,
+} from "@knodia/bff-client/tanstack-query";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
@@ -22,6 +25,9 @@ import { AuthContext } from "./useAuthContext";
  * Wraps react-oidc-context's AuthProvider with OIDC configuration
  * and token exchange logic. After OIDC login, exchanges the Cognito
  * access_token for a ui-session token via the BFF.
+ *
+ * On new tabs (empty sessionStorage), attempts a silent refresh via
+ * the HttpOnly refresh cookie before falling back to OIDC login.
  */
 export function OidcAuthProvider({ children }: { children: ReactNode }) {
   return (
@@ -52,7 +58,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   const {
     error: exchangeError,
     isPending: isExchangePending,
-    mutate,
+    mutate: exchangeToken,
   } = useMutation({
     ...createSessionMutation({ client }),
     onError: () => {
@@ -64,14 +70,37 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const {
+    isIdle: isRefreshIdle,
+    isPending: isRefreshPending,
+    mutate: refreshFromCookie,
+  } = useMutation({
+    ...refreshSessionMutation({ client }),
+    onSuccess: (data) => {
+      setAuthToken(data.uiSessionToken);
+      setUiSessionToken(data.uiSessionToken);
+    },
+    // onError intentionally omitted: silent failure means the user
+    // is simply not authenticated and will be redirected to login.
+  });
+
+  // On mount, if sessionStorage is empty, attempt to recover the session
+  // from the HttpOnly refresh cookie (e.g. new tab, page restored by browser).
+  useEffect(() => {
+    if (!uiSessionToken && !user?.access_token && isRefreshIdle) {
+      refreshFromCookie({ withCredentials: true });
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- bootstrap only
+
+  // After OIDC login completes, exchange the Cognito token for a BFF session.
   useEffect(() => {
     if (user?.access_token && !uiSessionToken) {
-      mutate({
+      exchangeToken({
         body: { oidcToken: user.access_token },
         withCredentials: true,
       });
     }
-  }, [user?.access_token, uiSessionToken, mutate]);
+  }, [user?.access_token, uiSessionToken, exchangeToken]);
 
   const login = useCallback(() => {
     void signinRedirect();
@@ -102,7 +131,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
       value={{
         error: oidcError ?? exchangeError,
         isAuthenticated: !!uiSessionToken,
-        isLoading: oidcIsLoading || isExchangePending,
+        isLoading: oidcIsLoading || isExchangePending || isRefreshPending,
         login,
         logout,
         token: uiSessionToken,
