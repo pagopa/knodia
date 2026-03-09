@@ -11,9 +11,9 @@ export interface ConsumptionEserviceDetail {
   description: string;
   id: EserviceId;
   identificationRequired: boolean;
-  interfaceDocument: bffApi.ConsumerCatalogEserviceDetailInterfaceDocument;
+  interfaceDocument: bffApi.ConsumerEserviceDetailsInterfaceDocument;
   isSignalHubEnabled: boolean;
-  maxDailyCalls: bffApi.ConsumerCatalogEserviceDetailMaxDailyCalls;
+  maxDailyCalls: bffApi.ConsumerEserviceDetailsMaxDailyCalls;
   mode: bffApi.EserviceMode;
   name: string;
   producer: {

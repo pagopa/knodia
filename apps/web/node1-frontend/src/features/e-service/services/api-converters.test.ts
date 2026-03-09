@@ -10,8 +10,8 @@ const TEST_CHECKSUM =
   "80bb7a41804be0601bbff2f0019045657757c29e5995e8eb221317cf757ba89e";
 
 function createBffDetail(
-  overrides?: Partial<bffApi.ConsumerCatalogEserviceDetail>,
-): bffApi.ConsumerCatalogEserviceDetail {
+  overrides?: Partial<bffApi.ConsumerEserviceDetails>,
+): bffApi.ConsumerEserviceDetails {
   return {
     accessToken: {
       audience: ["https://api.example.com"],

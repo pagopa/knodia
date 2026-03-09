@@ -30,7 +30,7 @@ export function toCatalogSearchResultUI(
 }
 
 export function toConsumptionEserviceDetail(
-  detail: bffApi.ConsumerCatalogEserviceDetail,
+  detail: bffApi.ConsumerEserviceDetails,
 ): ConsumptionEserviceDetail {
   return {
     accessToken: {
