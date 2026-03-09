@@ -345,3 +345,68 @@ export const API_GetConsumerCatalogEservicesQueryParams =
 export type API_GetConsumerCatalogEservicesQueryParams = z.infer<
   typeof API_GetConsumerCatalogEservicesQueryParams
 >;
+
+export const API_GetConsumerEserviceDetailsQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetConsumerEserviceDetailsQueryParams = z.infer<
+  typeof API_GetConsumerEserviceDetailsQueryParams
+>;
+
+const API_ConsumerEserviceDetailsProducer = z
+  .strictObject({
+    email: z.string(),
+    id: z.uuid(),
+    knodeName: z.string(),
+    name: API_LocalizedName,
+    notes: z.string(),
+  })
+  .meta({ id: "ConsumerEserviceDetailsProducer" });
+
+const API_ConsumerRequiredAttribute = z
+  .strictObject({
+    code: z.string(),
+    possessed: z.boolean(),
+    scheme: z.string(),
+  })
+  .meta({ id: "ConsumerRequiredAttribute" });
+
+export const API_ConsumerEserviceDetails = z
+  .strictObject({
+    accessToken: z
+      .strictObject({
+        audience: z.array(z.string()),
+        duration: z.number().int().meta({
+          description: "Duration of the access token in seconds",
+          format: "int32",
+        }),
+        type: API_AccessTokenType,
+      })
+      .meta({ id: "ConsumerEserviceDetailsAccessToken" }),
+    categories: z.array(API_EserviceCategory),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    identificationRequired: z.boolean(),
+    interfaceDocument: z
+      .strictObject({
+        checksum: z.string(),
+        name: z.string(),
+      })
+      .meta({ id: "ConsumerEserviceDetailsInterfaceDocument" }),
+    isSignalHubEnabled: z.boolean(),
+    maxDailyCalls: z
+      .strictObject({
+        perConsumer: z.number().int().meta({ format: "int32" }),
+        perKnode: z.number().int().meta({ format: "int32" }),
+      })
+      .meta({ id: "ConsumerEserviceDetailsMaxDailyCalls" }),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producer: API_ConsumerEserviceDetailsProducer,
+    requiredAttributes: z.array(z.array(API_ConsumerRequiredAttribute)),
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "ConsumerEserviceDetails" });
+export type API_ConsumerEserviceDetails = z.infer<
+  typeof API_ConsumerEserviceDetails
+>;
