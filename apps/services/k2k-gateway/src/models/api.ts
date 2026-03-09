@@ -99,6 +99,7 @@ export const API_CatalogEserviceSearchResult = z
     mode: API_EserviceMode,
     name: API_LocalizedText,
     producerId: API_OrganizationId,
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
 
