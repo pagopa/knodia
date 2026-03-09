@@ -222,8 +222,10 @@ describe("authenticationPlugin", () => {
 });
 
 describe("authenticationPlugin with multiple JWKS", () => {
-  it("succeeds using the first valid JWKS when multiple are configured", async () => {
-    const multiJwksApp = buildTestApp();
+  let multiJwksApp: Awaited<ReturnType<typeof buildTestApp>>;
+
+  beforeAll(async () => {
+    multiJwksApp = buildTestApp();
     multiJwksApp.register(async (protectedApp) => {
       protectedApp.register(authenticationPlugin, {
         acceptedAudiences: ["test-audience"],
@@ -237,7 +239,13 @@ describe("authenticationPlugin with multiple JWKS", () => {
       }));
     });
     await multiJwksApp.ready();
+  });
 
+  afterAll(async () => {
+    await multiJwksApp.close();
+  });
+
+  it("succeeds using the first valid JWKS when multiple are configured", async () => {
     jwtVerify
       .mockRejectedValueOnce(new Error("key not found"))
       .mockResolvedValueOnce({ payload: validUISessionPayload });
@@ -257,27 +265,6 @@ describe("authenticationPlugin with multiple JWKS", () => {
         userRoles: ["administrative"],
       },
     });
-
-    await multiJwksApp.close();
-  });
-});
-
-describe("authenticationPlugin – multiple JWKS sets", () => {
-  let multiJwksApp: Awaited<ReturnType<typeof buildTestApp>>;
-
-  beforeAll(async () => {
-    multiJwksApp = await buildTestApp([
-      "https://primary.example.com/.well-known/jwks.json",
-      "https://secondary.example.com/.well-known/jwks.json",
-    ]);
-    multiJwksApp.get("/protected", async () => ({
-      authData: requestContext.get("authData"),
-    }));
-    await multiJwksApp.ready();
-  });
-
-  afterAll(async () => {
-    await multiJwksApp.close();
   });
 
   it("returns 401 when all JWKS sets fail", async () => {
