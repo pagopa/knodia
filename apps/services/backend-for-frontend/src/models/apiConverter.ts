@@ -4,6 +4,7 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 
 import type {
   API_ConsumerCatalogEserviceSearchResult,
+  API_ConsumerEserviceDetails,
   API_ProducerEservice,
   API_ProducerEserviceDetails,
 } from "./api.ts";
@@ -72,6 +73,40 @@ export const toAPI_ProducerEserviceDetails = ({
     updatedAt: latestVersion.updatedAt,
     versionNumber: latestVersion.versionNumber,
   },
+});
+
+export const toAPI_ConsumerEserviceDetails = (
+  detail: remoteResourcesManagerApi.EserviceDetails,
+): API_ConsumerEserviceDetails => ({
+  accessToken: {
+    audience: detail.latestVersion.accessTokenAudience,
+    duration: detail.latestVersion.accessTokenDuration,
+    type: detail.latestVersion.accessTokenType,
+  },
+  categories: detail.categories,
+  description: detail.description,
+  id: detail.id,
+  identificationRequired: detail.isConsumerOperatorIdentificationRequired,
+  interfaceDocument: {
+    checksum: detail.interfaceDocument.checksum,
+    name: detail.interfaceDocument.prettyName.en,
+  },
+  isSignalHubEnabled: detail.isSignalHubEnabled,
+  maxDailyCalls: {
+    perConsumer: detail.latestVersion.maxDailyCallsPerConsumer,
+    perKnode: detail.latestVersion.maxDailyCallsPerKnode,
+  },
+  mode: detail.mode,
+  name: detail.name,
+  producer: detail.producer,
+  requiredAttributes: detail.latestVersion.requiredAttributes.map(
+    (group: remoteResourcesManagerApi.EserviceAttribute[]) =>
+      group.map((attr: remoteResourcesManagerApi.EserviceAttribute) => ({
+        ...attr,
+        possessed: Math.random() >= 0.5, // TODO: check actual attribute possession
+      })),
+  ),
+  state: detail.latestVersion.state,
 });
 
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
