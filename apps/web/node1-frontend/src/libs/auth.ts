@@ -1,5 +1,14 @@
 import { config } from "@/config/config";
 
+/*
+ * The UI session token lives in sessionStorage because it is sent as
+ * Authorization: Bearer on every API call — moving it to an HttpOnly cookie
+ * would require proxying all protected routes through the BFF.
+ * XSS can still read it, but its 1h TTL limits the exposure window.
+ * The refresh token (24h) is the higher-value target and is stored in an
+ * HttpOnly cookie, which the browser sends automatically but JavaScript
+ * cannot access via document.cookie or any other API.
+ */
 const AUTH_TOKEN_KEY = "knodia_auth_token";
 
 export function clearAuthToken(): void {
