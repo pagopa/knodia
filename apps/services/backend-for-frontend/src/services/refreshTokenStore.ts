@@ -1,3 +1,4 @@
+import { type FastifyBaseLogger } from "fastify";
 import { createClient } from "redis";
 
 export interface RefreshTokenStore {
@@ -6,13 +7,34 @@ export interface RefreshTokenStore {
   revoke(jti: string, expireAtSec: number): Promise<void>;
 }
 
-export function createRefreshTokenStore(redisUrl: string): RefreshTokenStore {
-  const client = createClient({ url: redisUrl });
+export function createRefreshTokenStore(
+  redisUrl: string,
+  logger: FastifyBaseLogger,
+): RefreshTokenStore {
+  const client = createClient({
+    disableOfflineQueue: true,
+    socket: {
+      reconnectStrategy: (retries: number) => Math.min(retries * 1_000, 30_000),
+    },
+    url: redisUrl,
+  }).on("error", (err: unknown) =>
+    logger.warn(`Redis client error (${redisUrl}): ${String(err)}`),
+  );
+
   let connectPromise: Promise<void> | undefined;
 
   function ensureConnected(): Promise<void> {
     if (!connectPromise) {
-      connectPromise = client.connect().then(() => undefined);
+      connectPromise = client
+        .connect()
+        .then(() => {
+          logger.info(`Redis client connected (${redisUrl})`);
+        })
+        .catch((err: unknown) => {
+          // Reset so next call retries the connection
+          connectPromise = undefined;
+          throw err;
+        });
     }
     return connectPromise;
   }

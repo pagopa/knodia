@@ -26,8 +26,6 @@ export function buildAppFromConfig(config: BffProcessConfig) {
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
-  const refreshTokenStore = createRefreshTokenStore(config.redisUrl);
-  const authService = authServiceBuilder(tokenGenerator, refreshTokenStore);
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -55,6 +53,9 @@ export function buildAppFromConfig(config: BffProcessConfig) {
     makeApiProblem,
     serviceName: "backend-for-frontend",
   });
+
+  const refreshTokenStore = createRefreshTokenStore(config.redisUrl, app.log);
+  const authService = authServiceBuilder(tokenGenerator, refreshTokenStore);
 
   // Register cookie parser
   app.register(cookie);
