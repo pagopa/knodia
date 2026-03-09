@@ -11,6 +11,7 @@
   },
   "exports": {
     "./auth": "./src/auth/index.ts",
+    "./authMock": "./test/mock/authMock.ts",
     "./config": "./src/config/config.ts",
     "./context": "./src/context/context.ts",
     "./fastify": "./src/utils/fastify.ts",
@@ -18,6 +19,7 @@
     "./health": "./src/routers/healthRouter.ts",
     "./models": "./src/models/index.ts",
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
+    "./security": "./src/utils/openapi-zod-plugin/security.ts",
     "./problemBuilder": "./src/utils/problemBuilder.ts",
     "./startServer": "./src/utils/startServer.ts"
   },

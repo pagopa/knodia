@@ -30,6 +30,7 @@ import {
   toAPI_ProducerEserviceDetails,
 } from "../../models/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
+import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceRouterOptions {
@@ -93,6 +94,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "E-service created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.eservice],
     },
@@ -101,7 +104,9 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: producerId } = getUISessionAuthData(authData);
 
       logger.info(
         { query: req.query },
@@ -109,12 +114,6 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       );
 
       const { limit, mode, offset, q, sortBy, sortOrder, state } = req.query;
-      const { correlationId } = getContextValues(requestContext);
-
-      // TODO: get real producerId from auth context
-      const producerId = unsafeBrandId<OrganizationId>(
-        "00000000-0000-0000-0000-000000000000",
-      );
 
       // TODO: Implement sorting by activeAgreements/activePurposes.
       // Currently falls back to name sorting. Two options:
@@ -173,6 +172,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "Producer E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.eservice],
     },
@@ -235,6 +236,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "E-service details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       tags: [apiTags.eservice],
@@ -290,6 +293,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "E-service interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
       tags: [apiTags.eservice],

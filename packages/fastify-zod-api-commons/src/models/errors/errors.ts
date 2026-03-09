@@ -15,6 +15,7 @@ import {
 
 const {
   HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_INTERNAL_SERVER_ERROR,
   HTTP_STATUS_UNAUTHORIZED,
 } = constants;
@@ -27,6 +28,7 @@ export const commonErrorCodes = {
   MISSING_HEADER: "9994",
   FASTIFY_ERROR: "9995",
   UNAUTHORIZED: "9996",
+  FORBIDDEN: "9997",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 export type CommonErrorCodes = keyof typeof commonErrorCodes;
@@ -42,6 +44,15 @@ export function fastifyError(
     detail,
     status: httpStatus,
     title: STATUS_CODES[httpStatus] ?? "Unknown Error",
+  });
+}
+
+export function forbiddenError(detail: string): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: "FORBIDDEN",
+    detail,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Forbidden",
   });
 }
 

@@ -33,3 +33,8 @@ export const API_FileDownload = z.string().meta({
 export const API_KnodeId = z
   .enum(["Orion", "Lynx"])
   .meta({ description: "Unique Knode identifier", id: "KnodeId" });
+
+export const API_OrganizationId = z.uuid().meta({
+  description: "Unique identifier of the Organization",
+  id: "OrganizationId",
+});

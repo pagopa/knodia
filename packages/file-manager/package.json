@@ -12,7 +12,6 @@
     ".": "./src/fileManager.ts"
   },
   "devDependencies": {
-    "@knodia/common-models": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
@@ -22,6 +21,7 @@
     "vitest": "catalog:"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "catalog:"
+    "@aws-sdk/client-s3": "catalog:",
+    "@knodia/common-models": "workspace:*"
   }
 }

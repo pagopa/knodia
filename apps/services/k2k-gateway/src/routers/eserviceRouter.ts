@@ -90,6 +90,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
+      // No auth required currently. Mutual TLS will be added in the future;
+      // OpenAPI 3.1 supports `type: mutualTLS` security schemes natively,
+      // and we are evaluating upgrading to 3.1 to enable this
+      // (see https://pagopa.atlassian.net/browse/KN-96).
+      security: [],
       summary: "Search for E-services",
       tags: [apiTags.operation, apiTags.eservice],
     },
@@ -145,14 +150,22 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
+      const path = { eserviceId: req.params.eserviceId };
 
-      const { data } = await eserviceProcessApi.getEserviceLatestVersion({
-        client: eserviceProcessClient,
-        headers,
-        path: { eserviceId: req.params.eserviceId },
-      });
+      const [{ data: version }, { data: interfaceDoc }] = await Promise.all([
+        eserviceProcessApi.getEserviceLatestVersion({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+      ]);
 
-      res.send(toAPI_EserviceVersion(data));
+      res.send(toAPI_EserviceVersion(version, interfaceDoc));
     },
     method: "GET",
     schema: {
