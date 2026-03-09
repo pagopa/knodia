@@ -25,6 +25,13 @@ jobs:
     with:
       command: knip
 
+  generate-committed-artifacts:
+    name: Generate committed artifacts
+    uses: ./.github/workflows/pnpm-job.yml
+    with:
+      command: generate-committed-artifacts
+      fail_on_git_diff: true
+
   generate-openapi:
     name: Generate OpenAPI specs
     uses: ./.github/workflows/pnpm-job.yml
