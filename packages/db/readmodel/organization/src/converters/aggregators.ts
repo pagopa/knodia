@@ -1,10 +1,14 @@
 import type { Organization } from "@knodia/organization-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { aggregateByPKString } from "@knodia/db-readmodel-commons/utils";
+import {
+  aggregateByPKString,
+  throwIfMultipleOrEmpty,
+} from "@knodia/db-readmodel-commons/utils";
 
 import {
   type OrganizationAttributeSQL,
+  type OrganizationItemsSQL,
   type OrganizationSQL,
   readmodelOrganization,
   readmodelOrganizationAttribute,
@@ -16,16 +20,6 @@ type OrganizationAggregatorInput = {
   organization: OrganizationSQL;
 }[];
 
-const buildOrganization = (
-  organizationSQL: OrganizationSQL,
-  attributesSQL: OrganizationAttributeSQL[],
-): Organization => ({
-  attributes: attributesSQL.map(toOrganizationAttribute),
-  createdAt: organizationSQL.createdAt,
-  id: unsafeBrandId(organizationSQL.id),
-  name: organizationSQL.name,
-});
-
 export const aggregateOrganization = (
   queryRes: OrganizationAggregatorInput,
 ): Organization | undefined => {
@@ -33,12 +27,63 @@ export const aggregateOrganization = (
     return undefined;
   }
 
-  return aggregateOrganizations(queryRes).at(0);
+  return buildOrganization(toOrganizationAggregator(queryRes));
 };
 
 export const aggregateOrganizations = (
   queryRes: OrganizationAggregatorInput,
 ): Organization[] => {
+  const { attributesSQL, organizationsSQL } =
+    toOrganizationsAggregator(queryRes);
+
+  const attributesByOrgId = createOrganizationSQLPropertyMap(attributesSQL);
+
+  return organizationsSQL.map((organizationSQL) =>
+    buildOrganization({
+      attributesSQL: attributesByOrgId.get(organizationSQL.id) || [],
+      organizationSQL,
+    }),
+  );
+};
+
+const buildOrganization = ({
+  attributesSQL,
+  organizationSQL,
+}: OrganizationItemsSQL): Organization => ({
+  attributes: attributesSQL.map(toOrganizationAttribute),
+  createdAt: organizationSQL.createdAt,
+  id: unsafeBrandId(organizationSQL.id),
+  name: organizationSQL.name,
+});
+
+const createOrganizationSQLPropertyMap = (
+  items: OrganizationAttributeSQL[],
+): Map<string, OrganizationAttributeSQL[]> =>
+  items.reduce((acc, item) => {
+    const values = acc.get(item.organizationId) || [];
+    values.push(item);
+    acc.set(item.organizationId, values);
+    return acc;
+  }, new Map<string, OrganizationAttributeSQL[]>());
+
+const toOrganizationAggregator = (
+  queryRes: OrganizationAggregatorInput,
+): OrganizationItemsSQL => {
+  const { attributesSQL, organizationsSQL } =
+    toOrganizationsAggregator(queryRes);
+
+  return {
+    attributesSQL,
+    organizationSQL: throwIfMultipleOrEmpty(organizationsSQL, "organization"),
+  };
+};
+
+const toOrganizationsAggregator = (
+  queryRes: OrganizationAggregatorInput,
+): {
+  attributesSQL: OrganizationAttributeSQL[];
+  organizationsSQL: OrganizationSQL[];
+} => {
   const organizationPKSet = new Set<string>();
   const organizationsSQL: OrganizationSQL[] = [];
 
@@ -60,14 +105,8 @@ export const aggregateOrganizations = (
     );
   });
 
-  const attributesByOrgId = attributesSQL.reduce((acc, a) => {
-    const attrs = acc.get(a.organizationId) || [];
-    attrs.push(a);
-    acc.set(a.organizationId, attrs);
-    return acc;
-  }, new Map<string, OrganizationAttributeSQL[]>());
-
-  return organizationsSQL.map((org) =>
-    buildOrganization(org, attributesByOrgId.get(org.id) || []),
-  );
+  return {
+    attributesSQL,
+    organizationsSQL,
+  };
 };
