@@ -27,6 +27,8 @@ export function agreementServiceBuilder(
         `Creating agreement for e-service owned by Knode ${knodeId} with body data`,
       );
 
+      // TODO: add assertOrganizationExists(consumerId) to check if the seed consumerId exists before calling the K2K Gateway API
+
       const { data } = await k2kGatewayApi.createAgreement({
         body: bodyWithoutKnodeId,
         client: k2kGatewayClient,
