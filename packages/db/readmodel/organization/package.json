@@ -34,6 +34,7 @@
   "exports": {
     ".": "./src/organization.ts",
     "./config": "./config/config.ts",
+    "./converters": "./src/converters/index.ts",
     "./services": "./src/services/readmodelService.ts",
     "./writer": "./src/services/writerService.ts"
   }
