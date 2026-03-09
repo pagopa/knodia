@@ -15,7 +15,7 @@ import { zocker } from "zocker";
 import {
   API_CatalogEserviceSearchResult,
   type API_CatalogEserviceSearchResult as API_CatalogEserviceSearchResultType,
-} from "../src/models/api.ts";
+} from "../src/models/eservice/api.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getCatalogEservicesMock = vi.hoisted(() => vi.fn());

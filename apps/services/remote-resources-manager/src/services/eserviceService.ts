@@ -11,17 +11,13 @@ import type {
   API_CatalogEserviceSearchResults,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
-} from "../models/api.ts";
+} from "../models/eservice/api.ts";
 
-import { toAPI_CatalogEserviceSearchResult } from "../models/apiConverter.ts";
+import { toAPI_CatalogEserviceSearchResult } from "../models/eservice/apiConverter.ts";
 
-export type RemoteResourcesManagerService = ReturnType<
-  typeof remoteResourcesManagerServiceBuilder
->;
+export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
-export function remoteResourcesManagerServiceBuilder(
-  k2kGatewayClient: K2K2GatewayApiClient,
-) {
+export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
   return {
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,

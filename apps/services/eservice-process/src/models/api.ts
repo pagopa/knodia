@@ -1,3 +1,4 @@
+import { API_Attribute } from "@knodia/attribute-models/api";
 import {
   API_Pagination,
   API_PaginationQueryParams,
@@ -11,7 +12,6 @@ import {
 } from "@knodia/eservice-models";
 import {
   API_AccessTokenType,
-  API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
   API_EserviceVersionState,
@@ -138,7 +138,7 @@ export const API_EserviceVersion = z
       .max(maxDailyCalls)
       .meta({ description: "Maximum daily calls per Knode", format: "int32" }),
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
     state: API_EserviceVersionState.meta({
       description: "State of the version",
@@ -235,7 +235,7 @@ export const API_EserviceSeed = z
     }).optional(),
     name: API_LocalizedName,
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
   })
   .meta({ id: "EserviceSeed" });
