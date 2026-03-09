@@ -92,9 +92,34 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
+    Attribute:
+      description: Identifies an Attribute standardized within Knodia
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        scheme:
+          type: string
+          minLength: 1
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     EserviceCategory:
       description: Identifies a category of data, standardized within Knodia, which
-        the E-Service provides or receives
+        the E-service provides or receives
       type: object
       properties:
         code:
@@ -152,40 +177,31 @@ components:
         - BEARER
         - DPOP
     EserviceMode:
-      description: Indicates if the E-Service is intended to provide or receive data
+      description: Indicates if the E-service is intended to provide or receive data
       type: string
       enum:
         - PROVIDE_DATA
         - RECEIVE_DATA
-    Attribute:
-      description: Identifies an Attribute standardized within Knodia
-      type: object
-      properties:
-        code:
-          type: string
-          minLength: 1
-        scheme:
-          type: string
-          minLength: 1
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     RequiredAttributeGroup:
-      description: Describes a group of required Attributes (consumers must possess at
+      description: Describes a group of required Attributes (Consumers must possess at
         least one Attribute among them in order to satisfy the requirement)
       type: array
       items:
         $ref: "#/components/schemas/Attribute"
     RequiredAttributes:
       description: Describes the Attributes which a consumer must possess to request
-        an Agreement for the E-Service (at least one Attribute for each
+        an Agreement for the E-service (at least one Attribute for each
         Attribute Group)
       type: array
       items:
         $ref: "#/components/schemas/RequiredAttributeGroup"
     EserviceId:
       description: Unique identifier of the E-service
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    EserviceVersionId:
+      description: Unique identifier of the E-service version
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
@@ -407,6 +423,102 @@ components:
         - updatedAt
         - versionNumber
       additionalProperties: false
+    AgreementId:
+      description: Unique identifier for the Agreement
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - ORION
+        - LYNX
+    AgreementConsumer:
+      description: Consumer Organization of the Agreement
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/OrganizationId"
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
+    AgreementSeed:
+      description: Seed data to create a new Agreement
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/AgreementConsumer"
+        eserviceId:
+          $ref: "#/components/schemas/EserviceId"
+        eserviceVersionId:
+          $ref: "#/components/schemas/EserviceVersionId"
+      required:
+        - consumer
+        - eserviceId
+        - eserviceVersionId
+      additionalProperties: false
+    AgreementState:
+      description: Describes the states an Agreement can be in
+      type: string
+      enum:
+        - ACTIVE
+        - SUSPENDED
+        - ARCHIVED
+    Agreement:
+      description: Agreement between a Consumer and a Producer for an E-service
+      type: object
+      properties:
+        attributes:
+          description: Describes the Attributes of the E-service that the Consumer
+            possesses when the Agreement is activated (must satisfy at least one
+            Attribute for each Required Attribute Group defined by the
+            E-service)
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        consumer:
+          $ref: "#/components/schemas/AgreementConsumer"
+        eserviceId:
+          $ref: "#/components/schemas/EserviceId"
+        eserviceVersionId:
+          $ref: "#/components/schemas/EserviceVersionId"
+        id:
+          $ref: "#/components/schemas/AgreementId"
+        producerId:
+          $ref: "#/components/schemas/OrganizationId"
+        state:
+          $ref: "#/components/schemas/AgreementState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - attributes
+        - consumer
+        - eserviceId
+        - eserviceVersionId
+        - id
+        - producerId
+        - state
+        - updatedAt
+      additionalProperties: false
+    Agreements:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Agreement"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -555,6 +667,124 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /agreements:
+    post:
+      operationId: createAgreement
+      summary: Create a new Agreement
+      tags:
+        - resource
+        - agreement
+      description: Create a new Agreement for a Consumer to access a Producer's E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgreementSeed"
+      responses:
+        "201":
+          description: Agreement created successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getAgreements
+      tags:
+        - agreement
+      description: Retrieve a list of Agreements
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: consumerId
+          required: false
+          description: Filter by Consumer ID
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Agreement State
+      responses:
+        "200":
+          description: Agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Agreements retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Agreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Knode to Knode API
     url: /
@@ -565,5 +795,7 @@ tags:
     name: resource
   - description: Ad-hoc routes to simplify frequent use cases
     name: operation
+  - description: Routes related to Agreements
+    name: agreement
   - description: Routes related to E-services
     name: eservice
