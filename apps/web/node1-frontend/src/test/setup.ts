@@ -6,6 +6,8 @@ vi.stubGlobal("env", {
   BFF_URL: import.meta.env["BFF_URL"],
   COGNITO_AUTHORITY: "http://localhost:9229",
   COGNITO_CLIENT_ID: "test-client-id",
+  COGNITO_DOMAIN: "http://localhost:9229",
+  COGNITO_LOGOUT_URI: "http://localhost:5173/auth/callback",
   COGNITO_REDIRECT_URI: "http://localhost:5173/auth/callback",
 });
 

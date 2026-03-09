@@ -8,8 +8,8 @@ import {
 import { match } from "ts-pattern";
 
 import type {
-  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResult,
+  API_EserviceDetails,
 } from "./api.ts";
 
 export const toAPI_CatalogEserviceSearchResult = (
@@ -22,18 +22,17 @@ export const toAPI_CatalogEserviceSearchResult = (
   mode: toAPI_EserviceMode(catalogEservice.mode),
 });
 
-export const toAPI_CatalogEserviceDetail = (
+export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
-  interfaceDoc: k2kGatewayApi.EserviceVersionInterfaceDocument,
-): API_CatalogEserviceDetail => ({
+): API_EserviceDetails => ({
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,
   interfaceDocument: {
-    checksum: interfaceDoc.checksum,
-    name: interfaceDoc.name,
-    prettyName: interfaceDoc.prettyName,
+    checksum: version.interfaceDocument.checksum,
+    name: version.interfaceDocument.name,
+    prettyName: version.interfaceDocument.prettyName,
   },
   isConsumerOperatorIdentificationRequired:
     eservice.isConsumerOperatorIdentificationRequired,
@@ -49,7 +48,13 @@ export const toAPI_CatalogEserviceDetail = (
   },
   mode: toAPI_EserviceMode(eservice.mode),
   name: eservice.name,
-  producerId: eservice.producerId,
+  producer: {
+    email: "info@example.com", // TODO: retrieve real data from producer knode
+    id: eservice.producerId,
+    knodeName: "Knode", // TODO: retrieve real data from producer knode
+    name: { en: "Producer name" }, // TODO: retrieve real data from producer knode
+    notes: "Notes", // TODO: retrieve real data from producer knode
+  },
 });
 
 const toAPI_AccessTokenType = (

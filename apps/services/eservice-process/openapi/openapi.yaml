@@ -7,6 +7,13 @@ info:
   title: Knodia E-service Process API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -475,6 +482,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -580,17 +588,33 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     post:
       operationId: createEservice
       tags:
         - eservice
       description: Create a new E-service
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/EserviceSeed"
-        required: true
       parameters:
         - schema:
             allOf:
@@ -614,6 +638,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "409":
@@ -662,6 +702,22 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "404":
           description: E-service not found
           content:
@@ -706,6 +762,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -754,6 +826,22 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
@@ -770,11 +858,11 @@ paths:
       description: Retrieve a list of E-services based on complex search criteria
         contained in the request body
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
-        required: true
       parameters:
         - schema:
             format: int32
@@ -817,9 +905,27 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: E-service Process API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

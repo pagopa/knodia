@@ -10,15 +10,15 @@ import {
 } from "@knodia/remote-resources-manager-client";
 
 import {
-  API_ConsumerCatalogEserviceDetail,
   API_ConsumerCatalogEserviceSearchResults,
-  API_GetConsumerCatalogEserviceDetailQueryParams,
+  API_ConsumerEserviceDetails,
   API_GetConsumerCatalogEserviceSearchParams,
   API_GetConsumerCatalogEservicesQueryParams,
+  API_GetConsumerEserviceDetailsQueryParams,
 } from "../../models/api.ts";
 import {
-  toAPI_ConsumerCatalogEserviceDetail,
   toAPI_ConsumerCatalogEserviceSearchResult,
+  toAPI_ConsumerEserviceDetails,
 } from "../../models/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
@@ -70,6 +70,8 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
             "E-service search results retrieved (sorted by most recently updated first)",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       summary: "Search for E-services",
       tags: [apiTags.eservice],
@@ -83,34 +85,34 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { params: req.params, query: req.query },
-        `Getting consumer catalog E-service detail with ID ${req.params.eserviceId}`,
+        `Getting consumer E-service details with ID ${req.params.eserviceId}`,
       );
 
-      const { data } = await remoteResourcesManagerApi.getCatalogEserviceDetail(
-        {
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          path: { eserviceId: req.params.eserviceId },
-          query: { knodeId: req.query.knodeId },
-        },
-      );
+      const { data } = await remoteResourcesManagerApi.getEserviceDetails({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { eserviceId: req.params.eserviceId },
+        query: { knodeId: req.query.knodeId },
+      });
 
-      res.send(toAPI_ConsumerCatalogEserviceDetail(data));
+      res.send(toAPI_ConsumerEserviceDetails(data));
     },
     method: "GET",
     schema: {
       description: "Retrieve an E-service with all its details for consumers",
-      operationId: "getConsumerCatalogEserviceDetail",
+      operationId: "getConsumerEserviceDetails",
       params: API_EserviceIdPathParam,
-      querystring: API_GetConsumerCatalogEserviceDetailQueryParams,
+      querystring: API_GetConsumerEserviceDetailsQueryParams,
       response: {
-        200: API_ConsumerCatalogEserviceDetail.meta({
+        200: API_ConsumerEserviceDetails.meta({
           description: "E-service detail retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
-      summary: "Get consumer catalog E-service detail",
+      summary: "Get consumer E-service details",
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices/:eserviceId",

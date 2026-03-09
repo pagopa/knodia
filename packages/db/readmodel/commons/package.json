@@ -10,17 +10,17 @@
   "dependencies": {
     "@knodia/common-models": "workspace:*",
     "drizzle-orm": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
-    "ts-pattern": "catalog:",
     "typescript": "catalog:"
   },
   "exports": {
     "./models": "./src/models/index.ts",
-    "./utils": "./src/utilities/utils.ts"
+    "./utils": "./src/utils/utils.ts"
   }
 }

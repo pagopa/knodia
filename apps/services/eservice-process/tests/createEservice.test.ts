@@ -1,11 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { EserviceId } from "@knodia/common-models/ids";
-
+import {
+  type EserviceId,
+  generateId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
@@ -21,6 +29,10 @@ const validCategory = {
   scheme: "vc_example_eservice_categories",
 };
 
+const allowedTestTokens: TestToken[] = [
+  { roles: ["technical"], type: "ui-session" },
+];
+
 describe("POST /eservices (createEservice)", () => {
   const body = {
     ...zocker(API_EserviceSeed).setSeed(0).generate(),
@@ -31,7 +43,9 @@ describe("POST /eservices (createEservice)", () => {
   };
 
   it("should correctly create eservice creation event", async () => {
-    const response = await injectAppRequest().post("/eservices").body(body);
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/eservices")
+      .body(body);
     expect(response.statusCode).toBe(201);
 
     const responseBody = response.json<API_Eservice>();
@@ -46,7 +60,7 @@ describe("POST /eservices (createEservice)", () => {
       isSignalHubEnabled: body.isSignalHubEnabled ?? false,
       mode: body.mode ?? "ProvideData",
       name: body.name,
-      producerId: expect.any(String), // TODO: It's random for now
+      producerId: TEST_ORGANIZATION_ID,
       updatedAt: new Date(responseBody.createdAt),
       versions: [
         {
@@ -106,7 +120,7 @@ describe("POST /eservices (createEservice)", () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await injectAppRequest()
+      const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/eservices")
         .body(body as never);
       expect(response.statusCode).toBe(400);
@@ -114,7 +128,7 @@ describe("POST /eservices (createEservice)", () => {
   );
 
   it("should return 400 if an attribute is invalid", async () => {
-    const response = await injectAppRequest()
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")
       .body({
         ...body,
@@ -126,7 +140,7 @@ describe("POST /eservices (createEservice)", () => {
   });
 
   it("should return 400 if the maxDailyCallsPerConsumer is greater than maxDailyCallsPerKnode", async () => {
-    const response = await injectAppRequest()
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")
       .body({
         ...body,
@@ -137,7 +151,7 @@ describe("POST /eservices (createEservice)", () => {
   });
 
   it("should return 400 if a category is invalid", async () => {
-    const response = await injectAppRequest()
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")
       .body({
         ...body,
@@ -148,10 +162,20 @@ describe("POST /eservices (createEservice)", () => {
     expect(response.statusCode).toBe(400);
   });
 
+  it.each(forbiddenTestTokens(allowedTestTokens))(
+    "should return 403 for unauthorized token ($type)",
+    async (spec) => {
+      const response = await injectAppRequest(spec)
+        .post("/eservices")
+        .body(body);
+      expect(response.statusCode).toBe(403);
+    },
+  );
+
   it("should return 409 if an interface with the same ID already exists", async () => {
     await eserviceWriterService.upsertEservice(mockEservices[0]!, 0);
 
-    const response = await injectAppRequest()
+    const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")
       .body({
         ...body,
@@ -161,5 +185,16 @@ describe("POST /eservices (createEservice)", () => {
         },
       });
     expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 403 if the organization does not exist", async () => {
+    const response = await injectAppRequest({
+      organizationId: generateId<OrganizationId>(),
+      roles: ["technical"],
+      type: "ui-session",
+    })
+      .post("/eservices")
+      .body(body);
+    expect(response.statusCode).toBe(403);
   });
 });

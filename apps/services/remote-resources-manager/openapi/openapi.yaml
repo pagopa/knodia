@@ -7,6 +7,13 @@ info:
   title: Knodia Remote Resources Manager API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -247,7 +254,7 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CatalogEserviceDetailLatestVersion:
+    EserviceDetailsLatestVersion:
       type: object
       properties:
         accessTokenAudience:
@@ -288,7 +295,7 @@ components:
         - requiredAttributes
         - state
       additionalProperties: false
-    CatalogEserviceDetailInterfaceDocument:
+    EserviceDetailsInterfaceDocument:
       type: object
       properties:
         checksum:
@@ -302,7 +309,29 @@ components:
         - name
         - prettyName
       additionalProperties: false
-    CatalogEserviceDetail:
+    EserviceDetailsProducer:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeName:
+          type: string
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        notes:
+          type: string
+      required:
+        - email
+        - id
+        - knodeName
+        - name
+        - notes
+      additionalProperties: false
+    EserviceDetails:
       type: object
       properties:
         categories:
@@ -316,21 +345,19 @@ components:
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         interfaceDocument:
-          $ref: "#/components/schemas/CatalogEserviceDetailInterfaceDocument"
+          $ref: "#/components/schemas/EserviceDetailsInterfaceDocument"
         isConsumerOperatorIdentificationRequired:
           type: boolean
         isSignalHubEnabled:
           type: boolean
         latestVersion:
-          $ref: "#/components/schemas/CatalogEserviceDetailLatestVersion"
+          $ref: "#/components/schemas/EserviceDetailsLatestVersion"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
-        producerId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producer:
+          $ref: "#/components/schemas/EserviceDetailsProducer"
       required:
         - categories
         - description
@@ -341,7 +368,7 @@ components:
         - latestVersion
         - mode
         - name
-        - producerId
+        - producer
       additionalProperties: false
 paths:
   /status:
@@ -350,6 +377,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -368,11 +396,11 @@ paths:
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GetCatalogEserviceSearchParams"
-        required: true
       parameters:
         - schema:
             format: int32
@@ -410,9 +438,25 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}:
     get:
-      operationId: getCatalogEserviceDetail
+      operationId: getEserviceDetails
       summary: Get E-service detail
       tags:
         - k2k-gateway
@@ -422,6 +466,7 @@ paths:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
+          required: true
         - schema:
             $ref: "#/components/schemas/EserviceId"
           in: path
@@ -435,13 +480,29 @@ paths:
               schema:
                 description: E-service detail retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/CatalogEserviceDetail"
+                  - $ref: "#/components/schemas/EserviceDetails"
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -455,6 +516,8 @@ paths:
 servers:
   - description: Remote Resources Manager API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

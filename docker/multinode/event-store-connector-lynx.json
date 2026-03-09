@@ -1,0 +1,29 @@
+{
+  "name": "event-store-connector-lynx",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.user": "root",
+    "database.password": "root",
+    "database.dbname": "lynx_event_store",
+    "topic.prefix": "event-store-lynx",
+    "plugin.name": "pgoutput",
+    "binary.handling.mode": "hex",
+    "slot.name": "event_store_slot_lynx",
+    "publication.name": "event_store_pub_lynx",
+    "publication.autocreate.mode": "filtered",
+    "table.include.list": "local_lynx_.*.events",
+    "tombstones.on.delete": true,
+    "message.key.columns": "(.*).events:stream_id",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": false,
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": false,
+    "transforms": "PartitionRouting",
+    "transforms.PartitionRouting.type": "io.debezium.transforms.partitions.PartitionRouting",
+    "transforms.PartitionRouting.partition.topic.num": 3,
+    "transforms.PartitionRouting.partition.payload.fields": "change.stream_id"
+  }
+}
