@@ -103,6 +103,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
@@ -168,6 +169,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 

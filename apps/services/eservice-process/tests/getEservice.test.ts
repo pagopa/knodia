@@ -15,6 +15,7 @@ const VALID_ESERVICE_ID = eservice.id;
 const NON_EXISTENT_ESERVICE_ID = generateId<EserviceId>();
 
 const allowedTestTokens: TestToken[] = [
+  { type: "internal" },
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
 ];
