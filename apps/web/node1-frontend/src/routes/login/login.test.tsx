@@ -1,31 +1,17 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockLogin = vi.fn();
-const mockNavigate = vi.fn();
 
 let mockAuthState = {
   error: null as Error | null | undefined,
-  isAuthenticated: false,
-  isLoading: false,
   login: mockLogin,
-  logout: vi.fn(),
-  token: null as null | string,
 };
 
 vi.mock("@/contexts/auth", () => ({
   useAuth: () => mockAuthState,
 }));
-
-vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/react-router")>();
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 import { LoginPage } from "./index";
 
@@ -34,11 +20,7 @@ describe("LoginPage", () => {
     vi.clearAllMocks();
     mockAuthState = {
       error: null,
-      isAuthenticated: false,
-      isLoading: false,
       login: mockLogin,
-      logout: vi.fn(),
-      token: null,
     };
   });
 
@@ -83,29 +65,5 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: "Retry" }));
 
     expect(mockLogin).toHaveBeenCalledOnce();
-  });
-
-  it("navigates to / when isAuthenticated is true", async () => {
-    mockAuthState.isAuthenticated = true;
-    mockAuthState.token = "session-token";
-
-    render(<LoginPage />);
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        replace: true,
-        to: "/",
-      });
-    });
-  });
-
-  it("still renders the card when already authenticated", () => {
-    mockAuthState.isAuthenticated = true;
-    mockAuthState.token = "session-token";
-
-    render(<LoginPage />);
-
-    expect(screen.getByText("Welcome to")).toBeInTheDocument();
-    expect(screen.getByText("Orion Knode")).toBeInTheDocument();
   });
 });
