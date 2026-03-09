@@ -79,9 +79,9 @@ export function buildApp({
     protectedApp.register(agreementRouter, {
       agreementService: agreementServiceBuilder(k2kGatewayClient),
     });
-
-    return app;
   });
+
+  return app;
 }
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {

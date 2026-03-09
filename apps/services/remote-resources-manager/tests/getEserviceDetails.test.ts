@@ -10,7 +10,7 @@ import { zocker } from "zocker";
 import {
   API_EserviceDetails,
   type API_EserviceDetails as API_EserviceDetailsType,
-} from "../src/models/api.ts";
+} from "../src/models/eservice/api.ts";
 import {
   toK2KAccessTokenType,
   toK2KMode,
