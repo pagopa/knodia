@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
@@ -10,19 +11,31 @@ import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import { API_AgreementSeed } from "../models/agreement/api.ts";
-import { toProcessAPI_AgreementSeed } from "../models/agreement/apiConverter.ts";
+import {
+  API_Agreements,
+  API_AgreementSeed,
+  API_GetAgreementsQueryParams,
+} from "../models/agreement/api.ts";
+import {
+  toAPI_Agreement,
+  toProcessAPI_AgreementSeed,
+  toProcessAPI_AgreementState,
+} from "../models/agreement/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
+  callerKnodeId: KnodeId;
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 export const agreementRouter: FastifyPluginAsyncZod<
   AgreementRouterOptions
-> = async (fastify, { agreementProcessClient, tokenProvider }) => {
+> = async (
+  fastify,
+  { agreementProcessClient, callerKnodeId, tokenProvider },
+) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -59,6 +72,53 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       summary: "Create a new Agreement",
       tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestQuery: req.query },
+        "Getting Agreements with query params",
+      );
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { consumerId, state } = req.query;
+
+      const { data } = await agreementProcessApi.getAgreements({
+        client: agreementProcessClient,
+        headers,
+        query: {
+          consumerId,
+          consumerKnodeId: callerKnodeId,
+          limit: req.query.limit,
+          offset: req.query.offset,
+          state: state ? toProcessAPI_AgreementState(state) : undefined,
+        },
+      });
+
+      res.status(200).send({
+        items: data.items.map(toAPI_Agreement),
+        pagination: data.pagination,
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Agreements",
+      operationId: "getAgreements",
+      querystring: API_GetAgreementsQueryParams,
+      response: {
+        200: API_Agreements.meta({
+          description: "Agreements retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      tags: [apiTags.agreement],
     },
     url: "/agreements",
   });

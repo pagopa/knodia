@@ -1,0 +1,27 @@
+meta {
+  name: Get Agreements
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host-k2k-gateway}}/agreements?limit=50&offset=0&consumerId={{consumerId}}&state=ACTIVE
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  consumerId: {{consumerId}}
+  state: ACTIVE
+}
+
+headers {
+  ~Authorization: 
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  agreements: res.body.results
+}
