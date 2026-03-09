@@ -84,7 +84,7 @@ export function agreementServiceBuilder(
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<ListResult<Agreement>> {
       logger.info({ requestQuery }, "Getting Agreements with query params");
 
