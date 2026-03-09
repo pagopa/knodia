@@ -103,8 +103,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
       });
 
       res.status(200).send({
-        items: data.items.map(toAPI_Agreement),
         pagination: data.pagination,
+        results: data.items.map(toAPI_Agreement),
       });
     },
     method: "GET",

@@ -85,8 +85,8 @@ export type API_Agreement = z.infer<typeof API_Agreement>;
 
 export const API_Agreements = z
   .strictObject({
-    items: z.array(API_Agreement),
     pagination: API_Pagination,
+    results: z.array(API_Agreement),
   })
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
