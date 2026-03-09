@@ -25,7 +25,7 @@ export const toK2KMode = (mode: API_EserviceMode): k2kGatewayApi.EserviceMode =>
     .with("ReceiveData", () => "RECEIVE_DATA" as const)
     .exhaustive();
 
-export const toK2KAccessTokenType = (
+const toK2KAccessTokenType = (
   tokenType: API_AccessTokenType,
 ): k2kGatewayApi.AccessTokenType =>
   match(tokenType)
