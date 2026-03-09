@@ -149,7 +149,7 @@ export function eserviceServiceBuilder(
 
     async getEservice(
       eserviceId: EserviceId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Eservice> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
 
@@ -165,7 +165,7 @@ export function eserviceServiceBuilder(
     },
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<EserviceInterface> {
       logger.info(
         `Getting latest version interface of E-service with ID ${eserviceId}`,

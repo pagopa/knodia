@@ -7,6 +7,13 @@ info:
   title: Knodia Remote Resources Manager API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -87,137 +94,12 @@ components:
         - offset
         - total
       additionalProperties: false
-    OrganizationId:
-      description: Unique identifier of the Organization
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
       enum:
         - Orion
         - Lynx
-    AgreementState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
-    AgreementConsumer:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - id
-        - knodeId
-      additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    AgreementSeed:
-      description: Seed data to create a new agreement
-      type: object
-      properties:
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        eserviceVersionId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - consumer
-        - eserviceId
-        - eserviceVersionId
-        - knodeId
-      additionalProperties: false
-    Agreement:
-      description: Agreement between a Consumer and a Producer for an E-service
-      type: object
-      properties:
-        attributes:
-          description: Describes the Attributes of the E-service that the Consumer
-            possesses when the Agreement is activated (must satisfy at least one
-            Attribute for each Required Attribute Group defined by the
-            E-service)
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        eserviceVersionId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        producerId:
-          $ref: "#/components/schemas/OrganizationId"
-        state:
-          $ref: "#/components/schemas/AgreementState"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - attributes
-        - consumer
-        - eserviceId
-        - eserviceVersionId
-        - id
-        - producerId
-        - state
-        - updatedAt
-      additionalProperties: false
-    Agreements:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/Agreement"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-      required:
-        - items
-        - pagination
-      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
@@ -252,6 +134,22 @@ components:
         - ProvideData
         - ReceiveData
     EserviceCategory:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    AccessTokenType:
+      type: string
+      enum:
+        - Bearer
+        - DPoP
+    EserviceAttribute:
       type: object
       properties:
         code:
@@ -317,7 +215,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/Attribute"
+              $ref: "#/components/schemas/EserviceAttribute"
         latestVersionState:
           $ref: "#/components/schemas/EserviceVersionState"
         mode:
@@ -351,6 +249,127 @@ components:
         - pagination
         - results
       additionalProperties: false
+    EserviceId:
+      description: Unique identifier of the E-Service
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    EserviceDetailsLatestVersion:
+      type: object
+      properties:
+        accessTokenAudience:
+          type: array
+          items:
+            type: string
+        accessTokenDuration:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        accessTokenType:
+          $ref: "#/components/schemas/AccessTokenType"
+        maxDailyCallsPerConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        maxDailyCallsPerKnode:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/EserviceAttribute"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - accessTokenAudience
+        - accessTokenDuration
+        - accessTokenType
+        - maxDailyCallsPerConsumer
+        - maxDailyCallsPerKnode
+        - requiredAttributes
+        - state
+      additionalProperties: false
+    EserviceDetailsInterfaceDocument:
+      type: object
+      properties:
+        checksum:
+          type: string
+        name:
+          type: string
+        prettyName:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - checksum
+        - name
+        - prettyName
+      additionalProperties: false
+    EserviceDetailsProducer:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeName:
+          type: string
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        notes:
+          type: string
+      required:
+        - email
+        - id
+        - knodeName
+        - name
+        - notes
+      additionalProperties: false
+    EserviceDetails:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        description:
+          $ref: "#/components/schemas/LocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        interfaceDocument:
+          $ref: "#/components/schemas/EserviceDetailsInterfaceDocument"
+        isConsumerOperatorIdentificationRequired:
+          type: boolean
+        isSignalHubEnabled:
+          type: boolean
+        latestVersion:
+          $ref: "#/components/schemas/EserviceDetailsLatestVersion"
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producer:
+          $ref: "#/components/schemas/EserviceDetailsProducer"
+      required:
+        - categories
+        - description
+        - id
+        - interfaceDocument
+        - isConsumerOperatorIdentificationRequired
+        - isSignalHubEnabled
+        - latestVersion
+        - mode
+        - name
+        - producer
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -358,6 +377,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -372,7 +392,7 @@ paths:
       operationId: getCatalogEservices
       summary: Search for E-services
       tags:
-        - eservice
+        - k2k-gateway
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
@@ -418,41 +438,12 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
+        "401":
+          description: Unauthorized
           content:
             application/problem+json:
               schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /agreements:
-    post:
-      operationId: createAgreement
-      tags:
-        - agreement
-      description: Create a new Agreement
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/AgreementSeed"
-      responses:
-        "201":
-          description: Agreement created successfully
-          content:
-            application/json:
-              schema:
-                description: Agreement created successfully
-                allOf:
-                  - $ref: "#/components/schemas/CreatedResource"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "403":
@@ -463,69 +454,33 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                description: Not Found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "409":
-          description: Conflict
-          content:
-            application/problem+json:
-              schema:
-                description: Conflict
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}:
     get:
-      operationId: getAgreements
+      operationId: getEserviceDetails
+      summary: Get E-service detail
       tags:
-        - agreement
-      description: Retrieve a list of Agreements
+        - k2k-gateway
+      description: Retrieve an E-service with all its details
       parameters:
         - schema:
-            format: int32
-            type: number
-            minimum: 1
-            maximum: 50
+            $ref: "#/components/schemas/KnodeId"
           in: query
-          name: limit
+          name: knodeId
           required: true
-          description: Maximum number of items returned
         - schema:
-            format: int32
-            type: number
-            minimum: 0
-          in: query
-          name: offset
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
           required: true
-          description: Pagination starting position
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: consumerId
-          required: false
-          description: Filter by Consumer ID
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/AgreementState"
-          in: query
-          name: state
-          required: false
-          description: Filter by Agreement State
       responses:
         "200":
-          description: Agreements retrieved successfully
+          description: E-service detail retrieved successfully
           content:
             application/json:
               schema:
-                description: Agreements retrieved successfully
+                description: E-service detail retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Agreements"
+                  - $ref: "#/components/schemas/EserviceDetails"
         "400":
           description: Bad Request
           content:
@@ -550,13 +505,21 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "404":
+          description: E-service not found
+          content:
+            application/problem+json:
+              schema:
+                description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Remote Resources Manager API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health
-  - description: Routes related to Agreements
-    name: agreement
-  - description: Routes related to E-services
-    name: eservice
+  - description: K2K Gateway routes
+    name: k2k-gateway
