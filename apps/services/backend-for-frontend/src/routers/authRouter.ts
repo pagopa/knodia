@@ -100,7 +100,11 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   });
 
   fastify.route({
-    handler: async (_req, res) => {
+    handler: async (req, res) => {
+      const refreshCookie = req.cookies[REFRESH_COOKIE_NAME];
+      if (refreshCookie) {
+        await authService.revokeRefreshToken(refreshCookie);
+      }
       void res.clearCookie(REFRESH_COOKIE_NAME, {
         domain: config.cookie.domain,
         httpOnly: true,

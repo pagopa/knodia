@@ -6,7 +6,7 @@ import { OrganizationId, UserId } from "@knodia/common-models/ids";
 import { NonEmptyArray } from "@knodia/common-models/types";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type TokenGenerator } from "@knodia/token-generator";
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 import z from "zod";
 
 import { config } from "../config/config.ts";
@@ -167,6 +167,18 @@ export function authServiceBuilder(
     }> {
       const claims = await verifyRefreshToken(refreshTokenJwt);
       return generateTokenPairFromClaims(claims);
+    },
+
+    async revokeRefreshToken(refreshTokenJwt: string): Promise<void> {
+      try {
+        const payload = decodeJwt(refreshTokenJwt);
+        const parsed = UISessionRefreshTokenClaims.safeParse(payload);
+        if (parsed.success) {
+          await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);
+        }
+      } catch {
+        // Best-effort: if the token is malformed, there is nothing to revoke
+      }
     },
   };
 }

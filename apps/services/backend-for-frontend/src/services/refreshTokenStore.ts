@@ -3,6 +3,7 @@ import { createClient } from "redis";
 export interface RefreshTokenStore {
   consume(jti: string, expireAtSec: number): Promise<boolean>;
   disconnect(): Promise<void>;
+  revoke(jti: string, expireAtSec: number): Promise<void>;
 }
 
 export async function createRefreshTokenStore(
@@ -25,6 +26,13 @@ export async function createRefreshTokenStore(
 
     async disconnect(): Promise<void> {
       await client.disconnect();
+    },
+
+    async revoke(jti: string, expireAtSec: number): Promise<void> {
+      const key = `refresh:${jti}`;
+      // Mark the JTI as consumed so it cannot be used again.
+      // Uses SET with EXAT so the entry auto-expires at the token's original expiry.
+      await client.set(key, "1", { EXAT: expireAtSec });
     },
   };
 }

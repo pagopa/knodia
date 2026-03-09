@@ -7,6 +7,7 @@ import { config } from "../src/config/config.ts";
 const noopStore = {
   consume: () => Promise.resolve(true),
   disconnect: () => Promise.resolve(),
+  revoke: () => Promise.resolve(),
 };
 
 await generateOpenapi(buildApp({ config, refreshTokenStore: noopStore }));
