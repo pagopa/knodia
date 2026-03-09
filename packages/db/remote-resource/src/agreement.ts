@@ -1,6 +1,6 @@
 import { pgSchema, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { remoteResourceDbConfig } from "../../config/config.ts";
+import { remoteResourceDbConfig } from "../config/config.ts";
 
 const agreementSchema = pgSchema(
   remoteResourceDbConfig.remoteResourceDbAgreementSchema,
@@ -20,3 +20,6 @@ export const agreement = agreementSchema.table("agreement", {
   knodeId: text("knode_id").notNull(),
   producerId: uuid("producer_id").notNull(),
 });
+
+export type AgreementSQL = typeof agreement.$inferSelect;
+export type NewAgreementSQL = typeof agreement.$inferInsert;

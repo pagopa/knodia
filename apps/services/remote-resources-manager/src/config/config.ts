@@ -1,3 +1,4 @@
+import { RemoteResourceDbConfig } from "@knodia/db-remote-resource/config";
 import {
   AuthConfig,
   HTTPServerConfig,
@@ -5,8 +6,6 @@ import {
 import { LoggerConfig } from "@knodia/logger/config";
 import { env } from "node:process";
 import { z } from "zod";
-
-import { RemoteResourceDbConfig } from "../../config/config.ts";
 
 const RemoteResourcesManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)

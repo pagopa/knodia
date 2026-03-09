@@ -8,9 +8,6 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
-    "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
-    "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
-    "db:schema-normalize": "node ../../../scripts/normalize-drizzle-output.ts",
     "test": "pnpm -w test --project @knodia/remote-resources-manager",
     "test:watch": "pnpm test --watch"
   },
@@ -34,6 +31,7 @@
     "@fastify/request-context": "catalog:",
     "@knodia/k2k-gateway-client": "workspace:*",
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-remote-resource": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",

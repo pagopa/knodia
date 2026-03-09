@@ -2,6 +2,7 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { remoteResourceDbServiceBuilder } from "@knodia/db-remote-resource/services";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -20,7 +21,6 @@ import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
-import { remoteResourceDbServiceBuilder } from "./services/remoteResourceService.ts";
 import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
 
 export function buildApp({

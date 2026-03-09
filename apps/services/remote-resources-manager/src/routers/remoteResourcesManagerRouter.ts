@@ -1,3 +1,4 @@
+import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -5,7 +6,6 @@ import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import type { RemoteResourceDbService } from "../services/remoteResourceService.ts";
 import type { RemoteResourcesManagerService } from "../services/remoteResourcesManagerService.ts";
 
 import {
