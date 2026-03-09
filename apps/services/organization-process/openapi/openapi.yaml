@@ -146,6 +146,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK

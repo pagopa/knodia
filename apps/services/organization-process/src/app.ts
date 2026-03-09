@@ -3,7 +3,10 @@ import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
-import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
+import {
+  createFastifyApp,
+  requireCorrelationIdHeaderPlugin,
+} from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -53,6 +56,7 @@ export function buildApp({
 
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
     protectedApp.register(
       organizationRouter,
       organizationServiceBuilder(readmodelServiceBuilder(readmodelDb)),
