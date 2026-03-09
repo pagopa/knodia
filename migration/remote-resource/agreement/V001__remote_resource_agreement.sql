@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_agreement."agreement" (
 	"consumer_id" uuid NOT NULL,
 	"producer_id" uuid NOT NULL,
 	"knode_id" text NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	PRIMARY KEY ("knode_id", "agreement_id")
 );
 
