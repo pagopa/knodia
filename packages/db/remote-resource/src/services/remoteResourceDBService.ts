@@ -39,10 +39,9 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
             consumerId: remoteAgreement.consumerId,
             eserviceId: remoteAgreement.eserviceId,
             eserviceVersionId: remoteAgreement.eserviceVersionId,
-            knodeId: remoteAgreement.knodeId,
             producerId: remoteAgreement.producerId,
           },
-          target: agreement.agreementId,
+          target: [agreement.knodeId, agreement.agreementId],
         });
     },
   };

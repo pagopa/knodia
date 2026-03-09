@@ -3,13 +3,14 @@
 CREATE SCHEMA IF NOT EXISTS ${NAMESPACE}_agreement;
 
 CREATE TABLE IF NOT EXISTS ${NAMESPACE}_agreement."agreement" (
-	"agreement_id" uuid PRIMARY KEY NOT NULL,
+	"agreement_id" uuid NOT NULL,
 	"eservice_id" uuid NOT NULL,
 	"eservice_version_id" uuid NOT NULL,
 	"consumer_id" uuid NOT NULL,
 	"producer_id" uuid NOT NULL,
 	"knode_id" text NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	PRIMARY KEY ("knode_id", "agreement_id")
 );
 
 -- Grant privileges to ${NAMESPACE}_remote_resource_manager_user
