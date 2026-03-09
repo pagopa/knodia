@@ -1,3 +1,5 @@
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type { EserviceId } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
@@ -28,18 +30,16 @@ export function remoteResourcesManagerServiceBuilder(
 ) {
   return {
     async getCatalogEserviceDetail(
-      eserviceId: string,
-      // TODO: use knodeId to route to the correct K2K Gateway instance
-      knodeId: string,
+      eserviceId: ExternalResource<EserviceId>,
       { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CatalogEserviceDetail> {
       logger.info(
-        { eserviceId, knodeId },
-        `Getting E-service detail ${eserviceId} from Knode ${knodeId}`,
+        { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
+        `Getting E-service detail ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
 
       const headers = { [CORRELATION_ID_HEADER]: correlationId };
-      const path = { eserviceId };
+      const path = { eserviceId: eserviceId.id };
 
       const [{ data: eservice }, { data: version }] = await Promise.all([
         k2kGatewayApi.getEservice({

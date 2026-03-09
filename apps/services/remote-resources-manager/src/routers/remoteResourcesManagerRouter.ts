@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -67,8 +68,10 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
 
       const detail =
         await remoteResourcesManagerService.getCatalogEserviceDetail(
-          req.params.eserviceId,
-          req.query.knodeId,
+          {
+            id: unsafeBrandId(req.params.eserviceId),
+            knodeId: KnodeId.parse(req.query.knodeId),
+          },
           ctx,
         );
 
