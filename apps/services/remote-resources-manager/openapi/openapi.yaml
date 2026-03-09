@@ -254,7 +254,7 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CatalogEserviceDetailLatestVersion:
+    EserviceDetailsLatestVersion:
       type: object
       properties:
         accessTokenAudience:
@@ -295,7 +295,7 @@ components:
         - requiredAttributes
         - state
       additionalProperties: false
-    CatalogEserviceDetailInterfaceDocument:
+    EserviceDetailsInterfaceDocument:
       type: object
       properties:
         checksum:
@@ -309,7 +309,7 @@ components:
         - name
         - prettyName
       additionalProperties: false
-    CatalogEserviceDetailProducer:
+    EserviceDetailsProducer:
       type: object
       properties:
         email:
@@ -331,7 +331,7 @@ components:
         - name
         - notes
       additionalProperties: false
-    CatalogEserviceDetail:
+    EserviceDetails:
       type: object
       properties:
         categories:
@@ -345,19 +345,19 @@ components:
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         interfaceDocument:
-          $ref: "#/components/schemas/CatalogEserviceDetailInterfaceDocument"
+          $ref: "#/components/schemas/EserviceDetailsInterfaceDocument"
         isConsumerOperatorIdentificationRequired:
           type: boolean
         isSignalHubEnabled:
           type: boolean
         latestVersion:
-          $ref: "#/components/schemas/CatalogEserviceDetailLatestVersion"
+          $ref: "#/components/schemas/EserviceDetailsLatestVersion"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/CatalogEserviceDetailProducer"
+          $ref: "#/components/schemas/EserviceDetailsProducer"
       required:
         - categories
         - description
@@ -456,7 +456,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}:
     get:
-      operationId: getCatalogEserviceDetail
+      operationId: getEserviceDetails
       summary: Get E-service detail
       tags:
         - k2k-gateway
@@ -480,7 +480,7 @@ paths:
               schema:
                 description: E-service detail retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/CatalogEserviceDetail"
+                  - $ref: "#/components/schemas/EserviceDetails"
         "400":
           description: Bad Request
           content:

@@ -9,12 +9,12 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { RemoteResourcesManagerService } from "../services/remoteResourcesManagerService.ts";
 
 import {
-  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResults,
+  API_EserviceDetails,
   API_EserviceIdPathParam,
-  API_GetCatalogEserviceDetailQueryParams,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
+  API_GetEserviceDetailsQueryParams,
 } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -67,25 +67,24 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const detail =
-        await remoteResourcesManagerService.getCatalogEserviceDetail(
-          {
-            id: unsafeBrandId(req.params.eserviceId),
-            knodeId: KnodeId.parse(req.query.knodeId),
-          },
-          ctx,
-        );
+      const detail = await remoteResourcesManagerService.getEserviceDetails(
+        {
+          id: unsafeBrandId(req.params.eserviceId),
+          knodeId: KnodeId.parse(req.query.knodeId),
+        },
+        ctx,
+      );
 
       res.send(detail);
     },
     method: "GET",
     schema: {
       description: "Retrieve an E-service with all its details",
-      operationId: "getCatalogEserviceDetail",
+      operationId: "getEserviceDetails",
       params: API_EserviceIdPathParam,
-      querystring: API_GetCatalogEserviceDetailQueryParams,
+      querystring: API_GetEserviceDetailsQueryParams,
       response: {
-        200: API_CatalogEserviceDetail.meta({
+        200: API_EserviceDetails.meta({
           description: "E-service detail retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

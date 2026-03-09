@@ -8,8 +8,8 @@ import {
 import { match } from "ts-pattern";
 
 import type {
-  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResult,
+  API_EserviceDetails,
 } from "./api.ts";
 
 export const toAPI_CatalogEserviceSearchResult = (
@@ -22,10 +22,10 @@ export const toAPI_CatalogEserviceSearchResult = (
   mode: toAPI_EserviceMode(catalogEservice.mode),
 });
 
-export const toAPI_CatalogEserviceDetail = (
+export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
-): API_CatalogEserviceDetail => ({
+): API_EserviceDetails => ({
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,

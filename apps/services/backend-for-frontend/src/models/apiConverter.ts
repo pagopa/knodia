@@ -3,8 +3,8 @@ import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
-  API_ConsumerCatalogEserviceDetail,
   API_ConsumerCatalogEserviceSearchResult,
+  API_ConsumerEserviceDetails,
   API_ProducerEservice,
   API_ProducerEserviceDetails,
 } from "./api.ts";
@@ -75,9 +75,9 @@ export const toAPI_ProducerEserviceDetails = ({
   },
 });
 
-export const toAPI_ConsumerCatalogEserviceDetail = (
-  detail: remoteResourcesManagerApi.CatalogEserviceDetail,
-): API_ConsumerCatalogEserviceDetail => ({
+export const toAPI_ConsumerEserviceDetails = (
+  detail: remoteResourcesManagerApi.EserviceDetails,
+): API_ConsumerEserviceDetails => ({
   accessToken: {
     audience: detail.latestVersion.accessTokenAudience,
     duration: detail.latestVersion.accessTokenDuration,

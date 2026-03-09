@@ -8,8 +8,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import {
-  API_CatalogEserviceDetail,
-  type API_CatalogEserviceDetail as API_CatalogEserviceDetailType,
+  API_EserviceDetails,
+  type API_EserviceDetails as API_EserviceDetailsType,
 } from "../src/models/api.ts";
 import {
   toK2KAccessTokenType,
@@ -40,7 +40,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
 });
 
 const toK2KEservice = (
-  apiDetail: API_CatalogEserviceDetailType,
+  apiDetail: API_EserviceDetailsType,
 ): k2kGatewayApi.Eservice => ({
   categories: apiDetail.categories,
   description: apiDetail.description,
@@ -55,7 +55,7 @@ const toK2KEservice = (
 });
 
 const toK2KEserviceVersion = (
-  apiDetail: API_CatalogEserviceDetailType,
+  apiDetail: API_EserviceDetailsType,
 ): k2kGatewayApi.EserviceVersion => ({
   accessTokenAudience: apiDetail.latestVersion.accessTokenAudience,
   accessTokenDuration: apiDetail.latestVersion.accessTokenDuration,
@@ -79,11 +79,11 @@ const toK2KEserviceVersion = (
   versionNumber: 1,
 });
 
-describe("GET /eservices/:eserviceId (getCatalogEserviceDetail)", () => {
+describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const eserviceId = crypto.randomUUID();
   const knodeId = "Orion";
 
-  const expectedApiDetail = zocker(API_CatalogEserviceDetail).generate();
+  const expectedApiDetail = zocker(API_EserviceDetails).generate();
   const k2kEservice = toK2KEservice(expectedApiDetail);
   const k2kVersion = toK2KEserviceVersion(expectedApiDetail);
 

@@ -651,7 +651,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerCatalogEserviceDetailProducer:
+    ConsumerEserviceDetailsProducer:
       type: object
       properties:
         email:
@@ -687,7 +687,7 @@ components:
         - possessed
         - scheme
       additionalProperties: false
-    ConsumerCatalogEserviceDetailAccessToken:
+    ConsumerEserviceDetailsAccessToken:
       type: object
       properties:
         audience:
@@ -707,7 +707,7 @@ components:
         - duration
         - type
       additionalProperties: false
-    ConsumerCatalogEserviceDetailInterfaceDocument:
+    ConsumerEserviceDetailsInterfaceDocument:
       type: object
       properties:
         checksum:
@@ -718,7 +718,7 @@ components:
         - checksum
         - name
       additionalProperties: false
-    ConsumerCatalogEserviceDetailMaxDailyCalls:
+    ConsumerEserviceDetailsMaxDailyCalls:
       type: object
       properties:
         perConsumer:
@@ -735,11 +735,11 @@ components:
         - perConsumer
         - perKnode
       additionalProperties: false
-    ConsumerCatalogEserviceDetail:
+    ConsumerEserviceDetails:
       type: object
       properties:
         accessToken:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailAccessToken"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsAccessToken"
         categories:
           type: array
           items:
@@ -753,17 +753,17 @@ components:
         identificationRequired:
           type: boolean
         interfaceDocument:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailInterfaceDocument"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsInterfaceDocument"
         isSignalHubEnabled:
           type: boolean
         maxDailyCalls:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailMaxDailyCalls"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsMaxDailyCalls"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailProducer"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsProducer"
         requiredAttributes:
           type: array
           items:
@@ -1201,8 +1201,8 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumer/eservices/{eserviceId}:
     get:
-      operationId: getConsumerCatalogEserviceDetail
-      summary: Get consumer catalog E-service detail
+      operationId: getConsumerEserviceDetails
+      summary: Get consumer E-service details
       tags:
         - eservice
       description: Retrieve an E-service with all its details for consumers
@@ -1227,7 +1227,7 @@ paths:
               schema:
                 description: E-service detail retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerCatalogEserviceDetail"
+                  - $ref: "#/components/schemas/ConsumerEserviceDetails"
         "400":
           description: Bad Request
           content:
