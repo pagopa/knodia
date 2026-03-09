@@ -1,15 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { match } from "ts-pattern";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import { API_Agreement } from "../src/models/agreement/api.ts";
 import { toK2KAPI_AgreementState } from "../src/models/agreement/apiConverter.ts";
+import { toK2KAPI_KnodeId } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getAgreementsMock = vi.hoisted(() => vi.fn());
@@ -26,12 +25,6 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     },
   };
 });
-
-const toK2KAPI_KnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
-  match(knodeId)
-    .with("Orion", () => "ORION" as const)
-    .with("Lynx", () => "LYNX" as const)
-    .exhaustive();
 
 const toK2KResult = (apiResult: API_Agreement): k2kGatewayApi.Agreement => ({
   attributes: apiResult.attributes,
