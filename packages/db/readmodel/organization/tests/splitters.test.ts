@@ -23,6 +23,7 @@ describe("Organization Splitters", () => {
       id: organization.id,
       metadataVersion,
       name: organization.name,
+      updatedAt: organization.updatedAt,
     };
 
     const expectedAttributesSQL: OrganizationAttributeSQL[] =

@@ -18,6 +18,7 @@ export const API_Organization = z
     createdAt: z.iso.datetime(),
     id: z.uuid(),
     name: z.string(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Organization" });
 export type API_Organization = z.infer<typeof API_Organization>;

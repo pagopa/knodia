@@ -9,4 +9,5 @@ export const toAPI_Organization = (
   createdAt: organization.createdAt.toISOString(),
   id: organization.id,
   name: organization.name,
+  updatedAt: organization.updatedAt.toISOString(),
 });

@@ -24,6 +24,10 @@ export const readmodelOrganization = organizationSchema.table(
     id: uuid().primaryKey().notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: text().notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
   },
   (table) => [
     unique("organization_id_metadata_v_unique").on(

@@ -42,4 +42,5 @@ const toOrganizationSQL = (
   id: organization.id,
   metadataVersion,
   name: organization.name,
+  updatedAt: organization.updatedAt,
 });

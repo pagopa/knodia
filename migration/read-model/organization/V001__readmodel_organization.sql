@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_organization."organization" (
 	"id" uuid PRIMARY KEY NOT NULL,
 	"metadata_version" bigint NOT NULL,
 	"name" text NOT NULL,
+	"updated_at" timestamp with time zone NOT NULL,
 	CONSTRAINT "organization_id_metadata_v_unique" UNIQUE("id","metadata_version")
 );
 

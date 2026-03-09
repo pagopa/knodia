@@ -7,5 +7,6 @@ export const Organization = z.strictObject({
   createdAt: z.coerce.date(),
   id: OrganizationId,
   name: z.string(),
+  updatedAt: z.coerce.date(),
 });
 export type Organization = z.infer<typeof Organization>;

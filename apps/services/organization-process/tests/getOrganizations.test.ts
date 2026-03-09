@@ -43,6 +43,7 @@ const toExpectAPI_Organization = (org: Organization) => ({
   createdAt: org.createdAt.toISOString(),
   id: org.id,
   name: org.name,
+  updatedAt: org.updatedAt.toISOString(),
 });
 
 describe("GET /organizations (getOrganizations)", () => {

@@ -39,6 +39,7 @@ beforeAll(async () => {
     id: TEST_ORGANIZATION_ID,
     metadataVersion: 0,
     name: "Test Organization",
+    updatedAt: new Date(),
   });
 });
 

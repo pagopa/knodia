@@ -54,6 +54,7 @@ const buildOrganization = ({
   createdAt: organizationSQL.createdAt,
   id: unsafeBrandId(organizationSQL.id),
   name: organizationSQL.name,
+  updatedAt: organizationSQL.updatedAt,
 });
 
 const createOrganizationSQLPropertyMap = (
