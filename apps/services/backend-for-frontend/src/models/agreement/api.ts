@@ -45,7 +45,6 @@ export const API_ProducerAgreement = z
     id: z.uuid(),
     producer: API_CompactOrganization.optional(),
     state: API_AgreementState,
-    // TODO: "recent update" boolean
   })
   .meta({ id: "ProducerAgreement" });
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
