@@ -10,7 +10,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import { type API_AgreementSeed } from "../src/models/agreement/api.ts";
-import { toK2KAPI_AgreementSeed } from "../src/models/agreement/apiConverter.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const createAgreementMock = vi.hoisted(() => vi.fn());
@@ -40,13 +39,13 @@ const allowedTestTokens: TestToken[] = [
 
 describe("POST /agreements (createAgreement)", () => {
   const eservice = getMockEservice({ latestVersionState: "Active" });
-  const body: API_AgreementSeed = {
-    consumer: {
-      id: generateId(),
-      knodeId: "Orion",
-    },
+  const k2kBody: k2kGatewayApi.AgreementSeed = {
+    consumerId: generateId(),
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
+  };
+  const body: API_AgreementSeed = {
+    ...k2kBody,
     knodeId: "Orion",
   };
 
@@ -70,7 +69,7 @@ describe("POST /agreements (createAgreement)", () => {
 
     expect(createAgreementMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: toK2KAPI_AgreementSeed(body),
+        body: k2kBody,
         headers: expect.objectContaining({
           [CORRELATION_ID_HEADER]: expect.any(String),
         }),
@@ -106,19 +105,10 @@ describe("POST /agreements (createAgreement)", () => {
     },
     { body: { ...body, eserviceVersionId: "" } },
     {
-      body: {
-        ...body,
-        consumer: { ...body.consumer, knodeId: "UnknownKnodeId" },
-      },
+      body: { ...body, consumerId: 99 },
     },
     {
-      body: { ...body, consumer: { ...body.consumer, knodeId: "" } },
-    },
-    {
-      body: { ...body, consumer: { ...body.consumer, id: 99 } },
-    },
-    {
-      body: { ...body, consumer: { ...body.consumer, id: "" } },
+      body: { ...body, consumerId: "" },
     },
   ])(
     "should return 400 if query/body parameters are formatted incorrectly (%o)",

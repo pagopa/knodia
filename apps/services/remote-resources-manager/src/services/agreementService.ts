@@ -10,8 +10,6 @@ import {
 
 import type { API_AgreementSeed } from "../models/agreement/api.ts";
 
-import { toK2KAPI_AgreementSeed } from "../models/agreement/apiConverter.ts";
-
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
 export function agreementServiceBuilder(
@@ -22,13 +20,15 @@ export function agreementServiceBuilder(
       reqBody: API_AgreementSeed,
       { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CreatedResource> {
+      const { knodeId, ...bodyWithoutKnodeId } = reqBody;
+
       logger.info(
         { requestBody: reqBody },
-        `Creating agreement for e-service owned by Knode ${reqBody.knodeId} with body data`,
+        `Creating agreement for e-service owned by Knode ${knodeId} with body data`,
       );
 
       const { data } = await k2kGatewayApi.createAgreement({
-        body: toK2KAPI_AgreementSeed(reqBody),
+        body: bodyWithoutKnodeId,
         client: k2kGatewayClient,
         headers: {
           [CORRELATION_ID_HEADER]: correlationId,

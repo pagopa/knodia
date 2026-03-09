@@ -1,10 +1,10 @@
-import { API_AgreementConsumer } from "@knodia/agreement-models/api";
+import { API_OrganizationId } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { z } from "zod";
 
 export const API_AgreementSeed = z
   .strictObject({
-    consumer: API_AgreementConsumer,
+    consumerId: API_OrganizationId,
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
     knodeId: API_KnodeId,
