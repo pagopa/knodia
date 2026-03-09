@@ -3,11 +3,7 @@ import { createServer } from "node:http";
 
 const PORT = 3000;
 const ISSUER = process.env.ISSUER ?? "http://localhost:4567";
-const ALLOWED_ORIGINS = (
-  process.env.ALLOWED_ORIGINS ??
-  process.env.ALLOWED_ORIGIN ??
-  "http://localhost:5175"
-)
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "http://localhost:5175")
   .split(",")
   .map((s) => s.trim());
 
