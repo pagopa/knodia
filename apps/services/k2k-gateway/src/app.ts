@@ -12,10 +12,12 @@ import type { K2KGatewayConfig } from "./config/config.ts";
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
+    agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
     internalJwt: config.internalJwt,
     loggerConfig: config,
@@ -25,15 +27,17 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
 }
 
 function buildApp({
+  agreementProcessUrl,
   eserviceProcessUrl,
   internalJwt,
   loggerConfig,
 }: {
+  agreementProcessUrl: string;
   eserviceProcessUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
 }) {
-  const clients = getKnodiaClients({ eserviceProcessUrl });
+  const clients = getKnodiaClients({ agreementProcessUrl, eserviceProcessUrl });
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
   const app = createFastifyApp({
     fastifyOptions: {
@@ -55,6 +59,14 @@ function buildApp({
             description: "Ad-hoc routes to simplify frequent use cases",
             name: apiTags.operation,
           },
+          {
+            description: "Routes related to Agreements",
+            name: apiTags.agreement,
+          },
+          {
+            description: "Routes related to E-services",
+            name: apiTags.eservice,
+          },
         ],
       },
     },
@@ -67,6 +79,10 @@ function buildApp({
   app.register(healthRouter);
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
+    tokenProvider,
+  });
+  app.register(agreementRouter, {
+    agreementProcessClient: clients.agreementProcessClient,
     tokenProvider,
   });
 
