@@ -202,7 +202,7 @@ function RouteComponent() {
       <Divider className="my-10" />
 
       <AccessTokenSettingsSection
-        audience={eservice.accessToken.audience}
+        audience={eservice.accessToken.audience.join(", ")}
         durationInMinutes={eservice.accessToken.durationInMinutes}
         type={eservice.accessToken.type}
       />
