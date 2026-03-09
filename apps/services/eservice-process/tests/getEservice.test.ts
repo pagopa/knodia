@@ -47,7 +47,11 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
   );
 
   it("should return the same e-service as the list endpoint", async () => {
-    const listResponse = await injectAppRequest(allowedTestTokens[0]!)
+    const uiToken: TestToken = {
+      roles: ["administrative"],
+      type: "ui-session",
+    };
+    const listResponse = await injectAppRequest(uiToken)
       .get("/eservices")
       .query({ limit: "50", offset: "0" });
     const listBody = listResponse.json<{ items: API_Eservice[] }>();
