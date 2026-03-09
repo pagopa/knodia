@@ -977,9 +977,6 @@ importers:
       concurrently:
         specifier: 'catalog:'
         version: 9.2.1
-      drizzle-kit:
-        specifier: 'catalog:'
-        version: 0.31.8
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
