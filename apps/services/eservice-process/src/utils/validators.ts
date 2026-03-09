@@ -1,6 +1,6 @@
 import type { OrganizationId } from "@knodia/common-models/ids";
 
-import type { ReadmodelService } from "./readmodelService.ts";
+import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import { organizationNotFound } from "../models/errors.ts";
 
