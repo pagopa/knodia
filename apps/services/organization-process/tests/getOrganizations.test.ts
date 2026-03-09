@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Organization } from "@knodia/organization-models";
 import type { TestToken } from "@knodia/test-commons/auth";
+import type z from "zod";
 
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import type { API_GetOrganizationsQueryParams } from "../src/models/api.ts";
 
 import { organizationWriterService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
@@ -56,6 +59,81 @@ describe("GET /organizations (getOrganizations)", () => {
     );
   });
 
+  it.each([
+    {
+      expectedResult: [
+        mockOrganizations[0],
+        mockOrganizations[1],
+        mockOrganizations[2],
+        mockOrganizations[3],
+      ] as Organization[],
+      query: { ...defaultQuery },
+      testCase: "pagination only (1st page), sort by name asc by default",
+      totalCount: 5,
+    },
+    {
+      expectedResult: [mockOrganizations[4]] as Organization[],
+      query: { limit: "4", offset: "4" },
+      testCase: "pagination only (2nd page)",
+      totalCount: 5,
+    },
+    {
+      expectedResult: [mockOrganizations[2]] as Organization[],
+      query: { ...defaultQuery, q: "cha" },
+      testCase: "search query",
+      totalCount: 1,
+    },
+    {
+      expectedResult: [
+        mockOrganizations[4],
+        mockOrganizations[3],
+        mockOrganizations[2],
+        mockOrganizations[1],
+      ] as Organization[],
+      query: { ...defaultQuery, sortOrder: "desc" },
+      testCase: "sort by name desc",
+      totalCount: 5,
+    },
+    {
+      expectedResult: [] as Organization[],
+      query: { ...defaultQuery, q: "nonexistent" },
+      testCase: "empty results",
+      totalCount: 0,
+    },
+  ] satisfies {
+    expectedResult: Organization[];
+    query: z.input<typeof API_GetOrganizationsQueryParams>;
+    testCase: string;
+    totalCount: number;
+  }[])(
+    "should return organizations with correct shape and pagination: $testCase (seed #%#)",
+    async ({ expectedResult, query, totalCount }) => {
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .get("/organizations")
+        .query(query);
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toEqual({
+        items: expectedResult.map(toExpectAPI_Organization),
+        pagination: {
+          limit: Number(query.limit),
+          offset: Number(query.offset),
+          total: totalCount,
+        },
+      });
+    },
+  );
+
+  it.each(allowedTestTokens)(
+    "should return 200 for authorized token ($type, $roles)",
+    async (token) => {
+      const response = await injectAppRequest(token)
+        .get("/organizations")
+        .query(defaultQuery);
+      expect(response.statusCode).toBe(200);
+    },
+  );
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
@@ -71,6 +149,8 @@ describe("GET /organizations (getOrganizations)", () => {
     { limit: "0", offset: "0" },
     { limit: "51", offset: "0" },
     { limit: "10", offset: "-1" },
+    { limit: new Date(), offset: NaN },
+    { limit: 9999999, offset: 9999999 },
     {
       ...defaultQuery,
       sortBy: "InvalidSortBy",
@@ -79,6 +159,7 @@ describe("GET /organizations (getOrganizations)", () => {
       ...defaultQuery,
       sortOrder: "InvalidSortOrder",
     },
+    { ...defaultQuery, q: [1, 2, 3] },
     {
       ...defaultQuery,
       invalidParam: "invalid",
@@ -92,88 +173,4 @@ describe("GET /organizations (getOrganizations)", () => {
       expect(response.statusCode).toBe(400);
     },
   );
-
-  it("should return organizations sorted by name asc (default)", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get("/organizations")
-      .query(defaultQuery);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      items: mockOrganizations.slice(0, 4).map(toExpectAPI_Organization),
-      pagination: {
-        limit: 4,
-        offset: 0,
-        total: 5,
-      },
-    });
-  });
-
-  it("should return second page", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get("/organizations")
-      .query({ limit: "4", offset: "4" });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      items: [toExpectAPI_Organization(mockOrganizations[4]!)],
-      pagination: {
-        limit: 4,
-        offset: 4,
-        total: 5,
-      },
-    });
-  });
-
-  it("should filter by name with q parameter", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get("/organizations")
-      .query({ ...defaultQuery, q: "cha" });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      items: [toExpectAPI_Organization(mockOrganizations[2]!)],
-      pagination: {
-        limit: 4,
-        offset: 0,
-        total: 1,
-      },
-    });
-  });
-
-  it("should sort by name desc", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get("/organizations")
-      .query({ ...defaultQuery, sortOrder: "desc" });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      items: mockOrganizations
-        .slice()
-        .reverse()
-        .slice(0, 4)
-        .map(toExpectAPI_Organization),
-      pagination: {
-        limit: 4,
-        offset: 0,
-        total: 5,
-      },
-    });
-  });
-
-  it("should return empty list when no results match", async () => {
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get("/organizations")
-      .query({ ...defaultQuery, q: "nonexistent" });
-
-    expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      items: [],
-      pagination: {
-        limit: 4,
-        offset: 0,
-        total: 0,
-      },
-    });
-  });
 });
