@@ -49,6 +49,8 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
       response: {
         200: API_Tests.meta({ description: "Results retrieved successfully" }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [testTags.test],
     },
@@ -70,6 +72,8 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
       response: {
         201: API_Test.meta({ description: "Resource created successfully" }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [testTags.test],
     },
