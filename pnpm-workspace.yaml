@@ -29,6 +29,8 @@ catalog:
   "@hey-api/openapi-ts": 0.89.2
   "@pagopa/eslint-config": 5.1.1
   "@phosphor-icons/react": 2.1.10
+  "@react-aria/toast": 3.0.11
+  "@react-stately/toast": 3.1.3
   "@stoplight/spectral-cli": 6.15.0
   "@storybook/react-vite": 10.1.11
   "@tailwindcss/vite": 4.1.18

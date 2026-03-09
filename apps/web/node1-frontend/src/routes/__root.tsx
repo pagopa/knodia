@@ -1,3 +1,4 @@
+import { ToastRegion } from "@knodia/ui-kit/ui";
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { formDevtoolsPlugin } from "@tanstack/react-form-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
@@ -29,6 +30,7 @@ function RootLayout() {
       }}
     >
       <Outlet />
+      <ToastRegion />
       <TanStackDevtools
         plugins={[
           {
