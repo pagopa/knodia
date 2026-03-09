@@ -284,6 +284,21 @@ services:
     volumes:
       - jwks-data:/usr/share/nginx/html:ro
 
+  redis:
+    security_opt:
+      - no-new-privileges:true
+    image: redis:7-alpine@sha256:48501c5e3aadb1d335e2dbd4e131cae48b181a87e1748735a9756e6c6989e4f6
+    container_name: knodia-redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   local-cognito:
     security_opt:
       - no-new-privileges:true
@@ -303,3 +318,4 @@ volumes:
   pgadmin-data:
   local-kms-data:
   jwks-data:
+  redis-data:

@@ -10,18 +10,7 @@ import { createRemoteJWKSet, jwtVerify } from "jose";
 import z from "zod";
 
 import { config } from "../config/config.ts";
-
-// In-memory store of consumed refresh token JTIs to prevent reuse.
-// Entries are auto-purged once the token's exp has passed.
-const usedRefreshJtis = new Map<string, number>();
-
-const cleanupTimer = setInterval(() => {
-  const now = Math.floor(Date.now() / 1000);
-  for (const [jti, exp] of usedRefreshJtis) {
-    if (exp <= now) usedRefreshJtis.delete(jti);
-  }
-}, 600_000);
-cleanupTimer.unref();
+import { type RefreshTokenStore } from "./refreshTokenStore.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
@@ -35,7 +24,10 @@ const ClaimsFromCognito = z.object({
 });
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
-export function authServiceBuilder(tokenGenerator: TokenGenerator) {
+export function authServiceBuilder(
+  tokenGenerator: TokenGenerator,
+  refreshTokenStore: RefreshTokenStore,
+) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
   const bffJwksSets = config.wellKnownUrls.map((url) =>
     createRemoteJWKSet(new URL(url)),
@@ -145,10 +137,13 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
       throw unauthorizedError("Invalid refresh token claims");
     }
 
-    if (usedRefreshJtis.has(parsed.data.jti)) {
+    const consumed = await refreshTokenStore.consume(
+      parsed.data.jti,
+      parsed.data.exp,
+    );
+    if (!consumed) {
       throw unauthorizedError("Refresh token already used");
     }
-    usedRefreshJtis.set(parsed.data.jti, parsed.data.exp);
 
     return ClaimsFromCognito.parse({
       organizationId: parsed.data.organizationId,

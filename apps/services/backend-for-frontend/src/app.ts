@@ -1,3 +1,4 @@
+import cookie from "@fastify/cookie";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -15,12 +16,15 @@ import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
+import { type RefreshTokenStore } from "./services/refreshTokenStore.ts";
 
-export function buildAppFromConfig(config: BffProcessConfig) {
-  return buildApp({ config });
-}
-
-function buildApp({ config }: { config: BffProcessConfig }) {
+export function buildApp({
+  config,
+  refreshTokenStore,
+}: {
+  config: BffProcessConfig;
+  refreshTokenStore: RefreshTokenStore;
+}) {
   const clients = getKnodiaClients({
     eserviceProcessUrl: config.eserviceProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
@@ -28,7 +32,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
-  const authService = authServiceBuilder(tokenGenerator);
+  const authService = authServiceBuilder(tokenGenerator, refreshTokenStore);
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -57,9 +61,12 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     serviceName: "backend-for-frontend",
   });
 
+  // Register cookie parser
+  app.register(cookie);
+
   // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(authRouter, { authService });
+  app.register(authRouter, { authService, config });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/

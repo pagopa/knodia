@@ -6,19 +6,15 @@ import { server } from "@/test/msw/server";
 const BFF_URL = import.meta.env["BFF_URL"];
 
 const mockGetAuthToken = vi.fn<() => null | string>();
-const mockGetRefreshToken = vi.fn<() => null | string>();
 const mockSetAuthToken = vi.fn();
-const mockSetRefreshToken = vi.fn();
-const mockClearAllTokens = vi.fn();
+const mockClearAuthToken = vi.fn();
 const mockRedirectToLogout = vi.fn();
 
 vi.mock("@/libs/auth", () => ({
-  clearAllTokens: (...args: unknown[]) => mockClearAllTokens(...args),
+  clearAuthToken: (...args: unknown[]) => mockClearAuthToken(...args),
   getAuthToken: () => mockGetAuthToken(),
-  getRefreshToken: () => mockGetRefreshToken(),
   redirectToLogout: () => mockRedirectToLogout(),
   setAuthToken: (...args: unknown[]) => mockSetAuthToken(...args),
-  setRefreshToken: (...args: unknown[]) => mockSetRefreshToken(...args),
 }));
 
 // Import after mocks so interceptors bind to mocked auth functions
@@ -46,7 +42,6 @@ function setupRefreshEndpoint(success: boolean) {
     http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
       if (success) {
         return HttpResponse.json({
-          refreshToken: "new-refresh-token",
           uiSessionToken: "new-session-token",
         });
       }
@@ -59,7 +54,6 @@ describe("axios interceptors", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockGetAuthToken.mockReturnValue(null);
-    mockGetRefreshToken.mockReturnValue(null);
   });
 
   describe("request interceptor (addAuthHeader)", () => {
@@ -96,7 +90,6 @@ describe("axios interceptors", () => {
 
   describe("response interceptor (handleUnauthorized)", () => {
     it("retries with new token after successful refresh", async () => {
-      mockGetRefreshToken.mockReturnValue("old-refresh");
       mockGetAuthToken
         .mockReturnValueOnce("expired-token")
         .mockReturnValue("new-session-token");
@@ -108,11 +101,9 @@ describe("axios interceptors", () => {
 
       expect(response.data).toEqual({ result: "ok" });
       expect(mockSetAuthToken).toHaveBeenCalledWith("new-session-token");
-      expect(mockSetRefreshToken).toHaveBeenCalledWith("new-refresh-token");
     });
 
-    it("clears tokens and redirects to logout when refresh fails", async () => {
-      mockGetRefreshToken.mockReturnValue("old-refresh");
+    it("clears token and redirects to logout when refresh fails", async () => {
       mockGetAuthToken.mockReturnValue("expired-token");
 
       setupProtectedEndpoint([{ status: 401 }]);
@@ -120,19 +111,7 @@ describe("axios interceptors", () => {
 
       await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
 
-      expect(mockClearAllTokens).toHaveBeenCalledOnce();
-      expect(mockRedirectToLogout).toHaveBeenCalledOnce();
-    });
-
-    it("clears tokens and redirects when no refresh token is available", async () => {
-      mockGetRefreshToken.mockReturnValue(null);
-      mockGetAuthToken.mockReturnValue("expired-token");
-
-      setupProtectedEndpoint([{ status: 401 }]);
-
-      await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
-
-      expect(mockClearAllTokens).toHaveBeenCalledOnce();
+      expect(mockClearAuthToken).toHaveBeenCalledOnce();
       expect(mockRedirectToLogout).toHaveBeenCalledOnce();
     });
 
@@ -145,8 +124,7 @@ describe("axios interceptors", () => {
 
       await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
 
-      expect(mockGetRefreshToken).not.toHaveBeenCalled();
-      expect(mockClearAllTokens).not.toHaveBeenCalled();
+      expect(mockClearAuthToken).not.toHaveBeenCalled();
     });
 
     it("does not intercept 401 on auth endpoints", async () => {
@@ -157,6 +135,9 @@ describe("axios interceptors", () => {
         http.post(`${BFF_URL}/auth/ui-session/refresh`, () =>
           HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
         ),
+        http.post(`${BFF_URL}/auth/logout`, () =>
+          HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
+        ),
       );
 
       await expect(
@@ -165,13 +146,13 @@ describe("axios interceptors", () => {
       await expect(
         axios.post(`${BFF_URL}/auth/ui-session/refresh`, {}),
       ).rejects.toThrow();
+      await expect(axios.post(`${BFF_URL}/auth/logout`, {})).rejects.toThrow();
 
-      expect(mockClearAllTokens).not.toHaveBeenCalled();
+      expect(mockClearAuthToken).not.toHaveBeenCalled();
       expect(mockRedirectToLogout).not.toHaveBeenCalled();
     });
 
     it("coalesces concurrent refresh requests", async () => {
-      mockGetRefreshToken.mockReturnValue("old-refresh");
       mockGetAuthToken
         .mockReturnValueOnce("expired")
         .mockReturnValueOnce("expired")
@@ -203,7 +184,6 @@ describe("axios interceptors", () => {
         http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
           refreshCallCount++;
           return HttpResponse.json({
-            refreshToken: "new-refresh",
             uiSessionToken: "new-session-token",
           });
         }),

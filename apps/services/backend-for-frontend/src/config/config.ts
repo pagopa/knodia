@@ -12,8 +12,11 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
       .object({
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
+        COOKIE_DOMAIN: z.string().optional(),
+        COOKIE_SECURE: z.coerce.boolean().default(true),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
+        REDIS_URL: z.url(),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -32,8 +35,13 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
       .transform((c) => ({
         cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
+        cookie: {
+          domain: c.COOKIE_DOMAIN,
+          secure: c.COOKIE_SECURE,
+        },
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
+        redisUrl: c.REDIS_URL,
         refreshJwt: {
           secondsDuration: c.REFRESH_JWT_SECONDS_DURATION,
         },

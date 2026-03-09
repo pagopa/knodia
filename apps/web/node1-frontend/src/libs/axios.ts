@@ -3,17 +3,19 @@ import axios, { type InternalAxiosRequestConfig, isAxiosError } from "axios";
 
 import { config } from "@/config/config";
 import {
-  clearAllTokens,
+  clearAuthToken,
   getAuthToken,
-  getRefreshToken,
   redirectToLogout,
   setAuthToken,
-  setRefreshToken,
 } from "@/libs/auth";
 
 let refreshPromise: null | Promise<boolean> = null;
 
-const authUrls = ["/auth/ui-session", "/auth/ui-session/refresh"];
+const authUrls = [
+  "/auth/ui-session",
+  "/auth/ui-session/refresh",
+  "/auth/logout",
+];
 
 function addAuthHeader(axiosConfig: InternalAxiosRequestConfig) {
   const token = getAuthToken();
@@ -40,7 +42,7 @@ async function handleUnauthorized(error: unknown): Promise<unknown> {
     return axios.request(error.config);
   }
 
-  clearAllTokens();
+  clearAuthToken();
   redirectToLogout();
   return Promise.reject(error);
 }
@@ -55,17 +57,14 @@ function refreshOnce(): Promise<boolean> {
 }
 
 async function tryRefreshToken(): Promise<boolean> {
-  const refreshToken = getRefreshToken();
-  if (!refreshToken) return false;
-
   try {
     const { data } = await axios.post<{
-      refreshToken: string;
       uiSessionToken: string;
-    }>(`${config.bffUrl}/auth/ui-session/refresh`, { refreshToken });
+    }>(`${config.bffUrl}/auth/ui-session/refresh`, undefined, {
+      withCredentials: true,
+    });
 
     setAuthToken(data.uiSessionToken);
-    setRefreshToken(data.refreshToken);
     return true;
   } catch {
     return false;

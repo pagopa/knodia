@@ -7,6 +7,7 @@ import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { authServiceBuilder } from "../src/services/authService.ts";
+import { type RefreshTokenStore } from "../src/services/refreshTokenStore.ts";
 
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 const mockKmsSend = vi.hoisted(() => vi.fn());
@@ -54,8 +55,23 @@ const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
 
 const tokenGenerator = tokenGeneratorBuilder();
 
-function buildService() {
-  return authServiceBuilder(tokenGenerator);
+function buildService(store?: RefreshTokenStore) {
+  return authServiceBuilder(
+    tokenGenerator,
+    store ?? createMockRefreshTokenStore(),
+  );
+}
+
+function createMockRefreshTokenStore(): RefreshTokenStore {
+  const consumed = new Set<string>();
+  return {
+    consume(jti: string): Promise<boolean> {
+      if (consumed.has(jti)) return Promise.resolve(false);
+      consumed.add(jti);
+      return Promise.resolve(true);
+    },
+    disconnect: () => Promise.resolve(),
+  };
 }
 
 function makeCognitoPayload(
@@ -318,7 +334,8 @@ describe("refreshTokenPair", () => {
       Signature: new Uint8Array([1, 2, 3, 4]),
     });
 
-    const service = buildService();
+    const store = createMockRefreshTokenStore();
+    const service = buildService(store);
     await service.refreshUISessionTokenPair("refresh-jwt");
 
     setupValidRefreshToken({ jti: fixedJti });
@@ -332,8 +349,9 @@ describe("refreshTokenPair", () => {
       Signature: new Uint8Array([1, 2, 3, 4]),
     });
 
+    const store = createMockRefreshTokenStore();
     setupValidRefreshToken({ jti: "jti-1" });
-    const service = buildService();
+    const service = buildService(store);
     await service.refreshUISessionTokenPair("refresh-jwt-1");
 
     setupValidRefreshToken({ jti: "jti-2" });
