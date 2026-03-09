@@ -1,3 +1,4 @@
+import { API_OrganizationId } from "@knodia/common-models/api";
 import { z } from "zod";
 
 import { API_EserviceId, API_EserviceVersionId } from "../eservice/api.ts";
@@ -21,7 +22,7 @@ export type API_AgreementConsumer = z.infer<typeof API_AgreementConsumer>;
 
 export const API_AgreementSeed = z
   .strictObject({
-    consumer: API_AgreementConsumer,
+    consumerId: API_OrganizationId,
     eserviceId: API_EserviceId,
     eserviceVersionId: API_EserviceVersionId,
   })

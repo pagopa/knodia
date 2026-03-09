@@ -1,11 +1,13 @@
 meta {
   name: Create Agreement
   type: http
+  seq: 1
 }
 
 post {
   url: {{host-k2k-gateway}}/agreements
   body: json
+  auth: none
 }
 
 headers {
@@ -14,13 +16,15 @@ headers {
 
 body:json {
   {
-    "consumer": {
-      "id": "{{consumerId}}",
-      "knodeId": "ORION"
-    },
+    "consumerId": "{{consumerId}}",
     "eserviceId": "{{eserviceId}}",
     "eserviceVersionId": "{{eserviceVersionId}}"
   }
+}
+
+vars:pre-request {
+  consumerId: 20000000-2000-1000-8000-000000000002
+  eserviceVersionId: 771c4dcf-74fc-437e-808a-ad8bed5c49fb
 }
 
 vars:post-response {

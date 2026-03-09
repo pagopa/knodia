@@ -1,5 +1,6 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 
+import { KnodeId } from "@knodia/common-models/ids";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -18,6 +19,7 @@ import { eserviceRouter } from "./routers/eserviceRouter.ts";
 export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
     agreementProcessUrl: config.agreementProcessUrl,
+    callerKnodeId: config.callerKnodeId,
     eserviceProcessUrl: config.eserviceProcessUrl,
     internalJwt: config.internalJwt,
     loggerConfig: config,
@@ -28,11 +30,13 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
 
 function buildApp({
   agreementProcessUrl,
+  callerKnodeId,
   eserviceProcessUrl,
   internalJwt,
   loggerConfig,
 }: {
   agreementProcessUrl: string;
+  callerKnodeId: string;
   eserviceProcessUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
@@ -82,6 +86,7 @@ function buildApp({
   });
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
+    callerKnodeId: KnodeId.parse(callerKnodeId),
     tokenProvider,
   });
 

@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
@@ -17,12 +18,16 @@ import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
+  callerKnodeId: KnodeId;
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 export const agreementRouter: FastifyPluginAsyncZod<
   AgreementRouterOptions
-> = async (fastify, { agreementProcessClient, tokenProvider }) => {
+> = async (
+  fastify,
+  { agreementProcessClient, callerKnodeId, tokenProvider },
+) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -36,7 +41,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
       const { data } = await agreementProcessApi.createAgreement({
-        body: toProcessAPI_AgreementSeed(req.body),
+        body: toProcessAPI_AgreementSeed(req.body, callerKnodeId),
         client: agreementProcessClient,
         headers,
       });
