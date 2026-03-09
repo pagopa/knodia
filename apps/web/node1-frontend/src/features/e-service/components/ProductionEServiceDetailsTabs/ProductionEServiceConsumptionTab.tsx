@@ -6,7 +6,7 @@ import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { formatNumber } from "@/utils/formatters";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
-import { Section } from "./Section";
+import { Section } from "../Section";
 
 export function ProductionEServiceConsumptionTab() {
   return (

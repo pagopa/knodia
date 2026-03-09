@@ -1,14 +1,13 @@
 import type { OpenAPIV3 } from "openapi-types";
 
-import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
-import openapiZodPlugin from "../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
 import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "../src/utils/openapi-zod-plugin/security.ts";
+import { buildTestApp } from "./mock/buildTestApp.ts";
 import {
   expectedOpenapiComponents,
   expectedOpenapiPaths,
@@ -16,31 +15,27 @@ import {
 import { testRouter, testTags } from "./utils/testRouter.ts";
 
 describe("openapiZodPlugin", () => {
-  const fastify = Fastify({
-    logger: false,
+  const fastify = buildTestApp({
+    openapi: {
+      components: { securitySchemes: bearerAuthSecurityScheme },
+      info: {
+        description: "API for testing openapiZodPlugin",
+        title: "Test API",
+        version: "1.0.0",
+      },
+      security: bearerAuthSecurity,
+      servers: [{ description: "Test API server", url: "/" }],
+      tags: [
+        healthRouterTag,
+        {
+          description: "Tag 1 for testing",
+          name: testTags.test,
+        },
+      ],
+    },
   });
 
   beforeAll(async () => {
-    await fastify.register(openapiZodPlugin, {
-      openapi: {
-        components: { securitySchemes: bearerAuthSecurityScheme },
-        info: {
-          description: "API for testing openapiZodPlugin",
-          title: "Test API",
-          version: "1.0.0",
-        },
-        security: bearerAuthSecurity,
-        servers: [{ description: "Test API server", url: "/" }],
-        tags: [
-          healthRouterTag,
-          {
-            description: "Tag 1 for testing",
-            name: testTags.test,
-          },
-        ],
-      },
-    });
-
     await fastify.register(healthRouter);
     await fastify.register(testRouter);
     await fastify.ready();

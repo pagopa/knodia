@@ -60,7 +60,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     },
     loggerConfig: config,
     makeApiProblem,
-    readCorrelationIdFromHeader: false,
     serviceName: "backend-for-frontend",
   });
 

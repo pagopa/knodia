@@ -4,7 +4,10 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/eservice";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
-import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
+import {
+  createFastifyApp,
+  requireCorrelationIdHeaderPlugin,
+} from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
@@ -58,15 +61,23 @@ export function buildApp({
     serviceName: "eservice-process",
   });
 
-  app.register(authenticationPlugin, config);
+  // Public routes (no auth required)
   app.register(healthRouter);
-  app.register(
-    eserviceRouter,
-    eserviceServiceBuilder(
-      eserviceEventStoreWriterBuilder(eventStoreDb),
-      readmodelServiceBuilder(readmodelDb),
-    ),
-  );
+
+  // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
+  // hooks are scoped to this context only.
+  // See https://fastify.dev/docs/latest/Reference/Encapsulation/
+  app.register(async (protectedApp) => {
+    protectedApp.register(authenticationPlugin, config);
+    protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
+    protectedApp.register(
+      eserviceRouter,
+      eserviceServiceBuilder(
+        eserviceEventStoreWriterBuilder(eventStoreDb),
+        readmodelServiceBuilder(readmodelDb),
+      ),
+    );
+  });
 
   return app;
 }

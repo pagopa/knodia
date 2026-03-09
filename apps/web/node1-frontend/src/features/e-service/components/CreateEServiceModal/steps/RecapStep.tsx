@@ -1,16 +1,15 @@
 import { getCategory } from "@knodia/category-models";
 import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
+import type { SchemeRef } from "@/features/e-service/types/schemeRef";
+
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
 import { useCalculateChecksum } from "@/features/e-service/hooks/useCalculateChecksum";
 import { usePublishEService } from "@/features/e-service/hooks/usePublishEService";
-import {
-  eserviceFormSchema,
-  type SchemeRef,
-} from "@/features/e-service/types/eserviceCreateForm";
+import { eserviceFormSchema } from "@/features/e-service/types/eserviceCreateForm";
 import { downloadFile } from "@/utils/downloadFile";
 
 import { AttributeGroupContainer } from "../../AttributeGroupContainer";
