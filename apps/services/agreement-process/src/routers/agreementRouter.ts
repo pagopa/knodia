@@ -99,6 +99,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
           description: "Agreements retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.agreement],
     },
