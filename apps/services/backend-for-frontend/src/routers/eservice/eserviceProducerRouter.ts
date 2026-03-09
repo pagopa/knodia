@@ -2,12 +2,7 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import {
-  EserviceInterfaceId,
-  generateId,
-  OrganizationId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
   eserviceProcessApi,
@@ -30,6 +25,7 @@ import {
   toAPI_ProducerEserviceDetails,
 } from "../../models/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
+import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceRouterOptions {
@@ -101,7 +97,9 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: producerId } = getUISessionAuthData(authData);
 
       logger.info(
         { query: req.query },
@@ -109,12 +107,6 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       );
 
       const { limit, mode, offset, q, sortBy, sortOrder, state } = req.query;
-      const { correlationId } = getContextValues(requestContext);
-
-      // TODO: get real producerId from auth context
-      const producerId = unsafeBrandId<OrganizationId>(
-        "00000000-0000-0000-0000-000000000000",
-      );
 
       // TODO: Implement sorting by activeAgreements/activePurposes.
       // Currently falls back to name sorting. Two options:
