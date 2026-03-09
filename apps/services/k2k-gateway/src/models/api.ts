@@ -157,10 +157,10 @@ export type API_Eservice = z.infer<typeof API_Eservice>;
 const API_EserviceVersionInterfaceDocument = z
   .strictObject({
     checksum: z.string().meta({
-      description: "Integrity checksum of the file",
+      description: "SHA-256 integrity checksum of the file",
     }),
     contentType: z.string().meta({
-      description: "The content type of the file",
+      description: "The MIME content type of the file",
     }),
     id: z
       .uuid()
@@ -172,7 +172,7 @@ const API_EserviceVersionInterfaceDocument = z
       description: "A human-readable name for the file",
     }),
     updatedAt: z.iso.datetime().meta({
-      description: "The date and time when the file was last updated",
+      description: "Last update timestamp of the Interface Document",
     }),
   })
   .meta({ id: "EserviceVersionInterfaceDocument" });
