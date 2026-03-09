@@ -89,29 +89,33 @@ const API_EserviceId = z.uuid().meta({
   id: "EserviceId",
 });
 
-export const API_CatalogEserviceSearchResult = z.strictObject({
-  categories: z.array(API_EserviceCategory).meta({
-    description: "Categories of data the E-service provides or receives",
-  }),
-  description: API_LocalizedText.meta({
-    description: "Human-readable description of the E-service",
-  }),
-  id: API_EserviceId,
-  latestVersionRequiredAttributes: API_RequiredAttributes.meta({
-    description: "Attributes required by the latest version of the E-service",
-  }),
-  latestVersionState: API_EserviceVersionState.meta({
-    description: "Current state of the latest version of the E-service",
-  }),
-  mode: API_EserviceMode,
-  name: API_LocalizedText.meta({
-    description: "Human-readable name of the E-service",
-  }),
-  producerId: API_OrganizationId,
-  updatedAt: z.iso.datetime().meta({
-    description: "Last update timestamp of the E-service",
-  }),
-});
+export const API_CatalogEserviceSearchResult = z
+  .strictObject({
+    categories: z.array(API_EserviceCategory).meta({
+      description: "Categories of data the E-service provides or receives",
+    }),
+    description: API_LocalizedText.meta({
+      description: "Human-readable description of the E-service",
+    }),
+    id: API_EserviceId,
+    latestVersionRequiredAttributes: API_RequiredAttributes.meta({
+      description: "Attributes required by the latest version of the E-service",
+    }),
+    latestVersionState: API_EserviceVersionState.meta({
+      description: "Current state of the latest version of the E-service",
+    }),
+    mode: API_EserviceMode,
+    name: API_LocalizedText.meta({
+      description: "Human-readable name of the E-service",
+    }),
+    producerId: API_OrganizationId,
+    updatedAt: z.iso.datetime().meta({
+      description: "Last update timestamp of the E-service",
+    }),
+  })
+  .meta({
+    id: "CatalogEserviceSearchResult",
+  });
 
 export type API_CatalogEserviceSearchResult = z.infer<
   typeof API_CatalogEserviceSearchResult
