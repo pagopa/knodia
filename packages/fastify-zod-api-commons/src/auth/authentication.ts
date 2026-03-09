@@ -43,22 +43,16 @@ export const authenticationPlugin = fastifyPlugin<AuthenticationPluginOptions>(
 
       const token = parseAuthHeaderToken(request.headers.authorization);
 
-      let rawPayload: unknown = null;
-      for (const jwks of jwksSets) {
-        try {
+      const rawPayload = await Promise.any(
+        jwksSets.map(async (jwks) => {
           const { payload } = await jwtVerify(token, jwks, {
             audience: opts.acceptedAudiences,
           });
-          rawPayload = payload;
-          break;
-        } catch {
-          // Try next JWKS set
-        }
-      }
-
-      if (rawPayload === null) {
+          return payload;
+        }),
+      ).catch(() => {
         throw unauthorizedError("Token verification failed");
-      }
+      });
 
       const parsed = KnodiaAuthTokenClaims.safeParse(rawPayload);
       if (!parsed.success) {
