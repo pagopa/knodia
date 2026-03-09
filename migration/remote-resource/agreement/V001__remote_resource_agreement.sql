@@ -15,4 +15,4 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_agreement."agreement" (
 
 -- Grant privileges to ${NAMESPACE}_remote_resource_manager_user
 GRANT USAGE ON SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_remote_resource_manager_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_remote_resource_manager_user;
+GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_remote_resource_manager_user;

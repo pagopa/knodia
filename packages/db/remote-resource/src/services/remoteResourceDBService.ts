@@ -30,19 +30,8 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result ?? undefined;
     },
-    async upsertAgreement(remoteAgreement: NewAgreementSQL): Promise<void> {
-      await db
-        .insert(agreement)
-        .values(remoteAgreement)
-        .onConflictDoUpdate({
-          set: {
-            consumerId: remoteAgreement.consumerId,
-            eserviceId: remoteAgreement.eserviceId,
-            eserviceVersionId: remoteAgreement.eserviceVersionId,
-            producerId: remoteAgreement.producerId,
-          },
-          target: [agreement.knodeId, agreement.agreementId],
-        });
+    async insertAgreement(remoteAgreement: NewAgreementSQL): Promise<void> {
+      await db.insert(agreement).values(remoteAgreement);
     },
   };
 }
