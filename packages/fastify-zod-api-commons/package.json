@@ -19,6 +19,7 @@
     "./health": "./src/routers/healthRouter.ts",
     "./models": "./src/models/index.ts",
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
+    "./security": "./src/utils/openapi-zod-plugin/security.ts",
     "./problemBuilder": "./src/utils/problemBuilder.ts",
     "./startServer": "./src/utils/startServer.ts"
   },
