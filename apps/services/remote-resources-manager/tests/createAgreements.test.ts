@@ -1,17 +1,22 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { API_CreatedResource } from "@knodia/common-models/api";
-import { generateId } from "@knodia/common-models/ids";
+import { generateId, KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockEservice } from "@knodia/test-commons/utils";
+import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { zocker } from "zocker";
+
+import type { Agreement } from "../../../../packages/models/agreement-models/src/agreement.ts";
 
 import { type API_AgreementSeed } from "../src/models/agreement/api.ts";
+import { toK2KAgreement } from "./k2kConverters.ts";
+import { remoteResourceDbService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const createAgreementMock = vi.hoisted(() => vi.fn());
+const getAgreementMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -22,14 +27,9 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
       createAgreement: createAgreementMock,
+      getAgreement: getAgreementMock,
     },
   };
-});
-
-const toK2KResult = (
-  apiResult: API_CreatedResource,
-): k2kGatewayApi.CreatedResource => ({
-  id: apiResult.id,
 });
 
 const allowedTestTokens: TestToken[] = [
@@ -48,16 +48,30 @@ describe("POST /agreements (createAgreement)", () => {
     knodeId: "Orion",
   };
 
-  const expectedApiResult = zocker(API_CreatedResource).generate();
-  const mockK2KResponse = toK2KResult(expectedApiResult);
+  const agreement: Agreement = {
+    ...getMockAgreement(),
+    consumer: {
+      id: unsafeBrandId(body.consumerId),
+      knodeId: KnodeId.parse(body.knodeId),
+    },
+    eserviceId: unsafeBrandId(body.eserviceId),
+    eserviceVersionId: unsafeBrandId(body.eserviceVersionId),
+  };
+  const mockK2KResponse: API_CreatedResource = {
+    id: agreement.id,
+  };
 
   beforeEach(() => {
     createAgreementMock.mockReset();
+    getAgreementMock.mockReset();
   });
 
   it("should return 201 with converted results on success", async () => {
     createAgreementMock.mockResolvedValue({
       data: mockK2KResponse,
+    });
+    getAgreementMock.mockResolvedValue({
+      data: toK2KAgreement(agreement),
     });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
@@ -72,7 +86,23 @@ describe("POST /agreements (createAgreement)", () => {
       }),
     );
 
-    expect(response.json()).toEqual(expectedApiResult);
+    expect(response.json()).toEqual(mockK2KResponse);
+
+    const remoteResourceAgreement =
+      await remoteResourceDbService.getByAgreementId(
+        agreement.id,
+        KnodeId.parse(body.knodeId),
+      );
+    const expectedRemoteResourceAgreement: RemoteResourceAgreementSQL = {
+      agreementId: agreement.id,
+      consumerId: agreement.consumer.id,
+      eserviceId: agreement.eserviceId,
+      eserviceVersionId: agreement.eserviceVersionId,
+      knodeId: body.knodeId,
+      producerId: agreement.producerId,
+    };
+
+    expect(remoteResourceAgreement).toEqual(expectedRemoteResourceAgreement);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

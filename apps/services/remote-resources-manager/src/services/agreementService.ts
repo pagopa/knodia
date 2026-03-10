@@ -14,8 +14,8 @@ export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
 export function agreementServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: will be used to persist remote agreements
-  _remoteResourceDbService: RemoteResourceDbService,
+
+  remoteResourceDbService: RemoteResourceDbService,
 ) {
   return {
     async createAgreement(
@@ -23,6 +23,7 @@ export function agreementServiceBuilder(
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CreatedResource> {
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
+      const { consumerId, eserviceId, eserviceVersionId } = bodyWithoutKnodeId;
 
       logger.info(
         { requestBody: reqBody },
@@ -31,14 +32,25 @@ export function agreementServiceBuilder(
 
       // TODO: add assertOrganizationExists(consumerId) to check if the seed consumerId exists before calling the K2K Gateway API
 
-      const { data } = await k2kGatewayApi.createAgreement({
+      const { data: createdAgreement } = await k2kGatewayApi.createAgreement({
         body: bodyWithoutKnodeId,
         client: k2kGatewayClient,
       });
+      const { data: agreement } = await k2kGatewayApi.getAgreement({
+        client: k2kGatewayClient,
+        path: { agreementId: createdAgreement.id },
+      });
 
-      // TODO: save the remote agreement in the remote resources database
+      await remoteResourceDbService.insertAgreement({
+        agreementId: agreement.id,
+        consumerId,
+        eserviceId,
+        eserviceVersionId,
+        knodeId,
+        producerId: agreement.producerId,
+      });
 
-      return data;
+      return createdAgreement;
     },
   };
 }
