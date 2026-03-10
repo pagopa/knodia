@@ -40,9 +40,36 @@ export type Pagination = {
 };
 
 /**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
+/**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
+/**
  * Unique Knode identifier
  */
 export type KnodeId = 'Orion' | 'Lynx';
+
+/**
+ * Seed data to create a new agreement
+ */
+export type AgreementSeed = {
+    consumerId: OrganizationId;
+    eserviceId: string;
+    eserviceVersionId: string;
+    knodeId: KnodeId;
+};
+
+export type Attribute = {
+    code: string;
+    scheme: string;
+};
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
@@ -69,11 +96,6 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-export type EserviceAttribute = {
-    code: string;
-    scheme: string;
-};
-
 export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
     knodeId: KnodeId;
@@ -90,7 +112,7 @@ export type CatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
-    latestVersionRequiredAttributes: Array<Array<EserviceAttribute>>;
+    latestVersionRequiredAttributes: Array<Array<Attribute>>;
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
@@ -114,7 +136,7 @@ export type EserviceDetailsLatestVersion = {
     accessTokenType: AccessTokenType;
     maxDailyCallsPerConsumer: number;
     maxDailyCallsPerKnode: number;
-    requiredAttributes: Array<Array<EserviceAttribute>>;
+    requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
 };
 
@@ -243,3 +265,44 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type CreateAgreementData = {
+    body: AgreementSeed;
+    path?: never;
+    query?: never;
+    url: '/agreements';
+};
+
+export type CreateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateAgreementError = CreateAgreementErrors[keyof CreateAgreementErrors];
+
+export type CreateAgreementResponses = {
+    /**
+     * Agreement created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];

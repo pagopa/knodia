@@ -73,6 +73,42 @@ components:
         - status
         - title
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
+    AgreementState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
+    AgreementConsumer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -94,55 +130,36 @@ components:
         - offset
         - total
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     OrganizationId:
       description: Unique identifier of the Organization
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    AgreementState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
-    AgreementConsumer:
+    AgreementSeed:
       type: object
       properties:
-        id:
+        consumer:
+          $ref: "#/components/schemas/AgreementConsumer"
+        eserviceId:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - id
-        - knodeId
-      additionalProperties: false
-    AgreementAttribute:
-      type: object
-      properties:
-        code:
+        eserviceVersionId:
           type: string
-        scheme:
-          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
-        - code
-        - scheme
+        - consumer
+        - eserviceId
+        - eserviceVersionId
       additionalProperties: false
     Agreement:
       type: object
       properties:
         attributes:
-          description: Attributes for the Agreement
           type: array
           items:
-            $ref: "#/components/schemas/AgreementAttribute"
+            $ref: "#/components/schemas/Attribute"
         consumer:
           $ref: "#/components/schemas/AgreementConsumer"
         createdAt:
@@ -181,24 +198,6 @@ components:
         - producerId
         - state
         - updatedAt
-      additionalProperties: false
-    AgreementSeed:
-      type: object
-      properties:
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        eserviceVersionId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - consumer
-        - eserviceId
-        - eserviceVersionId
       additionalProperties: false
     Agreements:
       type: object
