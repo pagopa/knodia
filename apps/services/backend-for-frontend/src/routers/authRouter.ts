@@ -7,12 +7,15 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
-import { config } from "../config/config.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { type authServiceBuilder } from "../services/authService.ts";
 
 interface AuthRouterOptions {
   authService: ReturnType<typeof authServiceBuilder>;
+  cookieConfig: {
+    domain?: string;
+    secure: boolean;
+  };
 }
 
 const REFRESH_COOKIE_NAME = "refresh";
@@ -40,15 +43,15 @@ const API_RefreshCookie = z.object({
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
-  { authService },
+  { authService, cookieConfig },
 ) => {
   function setRefreshCookie(res: FastifyReply, refreshToken: string): void {
     void res.setCookie(REFRESH_COOKIE_NAME, refreshToken, {
-      domain: config.cookie.domain,
+      domain: cookieConfig.domain,
       httpOnly: true,
       path: REFRESH_COOKIE_PATH,
       sameSite: "strict",
-      secure: config.cookie.secure,
+      secure: cookieConfig.secure,
     });
   }
 
@@ -58,11 +61,11 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   function clearRefreshCookie(res: FastifyReply): void {
     void res.clearCookie(REFRESH_COOKIE_NAME, {
-      domain: config.cookie.domain,
+      domain: cookieConfig.domain,
       httpOnly: true,
       path: REFRESH_COOKIE_PATH,
       sameSite: "strict",
-      secure: config.cookie.secure,
+      secure: cookieConfig.secure,
     });
   }
 

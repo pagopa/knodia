@@ -5,8 +5,7 @@ import {
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
-import "@knodia/test-commons/redis";
-import { afterEach, describe, expect, inject, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 const mockJwtVerify = vi.hoisted(() => vi.fn());
 const mockDecodeJwt = vi.hoisted(() => vi.fn());
@@ -29,48 +28,10 @@ vi.mock("@aws-sdk/client-kms", () => ({
   },
 }));
 
+import { app } from "./setup.ts";
+
 const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
-
-vi.mock("../src/config/config.ts", () => ({
-  get config() {
-    return {
-      acceptedAudiences: ["test-audience"],
-      cognitoIssuer: "https://cognito-idp.eu-west-1.amazonaws.com/pool-id",
-      cognitoJwksUrl:
-        "https://cognito-idp.eu-west-1.amazonaws.com/pool-id/.well-known/jwks.json",
-      cookie: {
-        domain: undefined,
-        secure: false,
-      },
-      host: "0.0.0.0",
-      logLevel: "silent",
-      port: 0,
-      redisUrl: inject("REDIS_CONNECTION_STRING"),
-      refreshJwt: {
-        secondsDuration: 86400,
-      },
-      uiSessionJwt: {
-        audience: "test-audience",
-        issuer: "test-issuer",
-        kid: "alias/test-kid",
-        secondsDuration: 3600,
-      },
-      wellKnownUrls: [
-        "http://localhost:4500/knodia/.well-known/jwks.json",
-        "http://localhost:4501/knodia/.well-known/jwks.json",
-      ],
-    };
-  },
-}));
-
-async function buildTestApp() {
-  const { buildAppFromConfig } = await import("../src/app.ts");
-  const { config } = await import("../src/config/config.ts");
-  const app = buildAppFromConfig(config);
-  await app.ready();
-  return app;
-}
 
 function makeCognitoPayload(
   overrides: Record<string, unknown> = {},
@@ -173,7 +134,6 @@ describe("auth integration", () => {
       setupValidCognitoToken();
       setupKmsSignature();
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "valid-cognito-token" },
@@ -195,15 +155,12 @@ describe("auth integration", () => {
       expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
       expect(uiPayload.roles).toEqual(["administrative", "technical"]);
       expect(uiPayload.type).toBe("ui-session");
-
-      await app.close();
     });
 
     it("sets HttpOnly refresh cookie on successful login", async () => {
       setupValidCognitoToken();
       setupKmsSignature();
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "valid-cognito-token" },
@@ -223,15 +180,12 @@ describe("auth integration", () => {
       );
       expect(refreshPayload.sub).toBe(TEST_USER_ID);
       expect(refreshPayload.type).toBe("refresh-ui-session");
-
-      await app.close();
     });
 
     it("calls KMS with the correct key alias and signing algorithm", async () => {
       setupValidCognitoToken();
       setupKmsSignature();
 
-      const app = await buildTestApp();
       await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
@@ -244,14 +198,11 @@ describe("auth integration", () => {
         KeyId: "alias/test-kid",
         SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
       });
-
-      await app.close();
     });
 
     it("returns 401 when Cognito JWT verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "bad-token" },
@@ -259,8 +210,6 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns 401 when cognito:groups is missing", async () => {
@@ -269,7 +218,6 @@ describe("auth integration", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
@@ -277,14 +225,11 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns 401 when no org: group is present", async () => {
       setupValidCognitoToken({ "cognito:groups": ["role:administrative"] });
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
@@ -292,8 +237,6 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns 401 when no valid role: group is present", async () => {
@@ -301,7 +244,6 @@ describe("auth integration", () => {
         "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
       });
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
@@ -309,15 +251,12 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns error when KMS returns no signature", async () => {
       setupValidCognitoToken();
       mockKmsSend.mockResolvedValue({ Signature: undefined });
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
@@ -325,8 +264,6 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(500);
-
-      await app.close();
     });
 
     it("extracts org ID by stripping the 'org:' prefix", async () => {
@@ -336,7 +273,6 @@ describe("auth integration", () => {
       });
       setupKmsSignature();
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
@@ -348,8 +284,6 @@ describe("auth integration", () => {
         parseJwtPayload(body.uiSessionToken),
       );
       expect(payload.organizationId).toBe(customOrgId);
-
-      await app.close();
     });
 
     it("ignores groups that do not start with 'org:' or 'role:'", async () => {
@@ -363,7 +297,6 @@ describe("auth integration", () => {
       });
       setupKmsSignature();
 
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         payload: { oidcToken: "token" },
@@ -376,8 +309,6 @@ describe("auth integration", () => {
       );
       expect(uiPayload.roles).toEqual(["administrative"]);
       expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
-
-      await app.close();
     });
   });
 
@@ -388,7 +319,6 @@ describe("auth integration", () => {
       setupValidRefreshToken();
       setupKmsSignature();
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "valid-refresh-jwt" },
         method: "POST",
@@ -404,26 +334,20 @@ describe("auth integration", () => {
       const cookies = parseCookies(response.headers["set-cookie"]);
       expect(cookies.get("refresh")).toBeDefined();
       expect(cookies.get("refresh")!.attributes.get("httponly")).toBe("true");
-
-      await app.close();
     });
 
     it("returns 401 when no refresh cookie is present", async () => {
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         url: "/auth/ui-session/refresh",
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns 401 when refresh token verification fails", async () => {
       mockJwtVerify.mockRejectedValue(new Error("Invalid signature"));
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "bad-jwt" },
         method: "POST",
@@ -431,8 +355,6 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns 401 when refresh token has invalid claims", async () => {
@@ -441,7 +363,6 @@ describe("auth integration", () => {
         protectedHeader: { alg: "RS256" },
       });
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "jwt" },
         method: "POST",
@@ -449,14 +370,11 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns 401 when refresh token has wrong type", async () => {
       setupValidRefreshToken({ type: "ui-session" });
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "jwt" },
         method: "POST",
@@ -464,16 +382,12 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("returns 401 when the same refresh token is used twice (replay)", async () => {
       const fixedJti = "replay-test-jti";
       setupValidRefreshToken({ jti: fixedJti });
       setupKmsSignature();
-
-      const app = await buildTestApp();
 
       // First use succeeds
       const first = await app.inject({
@@ -491,14 +405,10 @@ describe("auth integration", () => {
         url: "/auth/ui-session/refresh",
       });
       expect(second.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("allows different refresh tokens with distinct JTIs", async () => {
       setupKmsSignature();
-
-      const app = await buildTestApp();
 
       setupValidRefreshToken({ jti: "jti-1" });
       const first = await app.inject({
@@ -515,8 +425,6 @@ describe("auth integration", () => {
         url: "/auth/ui-session/refresh",
       });
       expect(second.statusCode).toBe(200);
-
-      await app.close();
     });
 
     it("succeeds when one of multiple JWKS sets validates the refresh token", async () => {
@@ -528,7 +436,6 @@ describe("auth integration", () => {
         });
       setupKmsSignature();
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
@@ -536,8 +443,6 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(200);
-
-      await app.close();
     });
 
     it("returns 401 when all JWKS sets fail to validate the refresh token", async () => {
@@ -545,7 +450,6 @@ describe("auth integration", () => {
         .mockRejectedValueOnce(new Error("key not found"))
         .mockRejectedValueOnce(new Error("invalid signature"));
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "bad-jwt" },
         method: "POST",
@@ -553,15 +457,12 @@ describe("auth integration", () => {
       });
 
       expect(response.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("validates refresh token against all JWKS sets in parallel", async () => {
       setupValidRefreshToken();
       setupKmsSignature();
 
-      const app = await buildTestApp();
       await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
@@ -570,8 +471,6 @@ describe("auth integration", () => {
 
       // With 2 wellKnownUrls, jwtVerify should be called for both JWKS sets
       expect(mockJwtVerify).toHaveBeenCalledTimes(2);
-
-      await app.close();
     });
 
     it("preserves claims from the refresh token in the new pair", async () => {
@@ -582,7 +481,6 @@ describe("auth integration", () => {
       });
       setupKmsSignature();
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "refresh-jwt" },
         method: "POST",
@@ -595,8 +493,6 @@ describe("auth integration", () => {
       );
       expect(payload.organizationId).toBe(customOrgId);
       expect(payload.roles).toEqual(["technical"]);
-
-      await app.close();
     });
   });
 
@@ -606,7 +502,6 @@ describe("auth integration", () => {
     it("clears the refresh cookie", async () => {
       mockDecodeJwt.mockReturnValue(makeRefreshPayload());
 
-      const app = await buildTestApp();
       const response = await app.inject({
         cookies: { refresh: "some-refresh-jwt" },
         method: "POST",
@@ -623,15 +518,12 @@ describe("auth integration", () => {
       expect(refreshCookie!.attributes.get("max-age")).toBe("0");
       expect(refreshCookie!.attributes.get("httponly")).toBe("true");
       expect(refreshCookie!.attributes.get("path")).toBe("/auth");
-
-      await app.close();
     });
 
     it("revokes the refresh token JTI in Redis", async () => {
       const jti = `revoke-test-${crypto.randomUUID()}`;
       mockDecodeJwt.mockReturnValue(makeRefreshPayload({ jti }));
 
-      const app = await buildTestApp();
       await app.inject({
         cookies: { refresh: "jwt-with-jti" },
         method: "POST",
@@ -647,20 +539,15 @@ describe("auth integration", () => {
         url: "/auth/ui-session/refresh",
       });
       expect(refreshResponse.statusCode).toBe(401);
-
-      await app.close();
     });
 
     it("succeeds even without a refresh cookie", async () => {
-      const app = await buildTestApp();
       const response = await app.inject({
         method: "POST",
         url: "/auth/logout",
       });
 
       expect(response.statusCode).toBe(204);
-
-      await app.close();
     });
   });
 });

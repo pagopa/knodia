@@ -61,14 +61,18 @@ export function buildAppFromConfig(config: BffProcessConfig) {
   });
 
   const refreshTokenStore = createRefreshTokenStore(config.redisUrl, app.log);
-  const authService = authServiceBuilder(tokenGenerator, refreshTokenStore);
+  const authService = authServiceBuilder(
+    config,
+    tokenGenerator,
+    refreshTokenStore,
+  );
 
   // Register cookie parser
   app.register(cookie);
 
   // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(authRouter, { authService });
+  app.register(authRouter, { authService, cookieConfig: config.cookie });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/

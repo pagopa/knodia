@@ -9,7 +9,8 @@ import { type TokenGenerator } from "@knodia/token-generator";
 import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 import z from "zod";
 
-import { config } from "../config/config.ts";
+import type { BffProcessConfig } from "../config/config.ts";
+
 import { type RefreshTokenStore } from "./refreshTokenStore.ts";
 
 const CognitoPayload = z.object({
@@ -22,9 +23,11 @@ const ClaimsFromCognito = z.object({
   roles: NonEmptyArray(UserRole),
   sub: UserId,
 });
+
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
 export function authServiceBuilder(
+  config: BffProcessConfig,
   tokenGenerator: TokenGenerator,
   refreshTokenStore: RefreshTokenStore,
 ) {
