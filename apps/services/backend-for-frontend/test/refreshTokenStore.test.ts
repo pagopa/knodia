@@ -23,7 +23,7 @@ describe("refreshTokenStore", () => {
   });
 
   afterAll(async () => {
-    await redisClient.disconnect();
+    redisClient.destroy();
   });
 
   function futureExpiry(): number {
