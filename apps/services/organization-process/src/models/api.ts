@@ -24,14 +24,7 @@ export const API_Organizations = z
   .meta({ id: "Organizations" });
 export type API_Organizations = z.infer<typeof API_Organizations>;
 
-export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
-  {
-    q: z
-      .string()
-      .optional()
-      .meta({ description: "Search by organization name" }),
-  },
-);
+export const API_GetOrganizationsQueryParams = API_PaginationQueryParams;
 export type API_GetOrganizationsQueryParams = z.infer<
   typeof API_GetOrganizationsQueryParams
 >;

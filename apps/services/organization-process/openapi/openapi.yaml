@@ -188,12 +188,6 @@ paths:
           required: true
           description: Pagination starting position
         - schema:
-            type: string
-          in: query
-          name: q
-          required: false
-          description: Search by organization name
-        - schema:
             allOf:
               - $ref: "#/components/schemas/CorrelationId"
           in: header

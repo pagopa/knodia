@@ -78,18 +78,6 @@ describe("GET /organizations (getOrganizations)", () => {
       testCase: "pagination only (2nd page)",
       totalCount: 5,
     },
-    {
-      expectedResult: [mockOrganizations[2]] as Organization[],
-      query: { ...defaultQuery, q: "cha" },
-      testCase: "search query",
-      totalCount: 1,
-    },
-    {
-      expectedResult: [] as Organization[],
-      query: { ...defaultQuery, q: "nonexistent" },
-      testCase: "empty results",
-      totalCount: 0,
-    },
   ] satisfies {
     expectedResult: Organization[];
     query: z.input<typeof API_GetOrganizationsQueryParams>;
@@ -141,7 +129,6 @@ describe("GET /organizations (getOrganizations)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    { ...defaultQuery, q: [1, 2, 3] },
     {
       ...defaultQuery,
       invalidParam: "invalid",
