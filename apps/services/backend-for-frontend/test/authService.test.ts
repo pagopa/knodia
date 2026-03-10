@@ -33,6 +33,32 @@ import { app } from "./setup.ts";
 const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
 
+function getSetCookie(
+  response: { headers: Record<string, string | string[] | undefined> },
+  name: string,
+): Record<string, string> | undefined {
+  const raw = response.headers["set-cookie"];
+  const headers = Array.isArray(raw) ? raw : raw ? [raw] : [];
+  const header = headers.find((h) => h.startsWith(`${name}=`));
+  if (!header) return undefined;
+
+  const [nameValue, ...attrParts] = header.split(";").map((p) => p.trim());
+  const result: Record<string, string> = {
+    value: nameValue!.slice(name.length + 1),
+  };
+  for (const attr of attrParts) {
+    const eqIndex = attr.indexOf("=");
+    if (eqIndex === -1) {
+      result[attr.toLowerCase()] = "true";
+    } else {
+      result[attr.slice(0, eqIndex).trim().toLowerCase()] = attr
+        .slice(eqIndex + 1)
+        .trim();
+    }
+  }
+  return result;
+}
+
 function makeCognitoPayload(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
@@ -62,36 +88,6 @@ function makeRefreshPayload(
     type: "refresh-ui-session",
     ...overrides,
   };
-}
-
-function parseCookies(
-  setCookieHeaders: string | string[] | undefined,
-): Map<string, { attributes: Map<string, string>; value: string }> {
-  const cookies = new Map<
-    string,
-    { attributes: Map<string, string>; value: string }
-  >();
-  const headers = Array.isArray(setCookieHeaders)
-    ? setCookieHeaders
-    : setCookieHeaders
-      ? [setCookieHeaders]
-      : [];
-
-  for (const header of headers) {
-    const parts = header.split(";").map((p) => p.trim());
-    const [nameValue, ...attrParts] = parts;
-    if (!nameValue) continue;
-    const eqIndex = nameValue.indexOf("=");
-    const name = nameValue.slice(0, eqIndex);
-    const value = nameValue.slice(eqIndex + 1);
-    const attributes = new Map<string, string>();
-    for (const attr of attrParts) {
-      const [key, val] = attr.split("=").map((s) => s.trim());
-      attributes.set(key!.toLowerCase(), val ?? "true");
-    }
-    cookies.set(name!, { attributes, value });
-  }
-  return cookies;
 }
 
 function parseJwtPayload(jwt: string): unknown {
@@ -167,13 +163,12 @@ describe("auth integration", () => {
         url: "/auth/ui-session",
       });
 
-      const cookies = parseCookies(response.headers["set-cookie"]);
-      const refreshCookie = cookies.get("refresh");
+      const refreshCookie = getSetCookie(response, "refresh");
       expect(refreshCookie).toBeDefined();
       expect(refreshCookie!.value).toBeTruthy();
-      expect(refreshCookie!.attributes.get("httponly")).toBe("true");
-      expect(refreshCookie!.attributes.get("samesite")).toBe("Strict");
-      expect(refreshCookie!.attributes.get("path")).toBe("/auth");
+      expect(refreshCookie!.httponly).toBe("true");
+      expect(refreshCookie!.samesite).toBe("Strict");
+      expect(refreshCookie!.path).toBe("/auth");
 
       const refreshPayload = UISessionRefreshTokenClaims.parse(
         parseJwtPayload(refreshCookie!.value),
@@ -331,9 +326,9 @@ describe("auth integration", () => {
       expect(body.uiSessionToken).toBeDefined();
 
       // Should set a new refresh cookie (rotation)
-      const cookies = parseCookies(response.headers["set-cookie"]);
-      expect(cookies.get("refresh")).toBeDefined();
-      expect(cookies.get("refresh")!.attributes.get("httponly")).toBe("true");
+      const refreshCookie = getSetCookie(response, "refresh");
+      expect(refreshCookie).toBeDefined();
+      expect(refreshCookie!.httponly).toBe("true");
     });
 
     it("returns 401 when no refresh cookie is present", async () => {
@@ -510,14 +505,13 @@ describe("auth integration", () => {
 
       expect(response.statusCode).toBe(204);
 
-      const cookies = parseCookies(response.headers["set-cookie"]);
-      const refreshCookie = cookies.get("refresh");
+      const refreshCookie = getSetCookie(response, "refresh");
       expect(refreshCookie).toBeDefined();
       // Cookie cleared: empty value and Max-Age=0
       expect(refreshCookie!.value).toBe("");
-      expect(refreshCookie!.attributes.get("max-age")).toBe("0");
-      expect(refreshCookie!.attributes.get("httponly")).toBe("true");
-      expect(refreshCookie!.attributes.get("path")).toBe("/auth");
+      expect(refreshCookie!["max-age"]).toBe("0");
+      expect(refreshCookie!.httponly).toBe("true");
+      expect(refreshCookie!.path).toBe("/auth");
     });
 
     it("revokes the refresh token JTI in Redis", async () => {
