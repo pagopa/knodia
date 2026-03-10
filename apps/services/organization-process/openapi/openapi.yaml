@@ -146,6 +146,20 @@ components:
         - items
         - pagination
       additionalProperties: false
+    OrganizationSeed:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        name:
+          type: string
+          minLength: 1
+      required:
+        - attributes
+        - name
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -164,6 +178,58 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /organizations:
+    post:
+      operationId: createOrganization
+      tags:
+        - organization
+      description: Create a new Organization
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrganizationSeed"
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "201":
+          description: Organization created successfully
+          content:
+            application/json:
+              schema:
+                description: Organization created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Organization"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     get:
       operationId: getOrganizations
       tags:

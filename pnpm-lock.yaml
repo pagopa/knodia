@@ -943,6 +943,12 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/db-event-store-organization':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/organization
+      '@knodia/db-event-store-writer':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/writer
       '@knodia/db-readmodel-commons':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/commons

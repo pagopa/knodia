@@ -1,0 +1,37 @@
+meta {
+  name: Create Organization
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host-organization-process}}/organizations
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": "{{randomName}}",
+    "attributes": [
+      {
+        "code": "nuts1",
+        "scheme": "vc_territorial_units"
+      }
+    ]
+  }
+}
+
+vars:post-response {
+  organizationId: res.body.id
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("randomName", `Test Organization ${random}`)
+}
