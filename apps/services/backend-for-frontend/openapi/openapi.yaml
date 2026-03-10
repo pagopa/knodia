@@ -710,14 +710,6 @@ paths:
                 description: Session refreshed successfully
                 allOf:
                   - $ref: "#/components/schemas/SessionResponse"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:
@@ -743,14 +735,6 @@ paths:
       responses:
         "204":
           description: Logged out successfully
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice

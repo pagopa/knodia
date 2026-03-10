@@ -1,11 +1,9 @@
 import Fastify from "fastify";
-import { GenericContainer, type StartedTestContainer } from "testcontainers";
+import { setupRedisTestContainer } from "@knodia/test-commons/redis";
+import type { StartedTestContainer } from "testcontainers";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { createRefreshTokenStore } from "../src/services/refreshTokenStore.ts";
-
-const REDIS_PORT = 6379;
-const REDIS_IMAGE = "redis:7-alpine";
 
 const logger = Fastify({ logger: false }).log;
 
@@ -14,11 +12,9 @@ describe("refreshTokenStore", () => {
   let redisUrl: string;
 
   beforeAll(async () => {
-    container = await new GenericContainer(REDIS_IMAGE)
-      .withExposedPorts(REDIS_PORT)
-      .start();
-
-    redisUrl = `redis://${container.getHost()}:${container.getMappedPort(REDIS_PORT)}`;
+    const result = await setupRedisTestContainer();
+    container = result.container;
+    redisUrl = result.connectionString;
   }, 60_000);
 
   afterAll(async () => {

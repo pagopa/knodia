@@ -36,6 +36,7 @@
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",
+    "./redis": "./src/testcontainers/redis.ts",
     "./readmodel": "./src/readmodel.ts",
     "./utils": "./src/utils/index.ts"
   }

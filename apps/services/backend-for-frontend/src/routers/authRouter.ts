@@ -115,7 +115,6 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         200: API_SessionResponse.meta({
           description: "Session refreshed successfully",
         }),
-        400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
       },
       tags: [apiTags.auth],
@@ -140,7 +139,6 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       operationId: "logout",
       response: {
         204: z.undefined().meta({ description: "Logged out successfully" }),
-        400: API_Problem.meta({ description: "Bad Request" }),
       },
       tags: [apiTags.auth],
     },
