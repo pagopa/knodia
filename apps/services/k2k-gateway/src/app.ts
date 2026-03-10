@@ -1,5 +1,6 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 
+import { KnodeId } from "@knodia/common-models/ids";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -13,10 +14,13 @@ import type { K2KGatewayConfig } from "./config/config.ts";
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 
 export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
+    agreementProcessUrl: config.agreementProcessUrl,
+    callerKnodeId: config.callerKnodeId,
     eserviceInterfacesS3Bucket: config.eserviceInterfacesS3Bucket,
     eserviceProcessUrl: config.eserviceProcessUrl,
     internalJwt: config.internalJwt,
@@ -27,17 +31,21 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
 }
 
 function buildApp({
+  agreementProcessUrl,
+  callerKnodeId,
   eserviceInterfacesS3Bucket,
   eserviceProcessUrl,
   internalJwt,
   loggerConfig,
 }: {
+  agreementProcessUrl: string;
+  callerKnodeId: KnodeId;
   eserviceInterfacesS3Bucket: string;
   eserviceProcessUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
 }) {
-  const clients = getKnodiaClients({ eserviceProcessUrl });
+  const clients = getKnodiaClients({ agreementProcessUrl, eserviceProcessUrl });
   const fileManager = initFileManager();
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
   const app = createFastifyApp({
@@ -61,6 +69,10 @@ function buildApp({
             name: apiTags.operation,
           },
           {
+            description: "Routes related to Agreements",
+            name: apiTags.agreement,
+          },
+          {
             description: "Routes related to E-services",
             name: apiTags.eservice,
           },
@@ -77,6 +89,11 @@ function buildApp({
     eserviceInterfacesS3Bucket,
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
+    tokenProvider,
+  });
+  app.register(agreementRouter, {
+    agreementProcessClient: clients.agreementProcessClient,
+    callerKnodeId,
     tokenProvider,
   });
 

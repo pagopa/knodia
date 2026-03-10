@@ -125,12 +125,17 @@ components:
       description: Binary file content
       format: binary
       type: string
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
@@ -191,7 +196,7 @@ components:
       enum:
         - Bearer
         - DPoP
-    EserviceAttribute:
+    Attribute:
       type: object
       properties:
         code:
@@ -202,6 +207,12 @@ components:
         - code
         - scheme
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -291,7 +302,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
       required:
         - accessTokenAudience
         - accessTokenDuration
@@ -302,16 +313,6 @@ components:
         - maxDailyCallsPerKnode
         - name
         - requiredAttributes
-      additionalProperties: false
-    CreatedResource:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
       additionalProperties: false
     ProducerEservice:
       type: object
@@ -424,7 +425,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
         state:
           description: State of the version
           allOf:

@@ -4,8 +4,7 @@ node_modules/
 # Turbo
 .turbo/
 
-# Generated files
-generated/
+# Generated files (API clients and protobuf TS) intentionally committed (see .gitattributes)
 
 # General
 .DS_Store

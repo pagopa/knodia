@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import { HTTPServerConfig } from "@knodia/fastify-zod-api-commons/config";
 import { FileManagerConfig } from "@knodia/file-manager/config";
 import { LoggerConfig } from "@knodia/logger/config";
@@ -8,6 +9,8 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
+        AGREEMENT_PROCESS_URL: z.url(),
+        CALLER_KNODE_ID: KnodeId,
         ESERVICE_PROCESS_URL: z.url(),
         INTERNAL_JWT_AUDIENCE: z.string(),
         INTERNAL_JWT_ISSUER: z.string(),
@@ -20,6 +23,8 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
         INTERNAL_JWT_SUBJECT: z.string(),
       })
       .transform((c) => ({
+        agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
+        callerKnodeId: c.CALLER_KNODE_ID,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         internalJwt: {
           audience: c.INTERNAL_JWT_AUDIENCE,
