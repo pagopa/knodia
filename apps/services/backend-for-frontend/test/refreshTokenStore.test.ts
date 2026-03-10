@@ -1,25 +1,18 @@
-import type { StartedTestContainer } from "testcontainers";
-
-import { setupRedisTestContainer } from "@knodia/test-commons/redis";
 import Fastify from "fastify";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, inject, it } from "vitest";
 
-import { createRefreshTokenStore } from "../src/services/refreshTokenStore.ts";
+import {
+  createRefreshTokenStore,
+  type RefreshTokenStore,
+} from "../src/services/refreshTokenStore.ts";
 
 const logger = Fastify({ logger: false }).log;
 
 describe("refreshTokenStore", () => {
-  let container: StartedTestContainer;
-  let redisUrl: string;
+  let store: RefreshTokenStore;
 
   beforeAll(async () => {
-    const result = await setupRedisTestContainer();
-    container = result.container;
-    redisUrl = result.connectionString;
-  }, 60_000);
-
-  afterAll(async () => {
-    await container.stop();
+    store = createRefreshTokenStore(inject("REDIS_CONNECTION_STRING"), logger);
   });
 
   function futureExpiry(): number {
@@ -28,7 +21,6 @@ describe("refreshTokenStore", () => {
 
   describe("consume", () => {
     it("returns true on first use of a JTI", async () => {
-      const store = createRefreshTokenStore(redisUrl, logger);
       const jti = crypto.randomUUID();
 
       const result = await store.consume(jti, futureExpiry());
@@ -37,7 +29,6 @@ describe("refreshTokenStore", () => {
     });
 
     it("returns false when the same JTI is consumed twice", async () => {
-      const store = createRefreshTokenStore(redisUrl, logger);
       const jti = crypto.randomUUID();
       const exp = futureExpiry();
 
@@ -48,7 +39,6 @@ describe("refreshTokenStore", () => {
     });
 
     it("allows different JTIs to be consumed independently", async () => {
-      const store = createRefreshTokenStore(redisUrl, logger);
       const exp = futureExpiry();
 
       const first = await store.consume(crypto.randomUUID(), exp);
@@ -61,7 +51,6 @@ describe("refreshTokenStore", () => {
 
   describe("revoke", () => {
     it("prevents a JTI from being consumed after revocation", async () => {
-      const store = createRefreshTokenStore(redisUrl, logger);
       const jti = crypto.randomUUID();
       const exp = futureExpiry();
 
@@ -72,7 +61,6 @@ describe("refreshTokenStore", () => {
     });
 
     it("is idempotent — revoking the same JTI twice does not throw", async () => {
-      const store = createRefreshTokenStore(redisUrl, logger);
       const jti = crypto.randomUUID();
       const exp = futureExpiry();
 

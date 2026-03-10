@@ -1,3 +1,4 @@
+import { setupRedisTestContainer } from "./packages/test-commons/src/testcontainers/redis"
 import { eventstoreTemplate } from "./packages/test-commons/src/eventstore"
 import { readmodelTemplate } from "./packages/test-commons/src/readmodel"
 import { setupKafkaTestContainer } from "./packages/test-commons/src/testcontainers/kafka"
@@ -10,10 +11,12 @@ export default async function setup(project: TestProject) {
     { container: postgresContainer, connectionString: postgresConnectionString, network },
     { container: kafkaContainer, broker },
     { container: minioContainer, connectionString: minioConnectionString },
+    { container: redisContainer, connectionString: redisConnectionString },
   ] = await Promise.all([
     setupPostgresTestContainer(),
     setupKafkaTestContainer(),
-    setupMinioTestContainer()
+    setupMinioTestContainer(),
+    setupRedisTestContainer(),
   ]);
 
   // Single Flyway container: creates roles + migrates all template databases
@@ -26,12 +29,14 @@ export default async function setup(project: TestProject) {
   project.provide("POSTGRES_CONNECTION_STRING", postgresConnectionString);
   project.provide("KAFKA_BROKER", broker);
   project.provide("MINIO_CONNECTION_STRING", minioConnectionString);
+  project.provide("REDIS_CONNECTION_STRING", redisConnectionString);
 
   return async function teardown() {
     await Promise.all([
       postgresContainer.stop({ removeVolumes: true }),
       kafkaContainer.stop({ removeVolumes: true }),
       minioContainer.stop({ removeVolumes: true }),
+      redisContainer.stop({ removeVolumes: true }),
     ]);
     await network.stop();
   };
