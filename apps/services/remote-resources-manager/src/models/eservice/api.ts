@@ -53,6 +53,7 @@ export const API_CatalogEserviceSearchResult = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
 export type API_CatalogEserviceSearchResult = z.infer<
