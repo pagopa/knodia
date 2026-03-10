@@ -166,7 +166,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         "Download the interface document for the latest version of an E-service",
       operationId: "getConsumerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
-      produces: ["application/octet-stream"],
+      produces: ["application/json", "application/yaml"],
       querystring: API_GetConsumerEserviceDetailsQueryParams,
       response: {
         200: API_FileDownload.meta({

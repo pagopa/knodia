@@ -126,7 +126,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         "Download the interface document for the latest version of an E-service",
       operationId: "downloadEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
-      produces: ["application/octet-stream"],
+      produces: ["application/json", "application/yaml"],
       querystring: API_GetEserviceDetailsQueryParams,
       response: {
         200: API_FileDownload.meta({

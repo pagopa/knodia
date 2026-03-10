@@ -539,12 +539,13 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/octet-stream:
+            application/json: &a1
               schema:
                 description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
         "400":
           description: Bad Request
           content:

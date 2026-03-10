@@ -616,12 +616,13 @@ paths:
         "200":
           description: E-service Interface Document downloaded successfully
           content:
-            application/octet-stream:
+            application/json: &a1
               schema:
                 description: E-service Interface Document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
         "400":
           description: Bad Request
           content:
