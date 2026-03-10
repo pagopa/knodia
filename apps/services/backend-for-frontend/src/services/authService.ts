@@ -162,25 +162,25 @@ export function authServiceBuilder(
     },
 
     async refreshUISessionTokenPair(
-      refreshTokenJwtCookie: string | undefined,
+      refreshTokenCookie: string | undefined,
     ): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {
-      if (!refreshTokenJwtCookie) {
+      if (!refreshTokenCookie) {
         throw unauthorizedError("Missing refresh token cookie");
       }
 
-      const claims = await verifyRefreshToken(refreshTokenJwtCookie);
+      const claims = await verifyRefreshToken(refreshTokenCookie);
       return generateTokenPairFromClaims(claims);
     },
 
     async revokeRefreshToken(
-      refreshTokenJwtCookie: string | undefined,
+      refreshTokenCookie: string | undefined,
     ): Promise<void> {
-      if (refreshTokenJwtCookie) {
+      if (refreshTokenCookie) {
         try {
-          const payload = decodeJwt(refreshTokenJwtCookie);
+          const payload = decodeJwt(refreshTokenCookie);
           const parsed = UISessionRefreshTokenClaims.safeParse(payload);
           if (parsed.success) {
             await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);

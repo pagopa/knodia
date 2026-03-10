@@ -92,10 +92,10 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const refreshTokenJwtCookie = getRefreshCookie(req);
+      const refreshTokenCookie = getRefreshCookie(req);
 
       const { refreshToken, uiSessionToken } =
-        await authService.refreshUISessionTokenPair(refreshTokenJwtCookie);
+        await authService.refreshUISessionTokenPair(refreshTokenCookie);
       setRefreshCookie(res, refreshToken);
 
       res.send({ uiSessionToken });
@@ -120,9 +120,9 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const refreshTokenJwtCookie = getRefreshCookie(req);
+      const refreshTokenCookie = getRefreshCookie(req);
 
-      await authService.revokeRefreshToken(refreshTokenJwtCookie);
+      await authService.revokeRefreshToken(refreshTokenCookie);
       clearRefreshCookie(res);
 
       res.status(204).send();
