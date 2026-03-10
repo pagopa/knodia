@@ -1,4 +1,3 @@
-import type { API_LocalizedName } from "@knodia/eservice-models/api";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -112,7 +111,7 @@ export const toAPI_ConsumerEserviceDetails = (
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,
   hasRequiredAttributes: boolean,
-  producerName: API_LocalizedName, // TODO: update with producer process API_LocalizedName
+  producerName: string, // TODO: update with producer process API_LocalizedName
 ): API_ConsumerCatalogEserviceSearchResult => ({
   categories: catalogEserviceSearchResult.categories,
   description: catalogEserviceSearchResult.description,

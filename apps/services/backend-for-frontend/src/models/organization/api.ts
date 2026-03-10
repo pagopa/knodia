@@ -1,10 +1,10 @@
-import { API_LocalizedName } from "@knodia/eservice-models/api";
+import { maxNameLength, minNameLength } from "@knodia/eservice-models";
 import z from "zod";
 
 export const API_CompactOrganization = z
   .strictObject({
     id: z.uuid(),
-    name: API_LocalizedName,
+    name: z.string().min(minNameLength).max(maxNameLength),
   })
   .meta({
     description: "Organization with only id and name",

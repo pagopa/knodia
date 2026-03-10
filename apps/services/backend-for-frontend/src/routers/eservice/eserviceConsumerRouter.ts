@@ -52,7 +52,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
             Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
-            { en: "Producer name" }, // TODO: retrieve producer name
+            "Producer name", // TODO: retrieve producer name
           ),
         ),
       });

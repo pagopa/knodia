@@ -15,7 +15,7 @@ export const toAPI_ProducerAgreement = ({
 }): API_ProducerAgreement => ({
   consumer: {
     id: consumer.id,
-    name: { en: consumer.name }, // TODO: localized or not?
+    name: consumer.name,
   },
   eservice: {
     id: eservice.id,
