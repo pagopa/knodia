@@ -130,11 +130,6 @@ components:
         - offset
         - total
       additionalProperties: false
-    OrganizationId:
-      description: Unique identifier of the Organization
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     AgreementSeed:
       type: object
       properties:
@@ -321,61 +316,6 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: consumerId
-          required: false
-          description: Filter by Consumer ID
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/KnodeId"
-          in: query
-          name: consumerKnodeId
-          required: false
-          description: Filter by Consumer Knode ID
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: eserviceId
-          required: false
-          description: Filter by E-service ID
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/OrganizationId"
-          in: query
-          name: producerId
-          required: false
-          description: Filter by Producer Organization ID
-        - schema:
-            type: string
-            enum:
-              - eserviceName
-              - state
-          in: query
-          name: sortBy
-          required: false
-          description: Field to sort by
-        - schema:
-            type: string
-            enum:
-              - asc
-              - desc
-          in: query
-          name: sortOrder
-          required: false
-          description: Sort direction
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/AgreementState"
-          in: query
-          name: state
-          required: false
-          description: Filter by Agreement State
         - schema:
             allOf:
               - $ref: "#/components/schemas/CorrelationId"

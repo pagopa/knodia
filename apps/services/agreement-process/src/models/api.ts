@@ -4,11 +4,9 @@ import {
 } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
-  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { z } from "zod";
 
 export const API_AgreementSeed = z
@@ -43,33 +41,7 @@ export const API_Agreements = z
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
 
-export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
-  consumerKnodeId: API_KnodeId.optional().meta({
-    description: "Filter by Consumer Knode ID",
-  }),
-  eserviceId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by E-service ID" }),
-  producerId: API_OrganizationId.optional().meta({
-    description: "Filter by Producer Organization ID",
-  }),
-  sortBy: z
-    .enum(["eserviceName", "state"]) // TODO: add consumerName
-    .optional()
-    .meta({ description: "Field to sort by" }),
-  sortOrder: z
-    .enum(["asc", "desc"])
-    .optional()
-    .meta({ description: "Sort direction" }),
-  state: API_AgreementState.optional().meta({
-    description: "Filter by Agreement State",
-  }),
-});
+export const API_GetAgreementsQueryParams = API_PaginationQueryParams;
 export type API_GetAgreementsQueryParams = z.infer<
   typeof API_GetAgreementsQueryParams
 >;
