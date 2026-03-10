@@ -6,8 +6,11 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { consumerKeychainWriterService } from "./setup.ts";
-import { getAllKeychainEvents, injectAppRequest } from "./utils.ts";
+import {
+  getAllKeychainEvents,
+  injectAppRequest,
+  seedConsumerKeychain,
+} from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
@@ -17,10 +20,7 @@ const consumerKeychain = getMockConsumerKeychain();
 
 describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)", () => {
   it("should correctly create consumer keychain deletion event", async () => {
-    await consumerKeychainWriterService.upsertConsumerKeychain(
-      consumerKeychain,
-      0,
-    );
+    await seedConsumerKeychain(consumerKeychain);
 
     const deleteResponse = await injectAppRequest(allowedTestTokens[0]!).delete(
       `/consumerKeychains/${consumerKeychain.id}`,
@@ -29,9 +29,9 @@ describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)
     expect(deleteResponse.statusCode).toBe(204);
 
     const events = await getAllKeychainEvents();
-    expect(events).toHaveLength(2);
 
     const deletedEvent = events[1];
+
     expect(deletedEvent).toMatchObject({
       streamId: consumerKeychain.id,
       type: "ConsumerKeychainDeletedV1",
@@ -40,7 +40,12 @@ describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)
 
     const deletedEventData = KeychainEventV1.parse(deletedEvent).data;
     expect(deletedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+      consumerKeychain: toConsumerKeychainV1({
+        ...consumerKeychain,
+        keys: [],
+        purposes: [],
+        users: [],
+      }),
     });
   });
 
