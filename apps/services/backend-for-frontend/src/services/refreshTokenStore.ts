@@ -3,6 +3,12 @@ import { createClient } from "redis";
 
 export type RefreshTokenStore = ReturnType<typeof createRefreshTokenStore>;
 
+/**
+ * Uses Redis as a set of "seen" JTIs to prevent refresh token replay.
+ *
+ * Each JTI is stored as a key with an expiry matching the token's `exp` claim,
+ * so entries auto-cleanup after the token would have expired anyway.
+ */
 export function createRefreshTokenStore(
   redisUrl: string,
   logger: FastifyBaseLogger,
@@ -20,23 +26,34 @@ export function createRefreshTokenStore(
     .connect()
     .then(() => logger.info(`Redis client connected (${redisUrl})`));
 
+  const USED = "1"; // arbitrary value — only the key's existence matters
+
+  function keyFor(jti: string): string {
+    return `refresh:${jti}`;
+  }
+
   return {
+    /**
+     * Marks a JTI as used. Returns `true` if this is the first use,
+     * `false` if the JTI was already seen (replay attempt).
+     *
+     * Uses SET NX (set-if-not-exists) for atomicity.
+     */
     async consume(jti: string, expireAtSec: number): Promise<boolean> {
-      const key = `refresh:${jti}`;
-      // SET NX returns null if the key already exists (token already consumed)
-      const result = await client.set(key, "1", {
+      const result = await client.set(keyFor(jti), USED, {
         EXAT: expireAtSec,
-        NX: true,
+        NX: true, // SET NX returns null if key already exists
       });
-      // result is "OK" on success, null if key already existed
-      return result === "OK";
+      const alreadyUsed = result === null;
+      return !alreadyUsed;
     },
 
+    /**
+     * Unconditionally marks a JTI as used (e.g. on logout),
+     * so any future consume attempt will fail.
+     */
     async revoke(jti: string, expireAtSec: number): Promise<void> {
-      const key = `refresh:${jti}`;
-      // Mark the JTI as consumed so it cannot be used again.
-      // Uses SET with EXAT so the entry auto-expires at the token's original expiry.
-      await client.set(key, "1", { EXAT: expireAtSec });
+      await client.set(keyFor(jti), USED, { EXAT: expireAtSec });
     },
   };
 }
