@@ -21,6 +21,16 @@
       "PassFile": "/pgadmin4/pgpass"
     },
     "3": {
+      "Name": "Remote Resource (orion)",
+      "Group": "Knodia Multinode",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "orion_remote_resource",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    },
+    "4": {
       "Name": "Event Store (lynx)",
       "Group": "Knodia Multinode",
       "Host": "postgres",
@@ -30,12 +40,22 @@
       "SSLMode": "prefer",
       "PassFile": "/pgadmin4/pgpass"
     },
-    "4": {
+    "5": {
       "Name": "Read Model (lynx)",
       "Group": "Knodia Multinode",
       "Host": "postgres",
       "Port": 5432,
       "MaintenanceDB": "lynx_readmodel",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
+    },
+    "6": {
+      "Name": "Remote Resource (lynx)",
+      "Group": "Knodia Multinode",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "lynx_remote_resource",
       "Username": "root",
       "SSLMode": "prefer",
       "PassFile": "/pgadmin4/pgpass"
