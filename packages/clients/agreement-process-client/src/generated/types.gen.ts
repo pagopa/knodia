@@ -113,6 +113,18 @@ export type GetAgreementsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: string;
+        /**
+         * Filter by Consumer Knode ID
+         */
+        consumerKnodeId?: KnodeId;
+        /**
+         * Filter by Agreement State
+         */
+        state?: AgreementState;
     };
     url: '/agreements';
 };
