@@ -3,7 +3,7 @@ import { OrganizationId } from "@knodia/common-models/ids";
 import z from "zod";
 
 export const Organization = z.strictObject({
-  attributes: z.array(AttributeId).min(1),
+  attributes: z.array(AttributeId),
   createdAt: z.coerce.date(),
   id: OrganizationId,
   name: z.string(),

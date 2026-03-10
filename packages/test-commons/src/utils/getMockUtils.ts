@@ -60,10 +60,5 @@ export function getMockEservice({
 }
 
 export function getMockOrganization(seed = 0): Organization {
-  return zocker(Organization)
-    .array({
-      min: 1,
-    })
-    .setSeed(seed)
-    .generate();
+  return zocker(Organization).setSeed(seed).generate();
 }
