@@ -1,6 +1,7 @@
 import { API_OrganizationId } from "@knodia/common-models/api";
 import { z } from "zod";
 
+import { API_KnodeId } from "../api.ts";
 import { API_Attribute } from "../attribute/api.ts";
 import { API_EserviceId, API_EserviceVersionId } from "../eservice/api.ts";
 
@@ -8,12 +9,6 @@ const API_AgreementId = z.uuid().meta({
   description: "Unique identifier of the Agreement",
   id: "AgreementId",
 });
-
-export const API_KnodeId = z.enum(["ORION", "LYNX"]).meta({
-  description: "Unique Knode identifier",
-  id: "KnodeId",
-});
-export type API_KnodeId = z.infer<typeof API_KnodeId>;
 
 export const API_AgreementConsumer = z
   .strictObject({

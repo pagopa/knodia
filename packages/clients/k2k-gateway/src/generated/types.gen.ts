@@ -52,6 +52,11 @@ export type CreatedResource = {
 };
 
 /**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'ORION' | 'LYNX';
+
+/**
  * Identifies an Attribute standardized within Knodia
  */
 export type Attribute = {
@@ -267,11 +272,6 @@ export type EserviceVersion = {
  * Unique identifier of the Agreement
  */
 export type AgreementId = string;
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'ORION' | 'LYNX';
 
 /**
  * Consumer Organization of the Agreement
