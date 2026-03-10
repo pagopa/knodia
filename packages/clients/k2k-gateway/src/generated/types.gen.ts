@@ -264,12 +264,52 @@ export type EserviceVersion = {
 };
 
 /**
+ * Unique identifier for the Agreement
+ */
+export type AgreementId = string;
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'ORION' | 'LYNX';
+
+/**
+ * Consumer Organization of the Agreement
+ */
+export type AgreementConsumer = {
+    id: OrganizationId;
+    knodeId: KnodeId;
+};
+
+/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
     consumerId: OrganizationId;
     eserviceId: EserviceId;
     eserviceVersionId: EserviceVersionId;
+};
+
+/**
+ * Describes the states an Agreement can be in
+ */
+export type AgreementState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+
+/**
+ * Agreement between a Consumer and a Producer for an E-service
+ */
+export type Agreement = {
+    /**
+     * Describes the Attributes of the E-service that the Consumer possesses when the Agreement is activated (must satisfy at least one Attribute for each Required Attribute Group defined by the E-service)
+     */
+    attributes: Array<Attribute>;
+    consumer: AgreementConsumer;
+    eserviceId: EserviceId;
+    eserviceVersionId: EserviceVersionId;
+    id: AgreementId;
+    producerId: OrganizationId;
+    state: AgreementState;
+    updatedAt: string;
 };
 
 export type GetStatusData = {
@@ -416,3 +456,34 @@ export type CreateAgreementResponses = {
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
+
+export type GetAgreementData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}';
+};
+
+export type GetAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetAgreementError = GetAgreementErrors[keyof GetAgreementErrors];
+
+export type GetAgreementResponses = {
+    /**
+     * Agreement retrieved successfully
+     */
+    200: Agreement;
+};
+
+export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
