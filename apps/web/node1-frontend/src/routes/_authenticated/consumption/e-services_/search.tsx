@@ -8,6 +8,7 @@ import { SearchContent } from "@/features/e-service/components/ConsumptionEservi
 import { SearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchFilters";
 import {
   consumptionEserviceSearchDefaultValues,
+  type ConsumptionEserviceSearchParams,
   consumptionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
 import { toCatalogSearchResultUI } from "@/features/e-service/services/api-converters";
@@ -17,8 +18,13 @@ import { client } from "@/libs/axios";
 
 const CATALOG_SEARCH_LIMIT = 4;
 
+const isSearchReady = (
+  params: Omit<ConsumptionEserviceSearchParams, "offset">,
+): boolean =>
+  params.knodeId !== "" && (params.category !== "" || params.keywords !== "");
+
 const catalogQuery = (
-  body: null | ReturnType<typeof buildCatalogSearchBody>,
+  body: ReturnType<typeof buildCatalogSearchBody>,
   offset: number,
 ) =>
   getConsumerCatalogEservicesQueryOptions({
@@ -31,20 +37,19 @@ export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/search",
 )({
   component: RouteComponent,
-  loaderDeps: ({ search: { category, keywords, knode, offset } }) => ({
+  loaderDeps: ({ search: { category, keywords, knodeId, offset } }) => ({
     category,
     keywords,
-    knode,
+    knodeId,
     offset,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps }) => {
-    if (!deps.knode || (!deps.category && !deps.keywords)) return;
-
+    if (!isSearchReady(deps)) return;
     const body = buildCatalogSearchBody({
       category: deps.category,
       keywords: deps.keywords,
-      knodeId: deps.knode,
+      knodeId: deps.knodeId,
     });
     queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
@@ -59,18 +64,18 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
   const [hasValidationError, setHasValidationError] = useState(false);
 
-  const body =
-    search.knode && (search.category || search.keywords)
-      ? buildCatalogSearchBody({
-          category: search.category,
-          keywords: search.keywords,
-          knodeId: search.knode,
-        })
-      : null;
+  const searchReady = isSearchReady(search);
+
+  const body = buildCatalogSearchBody({
+    category: search.category,
+    keywords: search.keywords,
+    knodeId: search.knodeId,
+  });
 
   const { data: results, isLoading } = useQuery({
     ...catalogQuery(body, search.offset),
-    placeholderData: body ? keepPreviousData : undefined,
+    enabled: searchReady,
+    placeholderData: searchReady ? keepPreviousData : undefined,
     select: (data) => ({
       items: data.results.map(toCatalogSearchResultUI),
       pagination: data.pagination,
@@ -106,7 +111,7 @@ function RouteComponent() {
         defaultValues={{
           category: search.category,
           keywords: search.keywords,
-          knode: search.knode,
+          knodeId: search.knodeId,
         }}
         onSubmit={handleSearch}
         onValidationError={handleValidationError}
@@ -115,7 +120,7 @@ function RouteComponent() {
       <SearchContent
         hasValidationError={hasValidationError}
         isLoading={isLoading}
-        knodeId={search.knode}
+        knodeId={search.knodeId}
         onOffsetChange={handleOffsetChange}
         results={results ?? null}
       />

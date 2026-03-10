@@ -7,6 +7,13 @@ info:
   title: Knodia BFF API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -77,10 +84,21 @@ components:
     SessionResponse:
       type: object
       properties:
+        refreshToken:
+          type: string
         uiSessionToken:
           type: string
       required:
+        - refreshToken
         - uiSessionToken
+      additionalProperties: false
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
       additionalProperties: false
     Pagination:
       type: object
@@ -637,7 +655,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerCatalogEserviceDetailProducer:
+    ConsumerEserviceDetailsProducer:
       type: object
       properties:
         email:
@@ -673,7 +691,7 @@ components:
         - possessed
         - scheme
       additionalProperties: false
-    ConsumerCatalogEserviceDetailAccessToken:
+    ConsumerEserviceDetailsAccessToken:
       type: object
       properties:
         audience:
@@ -693,7 +711,7 @@ components:
         - duration
         - type
       additionalProperties: false
-    ConsumerCatalogEserviceDetailInterfaceDocument:
+    ConsumerEserviceDetailsInterfaceDocument:
       type: object
       properties:
         checksum:
@@ -704,7 +722,7 @@ components:
         - checksum
         - name
       additionalProperties: false
-    ConsumerCatalogEserviceDetailMaxDailyCalls:
+    ConsumerEserviceDetailsMaxDailyCalls:
       type: object
       properties:
         perConsumer:
@@ -721,11 +739,11 @@ components:
         - perConsumer
         - perKnode
       additionalProperties: false
-    ConsumerCatalogEserviceDetail:
+    ConsumerEserviceDetails:
       type: object
       properties:
         accessToken:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailAccessToken"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsAccessToken"
         categories:
           type: array
           items:
@@ -739,17 +757,17 @@ components:
         identificationRequired:
           type: boolean
         interfaceDocument:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailInterfaceDocument"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsInterfaceDocument"
         isSignalHubEnabled:
           type: boolean
         maxDailyCalls:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailMaxDailyCalls"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsMaxDailyCalls"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
         producer:
-          $ref: "#/components/schemas/ConsumerCatalogEserviceDetailProducer"
+          $ref: "#/components/schemas/ConsumerEserviceDetailsProducer"
         requiredAttributes:
           type: array
           items:
@@ -780,6 +798,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -796,11 +815,12 @@ paths:
         - auth
       description: Validate a Cognito token and generate a session token
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/SessionRequest"
-        required: true
+      security: []
       responses:
         "200":
           description: Session created successfully
@@ -826,6 +846,44 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /auth/ui-session/refresh:
+    post:
+      operationId: refreshSession
+      tags:
+        - auth
+      description: Refresh an expired UI session token using a refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+      security: []
+      responses:
+        "200":
+          description: Session refreshed successfully
+          content:
+            application/json:
+              schema:
+                description: Session refreshed successfully
+                allOf:
+                  - $ref: "#/components/schemas/SessionResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice
@@ -833,11 +891,11 @@ paths:
         - eservice
       description: Create a new E-service
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/EserviceSeed"
-        required: true
       responses:
         "201":
           description: E-service created successfully
@@ -853,6 +911,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     get:
@@ -936,6 +1010,22 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}:
     get:
       operationId: getProducerEserviceDetails
@@ -965,6 +1055,22 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -1007,6 +1113,22 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
@@ -1024,11 +1146,11 @@ paths:
       description: Search for E-services according to search criteria and considering
         only E-services with an active or suspended Version
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/GetConsumerCatalogEserviceSearchParams"
-        required: true
       parameters:
         - schema:
             format: int32
@@ -1066,10 +1188,26 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/eservices/{eserviceId}:
     get:
-      operationId: getConsumerCatalogEserviceDetail
-      summary: Get consumer catalog E-service detail
+      operationId: getConsumerEserviceDetails
+      summary: Get consumer E-service details
       tags:
         - eservice
       description: Retrieve an E-service with all its details for consumers
@@ -1078,6 +1216,7 @@ paths:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
+          required: true
         - schema:
             type: string
             format: uuid
@@ -1093,13 +1232,29 @@ paths:
               schema:
                 description: E-service detail retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerCatalogEserviceDetail"
+                  - $ref: "#/components/schemas/ConsumerEserviceDetails"
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
@@ -1122,6 +1277,7 @@ paths:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
+          required: true
         - schema:
             type: string
             format: uuid
@@ -1158,6 +1314,8 @@ paths:
 servers:
   - description: BFF API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

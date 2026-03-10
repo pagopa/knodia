@@ -1,11 +1,8 @@
-import fastifyRequestContext from "@fastify/request-context";
 import { requestContext } from "@fastify/request-context";
-import { generateId } from "@knodia/common-models/ids";
 import {
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
-import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import {
@@ -15,7 +12,7 @@ import {
 import { ApiError } from "../../src/models/errors/apiError.ts";
 import { healthRouterUrl } from "../../src/routers/healthRouter.ts";
 import { docsRoutePrefix } from "../../src/utils/openapi-zod-plugin/openapiZodPlugin.ts";
-import { makeApiProblemBuilder } from "../../src/utils/problemBuilder.ts";
+import { buildTestApp } from "../mock/buildTestApp.ts";
 
 const { createRemoteJWKSet, jwtVerify } = vi.hoisted(() => ({
   createRemoteJWKSet: vi.fn().mockReturnValue("mock-jwks-set"),
@@ -23,34 +20,6 @@ const { createRemoteJWKSet, jwtVerify } = vi.hoisted(() => ({
 }));
 
 vi.mock("jose", () => ({ createRemoteJWKSet, jwtVerify }));
-
-const makeApiProblem = makeApiProblemBuilder(
-  {},
-  { serviceName: "backend-for-frontend" },
-);
-
-const buildTestApp = async (wellKnownUrls: string[]) => {
-  const app = Fastify({ genReqId: () => generateId(), logger: false });
-
-  await app.register(fastifyRequestContext, {
-    defaultStoreValues: (request) => ({
-      correlationId: generateId(),
-      logger: request.log,
-    }),
-  });
-
-  await app.register(authenticationPlugin, {
-    acceptedAudiences: ["test-audience"],
-    wellKnownUrls,
-  });
-
-  app.setErrorHandler((error, _, reply) => {
-    const problem = makeApiProblem(error);
-    return reply.status(problem.status).send(problem);
-  });
-
-  return app;
-};
 
 describe("parseAuthHeaderToken", () => {
   it("throws ApiError when header is undefined", () => {
@@ -86,16 +55,25 @@ const validInternalPayload = getTestInternalTokenClaims();
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
 describe("authenticationPlugin", () => {
-  let app: Awaited<ReturnType<typeof buildTestApp>>;
+  let app: ReturnType<typeof buildTestApp>;
 
   beforeAll(async () => {
-    app = await buildTestApp(["https://example.com/.well-known/jwks.json"]);
+    app = buildTestApp();
 
+    // Public routes (no auth) — registered outside the protected context
     app.get(healthRouterUrl, async () => ({ ok: true }));
     app.get(docsTestRoute, async () => ({ ok: true }));
-    app.get("/protected", async () => ({
-      authData: requestContext.get("authData"),
-    }));
+
+    // Protected routes — authenticationPlugin scoped via Fastify encapsulation
+    app.register(async (protectedApp) => {
+      protectedApp.register(authenticationPlugin, {
+        acceptedAudiences: ["test-audience"],
+        wellKnownUrls: ["https://example.com/.well-known/jwks.json"],
+      });
+      protectedApp.get("/protected", async () => ({
+        authData: requestContext.get("authData"),
+      }));
+    });
 
     await app.ready();
   });
@@ -104,8 +82,8 @@ describe("authenticationPlugin", () => {
     await app.close();
   });
 
-  describe("route bypass", () => {
-    it("bypasses auth for the health status route", async () => {
+  describe("encapsulation", () => {
+    it("does not require auth for the health status route", async () => {
       const response = await app.inject({
         method: "GET",
         url: healthRouterUrl,
@@ -114,7 +92,7 @@ describe("authenticationPlugin", () => {
       expect(response.statusCode).toBe(200);
     });
 
-    it("bypasses auth for routes under the /docs prefix", async () => {
+    it("does not require auth for routes under the /docs prefix", async () => {
       const response = await app.inject({
         method: "GET",
         url: docsTestRoute,
@@ -157,7 +135,7 @@ describe("authenticationPlugin", () => {
       expect(response.body).toContain("Token verification failed");
     });
 
-    it("returns 401 when the verified payload does not match KnodiaTokenClaims", async () => {
+    it("returns 401 when the verified payload does not match KnodiaAuthTokenClaims", async () => {
       jwtVerify.mockResolvedValueOnce({
         payload: { sub: "some-user", tokenType: "unknown" },
       });
@@ -240,38 +218,82 @@ describe("authenticationPlugin", () => {
         },
       });
     });
+  });
+});
 
-    it("succeeds using the first valid JWKS when multiple are configured", async () => {
-      const multiJwksApp = await buildTestApp([
-        "https://primary.example.com/.well-known/jwks.json",
-        "https://secondary.example.com/.well-known/jwks.json",
-      ]);
-      multiJwksApp.get("/protected", async () => ({
+describe("authenticationPlugin with multiple JWKS", () => {
+  let multiJwksApp: Awaited<ReturnType<typeof buildTestApp>>;
+
+  beforeAll(async () => {
+    multiJwksApp = buildTestApp();
+    multiJwksApp.register(async (protectedApp) => {
+      protectedApp.register(authenticationPlugin, {
+        acceptedAudiences: ["test-audience"],
+        wellKnownUrls: [
+          "https://primary.example.com/.well-known/jwks.json",
+          "https://secondary.example.com/.well-known/jwks.json",
+        ],
+      });
+      protectedApp.get("/protected", async () => ({
         authData: requestContext.get("authData"),
       }));
-      await multiJwksApp.ready();
-
-      jwtVerify
-        .mockRejectedValueOnce(new Error("key not found"))
-        .mockResolvedValueOnce({ payload: validUISessionPayload });
-
-      const response = await multiJwksApp.inject({
-        headers: { authorization: "Bearer fallback-token" },
-        method: "GET",
-        url: "/protected",
-      });
-
-      expect(response.statusCode).toBe(200);
-      expect(response.json()).toMatchObject({
-        authData: {
-          organizationId: validUISessionPayload.organizationId,
-          tokenType: validUISessionPayload.type,
-          userId: validUISessionPayload.sub,
-          userRoles: ["administrative"],
-        },
-      });
-
-      await multiJwksApp.close();
     });
+    await multiJwksApp.ready();
+  });
+
+  afterAll(async () => {
+    await multiJwksApp.close();
+  });
+
+  it("succeeds using the first valid JWKS when multiple are configured", async () => {
+    jwtVerify
+      .mockRejectedValueOnce(new Error("key not found"))
+      .mockResolvedValueOnce({ payload: validUISessionPayload });
+
+    const response = await multiJwksApp.inject({
+      headers: { authorization: "Bearer fallback-token" },
+      method: "GET",
+      url: "/protected",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toMatchObject({
+      authData: {
+        organizationId: validUISessionPayload.organizationId,
+        tokenType: validUISessionPayload.type,
+        userId: validUISessionPayload.sub,
+        userRoles: ["administrative"],
+      },
+    });
+  });
+
+  it("returns 401 when all JWKS sets fail", async () => {
+    jwtVerify
+      .mockRejectedValueOnce(new Error("key not found"))
+      .mockRejectedValueOnce(new Error("invalid signature"));
+
+    const response = await multiJwksApp.inject({
+      headers: { authorization: "Bearer bad-token" },
+      method: "GET",
+      url: "/protected",
+    });
+
+    expect(response.statusCode).toBe(401);
+    expect(response.body).toContain("Token verification failed");
+  });
+
+  it("validates against all JWKS sets in parallel", async () => {
+    jwtVerify.mockClear();
+    jwtVerify
+      .mockRejectedValueOnce(new Error("key not found"))
+      .mockResolvedValueOnce({ payload: validUISessionPayload });
+
+    await multiJwksApp.inject({
+      headers: { authorization: "Bearer token" },
+      method: "GET",
+      url: "/protected",
+    });
+
+    expect(jwtVerify).toHaveBeenCalledTimes(2);
   });
 });

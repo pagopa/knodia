@@ -1,5 +1,5 @@
 import { bffApi } from "@knodia/bff-client";
-import { getConsumerCatalogEserviceDetailOptions } from "@knodia/bff-client/tanstack-query";
+import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { RequestAgreementModal } from "@/features/e-service/components/RequestAgreementModal/RequestAgreementModal";
@@ -8,7 +8,7 @@ import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-c
 import { client } from "@/libs/axios";
 
 const eserviceQuery = (eserviceId: string, knodeId: string) =>
-  getConsumerCatalogEserviceDetailOptions({
+  getConsumerEserviceDetailsOptions({
     client,
     path: { eserviceId },
     query: { knodeId: knodeId as bffApi.KnodeId },

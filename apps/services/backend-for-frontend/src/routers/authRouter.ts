@@ -17,10 +17,17 @@ const API_SessionRequest = z
   .meta({ id: "SessionRequest" });
 
 const API_SessionResponse = z
-  .object({
+  .strictObject({
+    refreshToken: z.string(),
     uiSessionToken: z.string(),
   })
   .meta({ id: "SessionResponse" });
+
+const API_RefreshRequest = z
+  .strictObject({
+    refreshToken: z.string(),
+  })
+  .meta({ id: "RefreshRequest" });
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
@@ -28,14 +35,10 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const { oidcToken } = req.body;
-
-      const uiSessionToken =
-        await authService.generateUISessionToken(oidcToken);
-
-      res.send({
-        uiSessionToken,
-      });
+      const tokens = await authService.generateUISessionTokenPair(
+        req.body.oidcToken,
+      );
+      res.send(tokens);
     },
     method: "POST",
     schema: {
@@ -49,8 +52,34 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
       },
+      security: [],
       tags: [apiTags.auth],
     },
     url: "/auth/ui-session",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const tokens = await authService.refreshUISessionTokenPair(
+        req.body.refreshToken,
+      );
+      res.send(tokens);
+    },
+    method: "POST",
+    schema: {
+      body: API_RefreshRequest,
+      description: "Refresh an expired UI session token using a refresh token",
+      operationId: "refreshSession",
+      response: {
+        200: API_SessionResponse.meta({
+          description: "Session refreshed successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+      },
+      security: [],
+      tags: [apiTags.auth],
+    },
+    url: "/auth/ui-session/refresh",
   });
 };

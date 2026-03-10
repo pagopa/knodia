@@ -90,8 +90,13 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
+      // No auth required currently. Mutual TLS will be added in the future;
+      // OpenAPI 3.1 supports `type: mutualTLS` security schemes natively,
+      // and we are evaluating upgrading to 3.1 to enable this
+      // (see https://pagopa.atlassian.net/browse/KN-96).
+      security: [],
       summary: "Search for E-services",
-      tags: [apiTags.operation],
+      tags: [apiTags.operation, apiTags.eservice],
     },
     url: "/catalog",
   });
@@ -129,7 +134,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
   });
@@ -145,29 +150,37 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
+      const path = { eserviceId: req.params.eserviceId };
 
-      const { data } = await eserviceProcessApi.getEserviceLatestVersion({
-        client: eserviceProcessClient,
-        headers,
-        path: { eserviceId: req.params.eserviceId },
-      });
+      const [{ data: version }, { data: interfaceDoc }] = await Promise.all([
+        eserviceProcessApi.getEserviceLatestVersion({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+        eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path,
+        }),
+      ]);
 
-      res.send(toAPI_EserviceVersion(data));
+      res.send(toAPI_EserviceVersion(version, interfaceDoc));
     },
     method: "GET",
     schema: {
-      description: "Retrieve the latest version of an E-service",
+      description: "Retrieve the latest Version of an E-service",
       operationId: "getEserviceLatestVersion",
       params: API_EserviceIdPathParam,
       response: {
         200: API_EserviceVersion.meta({
-          description: "E-service latest version retrieved successfully",
+          description: "E-service latest Version retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service latest version",
-      tags: [apiTags.resource],
+      tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest",
   });
@@ -196,18 +209,18 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the interface document of the latest version of an E-service",
+        "Retrieve the Interface Document of the latest Version of an E-service",
       operationId: "getEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       response: {
         200: API_EserviceVersionInterfaceDocument.meta({
           description:
-            "E-service latest version interface document retrieved successfully",
+            "E-service latest Version Interface Document retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
-      summary: "Get E-service latest version interface",
+      summary: "Get E-service latest Version Interface Document",
       tags: [apiTags.resource],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
@@ -252,18 +265,18 @@ export const eserviceRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Download the interface document for the latest version of an E-service",
+        "Download the Interface Document for the latest Version of an E-service",
       operationId: "downloadEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/octet-stream"],
       response: {
         200: API_FileDownload.meta({
-          description: "E-service interface document downloaded successfully",
+          description: "E-service Interface Document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Download E-service latest version interface",
+      summary: "Download E-service latest Version Interface Document",
       tags: [apiTags.resource],
     },
     url: "/eservices/:eserviceId/versions/latest/interface/download",

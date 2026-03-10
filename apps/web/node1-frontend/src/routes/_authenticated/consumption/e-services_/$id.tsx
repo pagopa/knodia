@@ -1,5 +1,5 @@
 import { bffApi } from "@knodia/bff-client";
-import { getConsumerCatalogEserviceDetailOptions } from "@knodia/bff-client/tanstack-query";
+import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Avatar,
   Banner,
@@ -34,7 +34,7 @@ import { client } from "@/libs/axios";
 import { downloadFile } from "@/utils/downloadFile";
 
 const eserviceQuery = (eserviceId: string, knodeId: string) =>
-  getConsumerCatalogEserviceDetailOptions({
+  getConsumerEserviceDetailsOptions({
     client,
     path: { eserviceId },
     query: { knodeId: knodeId as bffApi.KnodeId },

@@ -3,14 +3,14 @@ import { createServer } from "node:http";
 
 const PORT = 3000;
 const ISSUER = process.env.ISSUER ?? "http://localhost:4567";
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN ?? "http://localhost:5175";
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "http://localhost:5175")
+  .split(",")
+  .map((s) => s.trim());
 
 // Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
-
-// --- RSA key pair generated in memory at startup ---
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -22,8 +22,6 @@ const JWKS = {
 
 // Auth codes for the authorization code flow (consumed immediately by /token)
 const authCodes = new Map();
-
-// --- JWT helpers ---
 
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
@@ -41,8 +39,6 @@ function signJwt(payload) {
   return `${message}.${signature}`;
 }
 
-// --- Request body parser ---
-
 function readBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
@@ -52,20 +48,33 @@ function readBody(req) {
   });
 }
 
-// --- CORS helpers ---
-
-function setCorsHeaders(res) {
-  res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
+function setCorsHeaders(req, res) {
+  const requestOrigin = req.headers.origin;
+  const allowedOrigin = ALLOWED_ORIGINS.find((o) => o === requestOrigin);
+  if (allowedOrigin) {
+    res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 }
 
-// --- HTTP server ---
+function isAllowedRedirect(target) {
+  try {
+    const parsed = new URL(target);
+    const issuerOrigin = new URL(ISSUER).origin;
+    const allowedOrigins = ALLOWED_ORIGINS.map((o) => new URL(o).origin);
+    return (
+      allowedOrigins.includes(parsed.origin) || parsed.origin === issuerOrigin
+    );
+  } catch {
+    return false;
+  }
+}
 
 createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
 
-  setCorsHeaders(res);
+  setCorsHeaders(req, res);
 
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -86,6 +95,7 @@ createServer(async (req, res) => {
           issuer: ISSUER,
           authorization_endpoint: `${ISSUER}/authorize`,
           token_endpoint: `${ISSUER}/token`,
+          end_session_endpoint: `${ISSUER}/logout`,
           jwks_uri: `${ISSUER}/jwks`,
           response_types_supported: ["code"],
           subject_types_supported: ["public"],
@@ -195,6 +205,31 @@ createServer(async (req, res) => {
           expires_in: 3600,
         }),
       );
+      return;
+    }
+
+    // Logout endpoint — redirect to logout_uri
+    if (req.method === "GET" && url.pathname === "/logout") {
+      const logoutUri = url.searchParams.get("logout_uri");
+
+      if (!logoutUri) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "logout_uri is required" }));
+        return;
+      }
+
+      if (!isAllowedRedirect(logoutUri)) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(
+          JSON.stringify({ error: "logout_uri is not an allowed redirect" }),
+        );
+        return;
+      }
+
+      console.log(`[logout] Redirecting to ${logoutUri}`);
+
+      res.writeHead(302, { Location: logoutUri });
+      res.end();
       return;
     }
 

@@ -1,4 +1,5 @@
 import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -90,27 +91,37 @@ const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
 });
 
 const API_EserviceId = z.uuid().meta({
-  description: "Unique identifier of the E-Service",
+  description: "Unique identifier of the E-service",
   id: "EserviceId",
-});
-
-const API_OrganizationId = z.uuid().meta({
-  description: "Unique identifier of the Organization",
-  id: "OrganizationId",
 });
 
 export const API_CatalogEserviceSearchResult = z
   .strictObject({
-    categories: z.array(API_EserviceCategory),
-    description: API_LocalizedText,
+    categories: z.array(API_EserviceCategory).meta({
+      description: "Categories of data the E-service provides or receives",
+    }),
+    description: API_LocalizedText.meta({
+      description: "Human-readable description of the E-service",
+    }),
     id: API_EserviceId,
-    latestVersionRequiredAttributes: API_RequiredAttributes,
-    latestVersionState: API_EserviceVersionState,
+    latestVersionRequiredAttributes: API_RequiredAttributes.meta({
+      description: "Attributes required by the latest version of the E-service",
+    }),
+    latestVersionState: API_EserviceVersionState.meta({
+      description: "Current state of the latest version of the E-service",
+    }),
     mode: API_EserviceMode,
-    name: API_LocalizedText,
+    name: API_LocalizedText.meta({
+      description: "Human-readable name of the E-service",
+    }),
     producerId: API_OrganizationId,
+    updatedAt: z.iso.datetime().meta({
+      description: "Last update timestamp of the E-service",
+    }),
   })
-  .meta({ id: "CatalogEserviceSearchResult" });
+  .meta({
+    id: "CatalogEserviceSearchResult",
+  });
 
 export type API_CatalogEserviceSearchResult = z.infer<
   typeof API_CatalogEserviceSearchResult
@@ -131,59 +142,98 @@ export const API_EserviceIdPathParam = z.strictObject({
 
 export const API_Eservice = z
   .strictObject({
-    categories: z.array(API_EserviceCategory),
-    createdAt: z.iso.datetime(),
-    description: API_LocalizedText,
+    categories: z.array(API_EserviceCategory).meta({
+      description: "Categories of data the E-service provides or receives",
+    }),
+    description: API_LocalizedText.meta({
+      description: "Human-readable description of the E-service",
+    }),
     id: API_EserviceId,
-    isConsumerOperatorIdentificationRequired: z.boolean(),
-    isSignalHubEnabled: z.boolean(),
+    isConsumerOperatorIdentificationRequired: z.boolean().meta({
+      description:
+        "Indicates whether a consumer operator must log in to the producer Knode directly to confirm Agreement submission",
+    }),
+    isSignalHubEnabled: z.boolean().meta({
+      description: "Whether the E-service supports Signal Hub notifications",
+    }),
     mode: API_EserviceMode,
-    name: API_LocalizedText,
+    name: API_LocalizedText.meta({
+      description: "Human-readable name of the E-service",
+    }),
     producerId: API_OrganizationId,
-    updatedAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime().meta({
+      description: "Last update timestamp of the E-service",
+    }),
   })
   .meta({ id: "Eservice" });
 
 export type API_Eservice = z.infer<typeof API_Eservice>;
 
+export const API_EserviceVersionInterfaceDocument = z
+  .strictObject({
+    checksum: z.string().meta({
+      description: "SHA-256 integrity checksum of the file",
+    }),
+    contentType: z.string().meta({
+      description: "The MIME content type of the file",
+    }),
+    id: z
+      .uuid()
+      .meta({ description: "Unique identifier of the Interface Document" }),
+    name: z.string().meta({
+      description: "The name of the file",
+    }),
+    prettyName: API_LocalizedText.meta({
+      description: "A human-readable name for the file",
+    }),
+    updatedAt: z.iso.datetime().meta({
+      description: "Last update timestamp of the Interface Document",
+    }),
+  })
+  .meta({ id: "EserviceVersionInterfaceDocument" });
+export type API_EserviceVersionInterfaceDocument = z.infer<
+  typeof API_EserviceVersionInterfaceDocument
+>;
+
 export const API_EserviceVersion = z
   .strictObject({
-    accessTokenAudience: z.array(z.string()),
+    accessTokenAudience: z.array(z.string()).meta({
+      description: "List of audiences for the access token",
+    }),
     accessTokenDuration: z.number().int().meta({
       description: "Duration of the access token in seconds",
       format: "int32",
     }),
     accessTokenType: API_AccessTokenType,
-    createdAt: z.iso.datetime(),
     id: z
       .uuid()
-      .meta({ description: "Unique identifier of the E-service version" }),
-    maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
-    maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
+      .meta({ description: "Unique identifier of the E-service Version" }),
+    interfaceDocument: API_EserviceVersionInterfaceDocument.meta({
+      description:
+        "Metadata of the Interface Document associated with this Version",
+    }),
+    maxDailyCallsPerConsumer: z.number().int().meta({
+      description:
+        "Maximum number of daily calls that this Version can afford per consumer",
+      format: "int32",
+    }),
+    maxDailyCallsPerKnode: z.number().int().meta({
+      description:
+        "Maximum number of daily calls that this Version can afford per Knode",
+      format: "int32",
+    }),
     requiredAttributes: API_RequiredAttributes,
-    state: API_EserviceVersionState,
-    updatedAt: z.iso.datetime(),
-    versionNumber: z.number().int().meta({ format: "int32" }),
+    state: API_EserviceVersionState.meta({
+      description: "Current state of the Version",
+    }),
+    updatedAt: z.iso.datetime().meta({
+      description: "Last update timestamp of the Version",
+    }),
+    versionNumber: z.number().int().meta({
+      description: "Progressive version number",
+      format: "int32",
+    }),
   })
   .meta({ id: "EserviceVersion" });
 
 export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
-
-export const API_EserviceVersionInterfaceDocument = z
-  .strictObject({
-    checksum: z.string(),
-    contentType: z.string(),
-    createdAt: z.iso.datetime(),
-    id: z
-      .uuid()
-      .meta({ description: "Unique identifier of the interface document" }),
-    name: z.string(),
-    path: z.string(),
-    prettyName: API_LocalizedText,
-    updatedAt: z.iso.datetime(),
-  })
-  .meta({ id: "EserviceVersionInterfaceDocument" });
-
-export type API_EserviceVersionInterfaceDocument = z.infer<
-  typeof API_EserviceVersionInterfaceDocument
->;

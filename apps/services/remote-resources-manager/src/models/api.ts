@@ -53,6 +53,7 @@ export const API_CatalogEserviceSearchResult = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
 export type API_CatalogEserviceSearchResult = z.infer<
@@ -81,14 +82,14 @@ export const API_EserviceIdPathParam = z.strictObject({
   }),
 });
 
-export const API_GetCatalogEserviceDetailQueryParams = z.strictObject({
+export const API_GetEserviceDetailsQueryParams = z.strictObject({
   knodeId: API_KnodeId,
 });
-export type API_GetCatalogEserviceDetailQueryParams = z.infer<
-  typeof API_GetCatalogEserviceDetailQueryParams
+export type API_GetEserviceDetailsQueryParams = z.infer<
+  typeof API_GetEserviceDetailsQueryParams
 >;
 
-const API_CatalogEserviceDetailLatestVersion = z
+const API_EserviceDetailsLatestVersion = z
   .strictObject({
     accessTokenAudience: z.array(z.string()),
     accessTokenDuration: z.number().int().meta({ format: "int32" }),
@@ -98,30 +99,38 @@ const API_CatalogEserviceDetailLatestVersion = z
     requiredAttributes: z.array(z.array(API_EserviceAttribute)),
     state: API_EserviceVersionState,
   })
-  .meta({ id: "CatalogEserviceDetailLatestVersion" });
+  .meta({ id: "EserviceDetailsLatestVersion" });
 
-const API_CatalogEserviceDetailInterfaceDocument = z
+const API_EserviceDetailsInterfaceDocument = z
   .strictObject({
     checksum: z.string(),
     name: z.string(),
     prettyName: API_LocalizedName,
   })
-  .meta({ id: "CatalogEserviceDetailInterfaceDocument" });
+  .meta({ id: "EserviceDetailsInterfaceDocument" });
 
-export const API_CatalogEserviceDetail = z
+const API_EserviceDetailsProducer = z
+  .strictObject({
+    email: z.string(),
+    id: z.uuid(),
+    knodeName: z.string(),
+    name: API_LocalizedName,
+    notes: z.string(),
+  })
+  .meta({ id: "EserviceDetailsProducer" });
+
+export const API_EserviceDetails = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
-    interfaceDocument: API_CatalogEserviceDetailInterfaceDocument,
+    interfaceDocument: API_EserviceDetailsInterfaceDocument,
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
-    latestVersion: API_CatalogEserviceDetailLatestVersion,
+    latestVersion: API_EserviceDetailsLatestVersion,
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producerId: z.uuid(),
+    producer: API_EserviceDetailsProducer,
   })
-  .meta({ id: "CatalogEserviceDetail" });
-export type API_CatalogEserviceDetail = z.infer<
-  typeof API_CatalogEserviceDetail
->;
+  .meta({ id: "EserviceDetails" });
+export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;

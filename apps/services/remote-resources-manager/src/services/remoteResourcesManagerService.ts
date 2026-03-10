@@ -1,4 +1,7 @@
-import type { RequestContextData } from "@fastify/request-context";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type { EserviceId } from "@knodia/common-models/ids";
+import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -7,15 +10,15 @@ import {
 } from "@knodia/k2k-gateway-client";
 
 import type {
-  API_CatalogEserviceDetail,
   API_CatalogEserviceSearchResults,
+  API_EserviceDetails,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
 } from "../models/api.ts";
 
 import {
-  toAPI_CatalogEserviceDetail,
   toAPI_CatalogEserviceSearchResult,
+  toAPI_EserviceDetails,
 } from "../models/apiConverter.ts";
 
 export type RemoteResourcesManagerService = ReturnType<
@@ -27,18 +30,16 @@ export function remoteResourcesManagerServiceBuilder(
 ) {
   return {
     async downloadEserviceLatestVersionInterface(
-      eserviceId: string,
-      // TODO: use knodeId to route to the correct K2K Gateway instance
-      knodeId: string,
-      { correlationId, logger }: RequestContextData,
+      eserviceId: ExternalResource<EserviceId>,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<{ buffer: Buffer; contentType: string; fileName: string }> {
       logger.info(
-        { eserviceId, knodeId },
-        `Downloading interface of E-service ${eserviceId} from Knode ${knodeId}`,
+        { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
+        `Downloading interface of E-service ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
 
       const headers = { [CORRELATION_ID_HEADER]: correlationId };
-      const path = { eserviceId };
+      const path = { eserviceId: eserviceId.id };
 
       const [{ data: metadata }, { data: blob }] = await Promise.all([
         k2kGatewayApi.getEserviceLatestVersionInterface({
@@ -63,46 +64,11 @@ export function remoteResourcesManagerServiceBuilder(
       };
     },
 
-    async getCatalogEserviceDetail(
-      eserviceId: string,
-      // TODO: use knodeId to route to the correct K2K Gateway instance
-      knodeId: string,
-      { correlationId, logger }: RequestContextData,
-    ): Promise<API_CatalogEserviceDetail> {
-      logger.info(
-        { eserviceId, knodeId },
-        `Getting E-service detail ${eserviceId} from Knode ${knodeId}`,
-      );
-
-      const headers = { [CORRELATION_ID_HEADER]: correlationId };
-      const path = { eserviceId };
-
-      const [{ data: eservice }, { data: version }, { data: interfaceDoc }] =
-        await Promise.all([
-          k2kGatewayApi.getEservice({
-            client: k2kGatewayClient,
-            headers,
-            path,
-          }),
-          k2kGatewayApi.getEserviceLatestVersion({
-            client: k2kGatewayClient,
-            headers,
-            path,
-          }),
-          k2kGatewayApi.getEserviceLatestVersionInterface({
-            client: k2kGatewayClient,
-            headers,
-            path,
-          }),
-        ]);
-
-      return toAPI_CatalogEserviceDetail(eservice, version, interfaceDoc);
-    },
 
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,
-      { correlationId, logger }: RequestContextData,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CatalogEserviceSearchResults> {
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
 
@@ -124,6 +90,34 @@ export function remoteResourcesManagerServiceBuilder(
         pagination: data.pagination,
         results: data.results.map(toAPI_CatalogEserviceSearchResult),
       };
+    },
+
+    async getEserviceDetails(
+      eserviceId: ExternalResource<EserviceId>,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_EserviceDetails> {
+      logger.info(
+        { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
+        `Getting E-service detail ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
+      );
+
+      const headers = { [CORRELATION_ID_HEADER]: correlationId };
+      const path = { eserviceId: eserviceId.id };
+
+      const [{ data: eservice }, { data: version }] = await Promise.all([
+        k2kGatewayApi.getEservice({
+          client: k2kGatewayClient,
+          headers,
+          path,
+        }),
+        k2kGatewayApi.getEserviceLatestVersion({
+          client: k2kGatewayClient,
+          headers,
+          path,
+        }),
+      ]);
+
+      return toAPI_EserviceDetails(eservice, version);
     },
   };
 }
