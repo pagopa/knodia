@@ -1,8 +1,7 @@
 import type { agreementProcessApi } from "@knodia/agreement-process-client";
+import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { Organization } from "@knodia/organization-models";
-
-import { API_KnodeId } from "@knodia/common-models/api";
 
 import type { API_ProducerAgreement } from "./api.ts";
 
@@ -33,7 +32,7 @@ export const toAPI_ProducerAgreement = ({
         producer: {
           id: producer.id,
           knodeId: producer.knodeId,
-          name: { en: producer.name },
+          name: producer.name,
         },
       }
     : {}),
