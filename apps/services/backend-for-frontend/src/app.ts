@@ -83,5 +83,6 @@ export function buildAppFromConfig(config: BffProcessConfig) {
     });
   });
 
+  app.addHook("onClose", () => refreshTokenStore.close());
   return app;
 }

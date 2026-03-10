@@ -33,6 +33,10 @@ export function createRefreshTokenStore(
   }
 
   return {
+    async close(): Promise<void> {
+      await client.destroy();
+    },
+
     /**
      * Marks a JTI as used. Returns `true` if this is the first use,
      * `false` if the JTI was already seen (replay attempt).
