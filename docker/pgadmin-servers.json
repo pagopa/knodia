@@ -19,6 +19,16 @@
       "Username": "root",
       "SSLMode": "prefer",
       "PassFile": "/pgadmin4/pgpass"
+    },
+    "3": {
+      "Name": "Remote Resource",
+      "Group": "Knodia",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "remote_resource",
+      "Username": "root",
+      "SSLMode": "prefer",
+      "PassFile": "/pgadmin4/pgpass"
     }
   }
 }
