@@ -3,7 +3,6 @@ import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { generateId } from "@knodia/common-models/ids";
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -70,9 +69,6 @@ describe("POST /agreements (createAgreement)", () => {
     expect(createAgreementMock).toHaveBeenCalledWith(
       expect.objectContaining({
         body: k2kBody,
-        headers: expect.objectContaining({
-          [CORRELATION_ID_HEADER]: expect.any(String),
-        }),
       }),
     );
 

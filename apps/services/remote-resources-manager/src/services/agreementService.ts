@@ -2,7 +2,6 @@ import type { API_CreatedResource } from "@knodia/common-models/api";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -18,7 +17,7 @@ export function agreementServiceBuilder(
   return {
     async createAgreement(
       reqBody: API_AgreementSeed,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CreatedResource> {
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
 
@@ -32,9 +31,6 @@ export function agreementServiceBuilder(
       const { data } = await k2kGatewayApi.createAgreement({
         body: bodyWithoutKnodeId,
         client: k2kGatewayClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
       });
 
       // TODO: save the remote agreement in the remote resources database
