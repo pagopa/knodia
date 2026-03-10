@@ -47,7 +47,7 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
           client: k2kGatewayClient,
           headers,
           path,
-          responseType: 'arraybuffer',
+          responseType: "arraybuffer",
         }),
       ]);
 

@@ -145,7 +145,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
             headers,
             path,
             query,
-            responseType: 'arraybuffer',
+            responseType: "arraybuffer",
           }),
         ]);
 
