@@ -6,7 +6,6 @@
     "generate-api-client": "turbo run generate-api-client",
     "generate-openapi": "turbo run generate-openapi",
     "generate-protobuf": "turbo run generate-protobuf",
-    "generate-committed-artifacts": "turbo run generate-api-client generate-protobuf",
     "generate-bruno-collection": "node --experimental-strip-types ./tools/bruno-collection-generator/src/cli.ts",
     "lint": "turbo run lint",
     "lint:autofix": "turbo run lint:autofix",
