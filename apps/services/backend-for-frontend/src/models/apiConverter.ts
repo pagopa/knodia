@@ -100,8 +100,8 @@ export const toAPI_ConsumerEserviceDetails = (
   name: detail.name,
   producer: detail.producer,
   requiredAttributes: detail.latestVersion.requiredAttributes.map(
-    (group: remoteResourcesManagerApi.EserviceAttribute[]) =>
-      group.map((attr: remoteResourcesManagerApi.EserviceAttribute) => ({
+    (group: remoteResourcesManagerApi.Attribute[]) =>
+      group.map((attr: remoteResourcesManagerApi.Attribute) => ({
         ...attr,
         possessed: Math.random() >= 0.5, // TODO: check actual attribute possession
       })),

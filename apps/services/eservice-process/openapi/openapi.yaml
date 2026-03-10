@@ -133,7 +133,7 @@ components:
       enum:
         - Bearer
         - DPoP
-    EserviceAttribute:
+    Attribute:
       type: object
       properties:
         code:
@@ -308,7 +308,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
         state:
           description: State of the version
           allOf:
@@ -429,7 +429,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
       required:
         - accessTokenAudience
         - accessTokenDuration

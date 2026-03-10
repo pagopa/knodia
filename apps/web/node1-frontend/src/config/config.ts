@@ -15,6 +15,7 @@
  * Requires COGNITO_AUTHORITY, COGNITO_CLIENT_ID, COGNITO_REDIRECT_URI.
  */
 
+import { KnodeId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
 const FrontendNode1Config = z.object({
@@ -24,6 +25,7 @@ const FrontendNode1Config = z.object({
   COGNITO_DOMAIN: z.string().min(1, "COGNITO_DOMAIN is required"),
   COGNITO_LOGOUT_URI: z.string().min(1, "COGNITO_LOGOUT_URI is required"),
   COGNITO_REDIRECT_URI: z.string().min(1, "COGNITO_REDIRECT_URI is required"),
+  KNODE_ID: KnodeId,
 });
 
 const parsed = FrontendNode1Config.safeParse(window.env);
@@ -45,6 +47,7 @@ export const config = {
     logoutUri: parsed.data.COGNITO_LOGOUT_URI,
     redirectUri: parsed.data.COGNITO_REDIRECT_URI,
   },
+  knodeId: parsed.data.KNODE_ID,
 };
 
 declare global {
