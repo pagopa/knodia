@@ -193,10 +193,12 @@ components:
       type: object
       properties:
         categories:
+          description: Categories of data the E-service provides or receives
           type: array
           items:
             $ref: "#/components/schemas/EserviceCategory"
         description:
+          description: Human-readable description of the E-service
           type: object
           properties:
             en:
@@ -207,12 +209,17 @@ components:
         id:
           $ref: "#/components/schemas/EserviceId"
         latestVersionRequiredAttributes:
-          $ref: "#/components/schemas/RequiredAttributes"
+          description: Attributes required by the latest version of the E-service
+          allOf:
+            - $ref: "#/components/schemas/RequiredAttributes"
         latestVersionState:
-          $ref: "#/components/schemas/EserviceVersionState"
+          description: Current state of the latest version of the E-service
+          allOf:
+            - $ref: "#/components/schemas/EserviceVersionState"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
+          description: Human-readable name of the E-service
           type: object
           properties:
             en:
@@ -222,6 +229,11 @@ components:
           additionalProperties: false
         producerId:
           $ref: "#/components/schemas/OrganizationId"
+        updatedAt:
+          description: Last update timestamp of the E-service
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - categories
         - description
@@ -231,6 +243,7 @@ components:
         - mode
         - name
         - producerId
+        - updatedAt
       additionalProperties: false
     CatalogEserviceSearchResults:
       type: object
