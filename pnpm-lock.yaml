@@ -560,9 +560,6 @@ importers:
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
-      '@knodia/file-manager':
-        specifier: workspace:*
-        version: link:../../../packages/file-manager
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
@@ -712,6 +709,9 @@ importers:
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/file-manager':
+        specifier: workspace:*
+        version: link:../../../packages/file-manager
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger

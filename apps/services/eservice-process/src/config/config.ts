@@ -10,16 +10,7 @@ import { z } from "zod";
 const EserviceProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(EventStoreEserviceConfig)
-  .and(ReadmodelEserviceConfig)
-  .and(
-    z
-      .object({
-        ESERVICE_INTERFACES_S3_BUCKET: z.string(),
-      })
-      .transform((c) => ({
-        eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
-      })),
-  );
+  .and(ReadmodelEserviceConfig);
 export type EserviceProcessConfig = z.infer<typeof EserviceProcessConfig>;
 
 export const config = EserviceProcessConfig.parse(process.env);

@@ -5,6 +5,7 @@ import { z } from "zod";
 const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
   z
     .object({
+      ESERVICE_INTERFACES_S3_BUCKET: z.string(),
       ESERVICE_PROCESS_URL: z.url(),
       INTERNAL_JWT_AUDIENCE: z.string(),
       INTERNAL_JWT_ISSUER: z.string(),
@@ -17,6 +18,7 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
       INTERNAL_JWT_SUBJECT: z.string(),
     })
     .transform((c) => ({
+      eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
       eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
       internalJwt: {
         audience: c.INTERNAL_JWT_AUDIENCE,

@@ -1,4 +1,5 @@
 import type { EserviceProcessClient } from "@knodia/eservice-process-client";
+import type { FileManager } from "@knodia/file-manager";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
@@ -27,14 +28,24 @@ import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface EserviceRouterOptions {
+  eserviceInterfacesS3Bucket: string;
   eserviceProcessClient: EserviceProcessClient;
+  fileManager: FileManager;
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
   // eslint-disable-next-line max-lines-per-function
-> = async (fastify, { eserviceProcessClient, tokenProvider }) => {
+> = async (
+  fastify,
+  {
+    eserviceInterfacesS3Bucket,
+    eserviceProcessClient,
+    fileManager,
+    tokenProvider,
+  },
+) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -238,29 +249,23 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const [{ data: metadata }, { data: blob }] = await Promise.all([
-        eserviceProcessApi.getEserviceLatestVersionInterface({
+      const { data: metadata } =
+        await eserviceProcessApi.getEserviceLatestVersionInterface({
           client: eserviceProcessClient,
           headers,
           path: { eserviceId: req.params.eserviceId },
-        }),
-        eserviceProcessApi.downloadEserviceLatestVersionInterface({
-          client: eserviceProcessClient,
-          headers,
-          path: { eserviceId: req.params.eserviceId },
-        }),
-      ]);
+        });
 
-      const buffer =
-        typeof blob === "string"
-          ? Buffer.from(blob)
-          : Buffer.from(await blob.arrayBuffer());
+      const { content } = await fileManager.getBytes({
+        bucket: eserviceInterfacesS3Bucket,
+        key: metadata.path,
+      });
 
       res.raw.writeHead(200, {
         "Content-Disposition": `attachment; filename="${metadata.name}"`,
         "Content-Type": metadata.contentType,
       });
-      res.raw.end(buffer);
+      res.raw.end(content);
     },
     method: "GET",
     schema: {
