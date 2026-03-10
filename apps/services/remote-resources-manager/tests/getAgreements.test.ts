@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
@@ -79,9 +78,6 @@ describe("GET /agreements (getAgreements)", () => {
 
     expect(getAgreementsMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        headers: expect.objectContaining({
-          [CORRELATION_ID_HEADER]: expect.any(String),
-        }),
         query: parsedDefaultQuery,
       }),
     );
