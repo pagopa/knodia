@@ -45,7 +45,22 @@ export type Pagination = {
 export type OrganizationId = string;
 
 /**
- * Identifies a category of data, standardized within Knodia, which the E-Service provides or receives
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
+/**
+ * Identifies an Attribute standardized within Knodia
+ */
+export type Attribute = {
+    code: string;
+    scheme: string;
+};
+
+/**
+ * Identifies a category of data, standardized within Knodia, which the E-service provides or receives
  */
 export type EserviceCategory = {
     code: string;
@@ -81,25 +96,17 @@ export type EserviceVersionState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
 export type AccessTokenType = 'BEARER' | 'DPOP';
 
 /**
- * Indicates if the E-Service is intended to provide or receive data
+ * Indicates if the E-service is intended to provide or receive data
  */
 export type EserviceMode = 'PROVIDE_DATA' | 'RECEIVE_DATA';
 
 /**
- * Identifies an Attribute standardized within Knodia
- */
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
-/**
- * Describes a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)
+ * Describes a group of required Attributes (Consumers must possess at least one Attribute among them in order to satisfy the requirement)
  */
 export type RequiredAttributeGroup = Array<Attribute>;
 
 /**
- * Describes the Attributes which a consumer must possess to request an Agreement for the E-Service (at least one Attribute for each Attribute Group)
+ * Describes the Attributes which a consumer must possess to request an Agreement for the E-service (at least one Attribute for each Attribute Group)
  */
 export type RequiredAttributes = Array<RequiredAttributeGroup>;
 
@@ -107,6 +114,11 @@ export type RequiredAttributes = Array<RequiredAttributeGroup>;
  * Unique identifier of the E-service
  */
 export type EserviceId = string;
+
+/**
+ * Unique identifier of the E-service version
+ */
+export type EserviceVersionId = string;
 
 export type CatalogEserviceSearchResult = {
     /**
@@ -251,6 +263,15 @@ export type EserviceVersion = {
     versionNumber: number;
 };
 
+/**
+ * Seed data to create a new Agreement
+ */
+export type AgreementSeed = {
+    consumerId: OrganizationId;
+    eserviceId: EserviceId;
+    eserviceVersionId: EserviceVersionId;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -362,3 +383,36 @@ export type GetEserviceLatestVersionResponses = {
 };
 
 export type GetEserviceLatestVersionResponse = GetEserviceLatestVersionResponses[keyof GetEserviceLatestVersionResponses];
+
+export type CreateAgreementData = {
+    body: AgreementSeed;
+    path?: never;
+    query?: never;
+    url: '/agreements';
+};
+
+export type CreateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreateAgreementError = CreateAgreementErrors[keyof CreateAgreementErrors];
+
+export type CreateAgreementResponses = {
+    /**
+     * Agreement created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
