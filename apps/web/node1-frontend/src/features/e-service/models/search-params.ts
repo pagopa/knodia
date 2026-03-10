@@ -39,7 +39,7 @@ export type ProductionEserviceSearchParams = z.infer<
 export const consumptionEserviceSearchDefaultValues = {
   category: "",
   keywords: "",
-  knode: "",
+  knodeId: "",
   offset: 0,
 };
 
@@ -52,10 +52,10 @@ export const consumptionEserviceSearchSchema = z.object({
     .string()
     .default(consumptionEserviceSearchDefaultValues.keywords)
     .catch(consumptionEserviceSearchDefaultValues.keywords),
-  knode: z
+  knodeId: z
     .string()
-    .default(consumptionEserviceSearchDefaultValues.knode)
-    .catch(consumptionEserviceSearchDefaultValues.knode),
+    .default(consumptionEserviceSearchDefaultValues.knodeId)
+    .catch(consumptionEserviceSearchDefaultValues.knodeId),
   offset: z
     .number()
     .min(0)
@@ -66,3 +66,7 @@ export const consumptionEserviceSearchSchema = z.object({
 export type ConsumptionEserviceSearchParams = z.infer<
   typeof consumptionEserviceSearchSchema
 >;
+
+export const eserviceDetailSearchSchema = z.object({
+  knodeId: z.string(),
+});

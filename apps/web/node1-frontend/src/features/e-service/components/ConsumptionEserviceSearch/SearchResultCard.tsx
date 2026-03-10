@@ -1,10 +1,10 @@
 import { Avatar, Banner } from "@knodia/ui-kit/ui";
 import { SealCheckIcon, WarningDiamondIcon } from "@phosphor-icons/react";
 
-import type { ConsumptionEserviceSearchResult } from "@/features/e-service/consumption-eservice-search.mock";
+import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 
+import { CategoryChip } from "../CategoryChip";
 import {
-  CategoryChip,
   EserviceCard,
   EserviceCardFooter,
   EserviceCardHeader,
@@ -12,14 +12,17 @@ import {
 
 export function SearchResultCard({
   eservice,
+  knodeId,
 }: {
   eservice: ConsumptionEserviceSearchResult;
+  knodeId: string;
 }) {
   return (
     <EserviceCard>
       <EserviceCardHeader
         description={eservice.description}
         id={eservice.id}
+        search={{ knodeId }}
         title={eservice.name}
         to="/consumption/e-services/$id"
       />
@@ -32,16 +35,12 @@ export function SearchResultCard({
         mode={eservice.mode}
         state={eservice.state}
         trailing={
-          <div className="flex shrink-0 items-center gap-2">
-            <Avatar
-              className="bg-brand-dark text-white"
-              fallback={eservice.organization.initials}
-              size="sm"
-            />
-            <span className="label-md text-primary-light-high-contrast">
-              {eservice.organization.name}
-            </span>
-          </div>
+          <Avatar
+            className="bg-brand-dark text-white"
+            fallback={eservice.organization.initials}
+            name={eservice.organization.name}
+            size="sm"
+          />
         }
       >
         {eservice.categories.map((category) => (
@@ -49,6 +48,7 @@ export function SearchResultCard({
             code={category.code}
             key={category.code}
             scheme={category.scheme}
+            showIcon={false}
           />
         ))}
       </EserviceCardFooter>

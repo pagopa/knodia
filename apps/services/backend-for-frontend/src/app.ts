@@ -4,6 +4,10 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import {
+  bearerAuthSecurity,
+  bearerAuthSecurityScheme,
+} from "@knodia/fastify-zod-api-commons/security";
 import { initFileManager } from "@knodia/file-manager";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
@@ -35,11 +39,13 @@ function buildApp({ config }: { config: BffProcessConfig }) {
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
+        components: { securitySchemes: bearerAuthSecurityScheme },
         info: {
           description: "Knodia backend-for-frontend API",
           title: "Knodia BFF API",
           version: "1.0.0",
         },
+        security: bearerAuthSecurity,
         servers: [{ description: "BFF API", url: "/" }],
         tags: [
           healthRouterTag,
@@ -60,7 +66,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     },
     loggerConfig: config,
     makeApiProblem,
-    readCorrelationIdFromHeader: false,
     serviceName: "backend-for-frontend",
   });
 

@@ -65,6 +65,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.eservice],
@@ -92,6 +93,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-service created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
@@ -103,6 +105,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
@@ -124,6 +127,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-service retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
@@ -135,6 +139,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
@@ -156,6 +161,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-service version retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
@@ -167,6 +173,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
@@ -192,6 +199,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
             "E-service version interface document retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
@@ -234,6 +242,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
           description: "E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.eservice],

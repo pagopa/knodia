@@ -1,17 +1,17 @@
 import { categories } from "@knodia/category-models";
+import { KnodeId } from "@knodia/common-models/ids";
 import { Button, ComboBox, ComboBoxItem, TextField } from "@knodia/ui-kit/ui";
 import { useForm } from "@tanstack/react-form";
+
+import { config } from "@/config/config";
 
 import type { ConsumptionEserviceSearchParams } from "../../models/search-params";
 
 import { toSchemeRefOptions } from "../../utils/schemeRef";
 
-// TODO: Replace with real data
-const knodeOptions = [
-  { id: "knode-1", label: "Knode 1" },
-  { id: "knode-2", label: "Knode 2" },
-  { id: "knode-3", label: "Knode 3" },
-];
+const knodeOptions = KnodeId.options
+  .filter((id) => id !== config.knodeId)
+  .map((id) => ({ id, label: id }));
 
 const categoryOptions = toSchemeRefOptions(categories);
 
@@ -30,7 +30,7 @@ export function SearchFilters({
     defaultValues,
     onSubmit: ({ value }) => {
       // Knode is required AND (category OR keywords) is required
-      if (!value.knode || (!value.category && !value.keywords)) {
+      if (!value.knodeId || (!value.category && !value.keywords)) {
         onValidationError();
         return;
       }
@@ -68,7 +68,7 @@ export function SearchFilters({
               )}
             </ComboBox>
           )}
-          name="knode"
+          name="knodeId"
         />
 
         <form.Field

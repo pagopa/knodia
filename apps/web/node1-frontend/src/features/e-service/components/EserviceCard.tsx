@@ -1,25 +1,11 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { getCategory } from "@knodia/category-models";
-import { ButtonLink, Chip, Divider } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon, CheckIcon } from "@phosphor-icons/react";
+import { ButtonLink, Divider } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
-
-export function CategoryChip({
-  code,
-  scheme,
-}: {
-  code: string;
-  scheme: string;
-}) {
-  const label = getCategory(scheme, code)?.name ?? code;
-  return (
-    <Chip icon={<CheckIcon />} kind="neutral" label={label} type="light" />
-  );
-}
 
 export function EserviceCard({ children }: { children: React.ReactNode }) {
   return (
@@ -58,11 +44,13 @@ export function EserviceCardFooter({
 export function EserviceCardHeader({
   description,
   id,
+  search,
   title,
   to,
 }: {
   description?: string;
   id: string;
+  search?: { knodeId: string };
   title: string;
   to: string;
 }) {
@@ -83,6 +71,7 @@ export function EserviceCardHeader({
         hierarchy="neutral"
         kind="outlined"
         params={{ id }}
+        search={search}
         size="icon-md"
         to={to}
       >

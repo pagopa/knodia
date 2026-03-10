@@ -1,8 +1,9 @@
+import { API_Attribute } from "@knodia/attribute-models/api";
 import {
-  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   maxAccessTokenDuration,
   maxDailyCalls,
@@ -11,7 +12,6 @@ import {
 } from "@knodia/eservice-models";
 import {
   API_AccessTokenType,
-  API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
   API_EserviceVersionState,
@@ -105,7 +105,7 @@ export const API_EserviceSeed = z
     }).optional(),
     name: API_LocalizedName,
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
   })
   .meta({ id: "EserviceSeed" });
@@ -232,7 +232,7 @@ const API_ProducerEserviceVersionDetails = z
         format: "int32",
       }),
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
     state: API_EserviceVersionState.meta({
       description: "State of the version",
@@ -337,8 +337,8 @@ const API_ConsumerCatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
+    hasRequiredAttributes: z.boolean(),
     id: z.uuid(),
-    latestVersionRequiredAttributes: z.array(z.array(API_EserviceAttribute)),
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: API_LocalizedName,
@@ -363,4 +363,69 @@ export const API_GetConsumerCatalogEservicesQueryParams =
   API_PaginationQueryParams;
 export type API_GetConsumerCatalogEservicesQueryParams = z.infer<
   typeof API_GetConsumerCatalogEservicesQueryParams
+>;
+
+export const API_GetConsumerEserviceDetailsQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetConsumerEserviceDetailsQueryParams = z.infer<
+  typeof API_GetConsumerEserviceDetailsQueryParams
+>;
+
+const API_ConsumerEserviceDetailsProducer = z
+  .strictObject({
+    email: z.string(),
+    id: z.uuid(),
+    knodeName: z.string(),
+    name: API_LocalizedName,
+    notes: z.string(),
+  })
+  .meta({ id: "ConsumerEserviceDetailsProducer" });
+
+const API_ConsumerRequiredAttribute = z
+  .strictObject({
+    code: z.string(),
+    possessed: z.boolean(),
+    scheme: z.string(),
+  })
+  .meta({ id: "ConsumerRequiredAttribute" });
+
+export const API_ConsumerEserviceDetails = z
+  .strictObject({
+    accessToken: z
+      .strictObject({
+        audience: z.array(z.string()),
+        duration: z.number().int().meta({
+          description: "Duration of the access token in seconds",
+          format: "int32",
+        }),
+        type: API_AccessTokenType,
+      })
+      .meta({ id: "ConsumerEserviceDetailsAccessToken" }),
+    categories: z.array(API_EserviceCategory),
+    description: API_LocalizedDescription,
+    id: z.uuid(),
+    identificationRequired: z.boolean(),
+    interfaceDocument: z
+      .strictObject({
+        checksum: z.string(),
+        name: z.string(),
+      })
+      .meta({ id: "ConsumerEserviceDetailsInterfaceDocument" }),
+    isSignalHubEnabled: z.boolean(),
+    maxDailyCalls: z
+      .strictObject({
+        perConsumer: z.number().int().meta({ format: "int32" }),
+        perKnode: z.number().int().meta({ format: "int32" }),
+      })
+      .meta({ id: "ConsumerEserviceDetailsMaxDailyCalls" }),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producer: API_ConsumerEserviceDetailsProducer,
+    requiredAttributes: z.array(z.array(API_ConsumerRequiredAttribute)),
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "ConsumerEserviceDetails" });
+export type API_ConsumerEserviceDetails = z.infer<
+  typeof API_ConsumerEserviceDetails
 >;
