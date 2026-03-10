@@ -34,7 +34,7 @@ const TEST_USER_ID = "10000000-1000-1000-8000-000000000001";
 const TEST_ORG_ID = "20000000-2000-1000-8000-000000000002";
 
 function getSetCookie(
-  response: { headers: Record<string, string | string[] | undefined> },
+  response: { headers: { "set-cookie"?: string | string[] } },
   name: string,
 ): Record<string, string> | undefined {
   const raw = response.headers["set-cookie"];
@@ -165,13 +165,13 @@ describe("auth integration", () => {
 
       const refreshCookie = getSetCookie(response, "refresh");
       expect(refreshCookie).toBeDefined();
-      expect(refreshCookie!.value).toBeTruthy();
-      expect(refreshCookie!.httponly).toBe("true");
-      expect(refreshCookie!.samesite).toBe("Strict");
-      expect(refreshCookie!.path).toBe("/auth");
+      expect(refreshCookie!["value"]).toBeTruthy();
+      expect(refreshCookie!["httponly"]).toBe("true");
+      expect(refreshCookie!["samesite"]).toBe("Strict");
+      expect(refreshCookie!["path"]).toBe("/auth");
 
       const refreshPayload = UISessionRefreshTokenClaims.parse(
-        parseJwtPayload(refreshCookie!.value),
+        parseJwtPayload(refreshCookie!["value"]!),
       );
       expect(refreshPayload.sub).toBe(TEST_USER_ID);
       expect(refreshPayload.type).toBe("refresh-ui-session");
@@ -328,7 +328,7 @@ describe("auth integration", () => {
       // Should set a new refresh cookie (rotation)
       const refreshCookie = getSetCookie(response, "refresh");
       expect(refreshCookie).toBeDefined();
-      expect(refreshCookie!.httponly).toBe("true");
+      expect(refreshCookie!["httponly"]).toBe("true");
     });
 
     it("returns 401 when no refresh cookie is present", async () => {
@@ -508,10 +508,10 @@ describe("auth integration", () => {
       const refreshCookie = getSetCookie(response, "refresh");
       expect(refreshCookie).toBeDefined();
       // Cookie cleared: empty value and Max-Age=0
-      expect(refreshCookie!.value).toBe("");
+      expect(refreshCookie!["value"]).toBe("");
       expect(refreshCookie!["max-age"]).toBe("0");
-      expect(refreshCookie!.httponly).toBe("true");
-      expect(refreshCookie!.path).toBe("/auth");
+      expect(refreshCookie!["httponly"]).toBe("true");
+      expect(refreshCookie!["path"]).toBe("/auth");
     });
 
     it("revokes the refresh token JTI in Redis", async () => {
