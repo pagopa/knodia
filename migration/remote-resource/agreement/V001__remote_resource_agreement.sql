@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_agreement."agreement" (
 	PRIMARY KEY ("knode_id", "agreement_id")
 );
 
--- Grant privileges to ${NAMESPACE}_remote_resource_manager_user
-GRANT USAGE ON SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_remote_resource_manager_user;
-GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_remote_resource_manager_user;
+-- Grant privileges to ${NAMESPACE}_remote_resources_manager_user
+GRANT USAGE ON SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_remote_resources_manager_user;
+GRANT SELECT, INSERT ON ALL TABLES IN SCHEMA ${NAMESPACE}_agreement TO ${NAMESPACE}_remote_resources_manager_user;
