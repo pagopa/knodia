@@ -1085,6 +1085,7 @@ paths:
   /producer/eservices/{eserviceId}/interface:
     get:
       operationId: getProducerEserviceLatestVersionInterface
+      summary: Download producer E-service latest version interface
       tags:
         - eservice
       description: Download the interface document for the latest version of an E-service

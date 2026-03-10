@@ -287,6 +287,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
+      summary: "Download producer E-service latest version interface",
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId/interface",
