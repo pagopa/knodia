@@ -209,10 +209,12 @@ components:
       type: object
       properties:
         categories:
+          description: Categories of data the E-service provides or receives
           type: array
           items:
             $ref: "#/components/schemas/EserviceCategory"
         description:
+          description: Human-readable description of the E-service
           type: object
           properties:
             en:
@@ -223,12 +225,17 @@ components:
         id:
           $ref: "#/components/schemas/EserviceId"
         latestVersionRequiredAttributes:
-          $ref: "#/components/schemas/RequiredAttributes"
+          description: Attributes required by the latest version of the E-service
+          allOf:
+            - $ref: "#/components/schemas/RequiredAttributes"
         latestVersionState:
-          $ref: "#/components/schemas/EserviceVersionState"
+          description: Current state of the latest version of the E-service
+          allOf:
+            - $ref: "#/components/schemas/EserviceVersionState"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
+          description: Human-readable name of the E-service
           type: object
           properties:
             en:
@@ -238,6 +245,11 @@ components:
           additionalProperties: false
         producerId:
           $ref: "#/components/schemas/OrganizationId"
+        updatedAt:
+          description: Last update timestamp of the E-service
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - categories
         - description
@@ -247,6 +259,7 @@ components:
         - mode
         - name
         - producerId
+        - updatedAt
       additionalProperties: false
     CatalogEserviceSearchResults:
       type: object
@@ -423,101 +436,20 @@ components:
         - updatedAt
         - versionNumber
       additionalProperties: false
-    AgreementId:
-      description: Unique identifier for the Agreement
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - ORION
-        - LYNX
-    AgreementConsumer:
-      description: Consumer Organization of the Agreement
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/OrganizationId"
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - id
-        - knodeId
-      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
       properties:
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          $ref: "#/components/schemas/EserviceId"
-        eserviceVersionId:
-          $ref: "#/components/schemas/EserviceVersionId"
-      required:
-        - consumer
-        - eserviceId
-        - eserviceVersionId
-      additionalProperties: false
-    AgreementState:
-      description: Describes the states an Agreement can be in
-      type: string
-      enum:
-        - ACTIVE
-        - SUSPENDED
-        - ARCHIVED
-    Agreement:
-      description: Agreement between a Consumer and a Producer for an E-service
-      type: object
-      properties:
-        attributes:
-          description: Describes the Attributes of the E-service that the Consumer
-            possesses when the Agreement is activated (must satisfy at least one
-            Attribute for each Required Attribute Group defined by the
-            E-service)
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          $ref: "#/components/schemas/EserviceId"
-        eserviceVersionId:
-          $ref: "#/components/schemas/EserviceVersionId"
-        id:
-          $ref: "#/components/schemas/AgreementId"
-        producerId:
+        consumerId:
           $ref: "#/components/schemas/OrganizationId"
-        state:
-          $ref: "#/components/schemas/AgreementState"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        eserviceId:
+          $ref: "#/components/schemas/EserviceId"
+        eserviceVersionId:
+          $ref: "#/components/schemas/EserviceVersionId"
       required:
-        - attributes
-        - consumer
+        - consumerId
         - eserviceId
         - eserviceVersionId
-        - id
-        - producerId
-        - state
-        - updatedAt
-      additionalProperties: false
-    Agreements:
-      type: object
-      properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
-          type: array
-          items:
-            $ref: "#/components/schemas/Agreement"
-      required:
-        - pagination
-        - results
       additionalProperties: false
 paths:
   /status:
@@ -712,77 +644,6 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-    get:
-      operationId: getAgreements
-      tags:
-        - agreement
-      description: Retrieve a list of Agreements
-      parameters:
-        - schema:
-            format: int32
-            type: number
-            minimum: 1
-            maximum: 50
-          in: query
-          name: limit
-          required: true
-          description: Maximum number of items returned
-        - schema:
-            format: int32
-            type: number
-            minimum: 0
-          in: query
-          name: offset
-          required: true
-          description: Pagination starting position
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: consumerId
-          required: false
-          description: Filter by Consumer ID
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/AgreementState"
-          in: query
-          name: state
-          required: false
-          description: Filter by Agreement State
-      responses:
-        "200":
-          description: Agreements retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Agreements retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/Agreements"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

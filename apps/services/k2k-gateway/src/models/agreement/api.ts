@@ -32,7 +32,7 @@ export type API_AgreementConsumer = z.infer<typeof API_AgreementConsumer>;
 
 export const API_AgreementSeed = z
   .strictObject({
-    consumer: API_AgreementConsumer,
+    consumerId: API_OrganizationId,
     eserviceId: API_EserviceId,
     eserviceVersionId: API_EserviceVersionId,
   })

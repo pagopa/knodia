@@ -36,7 +36,7 @@ function buildApp({
   loggerConfig,
 }: {
   agreementProcessUrl: string;
-  callerKnodeId: string;
+  callerKnodeId: KnodeId;
   eserviceProcessUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
@@ -86,7 +86,7 @@ function buildApp({
   });
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
-    callerKnodeId: KnodeId.parse(callerKnodeId),
+    callerKnodeId,
     tokenProvider,
   });
 

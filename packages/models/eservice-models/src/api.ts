@@ -62,11 +62,3 @@ export const API_AccessTokenType = z
   .enum(["Bearer", "DPoP"])
   .meta({ id: "AccessTokenType" });
 export type API_AccessTokenType = z.infer<typeof API_AccessTokenType>;
-
-export const API_EserviceAttribute = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({ id: "EserviceAttribute" });
-export type API_EserviceAttribute = z.infer<typeof API_EserviceAttribute>;
