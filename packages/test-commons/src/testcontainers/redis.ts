@@ -1,7 +1,7 @@
 import { GenericContainer } from "testcontainers";
 
 const REDIS_PORT = 6379;
-const REDIS_IMAGE = "redis:7-alpine";
+const REDIS_IMAGE = "redis:8.6.1-alpine";
 
 /**
  * !!! Intended to be called once in global test setup !!!

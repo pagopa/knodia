@@ -287,7 +287,7 @@ services:
   redis:
     security_opt:
       - no-new-privileges:true
-    image: redis:7-alpine@sha256:48501c5e3aadb1d335e2dbd4e131cae48b181a87e1748735a9756e6c6989e4f6
+    image: redis:8.6.1-alpine@sha256:2afba59292f25f5d1af200496db41bea2c6c816b059f57ae74703a50a03a27d0
     container_name: knodia-redis
     ports:
       - 6379:6379
