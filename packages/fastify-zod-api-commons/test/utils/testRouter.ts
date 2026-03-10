@@ -75,4 +75,23 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
     },
     url: "/test",
   });
+
+  fastify.route({
+    handler: (_req, res) => {
+      res.send({ test: "ok" });
+    },
+    method: "POST",
+    schema: {
+      cookies: z.object({
+        session: z.string().optional().describe("HttpOnly session cookie"),
+      }),
+      description: "Test endpoint with cookie parameter",
+      operationId: "testCookie",
+      response: {
+        200: API_Test.meta({ description: "OK" }),
+      },
+      tags: [testTags.test],
+    },
+    url: "/test/cookie",
+  });
 };

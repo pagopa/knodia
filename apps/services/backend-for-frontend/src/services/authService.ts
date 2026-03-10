@@ -161,23 +161,33 @@ export function authServiceBuilder(
       return generateTokenPairFromClaims(claims);
     },
 
-    async refreshUISessionTokenPair(refreshTokenJwt: string): Promise<{
+    async refreshUISessionTokenPair(
+      refreshTokenJwtCookie: string | undefined,
+    ): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {
-      const claims = await verifyRefreshToken(refreshTokenJwt);
+      if (!refreshTokenJwtCookie) {
+        throw unauthorizedError("Missing refresh token cookie");
+      }
+
+      const claims = await verifyRefreshToken(refreshTokenJwtCookie);
       return generateTokenPairFromClaims(claims);
     },
 
-    async revokeRefreshToken(refreshTokenJwt: string): Promise<void> {
-      try {
-        const payload = decodeJwt(refreshTokenJwt);
-        const parsed = UISessionRefreshTokenClaims.safeParse(payload);
-        if (parsed.success) {
-          await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);
+    async revokeRefreshToken(
+      refreshTokenJwtCookie: string | undefined,
+    ): Promise<void> {
+      if (refreshTokenJwtCookie) {
+        try {
+          const payload = decodeJwt(refreshTokenJwtCookie);
+          const parsed = UISessionRefreshTokenClaims.safeParse(payload);
+          if (parsed.success) {
+            await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);
+          }
+        } catch {
+          // Best-effort: if the token is malformed, there is nothing to revoke
         }
-      } catch {
-        // Best-effort: if the token is malformed, there is nothing to revoke
       }
     },
   };

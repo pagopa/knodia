@@ -1,9 +1,7 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import {
-  API_Problem,
-  unauthorizedError,
-} from "@knodia/fastify-zod-api-commons/models";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
 import { type BffProcessConfig, config } from "../config/config.ts";
@@ -30,15 +28,34 @@ const API_SessionResponse = z
   })
   .meta({ id: "SessionResponse" });
 
+const API_RefreshCookie = z.object({
+  refresh: z
+    .string()
+    .describe(
+      "HttpOnly refresh token (set automatically by login and refresh responses)",
+    ),
+});
+
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
   { authService },
 ) => {
-  function setRefreshCookie(
-    res: Parameters<Parameters<typeof fastify.route>[0]["handler"]>[1],
-    refreshToken: string,
-  ): void {
+  function setRefreshCookie(res: FastifyReply, refreshToken: string): void {
     void res.setCookie(REFRESH_COOKIE_NAME, refreshToken, {
+      domain: config.cookie.domain,
+      httpOnly: true,
+      path: REFRESH_COOKIE_PATH,
+      sameSite: "strict",
+      secure: config.cookie.secure,
+    });
+  }
+
+  function getRefreshCookie(req: FastifyRequest): string | undefined {
+    return req.cookies[REFRESH_COOKIE_NAME];
+  }
+
+  function clearRefreshCookie(res: FastifyReply): void {
+    void res.clearCookie(REFRESH_COOKIE_NAME, {
       domain: config.cookie.domain,
       httpOnly: true,
       path: REFRESH_COOKIE_PATH,
@@ -52,6 +69,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       const { refreshToken, uiSessionToken } =
         await authService.generateUISessionTokenPair(req.body.oidcToken);
       setRefreshCookie(res, refreshToken);
+
       res.send({ uiSessionToken });
     },
     method: "POST",
@@ -73,17 +91,17 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const refreshCookie = req.cookies[REFRESH_COOKIE_NAME];
-      if (!refreshCookie) {
-        throw unauthorizedError("Missing refresh token cookie");
-      }
+      const refreshTokenJwtCookie = getRefreshCookie(req);
+
       const { refreshToken, uiSessionToken } =
-        await authService.refreshUISessionTokenPair(refreshCookie);
+        await authService.refreshUISessionTokenPair(refreshTokenJwtCookie);
       setRefreshCookie(res, refreshToken);
+
       res.send({ uiSessionToken });
     },
     method: "POST",
     schema: {
+      cookies: API_RefreshCookie,
       description:
         "Refresh an expired UI session token using the refresh token cookie",
       operationId: "refreshSession",
@@ -101,21 +119,16 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
 
   fastify.route({
     handler: async (req, res) => {
-      const refreshCookie = req.cookies[REFRESH_COOKIE_NAME];
-      if (refreshCookie) {
-        await authService.revokeRefreshToken(refreshCookie);
-      }
-      void res.clearCookie(REFRESH_COOKIE_NAME, {
-        domain: config.cookie.domain,
-        httpOnly: true,
-        path: REFRESH_COOKIE_PATH,
-        sameSite: "strict",
-        secure: config.cookie.secure,
-      });
+      const refreshTokenJwtCookie = getRefreshCookie(req);
+
+      await authService.revokeRefreshToken(refreshTokenJwtCookie);
+      clearRefreshCookie(res);
+
       res.status(204).send();
     },
     method: "POST",
     schema: {
+      cookies: API_RefreshCookie,
       description: "Clear the refresh token cookie",
       operationId: "logout",
       response: {

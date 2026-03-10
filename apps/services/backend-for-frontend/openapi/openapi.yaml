@@ -692,6 +692,14 @@ paths:
       tags:
         - auth
       description: Refresh an expired UI session token using the refresh token cookie
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: refresh
+          required: true
+          description: HttpOnly refresh token (set automatically by login and refresh
+            responses)
       responses:
         "200":
           description: Session refreshed successfully
@@ -723,6 +731,14 @@ paths:
       tags:
         - auth
       description: Clear the refresh token cookie
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: refresh
+          required: true
+          description: HttpOnly refresh token (set automatically by login and refresh
+            responses)
       responses:
         "204":
           description: Logged out successfully
