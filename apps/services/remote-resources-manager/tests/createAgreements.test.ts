@@ -3,14 +3,12 @@ import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { generateId } from "@knodia/common-models/ids";
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import { type API_AgreementSeed } from "../src/models/agreement/api.ts";
-import { toK2KAPI_AgreementSeed } from "../src/models/agreement/apiConverter.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const createAgreementMock = vi.hoisted(() => vi.fn());
@@ -35,18 +33,18 @@ const toK2KResult = (
 });
 
 const allowedTestTokens: TestToken[] = [
-  { roles: ["technical"], type: "ui-session" },
+  { roles: ["administrative"], type: "ui-session" },
 ];
 
 describe("POST /agreements (createAgreement)", () => {
   const eservice = getMockEservice({ latestVersionState: "Active" });
-  const body: API_AgreementSeed = {
-    consumer: {
-      id: generateId(),
-      knodeId: "Orion",
-    },
+  const k2kBody: k2kGatewayApi.AgreementSeed = {
+    consumerId: generateId(),
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
+  };
+  const body: API_AgreementSeed = {
+    ...k2kBody,
     knodeId: "Orion",
   };
 
@@ -70,10 +68,7 @@ describe("POST /agreements (createAgreement)", () => {
 
     expect(createAgreementMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: toK2KAPI_AgreementSeed(body),
-        headers: expect.objectContaining({
-          [CORRELATION_ID_HEADER]: expect.any(String),
-        }),
+        body: k2kBody,
       }),
     );
 
@@ -106,19 +101,10 @@ describe("POST /agreements (createAgreement)", () => {
     },
     { body: { ...body, eserviceVersionId: "" } },
     {
-      body: {
-        ...body,
-        consumer: { ...body.consumer, knodeId: "UnknownKnodeId" },
-      },
+      body: { ...body, consumerId: 99 },
     },
     {
-      body: { ...body, consumer: { ...body.consumer, knodeId: "" } },
-    },
-    {
-      body: { ...body, consumer: { ...body.consumer, id: 99 } },
-    },
-    {
-      body: { ...body, consumer: { ...body.consumer, id: "" } },
+      body: { ...body, consumerId: "" },
     },
   ])(
     "should return 400 if query/body parameters are formatted incorrectly (%o)",

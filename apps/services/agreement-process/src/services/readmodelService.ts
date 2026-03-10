@@ -9,7 +9,6 @@ import {
 import { aggregateAgreements } from "@knodia/db-readmodel-agreement/converters";
 import {
   type ListResult,
-  SortDirection,
   type WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import {
@@ -19,8 +18,7 @@ import {
 import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { type Eservice } from "@knodia/eservice-models";
-import { and, eq, SQL } from "drizzle-orm";
-import { toCamelCase } from "drizzle-orm/casing";
+import { eq } from "drizzle-orm";
 
 import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 
@@ -32,54 +30,14 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
     ): Promise<ListResult<Agreement>> {
-      const {
-        consumerId,
-        consumerKnodeId,
-        eserviceId,
-        limit,
-        offset,
-        producerId,
-        sortBy,
-        sortOrder,
-        state,
-      } = requestQuery;
+      const { limit, offset } = requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
-        const defaultSort: {
-          sortBy: string;
-          sortOrder: SortDirection;
-        } = {
-          sortBy: toCamelCase(readmodelAgreement.updatedAt.name),
+        const orderByFilters = createOrderByFilters({
+          sortBy: "updatedAt",
           sortOrder: "desc",
-        };
-
-        const defaultOrderByFilters = createOrderByFilters({
-          sortBy: defaultSort.sortBy,
-          sortOrder:
-            sortOrder && sortBy
-              ? defaultSort.sortOrder
-              : (sortOrder ?? defaultSort.sortOrder),
           table: readmodelAgreement,
         });
-        let orderByFilters: SQL[] = [];
-        if (sortBy) {
-          if (sortBy === "eserviceName") {
-            orderByFilters = createOrderByFilters({
-              sortBy: readmodelEservice.name.name,
-              sortOrder: sortOrder ?? SortDirection.enum.asc,
-              table: readmodelEservice,
-            }).concat(defaultOrderByFilters);
-          } else {
-            orderByFilters = createOrderByFilters({
-              defaultSort,
-              sortBy,
-              sortOrder: sortOrder ?? SortDirection.enum.asc,
-              table: readmodelAgreement,
-            });
-          }
-        } else {
-          orderByFilters = defaultOrderByFilters;
-        }
 
         const createFilterQuery = () =>
           tx
@@ -90,21 +48,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .innerJoin(
               readmodelEservice,
               eq(readmodelAgreement.eserviceId, readmodelEservice.id),
-            )
-            .where(
-              and(
-                eserviceId ? eq(readmodelEservice.id, eserviceId) : undefined,
-                consumerId
-                  ? eq(readmodelAgreement.consumerId, consumerId)
-                  : undefined,
-                consumerKnodeId
-                  ? eq(readmodelAgreement.consumerKnodeId, consumerKnodeId)
-                  : undefined,
-                state ? eq(readmodelAgreement.state, state) : undefined,
-                producerId
-                  ? eq(readmodelAgreement.producerId, producerId)
-                  : undefined,
-              ),
             )
             .$dynamic();
 
@@ -143,7 +86,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         const agreements = aggregateAgreements(queryRes);
 
         return {
-          results: agreements.map((e) => e.data),
+          results: agreements.map((a) => a.data),
           totalCount,
         };
       });

@@ -3,7 +3,6 @@ import type { EserviceId } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -28,7 +27,7 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CatalogEserviceSearchResults> {
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
 
@@ -40,9 +39,6 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
       const { data } = await k2kGatewayApi.getCatalogEservices({
         body: bodyWithoutKnodeId,
         client: k2kGatewayClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
         query: reqQuery,
       });
 
@@ -54,25 +50,22 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
 
     async getEserviceDetails(
       eserviceId: ExternalResource<EserviceId>,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_EserviceDetails> {
       logger.info(
         { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
         `Getting E-service detail ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
 
-      const headers = { [CORRELATION_ID_HEADER]: correlationId };
       const path = { eserviceId: eserviceId.id };
 
       const [{ data: eservice }, { data: version }] = await Promise.all([
         k2kGatewayApi.getEservice({
           client: k2kGatewayClient,
-          headers,
           path,
         }),
         k2kGatewayApi.getEserviceLatestVersion({
           client: k2kGatewayClient,
-          headers,
           path,
         }),
       ]);

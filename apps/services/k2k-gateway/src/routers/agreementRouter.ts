@@ -49,7 +49,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
       const { data } = await agreementProcessApi.createAgreement({
-        body: toProcessAPI_AgreementSeed(req.body),
+        body: toProcessAPI_AgreementSeed(req.body, callerKnodeId),
         client: agreementProcessClient,
         headers,
       });

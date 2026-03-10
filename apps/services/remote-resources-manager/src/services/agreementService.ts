@@ -2,7 +2,6 @@ import type { API_CreatedResource } from "@knodia/common-models/api";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -28,19 +27,20 @@ export function agreementServiceBuilder(
   return {
     async createAgreement(
       reqBody: API_AgreementSeed,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CreatedResource> {
+      const { knodeId, ...bodyWithoutKnodeId } = reqBody;
+
       logger.info(
         { requestBody: reqBody },
-        `Creating agreement for e-service owned by Knode ${reqBody.knodeId} with body data`,
+        `Creating agreement for e-service owned by Knode ${knodeId} with body data`,
       );
 
+      // TODO: add assertOrganizationExists(consumerId) to check if the seed consumerId exists before calling the K2K Gateway API
+
       const { data } = await k2kGatewayApi.createAgreement({
-        body: toK2KAPI_AgreementSeed(reqBody),
+        body: bodyWithoutKnodeId,
         client: k2kGatewayClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
       });
 
       // TODO: save the remote agreement in the remote resources database
@@ -49,15 +49,12 @@ export function agreementServiceBuilder(
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Agreements> {
       logger.info({ requestQuery }, "Getting Agreements with query params");
 
       const { data } = await k2kGatewayApi.getAgreements({
         client: k2kGatewayClient,
-        headers: {
-          [CORRELATION_ID_HEADER]: correlationId,
-        },
         query: {
           consumerId: requestQuery.consumerId,
           limit: requestQuery.limit,

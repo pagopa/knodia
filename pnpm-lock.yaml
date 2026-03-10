@@ -922,9 +922,6 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
-      '@knodia/agreement-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/agreement-models
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
@@ -1807,6 +1804,9 @@ importers:
 
   packages/models/agreement-models:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: 'catalog:'
+        version: 2.10.2
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../attribute-models
@@ -1823,9 +1823,6 @@ importers:
       '@bufbuild/buf':
         specifier: 'catalog:'
         version: 1.61.0
-      '@bufbuild/protobuf':
-        specifier: 'catalog:'
-        version: 2.10.2
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -1955,6 +1952,9 @@ importers:
 
   packages/models/keychain-models:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: 'catalog:'
+        version: 2.10.2
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models
@@ -1968,9 +1968,6 @@ importers:
       '@bufbuild/buf':
         specifier: 'catalog:'
         version: 1.61.0
-      '@bufbuild/protobuf':
-        specifier: 'catalog:'
-        version: 2.10.2
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config

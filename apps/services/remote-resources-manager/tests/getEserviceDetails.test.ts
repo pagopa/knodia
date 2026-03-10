@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
@@ -54,19 +53,14 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(response.statusCode).toBe(200);
 
     const expectedPath = { eserviceId };
-    const expectedHeaders = expect.objectContaining({
-      [CORRELATION_ID_HEADER]: expect.any(String),
-    });
 
     expect(getEserviceMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        headers: expectedHeaders,
         path: expectedPath,
       }),
     );
     expect(getEserviceLatestVersionMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        headers: expectedHeaders,
         path: expectedPath,
       }),
     );

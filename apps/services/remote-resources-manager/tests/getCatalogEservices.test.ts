@@ -2,7 +2,6 @@
 
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
@@ -78,9 +77,6 @@ describe("POST /catalog (getCatalogEservices)", () => {
     expect(getCatalogEservicesMock).toHaveBeenCalledWith(
       expect.objectContaining({
         body: { keywords: "test" },
-        headers: expect.objectContaining({
-          [CORRELATION_ID_HEADER]: expect.any(String),
-        }),
         query: parsedDefaultQuery,
       }),
     );
