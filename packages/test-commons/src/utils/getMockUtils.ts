@@ -1,6 +1,7 @@
 import { Agreement } from "@knodia/agreement-models";
 import {
   Eservice,
+  EserviceCategory,
   EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
@@ -16,7 +17,6 @@ export function getMockAgreement(seed = 0): Agreement {
     .generate();
 }
 
-/** @knipignore */
 export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
   return zocker(ConsumerKeychain)
     .array({
@@ -56,4 +56,12 @@ export function getMockEservice({
         }
       : {}),
   };
+}
+
+export function getMockEserviceCategory(seed = 0) {
+  return zocker(EserviceCategory).setSeed(seed).generate();
+}
+
+export function getMockEserviceVersion(seed = 0): EserviceVersion {
+  return zocker(EserviceVersion).setSeed(seed).generate();
 }

@@ -1,4 +1,9 @@
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  EserviceVersionId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
 import type { EserviceVersionState } from "@knodia/eservice-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -7,17 +12,30 @@ import { constants } from "http2";
 
 const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 
+/* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   ESERVICE_NOT_FOUND: "0001",
   ESERVICE_VERSION_NOT_FOUND: "0002",
   ESERVICE_VERSION_NOT_IN_EXPECTED_STATE: "0003",
+  AGREEMENT_NOT_FOUND: "0004",
+  REQUESTER_IS_NOT_PRODUCER: "0005",
 } as const;
+/* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "agreement-process",
 });
+
+export function agreementNotFound(id: AgreementId) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_FOUND",
+    detail: `Agreement with id ${id} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Agreement Not Found",
+  });
+}
 
 export function eserviceNotFound(id: EserviceId) {
   return createApiError<ErrorCodes>({
@@ -54,5 +72,17 @@ export function eserviceVersionNotInExpectedState(
     detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: ${allowedStates}`,
     status: HTTP_STATUS_CONFLICT,
     title: "E-service Version Not in Expected State",
+  });
+}
+
+export function requesterIsNotProducer(
+  producerId: OrganizationId,
+  requesterId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "REQUESTER_IS_NOT_PRODUCER",
+    detail: `Requester ${requesterId} is not the Producer ${producerId} of the E-service`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Requester is not the Producer",
   });
 }

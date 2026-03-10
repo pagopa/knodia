@@ -1,6 +1,10 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
-import type { InternalAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import {
@@ -12,11 +16,18 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
+import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
-import { retrieveEservice } from "../utils/readmodelUtils.ts";
-import { assertEserviceVersionIsActive } from "../utils/validators.ts";
+import {
+  retrieveAgreement,
+  retrieveEservice,
+} from "../utils/readmodelUtils.ts";
+import {
+  assertEserviceVersionIsActive,
+  assertRequesterIsProducer,
+} from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -76,6 +87,31 @@ export function agreementServiceBuilder(
       );
 
       return agreement;
+    },
+    async getAgreement(
+      agreementId: AgreementId,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<Agreement> {
+      logger.info(`Getting Agreement with ID ${agreementId}`);
+
+      const agreement = await retrieveAgreement(agreementId, readmodelService);
+
+      if (authData.tokenType === "ui-session") {
+        assertRequesterIsProducer(agreement.producerId, authData);
+      }
+
+      return agreement;
+    },
+    async getAgreements(
+      requestQuery: API_GetAgreementsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<Agreement>> {
+      logger.info({ requestQuery }, "Getting Agreements with query params");
+
+      return await readmodelService.getAgreements(requestQuery);
     },
   };
 }
