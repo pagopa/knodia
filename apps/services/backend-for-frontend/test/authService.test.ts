@@ -5,6 +5,7 @@ import {
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
 } from "@knodia/common-models/auth";
+import "@knodia/test-commons/redis";
 import { afterEach, describe, expect, inject, it, vi } from "vitest";
 
 const mockJwtVerify = vi.hoisted(() => vi.fn());

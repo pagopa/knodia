@@ -1,3 +1,4 @@
+import "@knodia/test-commons/redis";
 import Fastify from "fastify";
 import { beforeAll, describe, expect, inject, it } from "vitest";
 
