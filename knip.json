@@ -18,6 +18,7 @@
   "workspaces": {
     ".": {
       "ignore": [
+        "docker/multinode/env-*.js",
         "scripts/local-kms/kms-setup.mjs",
         "scripts/local-kms/local-cognito.mjs"
       ]

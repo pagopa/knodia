@@ -333,7 +333,7 @@ services:
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
       flyway-orion:
@@ -362,6 +362,10 @@ services:
       INTERNAL_JWT_KID: "alias/local-knodia-key"
       INTERNAL_JWT_SECONDS_DURATION: "3600"
       INTERNAL_JWT_SUBJECT: "k2k-gateway"
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_REGION: eu-south-1
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
       eservice-process-orion:
         condition: service_started
@@ -409,17 +413,18 @@ services:
       REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-orion:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      COGNITO_ISSUER: "http://local-cognito:3000"
+      COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
-      UI_SESSION_JWT_KID: "local-knodia-key"
+      UI_SESSION_JWT_KID: "alias/local-knodia-key"
       UI_SESSION_JWT_SECONDS_DURATION: "3600"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-orion-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
       remote-resources-manager-orion:
         condition: service_started
@@ -492,7 +497,7 @@ services:
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
-      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
       flyway-lynx:
@@ -521,6 +526,10 @@ services:
       INTERNAL_JWT_KID: "alias/local-knodia-key"
       INTERNAL_JWT_SECONDS_DURATION: "3600"
       INTERNAL_JWT_SUBJECT: "k2k-gateway"
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_REGION: eu-south-1
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
       eservice-process-lynx:
         condition: service_started
@@ -568,17 +577,18 @@ services:
       REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-lynx:3000"
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
-      COGNITO_ISSUER: "http://local-cognito:3000"
+      COGNITO_ISSUER: "http://localhost:4567"
       COGNITO_JWKS_URL: "http://local-cognito:3000/jwks"
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
-      UI_SESSION_JWT_KID: "local-knodia-key"
+      UI_SESSION_JWT_KID: "alias/local-knodia-key"
       UI_SESSION_JWT_SECONDS_DURATION: "3600"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-lynx-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
+      AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
       remote-resources-manager-lynx:
         condition: service_started
@@ -617,6 +627,50 @@ services:
         condition: service_completed_successfully
       kafka:
         condition: service_healthy
+
+  # ============================================================
+  # Frontends
+  # ============================================================
+
+  frontend-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-frontend-orion
+    build:
+      context: ..
+      dockerfile: apps/web/node1-frontend/Dockerfile
+    ports:
+      - 5001:80
+    volumes:
+      - ./multinode/nginx-frontend.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./multinode/env-orion.js:/usr/share/nginx/html/ui/env.js:ro
+    environment:
+      BFF_UPSTREAM: "http://bff-orion:3000"
+    depends_on:
+      bff-orion:
+        condition: service_started
+
+  frontend-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-frontend-lynx
+    build:
+      context: ..
+      dockerfile: apps/web/node1-frontend/Dockerfile
+    ports:
+      - 5002:80
+    volumes:
+      - ./multinode/nginx-frontend.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./multinode/env-lynx.js:/usr/share/nginx/html/ui/env.js:ro
+    environment:
+      BFF_UPSTREAM: "http://bff-lynx:3000"
+    depends_on:
+      bff-lynx:
+        condition: service_started
 
   # ============================================================
   # Local KMS & JWKS (authentication)
@@ -685,7 +739,8 @@ services:
       - ../scripts/local-kms:/app/scripts/local-kms:ro
     working_dir: /app
     environment:
-      ISSUER: "http://local-cognito:3000"
+      ISSUER: "http://localhost:4567"
+      ALLOWED_ORIGINS: "http://localhost:5001,http://localhost:5002"
     command: node scripts/local-kms/local-cognito.mjs
 
 volumes:
