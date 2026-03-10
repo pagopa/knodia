@@ -5,7 +5,7 @@ import { API_Attribute } from "../attribute/api.ts";
 import { API_EserviceId, API_EserviceVersionId } from "../eservice/api.ts";
 
 const API_AgreementId = z.uuid().meta({
-  description: "Unique identifier for the Agreement",
+  description: "Unique identifier of the Agreement",
   id: "AgreementId",
 });
 

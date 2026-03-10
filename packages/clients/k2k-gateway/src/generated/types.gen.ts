@@ -264,7 +264,7 @@ export type EserviceVersion = {
 };
 
 /**
- * Unique identifier for the Agreement
+ * Unique identifier of the Agreement
  */
 export type AgreementId = string;
 
