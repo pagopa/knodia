@@ -654,7 +654,8 @@ paths:
       operationId: createSession
       tags:
         - auth
-      description: Validate a Cognito token and generate a session token
+      description: Validate a Cognito token and generate a session token. Sets a
+        HttpOnly refresh token cookie.
       requestBody:
         required: true
         content:
@@ -736,7 +737,7 @@ paths:
             type: string
           in: cookie
           name: refresh
-          required: true
+          required: false
           description: HttpOnly refresh token (set automatically by login and refresh
             responses)
       responses:

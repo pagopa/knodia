@@ -75,7 +75,8 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
     method: "POST",
     schema: {
       body: API_SessionRequest,
-      description: "Validate a Cognito token and generate a session token",
+      description:
+        "Validate a Cognito token and generate a session token. Sets a HttpOnly refresh token cookie.",
       operationId: "createSession",
       response: {
         200: API_SessionResponse.meta({
@@ -128,7 +129,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
     },
     method: "POST",
     schema: {
-      cookies: API_RefreshCookie,
+      cookies: API_RefreshCookie.partial(),
       description: "Clear the refresh token cookie",
       operationId: "logout",
       response: {
