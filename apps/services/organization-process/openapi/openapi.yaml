@@ -73,6 +73,17 @@ components:
         - status
         - title
       additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -94,24 +105,13 @@ components:
         - offset
         - total
       additionalProperties: false
-    OrganizationAttribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     Organization:
       type: object
       properties:
         attributes:
           type: array
           items:
-            $ref: "#/components/schemas/OrganizationAttribute"
+            $ref: "#/components/schemas/Attribute"
         createdAt:
           type: string
           format: date-time
