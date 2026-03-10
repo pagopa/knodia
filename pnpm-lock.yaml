@@ -919,6 +919,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
