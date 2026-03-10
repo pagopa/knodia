@@ -13,12 +13,13 @@
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
-    "@knodia/typescript-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
+    "testcontainers": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
@@ -27,15 +28,15 @@
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
-    "@knodia/file-manager": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/file-manager": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "fastify": "catalog:",
-    "jose": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "jose": "catalog:",
     "pino-pretty": "catalog:",
     "redis": "catalog:",
     "zod": "catalog:"
