@@ -143,7 +143,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         const agreements = aggregateAgreements(queryRes);
 
         return {
-          results: agreements.map((e) => e.data),
+          results: agreements.map((a) => a.data),
           totalCount,
         };
       });
