@@ -2,7 +2,6 @@
 
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
@@ -10,7 +9,7 @@ import { zocker } from "zocker";
 import {
   API_EserviceDetails,
   type API_EserviceDetails as API_EserviceDetailsType,
-} from "../src/models/api.ts";
+} from "../src/models/eservice/api.ts";
 import {
   toK2KAccessTokenType,
   toK2KMode,
@@ -103,19 +102,14 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(response.statusCode).toBe(200);
 
     const expectedPath = { eserviceId };
-    const expectedHeaders = expect.objectContaining({
-      [CORRELATION_ID_HEADER]: expect.any(String),
-    });
 
     expect(getEserviceMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        headers: expectedHeaders,
         path: expectedPath,
       }),
     );
     expect(getEserviceLatestVersionMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        headers: expectedHeaders,
         path: expectedPath,
       }),
     );

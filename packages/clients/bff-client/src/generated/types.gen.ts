@@ -78,7 +78,7 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-export type EserviceAttribute = {
+export type Attribute = {
     code: string;
     scheme: string;
 };
@@ -87,6 +87,13 @@ export type Pagination = {
     limit: number;
     offset: number;
     total: number;
+};
+
+/**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
 };
 
 /**
@@ -160,11 +167,7 @@ export type EserviceSeed = {
     /**
      * Required attributes for the E-service
      */
-    requiredAttributes: Array<Array<EserviceAttribute>>;
-};
-
-export type CreatedResource = {
-    id: string;
+    requiredAttributes: Array<Array<Attribute>>;
 };
 
 export type ProducerEservice = {
@@ -230,7 +233,7 @@ export type ProducerEserviceVersionDetails = {
     /**
      * Required attributes for the E-service
      */
-    requiredAttributes: Array<Array<EserviceAttribute>>;
+    requiredAttributes: Array<Array<Attribute>>;
     /**
      * State of the version
      */

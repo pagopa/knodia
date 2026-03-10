@@ -1,8 +1,9 @@
+import { API_Attribute } from "@knodia/attribute-models/api";
 import {
-  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   maxAccessTokenDuration,
   maxDailyCalls,
@@ -11,7 +12,6 @@ import {
 } from "@knodia/eservice-models";
 import {
   API_AccessTokenType,
-  API_EserviceAttribute,
   API_EserviceCategory,
   API_EserviceMode,
   API_EserviceVersionState,
@@ -101,18 +101,11 @@ export const API_EserviceSeed = z
     }).optional(),
     name: API_LocalizedName,
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
-
-export const API_CreatedResource = z
-  .strictObject({
-    id: z.uuid(),
-  })
-  .meta({ id: "CreatedResource" });
-export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
 
 export const API_ProducerEservice = z
   .strictObject({
@@ -220,7 +213,7 @@ const API_ProducerEserviceVersionDetails = z
         format: "int32",
       }),
     requiredAttributes: z
-      .array(z.array(API_EserviceAttribute))
+      .array(z.array(API_Attribute))
       .meta({ description: "Required attributes for the E-service" }),
     state: API_EserviceVersionState.meta({
       description: "State of the version",
