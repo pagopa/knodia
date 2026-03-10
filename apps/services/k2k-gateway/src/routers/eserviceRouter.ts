@@ -9,6 +9,7 @@ import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
+import { config } from "../config/config.ts";
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CatalogEserviceSearchResults,
@@ -28,7 +29,6 @@ import {
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface EserviceRouterOptions {
-  eserviceInterfacesS3Bucket: string;
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
   tokenProvider: RefreshableInternalTokenGenerator;
@@ -37,15 +37,7 @@ interface EserviceRouterOptions {
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
   // eslint-disable-next-line max-lines-per-function
-> = async (
-  fastify,
-  {
-    eserviceInterfacesS3Bucket,
-    eserviceProcessClient,
-    fileManager,
-    tokenProvider,
-  },
-) => {
+> = async (fastify, { eserviceProcessClient, fileManager, tokenProvider }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -257,7 +249,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         });
 
       const { content } = await fileManager.getBytes({
-        bucket: eserviceInterfacesS3Bucket,
+        bucket: config.eserviceInterfacesS3Bucket,
         key: metadata.path,
       });
 

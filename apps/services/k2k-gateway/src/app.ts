@@ -21,7 +21,6 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
     agreementProcessUrl: config.agreementProcessUrl,
     callerKnodeId: config.callerKnodeId,
-    eserviceInterfacesS3Bucket: config.eserviceInterfacesS3Bucket,
     eserviceProcessUrl: config.eserviceProcessUrl,
     internalJwt: config.internalJwt,
     loggerConfig: config,
@@ -33,14 +32,12 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
 function buildApp({
   agreementProcessUrl,
   callerKnodeId,
-  eserviceInterfacesS3Bucket,
   eserviceProcessUrl,
   internalJwt,
   loggerConfig,
 }: {
   agreementProcessUrl: string;
   callerKnodeId: KnodeId;
-  eserviceInterfacesS3Bucket: string;
   eserviceProcessUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
@@ -86,7 +83,6 @@ function buildApp({
 
   app.register(healthRouter);
   app.register(eserviceRouter, {
-    eserviceInterfacesS3Bucket,
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
     tokenProvider,
