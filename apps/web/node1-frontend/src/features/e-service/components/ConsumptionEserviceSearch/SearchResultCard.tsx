@@ -12,14 +12,17 @@ import {
 
 export function SearchResultCard({
   eservice,
+  knodeId,
 }: {
   eservice: ConsumptionEserviceSearchResult;
+  knodeId: string;
 }) {
   return (
     <EserviceCard>
       <EserviceCardHeader
         description={eservice.description}
         id={eservice.id}
+        search={{ knodeId }}
         title={eservice.name}
         to="/consumption/e-services/$id"
       />

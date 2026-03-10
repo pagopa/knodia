@@ -305,6 +305,9 @@ importers:
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../../../packages/models/agreement-models
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -466,6 +469,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -712,6 +718,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/agreement-process-client
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -931,6 +940,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/attribute-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -1128,6 +1140,28 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+
+  packages/clients/agreement-process-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   packages/clients/bff-client:
     dependencies:
@@ -1788,6 +1822,9 @@ importers:
 
   packages/models/agreement-models:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: 'catalog:'
+        version: 2.10.2
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../attribute-models
@@ -1804,9 +1841,6 @@ importers:
       '@bufbuild/buf':
         specifier: 'catalog:'
         version: 1.61.0
-      '@bufbuild/protobuf':
-        specifier: 'catalog:'
-        version: 2.10.2
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -1936,6 +1970,9 @@ importers:
 
   packages/models/keychain-models:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: 'catalog:'
+        version: 2.10.2
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models
@@ -1949,9 +1986,6 @@ importers:
       '@bufbuild/buf':
         specifier: 'catalog:'
         version: 1.61.0
-      '@bufbuild/protobuf':
-        specifier: 'catalog:'
-        version: 2.10.2
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config

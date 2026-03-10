@@ -7,6 +7,13 @@ info:
   title: Knodia Agreement Process API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -91,7 +98,7 @@ components:
         - id
         - knodeId
       additionalProperties: false
-    AgreementAttribute:
+    Attribute:
       type: object
       properties:
         code:
@@ -102,14 +109,31 @@ components:
         - code
         - scheme
       additionalProperties: false
+    AgreementSeed:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/AgreementConsumer"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        eserviceVersionId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - consumer
+        - eserviceId
+        - eserviceVersionId
+      additionalProperties: false
     Agreement:
       type: object
       properties:
         attributes:
-          description: Attributes for the Agreement
           type: array
           items:
-            $ref: "#/components/schemas/AgreementAttribute"
+            $ref: "#/components/schemas/Attribute"
         consumer:
           $ref: "#/components/schemas/AgreementConsumer"
         createdAt:
@@ -149,24 +173,6 @@ components:
         - state
         - updatedAt
       additionalProperties: false
-    AgreementSeed:
-      type: object
-      properties:
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        eserviceVersionId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - consumer
-        - eserviceId
-        - eserviceVersionId
-      additionalProperties: false
 paths:
   /status:
     get:
@@ -174,6 +180,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -220,6 +227,14 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "403":
           description: Forbidden
           content:
@@ -247,6 +262,8 @@ paths:
 servers:
   - description: Agreement Process API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health

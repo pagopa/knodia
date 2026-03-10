@@ -2,6 +2,7 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_CreatedResource } from "@knodia/common-models/api";
 import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
@@ -13,7 +14,6 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { config } from "../../config/config.ts";
 import {
-  API_CreatedResource,
   API_EserviceSeed,
   API_FileDownload,
   API_ProducerEserviceDetails,
@@ -89,6 +89,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "E-service created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.eservice],
     },
@@ -102,7 +104,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       const { organizationId: producerId } = getUISessionAuthData(authData);
 
       logger.info(
-        { query: req.query },
+        { requestQuery: req.query },
         "Getting Producer E-services with query parameters",
       );
 
@@ -165,6 +167,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "Producer E-services retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.eservice],
     },
@@ -227,6 +231,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "E-service details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       tags: [apiTags.eservice],
@@ -275,6 +281,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
           description: "E-service interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
       tags: [apiTags.eservice],

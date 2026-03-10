@@ -133,9 +133,18 @@ export const expectedOpenapiComponents = {
     Test: expectedTestSchema,
     Tests: expectedTestsSchema,
   },
+  securitySchemes: {
+    bearerAuth: {
+      bearerFormat: "JWT",
+      description:
+        "A JWT bearer token conforming to the best practices defined in RFC 8725 (https://www.rfc-editor.org/rfc/rfc8725.html)",
+      scheme: "bearer",
+      type: "http",
+    },
+  },
 };
 
-const badRequestResponse = {
+const problemResponse = (description: string) => ({
   content: {
     "application/problem+json": {
       schema: {
@@ -144,12 +153,16 @@ const badRequestResponse = {
             $ref: "#/components/schemas/Problem",
           },
         ],
-        description: "Bad Request",
+        description,
       },
     },
   },
-  description: "Bad Request",
-};
+  description,
+});
+
+const badRequestResponse = problemResponse("Bad Request");
+const unauthorizedResponse = problemResponse("Unauthorized");
+const forbiddenResponse = problemResponse("Forbidden");
 
 const correlationIdHeaderParameter = {
   description: "Unique identifier of the request",
@@ -209,6 +222,8 @@ const expectedTestGet = {
       description: "Results retrieved successfully",
     },
     "400": badRequestResponse,
+    "401": unauthorizedResponse,
+    "403": forbiddenResponse,
   },
   tags: [testTags.test],
 };
@@ -244,6 +259,8 @@ const expectedTestPost = {
       description: "Resource created successfully",
     },
     "400": badRequestResponse,
+    "401": unauthorizedResponse,
+    "403": forbiddenResponse,
   },
   tags: [testTags.test],
 };
@@ -271,6 +288,7 @@ const expectedStatusGet = {
     responses: {
       "200": expectedHealthResponse,
     },
+    security: [],
     tags: [healthRouterTag.name],
   },
 };
