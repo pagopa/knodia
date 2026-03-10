@@ -1,3 +1,4 @@
+import type { OrganizationId } from "@knodia/common-models/ids";
 import type { Organization } from "@knodia/organization-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -14,7 +15,7 @@ export function organizationReadmodelServiceBuilder(
 ) {
   return {
     async getOrganizationById(
-      organizationId: string,
+      organizationId: OrganizationId,
     ): Promise<Organization | undefined> {
       const queryRes = await readmodelDb
         .select({

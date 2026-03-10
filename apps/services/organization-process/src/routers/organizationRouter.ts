@@ -40,7 +40,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve a list of organizations",
+      description: "Retrieve a list of Organizations",
       headers: KnodiaServiceHeaders,
       operationId: "getOrganizations",
       querystring: API_GetOrganizationsQueryParams,

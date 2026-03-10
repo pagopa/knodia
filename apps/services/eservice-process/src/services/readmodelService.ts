@@ -2,11 +2,13 @@
 import type {
   EserviceId,
   EserviceInterfaceId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
 import type {
   ListResult,
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
+import type { Organization } from "@knodia/organization-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -309,7 +311,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         interfaceId,
       );
     },
-    async getOrganizationById(organizationId: string) {
+    async getOrganizationById(
+      organizationId: OrganizationId,
+    ): Promise<Organization | undefined> {
       return await organizationReadmodelService.getOrganizationById(
         organizationId,
       );

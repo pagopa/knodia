@@ -2,10 +2,11 @@ import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
-import { readmodelOrganization } from "@knodia/db-readmodel-organization";
+import { organizationWriterServiceBuilder } from "@knodia/db-readmodel-organization/writer";
 import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { getMockOrganization } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
@@ -35,12 +36,16 @@ beforeAll(async () => {
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
 
-  await readmodelDb.insert(readmodelOrganization).values({
-    id: TEST_ORGANIZATION_ID,
-    metadataVersion: 0,
-    name: "Test Organization",
-    updatedAt: new Date(),
-  });
+  const organizationWriterService =
+    organizationWriterServiceBuilder(readmodelDb);
+  await organizationWriterService.upsertOrganization(
+    {
+      ...getMockOrganization(),
+      id: TEST_ORGANIZATION_ID,
+      name: "Test Organization",
+    },
+    0,
+  );
 });
 
 beforeEach(async () => {
