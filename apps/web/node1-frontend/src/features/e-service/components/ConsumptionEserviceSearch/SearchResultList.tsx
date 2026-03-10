@@ -8,9 +8,11 @@ import { SearchResultCard } from "./SearchResultCard";
 export function SearchResultList({
   eservices,
   isLoading,
+  knodeId,
 }: {
   eservices: ConsumptionEserviceSearchResult[];
   isLoading: boolean;
+  knodeId: string;
 }) {
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
@@ -30,7 +32,7 @@ export function SearchResultList({
     <ul className="flex flex-col gap-4" role="list">
       {eservices.map((eservice) => (
         <li key={eservice.id}>
-          <SearchResultCard eservice={eservice} />
+          <SearchResultCard eservice={eservice} knodeId={knodeId} />
         </li>
       ))}
     </ul>

@@ -20,7 +20,7 @@ export const toAPI_ProducerAgreement = ({
   consumer: {
     id: consumer.id,
     knodeId: agreement.consumer.knodeId,
-    name: { en: consumer.name }, // TODO: localized or not?
+    name: consumer.name,
   },
   eservice: {
     id: eservice.id,

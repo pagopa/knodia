@@ -73,6 +73,18 @@ components:
         - status
         - title
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
+    AgreementState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     Pagination:
       type: object
       properties:
@@ -94,18 +106,28 @@ components:
         - offset
         - total
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
-    AgreementState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
@@ -166,32 +188,20 @@ components:
       enum:
         - Bearer
         - DPoP
-    EserviceAttribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     CompactOrganization:
-      description: Organization with only id, knodeId, and name
+      description: Organization with only id and name
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
         name:
-          $ref: "#/components/schemas/LocalizedName"
+          type: string
+          minLength: 5
+          maxLength: 60
       required:
         - id
-        - knodeId
         - name
       additionalProperties: false
     InterfaceDocumentSeed:
@@ -283,7 +293,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
       required:
         - accessTokenAudience
         - accessTokenDuration
@@ -294,16 +304,6 @@ components:
         - maxDailyCallsPerKnode
         - name
         - requiredAttributes
-      additionalProperties: false
-    CreatedResource:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
       additionalProperties: false
     ProducerEservice:
       type: object
@@ -416,7 +416,7 @@ components:
           items:
             type: array
             items:
-              $ref: "#/components/schemas/EserviceAttribute"
+              $ref: "#/components/schemas/Attribute"
         state:
           description: State of the version
           allOf:
@@ -794,9 +794,6 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        producer:
-          allOf:
-            - $ref: "#/components/schemas/CompactOrganization"
         state:
           $ref: "#/components/schemas/AgreementState"
       required:
@@ -1085,7 +1082,7 @@ paths:
       operationId: getProducerEserviceDetails
       tags:
         - eservice
-      description: Retrieve a Producer E-service with all its details
+      description: Retrieve an E-service with all its details
       parameters:
         - schema:
             type: string
@@ -1096,11 +1093,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service details retrieved successfully
+          description: E-service details retrieved successfully
           content:
             application/json:
               schema:
-                description: Producer E-service details retrieved successfully
+                description: E-service details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEserviceDetails"
         "400":
@@ -1128,11 +1125,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Not Found
+          description: E-service not found
           content:
             application/problem+json:
               schema:
-                description: Not Found
+                description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:
@@ -1140,8 +1137,7 @@ paths:
       operationId: getProducerEserviceLatestVersionInterface
       tags:
         - eservice
-      description: Download the interface document for the latest version of a
-        Producer E-service
+      description: Download the interface document for the latest version of an E-service
       parameters:
         - schema:
             type: string
@@ -1152,12 +1148,12 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service interface document downloaded successfully
+          description: E-service interface document downloaded successfully
           content:
             application/octet-stream:
               schema:
                 format: binary
-                description: Producer E-service interface document downloaded successfully
+                description: E-service interface document downloaded successfully
                 type: string
         "400":
           description: Bad Request
@@ -1344,54 +1340,6 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: consumerId
-          required: false
-          description: Filter by Consumer ID
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/KnodeId"
-          in: query
-          name: consumerKnodeId
-          required: false
-          description: Filter by Consumer Knode ID
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: eserviceId
-          required: false
-          description: Filter by E-service ID
-        - schema:
-            type: string
-            enum:
-              - eserviceName
-              - state
-          in: query
-          name: sortBy
-          required: false
-          description: Field to sort by
-        - schema:
-            type: string
-            enum:
-              - asc
-              - desc
-          in: query
-          name: sortOrder
-          required: false
-          description: Sort direction
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/AgreementState"
-          in: query
-          name: state
-          required: false
-          description: Filter by Agreement State
       responses:
         "200":
           description: Producer Agreements retrieved successfully
@@ -1401,37 +1349,6 @@ paths:
                 description: Producer Agreements retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerAgreements"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /producer/agreements/{agreementId}:
-    get:
-      operationId: getProducerAgreementDetails
-      tags:
-        - agreement
-      description: Retrieve a Producer Agreement with all its details
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: agreementId
-          required: true
-      responses:
-        "200":
-          description: Producer Agreement details retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Producer Agreement details retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/ProducerAgreement"
         "400":
           description: Bad Request
           content:
@@ -1454,14 +1371,6 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

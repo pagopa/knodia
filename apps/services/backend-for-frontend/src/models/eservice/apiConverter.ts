@@ -1,5 +1,4 @@
-import type { API_KnodeId } from "@knodia/common-models/api";
-import type { API_LocalizedName } from "@knodia/eservice-models/api";
+import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -101,8 +100,8 @@ export const toAPI_ConsumerEserviceDetails = (
   name: detail.name,
   producer: detail.producer,
   requiredAttributes: detail.latestVersion.requiredAttributes.map(
-    (group: remoteResourcesManagerApi.EserviceAttribute[]) =>
-      group.map((attr: remoteResourcesManagerApi.EserviceAttribute) => ({
+    (group: remoteResourcesManagerApi.Attribute[]) =>
+      group.map((attr: remoteResourcesManagerApi.Attribute) => ({
         ...attr,
         possessed: Math.random() >= 0.5, // TODO: check actual attribute possession
       })),
@@ -115,7 +114,7 @@ export const toAPI_ConsumerCatalogEserviceSearchResult = (
   hasRequiredAttributes: boolean,
   producer: {
     knodeId: API_KnodeId;
-    name: API_LocalizedName; // TODO: update with producer process API_LocalizedName
+    name: string; // TODO: update with producer process API_LocalizedName
   },
 ): API_ConsumerCatalogEserviceSearchResult => ({
   categories: catalogEserviceSearchResult.categories,

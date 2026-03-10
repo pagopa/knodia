@@ -1,0 +1,27 @@
+meta {
+  name: Create Agreement
+  type: http
+}
+
+post {
+  url: {{host-remote-resources-manager}}/agreements
+  body: json
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "consumerId": "{{consumerId}}",
+    "eserviceId": "{{eserviceId}}",
+    "eserviceVersionId": "{{eserviceVersionId}}",
+    "knodeId": "{{other-knode-id}}"
+  }
+}
+
+vars:post-response {
+  agreementId: res.body.id
+}

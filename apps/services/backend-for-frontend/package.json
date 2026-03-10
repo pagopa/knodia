@@ -26,6 +26,7 @@
     "@fastify/request-context": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/agreement-process-client": "workspace:*",
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/file-manager": "workspace:*",

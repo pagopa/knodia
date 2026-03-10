@@ -1,15 +1,17 @@
 import { categories } from "@knodia/category-models";
+import { KnodeId } from "@knodia/common-models/ids";
 import { Button, ComboBox, ComboBoxItem, TextField } from "@knodia/ui-kit/ui";
 import { useForm } from "@tanstack/react-form";
+
+import { config } from "@/config/config";
 
 import type { ConsumptionEserviceSearchParams } from "../../models/search-params";
 
 import { toSchemeRefOptions } from "../../utils/schemeRef";
 
-// TODO: the current Knode is Orion, so the only other Knode is Lynx. In the future, the list and the
-// check of available remote Knodes should be dynamic. If this code is reused for the Lynx node, this
-// hardcoded list will need to be replaced.
-const knodeOptions = [{ id: "Lynx", label: "Lynx" }];
+const knodeOptions = KnodeId.options
+  .filter((id) => id !== config.knodeId)
+  .map((id) => ({ id, label: id }));
 
 const categoryOptions = toSchemeRefOptions(categories);
 

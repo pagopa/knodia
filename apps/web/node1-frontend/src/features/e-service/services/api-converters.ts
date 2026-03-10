@@ -1,6 +1,7 @@
 import { bffApi } from "@knodia/bff-client";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 
+import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
 import type { EServiceFormData } from "@/features/e-service/types/eserviceCreateForm";
 
@@ -21,10 +22,40 @@ export function toCatalogSearchResultUI(
     mode: result.mode,
     name: result.name.en,
     organization: {
-      initials: getOrganizationInitials(result.producer.name.en),
-      name: result.producer.name.en,
+      initials: getOrganizationInitials(result.producer.name),
+      name: result.producer.name,
     },
     state: result.latestVersionState,
+  };
+}
+
+export function toConsumptionEserviceDetail(
+  detail: bffApi.ConsumerEserviceDetails,
+): ConsumptionEserviceDetail {
+  return {
+    accessToken: {
+      audience: detail.accessToken.audience,
+      durationInMinutes: Math.floor(detail.accessToken.duration / 60),
+      type: detail.accessToken.type,
+    },
+    categories: detail.categories,
+    description: detail.description.en,
+    id: unsafeBrandId(detail.id),
+    identificationRequired: detail.identificationRequired,
+    interfaceDocument: detail.interfaceDocument,
+    isSignalHubEnabled: detail.isSignalHubEnabled,
+    maxDailyCalls: detail.maxDailyCalls,
+    mode: detail.mode,
+    name: detail.name.en,
+    producer: {
+      email: detail.producer.email,
+      initials: getOrganizationInitials(detail.producer.name.en),
+      knodeName: detail.producer.knodeName,
+      name: detail.producer.name.en,
+      notes: detail.producer.notes,
+    },
+    requiredAttributes: detail.requiredAttributes,
+    state: detail.state,
   };
 }
 
