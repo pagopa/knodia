@@ -1692,6 +1692,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../models/common-models
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
     devDependencies:
       '@knodia/eslint-config':
         specifier: workspace:*
