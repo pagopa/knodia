@@ -7,6 +7,13 @@ info:
   title: Knodia Organization Process API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -161,7 +168,7 @@ paths:
       operationId: getOrganizations
       tags:
         - organization
-      description: Retrieve a list of organizations
+      description: Retrieve a list of Organizations
       parameters:
         - schema:
             format: int32
@@ -248,6 +255,8 @@ paths:
 servers:
   - description: Organization Process API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health
