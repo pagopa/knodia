@@ -95,7 +95,7 @@ export type AccessTokenType = 'Bearer' | 'DPoP';
  */
 export type CompactOrganization = {
     id: string;
-    name: LocalizedName;
+    name: string;
 };
 
 export type InterfaceDocumentSeed = {
@@ -754,6 +754,14 @@ export type GetProducerAgreementsErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type GetProducerAgreementsError = GetProducerAgreementsErrors[keyof GetProducerAgreementsErrors];
