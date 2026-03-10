@@ -194,25 +194,6 @@ paths:
           required: false
           description: Search by organization name
         - schema:
-            default: name
-            type: string
-            enum:
-              - name
-          in: query
-          name: sortBy
-          required: false
-          description: Field to sort by
-        - schema:
-            default: asc
-            type: string
-            enum:
-              - asc
-              - desc
-          in: query
-          name: sortOrder
-          required: false
-          description: Sort direction
-        - schema:
             allOf:
               - $ref: "#/components/schemas/CorrelationId"
           in: header

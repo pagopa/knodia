@@ -69,7 +69,7 @@ describe("GET /organizations (getOrganizations)", () => {
         mockOrganizations[3],
       ] as Organization[],
       query: { ...defaultQuery },
-      testCase: "pagination only (1st page), sort by name asc by default",
+      testCase: "pagination only (1st page)",
       totalCount: 5,
     },
     {
@@ -83,17 +83,6 @@ describe("GET /organizations (getOrganizations)", () => {
       query: { ...defaultQuery, q: "cha" },
       testCase: "search query",
       totalCount: 1,
-    },
-    {
-      expectedResult: [
-        mockOrganizations[4],
-        mockOrganizations[3],
-        mockOrganizations[2],
-        mockOrganizations[1],
-      ] as Organization[],
-      query: { ...defaultQuery, sortOrder: "desc" },
-      testCase: "sort by name desc",
-      totalCount: 5,
     },
     {
       expectedResult: [] as Organization[],
@@ -152,14 +141,6 @@ describe("GET /organizations (getOrganizations)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    {
-      ...defaultQuery,
-      sortBy: "InvalidSortBy",
-    },
-    {
-      ...defaultQuery,
-      sortOrder: "InvalidSortOrder",
-    },
     { ...defaultQuery, q: [1, 2, 3] },
     {
       ...defaultQuery,

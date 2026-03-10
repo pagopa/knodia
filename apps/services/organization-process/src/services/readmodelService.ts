@@ -32,15 +32,13 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       limit: number;
       offset: number;
       q?: string;
-      sortBy: string;
-      sortOrder: string;
     }): Promise<ListResult<Organization>> {
-      const { limit, offset, q, sortBy, sortOrder } = params;
+      const { limit, offset, q } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
-          sortBy,
-          sortOrder,
+          sortBy: "name",
+          sortOrder: "asc",
           table: readmodelOrganization,
         });
 

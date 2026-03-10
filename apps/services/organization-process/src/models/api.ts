@@ -37,16 +37,6 @@ export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
       .string()
       .optional()
       .meta({ description: "Search by organization name" }),
-    sortBy: z
-      .enum(["name"])
-      .optional()
-      .default("name")
-      .meta({ description: "Field to sort by" }),
-    sortOrder: z
-      .enum(["asc", "desc"])
-      .optional()
-      .default("asc")
-      .meta({ description: "Sort direction" }),
   },
 );
 export type API_GetOrganizationsQueryParams = z.infer<
