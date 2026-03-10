@@ -2,10 +2,22 @@ import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { match } from "ts-pattern";
 
 import type {
+  API_AccessTokenType,
   API_CatalogEserviceSearchResult,
+  API_Eservice,
   API_EserviceMode,
+  API_EserviceVersion,
   API_EserviceVersionState,
 } from "./api.ts";
+
+function toAPI_AccessTokenType(
+  type: eserviceProcessApi.AccessTokenType,
+): API_AccessTokenType {
+  return match(type)
+    .with("Bearer", () => "BEARER" as const)
+    .with("DPoP", () => "DPOP" as const)
+    .exhaustive();
+}
 
 function toAPI_EserviceMode(
   mode: eserviceProcessApi.EserviceMode,
@@ -38,4 +50,44 @@ export const toAPI_CatalogEserviceSearchResult = (
   mode: toAPI_EserviceMode(eservice.mode),
   name: eservice.name,
   producerId: eservice.producerId,
+  updatedAt: eservice.updatedAt,
+});
+
+export const toAPI_Eservice = (
+  eservice: eserviceProcessApi.Eservice,
+): API_Eservice => ({
+  categories: eservice.categories,
+  description: eservice.description,
+  id: eservice.id,
+  isConsumerOperatorIdentificationRequired:
+    eservice.isConsumerOperatorIdentificationRequired,
+  isSignalHubEnabled: eservice.isSignalHubEnabled,
+  mode: toAPI_EserviceMode(eservice.mode),
+  name: eservice.name,
+  producerId: eservice.producerId,
+  updatedAt: eservice.updatedAt,
+});
+
+export const toAPI_EserviceVersion = (
+  version: eserviceProcessApi.EserviceVersion,
+  interfaceDoc: eserviceProcessApi.EserviceVersionInterfaceDocument,
+): API_EserviceVersion => ({
+  accessTokenAudience: version.accessTokenAudience,
+  accessTokenDuration: version.accessTokenDuration,
+  accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
+  id: version.id,
+  interfaceDocument: {
+    checksum: interfaceDoc.checksum,
+    contentType: interfaceDoc.contentType,
+    id: interfaceDoc.id,
+    name: interfaceDoc.name,
+    prettyName: interfaceDoc.prettyName,
+    updatedAt: interfaceDoc.updatedAt,
+  },
+  maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
+  maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
+  requiredAttributes: version.requiredAttributes,
+  state: toAPI_EserviceVersionState(version.state),
+  updatedAt: version.updatedAt,
+  versionNumber: version.versionNumber,
 });
