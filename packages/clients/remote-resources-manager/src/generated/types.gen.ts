@@ -56,6 +56,18 @@ export type CreatedResource = {
  */
 export type KnodeId = 'Orion' | 'Lynx';
 
+export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+
+export type AgreementConsumer = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+export type Attribute = {
+    code: string;
+    scheme: string;
+};
+
 /**
  * Seed data to create a new agreement
  */
@@ -66,9 +78,26 @@ export type AgreementSeed = {
     knodeId: KnodeId;
 };
 
-export type Attribute = {
-    code: string;
-    scheme: string;
+/**
+ * Agreement between a Consumer and a Producer for an E-service
+ */
+export type Agreement = {
+    /**
+     * Describes the Attributes of the E-service that the Consumer possesses when the Agreement is activated (must satisfy at least one Attribute for each Required Attribute Group defined by the E-service)
+     */
+    attributes: Array<Attribute>;
+    consumer: AgreementConsumer;
+    eserviceId: string;
+    eserviceVersionId: string;
+    id: string;
+    producerId: OrganizationId;
+    state: AgreementState;
+    updatedAt: string;
+};
+
+export type Agreements = {
+    pagination: Pagination;
+    results: Array<Agreement>;
 };
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
@@ -265,6 +294,56 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type GetAgreementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: string;
+        /**
+         * Filter by Agreement State
+         */
+        state?: AgreementState;
+    };
+    url: '/agreements';
+};
+
+export type GetAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
+
+export type GetAgreementsResponses = {
+    /**
+     * Agreements retrieved successfully
+     */
+    200: Agreements;
+};
+
+export type GetAgreementsResponse = GetAgreementsResponses[keyof GetAgreementsResponses];
 
 export type CreateAgreementData = {
     body: AgreementSeed;

@@ -15,7 +15,6 @@ import type {
 
 import {
   toAPI_Agreement,
-  toK2KAPI_AgreementSeed,
   toK2KAPI_AgreementState,
 } from "../models/agreement/apiConverter.ts";
 
