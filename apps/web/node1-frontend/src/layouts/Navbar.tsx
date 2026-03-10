@@ -5,6 +5,7 @@ import {
 } from "@knodia/ui-kit/layout";
 import { MenuItem } from "@knodia/ui-kit/ui";
 
+import { config } from "@/config/config";
 import { useAuth } from "@/contexts/auth";
 
 export function Navbar() {
@@ -16,7 +17,7 @@ export function Navbar() {
 
   return (
     <UINavbar>
-      <NavbarBrand>Orion Knode</NavbarBrand>
+      <NavbarBrand>{config.knodeId} Knode</NavbarBrand>
       <NavbarUserMenu
         avatar={{ fallback: "JS" }}
         name="John Smith"

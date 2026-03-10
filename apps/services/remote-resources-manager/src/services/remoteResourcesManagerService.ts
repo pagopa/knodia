@@ -37,7 +37,7 @@ export function remoteResourcesManagerServiceBuilder(
       const { knodeId, ...bodyWithoutKnodeId } = reqBody;
 
       logger.info(
-        { query: reqQuery, requestBody: reqBody },
+        { requestBody: reqBody, requestQuery: reqQuery },
         `Getting E-services owned by Knode ${knodeId} with query parameters and body data`,
       );
 
