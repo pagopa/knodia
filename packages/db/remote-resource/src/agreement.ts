@@ -1,6 +1,6 @@
 import { pgSchema, primaryKey, text, uuid } from "drizzle-orm/pg-core";
 
-import { remoteResourceDbConfig } from "../config/config.ts";
+import { remoteResourceDbConfig } from "./config.ts";
 
 const agreementSchema = pgSchema(
   remoteResourceDbConfig.remoteResourceDbAgreementSchema,

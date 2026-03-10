@@ -27,7 +27,7 @@
   },
   "exports": {
     ".": "./src/agreement.ts",
-    "./config": "./config/config.ts",
+    "./config": "./src/config.ts",
     "./services": "./src/services/remoteResourceDBService.ts"
   }
 }
