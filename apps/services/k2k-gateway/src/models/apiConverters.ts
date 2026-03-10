@@ -51,6 +51,7 @@ export const toAPI_CatalogEserviceSearchResult = (
   mode: toAPI_EserviceMode(eservice.mode),
   name: eservice.name,
   producerId: eservice.producerId,
+  updatedAt: eservice.updatedAt,
 });
 
 export const toAPI_Eservice = (
