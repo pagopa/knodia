@@ -47,14 +47,12 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
           client: k2kGatewayClient,
           headers,
           path,
+          responseType: 'arraybuffer',
         }),
       ]);
 
       return {
-        buffer:
-          typeof blob === "string"
-            ? Buffer.from(blob)
-            : Buffer.from(await blob.arrayBuffer()),
+        buffer: Buffer.from(blob as unknown as ArrayBuffer),
         contentType: metadata.contentType,
         fileName: metadata.name,
       };

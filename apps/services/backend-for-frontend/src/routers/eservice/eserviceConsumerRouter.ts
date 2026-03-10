@@ -145,13 +145,11 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
             headers,
             path,
             query,
+            responseType: 'arraybuffer',
           }),
         ]);
 
-      const buffer =
-        typeof blob === "string"
-          ? Buffer.from(blob)
-          : Buffer.from(await blob.arrayBuffer());
+      const buffer = Buffer.from(blob as unknown as ArrayBuffer);
 
       res.raw.writeHead(200, {
         "Content-Disposition": `attachment; filename="${detail.interfaceDocument.name}"`,
