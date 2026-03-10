@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { createEservice, createSession, getConsumerCatalogEservices, getConsumerEserviceDetails, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, type Options, refreshSession } from '../sdk.gen.ts';
-import type { CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse } from '../types.gen.ts';
+import { createEservice, createSession, getConsumerCatalogEservices, getConsumerEserviceDetails, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, logout, type Options, refreshSession } from '../sdk.gen.ts';
+import type { CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, LogoutData, LogoutResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -59,7 +59,7 @@ export const getStatusOptions = (options?: Options<GetStatusData>) => queryOptio
 });
 
 /**
- * Validate a Cognito token and generate a session token
+ * Validate a Cognito token and generate a session token. Sets a HttpOnly refresh token cookie.
  */
 export const createSessionMutation = (options?: Partial<Options<CreateSessionData>>): UseMutationOptions<CreateSessionResponse, AxiosError<CreateSessionError>, Options<CreateSessionData>> => {
     const mutationOptions: UseMutationOptions<CreateSessionResponse, AxiosError<CreateSessionError>, Options<CreateSessionData>> = {
@@ -76,12 +76,29 @@ export const createSessionMutation = (options?: Partial<Options<CreateSessionDat
 };
 
 /**
- * Refresh an expired UI session token using a refresh token
+ * Refresh an expired UI session token using the refresh token cookie
  */
 export const refreshSessionMutation = (options?: Partial<Options<RefreshSessionData>>): UseMutationOptions<RefreshSessionResponse, AxiosError<RefreshSessionError>, Options<RefreshSessionData>> => {
     const mutationOptions: UseMutationOptions<RefreshSessionResponse, AxiosError<RefreshSessionError>, Options<RefreshSessionData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await refreshSession({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Clear the refresh token cookie
+ */
+export const logoutMutation = (options?: Partial<Options<LogoutData>>): UseMutationOptions<LogoutResponse, AxiosError<DefaultError>, Options<LogoutData>> => {
+    const mutationOptions: UseMutationOptions<LogoutResponse, AxiosError<DefaultError>, Options<LogoutData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await logout({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
