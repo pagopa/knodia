@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { AgreementId, generateId } from "@knodia/common-models/ids";
+import {
+  AgreementId,
+  generateId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -17,6 +21,7 @@ const NON_EXISTENT_AGREEMENT_ID = generateId<AgreementId>();
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
+  { type: "internal" },
 ];
 
 const getAgreement = (
@@ -79,5 +84,16 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
   it("should return 400 for invalid agreement id format", async () => {
     const response = await getAgreement("not-a-uuid");
     expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 409 if the requester is not the producer (UI session token)", async () => {
+    const token: TestToken = {
+      organizationId: generateId<OrganizationId>(),
+      roles: ["administrative"],
+      type: "ui-session",
+    };
+
+    const response = await getAgreement(VALID_AGREEMENT_ID, token);
+    expect(response.statusCode).toBe(409);
   });
 });

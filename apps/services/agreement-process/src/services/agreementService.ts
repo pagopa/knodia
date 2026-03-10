@@ -90,12 +90,18 @@ export function agreementServiceBuilder(
     },
     async getAgreement(
       agreementId: AgreementId,
-      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+      {
+        authData,
+        logger,
+      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Agreement> {
       logger.info(`Getting Agreement with ID ${agreementId}`);
 
       const agreement = await retrieveAgreement(agreementId, readmodelService);
-      assertRequesterIsProducer(agreement.producerId, authData);
+
+      if (authData.tokenType === "ui-session") {
+        assertRequesterIsProducer(agreement.producerId, authData);
+      }
 
       return agreement;
     },
