@@ -1,6 +1,7 @@
-import Fastify from "fastify";
-import { setupRedisTestContainer } from "@knodia/test-commons/redis";
 import type { StartedTestContainer } from "testcontainers";
+
+import { setupRedisTestContainer } from "@knodia/test-commons/redis";
+import Fastify from "fastify";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { createRefreshTokenStore } from "../src/services/refreshTokenStore.ts";

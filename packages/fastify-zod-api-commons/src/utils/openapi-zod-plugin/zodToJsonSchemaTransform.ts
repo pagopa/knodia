@@ -10,7 +10,7 @@
  */
 
 import { createJsonSchemaTransform } from "fastify-type-provider-zod";
-import z, { toJSONSchema } from "zod";
+import z from "zod";
 
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
 
@@ -33,7 +33,7 @@ const convertCookiesZodToJsonSchema = (
 ): ReturnType<typeof baseTransform> => {
   const schema = result.schema as Record<string, unknown> | undefined;
   if (schema?.["cookies"]) {
-    schema["cookies"] = toJSONSchema(schema["cookies"] as z.ZodType, {
+    schema["cookies"] = z.toJSONSchema(schema["cookies"] as z.ZodType, {
       target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
     });
   }
