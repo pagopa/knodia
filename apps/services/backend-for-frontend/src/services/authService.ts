@@ -137,11 +137,11 @@ export function authServiceBuilder(
       throw unauthorizedError("Invalid refresh token claims");
     }
 
-    const isFirstUse = await refreshTokenStore.consume(
+    const alreadyUsed = !(await refreshTokenStore.consume(
       parsed.data.jti,
       parsed.data.exp,
-    );
-    if (!isFirstUse) {
+    ));
+    if (alreadyUsed) {
       throw unauthorizedError("Refresh token already used");
     }
 

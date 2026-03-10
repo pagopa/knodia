@@ -1,16 +1,12 @@
 import { type FastifyBaseLogger } from "fastify";
 import { createClient } from "redis";
 
-export interface RefreshTokenStore {
-  consume(jti: string, expireAtSec: number): Promise<boolean>;
-  disconnect(): Promise<void>;
-  revoke(jti: string, expireAtSec: number): Promise<void>;
-}
+export type RefreshTokenStore = ReturnType<typeof createRefreshTokenStore>;
 
 export function createRefreshTokenStore(
   redisUrl: string,
   logger: FastifyBaseLogger,
-): RefreshTokenStore {
+) {
   const client = createClient({
     disableOfflineQueue: true,
     socket: {
@@ -52,9 +48,9 @@ export function createRefreshTokenStore(
       return result === "OK";
     },
 
-    async disconnect(): Promise<void> {
+    async disconnect() {
       if (connectPromise) {
-        await client.disconnect();
+        client.destroy();
       }
     },
 
