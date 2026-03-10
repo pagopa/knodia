@@ -1,3 +1,4 @@
+import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { Organization } from "@knodia/organization-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
@@ -22,7 +23,7 @@ type OrganizationAggregatorInput = {
 
 export const aggregateOrganization = (
   queryRes: OrganizationAggregatorInput,
-): Organization | undefined => {
+): undefined | WithMetadata<Organization> => {
   if (queryRes.length === 0) {
     return undefined;
   }
@@ -32,7 +33,7 @@ export const aggregateOrganization = (
 
 export const aggregateOrganizations = (
   queryRes: OrganizationAggregatorInput,
-): Organization[] => {
+): WithMetadata<Organization>[] => {
   const { attributesSQL, organizationsSQL } =
     toOrganizationsAggregator(queryRes);
 
@@ -49,12 +50,15 @@ export const aggregateOrganizations = (
 const buildOrganization = ({
   attributesSQL,
   organizationSQL,
-}: OrganizationItemsSQL): Organization => ({
-  attributes: attributesSQL.map(toOrganizationAttribute),
-  createdAt: organizationSQL.createdAt,
-  id: unsafeBrandId(organizationSQL.id),
-  name: organizationSQL.name,
-  updatedAt: organizationSQL.updatedAt,
+}: OrganizationItemsSQL): WithMetadata<Organization> => ({
+  data: {
+    attributes: attributesSQL.map(toOrganizationAttribute),
+    createdAt: organizationSQL.createdAt,
+    id: unsafeBrandId(organizationSQL.id),
+    name: organizationSQL.name,
+    updatedAt: organizationSQL.updatedAt,
+  },
+  metadata: { version: organizationSQL.metadataVersion },
 });
 
 const createOrganizationSQLPropertyMap = (

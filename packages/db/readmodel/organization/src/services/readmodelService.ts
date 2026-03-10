@@ -1,4 +1,5 @@
 import type { OrganizationId } from "@knodia/common-models/ids";
+import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { Organization } from "@knodia/organization-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -16,7 +17,7 @@ export function organizationReadmodelServiceBuilder(
   return {
     async getOrganizationById(
       organizationId: OrganizationId,
-    ): Promise<Organization | undefined> {
+    ): Promise<undefined | WithMetadata<Organization>> {
       const queryRes = await readmodelDb
         .select({
           attribute: readmodelOrganizationAttribute,

@@ -1,4 +1,6 @@
-import { Organization } from "@knodia/organization-models";
+import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type { Organization } from "@knodia/organization-models";
+
 import {
   getMockOrganization,
   toExpectOrganization,
@@ -28,9 +30,10 @@ describe("Organization Aggregators", () => {
       })),
     );
 
-    expect(aggregatedOrganization).toEqual(
-      toExpectOrganization(organization) satisfies Organization,
-    );
+    expect(aggregatedOrganization).toEqual({
+      data: toExpectOrganization(organization),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Organization>);
   });
 
   it("should convert Organizations SQL objects into Organizations business objects", () => {
@@ -55,9 +58,15 @@ describe("Organization Aggregators", () => {
 
     expect(aggregatedOrganizations).toEqual(
       expect.arrayContaining([
-        toExpectOrganization(organization1),
-        toExpectOrganization(organization2),
-      ] satisfies Organization[]),
+        {
+          data: toExpectOrganization(organization1),
+          metadata: { version: 1 },
+        },
+        {
+          data: toExpectOrganization(organization2),
+          metadata: { version: 1 },
+        },
+      ] satisfies WithMetadata<Organization>[]),
     );
   });
 });

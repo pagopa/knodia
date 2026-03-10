@@ -30,7 +30,6 @@
     "@fastify/request-context": "catalog:",
     "@knodia/attribute-models": "workspace:*",
     "@knodia/category-models": "workspace:*",
-    "@knodia/organization-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-event-store-eservice": "workspace:*",
     "@knodia/db-event-store-writer": "workspace:*",

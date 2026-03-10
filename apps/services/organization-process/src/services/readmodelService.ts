@@ -87,7 +87,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         ]);
 
         return {
-          results: aggregateOrganizations(queryRes),
+          results: aggregateOrganizations(queryRes).map((o) => o.data),
           totalCount,
         };
       });
