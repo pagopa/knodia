@@ -18,7 +18,6 @@ const createMockRefreshTokenStore = vi.hoisted(
         consumed.add(jti);
         return Promise.resolve(true);
       },
-      disconnect: () => Promise.resolve(),
       revoke(jti: string): Promise<void> {
         consumed.add(jti);
         return Promise.resolve();

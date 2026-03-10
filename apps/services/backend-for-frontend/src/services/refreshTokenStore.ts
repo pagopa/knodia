@@ -8,7 +8,6 @@ export function createRefreshTokenStore(
   logger: FastifyBaseLogger,
 ) {
   const client = createClient({
-    disableOfflineQueue: true,
     socket: {
       reconnectStrategy: (retries: number) => Math.min(retries * 1_000, 30_000),
     },
@@ -17,27 +16,12 @@ export function createRefreshTokenStore(
     logger.warn(`Redis client error (${redisUrl}): ${String(err)}`),
   );
 
-  let connectPromise: Promise<void> | undefined;
-
-  function ensureConnected(): Promise<void> {
-    if (!connectPromise) {
-      connectPromise = client
-        .connect()
-        .then(() => {
-          logger.info(`Redis client connected (${redisUrl})`);
-        })
-        .catch((err: unknown) => {
-          // Reset so next call retries the connection
-          connectPromise = undefined;
-          throw err;
-        });
-    }
-    return connectPromise;
-  }
+  void client
+    .connect()
+    .then(() => logger.info(`Redis client connected (${redisUrl})`));
 
   return {
     async consume(jti: string, expireAtSec: number): Promise<boolean> {
-      await ensureConnected();
       const key = `refresh:${jti}`;
       // SET NX returns null if the key already exists (token already consumed)
       const result = await client.set(key, "1", {
@@ -48,14 +32,7 @@ export function createRefreshTokenStore(
       return result === "OK";
     },
 
-    async disconnect() {
-      if (connectPromise) {
-        client.destroy();
-      }
-    },
-
     async revoke(jti: string, expireAtSec: number): Promise<void> {
-      await ensureConnected();
       const key = `refresh:${jti}`;
       // Mark the JTI as consumed so it cannot be used again.
       // Uses SET with EXAT so the entry auto-expires at the token's original expiry.
