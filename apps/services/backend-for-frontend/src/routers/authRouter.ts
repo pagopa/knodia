@@ -7,13 +7,12 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
-import { type BffProcessConfig, config } from "../config/config.ts";
+import { config } from "../config/config.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { type authServiceBuilder } from "../services/authService.ts";
 
 interface AuthRouterOptions {
   authService: ReturnType<typeof authServiceBuilder>;
-  config: BffProcessConfig;
 }
 
 const REFRESH_COOKIE_NAME = "refresh";

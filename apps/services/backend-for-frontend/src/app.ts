@@ -62,7 +62,7 @@ export function buildAppFromConfig(config: BffProcessConfig) {
 
   // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(authRouter, { authService, config });
+  app.register(authRouter, { authService });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
