@@ -1,0 +1,27 @@
+meta {
+  name: Create Agreement
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{host-k2k-gateway}}/agreements
+  body: json
+  auth: none
+}
+
+headers {
+  ~Authorization: 
+}
+
+body:json {
+  {
+    "consumerId": "{{consumerId}}",
+    "eserviceId": "{{eserviceId}}",
+    "eserviceVersionId": "{{eserviceVersionId}}"
+  }
+}
+
+vars:post-response {
+  agreementId: res.body.id
+}

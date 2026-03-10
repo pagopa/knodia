@@ -90,6 +90,13 @@ export type Pagination = {
 };
 
 /**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
+/**
  * Unique Knode identifier
  */
 export type KnodeId = 'Orion' | 'Lynx';
@@ -161,10 +168,6 @@ export type EserviceSeed = {
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<EserviceAttribute>>;
-};
-
-export type CreatedResource = {
-    id: string;
 };
 
 export type ProducerEservice = {

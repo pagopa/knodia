@@ -24,11 +24,17 @@ export type API_PaginationQueryParams = z.infer<
   typeof API_PaginationQueryParams
 >;
 
-export const API_KnodeId = z
-  .enum(["Orion", "Lynx"])
-  .meta({ description: "Unique Knode identifier", id: "KnodeId" });
-
 export const API_OrganizationId = z.uuid().meta({
   description: "Unique identifier of the Organization",
   id: "OrganizationId",
 });
+
+export const API_CreatedResource = z
+  .strictObject({
+    id: z.uuid(),
+  })
+  .meta({
+    description: "Unique identifier of the created resource",
+    id: "CreatedResource",
+  });
+export type API_CreatedResource = z.infer<typeof API_CreatedResource>;
