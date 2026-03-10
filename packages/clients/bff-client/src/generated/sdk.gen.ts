@@ -88,6 +88,8 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Download producer E-service latest version interface
+ *
  * Download the interface document for the latest version of an E-service
  */
 export const getProducerEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetProducerEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEserviceLatestVersionInterfaceErrors, ThrowOnError>({
