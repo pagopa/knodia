@@ -28,11 +28,12 @@
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@fastify/request-context": "catalog:",
-    "@knodia/k2k-gateway-client": "workspace:*",
+    "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-remote-resource": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/k2k-gateway-client": "workspace:*",
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
