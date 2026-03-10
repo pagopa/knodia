@@ -25,7 +25,7 @@ jobs:
     with:
       command: knip
 
-  generate-committed-artifacts:
+  generate-artifacts:
     name: Generate committed artifacts
     uses: ./.github/workflows/pnpm-job.yml
     with:
