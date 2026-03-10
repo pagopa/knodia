@@ -29,14 +29,11 @@ import {
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
-interface EserviceRouterOptions {
-  eserviceService: EserviceService;
-}
-
-export const eserviceRouter: FastifyPluginAsyncZod<
-  EserviceRouterOptions
-  // eslint-disable-next-line max-lines-per-function
-> = async (fastify, { eserviceService }) => {
+// eslint-disable-next-line max-lines-per-function
+export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
+  fastify,
+  eserviceService,
+) => {
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [

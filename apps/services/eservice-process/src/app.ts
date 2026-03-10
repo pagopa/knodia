@@ -63,18 +63,20 @@ export function buildApp({
 
   // Public routes (no auth required)
   app.register(healthRouter);
+
   // Protected routes — authenticationPlugin and requireCorrelationIdHeaderPlugin
   // hooks are scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(eserviceRouter, {
-      eserviceService: eserviceServiceBuilder(
+    protectedApp.register(
+      eserviceRouter,
+      eserviceServiceBuilder(
         eserviceEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
       ),
-    });
+    );
   });
 
   return app;
