@@ -28,6 +28,6 @@
   "exports": {
     ".": "./src/agreement.ts",
     "./config": "./src/config.ts",
-    "./services": "./src/services/remoteResourceDBService.ts"
+    "./services": "./src/services/remoteResourceDbService.ts"
   }
 }
