@@ -6,7 +6,7 @@ const agreementSchema = pgSchema(
   remoteResourceDbConfig.remoteResourceDbAgreementSchema,
 );
 
-export const agreement = agreementSchema.table(
+export const remoteResourceAgreement = agreementSchema.table(
   "agreement",
   {
     agreementId: uuid("agreement_id").notNull(),
@@ -24,4 +24,5 @@ export const agreement = agreementSchema.table(
   ],
 );
 
-export type NewAgreementSQL = typeof agreement.$inferInsert;
+export type NewRemoteResourceAgreement =
+  typeof remoteResourceAgreement.$inferInsert;

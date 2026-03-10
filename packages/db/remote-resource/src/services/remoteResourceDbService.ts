@@ -4,9 +4,9 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { and, eq } from "drizzle-orm";
 
-import type { NewAgreementSQL } from "../agreement.ts";
+import type { NewRemoteResourceAgreement } from "../agreement.ts";
 
-import { agreement } from "../agreement.ts";
+import { remoteResourceAgreement } from "../agreement.ts";
 
 export type RemoteResourceDbService = ReturnType<
   typeof remoteResourceDbServiceBuilder
@@ -20,18 +20,20 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
     ) {
       const [result] = await db
         .select()
-        .from(agreement)
+        .from(remoteResourceAgreement)
         .where(
           and(
-            eq(agreement.agreementId, agreementId),
-            eq(agreement.knodeId, knodeId),
+            eq(remoteResourceAgreement.agreementId, agreementId),
+            eq(remoteResourceAgreement.knodeId, knodeId),
           ),
         )
         .limit(1);
       return result ?? undefined;
     },
-    async insertAgreement(remoteAgreement: NewAgreementSQL): Promise<void> {
-      await db.insert(agreement).values(remoteAgreement);
+    async insertAgreement(
+      remoteAgreement: NewRemoteResourceAgreement,
+    ): Promise<void> {
+      await db.insert(remoteResourceAgreement).values(remoteAgreement);
     },
   };
 }
