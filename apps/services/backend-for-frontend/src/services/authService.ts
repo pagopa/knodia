@@ -137,11 +137,11 @@ export function authServiceBuilder(
       throw unauthorizedError("Invalid refresh token claims");
     }
 
-    const consumed = await refreshTokenStore.consume(
+    const isFirstUse = await refreshTokenStore.consume(
       parsed.data.jti,
       parsed.data.exp,
     );
-    if (!consumed) {
+    if (!isFirstUse) {
       throw unauthorizedError("Refresh token already used");
     }
 
@@ -161,33 +161,23 @@ export function authServiceBuilder(
       return generateTokenPairFromClaims(claims);
     },
 
-    async refreshUISessionTokenPair(
-      refreshTokenCookie: string | undefined,
-    ): Promise<{
+    async refreshUISessionTokenPair(refreshToken: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {
-      if (!refreshTokenCookie) {
-        throw unauthorizedError("Missing refresh token cookie");
-      }
-
-      const claims = await verifyRefreshToken(refreshTokenCookie);
+      const claims = await verifyRefreshToken(refreshToken);
       return generateTokenPairFromClaims(claims);
     },
 
-    async revokeRefreshToken(
-      refreshTokenCookie: string | undefined,
-    ): Promise<void> {
-      if (refreshTokenCookie) {
-        try {
-          const payload = decodeJwt(refreshTokenCookie);
-          const parsed = UISessionRefreshTokenClaims.safeParse(payload);
-          if (parsed.success) {
-            await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);
-          }
-        } catch {
-          // Best-effort: if the token is malformed, there is nothing to revoke
+    async revokeRefreshToken(refreshToken: string): Promise<void> {
+      try {
+        const payload = decodeJwt(refreshToken);
+        const parsed = UISessionRefreshTokenClaims.safeParse(payload);
+        if (parsed.success) {
+          await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);
         }
+      } catch {
+        // Best-effort: if the token is malformed, there is nothing to revoke
       }
     },
   };

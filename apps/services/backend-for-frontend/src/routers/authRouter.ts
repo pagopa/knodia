@@ -1,7 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  unauthorizedError,
+} from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
 import { type BffProcessConfig, config } from "../config/config.ts";
@@ -93,6 +96,9 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const refreshTokenCookie = getRefreshCookie(req);
+      if (!refreshTokenCookie) {
+        throw unauthorizedError("Missing refresh token cookie");
+      }
 
       const { refreshToken, uiSessionToken } =
         await authService.refreshUISessionTokenPair(refreshTokenCookie);
@@ -121,8 +127,9 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const refreshTokenCookie = getRefreshCookie(req);
-
-      await authService.revokeRefreshToken(refreshTokenCookie);
+      if (refreshTokenCookie) {
+        await authService.revokeRefreshToken(refreshTokenCookie);
+      }
       clearRefreshCookie(res);
 
       res.status(204).send();
