@@ -93,7 +93,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["technical"] },
+        { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
       await consumerKeychainService.deleteConsumerKeychain(
@@ -114,6 +114,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           description: "Consumer Keychain deleted successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Consumer Keychain not found" }),
       },

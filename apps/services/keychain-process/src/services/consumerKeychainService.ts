@@ -12,11 +12,12 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { consumerKeychainNotFound } from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
 } from "../models/keychainEventFactory.ts";
+import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
   typeof consumerKeychainServiceBuilder
@@ -26,19 +27,6 @@ export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
 ) {
-  const retrieveConsumerKeychain = async (
-    consumerKeychainId: ConsumerKeychainId,
-  ) => {
-    const consumerKeychain =
-      await readmodelService.getConsumerKeychainById(consumerKeychainId);
-
-    if (!consumerKeychain) {
-      throw consumerKeychainNotFound(consumerKeychainId);
-    }
-
-    return consumerKeychain;
-  };
-
   return {
     async createConsumerKeychain(
       seed: API_ConsumerKeychainSeed,
@@ -74,12 +62,19 @@ export function consumerKeychainServiceBuilder(
     },
     async deleteConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<void> {
       logger.info(`Deleting Consumer Keychain ${consumerKeychainId}`);
 
-      const consumerKeychain =
-        await retrieveConsumerKeychain(consumerKeychainId);
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
 
       await eventStoreWriter.insertEvent(
         createConsumerKeychainDeletedV1Event(
