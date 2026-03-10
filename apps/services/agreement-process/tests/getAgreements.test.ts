@@ -7,7 +7,12 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_GetAgreementsQueryParams } from "../src/models/api.ts";
 
-import { eservice1, eservice2, mockAgreements } from "./mockAgreements.ts";
+import {
+  consumerId,
+  eservice1,
+  eservice2,
+  mockAgreements,
+} from "./mockAgreements.ts";
 import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
 
@@ -58,6 +63,51 @@ describe("GET /agreements (getAgreements)", () => {
       },
       testCase: "pagination only (2nd page), sort by updatedAt desc by default",
       totalCount: 10,
+    },
+    {
+      expectedResult: [
+        mockAgreements[4],
+        mockAgreements[3],
+        mockAgreements[2],
+        mockAgreements[1],
+      ] as Agreement[],
+      query: { ...defaultQuery, consumerId },
+      testCase: "filter by consumerId, sort by updatedAt desc by default",
+      totalCount: 5,
+    },
+    {
+      expectedResult: [
+        mockAgreements[5],
+        mockAgreements[4],
+        mockAgreements[3],
+      ] as Agreement[],
+      query: { ...defaultQuery, consumerKnodeId: "Lynx" },
+      testCase: "filter by consumerKnodeId, sort by updatedAt desc by default",
+      totalCount: 3,
+    },
+    {
+      expectedResult: [
+        mockAgreements[8],
+        mockAgreements[3],
+        mockAgreements[2],
+      ] as Agreement[],
+      query: {
+        ...defaultQuery,
+        state: "Archived",
+      },
+      testCase: "filter by state, sort by updatedAt desc by default",
+      totalCount: 3,
+    },
+    {
+      expectedResult: [mockAgreements[1]] as Agreement[],
+      query: {
+        ...defaultQuery,
+        consumerId,
+        consumerKnodeId: "Orion",
+        state: "Suspended",
+      },
+      testCase: "full query",
+      totalCount: 1,
     },
   ] satisfies {
     expectedResult: Agreement[];

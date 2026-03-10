@@ -18,7 +18,7 @@ import {
 import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { type Eservice } from "@knodia/eservice-models";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 
@@ -30,7 +30,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
     ): Promise<ListResult<Agreement>> {
-      const { limit, offset } = requestQuery;
+      const { consumerId, consumerKnodeId, limit, offset, state } =
+        requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -48,6 +49,17 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .innerJoin(
               readmodelEservice,
               eq(readmodelAgreement.eserviceId, readmodelEservice.id),
+            )
+            .where(
+              and(
+                consumerId
+                  ? eq(readmodelAgreement.consumerId, consumerId)
+                  : undefined,
+                consumerKnodeId
+                  ? eq(readmodelAgreement.consumerKnodeId, consumerKnodeId)
+                  : undefined,
+                state ? eq(readmodelAgreement.state, state) : undefined,
+              ),
             )
             .$dynamic();
 
