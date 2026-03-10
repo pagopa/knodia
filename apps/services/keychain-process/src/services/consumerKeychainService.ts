@@ -4,12 +4,7 @@ import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { ConsumerKeychain } from "@knodia/keychain-models";
 
-import {
-  type ConsumerKeychainId,
-  generateId,
-  OrganizationId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 
 import type {
   API_ConsumerKeychainSeed,
@@ -30,14 +25,11 @@ export function consumerKeychainServiceBuilder(
   return {
     async createConsumerKeychain(
       seed: API_ConsumerKeychainSeed,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<ConsumerKeychain> {
       const consumerKeychainId = generateId<ConsumerKeychainId>();
 
-      // TODO: get real ownerId from auth context
-      const ownerId = unsafeBrandId<OrganizationId>(
-        "00000000-0000-0000-0000-000000000000",
-      );
+      const { organizationId: ownerId } = authData;
 
       logger.info(
         `Creating Consumer Keychain ${consumerKeychainId} for owner ${ownerId} `,

@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -8,10 +9,7 @@ import {
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
 
-import {
-  API_ConsumerKeychainSeed,
-  API_CreatedResource,
-} from "../../models/api.ts";
+import { API_ConsumerKeychainSeed } from "../../models/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
@@ -49,6 +47,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           description: "Consumer Keychain created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.consumerKeychain],
     },

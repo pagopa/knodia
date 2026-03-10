@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { ConsumerKeychain } from "@knodia/keychain-models";
 
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { KeychainEventV1, toConsumerKeychainV1 } from "@knodia/keychain-models";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
 import { API_ConsumerKeychainSeed, API_Keychain } from "../src/models/api.ts";
@@ -11,7 +15,7 @@ import { toAPI_Keychain } from "../src/models/apiConverter.ts";
 import { getAllKeychainEvents, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
-  { roles: ["technical"], type: "ui-session" },
+  { roles: ["administrative"], type: "ui-session" },
 ];
 
 describe("POST /consumerKeychains (createConsumerKeychain)", () => {
@@ -31,10 +35,10 @@ describe("POST /consumerKeychains (createConsumerKeychain)", () => {
     const expectedConsumerKeychain: ConsumerKeychain = {
       createdAt: new Date(responseBody.createdAt),
       description: body.description,
-      id: responseBody.id as ConsumerKeychainId,
+      id: unsafeBrandId(responseBody.id),
       keys: [],
       name: body.name,
-      ownerId: expect.any(String),
+      ownerId: TEST_ORGANIZATION_ID,
       purposes: [],
       updatedAt: new Date(responseBody.updatedAt),
       users: [],
