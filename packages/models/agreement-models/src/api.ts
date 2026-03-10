@@ -1,4 +1,4 @@
-import { API_KnodeId } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import z from "zod";
 
 export const API_AgreementState = z

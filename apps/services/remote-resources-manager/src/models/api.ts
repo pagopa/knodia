@@ -1,8 +1,8 @@
 import {
-  API_KnodeId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_AccessTokenType,
   API_EserviceAttribute,
@@ -53,6 +53,7 @@ export const API_CatalogEserviceSearchResult = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producerId: z.uuid(),
+    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
 export type API_CatalogEserviceSearchResult = z.infer<
