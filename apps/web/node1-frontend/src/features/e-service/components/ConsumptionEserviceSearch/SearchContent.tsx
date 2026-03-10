@@ -8,11 +8,13 @@ import { SearchResultList } from "./SearchResultList";
 export function SearchContent({
   hasValidationError,
   isLoading,
+  knodeId,
   onOffsetChange,
   results,
 }: {
   hasValidationError: boolean;
   isLoading: boolean;
+  knodeId: string;
   onOffsetChange: (offset: number) => void;
   results: null | {
     items: ConsumptionEserviceSearchResult[];
@@ -39,7 +41,11 @@ export function SearchContent({
 
   return (
     <>
-      <SearchResultList eservices={results.items} isLoading={isLoading} />
+      <SearchResultList
+        eservices={results.items}
+        isLoading={isLoading}
+        knodeId={knodeId}
+      />
       <Pagination
         className="mx-auto mt-auto pt-6"
         limit={results.pagination.limit}
