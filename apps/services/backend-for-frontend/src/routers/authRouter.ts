@@ -6,7 +6,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
-import { type BffProcessConfig } from "../config/config.ts";
+import { type BffProcessConfig, config } from "../config/config.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { type authServiceBuilder } from "../services/authService.ts";
 
@@ -32,7 +32,7 @@ const API_SessionResponse = z
 
 export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
-  { authService, config },
+  { authService },
 ) => {
   function setRefreshCookie(
     res: Parameters<Parameters<typeof fastify.route>[0]["handler"]>[1],
