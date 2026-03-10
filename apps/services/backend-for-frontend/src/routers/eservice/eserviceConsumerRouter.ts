@@ -35,7 +35,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
-        { query: req.query, requestBody: req.body },
+        { requestBody: req.body, requestQuery: req.query },
         `Getting E-services owned by Knode ${req.body.knodeId} with query parameters and body data`,
       );
 

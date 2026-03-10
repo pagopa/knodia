@@ -1,21 +1,26 @@
 import {
-  API_AgreementAttribute,
   API_AgreementConsumer,
   API_AgreementState,
 } from "@knodia/agreement-models/api";
+import { API_Attribute } from "@knodia/attribute-models/api";
 import {
-  API_KnodeId,
-  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { z } from "zod";
 
+export const API_AgreementSeed = z
+  .strictObject({
+    consumer: API_AgreementConsumer,
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+  })
+  .meta({ id: "AgreementSeed" });
+export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
+
 export const API_Agreement = z
   .strictObject({
-    attributes: z
-      .array(API_AgreementAttribute)
-      .meta({ description: "Attributes for the Agreement" }),
+    attributes: z.array(API_Attribute),
     consumer: API_AgreementConsumer,
     createdAt: z.iso.datetime(),
     eserviceId: z.uuid(),
@@ -28,15 +33,6 @@ export const API_Agreement = z
   .meta({ id: "Agreement" });
 export type API_Agreement = z.infer<typeof API_Agreement>;
 
-export const API_AgreementSeed = z
-  .strictObject({
-    consumer: API_AgreementConsumer,
-    eserviceId: z.uuid(),
-    eserviceVersionId: z.uuid(),
-  })
-  .meta({ id: "AgreementSeed" });
-export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
-
 export const API_Agreements = z
   .strictObject({
     items: z.array(API_Agreement),
@@ -45,33 +41,7 @@ export const API_Agreements = z
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
 
-export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
-  consumerKnodeId: API_KnodeId.optional().meta({
-    description: "Filter by Consumer Knode ID",
-  }),
-  eserviceId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by E-service ID" }),
-  producerId: API_OrganizationId.optional().meta({
-    description: "Filter by Producer Organization ID",
-  }),
-  sortBy: z
-    .enum(["eserviceName", "state"]) // TODO: add consumerName
-    .optional()
-    .meta({ description: "Field to sort by" }),
-  sortOrder: z
-    .enum(["asc", "desc"])
-    .optional()
-    .meta({ description: "Sort direction" }),
-  state: API_AgreementState.optional().meta({
-    description: "Filter by Agreement State",
-  }),
-});
+export const API_GetAgreementsQueryParams = API_PaginationQueryParams;
 export type API_GetAgreementsQueryParams = z.infer<
   typeof API_GetAgreementsQueryParams
 >;

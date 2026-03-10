@@ -1,4 +1,4 @@
-import { API_KnodeId } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import z from "zod";
 
 export const API_AgreementState = z
@@ -12,11 +12,4 @@ export const API_AgreementConsumer = z
     knodeId: API_KnodeId,
   })
   .meta({ id: "AgreementConsumer" });
-
-export const API_AgreementAttribute = z
-  .strictObject({
-    code: z.string(),
-    scheme: z.string(),
-  })
-  .meta({ id: "AgreementAttribute" });
-export type API_AgreementAttribute = z.infer<typeof API_AgreementAttribute>;
+export type API_AgreementConsumer = z.infer<typeof API_AgreementConsumer>;

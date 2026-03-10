@@ -1,3 +1,4 @@
 export const apiTags = {
-  k2kGateway: "k2k-gateway",
+  agreement: "agreement",
+  eservice: "eservice",
 } as const;

@@ -30,7 +30,7 @@ export const eservice2: Eservice = {
 };
 const eserviceVersion2 = eservice2.versions[0]!;
 
-export const consumerId = generateId<OrganizationId>();
+const consumerId = generateId<OrganizationId>();
 export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(0),
