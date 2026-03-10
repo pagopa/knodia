@@ -78,7 +78,7 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-export type EserviceAttribute = {
+export type Attribute = {
     code: string;
     scheme: string;
 };
@@ -167,7 +167,7 @@ export type EserviceSeed = {
     /**
      * Required attributes for the E-service
      */
-    requiredAttributes: Array<Array<EserviceAttribute>>;
+    requiredAttributes: Array<Array<Attribute>>;
 };
 
 export type ProducerEservice = {
@@ -233,7 +233,7 @@ export type ProducerEserviceVersionDetails = {
     /**
      * Required attributes for the E-service
      */
-    requiredAttributes: Array<Array<EserviceAttribute>>;
+    requiredAttributes: Array<Array<Attribute>>;
     /**
      * State of the version
      */

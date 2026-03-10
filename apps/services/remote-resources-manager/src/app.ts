@@ -20,8 +20,10 @@ import type { RemoteResourcesManagerConfig } from "./config/config.ts";
 import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
-import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
+import { agreementRouter } from "./routers/agreementRouter.ts";
+import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { agreementServiceBuilder } from "./services/agreementService.ts";
+import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 
 export function buildApp({
   config,
@@ -47,8 +49,12 @@ export function buildApp({
         tags: [
           healthRouterTag,
           {
-            description: "K2K Gateway routes",
-            name: apiTags.k2kGateway,
+            description: "Routes related to Agreements",
+            name: apiTags.agreement,
+          },
+          {
+            description: "Routes related to E-services",
+            name: apiTags.eservice,
           },
         ],
       },
@@ -67,9 +73,11 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(remoteResourcesManagerRouter, {
-      remoteResourcesManagerService:
-        remoteResourcesManagerServiceBuilder(k2kGatewayClient),
+    protectedApp.register(eserviceRouter, {
+      eserviceService: eserviceServiceBuilder(k2kGatewayClient),
+    });
+    protectedApp.register(agreementRouter, {
+      agreementService: agreementServiceBuilder(k2kGatewayClient),
     });
   });
 
