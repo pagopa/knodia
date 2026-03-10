@@ -1,3 +1,5 @@
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
+
 import { beforeAll } from "vitest";
 
 import { buildApp } from "../src/app.ts";
@@ -14,6 +16,7 @@ beforeAll(() => {
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },
     knodeUrl: "http://localhost:0",
+    remoteResourceDb: {} as NodePgDatabase,
   });
 });
 
