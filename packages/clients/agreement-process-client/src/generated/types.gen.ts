@@ -45,16 +45,19 @@ export type AgreementConsumer = {
     knodeId: KnodeId;
 };
 
-export type AgreementAttribute = {
+export type Attribute = {
     code: string;
     scheme: string;
 };
 
+export type AgreementSeed = {
+    consumer: AgreementConsumer;
+    eserviceId: string;
+    eserviceVersionId: string;
+};
+
 export type Agreement = {
-    /**
-     * Attributes for the Agreement
-     */
-    attributes: Array<AgreementAttribute>;
+    attributes: Array<Attribute>;
     consumer: AgreementConsumer;
     createdAt: string;
     eserviceId: string;
@@ -63,12 +66,6 @@ export type Agreement = {
     producerId: string;
     state: AgreementState;
     updatedAt: string;
-};
-
-export type AgreementSeed = {
-    consumer: AgreementConsumer;
-    eserviceId: string;
-    eserviceVersionId: string;
 };
 
 export type GetStatusData = {
