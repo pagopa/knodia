@@ -76,6 +76,11 @@ export type GetCatalogEserviceSearchParams = {
 export type EserviceVersionState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
 
 /**
+ * Type of the access token
+ */
+export type AccessTokenType = 'BEARER' | 'DPOP';
+
+/**
  * Indicates if the E-Service is intended to provide or receive data
  */
 export type EserviceMode = 'PROVIDE_DATA' | 'RECEIVE_DATA';
@@ -99,28 +104,151 @@ export type RequiredAttributeGroup = Array<Attribute>;
 export type RequiredAttributes = Array<RequiredAttributeGroup>;
 
 /**
- * Unique identifier of the E-Service
+ * Unique identifier of the E-service
  */
 export type EserviceId = string;
 
 export type CatalogEserviceSearchResult = {
+    /**
+     * Categories of data the E-service provides or receives
+     */
     categories: Array<EserviceCategory>;
+    /**
+     * Human-readable description of the E-service
+     */
     description: {
         en: string;
     };
     id: EserviceId;
+    /**
+     * Attributes required by the latest version of the E-service
+     */
     latestVersionRequiredAttributes: RequiredAttributes;
+    /**
+     * Current state of the latest version of the E-service
+     */
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
+    /**
+     * Human-readable name of the E-service
+     */
     name: {
         en: string;
     };
     producerId: OrganizationId;
+    /**
+     * Last update timestamp of the E-service
+     */
+    updatedAt: string;
 };
 
 export type CatalogEserviceSearchResults = {
     pagination: Pagination;
     results: Array<CatalogEserviceSearchResult>;
+};
+
+export type Eservice = {
+    /**
+     * Categories of data the E-service provides or receives
+     */
+    categories: Array<EserviceCategory>;
+    /**
+     * Human-readable description of the E-service
+     */
+    description: {
+        en: string;
+    };
+    id: EserviceId;
+    /**
+     * Indicates whether a consumer operator must log in to the producer Knode directly to confirm Agreement submission
+     */
+    isConsumerOperatorIdentificationRequired: boolean;
+    /**
+     * Whether the E-service supports Signal Hub notifications
+     */
+    isSignalHubEnabled: boolean;
+    mode: EserviceMode;
+    /**
+     * Human-readable name of the E-service
+     */
+    name: {
+        en: string;
+    };
+    producerId: OrganizationId;
+    /**
+     * Last update timestamp of the E-service
+     */
+    updatedAt: string;
+};
+
+export type EserviceVersionInterfaceDocument = {
+    /**
+     * SHA-256 integrity checksum of the file
+     */
+    checksum: string;
+    /**
+     * The MIME content type of the file
+     */
+    contentType: string;
+    /**
+     * Unique identifier of the Interface Document
+     */
+    id: string;
+    /**
+     * The name of the file
+     */
+    name: string;
+    /**
+     * A human-readable name for the file
+     */
+    prettyName: {
+        en: string;
+    };
+    /**
+     * Last update timestamp of the Interface Document
+     */
+    updatedAt: string;
+};
+
+export type EserviceVersion = {
+    /**
+     * List of audiences for the access token
+     */
+    accessTokenAudience: Array<string>;
+    /**
+     * Duration of the access token in seconds
+     */
+    accessTokenDuration: number;
+    accessTokenType: AccessTokenType;
+    /**
+     * Unique identifier of the E-service Version
+     */
+    id: string;
+    /**
+     * Metadata of the Interface Document associated with this Version
+     */
+    interfaceDocument: EserviceVersionInterfaceDocument;
+    /**
+     * Maximum number of daily calls that this Version can afford per consumer
+     */
+    maxDailyCallsPerConsumer: number;
+    /**
+     * Maximum number of daily calls that this Version can afford per Knode
+     */
+    maxDailyCallsPerKnode: number;
+    requiredAttributes: RequiredAttributes;
+    /**
+     * Current state of the Version
+     */
+    state: EserviceVersionState;
+    /**
+     * Last update timestamp of the Version
+     */
+    updatedAt: string;
+    /**
+     * Progressive version number
+     */
+    versionNumber: number;
 };
 
 export type GetStatusData = {
@@ -172,3 +300,65 @@ export type GetCatalogEservicesResponses = {
 };
 
 export type GetCatalogEservicesResponse = GetCatalogEservicesResponses[keyof GetCatalogEservicesResponses];
+
+export type GetEserviceData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}';
+};
+
+export type GetEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type GetEserviceError = GetEserviceErrors[keyof GetEserviceErrors];
+
+export type GetEserviceResponses = {
+    /**
+     * E-service retrieved successfully
+     */
+    200: Eservice;
+};
+
+export type GetEserviceResponse = GetEserviceResponses[keyof GetEserviceResponses];
+
+export type GetEserviceLatestVersionData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/versions/latest';
+};
+
+export type GetEserviceLatestVersionErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type GetEserviceLatestVersionError = GetEserviceLatestVersionErrors[keyof GetEserviceLatestVersionErrors];
+
+export type GetEserviceLatestVersionResponses = {
+    /**
+     * E-service latest Version retrieved successfully
+     */
+    200: EserviceVersion;
+};
+
+export type GetEserviceLatestVersionResponse = GetEserviceLatestVersionResponses[keyof GetEserviceLatestVersionResponses];

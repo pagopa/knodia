@@ -32,6 +32,7 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
  */
 export const getEservices = <ThrowOnError extends boolean = true>(options: Options<GetEservicesData, ThrowOnError>) => (options.client ?? client).get<GetEservicesResponses, GetEservicesErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices',
     ...options
 });
@@ -41,6 +42,7 @@ export const getEservices = <ThrowOnError extends boolean = true>(options: Optio
  */
 export const createEservice = <ThrowOnError extends boolean = true>(options: Options<CreateEserviceData, ThrowOnError>) => (options.client ?? client).post<CreateEserviceResponses, CreateEserviceErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices',
     ...options,
     headers: {
@@ -54,6 +56,7 @@ export const createEservice = <ThrowOnError extends boolean = true>(options: Opt
  */
 export const getEservice = <ThrowOnError extends boolean = true>(options: Options<GetEserviceData, ThrowOnError>) => (options.client ?? client).get<GetEserviceResponses, GetEserviceErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices/{eserviceId}',
     ...options
 });
@@ -63,6 +66,7 @@ export const getEservice = <ThrowOnError extends boolean = true>(options: Option
  */
 export const getEserviceLatestVersion = <ThrowOnError extends boolean = true>(options: Options<GetEserviceLatestVersionData, ThrowOnError>) => (options.client ?? client).get<GetEserviceLatestVersionResponses, GetEserviceLatestVersionErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices/{eserviceId}/versions/latest',
     ...options
 });
@@ -72,6 +76,7 @@ export const getEserviceLatestVersion = <ThrowOnError extends boolean = true>(op
  */
 export const getEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionInterfaceErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices/{eserviceId}/versions/latest/interface',
     ...options
 });
@@ -81,6 +86,7 @@ export const getEserviceLatestVersionInterface = <ThrowOnError extends boolean =
  */
 export const getCatalogEservices = <ThrowOnError extends boolean = true>(options: Options<GetCatalogEservicesData, ThrowOnError>) => (options.client ?? client).post<GetCatalogEservicesResponses, GetCatalogEservicesErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/catalog',
     ...options,
     headers: {

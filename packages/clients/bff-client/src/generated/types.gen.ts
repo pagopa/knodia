@@ -46,17 +46,6 @@ export type RefreshRequest = {
     refreshToken: string;
 };
 
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
-};
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -93,6 +82,17 @@ export type EserviceAttribute = {
     code: string;
     scheme: string;
 };
+
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
 
 export type InterfaceDocumentSeed = {
     /**
@@ -329,6 +329,55 @@ export type ConsumerCatalogEserviceSearchResults = {
     results: Array<ConsumerCatalogEserviceSearchResult>;
 };
 
+export type ConsumerEserviceDetailsProducer = {
+    email: string;
+    id: string;
+    knodeName: string;
+    name: LocalizedName;
+    notes: string;
+};
+
+export type ConsumerRequiredAttribute = {
+    code: string;
+    possessed: boolean;
+    scheme: string;
+};
+
+export type ConsumerEserviceDetailsAccessToken = {
+    audience: Array<string>;
+    /**
+     * Duration of the access token in seconds
+     */
+    duration: number;
+    type: AccessTokenType;
+};
+
+export type ConsumerEserviceDetailsInterfaceDocument = {
+    checksum: string;
+    name: string;
+};
+
+export type ConsumerEserviceDetailsMaxDailyCalls = {
+    perConsumer: number;
+    perKnode: number;
+};
+
+export type ConsumerEserviceDetails = {
+    accessToken: ConsumerEserviceDetailsAccessToken;
+    categories: Array<EserviceCategory>;
+    description: LocalizedDescription;
+    id: string;
+    identificationRequired: boolean;
+    interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
+    isSignalHubEnabled: boolean;
+    maxDailyCalls: ConsumerEserviceDetailsMaxDailyCalls;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producer: ConsumerEserviceDetailsProducer;
+    requiredAttributes: Array<Array<ConsumerRequiredAttribute>>;
+    state: EserviceVersionState;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -444,6 +493,14 @@ export type GetProducerEservicesErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type GetProducerEservicesError = GetProducerEservicesErrors[keyof GetProducerEservicesErrors];
@@ -469,6 +526,14 @@ export type CreateEserviceErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type CreateEserviceError = CreateEserviceErrors[keyof CreateEserviceErrors];
@@ -496,6 +561,14 @@ export type GetProducerEserviceDetailsErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
     /**
      * E-service not found
      */
@@ -527,6 +600,14 @@ export type GetProducerEserviceLatestVersionInterfaceErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
     /**
      * Not Found
      */
@@ -565,6 +646,14 @@ export type GetConsumerCatalogEservicesErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
 };
 
 export type GetConsumerCatalogEservicesError = GetConsumerCatalogEservicesErrors[keyof GetConsumerCatalogEservicesErrors];
@@ -577,3 +666,44 @@ export type GetConsumerCatalogEservicesResponses = {
 };
 
 export type GetConsumerCatalogEservicesResponse = GetConsumerCatalogEservicesResponses[keyof GetConsumerCatalogEservicesResponses];
+
+export type GetConsumerEserviceDetailsData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/eservices/{eserviceId}';
+};
+
+export type GetConsumerEserviceDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerEserviceDetailsError = GetConsumerEserviceDetailsErrors[keyof GetConsumerEserviceDetailsErrors];
+
+export type GetConsumerEserviceDetailsResponses = {
+    /**
+     * E-service detail retrieved successfully
+     */
+    200: ConsumerEserviceDetails;
+};
+
+export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];

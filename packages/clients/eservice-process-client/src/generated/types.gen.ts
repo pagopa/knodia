@@ -323,6 +323,10 @@ export type GetEservicesErrors = {
      */
     400: Problem;
     /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
      * Forbidden
      */
     403: Problem;
@@ -357,6 +361,10 @@ export type CreateEserviceErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
     /**
      * Forbidden
      */
@@ -399,6 +407,10 @@ export type GetEserviceErrors = {
      */
     400: Problem;
     /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
      * Forbidden
      */
     403: Problem;
@@ -440,6 +452,10 @@ export type GetEserviceLatestVersionErrors = {
      */
     400: Problem;
     /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
      * Forbidden
      */
     403: Problem;
@@ -480,6 +496,10 @@ export type GetEserviceLatestVersionInterfaceErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
     /**
      * Forbidden
      */
@@ -528,6 +548,10 @@ export type GetCatalogEservicesErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
     /**
      * Forbidden
      */

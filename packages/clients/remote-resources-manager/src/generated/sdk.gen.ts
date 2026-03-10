@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -34,10 +34,23 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
  */
 export const getCatalogEservices = <ThrowOnError extends boolean = true>(options: Options<GetCatalogEservicesData, ThrowOnError>) => (options.client ?? client).post<GetCatalogEservicesResponses, GetCatalogEservicesErrors, ThrowOnError>({
     responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/catalog',
     ...options,
     headers: {
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Get E-service detail
+ *
+ * Retrieve an E-service with all its details
+ */
+export const getEserviceDetails = <ThrowOnError extends boolean = true>(options: Options<GetEserviceDetailsData, ThrowOnError>) => (options.client ?? client).get<GetEserviceDetailsResponses, GetEserviceDetailsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/eservices/{eserviceId}',
+    ...options
 });

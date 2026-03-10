@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -40,4 +40,26 @@ export const getCatalogEservices = <ThrowOnError extends boolean = true>(options
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Get E-service
+ *
+ * Retrieve an E-service
+ */
+export const getEservice = <ThrowOnError extends boolean = true>(options: Options<GetEserviceData, ThrowOnError>) => (options.client ?? client).get<GetEserviceResponses, GetEserviceErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/eservices/{eserviceId}',
+    ...options
+});
+
+/**
+ * Get E-service latest version
+ *
+ * Retrieve the latest Version of an E-service
+ */
+export const getEserviceLatestVersion = <ThrowOnError extends boolean = true>(options: Options<GetEserviceLatestVersionData, ThrowOnError>) => (options.client ?? client).get<GetEserviceLatestVersionResponses, GetEserviceLatestVersionErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/eservices/{eserviceId}/versions/latest',
+    ...options
 });

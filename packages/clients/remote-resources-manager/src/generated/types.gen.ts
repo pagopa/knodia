@@ -67,6 +67,8 @@ export type EserviceCategory = {
     scheme: string;
 };
 
+export type AccessTokenType = 'Bearer' | 'DPoP';
+
 export type EserviceAttribute = {
     code: string;
     scheme: string;
@@ -93,11 +95,54 @@ export type CatalogEserviceSearchResult = {
     mode: EserviceMode;
     name: LocalizedName;
     producerId: string;
+    updatedAt: string;
 };
 
 export type CatalogEserviceSearchResults = {
     pagination: Pagination;
     results: Array<CatalogEserviceSearchResult>;
+};
+
+/**
+ * Unique identifier of the E-Service
+ */
+export type EserviceId = string;
+
+export type EserviceDetailsLatestVersion = {
+    accessTokenAudience: Array<string>;
+    accessTokenDuration: number;
+    accessTokenType: AccessTokenType;
+    maxDailyCallsPerConsumer: number;
+    maxDailyCallsPerKnode: number;
+    requiredAttributes: Array<Array<EserviceAttribute>>;
+    state: EserviceVersionState;
+};
+
+export type EserviceDetailsInterfaceDocument = {
+    checksum: string;
+    name: string;
+    prettyName: LocalizedName;
+};
+
+export type EserviceDetailsProducer = {
+    email: string;
+    id: string;
+    knodeName: string;
+    name: LocalizedName;
+    notes: string;
+};
+
+export type EserviceDetails = {
+    categories: Array<EserviceCategory>;
+    description: LocalizedDescription;
+    id: string;
+    interfaceDocument: EserviceDetailsInterfaceDocument;
+    isConsumerOperatorIdentificationRequired: boolean;
+    isSignalHubEnabled: boolean;
+    latestVersion: EserviceDetailsLatestVersion;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producer: EserviceDetailsProducer;
 };
 
 export type GetStatusData = {
@@ -138,6 +183,10 @@ export type GetCatalogEservicesErrors = {
      */
     400: Problem;
     /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
      * Forbidden
      */
     403: Problem;
@@ -153,3 +202,44 @@ export type GetCatalogEservicesResponses = {
 };
 
 export type GetCatalogEservicesResponse = GetCatalogEservicesResponses[keyof GetCatalogEservicesResponses];
+
+export type GetEserviceDetailsData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eservices/{eserviceId}';
+};
+
+export type GetEserviceDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type GetEserviceDetailsError = GetEserviceDetailsErrors[keyof GetEserviceDetailsErrors];
+
+export type GetEserviceDetailsResponses = {
+    /**
+     * E-service detail retrieved successfully
+     */
+    200: EserviceDetails;
+};
+
+export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
