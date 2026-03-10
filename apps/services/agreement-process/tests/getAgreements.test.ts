@@ -58,6 +58,17 @@ describe("GET /agreements (getAgreements)", () => {
       testCase: "pagination only (2nd page), sort by updatedAt desc by default",
       totalCount: 10,
     },
+    {
+      expectedResult: [
+        mockAgreements[4],
+        mockAgreements[3],
+        mockAgreements[2],
+        mockAgreements[1],
+      ] as Agreement[],
+      query: { ...defaultQuery, producerId: eservice1.producerId },
+      testCase: "filter by producerId, sort by updatedAt desc by default",
+      totalCount: 5,
+    },
   ] satisfies {
     expectedResult: Agreement[];
     query: z.input<typeof API_GetAgreementsQueryParams>;

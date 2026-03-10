@@ -33,17 +33,29 @@ export type Problem = {
     title: string;
 };
 
-export type SessionRequest = {
-    oidcToken: string;
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
 };
 
-export type SessionResponse = {
-    refreshToken: string;
-    uiSessionToken: string;
+/**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
 };
 
-export type RefreshRequest = {
-    refreshToken: string;
+export type Attribute = {
+    code: string;
+    scheme: string;
 };
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
@@ -78,28 +90,13 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
-};
-
 /**
- * Unique identifier of the created resource
+ * Organization with only id and name
  */
-export type CreatedResource = {
+export type CompactOrganization = {
     id: string;
+    name: LocalizedName;
 };
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
 
 export type InterfaceDocumentSeed = {
     /**
@@ -308,14 +305,6 @@ export type GetConsumerCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
-/**
- * Organization with only id and name
- */
-export type CompactOrganization = {
-    id: string;
-    name: LocalizedName;
-};
-
 export type ConsumerCatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
@@ -379,6 +368,39 @@ export type ConsumerEserviceDetails = {
     producer: ConsumerEserviceDetailsProducer;
     requiredAttributes: Array<Array<ConsumerRequiredAttribute>>;
     state: EserviceVersionState;
+};
+
+/**
+ * E-service with only id and name
+ */
+export type CompactEservice = {
+    id: string;
+    name: LocalizedName;
+};
+
+export type ProducerAgreement = {
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    id: string;
+    state: AgreementState;
+};
+
+export type ProducerAgreements = {
+    items: Array<ProducerAgreement>;
+    pagination: Pagination;
+};
+
+export type SessionRequest = {
+    oidcToken: string;
+};
+
+export type SessionResponse = {
+    refreshToken: string;
+    uiSessionToken: string;
+};
+
+export type RefreshRequest = {
+    refreshToken: string;
 };
 
 export type GetStatusData = {
@@ -710,3 +732,37 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
+
+export type GetProducerAgreementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producer/agreements';
+};
+
+export type GetProducerAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetProducerAgreementsError = GetProducerAgreementsErrors[keyof GetProducerAgreementsErrors];
+
+export type GetProducerAgreementsResponses = {
+    /**
+     * Producer Agreements retrieved successfully
+     */
+    200: ProducerAgreements;
+};
+
+export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];

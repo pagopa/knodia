@@ -4,6 +4,7 @@ import {
 } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -41,7 +42,11 @@ export const API_Agreements = z
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
 
-export const API_GetAgreementsQueryParams = API_PaginationQueryParams;
+export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
+  producerId: API_OrganizationId.optional().meta({
+    description: "Filter by Producer Organization ID",
+  }),
+});
 export type API_GetAgreementsQueryParams = z.infer<
   typeof API_GetAgreementsQueryParams
 >;
