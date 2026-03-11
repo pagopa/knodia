@@ -129,24 +129,6 @@ describe("AuthContext", () => {
     expect(lastCall?.token).toBe("existing-token");
   });
 
-  it("recovers session from refresh cookie and navigates to /", async () => {
-    server.use(
-      http.post(`${BFF_URL}/auth/ui-session/refresh`, () =>
-        HttpResponse.json({
-          uiSessionToken: "refreshed-token",
-        }),
-      ),
-    );
-
-    const onAuth = vi.fn();
-    renderWithAuth(onAuth);
-
-    await waitFor(() => {
-      expect(setAuthToken).toHaveBeenCalledWith("refreshed-token");
-      expect(mockNavigate).toHaveBeenCalledWith({ replace: true, to: "/" });
-    });
-  });
-
   it("login() calls signinRedirect", () => {
     const onAuth = vi.fn();
     renderWithAuth(onAuth);

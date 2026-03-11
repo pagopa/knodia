@@ -1,10 +1,10 @@
 import { config } from "@/config/config";
 
 /*
- * The UI session token lives in sessionStorage because it is sent as
- * Authorization: Bearer on every API call — moving it to an HttpOnly cookie
- * would require proxying all protected routes through the BFF.
- * XSS can still read it, but its 1h TTL limits the exposure window.
+ * The UI session token lives in localStorage so it persists across tabs.
+ * It is sent as Authorization: Bearer on every API call — moving it to an
+ * HttpOnly cookie would require proxying all protected routes through the BFF.
+ * XSS can still read it, but its short TTL limits the exposure window.
  * The refresh token (24h) is the higher-value target and is stored in an
  * HttpOnly cookie, which the browser sends automatically but JavaScript
  * cannot access via document.cookie or any other API.
@@ -12,11 +12,11 @@ import { config } from "@/config/config";
 const AUTH_TOKEN_KEY = "knodia_auth_token";
 
 export function clearAuthToken(): void {
-  sessionStorage.removeItem(AUTH_TOKEN_KEY);
+  localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
 export function getAuthToken(): null | string {
-  return sessionStorage.getItem(AUTH_TOKEN_KEY);
+  return localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
 // Cognito does not support OIDC RP-Initiated Logout (end_session_endpoint),
@@ -27,5 +27,5 @@ export function redirectToLogout(): void {
 }
 
 export function setAuthToken(token: string): void {
-  sessionStorage.setItem(AUTH_TOKEN_KEY, token);
+  localStorage.setItem(AUTH_TOKEN_KEY, token);
 }

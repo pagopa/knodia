@@ -1,16 +1,7 @@
-import {
-  createSessionMutation,
-  refreshSessionMutation,
-} from "@knodia/bff-client/tanstack-query";
+import { createSessionMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import {
-  type ReactNode,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import {
   AuthProvider as OidcProvider,
   useAuth as useOidcAuth,
@@ -32,9 +23,6 @@ import { AuthContext } from "./useAuthContext";
  * Wraps react-oidc-context's AuthProvider with OIDC configuration
  * and token exchange logic. After OIDC login, exchanges the Cognito
  * access_token for a ui-session token via the BFF.
- *
- * On new tabs (empty sessionStorage), attempts a silent refresh via
- * the HttpOnly refresh cookie before falling back to OIDC login.
  */
 export function OidcAuthProvider({ children }: { children: ReactNode }) {
   return (
@@ -78,38 +66,6 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  const {
-    isIdle: isRefreshIdle,
-    isPending: isRefreshPending,
-    mutate: refreshFromCookie,
-  } = useMutation({
-    ...refreshSessionMutation({ client }),
-    onSuccess: (data) => {
-      setAuthToken(data.uiSessionToken);
-      setUiSessionToken(data.uiSessionToken);
-      void router.navigate({ replace: true, to: "/" });
-    },
-    // onError intentionally omitted: silent failure means the user
-    // is simply not authenticated and will be redirected to login.
-  });
-
-  // On mount, if sessionStorage is empty, attempt to recover the session
-  // from the HttpOnly refresh cookie (e.g. new tab, page restored by browser).
-  // The ref guard prevents double-firing in React StrictMode (dev), which would
-  // consume the one-time-use refresh token JTI twice and cause a 401.
-  const refreshAttempted = useRef(false);
-  useEffect(() => {
-    if (
-      !uiSessionToken &&
-      !user?.access_token &&
-      isRefreshIdle &&
-      !refreshAttempted.current
-    ) {
-      refreshAttempted.current = true;
-      refreshFromCookie({ withCredentials: true });
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- bootstrap only
-
   // After OIDC login completes, exchange the Cognito token for a BFF session.
   useEffect(() => {
     if (user?.access_token && !uiSessionToken) {
@@ -149,7 +105,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
       value={{
         error: oidcError ?? exchangeError,
         isAuthenticated: !!uiSessionToken,
-        isLoading: oidcIsLoading || isExchangePending || isRefreshPending,
+        isLoading: oidcIsLoading || isExchangePending,
         login,
         logout,
         token: uiSessionToken,
