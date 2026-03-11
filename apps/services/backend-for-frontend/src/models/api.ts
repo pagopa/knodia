@@ -422,3 +422,37 @@ export const API_ConsumerEserviceDetails = z
 export type API_ConsumerEserviceDetails = z.infer<
   typeof API_ConsumerEserviceDetails
 >;
+
+export const API_Keychain = z
+  .strictObject({
+    id: z.uuid(),
+    keysCount: z.number().int().min(0),
+    membersCount: z.number().int().min(0),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "Keychain" });
+export type API_Keychain = z.infer<typeof API_Keychain>;
+
+export const API_Keychains = z
+  .strictObject({
+    items: z.array(API_Keychain),
+    pagination: API_Pagination,
+  })
+  .meta({ id: "Keychains" });
+export type API_Keychains = z.infer<typeof API_Keychains>;
+
+export const API_KeychainDetails = z
+  .strictObject({
+    createdAt: z.iso.datetime(),
+    description: API_KeychainLocalizedDescription.optional(),
+    id: z.uuid(),
+    name: API_KeychainLocalizedName,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "KeychainDetails" });
+export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
+
+export const API_ConsumerKeychainsQueryParams = API_PaginationQueryParams;
+export type API_ConsumerKeychainsQueryParams = z.infer<
+  typeof API_ConsumerKeychainsQueryParams
+>;

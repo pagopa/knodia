@@ -64,6 +64,41 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const consumerKeychain =
+        await consumerKeychainService.getConsumerKeychain(
+          req.params.consumerKeychainId,
+          ctx,
+        );
+
+      res.status(200).send(toAPI_Keychain(consumerKeychain));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Consumer Keychain by its ID",
+      headers: KnodiaServiceHeaders,
+      operationId: "getConsumerKeychain",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        200: API_Keychain.meta({
+          description: "Consumer Keychain retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
