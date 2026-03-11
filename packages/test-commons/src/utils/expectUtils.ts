@@ -80,7 +80,6 @@ export function toExpectAPI_EserviceVersionInterfaceDocument(
   };
 }
 
-/** @knipignore */
 export function toExpectConsumerKeychain(consumerKeychain: ConsumerKeychain) {
   return expect.objectContaining({
     ...consumerKeychain,

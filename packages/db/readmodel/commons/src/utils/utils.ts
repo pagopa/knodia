@@ -190,6 +190,7 @@ export const createOrderByFilters = ({
       direction: SortDirection.parse(sortOrder),
     },
   ];
+
   const pkColumns = getTablePKColumns(table);
   for (const [colName] of pkColumns) {
     if (!sorts.some((s) => s.column === colName)) {
