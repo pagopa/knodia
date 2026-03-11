@@ -20,6 +20,10 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_KeychainLocalizedDescription,
+  API_KeychainLocalizedName,
+} from "@knodia/keychain-models/api";
 import { z } from "zod";
 
 const API_InterfaceDocumentSeed = z
@@ -106,6 +110,14 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
+
+export const API_ConsumerKeychainSeed = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.optional(),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "ConsumerKeychainSeed" });
+export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
 
 export const API_ProducerEservice = z
   .strictObject({

@@ -90,10 +90,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 readmodelAgreementAttribute.agreementId,
               ),
             )
-            .innerJoin(
-              readmodelEservice,
-              eq(readmodelAgreement.eserviceId, readmodelEservice.id),
-            )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),
         ]);
