@@ -145,6 +145,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
       response: {
         204: z.undefined().meta({ description: "Logged out successfully" }),
       },
+      security: [],
       tags: [apiTags.auth],
     },
     url: "/auth/logout",

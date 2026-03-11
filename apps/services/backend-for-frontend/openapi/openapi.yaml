@@ -912,6 +912,7 @@ paths:
           required: false
           description: HttpOnly refresh token (set automatically by login and refresh
             responses)
+      security: []
       responses:
         "204":
           description: Logged out successfully
