@@ -1,3 +1,4 @@
+import type { AgreementState } from "@knodia/agreement-models";
 import type {
   EserviceId,
   EserviceVersionId,
@@ -20,6 +21,7 @@ export const assertEserviceVersionIsActive = async (
   readmodelService: ReadmodelService,
 ) => {
   const allowedStates: EserviceVersionState[] = ["Active"];
+
   const eserviceVersion = await retrieveEserviceVersion(
     eservice.id,
     eserviceVersionId,
@@ -35,7 +37,11 @@ export const assertEserviceVersionIsActive = async (
   }
 };
 
-export const assertAgreementDoesNotExist = async ({
+export const agreementCreationConflictingStates: AgreementState[] = [
+  "Active",
+  "Suspended",
+];
+export const assertNoConflictingAgreementExist = async ({
   consumerId,
   consumerKnodeId,
   eserviceId,
@@ -52,6 +58,7 @@ export const assertAgreementDoesNotExist = async ({
     eserviceId,
     limit: 1,
     offset: 0,
+    state: agreementCreationConflictingStates,
   });
 
   if (agreements.results.length > 0) {
