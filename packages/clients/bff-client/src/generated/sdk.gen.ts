@@ -52,11 +52,7 @@ export const refreshSession = <ThrowOnError extends boolean = true>(options: Opt
 /**
  * Clear the refresh token cookie
  */
-export const logout = <ThrowOnError extends boolean = true>(options?: Options<LogoutData, ThrowOnError>) => (options?.client ?? client).post<LogoutResponses, unknown, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/auth/logout',
-    ...options
-});
+export const logout = <ThrowOnError extends boolean = true>(options?: Options<LogoutData, ThrowOnError>) => (options?.client ?? client).post<LogoutResponses, unknown, ThrowOnError>({ url: '/auth/logout', ...options });
 
 /**
  * Retrieve a paginated list of E-services produced by the logged-in user's organization
