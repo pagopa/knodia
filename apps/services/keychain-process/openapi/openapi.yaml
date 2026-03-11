@@ -7,6 +7,13 @@ info:
   title: Knodia Keychain Process API
   version: 1.0.0
 components:
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: JWT
+      description: A JWT bearer token conforming to the best practices defined in RFC
+        8725 (https://www.rfc-editor.org/rfc/rfc8725.html)
+      scheme: bearer
+      type: http
   schemas:
     ProblemError:
       type: object
@@ -128,11 +135,11 @@ components:
           pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         description:
           allOf:
-            - $ref: "#/components/schemas/LocalizedDescription"
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
         id:
           $ref: "#/components/schemas/KeychainId"
         name:
-          $ref: "#/components/schemas/LocalizedName"
+          $ref: "#/components/schemas/KeychainLocalizedName"
         ownerId:
           $ref: "#/components/schemas/OrganizationId"
         updatedAt:
@@ -164,9 +171,9 @@ components:
       properties:
         description:
           allOf:
-            - $ref: "#/components/schemas/LocalizedDescription"
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
         name:
-          $ref: "#/components/schemas/LocalizedName"
+          $ref: "#/components/schemas/KeychainLocalizedName"
       required:
         - name
       additionalProperties: false
@@ -177,6 +184,7 @@ paths:
       tags:
         - health
       description: Check the health status of the service
+      security: []
       responses:
         "200":
           description: Service status OK
@@ -186,7 +194,7 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer-keychains:
+  /consumerKeychains:
     get:
       operationId: getConsumerKeychains
       tags:
@@ -234,6 +242,14 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "403":
           description: Forbidden
           content:
@@ -276,6 +292,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "403":
@@ -345,6 +369,8 @@ paths:
 servers:
   - description: Keychain Process API
     url: /
+security:
+  - bearerAuth: []
 tags:
   - description: Health check routes
     name: health
