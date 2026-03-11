@@ -21,7 +21,7 @@ export const eservice1: Eservice = {
 };
 const eserviceVersion1 = eservice1.versions[0]!;
 
-export const eservice2: Eservice = {
+const eservice2: Eservice = {
   ...getMockEservice({ latestVersionState: "Active", seed: 1 }),
   name: {
     en: "Test Eservice 2",
