@@ -294,6 +294,14 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "403":
           description: Forbidden
           content:
