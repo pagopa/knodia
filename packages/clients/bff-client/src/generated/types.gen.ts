@@ -46,24 +46,6 @@ export type RefreshRequest = {
     refreshToken: string;
 };
 
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
-};
-
-/**
- * Binary file content
- */
-export type FileDownload = Blob | File;
-
-/**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -101,10 +83,37 @@ export type Attribute = {
     scheme: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
 /**
  * Unique Knode identifier
  */
 export type KnodeId = 'Orion' | 'Lynx';
+
+/**
+ * Name of the Keychain
+ */
+export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Description of the Keychain
+ */
+export type KeychainLocalizedDescription = {
+    en: string;
+};
 
 export type InterfaceDocumentSeed = {
     /**
@@ -173,6 +182,11 @@ export type EserviceSeed = {
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type ConsumerKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
 };
 
 export type ProducerEservice = {
@@ -628,10 +642,43 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
      * E-service interface document downloaded successfully
      */
-    200: FileDownload;
+    200: Blob | File;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
+
+export type CreateConsumerKeychainData = {
+    body: ConsumerKeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/consumerKeychains';
+};
+
+export type CreateConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerKeychainError = CreateConsumerKeychainErrors[keyof CreateConsumerKeychainErrors];
+
+export type CreateConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerKeychainResponse = CreateConsumerKeychainResponses[keyof CreateConsumerKeychainResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
@@ -715,36 +762,3 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
-
-export type GetConsumerEserviceLatestVersionInterfaceData = {
-    body?: never;
-    path: {
-        eserviceId: string;
-    };
-    query: {
-        knodeId: KnodeId;
-    };
-    url: '/consumer/eservices/{eserviceId}/interface';
-};
-
-export type GetConsumerEserviceLatestVersionInterfaceErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-};
-
-export type GetConsumerEserviceLatestVersionInterfaceError = GetConsumerEserviceLatestVersionInterfaceErrors[keyof GetConsumerEserviceLatestVersionInterfaceErrors];
-
-export type GetConsumerEserviceLatestVersionInterfaceResponses = {
-    /**
-     * E-service interface document downloaded successfully
-     */
-    200: FileDownload;
-};
-
-export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
