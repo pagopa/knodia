@@ -11,7 +11,9 @@ import {
 import type { ConsumerKeychainService } from "../services/consumerKeychainService.ts";
 
 import {
+  API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
+  API_Keychain,
   API_Keychains,
 } from "../models/api.ts";
 import { toAPI_Keychain } from "../models/apiConverter.ts";
@@ -47,6 +49,35 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       response: {
         200: API_Keychains.meta({
           description: "Consumer keychains retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const consumerKeychain =
+        await consumerKeychainService.createConsumerKeychain(req.body, ctx);
+      res.status(201).send(toAPI_Keychain(consumerKeychain));
+    },
+    method: "POST",
+    schema: {
+      body: API_ConsumerKeychainSeed,
+      description: "Create a new Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "createConsumerKeychain",
+      response: {
+        201: API_Keychain.meta({
+          description: "Consumer Keychain created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
