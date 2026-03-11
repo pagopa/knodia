@@ -4,10 +4,10 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import loginBg from "@/assets/login-bg.webp";
+import { config } from "@/config/config";
 import { useAuth } from "@/contexts/auth";
 
 const KNODIA_PROJECT_URL = "https://knodia.org";
-const KNODE_NAME = "Orion Knode";
 
 export const Route = createFileRoute("/login/")({
   component: LoginPage,
@@ -34,7 +34,7 @@ export function LoginPage() {
       <div className="elevation-5 relative z-10 mx-6 flex w-full max-w-140 flex-col items-center gap-6 rounded-2xl bg-primary-light px-10 py-16">
         <div className="flex flex-col gap-3 text-center text-primary-light-high-contrast">
           <p className="title-md">Welcome to</p>
-          <h1 className="display-sm-em">{KNODE_NAME}</h1>
+          <h1 className="display-sm-em">{config.knodeId} Knode</h1>
         </div>
 
         <p className="body-lg text-center text-primary-light-low-contrast">
