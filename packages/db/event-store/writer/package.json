@@ -10,11 +10,11 @@
     "test:watch": "pnpm test --watch"
   },
   "dependencies": {
-    "@knodia/db-event-store-eservice": "workspace:*",
-    "@knodia/db-event-store-keychain": "workspace:*",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-event-store-agreement": "workspace:*",
+    "@knodia/db-event-store-eservice": "workspace:*",
+    "@knodia/db-event-store-keychain": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "drizzle-orm": "catalog:",

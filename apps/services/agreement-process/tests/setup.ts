@@ -1,4 +1,8 @@
 import {
+  type AgreementWriterService,
+  agreementWriterServiceBuilder,
+} from "@knodia/db-readmodel-agreement/writer";
+import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
@@ -12,6 +16,7 @@ let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
 let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
 let eserviceWriterService: EserviceWriterService;
+let agreementWriterService: AgreementWriterService;
 
 beforeAll(async () => {
   const connectionString = inject("POSTGRES_CONNECTION_STRING");
@@ -32,6 +37,7 @@ beforeAll(async () => {
   });
 
   eserviceWriterService = eserviceWriterServiceBuilder(readmodelDb);
+  agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
 });
 
 beforeEach(async () => {
@@ -52,4 +58,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eserviceWriterService, eventStoreDb };
+export { agreementWriterService, app, eserviceWriterService, eventStoreDb };
