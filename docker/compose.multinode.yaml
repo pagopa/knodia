@@ -478,6 +478,8 @@ services:
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      REDIS_URL: "redis://redis:6379"
+      COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-orion:
         condition: service_started
@@ -485,6 +487,8 @@ services:
         condition: service_healthy
       local-kms-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   eservice-readmodel-writer-orion:
     security_opt:
@@ -724,6 +728,8 @@ services:
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      REDIS_URL: "redis://redis:6379"
+      COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-lynx:
         condition: service_started
@@ -731,6 +737,8 @@ services:
         condition: service_healthy
       local-kms-setup:
         condition: service_completed_successfully
+      redis:
+        condition: service_healthy
 
   eservice-readmodel-writer-lynx:
     security_opt:
@@ -839,6 +847,25 @@ services:
         condition: service_started
 
   # ============================================================
+  # Redis
+  # ============================================================
+
+  redis:
+    security_opt:
+      - no-new-privileges:true
+    image: redis:8.6.1-alpine@sha256:2afba59292f25f5d1af200496db41bea2c6c816b059f57ae74703a50a03a27d0
+    container_name: knodia-multinode-redis
+    ports:
+      - 6379:6379
+    volumes:
+      - multinode-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
   # Local KMS & JWKS (authentication)
   # ============================================================
 
@@ -916,3 +943,4 @@ volumes:
   multinode-pgadmin-data:
   multinode-local-kms-data:
   multinode-jwks-data:
+  multinode-redis-data:
