@@ -22,6 +22,18 @@ import {
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
+export const API_AgreementSeed = z
+  .strictObject({
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description: "Seed data to create a new agreement",
+    id: "AgreementSeed",
+  });
+export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
+
 const API_InterfaceDocumentSeed = z
   .strictObject({
     checksum: z.string().meta({
