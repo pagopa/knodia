@@ -1,3 +1,4 @@
+import type { Organization } from "@knodia/organization-models";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -5,7 +6,6 @@ import {
   agreementProcessApi,
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
-import { genericInternalError } from "@knodia/common-models/errors";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   eserviceProcessApi,
@@ -13,7 +13,6 @@ import {
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { getOrganization } from "@knodia/organization-models";
 
 import {
   API_GetProducerAgreementsQueryParams,
@@ -64,12 +63,13 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           });
 
           // TODO: should this use the remote-resources-manager to fetch the consumer organization from agreement.consumer.knodeId?
-          const consumer = getOrganization(
-            unsafeBrandId(agreement.consumer.id),
-          );
-          if (!consumer) {
-            throw genericInternalError("Consumer organization not found");
-          }
+          const consumer: Organization = {
+            attributes: [],
+            createdAt: new Date(),
+            id: unsafeBrandId(agreement.consumer.id),
+            name: "Consumer Organization Name",
+            updatedAt: new Date(),
+          };
 
           return toAPI_ProducerAgreement({
             agreement,
