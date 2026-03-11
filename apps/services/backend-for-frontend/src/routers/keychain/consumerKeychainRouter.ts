@@ -9,8 +9,8 @@ import {
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
 
-import { API_ConsumerKeychainSeed } from "../../models/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
+import { API_ConsumerKeychainSeed } from "../../models/keychain/api.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface ConsumerKeychainRouterOptions {
