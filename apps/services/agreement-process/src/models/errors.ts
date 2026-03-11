@@ -20,7 +20,6 @@ const errorCodes = {
   ESERVICE_VERSION_NOT_IN_EXPECTED_STATE: "0003",
   AGREEMENT_ALREADY_EXISTS: "0004",
   AGREEMENT_NOT_FOUND: "0005",
-  REQUESTER_IS_NOT_PRODUCER: "0006",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -91,17 +90,5 @@ export function eserviceVersionNotInExpectedState(
     detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: ${allowedStates}`,
     status: HTTP_STATUS_CONFLICT,
     title: "E-service Version Not in Expected State",
-  });
-}
-
-export function requesterIsNotProducer(
-  producerId: OrganizationId,
-  requesterId: OrganizationId,
-) {
-  return createApiError<ErrorCodes>({
-    code: "REQUESTER_IS_NOT_PRODUCER",
-    detail: `Requester ${requesterId} is not the Producer ${producerId} of the E-service`,
-    status: HTTP_STATUS_CONFLICT,
-    title: "Requester is not the Producer",
   });
 }

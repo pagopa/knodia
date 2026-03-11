@@ -27,7 +27,6 @@ import {
 import {
   assertEserviceVersionIsActive,
   assertNoConflictingAgreementsExist,
-  assertRequesterIsProducer,
 } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -98,12 +97,11 @@ export function agreementServiceBuilder(
     },
     async getAgreement(
       agreementId: AgreementId,
-      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<Agreement> {
       logger.info(`Getting Agreement with ID ${agreementId}`);
 
       const agreement = await retrieveAgreement(agreementId, readmodelService);
-      assertRequesterIsProducer(agreement.producerId, authData);
 
       return agreement;
     },
