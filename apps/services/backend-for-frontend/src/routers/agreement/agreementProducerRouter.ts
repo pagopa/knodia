@@ -12,7 +12,10 @@ import {
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  genericError,
+} from "@knodia/fastify-zod-api-commons/models";
 
 import {
   API_GetProducerAgreementsQueryParams,
@@ -54,13 +57,30 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         },
       });
 
+      const eserviceIds = new Set(
+        data.items.map((agreement) => agreement.eserviceId),
+      );
+      const eservices = await eserviceProcessApi.getEservices({
+        client: eserviceProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        query: {
+          eserviceId: Array.from(eserviceIds),
+          limit: eserviceIds.size,
+          offset: 0,
+        },
+      });
+      const eserviceMap = new Map(
+        eservices.data.items.map((eservice) => [eservice.id, eservice]),
+      );
+
       const items = await Promise.all(
         data.items.map(async (agreement) => {
-          const { data: eservice } = await eserviceProcessApi.getEservice({
-            client: eserviceProcessClient,
-            headers: getKnodiaServiceHeaders(req, correlationId),
-            path: { eserviceId: agreement.eserviceId },
-          });
+          const eservice = eserviceMap.get(agreement.eserviceId);
+          if (!eservice) {
+            throw genericError(
+              `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+            );
+          }
 
           // TODO: should this use the remote-resources-manager to fetch the consumer organization from agreement.consumer.knodeId?
           const consumer: Organization = {
