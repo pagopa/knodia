@@ -6,6 +6,7 @@ import {
   type EserviceVersion,
 } from "@knodia/eservice-models";
 import { type ConsumerKeychain } from "@knodia/keychain-models";
+import { type Organization } from "@knodia/organization-models";
 import { expect } from "vitest";
 
 export function toExpectAgreement(agreement: Agreement) {
@@ -95,6 +96,13 @@ export function toExpectEservice(eservice: Eservice) {
     versions: expect.arrayContaining(
       eservice.versions.map(toExpectEserviceVersion),
     ),
+  };
+}
+
+export function toExpectOrganization(organization: Organization) {
+  return {
+    ...organization,
+    attributes: expect.arrayContaining(organization.attributes),
   };
 }
 

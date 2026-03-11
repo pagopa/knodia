@@ -15,6 +15,7 @@ import {
   setRefreshToken,
 } from "@/libs/auth";
 import { client } from "@/libs/axios";
+import { router } from "@/libs/router";
 
 import { AuthContext } from "./useAuthContext";
 
@@ -62,6 +63,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
       setAuthToken(data.uiSessionToken);
       setRefreshToken(data.refreshToken);
       setUiSessionToken(data.uiSessionToken);
+      void router.navigate({ replace: true, to: "/" });
     },
   });
 
