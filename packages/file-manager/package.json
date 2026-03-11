@@ -9,8 +9,7 @@
     "test:watch": "pnpm test --watch"
   },
   "exports": {
-    ".": "./src/fileManager.ts",
-    "./config": "./src/config.ts"
+    ".": "./src/fileManager.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
@@ -23,7 +22,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "catalog:",
-    "@knodia/common-models": "workspace:*",
-    "zod": "catalog:"
+    "@knodia/common-models": "workspace:*"
   }
 }
