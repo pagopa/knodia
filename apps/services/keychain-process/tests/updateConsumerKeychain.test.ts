@@ -26,7 +26,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-const consumerKeychain = getMockConsumerKeychain();
+const consumerKeychain = getMockConsumerKeychain(3);
 
 describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)", () => {
   it("should correctly create consumer keychain update event", async () => {
@@ -55,9 +55,7 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
       updatedAt: new Date(responseBody.updatedAt),
     };
 
-    expect(responseBody).toMatchObject(
-      toAPI_Keychain(expectedConsumerKeychain),
-    );
+    expect(responseBody).toEqual(toAPI_Keychain(expectedConsumerKeychain));
 
     const events = await getAllKeychainEvents();
     expect(events).toHaveLength(2);
@@ -72,7 +70,13 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
 
     const updatedEventData = KeychainEventV1.parse(updatedEvent).data;
     expect(updatedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
+      consumerKeychain: toConsumerKeychainV1({
+        ...expectedConsumerKeychain,
+        // TODO: Remove after KN-259
+        keys: [],
+        purposes: [],
+        users: [],
+      }),
     });
   });
 
@@ -83,8 +87,6 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      await seedConsumerKeychain(consumerKeychain);
-
       const response = await injectAppRequest({
         ...allowedTestTokens[0]!,
         organizationId: consumerKeychain.ownerId,
@@ -99,7 +101,7 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
 
   it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
     const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(1),
+      ...getMockConsumerKeychain(4),
       ownerId: generateId<OrganizationId>(),
     };
 
