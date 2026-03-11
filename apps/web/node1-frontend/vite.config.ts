@@ -51,6 +51,7 @@ function getDevProxy(
     ? {
         [bffPath]: {
           changeOrigin: true,
+          cookiePathRewrite: { "/auth": `${bffPath}/auth` },
           rewrite: (path) => path.replace(new RegExp(`^${bffPath}`), ""),
           target: devProxyTarget,
         } satisfies ProxyOptions,
