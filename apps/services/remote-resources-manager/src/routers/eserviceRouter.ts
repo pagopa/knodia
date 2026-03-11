@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { KnodeId, unsafeBrandExternalId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -69,7 +69,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const detail = await eserviceService.getEserviceDetails(
         {
-          id: unsafeBrandId(req.params.eserviceId),
+          id: unsafeBrandExternalId(req.params.eserviceId),
           knodeId: KnodeId.parse(req.query.knodeId),
         },
         ctx,

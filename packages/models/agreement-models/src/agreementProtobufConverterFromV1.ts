@@ -3,6 +3,7 @@ import type { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   KnodeId,
   OrganizationId,
+  unsafeBrandExternalId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
@@ -44,6 +45,6 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
 const fromAgreementConsumerV1 = (
   input: AgreementConsumerV1,
 ): ExternalResource<OrganizationId> => ({
-  id: unsafeBrandId(input.id),
+  id: unsafeBrandExternalId(input.id),
   knodeId: KnodeId.parse(input.knodeId),
 });

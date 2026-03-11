@@ -4,6 +4,7 @@ import { Agreement, AgreementState } from "@knodia/agreement-models";
 import {
   type AgreementId,
   KnodeId,
+  unsafeBrandExternalId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -41,7 +42,7 @@ const buildAgreement = ({
       toAgreementAttribute,
     ),
     consumer: {
-      id: unsafeBrandId(agreementSQL.consumerId),
+      id: unsafeBrandExternalId(agreementSQL.consumerId),
       knodeId: KnodeId.parse(agreementSQL.consumerKnodeId),
     },
     createdAt: agreementSQL.createdAt,

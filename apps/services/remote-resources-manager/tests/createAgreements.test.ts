@@ -3,7 +3,12 @@ import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { API_CreatedResource } from "@knodia/common-models/api";
-import { generateId, KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  KnodeId,
+  unsafeBrandExternalId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -51,7 +56,7 @@ describe("POST /agreements (createAgreement)", () => {
   const agreement: Agreement = {
     ...getMockAgreement(),
     consumer: {
-      id: unsafeBrandId(body.consumerId),
+      id: unsafeBrandExternalId(body.consumerId),
       knodeId: KnodeId.parse(body.knodeId),
     },
     eserviceId: unsafeBrandId(body.eserviceId),
@@ -90,7 +95,7 @@ describe("POST /agreements (createAgreement)", () => {
 
     const remoteResourceAgreement =
       await remoteResourceDbService.getByAgreementId(
-        agreement.id,
+        unsafeBrandExternalId(agreement.id),
         KnodeId.parse(body.knodeId),
       );
     const expectedRemoteResourceAgreement: RemoteResourceAgreementSQL = {

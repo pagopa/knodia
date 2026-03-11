@@ -4,7 +4,12 @@ import {
   AgreementEventV1,
   toAgreementV1,
 } from "@knodia/agreement-models";
-import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateExternalId,
+  generateId,
+  KnodeId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -21,7 +26,7 @@ describe("POST /agreements (createAgreement)", async () => {
     latestVersionState: "Active",
   });
   const eserviceVersion = eservice.versions[0]!;
-  const consumerId = generateId<OrganizationId>();
+  const consumerId = generateExternalId<OrganizationId>();
 
   const body: API_AgreementSeed = {
     consumer: {

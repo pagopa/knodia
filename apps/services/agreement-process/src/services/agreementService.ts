@@ -11,6 +11,7 @@ import {
   AgreementId,
   EserviceId,
   EserviceVersionId,
+  ExternalId,
   generateId,
   KnodeId,
   OrganizationId,
@@ -43,7 +44,7 @@ export function agreementServiceBuilder(
         eserviceVersionId,
       }: {
         consumer: {
-          id: OrganizationId;
+          id: ExternalId<OrganizationId>;
           knodeId: KnodeId;
         };
         eserviceId: EserviceId;
