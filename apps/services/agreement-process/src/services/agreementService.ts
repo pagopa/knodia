@@ -23,7 +23,7 @@ import { createAgreementActivatedV1Event } from "../models/agreementEventFactory
 import { retrieveEservice } from "../utils/readmodelUtils.ts";
 import {
   assertEserviceVersionIsActive,
-  assertNoConflictingAgreementExist,
+  assertNoConflictingAgreementsExist,
 } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -54,7 +54,7 @@ export function agreementServiceBuilder(
         `Creating Agreement ${agreementId}`,
       );
 
-      await assertNoConflictingAgreementExist({
+      await assertNoConflictingAgreementsExist({
         consumerId: consumer.id,
         consumerKnodeId: consumer.knodeId,
         eserviceId,

@@ -41,7 +41,7 @@ export const agreementCreationConflictingStates: AgreementState[] = [
   "Active",
   "Suspended",
 ];
-export const assertNoConflictingAgreementExist = async ({
+export const assertNoConflictingAgreementsExist = async ({
   consumerId,
   consumerKnodeId,
   eserviceId,
