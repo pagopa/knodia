@@ -81,6 +81,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
       setUiSessionToken(data.uiSessionToken);
+      void router.navigate({ replace: true, to: "/" });
     },
     // onError intentionally omitted: silent failure means the user
     // is simply not authenticated and will be redirected to login.
