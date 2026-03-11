@@ -52,4 +52,55 @@ describe("Consumer keychain read model writer tests", async () => {
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ConsumerKeychain>);
   });
+
+  it("ConsumerKeychainUpdatedV1", async () => {
+    const consumerKeychain = getMockConsumerKeychain();
+    const updatedConsumerKeychain: ConsumerKeychain = {
+      ...consumerKeychain,
+      description: undefined,
+      name: { en: "Updated Consumer keychain name" },
+      updatedAt: new Date(2),
+    };
+
+    const createdEventData = protobufBinaryCodec(
+      keychainEvents.ConsumerKeychainCreatedV1,
+    ).encode({
+      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+    });
+
+    await sendTestEvent({
+      data: createdEventData,
+      eventType: "ConsumerKeychainCreatedV1",
+      metadataVersion: 0,
+      producer,
+      streamId: consumerKeychain.id,
+      topicName,
+    });
+
+    const updatedEventData = protobufBinaryCodec(
+      keychainEvents.ConsumerKeychainUpdatedV1,
+    ).encode({
+      consumerKeychain: toConsumerKeychainV1(updatedConsumerKeychain),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: updatedEventData,
+      eventType: "ConsumerKeychainUpdatedV1",
+      metadataVersion,
+      producer,
+      streamId: consumerKeychain.id,
+      topicName,
+    });
+
+    await runTestConsumer(topicName, processMessage, kafkaConfig);
+
+    const retrievedKeychains = await getAllConsumerKeychains(readmodelDb);
+
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectConsumerKeychain(updatedConsumerKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ConsumerKeychain>);
+  });
 });

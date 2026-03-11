@@ -11,3 +11,7 @@ message ConsumerKeychainCreatedV1 {
 message ConsumerKeychainDeletedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
 }
+
+message ConsumerKeychainUpdatedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+}

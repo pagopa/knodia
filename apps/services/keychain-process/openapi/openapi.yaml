@@ -177,6 +177,17 @@ components:
       required:
         - name
       additionalProperties: false
+    ConsumerKeychainPatch:
+      type: object
+      properties:
+        description:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        name:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedName"
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -338,6 +349,73 @@ paths:
             application/json:
               schema:
                 description: Consumer Keychain retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychain"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    patch:
+      operationId: updateConsumerKeychain
+      tags:
+        - consumerKeychain
+      description: Update a Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsumerKeychainPatch"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Consumer Keychain updated successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain updated successfully
                 allOf:
                   - $ref: "#/components/schemas/Keychain"
         "400":
