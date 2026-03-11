@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { createEservice, createSession, getConsumerCatalogEservices, getConsumerEserviceDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, type Options, refreshSession } from '../sdk.gen.ts';
-import type { CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse } from '../types.gen.ts';
+import { createConsumerKeychain, createEservice, createSession, getConsumerCatalogEservices, getConsumerEserviceDetails, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, type Options, refreshSession } from '../sdk.gen.ts';
+import type { CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -220,6 +220,23 @@ export const getProducerEserviceLatestVersionInterfaceOptions = (options: Option
 });
 
 /**
+ * Create a new Consumer Keychain
+ */
+export const createConsumerKeychainMutation = (options?: Partial<Options<CreateConsumerKeychainData>>): UseMutationOptions<CreateConsumerKeychainResponse, AxiosError<CreateConsumerKeychainError>, Options<CreateConsumerKeychainData>> => {
+    const mutationOptions: UseMutationOptions<CreateConsumerKeychainResponse, AxiosError<CreateConsumerKeychainError>, Options<CreateConsumerKeychainData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await createConsumerKeychain({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
  * Search for E-services
  *
  * Search for E-services according to search criteria and considering only E-services with an active or suspended Version
@@ -256,49 +273,4 @@ export const getConsumerEserviceDetailsOptions = (options: Options<GetConsumerEs
         return data;
     },
     queryKey: getConsumerEserviceDetailsQueryKey(options)
-});
-
-export const getProducerAgreementsQueryKey = (options: Options<GetProducerAgreementsData>) => createQueryKey('getProducerAgreements', options);
-
-/**
- * Retrieve a paginated list of Agreements produced by the logged-in user's organization
- */
-export const getProducerAgreementsOptions = (options: Options<GetProducerAgreementsData>) => queryOptions<GetProducerAgreementsResponse, AxiosError<GetProducerAgreementsError>, GetProducerAgreementsResponse, ReturnType<typeof getProducerAgreementsQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getProducerAgreements({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerAgreementsQueryKey(options)
-});
-
-export const getProducerAgreementsInfiniteQueryKey = (options: Options<GetProducerAgreementsData>): QueryKey<Options<GetProducerAgreementsData>> => createQueryKey('getProducerAgreements', options, true);
-
-/**
- * Retrieve a paginated list of Agreements produced by the logged-in user's organization
- */
-export const getProducerAgreementsInfiniteOptions = (options: Options<GetProducerAgreementsData>) => infiniteQueryOptions<GetProducerAgreementsResponse, AxiosError<GetProducerAgreementsError>, InfiniteData<GetProducerAgreementsResponse>, QueryKey<Options<GetProducerAgreementsData>>, number | Pick<QueryKey<Options<GetProducerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetProducerAgreementsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getProducerAgreements({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getProducerAgreementsInfiniteQueryKey(options)
 });

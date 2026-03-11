@@ -33,29 +33,17 @@ export type Problem = {
     title: string;
 };
 
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
-
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
+export type SessionRequest = {
+    oidcToken: string;
 };
 
-/**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
+export type SessionResponse = {
+    refreshToken: string;
+    uiSessionToken: string;
 };
 
-export type Attribute = {
-    code: string;
-    scheme: string;
+export type RefreshRequest = {
+    refreshToken: string;
 };
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
@@ -90,12 +78,41 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
+export type Attribute = {
+    code: string;
+    scheme: string;
+};
+
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
 /**
- * Organization with only id and name
+ * Unique identifier of the created resource
  */
-export type CompactOrganization = {
+export type CreatedResource = {
     id: string;
-    name: string;
+};
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+/**
+ * Name of the Keychain
+ */
+export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Description of the Keychain
+ */
+export type KeychainLocalizedDescription = {
+    en: string;
 };
 
 export type InterfaceDocumentSeed = {
@@ -165,6 +182,11 @@ export type EserviceSeed = {
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type ConsumerKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
 };
 
 export type ProducerEservice = {
@@ -305,6 +327,14 @@ export type GetConsumerCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
+/**
+ * Organization with only id and name
+ */
+export type CompactOrganization = {
+    id: string;
+    name: LocalizedName;
+};
+
 export type ConsumerCatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
@@ -368,39 +398,6 @@ export type ConsumerEserviceDetails = {
     producer: ConsumerEserviceDetailsProducer;
     requiredAttributes: Array<Array<ConsumerRequiredAttribute>>;
     state: EserviceVersionState;
-};
-
-/**
- * E-service with only id and name
- */
-export type CompactEservice = {
-    id: string;
-    name: LocalizedName;
-};
-
-export type ProducerAgreement = {
-    consumer: CompactOrganization;
-    eservice: CompactEservice;
-    id: string;
-    state: AgreementState;
-};
-
-export type ProducerAgreements = {
-    items: Array<ProducerAgreement>;
-    pagination: Pagination;
-};
-
-export type SessionRequest = {
-    oidcToken: string;
-};
-
-export type SessionResponse = {
-    refreshToken: string;
-    uiSessionToken: string;
-};
-
-export type RefreshRequest = {
-    refreshToken: string;
 };
 
 export type GetStatusData = {
@@ -650,6 +647,39 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
 
+export type CreateConsumerKeychainData = {
+    body: ConsumerKeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/consumerKeychains';
+};
+
+export type CreateConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerKeychainError = CreateConsumerKeychainErrors[keyof CreateConsumerKeychainErrors];
+
+export type CreateConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerKeychainResponse = CreateConsumerKeychainResponses[keyof CreateConsumerKeychainResponses];
+
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
     path?: never;
@@ -732,45 +762,3 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
-
-export type GetProducerAgreementsData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-    };
-    url: '/producer/agreements';
-};
-
-export type GetProducerAgreementsErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetProducerAgreementsError = GetProducerAgreementsErrors[keyof GetProducerAgreementsErrors];
-
-export type GetProducerAgreementsResponses = {
-    /**
-     * Producer Agreements retrieved successfully
-     */
-    200: ProducerAgreements;
-};
-
-export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];
