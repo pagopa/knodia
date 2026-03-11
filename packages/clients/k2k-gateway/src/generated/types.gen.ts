@@ -40,6 +40,11 @@ export type Pagination = {
 };
 
 /**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
  * Unique identifier of the Organization
  */
 export type OrganizationId = string;
@@ -383,6 +388,68 @@ export type GetEserviceLatestVersionResponses = {
 };
 
 export type GetEserviceLatestVersionResponse = GetEserviceLatestVersionResponses[keyof GetEserviceLatestVersionResponses];
+
+export type GetEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/versions/latest/interface';
+};
+
+export type GetEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+};
+
+export type GetEserviceLatestVersionInterfaceError = GetEserviceLatestVersionInterfaceErrors[keyof GetEserviceLatestVersionInterfaceErrors];
+
+export type GetEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service latest Version Interface Document retrieved successfully
+     */
+    200: EserviceVersionInterfaceDocument;
+};
+
+export type GetEserviceLatestVersionInterfaceResponse = GetEserviceLatestVersionInterfaceResponses[keyof GetEserviceLatestVersionInterfaceResponses];
+
+export type DownloadEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/versions/latest/interface/download';
+};
+
+export type DownloadEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DownloadEserviceLatestVersionInterfaceError = DownloadEserviceLatestVersionInterfaceErrors[keyof DownloadEserviceLatestVersionInterfaceErrors];
+
+export type DownloadEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service Interface Document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
 
 export type CreateAgreementData = {
     body: AgreementSeed;
