@@ -18,6 +18,7 @@ import {
   setAuthToken,
 } from "@/libs/auth";
 import { client } from "@/libs/axios";
+import { router } from "@/libs/router";
 
 import { AuthContext } from "./useAuthContext";
 
@@ -67,6 +68,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
       setUiSessionToken(data.uiSessionToken);
+      void router.navigate({ replace: true, to: "/" });
     },
   });
 

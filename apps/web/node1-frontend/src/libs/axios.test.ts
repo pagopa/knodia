@@ -1,21 +1,17 @@
 import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import {
+  clearAuthToken,
+  getAuthToken,
+  redirectToLogout,
+  setAuthToken,
+} from "@/test/mocks/auth";
 import { server } from "@/test/msw/server";
 
+vi.mock("@/libs/auth", () => import("@/test/mocks/auth"));
+
 const BFF_URL = import.meta.env["BFF_URL"];
-
-const mockGetAuthToken = vi.fn<() => null | string>();
-const mockSetAuthToken = vi.fn();
-const mockClearAuthToken = vi.fn();
-const mockRedirectToLogout = vi.fn();
-
-vi.mock("@/libs/auth", () => ({
-  clearAuthToken: (...args: unknown[]) => mockClearAuthToken(...args),
-  getAuthToken: () => mockGetAuthToken(),
-  redirectToLogout: () => mockRedirectToLogout(),
-  setAuthToken: (...args: unknown[]) => mockSetAuthToken(...args),
-}));
 
 // Import after mocks so interceptors bind to mocked auth functions
 const { default: axios } = await import("axios");
@@ -53,12 +49,12 @@ function setupRefreshEndpoint(success: boolean) {
 describe("axios interceptors", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetAuthToken.mockReturnValue(null);
+    getAuthToken.mockReturnValue(null);
   });
 
   describe("request interceptor (addAuthHeader)", () => {
     it("adds Authorization header when token is present", async () => {
-      mockGetAuthToken.mockReturnValue("my-token");
+      getAuthToken.mockReturnValue("my-token");
 
       let capturedAuth: string | undefined;
       server.use(
@@ -90,7 +86,7 @@ describe("axios interceptors", () => {
 
   describe("response interceptor (handleUnauthorized)", () => {
     it("retries with new token after successful refresh", async () => {
-      mockGetAuthToken
+      getAuthToken
         .mockReturnValueOnce("expired-token")
         .mockReturnValue("new-session-token");
 
@@ -100,19 +96,19 @@ describe("axios interceptors", () => {
       const response = await axios.get(`${BFF_URL}/api/data`);
 
       expect(response.data).toEqual({ result: "ok" });
-      expect(mockSetAuthToken).toHaveBeenCalledWith("new-session-token");
+      expect(setAuthToken).toHaveBeenCalledWith("new-session-token");
     });
 
     it("clears token and redirects to logout when refresh fails", async () => {
-      mockGetAuthToken.mockReturnValue("expired-token");
+      getAuthToken.mockReturnValue("expired-token");
 
       setupProtectedEndpoint([{ status: 401 }]);
       setupRefreshEndpoint(false);
 
       await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
 
-      expect(mockClearAuthToken).toHaveBeenCalledOnce();
-      expect(mockRedirectToLogout).toHaveBeenCalledOnce();
+      expect(clearAuthToken).toHaveBeenCalledOnce();
+      expect(redirectToLogout).toHaveBeenCalledOnce();
     });
 
     it("does not intercept non-401 errors", async () => {
@@ -124,7 +120,7 @@ describe("axios interceptors", () => {
 
       await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
 
-      expect(mockClearAuthToken).not.toHaveBeenCalled();
+      expect(clearAuthToken).not.toHaveBeenCalled();
     });
 
     it("does not intercept 401 on auth endpoints", async () => {
@@ -148,12 +144,12 @@ describe("axios interceptors", () => {
       ).rejects.toThrow();
       await expect(axios.post(`${BFF_URL}/auth/logout`, {})).rejects.toThrow();
 
-      expect(mockClearAuthToken).not.toHaveBeenCalled();
-      expect(mockRedirectToLogout).not.toHaveBeenCalled();
+      expect(clearAuthToken).not.toHaveBeenCalled();
+      expect(redirectToLogout).not.toHaveBeenCalled();
     });
 
     it("coalesces concurrent refresh requests", async () => {
-      mockGetAuthToken
+      getAuthToken
         .mockReturnValueOnce("expired")
         .mockReturnValueOnce("expired")
         .mockReturnValue("new-session-token");

@@ -1,7 +1,6 @@
 import { Banner, Button, Divider, Link } from "@knodia/ui-kit/ui";
 import { LockIcon } from "@phosphor-icons/react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 import loginBg from "@/assets/login-bg.webp";
 import { config } from "@/config/config";
@@ -10,18 +9,16 @@ import { useAuth } from "@/contexts/auth";
 const KNODIA_PROJECT_URL = "https://knodia.org";
 
 export const Route = createFileRoute("/login/")({
+  beforeLoad: ({ context }) => {
+    if (context.auth.isAuthenticated) {
+      throw redirect({ to: "/" });
+    }
+  },
   component: LoginPage,
 });
 
 export function LoginPage() {
-  const { error, isAuthenticated, login } = useAuth();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      void navigate({ replace: true, to: "/" });
-    }
-  }, [isAuthenticated, navigate]);
+  const { error, login } = useAuth();
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-brand-dark">
