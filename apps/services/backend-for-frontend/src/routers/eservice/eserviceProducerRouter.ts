@@ -12,7 +12,8 @@ import {
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import { config } from "../../config/config.ts";
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import {
   API_EserviceSeed,
   API_FileDownload,
@@ -29,6 +30,7 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceRouterOptions {
+  config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
 }
@@ -37,7 +39,7 @@ interface EserviceRouterOptions {
 export const eserviceProducerRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
   // eslint-disable-next-line max-lines-per-function
-> = async (fastify, { eserviceProcessClient, fileManager }) => {
+> = async (fastify, { config, eserviceProcessClient, fileManager }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);

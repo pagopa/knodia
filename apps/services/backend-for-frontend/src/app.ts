@@ -12,8 +12,9 @@ import {
 import { initFileManager } from "@knodia/file-manager";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
+import type { BffProcessConfig } from "./config/config.ts";
+
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
-import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { authRouter } from "./routers/authRouter.ts";
@@ -79,6 +80,7 @@ export function buildAppFromConfig(config: BffProcessConfig) {
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(eserviceProducerRouter, {
+      config,
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
     });
