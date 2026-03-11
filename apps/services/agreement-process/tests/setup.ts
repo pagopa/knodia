@@ -51,6 +51,7 @@ afterEach(async () => {
   await Promise.all([
     eventStoreDb.execute("ROLLBACK"),
     readmodelDb.execute("ROLLBACK"),
+    eventStoreDb.execute("TRUNCATE TABLE test_agreement.events"), // TODO: workaround to clean table before ROLLBACK fix
   ]);
 });
 

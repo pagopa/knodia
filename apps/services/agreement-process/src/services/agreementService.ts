@@ -26,6 +26,7 @@ import {
 } from "../utils/readmodelUtils.ts";
 import {
   assertEserviceVersionIsActive,
+  assertNoConflictingAgreementsExist,
   assertRequesterIsProducer,
 } from "../utils/validators.ts";
 
@@ -56,6 +57,13 @@ export function agreementServiceBuilder(
         { requestBody: { consumer, eserviceId, eserviceVersionId } },
         `Creating Agreement ${agreementId}`,
       );
+
+      await assertNoConflictingAgreementsExist({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await assertEserviceVersionIsActive(

@@ -12,6 +12,7 @@ const link = tv({
   base: "rounded-xs underline transition [-webkit-tap-highlight-color:transparent] disabled:cursor-default disabled:text-[GrayText] disabled:no-underline",
   variants: {
     variant: {
+      inline: "font-semibold underline",
       primary: "text-blue-600 underline",
       secondary: "text-primary-light-high-contrast underline",
     },

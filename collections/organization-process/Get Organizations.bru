@@ -1,0 +1,22 @@
+meta {
+  name: Get Organizations
+  type: http
+}
+
+get {
+  url: {{host-organization-process}}/organizations?offset=0&limit=50
+  body: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+  ~q:
+  ~sortBy: name
+  ~sortOrder: asc
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

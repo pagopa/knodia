@@ -56,6 +56,11 @@ export type Pagination = {
     total: number;
 };
 
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
 export type AgreementSeed = {
     consumer: AgreementConsumer;
     eserviceId: string;
@@ -113,6 +118,22 @@ export type GetAgreementsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: OrganizationId;
+        /**
+         * Filter by Consumer Knode ID
+         */
+        consumerKnodeId?: KnodeId;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
     };
     url: '/agreements';
 };
@@ -189,48 +210,3 @@ export type CreateAgreementResponses = {
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
-
-export type GetAgreementData = {
-    body?: never;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
-    path: {
-        agreementId: string;
-    };
-    query?: never;
-    url: '/agreements/{agreementId}';
-};
-
-export type GetAgreementErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-};
-
-export type GetAgreementError = GetAgreementErrors[keyof GetAgreementErrors];
-
-export type GetAgreementResponses = {
-    /**
-     * Agreement retrieved successfully
-     */
-    200: Agreement;
-};
-
-export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];

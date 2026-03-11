@@ -1,5 +1,8 @@
+import type { AgreementState } from "@knodia/agreement-models";
 import type {
+  EserviceId,
   EserviceVersionId,
+  KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
 import type { Eservice, EserviceVersionState } from "@knodia/eservice-models";
@@ -8,6 +11,7 @@ import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
+  agreementAlreadyExists,
   eserviceVersionNotInExpectedState,
   requesterIsNotProducer,
 } from "../models/errors.ts";
@@ -19,6 +23,7 @@ export const assertEserviceVersionIsActive = async (
   readmodelService: ReadmodelService,
 ) => {
   const allowedStates: EserviceVersionState[] = ["Active"];
+
   const eserviceVersion = await retrieveEserviceVersion(
     eservice.id,
     eserviceVersionId,
@@ -31,6 +36,39 @@ export const assertEserviceVersionIsActive = async (
       eserviceVersionId,
       allowedStates,
     );
+  }
+};
+
+export const agreementCreationConflictingStates: AgreementState[] = [
+  "Active",
+  "Suspended",
+];
+export const assertNoConflictingAgreementsExist = async ({
+  consumerId,
+  consumerKnodeId,
+  eserviceId,
+  readmodelService,
+}: {
+  consumerId: OrganizationId;
+  consumerKnodeId: KnodeId;
+  eserviceId: EserviceId;
+  readmodelService: ReadmodelService;
+}) => {
+  const agreements = await readmodelService.getAgreements({
+    consumerId,
+    consumerKnodeId,
+    eserviceId,
+    limit: 1,
+    offset: 0,
+    state: agreementCreationConflictingStates,
+  });
+
+  if (agreements.results.length > 0) {
+    throw agreementAlreadyExists({
+      consumerId,
+      consumerKnodeId,
+      eserviceId,
+    });
   }
 };
 

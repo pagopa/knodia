@@ -42,7 +42,6 @@ services:
       - ../migration/event-store:/flyway/databases/orion_event_store:ro
       - ../migration/read-model:/flyway/databases/orion_readmodel:ro
       - ../migration/remote-resource:/flyway/databases/orion_remote_resource:ro
-      - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root
@@ -64,7 +63,6 @@ services:
       - ../migration/event-store:/flyway/databases/lynx_event_store:ro
       - ../migration/read-model:/flyway/databases/lynx_readmodel:ro
       - ../migration/remote-resource:/flyway/databases/lynx_remote_resource:ro
-      - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root
@@ -358,6 +356,8 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      AGREEMENT_PROCESS_URL: "http://agreement-process-orion:3000"
+      CALLER_KNODE_ID: "Lynx"
       ESERVICE_PROCESS_URL: "http://eservice-process-orion:3000"
       INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
       INTERNAL_JWT_ISSUER: "local-knodia"
@@ -369,8 +369,48 @@ services:
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
+      agreement-process-orion:
+        condition: service_started
       eservice-process-orion:
         condition: service_started
+
+  agreement-process-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-agreement-process-orion
+    build:
+      context: ..
+      dockerfile: apps/services/agreement-process/Dockerfile
+    ports:
+      - 3201:3000
+    environment:
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      EVENTSTORE_DB_USER: local_orion_agreement_process_user
+      EVENTSTORE_DB_PASSWORD: local_orion_agreement_process_user
+      EVENTSTORE_DB_HOST: postgres
+      EVENTSTORE_DB_PORT: "5432"
+      EVENTSTORE_DB_NAME: orion_event_store
+      EVENTSTORE_DB_USE_SSL: "false"
+      EVENTSTORE_DB_AGREEMENT_SCHEMA: local_orion_agreement
+      READMODEL_DB_USER: local_orion_agreement_process_user
+      READMODEL_DB_PASSWORD: local_orion_agreement_process_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_orion_agreement
+      READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
 
   remote-resources-manager-orion:
     security_opt:
@@ -475,6 +515,37 @@ services:
       kafka:
         condition: service_healthy
 
+  agreement-readmodel-writer-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-agreement-readmodel-writer-orion
+    build:
+      context: ..
+      dockerfile: apps/services/agreement-readmodel-writer/Dockerfile
+    environment:
+      READMODEL_DB_USER: local_orion_agreement_rmw_user
+      READMODEL_DB_PASSWORD: local_orion_agreement_rmw_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_orion_agreement
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-agreement-client-orion
+      KAFKA_GROUP_ID: kafka-agreement-readmodel-writer-orion
+      TOPIC_STARTING_OFFSET: earliest
+      AGREEMENT_TOPIC: event-store-orion.local_orion_agreement.events
+      AWS_REGION: eu-south-1
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+    depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+
   # ============================================================
   # Lynx Node
   # ============================================================
@@ -531,6 +602,8 @@ services:
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
+      AGREEMENT_PROCESS_URL: "http://agreement-process-lynx:3000"
+      CALLER_KNODE_ID: "Orion"
       ESERVICE_PROCESS_URL: "http://eservice-process-lynx:3000"
       INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
       INTERNAL_JWT_ISSUER: "local-knodia"
@@ -542,8 +615,48 @@ services:
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
+      agreement-process-lynx:
+        condition: service_started
       eservice-process-lynx:
         condition: service_started
+
+  agreement-process-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-agreement-process-lynx
+    build:
+      context: ..
+      dockerfile: apps/services/agreement-process/Dockerfile
+    ports:
+      - 3202:3000
+    environment:
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      EVENTSTORE_DB_USER: local_lynx_agreement_process_user
+      EVENTSTORE_DB_PASSWORD: local_lynx_agreement_process_user
+      EVENTSTORE_DB_HOST: postgres
+      EVENTSTORE_DB_PORT: "5432"
+      EVENTSTORE_DB_NAME: lynx_event_store
+      EVENTSTORE_DB_USE_SSL: "false"
+      EVENTSTORE_DB_AGREEMENT_SCHEMA: local_lynx_agreement
+      READMODEL_DB_USER: local_lynx_agreement_process_user
+      READMODEL_DB_PASSWORD: local_lynx_agreement_process_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_lynx_agreement
+      READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
 
   remote-resources-manager-lynx:
     security_opt:
@@ -640,6 +753,37 @@ services:
       KAFKA_GROUP_ID: kafka-eservice-readmodel-writer-lynx
       TOPIC_STARTING_OFFSET: earliest
       ESERVICE_TOPIC: event-store-lynx.local_lynx_eservice.events
+      AWS_REGION: eu-south-1
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+
+  agreement-readmodel-writer-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-agreement-readmodel-writer-lynx
+    build:
+      context: ..
+      dockerfile: apps/services/agreement-readmodel-writer/Dockerfile
+    environment:
+      READMODEL_DB_USER: local_lynx_agreement_rmw_user
+      READMODEL_DB_PASSWORD: local_lynx_agreement_rmw_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_lynx_agreement
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-agreement-client-lynx
+      KAFKA_GROUP_ID: kafka-agreement-readmodel-writer-lynx
+      TOPIC_STARTING_OFFSET: earliest
+      AGREEMENT_TOPIC: event-store-lynx.local_lynx_agreement.events
       AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
