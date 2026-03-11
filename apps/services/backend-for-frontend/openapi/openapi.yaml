@@ -1283,6 +1283,7 @@ paths:
   /consumer/agreements:
     post:
       operationId: createConsumerAgreement
+      summary: Create a consumer agreement
       tags:
         - agreement
       description: Create a new Agreement for the consumer to access a Producer's E-service
