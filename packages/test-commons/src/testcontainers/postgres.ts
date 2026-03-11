@@ -19,9 +19,6 @@ const FLYWAY_SCRIPTS_PATH = fileURLToPath(
   new URL(`../../../../scripts/flyway`, import.meta.url),
 );
 
-const ROLES_MIGRATION_PATH = fileURLToPath(
-  new URL(`../../../../migration/roles`, import.meta.url),
-);
 
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
@@ -69,7 +66,6 @@ export async function runTestFlywayMigrations({
   });
 
   const mounts: { source: string; target: string }[] = [
-    { source: ROLES_MIGRATION_PATH, target: "/flyway/roles" },
     { source: FLYWAY_SCRIPTS_PATH, target: "/flyway/scripts" },
   ];
 
