@@ -44,7 +44,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
 
-      res.status(201).send(data);
+      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
     },
     method: "POST",
     schema: {
@@ -60,6 +60,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      summary: "Create a consumer agreement",
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements",
