@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "@knodia/agreement-models": "workspace:*",
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
@@ -22,8 +24,6 @@
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@knodia/attribute-models": "workspace:*",
-    "@knodia/common-models": "workspace:*",
-    "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",

@@ -1457,6 +1457,12 @@ importers:
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../../../models/agreement-models
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../models/common-models
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../commons
       '@knodia/db-readmodel-config':
         specifier: workspace:*
         version: link:../config
@@ -1476,12 +1482,6 @@ importers:
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../models/attribute-models
-      '@knodia/common-models':
-        specifier: workspace:*
-        version: link:../../../models/common-models
-      '@knodia/db-readmodel-commons':
-        specifier: workspace:*
-        version: link:../commons
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../eslint-config
