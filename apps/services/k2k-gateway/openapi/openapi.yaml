@@ -667,6 +667,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
             application/yaml: *a1
+            application/x-yaml: *a1
         "400":
           description: Bad Request
           content:

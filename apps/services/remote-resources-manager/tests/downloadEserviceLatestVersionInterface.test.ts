@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
-
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -11,7 +9,6 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-const getEserviceLatestVersionInterfaceMock = vi.hoisted(() => vi.fn());
 const downloadEserviceLatestVersionInterfaceMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
@@ -24,20 +21,12 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
       ...original.k2kGatewayApi,
       downloadEserviceLatestVersionInterface:
         downloadEserviceLatestVersionInterfaceMock,
-      getEserviceLatestVersionInterface: getEserviceLatestVersionInterfaceMock,
     },
   };
 });
 
-const mockMetadata: k2kGatewayApi.EserviceVersionInterfaceDocument = {
-  checksum: "abc123",
-  contentType: "application/yaml",
-  id: crypto.randomUUID(),
-  name: "openapi.yaml",
-  prettyName: { en: "OpenAPI Specification" },
-  updatedAt: new Date().toISOString(),
-};
-
+const mockFileName = "openapi.yaml";
+const mockContentType = "application/yaml";
 const mockFileContent = "openapi: 3.0.0\ninfo:\n  title: Test API";
 const mockBlob = Buffer.from(mockFileContent);
 
@@ -46,16 +35,16 @@ describe("GET /eservices/:eserviceId/interface (downloadEserviceLatestVersionInt
   const knodeId = "Orion";
 
   beforeEach(() => {
-    getEserviceLatestVersionInterfaceMock.mockReset();
     downloadEserviceLatestVersionInterfaceMock.mockReset();
   });
 
   it("should return 200 with correct headers and file content on success", async () => {
-    getEserviceLatestVersionInterfaceMock.mockResolvedValue({
-      data: mockMetadata,
-    });
     downloadEserviceLatestVersionInterfaceMock.mockResolvedValue({
       data: mockBlob,
+      headers: {
+        "content-disposition": `attachment; filename="${mockFileName}"`,
+        "content-type": mockContentType,
+      },
     });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
@@ -64,20 +53,15 @@ describe("GET /eservices/:eserviceId/interface (downloadEserviceLatestVersionInt
 
     expect(response.statusCode).toBe(200);
 
-    expect(response.headers["content-type"]).toBe("application/yaml");
+    expect(response.headers["content-type"]).toBe(mockContentType);
     expect(response.headers["content-disposition"]).toBe(
-      `attachment; filename="${mockMetadata.name}"`,
+      `attachment; filename="${mockFileName}"`,
     );
     expect(response.body).toBe(mockFileContent);
 
-    const expectedPath = { eserviceId };
-
-    expect(getEserviceLatestVersionInterfaceMock).toHaveBeenCalledWith(
-      expect.objectContaining({ path: expectedPath }),
-    );
     expect(downloadEserviceLatestVersionInterfaceMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        path: expectedPath,
+        path: { eserviceId },
         responseType: "arraybuffer",
       }),
     );

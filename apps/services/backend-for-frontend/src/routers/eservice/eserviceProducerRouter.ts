@@ -277,7 +277,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         "Download the interface document for the latest version of an E-service",
       operationId: "getProducerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
-      produces: ["application/json", "application/yaml"],
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
       response: {
         200: API_FileDownload.meta({
           description: "E-service interface document downloaded successfully",
