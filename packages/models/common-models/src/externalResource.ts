@@ -2,7 +2,11 @@ import z from "zod";
 
 import { type IDS, KnodeId } from "./brandedIds.ts";
 
-const ExternalId = <T extends IDS>() => z.uuid().brand<`ExternalId:${T}`>();
+export const ExternalId = <T extends IDS>() =>
+  z.uuid().brand<`ExternalId:${T}`>();
+export type ExternalId<T extends IDS> = z.infer<
+  ReturnType<typeof ExternalId<T>>
+>;
 
 export const ExternalResource = <T extends IDS>() =>
   z.strictObject({

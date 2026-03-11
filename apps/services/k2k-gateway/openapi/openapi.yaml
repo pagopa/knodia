@@ -87,18 +87,39 @@ components:
         - offset
         - total
       additionalProperties: false
-    FileDownload:
-      description: Binary file content
-      format: binary
-      type: string
     OrganizationId:
       description: Unique identifier of the Organization
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
+    Attribute:
+      description: Identifies an Attribute standardized within Knodia
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        scheme:
+          type: string
+          minLength: 1
+      required:
+        - code
+        - scheme
+      additionalProperties: false
     EserviceCategory:
       description: Identifies a category of data, standardized within Knodia, which
-        the E-Service provides or receives
+        the E-service provides or receives
       type: object
       properties:
         code:
@@ -156,40 +177,31 @@ components:
         - BEARER
         - DPOP
     EserviceMode:
-      description: Indicates if the E-Service is intended to provide or receive data
+      description: Indicates if the E-service is intended to provide or receive data
       type: string
       enum:
         - PROVIDE_DATA
         - RECEIVE_DATA
-    Attribute:
-      description: Identifies an Attribute standardized within Knodia
-      type: object
-      properties:
-        code:
-          type: string
-          minLength: 1
-        scheme:
-          type: string
-          minLength: 1
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     RequiredAttributeGroup:
-      description: Describes a group of required Attributes (consumers must possess at
+      description: Describes a group of required Attributes (Consumers must possess at
         least one Attribute among them in order to satisfy the requirement)
       type: array
       items:
         $ref: "#/components/schemas/Attribute"
     RequiredAttributes:
       description: Describes the Attributes which a consumer must possess to request
-        an Agreement for the E-Service (at least one Attribute for each
+        an Agreement for the E-service (at least one Attribute for each
         Attribute Group)
       type: array
       items:
         $ref: "#/components/schemas/RequiredAttributeGroup"
     EserviceId:
       description: Unique identifier of the E-service
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    EserviceVersionId:
+      description: Unique identifier of the E-service version
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
@@ -424,6 +436,21 @@ components:
         - updatedAt
         - versionNumber
       additionalProperties: false
+    AgreementSeed:
+      description: Seed data to create a new Agreement
+      type: object
+      properties:
+        consumerId:
+          $ref: "#/components/schemas/OrganizationId"
+        eserviceId:
+          $ref: "#/components/schemas/EserviceId"
+        eserviceVersionId:
+          $ref: "#/components/schemas/EserviceVersionId"
+      required:
+        - consumerId
+        - eserviceId
+        - eserviceVersionId
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -572,67 +599,29 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eservices/{eserviceId}/versions/latest/interface:
-    get:
-      operationId: getEserviceLatestVersionInterface
-      summary: Get E-service latest Version Interface Document
+  /agreements:
+    post:
+      operationId: createAgreement
+      summary: Create a new Agreement
       tags:
         - resource
-      description: Retrieve the Interface Document of the latest Version of an E-service
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/EserviceId"
-          in: path
-          name: eserviceId
-          required: true
+        - agreement
+      description: Create a new Agreement for a Consumer to access a Producer's E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgreementSeed"
       responses:
-        "200":
-          description: E-service latest Version Interface Document retrieved successfully
+        "201":
+          description: Agreement created successfully
           content:
             application/json:
               schema:
-                description: E-service latest Version Interface Document retrieved successfully
+                description: Agreement created successfully
                 allOf:
-                  - $ref: "#/components/schemas/EserviceVersionInterfaceDocument"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: E-service not found
-          content:
-            application/problem+json:
-              schema:
-                description: E-service not found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /eservices/{eserviceId}/versions/latest/interface/download:
-    get:
-      operationId: downloadEserviceLatestVersionInterface
-      summary: Download E-service latest Version Interface Document
-      tags:
-        - resource
-      description: Download the Interface Document for the latest Version of an E-service
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/EserviceId"
-          in: path
-          name: eserviceId
-          required: true
-      responses:
-        "200":
-          description: E-service Interface Document downloaded successfully
-          content:
-            application/octet-stream:
-              schema:
-                description: E-service Interface Document downloaded successfully
-                format: binary
-                allOf:
-                  - $ref: "#/components/schemas/FileDownload"
+                  - $ref: "#/components/schemas/CreatedResource"
         "400":
           description: Bad Request
           content:
@@ -649,6 +638,14 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Knode to Knode API
     url: /
@@ -659,5 +656,7 @@ tags:
     name: resource
   - description: Ad-hoc routes to simplify frequent use cases
     name: operation
+  - description: Routes related to Agreements
+    name: agreement
   - description: Routes related to E-services
     name: eservice

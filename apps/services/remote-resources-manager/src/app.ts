@@ -1,6 +1,8 @@
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { remoteResourceDbServiceBuilder } from "@knodia/db-remote-resource/services";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -14,25 +16,32 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import type { RemoteResourcesManagerConfig } from "./config/config.ts";
 
 import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
-import { remoteResourcesManagerRouter } from "./routers/remoteResourcesManagerRouter.ts";
-import { remoteResourcesManagerServiceBuilder } from "./services/remoteResourcesManagerService.ts";
+import { agreementRouter } from "./routers/agreementRouter.ts";
+import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { agreementServiceBuilder } from "./services/agreementService.ts";
+import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 
 export function buildApp({
   config,
   knodeUrl,
+  remoteResourceDb,
 }: {
   config: AuthConfig & LoggerConfig;
   knodeUrl: string;
+  remoteResourceDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
     knodeUrl,
   });
+
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -47,8 +56,12 @@ export function buildApp({
         tags: [
           healthRouterTag,
           {
-            description: "K2K Gateway routes",
-            name: apiTags.k2kGateway,
+            description: "Routes related to Agreements",
+            name: apiTags.agreement,
+          },
+          {
+            description: "Routes related to E-services",
+            name: apiTags.eservice,
           },
         ],
       },
@@ -67,9 +80,14 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(remoteResourcesManagerRouter, {
-      remoteResourcesManagerService:
-        remoteResourcesManagerServiceBuilder(k2kGatewayClient),
+    protectedApp.register(eserviceRouter, {
+      eserviceService: eserviceServiceBuilder(k2kGatewayClient),
+    });
+    protectedApp.register(agreementRouter, {
+      agreementService: agreementServiceBuilder(
+        k2kGatewayClient,
+        remoteResourceDbServiceBuilder(remoteResourceDb),
+      ),
     });
   });
 
@@ -77,5 +95,27 @@ export function buildApp({
 }
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
-  return buildApp({ config, knodeUrl: config.knodeUrl });
+  const remoteResourcePool = new Pool({
+    database: config.remoteResourceDbName,
+    host: config.remoteResourceDbHost,
+    password: config.remoteResourceDbPassword,
+    port: config.remoteResourceDbPort,
+    ssl: config.remoteResourceDbUseSsl
+      ? { rejectUnauthorized: false }
+      : undefined,
+    user: config.remoteResourceDbUser,
+  });
+  const remoteResourceDb = drizzle(remoteResourcePool);
+
+  const app = buildApp({
+    config,
+    knodeUrl: config.knodeUrl,
+    remoteResourceDb,
+  });
+
+  app.addHook("onClose", async () => {
+    await remoteResourcePool.end();
+  });
+
+  return app;
 }

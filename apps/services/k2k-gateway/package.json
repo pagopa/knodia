@@ -22,11 +22,12 @@
   },
   "dependencies": {
     "@fastify/request-context": "catalog:",
+    "@knodia/agreement-process-client": "workspace:*",
     "@knodia/common-models": "workspace:*",
-    "@knodia/token-generator": "workspace:*",
     "@knodia/eservice-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/token-generator": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",

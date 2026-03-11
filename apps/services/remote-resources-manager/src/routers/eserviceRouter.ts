@@ -7,8 +7,9 @@ import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import type { RemoteResourcesManagerService } from "../services/remoteResourcesManagerService.ts";
+import type { EserviceService } from "../services/eserviceService.ts";
 
+import { apiTags } from "../models/apiTags.ts";
 import {
   API_CatalogEserviceSearchResults,
   API_EserviceDetails,
@@ -16,23 +17,22 @@ import {
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEserviceDetailsQueryParams,
-} from "../models/api.ts";
-import { apiTags } from "../models/apiTags.ts";
+} from "../models/eservice/api.ts";
 
-interface RemoteResourcesManagerRouterOptions {
-  remoteResourcesManagerService: RemoteResourcesManagerService;
+interface EserviceRouterOptions {
+  eserviceService: EserviceService;
 }
 
-export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
-  RemoteResourcesManagerRouterOptions
-> = async (fastify, { remoteResourcesManagerService }) => {
+export const eserviceRouter: FastifyPluginAsyncZod<
+  EserviceRouterOptions
+> = async (fastify, { eserviceService }) => {
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const eservices = await remoteResourcesManagerService.getCatalogEservices(
+      const eservices = await eserviceService.getCatalogEservices(
         req.body,
         req.query,
         ctx,
@@ -57,7 +57,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
       },
       summary: "Search for E-services",
-      tags: [apiTags.k2kGateway],
+      tags: [apiTags.eservice],
     },
     url: "/catalog",
   });
@@ -68,7 +68,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const detail = await remoteResourcesManagerService.getEserviceDetails(
+      const detail = await eserviceService.getEserviceDetails(
         {
           id: unsafeBrandId(req.params.eserviceId),
           knodeId: KnodeId.parse(req.query.knodeId),
@@ -94,7 +94,7 @@ export const remoteResourcesManagerRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "E-service not found" }),
       },
       summary: "Get E-service detail",
-      tags: [apiTags.k2kGateway],
+      tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
   });

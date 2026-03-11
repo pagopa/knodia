@@ -5,6 +5,8 @@ import {
 } from "@knodia/common-models/api";
 import { z } from "zod";
 
+import { API_Attribute } from "../attribute/api.ts";
+
 const API_EserviceCategory = z
   .strictObject({
     code: z.string(),
@@ -12,7 +14,7 @@ const API_EserviceCategory = z
   })
   .meta({
     description:
-      "Identifies a category of data, standardized within Knodia, which the E-Service provides or receives",
+      "Identifies a category of data, standardized within Knodia, which the E-service provides or receives",
     id: "EserviceCategory",
   });
 
@@ -63,36 +65,31 @@ export type API_AccessTokenType = z.infer<typeof API_AccessTokenType>;
 
 export const API_EserviceMode = z.enum(["PROVIDE_DATA", "RECEIVE_DATA"]).meta({
   description:
-    "Indicates if the E-Service is intended to provide or receive data",
+    "Indicates if the E-service is intended to provide or receive data",
   id: "EserviceMode",
 });
 export type API_EserviceMode = z.infer<typeof API_EserviceMode>;
 
-const API_Attribute = z
-  .strictObject({
-    code: z.string().min(1),
-    scheme: z.string().min(1),
-  })
-  .meta({
-    description: "Identifies an Attribute standardized within Knodia",
-    id: "Attribute",
-  });
-
 const API_RequiredAttributeGroup = z.array(API_Attribute).meta({
   description:
-    "Describes a group of required Attributes (consumers must possess at least one Attribute among them in order to satisfy the requirement)",
+    "Describes a group of required Attributes (Consumers must possess at least one Attribute among them in order to satisfy the requirement)",
   id: "RequiredAttributeGroup",
 });
 
 const API_RequiredAttributes = z.array(API_RequiredAttributeGroup).meta({
   description:
-    "Describes the Attributes which a consumer must possess to request an Agreement for the E-Service (at least one Attribute for each Attribute Group)",
+    "Describes the Attributes which a consumer must possess to request an Agreement for the E-service (at least one Attribute for each Attribute Group)",
   id: "RequiredAttributes",
 });
 
-const API_EserviceId = z.uuid().meta({
+export const API_EserviceId = z.uuid().meta({
   description: "Unique identifier of the E-service",
   id: "EserviceId",
+});
+
+export const API_EserviceVersionId = z.uuid().meta({
+  description: "Unique identifier of the E-service version",
+  id: "EserviceVersionId",
 });
 
 export const API_CatalogEserviceSearchResult = z
