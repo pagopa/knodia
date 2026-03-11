@@ -4,7 +4,13 @@ import {
 } from "@knodia/bff-client/tanstack-query";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   AuthProvider as OidcProvider,
   useAuth as useOidcAuth,
@@ -89,8 +95,17 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
 
   // On mount, if sessionStorage is empty, attempt to recover the session
   // from the HttpOnly refresh cookie (e.g. new tab, page restored by browser).
+  // The ref guard prevents double-firing in React StrictMode (dev), which would
+  // consume the one-time-use refresh token JTI twice and cause a 401.
+  const refreshAttempted = useRef(false);
   useEffect(() => {
-    if (!uiSessionToken && !user?.access_token && isRefreshIdle) {
+    if (
+      !uiSessionToken &&
+      !user?.access_token &&
+      isRefreshIdle &&
+      !refreshAttempted.current
+    ) {
+      refreshAttempted.current = true;
       refreshFromCookie({ withCredentials: true });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps -- bootstrap only
