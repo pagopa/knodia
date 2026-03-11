@@ -280,7 +280,7 @@ export type GetConsumerKeychainResponses = {
 
 export type GetConsumerKeychainResponse = GetConsumerKeychainResponses[keyof GetConsumerKeychainResponses];
 
-export type ConsumerKeychainPatchData = {
+export type UpdateConsumerKeychainData = {
     body: ConsumerKeychainPatch;
     headers: {
         /**
@@ -295,7 +295,7 @@ export type ConsumerKeychainPatchData = {
     url: '/consumerKeychains/{consumerKeychainId}';
 };
 
-export type ConsumerKeychainPatchErrors = {
+export type UpdateConsumerKeychainErrors = {
     /**
      * Bad Request
      */
@@ -314,13 +314,13 @@ export type ConsumerKeychainPatchErrors = {
     404: Problem;
 };
 
-export type ConsumerKeychainPatchError = ConsumerKeychainPatchErrors[keyof ConsumerKeychainPatchErrors];
+export type UpdateConsumerKeychainError = UpdateConsumerKeychainErrors[keyof UpdateConsumerKeychainErrors];
 
-export type ConsumerKeychainPatchResponses = {
+export type UpdateConsumerKeychainResponses = {
     /**
      * Consumer Keychain updated successfully
      */
     200: Keychain;
 };
 
-export type ConsumerKeychainPatchResponse = ConsumerKeychainPatchResponses[keyof ConsumerKeychainPatchResponses];
+export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
