@@ -165,6 +165,10 @@ export type CreateConsumerKeychainErrors = {
      */
     400: Problem;
     /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
      * Forbidden
      */
     403: Problem;
