@@ -4,14 +4,15 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_NOT_FOUND } = constants;
+const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   ORGANIZATION_NOT_FOUND: "0001",
   INVALID_ATTRIBUTE: "0002",
+  DUPLICATE_ORGANIZATION_NAME: "0003",
 } as const;
-
 /* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
@@ -19,6 +20,15 @@ type ErrorCodes = keyof typeof errorCodes;
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "organization-process",
 });
+
+export function duplicateOrganizationName(name: string) {
+  return createApiError<ErrorCodes>({
+    code: "DUPLICATE_ORGANIZATION_NAME",
+    detail: `An organization with name "${name}" already exists`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Duplicate Organization Name",
+  });
+}
 
 export function invalidAttribute(scheme: string, code: string) {
   return createApiError<ErrorCodes>({

@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { OrganizationId } from "@knodia/common-models/ids";
 import type { Organization } from "@knodia/organization-models";
 import type { TestToken } from "@knodia/test-commons/auth";
 
+import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import {
   OrganizationEventV1,
   toOrganizationV1,
 } from "@knodia/organization-models";
 import { forbiddenTestTokens } from "@knodia/test-commons/auth";
+import { getMockOrganization } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import { API_Organization, API_OrganizationSeed } from "../src/models/api.ts";
 import { toAPI_Organization } from "../src/models/apiConverter.ts";
+import { organizationWriterService } from "./setup.ts";
 import { getAllOrganizationEvents, injectAppRequest } from "./utils.ts";
 
 const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
@@ -100,6 +102,20 @@ describe("POST /organizations (createOrganization)", () => {
         attributes: [{ code: "nonexistent", scheme: "nonexistent" }],
       });
     expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 409 if an organization with the same name already exists", async () => {
+    const existing = {
+      ...getMockOrganization(0),
+      id: generateId<OrganizationId>(),
+      name: body.name,
+    };
+    await organizationWriterService.upsertOrganization(existing, 0);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/organizations")
+      .body(body);
+    expect(response.statusCode).toBe(409);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

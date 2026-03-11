@@ -27,6 +27,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         organizationId,
       );
     },
+    async getOrganizationByName(name: string) {
+      return await organizationReadmodelService.getOrganizationByName(name);
+    },
     async getOrganizations(params: {
       limit: number;
       offset: number;

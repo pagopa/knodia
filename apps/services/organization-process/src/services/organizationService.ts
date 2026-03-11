@@ -20,6 +20,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import { invalidAttribute } from "../models/errors.ts";
 import { createOrganizationCreatedV1Event } from "../models/organizationEventFactory.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
+import { assertOrganizationNameIsUnique } from "../utils/validators.ts";
 
 export type OrganizationService = ReturnType<typeof organizationServiceBuilder>;
 
@@ -41,6 +42,8 @@ export function organizationServiceBuilder(
           throw invalidAttribute(attr.scheme, attr.code);
         }
       }
+
+      await assertOrganizationNameIsUnique(seed.name, readmodelService);
 
       const now = new Date();
 
