@@ -119,9 +119,21 @@ export type GetAgreementsData = {
          */
         offset: number;
         /**
-         * Filter by Producer Organization ID
+         * Filter by Consumer ID
          */
-        producerId?: OrganizationId;
+        consumerId?: OrganizationId;
+        /**
+         * Filter by Consumer Knode ID
+         */
+        consumerKnodeId?: KnodeId;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
     };
     url: '/agreements';
 };
