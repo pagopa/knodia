@@ -84,10 +84,6 @@ describe("POST /organizations (createOrganization)", () => {
     ["empty body", {}],
     ["missing name", { attributes: [validAttribute] }],
     ["missing attributes", { name: "Test" }],
-    [
-      "invalid attribute",
-      { ...body, attributes: [{ code: "nonexistent", scheme: "nonexistent" }] },
-    ],
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, invalidBody) => {
@@ -97,6 +93,16 @@ describe("POST /organizations (createOrganization)", () => {
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return 400 if an attribute does not exist", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/organizations")
+      .body({
+        ...body,
+        attributes: [{ code: "nonexistent", scheme: "nonexistent" }],
+      });
+    expect(response.statusCode).toBe(400);
+  });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
