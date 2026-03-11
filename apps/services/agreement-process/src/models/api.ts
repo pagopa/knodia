@@ -3,6 +3,10 @@ import {
   API_AgreementState,
 } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
+import {
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
 import { z } from "zod";
 
 export const API_AgreementSeed = z
@@ -28,3 +32,16 @@ export const API_Agreement = z
   })
   .meta({ id: "Agreement" });
 export type API_Agreement = z.infer<typeof API_Agreement>;
+
+export const API_Agreements = z
+  .strictObject({
+    items: z.array(API_Agreement),
+    pagination: API_Pagination,
+  })
+  .meta({ id: "Agreements" });
+export type API_Agreements = z.infer<typeof API_Agreements>;
+
+export const API_GetAgreementsQueryParams = API_PaginationQueryParams;
+export type API_GetAgreementsQueryParams = z.infer<
+  typeof API_GetAgreementsQueryParams
+>;

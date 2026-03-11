@@ -53,7 +53,8 @@ describe("GET /eservices (getEservices)", () => {
         mockEservices[4],
       ] as Eservice[],
       query: { ...defaultQuery, producerId },
-      testCase: "pagination only (1st page), sort by name asc by default",
+      testCase:
+        "pagination with producerId (1st page), sort by name asc by default",
       totalCount: 9,
     },
     {

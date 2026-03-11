@@ -11,7 +11,8 @@ import {
 } from "../agreement.ts";
 import { aggregateAgreement } from "../converters/aggregators.ts";
 
-function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+/** @knipignore */
+export function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async getAgreementById(
       agreementId: AgreementId,
@@ -32,9 +33,3 @@ function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     },
   };
 }
-
-// TODO: knip workaround
-console.log(
-  "🚀 ~ agreementReadmodelServiceBuilder ~ agreementReadmodelServiceBuilder:",
-  agreementReadmodelServiceBuilder,
-);
