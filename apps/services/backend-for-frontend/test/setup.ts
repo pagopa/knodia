@@ -19,6 +19,7 @@ beforeAll(async () => {
     eserviceProcessUrl: "http://localhost:0",
     host: "0.0.0.0",
     isProduction: false,
+    keychainProcessUrl: "http://localhost:0",
     logLevel: "silent",
     nodeEnv: "test",
     port: 0,
