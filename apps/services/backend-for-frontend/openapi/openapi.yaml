@@ -198,6 +198,28 @@ components:
       enum:
         - Orion
         - Lynx
+    KeychainLocalizedName:
+      description: Name of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    KeychainLocalizedDescription:
+      description: Description of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -298,6 +320,17 @@ components:
         - maxDailyCallsPerKnode
         - name
         - requiredAttributes
+      additionalProperties: false
+    ConsumerKeychainSeed:
+      type: object
+      properties:
+        description:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - name
       additionalProperties: false
     ProducerEservice:
       type: object
@@ -1134,6 +1167,51 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumerKeychains:
+    post:
+      operationId: createConsumerKeychain
+      tags:
+        - consumerKeychain
+      description: Create a new Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsumerKeychainSeed"
+      responses:
+        "201":
+          description: Consumer Keychain created successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
     post:
       operationId: getConsumerCatalogEservices
@@ -1274,3 +1352,5 @@ tags:
     name: auth
   - description: E-services routes
     name: eservice
+  - description: Consumer keychains routes
+    name: consumerKeychain

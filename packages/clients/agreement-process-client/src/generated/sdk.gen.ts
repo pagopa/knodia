@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -24,6 +24,16 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
     responseType: 'json',
     url: '/status',
+    ...options
+});
+
+/**
+ * Retrieve a list of Agreements
+ */
+export const getAgreements = <ThrowOnError extends boolean = true>(options: Options<GetAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetAgreementsResponses, GetAgreementsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/agreements',
     ...options
 });
 

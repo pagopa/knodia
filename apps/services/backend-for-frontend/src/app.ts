@@ -20,12 +20,14 @@ import { makeApiProblem } from "./models/errors.ts";
 import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
+import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   const clients = getKnodiaClients({
     eserviceProcessUrl: config.eserviceProcessUrl,
+    keychainProcessUrl: config.keychainProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
@@ -52,6 +54,10 @@ export function buildAppFromConfig(config: BffProcessConfig) {
           {
             description: "E-services routes",
             name: apiTags.eservice,
+          },
+          {
+            description: "Consumer keychains routes",
+            name: apiTags.consumerKeychain,
           },
         ],
       },
@@ -83,6 +89,9 @@ export function buildAppFromConfig(config: BffProcessConfig) {
       config,
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
+    });
+    protectedApp.register(consumerKeychainRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
