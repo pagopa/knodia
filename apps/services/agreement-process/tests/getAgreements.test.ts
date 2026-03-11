@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Agreement } from "@knodia/agreement-models";
 import type z from "zod";
@@ -8,12 +7,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_GetAgreementsQueryParams } from "../src/models/api.ts";
 
-import {
-  consumerId,
-  eservice1,
-  eservice2,
-  mockAgreements,
-} from "./mockAgreements.ts";
+import { eservice1, eservice2, mockAgreements } from "./mockAgreements.ts";
 import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
 
@@ -64,140 +58,6 @@ describe("GET /agreements (getAgreements)", () => {
       testCase: "pagination only (2nd page), sort by updatedAt desc by default",
       totalCount: 10,
     },
-    {
-      expectedResult: [
-        mockAgreements[4],
-        mockAgreements[3],
-        mockAgreements[2],
-        mockAgreements[1],
-      ] as Agreement[],
-      query: { ...defaultQuery, producerId: eservice1.producerId },
-      testCase: "filter by producerId, sort by updatedAt desc by default",
-      totalCount: 5,
-    },
-    {
-      expectedResult: [
-        mockAgreements[4],
-        mockAgreements[3],
-        mockAgreements[2],
-        mockAgreements[1],
-      ] as Agreement[],
-      query: { ...defaultQuery, consumerId },
-      testCase: "filter by consumerId, sort by updatedAt desc by default",
-      totalCount: 5,
-    },
-    {
-      expectedResult: [
-        mockAgreements[5],
-        mockAgreements[4],
-        mockAgreements[3],
-      ] as Agreement[],
-      query: { ...defaultQuery, consumerKnodeId: "Lynx" },
-      testCase: "filter by consumerKnodeId, sort by updatedAt desc by default",
-      totalCount: 3,
-    },
-    {
-      expectedResult: [
-        mockAgreements[4],
-        mockAgreements[3],
-        mockAgreements[2],
-        mockAgreements[1],
-      ] as Agreement[],
-      query: {
-        ...defaultQuery,
-        eserviceId: eservice1.id,
-      },
-      testCase: "filter by eserviceId, sort by updatedAt desc by default",
-      totalCount: 5,
-    },
-    {
-      expectedResult: [
-        mockAgreements[8],
-        mockAgreements[3],
-        mockAgreements[2],
-      ] as Agreement[],
-      query: {
-        ...defaultQuery,
-        state: "Archived",
-      },
-      testCase: "filter by state, sort by updatedAt desc by default",
-      totalCount: 3,
-    },
-    {
-      expectedResult: [
-        mockAgreements[9],
-        mockAgreements[8],
-        mockAgreements[7],
-        mockAgreements[6],
-      ] as Agreement[],
-      query: {
-        ...defaultQuery,
-        sortBy: "eserviceName",
-        sortOrder: "desc",
-      },
-      testCase: "sort by eserviceName desc",
-      totalCount: 10,
-    },
-    {
-      expectedResult: [
-        mockAgreements[4],
-        mockAgreements[3],
-        mockAgreements[2],
-        mockAgreements[1],
-      ] as Agreement[],
-      query: {
-        ...defaultQuery,
-        sortBy: "eserviceName",
-        sortOrder: "asc",
-      },
-      testCase: "sort by eserviceName asc",
-      totalCount: 10,
-    },
-    {
-      expectedResult: [
-        mockAgreements[9],
-        mockAgreements[7],
-        mockAgreements[1],
-        mockAgreements[8],
-      ] as Agreement[],
-      query: {
-        ...defaultQuery,
-        sortBy: "state",
-        sortOrder: "desc",
-      },
-      testCase: "sort by state desc",
-      totalCount: 10,
-    },
-    {
-      expectedResult: [
-        mockAgreements[6],
-        mockAgreements[5],
-        mockAgreements[4],
-        mockAgreements[0],
-      ] as Agreement[],
-      query: {
-        ...defaultQuery,
-        sortBy: "state",
-        sortOrder: "asc",
-      },
-      testCase: "sort by state asc, default updatedAt desc as secondary sort",
-      totalCount: 10,
-    },
-    {
-      expectedResult: [mockAgreements[1]] as Agreement[],
-      query: {
-        ...defaultQuery,
-        consumerId,
-        consumerKnodeId: "Orion",
-        eserviceId: eservice1.id,
-        producerId: eservice1.producerId,
-        sortBy: "state",
-        sortOrder: "desc",
-        state: "Suspended",
-      },
-      testCase: "full query",
-      totalCount: 1,
-    },
   ] satisfies {
     expectedResult: Agreement[];
     query: z.input<typeof API_GetAgreementsQueryParams>;
@@ -229,21 +89,6 @@ describe("GET /agreements (getAgreements)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    {
-      ...defaultQuery,
-      state: "InvalidState",
-    },
-    { ...defaultQuery, consumerId: "InvalidConsumerId" },
-    { ...defaultQuery, consumerKnodeId: "InvalidConsumerKnodeId" },
-    { ...defaultQuery, eserviceId: "InvalidEserviceId" },
-    {
-      ...defaultQuery,
-      sortBy: "InvalidSortBy",
-    },
-    {
-      ...defaultQuery,
-      sortOrder: "InvalidSortOrder",
-    },
     {
       ...defaultQuery,
       invalidParam: "invalid",

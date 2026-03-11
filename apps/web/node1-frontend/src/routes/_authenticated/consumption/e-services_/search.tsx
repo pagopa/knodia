@@ -120,6 +120,7 @@ function RouteComponent() {
       <SearchContent
         hasValidationError={hasValidationError}
         isLoading={isLoading}
+        knodeId={search.knodeId}
         onOffsetChange={handleOffsetChange}
         results={results ?? null}
       />

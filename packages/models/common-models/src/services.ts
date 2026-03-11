@@ -7,6 +7,7 @@ export const HTTPServiceName = z.enum([
   "remote-resources-manager",
   "agreement-process",
   "keychain-process",
+  "organization-process",
 ]);
 export type HTTPServiceName = z.infer<typeof HTTPServiceName>;
 
