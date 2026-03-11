@@ -68,13 +68,8 @@ export function RecapStep() {
       </Banner>
 
       {isError && (
-        <Banner kind="error">
-          <div className="flex flex-col gap-2">
-            <div className="title-sm-em text-error-light-high-contrast">
-              Something went wrong
-            </div>
-            Please try again. Don't refresh the page to avoid data loss.
-          </div>
+        <Banner kind="error" size="md" title="Something went wrong">
+          Please try again. Don&apos;t refresh the page to avoid data loss.
         </Banner>
       )}
 

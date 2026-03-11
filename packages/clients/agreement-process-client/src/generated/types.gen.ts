@@ -56,6 +56,11 @@ export type Pagination = {
     total: number;
 };
 
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
 export type AgreementSeed = {
     consumer: AgreementConsumer;
     eserviceId: string;
@@ -113,6 +118,22 @@ export type GetAgreementsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: OrganizationId;
+        /**
+         * Filter by Consumer Knode ID
+         */
+        consumerKnodeId?: KnodeId;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
     };
     url: '/agreements';
 };

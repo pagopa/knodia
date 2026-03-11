@@ -10,8 +10,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_Agreement } from "../src/models/api.ts";
 
-import { eservice1, eservice2, mockAgreements } from "./mockAgreements.ts";
-import { agreementWriterService, eserviceWriterService } from "./setup.ts";
+import { mockAgreements } from "./mockAgreements.ts";
+import { agreementWriterService } from "./setup.ts";
 import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
 
 const agreement = mockAgreements[0]!;
@@ -35,8 +35,6 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
       ...mockAgreements.map((agreement) =>
         agreementWriterService.upsertAgreement(agreement, 0),
       ),
-      eserviceWriterService.upsertEservice(eservice1, 0),
-      eserviceWriterService.upsertEservice(eservice2, 0),
     ]);
   });
 

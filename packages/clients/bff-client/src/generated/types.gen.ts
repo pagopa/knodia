@@ -101,6 +101,20 @@ export type CreatedResource = {
  */
 export type KnodeId = 'Orion' | 'Lynx';
 
+/**
+ * Name of the Keychain
+ */
+export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Description of the Keychain
+ */
+export type KeychainLocalizedDescription = {
+    en: string;
+};
+
 export type InterfaceDocumentSeed = {
     /**
      * SHA-256 checksum of the uploaded E-service interface document
@@ -168,6 +182,11 @@ export type EserviceSeed = {
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
+};
+
+export type ConsumerKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
 };
 
 export type ProducerEservice = {
@@ -627,6 +646,39 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
+
+export type CreateConsumerKeychainData = {
+    body: ConsumerKeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/consumerKeychains';
+};
+
+export type CreateConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerKeychainError = CreateConsumerKeychainErrors[keyof CreateConsumerKeychainErrors];
+
+export type CreateConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerKeychainResponse = CreateConsumerKeychainResponses[keyof CreateConsumerKeychainResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
