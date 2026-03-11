@@ -88,6 +88,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     method: "PATCH",
     schema: {
       body: API_ConsumerKeychainPatch,
+      consumes: ["application/merge-patch+json"],
       description: "Update a Consumer Keychain",
       operationId: "updateConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
