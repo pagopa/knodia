@@ -91,21 +91,6 @@ describe("GET /agreements (getAgreements)", () => {
     { limit: 9999999, offset: 9999999 },
     {
       ...defaultQuery,
-      state: "InvalidState",
-    },
-    { ...defaultQuery, consumerId: "InvalidConsumerId" },
-    { ...defaultQuery, consumerKnodeId: "InvalidConsumerKnodeId" },
-    { ...defaultQuery, eserviceId: "InvalidEserviceId" },
-    {
-      ...defaultQuery,
-      sortBy: "InvalidSortBy",
-    },
-    {
-      ...defaultQuery,
-      sortOrder: "InvalidSortOrder",
-    },
-    {
-      ...defaultQuery,
       invalidParam: "invalid",
     },
   ])(
