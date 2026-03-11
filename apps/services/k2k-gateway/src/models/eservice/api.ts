@@ -189,10 +189,6 @@ export const API_EserviceVersionInterfaceDocument = z
   })
   .meta({ id: "EserviceVersionInterfaceDocument" });
 
-export type API_EserviceVersionInterfaceDocument = z.infer<
-  typeof API_EserviceVersionInterfaceDocument
->;
-
 export const API_EserviceVersion = z
   .strictObject({
     accessTokenAudience: z.array(z.string()).meta({
