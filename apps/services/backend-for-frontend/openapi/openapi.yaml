@@ -73,33 +73,55 @@ components:
         - status
         - title
       additionalProperties: false
-    SessionRequest:
+    Pagination:
       type: object
       properties:
-        oidcToken:
-          type: string
+        limit:
+          format: int32
+          type: number
+          minimum: 1
+          maximum: 50
+        offset:
+          format: int32
+          type: number
+          minimum: 0
+        total:
+          format: int32
+          type: number
+          minimum: 0
       required:
-        - oidcToken
+        - limit
+        - offset
+        - total
       additionalProperties: false
-    SessionResponse:
+    CreatedResource:
+      description: Unique identifier of the created resource
       type: object
       properties:
-        refreshToken:
+        id:
           type: string
-        uiSessionToken:
-          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
-        - refreshToken
-        - uiSessionToken
+        - id
       additionalProperties: false
-    RefreshRequest:
+    Attribute:
       type: object
       properties:
-        refreshToken:
+        code:
+          type: string
+        scheme:
           type: string
       required:
-        - refreshToken
+        - code
+        - scheme
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     EserviceVersionState:
       type: string
       enum:
@@ -160,76 +182,24 @@ components:
       enum:
         - Bearer
         - DPoP
-    Attribute:
+    AgreementSeed:
+      description: Seed data to create a new agreement
       type: object
       properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    Pagination:
-      type: object
-      properties:
-        limit:
-          format: int32
-          type: number
-          minimum: 1
-          maximum: 50
-        offset:
-          format: int32
-          type: number
-          minimum: 0
-        total:
-          format: int32
-          type: number
-          minimum: 0
-      required:
-        - limit
-        - offset
-        - total
-      additionalProperties: false
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
+        eserviceId:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
-    KeychainLocalizedName:
-      description: Name of the Keychain
-      type: object
-      properties:
-        en:
+        eserviceVersionId:
           type: string
-          minLength: 5
-          maxLength: 60
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
       required:
-        - en
-      additionalProperties: false
-    KeychainLocalizedDescription:
-      description: Description of the Keychain
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
+        - eserviceId
+        - eserviceVersionId
+        - knodeId
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object
@@ -331,17 +301,6 @@ components:
         - maxDailyCallsPerKnode
         - name
         - requiredAttributes
-      additionalProperties: false
-    ConsumerKeychainSeed:
-      type: object
-      properties:
-        description:
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
-        name:
-          $ref: "#/components/schemas/KeychainLocalizedName"
-      required:
-        - name
       additionalProperties: false
     ProducerEservice:
       type: object
@@ -821,6 +780,33 @@ components:
         - requiredAttributes
         - state
       additionalProperties: false
+    SessionRequest:
+      type: object
+      properties:
+        oidcToken:
+          type: string
+      required:
+        - oidcToken
+      additionalProperties: false
+    SessionResponse:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+        uiSessionToken:
+          type: string
+      required:
+        - refreshToken
+        - uiSessionToken
+      additionalProperties: false
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -1166,51 +1152,6 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains:
-    post:
-      operationId: createConsumerKeychain
-      tags:
-        - consumerKeychain
-      description: Create a new Consumer Keychain
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ConsumerKeychainSeed"
-      responses:
-        "201":
-          description: Consumer Keychain created successfully
-          content:
-            application/json:
-              schema:
-                description: Consumer Keychain created successfully
-                allOf:
-                  - $ref: "#/components/schemas/CreatedResource"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
     post:
       operationId: getConsumerCatalogEservices
@@ -1339,6 +1280,51 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/agreements:
+    post:
+      operationId: createConsumerAgreement
+      tags:
+        - agreement
+      description: Create a new Agreement for the consumer to access a Producer's E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgreementSeed"
+      responses:
+        "201":
+          description: Agreement created successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -1349,7 +1335,7 @@ tags:
     name: health
   - description: Authentication routes
     name: auth
+  - description: Agreements routes
+    name: agreement
   - description: E-services routes
     name: eservice
-  - description: Consumer keychains routes
-    name: consumerKeychain
