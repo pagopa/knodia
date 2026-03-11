@@ -8,6 +8,7 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { Organization } from "@knodia/organization-models";
 
+import { getAttribute } from "@knodia/attribute-models";
 import { generateId } from "@knodia/common-models/ids";
 
 import type {
@@ -16,6 +17,7 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { invalidAttribute } from "../models/errors.ts";
 import { createOrganizationCreatedV1Event } from "../models/organizationEventFactory.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
 
@@ -35,6 +37,12 @@ export function organizationServiceBuilder(
       logger.info(
         `Creating Organization ${organizationId} by user ${authData.userId}`,
       );
+
+      for (const attr of seed.attributes) {
+        if (getAttribute(attr) === undefined) {
+          throw invalidAttribute(attr.scheme, attr.code);
+        }
+      }
 
       const now = new Date();
 

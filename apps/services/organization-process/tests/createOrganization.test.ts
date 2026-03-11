@@ -84,6 +84,10 @@ describe("POST /organizations (createOrganization)", () => {
     ["empty body", {}],
     ["missing name", { attributes: [validAttribute] }],
     ["missing attributes", { name: "Test" }],
+    [
+      "invalid attribute",
+      { ...body, attributes: [{ code: "nonexistent", scheme: "nonexistent" }] },
+    ],
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, invalidBody) => {
