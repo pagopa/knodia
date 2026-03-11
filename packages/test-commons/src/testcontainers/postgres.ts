@@ -19,7 +19,6 @@ const FLYWAY_SCRIPTS_PATH = fileURLToPath(
   new URL(`../../../../scripts/flyway`, import.meta.url),
 );
 
-
 export async function createPostgresDatabaseFromTemplate(
   connectionString: string,
   templateName: string,
