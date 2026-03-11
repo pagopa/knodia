@@ -715,6 +715,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/organization-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/organization-process-client
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator

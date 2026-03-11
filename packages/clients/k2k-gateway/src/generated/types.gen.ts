@@ -40,11 +40,6 @@ export type Pagination = {
 };
 
 /**
- * Binary file content
- */
-export type FileDownload = Blob | File;
-
-/**
  * Unique identifier of the Organization
  */
 export type OrganizationId = string;
@@ -277,6 +272,18 @@ export type AgreementSeed = {
     eserviceVersionId: EserviceVersionId;
 };
 
+export type Organization = {
+    /**
+     * Attributes associated with the Organization
+     */
+    attributes: Array<Attribute>;
+    id: OrganizationId;
+    /**
+     * Human-readable name of the Organization
+     */
+    name: string;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -389,68 +396,6 @@ export type GetEserviceLatestVersionResponses = {
 
 export type GetEserviceLatestVersionResponse = GetEserviceLatestVersionResponses[keyof GetEserviceLatestVersionResponses];
 
-export type GetEserviceLatestVersionInterfaceData = {
-    body?: never;
-    path: {
-        eserviceId: EserviceId;
-    };
-    query?: never;
-    url: '/eservices/{eserviceId}/versions/latest/interface';
-};
-
-export type GetEserviceLatestVersionInterfaceErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * E-service not found
-     */
-    404: Problem;
-};
-
-export type GetEserviceLatestVersionInterfaceError = GetEserviceLatestVersionInterfaceErrors[keyof GetEserviceLatestVersionInterfaceErrors];
-
-export type GetEserviceLatestVersionInterfaceResponses = {
-    /**
-     * E-service latest Version Interface Document retrieved successfully
-     */
-    200: EserviceVersionInterfaceDocument;
-};
-
-export type GetEserviceLatestVersionInterfaceResponse = GetEserviceLatestVersionInterfaceResponses[keyof GetEserviceLatestVersionInterfaceResponses];
-
-export type DownloadEserviceLatestVersionInterfaceData = {
-    body?: never;
-    path: {
-        eserviceId: EserviceId;
-    };
-    query?: never;
-    url: '/eservices/{eserviceId}/versions/latest/interface/download';
-};
-
-export type DownloadEserviceLatestVersionInterfaceErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-};
-
-export type DownloadEserviceLatestVersionInterfaceError = DownloadEserviceLatestVersionInterfaceErrors[keyof DownloadEserviceLatestVersionInterfaceErrors];
-
-export type DownloadEserviceLatestVersionInterfaceResponses = {
-    /**
-     * E-service Interface Document downloaded successfully
-     */
-    200: FileDownload;
-};
-
-export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
-
 export type CreateAgreementData = {
     body: AgreementSeed;
     path?: never;
@@ -483,3 +428,34 @@ export type CreateAgreementResponses = {
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: OrganizationId;
+    };
+    query?: never;
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
