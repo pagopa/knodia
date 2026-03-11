@@ -1,0 +1,26 @@
+meta {
+  name: Create Agreement
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/consumer/agreements
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "eserviceId": "{{eserviceId}}",
+    "eserviceVersionId": "{{eserviceVersionId}}",
+    "knodeId": "{{other-knode-id}}"
+  }
+}
+
+vars:post-response {
+  agreementId: res.body.id
+}
