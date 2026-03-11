@@ -6,8 +6,8 @@ NAMESPACE="${FLYWAY_PLACEHOLDERS_NAMESPACE}"
 echo "Starting Flyway migrations (namespace: $NAMESPACE)..."
 
 # Step 1: Create roles (cluster-wide, against postgres database)
-if [ -d "/flyway/roles" ]; then
-  sql_count=$(find "/flyway/roles" -name "*.sql" -type f 2>/dev/null | wc -l)
+if [ -d "/flyway/scripts/roles" ]; then
+  sql_count=$(find "/flyway/scripts/roles" -name "*.sql" -type f 2>/dev/null | wc -l)
   if [ "$sql_count" -gt 0 ]; then
     echo ""
     echo "========================================"
@@ -16,7 +16,7 @@ if [ -d "/flyway/roles" ]; then
 
     flyway \
       -url="jdbc:postgresql://postgres:5432/postgres" \
-      -locations="filesystem:/flyway/roles" \
+      -locations="filesystem:/flyway/scripts/roles" \
       -schemas="public" \
       -defaultSchema="public" \
       migrate
