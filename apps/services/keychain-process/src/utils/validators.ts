@@ -8,7 +8,7 @@ export function assertOrganizationIsKeychainOwner(
 ): void {
   if (keychain.ownerId !== organizationId) {
     throw forbiddenError(
-      `Organization caller ${organizationId} is not the owner of the keychain`,
+      `Caller organization ${organizationId} is not the owner of the keychain`,
     );
   }
 }
