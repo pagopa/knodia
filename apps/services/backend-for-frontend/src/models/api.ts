@@ -426,8 +426,8 @@ export type API_ConsumerEserviceDetails = z.infer<
 export const API_Keychain = z
   .strictObject({
     id: z.uuid(),
-    keysCount: z.number().int().min(0),
-    membersCount: z.number().int().min(0),
+    keysCount: z.number().int().min(0).meta({ format: "int32" }),
+    membersCount: z.number().int().min(0).meta({ format: "int32" }),
     name: API_KeychainLocalizedName,
   })
   .meta({ id: "Keychain" });
