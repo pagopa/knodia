@@ -26,7 +26,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative"] },
+        { tokenType: "internal" },
       ]);
 
       const organization = await organizationService.createOrganization(

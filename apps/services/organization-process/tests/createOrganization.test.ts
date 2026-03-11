@@ -16,9 +16,7 @@ import { getAllOrganizationEvents, injectAppRequest } from "./utils.ts";
 
 const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
 
-const allowedTestTokens: TestToken[] = [
-  { roles: ["administrative"], type: "ui-session" },
-];
+const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 describe("POST /organizations (createOrganization)", () => {
   const body: API_OrganizationSeed = {

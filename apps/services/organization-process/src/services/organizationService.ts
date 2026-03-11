@@ -30,13 +30,11 @@ export function organizationServiceBuilder(
   return {
     async createOrganization(
       seed: API_OrganizationSeed,
-      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<Organization> {
       const organizationId = generateId<OrganizationId>();
 
-      logger.info(
-        `Creating Organization ${organizationId} by user ${authData.userId}`,
-      );
+      logger.info(`Creating Organization ${organizationId}`);
 
       for (const attr of seed.attributes) {
         if (getAttribute(attr) === undefined) {
