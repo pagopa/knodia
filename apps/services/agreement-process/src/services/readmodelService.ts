@@ -15,7 +15,6 @@ import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
-import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { type Eservice } from "@knodia/eservice-models";
 import { and, eq, inArray } from "drizzle-orm";
@@ -46,13 +45,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               agreementId: readmodelAgreement.id,
             })
             .from(readmodelAgreement)
-            .innerJoin(
-              readmodelEservice,
-              eq(readmodelAgreement.eserviceId, readmodelEservice.id),
-            )
             .where(
               and(
-                eserviceId ? eq(readmodelEservice.id, eserviceId) : undefined,
+                eserviceId
+                  ? eq(readmodelAgreement.eserviceId, eserviceId)
+                  : undefined,
                 consumerId
                   ? eq(readmodelAgreement.consumerId, consumerId)
                   : undefined,

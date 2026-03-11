@@ -7,13 +7,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_GetAgreementsQueryParams } from "../src/models/api.ts";
 
-import {
-  consumerId,
-  eservice1,
-  eservice2,
-  mockAgreements,
-} from "./mockAgreements.ts";
-import { agreementWriterService, eserviceWriterService } from "./setup.ts";
+import { consumerId, eservice1, mockAgreements } from "./mockAgreements.ts";
+import { agreementWriterService } from "./setup.ts";
 import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -32,8 +27,6 @@ describe("GET /agreements (getAgreements)", () => {
       ...mockAgreements.map((agreement) =>
         agreementWriterService.upsertAgreement(agreement, 0),
       ),
-      eserviceWriterService.upsertEservice(eservice1, 0),
-      eserviceWriterService.upsertEservice(eservice2, 0),
     ]);
   });
 
