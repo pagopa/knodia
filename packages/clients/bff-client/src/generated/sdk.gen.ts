@@ -148,7 +148,7 @@ export const updateConsumerKeychain = <ThrowOnError extends boolean = true>(opti
     url: '/consumerKeychains/{consumerKeychainId}',
     ...options,
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/merge-patch+json',
         ...options.headers
     }
 });
