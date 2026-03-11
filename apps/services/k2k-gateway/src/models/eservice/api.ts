@@ -166,7 +166,7 @@ export const API_Eservice = z
 
 export type API_Eservice = z.infer<typeof API_Eservice>;
 
-export const API_EserviceVersionInterfaceDocument = z
+const API_EserviceVersionInterfaceDocument = z
   .strictObject({
     checksum: z.string().meta({
       description: "SHA-256 integrity checksum of the file",
