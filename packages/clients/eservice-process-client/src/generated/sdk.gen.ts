@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -78,6 +78,16 @@ export const getEserviceLatestVersionInterface = <ThrowOnError extends boolean =
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices/{eserviceId}/versions/latest/interface',
+    ...options
+});
+
+/**
+ * Download the interface document for the latest version of an E-service
+ */
+export const downloadEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<DownloadEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<DownloadEserviceLatestVersionInterfaceResponses, DownloadEserviceLatestVersionInterfaceErrors, ThrowOnError>({
+    responseType: 'blob',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/eservices/{eserviceId}/versions/latest/interface/download',
     ...options
 });
 

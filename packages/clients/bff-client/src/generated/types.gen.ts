@@ -46,6 +46,24 @@ export type RefreshRequest = {
     refreshToken: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -81,19 +99,6 @@ export type AccessTokenType = 'Bearer' | 'DPoP';
 export type Attribute = {
     code: string;
     scheme: string;
-};
-
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
-};
-
-/**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
 };
 
 /**
@@ -623,7 +628,7 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
      * E-service interface document downloaded successfully
      */
-    200: Blob | File;
+    200: FileDownload;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
@@ -710,3 +715,36 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
+
+export type GetConsumerEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/eservices/{eserviceId}/interface';
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceError = GetConsumerEserviceLatestVersionInterfaceErrors[keyof GetConsumerEserviceLatestVersionInterfaceErrors];
+
+export type GetConsumerEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];

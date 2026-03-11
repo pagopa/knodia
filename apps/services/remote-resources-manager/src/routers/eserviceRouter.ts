@@ -106,7 +106,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       ]);
 
       const { buffer, contentType, fileName } =
-        await remoteResourcesManagerService.downloadEserviceLatestVersionInterface(
+        await eserviceService.downloadEserviceLatestVersionInterface(
           {
             id: unsafeBrandId(req.params.eserviceId),
             knodeId: KnodeId.parse(req.query.knodeId),
@@ -136,7 +136,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
       },
       summary: "Download E-service latest version interface",
-      tags: [apiTags.k2kGateway],
+      tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId/interface",
   });

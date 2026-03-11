@@ -33,6 +33,17 @@ export type Problem = {
     title: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -68,12 +79,6 @@ export type AccessTokenType = 'Bearer' | 'DPoP';
 export type Attribute = {
     code: string;
     scheme: string;
-};
-
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
 };
 
 export type EserviceVersionInterfaceDocument = {
@@ -520,6 +525,51 @@ export type GetEserviceLatestVersionInterfaceResponses = {
 };
 
 export type GetEserviceLatestVersionInterfaceResponse = GetEserviceLatestVersionInterfaceResponses[keyof GetEserviceLatestVersionInterfaceResponses];
+
+export type DownloadEserviceLatestVersionInterfaceData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/versions/latest/interface/download';
+};
+
+export type DownloadEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DownloadEserviceLatestVersionInterfaceError = DownloadEserviceLatestVersionInterfaceErrors[keyof DownloadEserviceLatestVersionInterfaceErrors];
+
+export type DownloadEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
 
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;
