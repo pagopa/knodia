@@ -50,6 +50,17 @@ export type Attribute = {
     scheme: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
 export type AgreementSeed = {
     consumer: AgreementConsumer;
     eserviceId: string;
@@ -68,6 +79,11 @@ export type Agreement = {
     updatedAt: string;
 };
 
+export type Agreements = {
+    items: Array<Agreement>;
+    pagination: Pagination;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -83,6 +99,70 @@ export type GetStatusResponses = {
 };
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
+
+export type GetAgreementsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: OrganizationId;
+        /**
+         * Filter by Consumer Knode ID
+         */
+        consumerKnodeId?: KnodeId;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Agreement State
+         */
+        state?: Array<AgreementState>;
+    };
+    url: '/agreements';
+};
+
+export type GetAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
+
+export type GetAgreementsResponses = {
+    /**
+     * Agreements retrieved successfully
+     */
+    200: Agreements;
+};
+
+export type GetAgreementsResponse = GetAgreementsResponses[keyof GetAgreementsResponses];
 
 export type CreateAgreementData = {
     body: AgreementSeed;
