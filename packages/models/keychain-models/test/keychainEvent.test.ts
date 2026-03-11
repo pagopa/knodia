@@ -47,6 +47,10 @@ describe("KeychainEventV1 codec", () => {
       message: ConsumerKeychainDeletedV1,
       type: "ConsumerKeychainDeletedV1" as const,
     },
+    {
+      message: ConsumerKeychainUpdatedV1,
+      type: "ConsumerKeychainUpdatedV1" as const,
+    },
   ];
 
   it.each(cases)(
@@ -74,31 +78,6 @@ describe("KeychainEventV1 codec", () => {
       expect(codec.decode(bytes)).toEqual(value);
     },
   );
-
-  it("encodes and decodes a ConsumerKeychainUpdatedV1 payload (KeychainEventV1 full codec)", () => {
-    const event: KeychainEventV1 = {
-      data: {
-        consumerKeychain: toConsumerKeychainV1(consumerKeychain),
-      },
-      type: "ConsumerKeychainUpdatedV1",
-    };
-    const encoded = KeychainEventV1.encode(event);
-    expect(encoded).toMatchObject({ type: "ConsumerKeychainUpdatedV1" });
-    expect(encoded.data).toBeInstanceOf(Uint8Array);
-
-    const decoded = KeychainEventV1.decode(encoded);
-    expect(decoded).toMatchObject(event);
-  });
-
-  it("encodes and decodes a ConsumerKeychainUpdatedV1 payload (protobufBinaryCodec-only)", () => {
-    const codec = protobufBinaryCodec(ConsumerKeychainUpdatedV1);
-    const value = {
-      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
-    };
-    const bytes = codec.encode(value);
-    expect(bytes).toBeInstanceOf(Uint8Array);
-    expect(codec.decode(bytes)).toEqual(value);
-  });
 
   it("decodes a KafkaMessageEnvelope with KeychainEventV1 data", () => {
     const toHex = (value: Uint8Array) => Buffer.from(value).toString("hex");
