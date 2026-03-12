@@ -11,7 +11,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { API_GetOrganizationsQueryParams } from "../src/models/api.ts";
 
 import { organizationWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, toExpectAPI_Organization } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
@@ -37,14 +37,6 @@ const mockOrganizations: Organization[] = [
   },
   { ...getMockOrganization(4), id: generateId<OrganizationId>(), name: "Echo" },
 ];
-
-const toExpectAPI_Organization = (org: Organization) => ({
-  attributes: expect.arrayContaining(org.attributes),
-  createdAt: org.createdAt.toISOString(),
-  id: org.id,
-  name: org.name,
-  updatedAt: org.updatedAt.toISOString(),
-});
 
 describe("GET /organizations (getOrganizations)", () => {
   const defaultQuery = {
