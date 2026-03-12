@@ -33,7 +33,7 @@ const toK2KAccessTokenType = (
     .with("DPoP", () => "DPOP" as const)
     .exhaustive();
 
-export const toK2KAPI_KnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
+export const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
   match(knodeId)
     .with("Orion", () => "ORION" as const)
     .with("Lynx", () => "LYNX" as const)

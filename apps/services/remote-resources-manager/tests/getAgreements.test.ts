@@ -7,7 +7,7 @@ import { zocker } from "zocker";
 
 import { API_Agreement } from "../src/models/agreement/api.ts";
 import { toK2KAPI_AgreementState } from "../src/models/agreement/apiConverter.ts";
-import { toK2KAPI_KnodeId } from "./k2kConverters.ts";
+import { toK2KKnodeId } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getAgreementsMock = vi.hoisted(() => vi.fn());
@@ -29,7 +29,7 @@ const toK2KResult = (apiResult: API_Agreement): k2kGatewayApi.Agreement => ({
   attributes: apiResult.attributes,
   consumer: {
     id: apiResult.consumer.id,
-    knodeId: toK2KAPI_KnodeId(apiResult.consumer.knodeId),
+    knodeId: toK2KKnodeId(apiResult.consumer.knodeId),
   },
   eserviceId: apiResult.eserviceId,
   eserviceVersionId: apiResult.eserviceVersionId,
