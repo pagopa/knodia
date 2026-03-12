@@ -61,7 +61,7 @@ const toK2KEserviceVersion = (
   accessTokenType: toK2KAccessTokenType(
     apiDetail.latestVersion.accessTokenType,
   ),
-  id: crypto.randomUUID(),
+  id: apiDetail.latestVersion.id,
   interfaceDocument: {
     checksum: apiDetail.interfaceDocument.checksum,
     contentType: "application/yaml",
