@@ -33,7 +33,7 @@ export function agreementServiceBuilder(
 
       // TODO: add assertOrganizationExists(consumerId) to check if the seed consumerId exists before calling the K2K Gateway API
 
-      const { data: createdAgreement } = await k2kGatewayApi.createAgreement({
+      const { data } = await k2kGatewayApi.createAgreement({
         body: {
           consumerId,
           eserviceId,
@@ -43,15 +43,15 @@ export function agreementServiceBuilder(
       });
 
       await remoteResourceDbService.insertAgreement({
-        agreementId: createdAgreement.id,
+        agreementId: data.id,
         consumerId,
         eserviceId,
         eserviceVersionId,
         knodeId,
-        producerId: createdAgreement.producerId,
+        producerId: data.producerId,
       });
 
-      return createdAgreement;
+      return data;
     },
   };
 }
