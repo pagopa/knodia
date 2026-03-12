@@ -33,18 +33,33 @@ export type Problem = {
     title: string;
 };
 
-export type SessionRequest = {
-    oidcToken: string;
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
 };
 
-export type SessionResponse = {
-    refreshToken: string;
-    uiSessionToken: string;
+/**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
 };
 
-export type RefreshRequest = {
-    refreshToken: string;
+export type Attribute = {
+    code: string;
+    scheme: string;
 };
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
@@ -78,29 +93,6 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
-};
-
-/**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
 /**
  * Name of the Keychain
  */
@@ -113,6 +105,15 @@ export type KeychainLocalizedName = {
  */
 export type KeychainLocalizedDescription = {
     en: string;
+};
+
+/**
+ * Seed data to create a new agreement
+ */
+export type AgreementSeed = {
+    eserviceId: string;
+    eserviceVersionId: string;
+    knodeId: KnodeId;
 };
 
 export type InterfaceDocumentSeed = {
@@ -392,12 +393,29 @@ export type ConsumerEserviceDetails = {
     identificationRequired: boolean;
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
     isSignalHubEnabled: boolean;
+    /**
+     * Unique identifier of the latest E-service Version
+     */
+    latestVersionId: string;
     maxDailyCalls: ConsumerEserviceDetailsMaxDailyCalls;
     mode: EserviceMode;
     name: LocalizedName;
     producer: ConsumerEserviceDetailsProducer;
     requiredAttributes: Array<Array<ConsumerRequiredAttribute>>;
     state: EserviceVersionState;
+};
+
+export type SessionRequest = {
+    oidcToken: string;
+};
+
+export type SessionResponse = {
+    refreshToken: string;
+    uiSessionToken: string;
+};
+
+export type RefreshRequest = {
+    refreshToken: string;
 };
 
 export type GetStatusData = {
@@ -642,7 +660,7 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
      * E-service interface document downloaded successfully
      */
-    200: Blob | File;
+    200: FileDownload;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
@@ -762,3 +780,69 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
+
+export type GetConsumerEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/eservices/{eserviceId}/interface';
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceError = GetConsumerEserviceLatestVersionInterfaceErrors[keyof GetConsumerEserviceLatestVersionInterfaceErrors];
+
+export type GetConsumerEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
+
+export type CreateConsumerAgreementData = {
+    body: AgreementSeed;
+    path?: never;
+    query?: never;
+    url: '/consumer/agreements';
+};
+
+export type CreateConsumerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerAgreementError = CreateConsumerAgreementErrors[keyof CreateConsumerAgreementErrors];
+
+export type CreateConsumerAgreementResponses = {
+    /**
+     * Agreement created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];

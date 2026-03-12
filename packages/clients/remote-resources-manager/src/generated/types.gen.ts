@@ -139,6 +139,10 @@ export type EserviceDetailsLatestVersion = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
+    /**
+     * Unique identifier of the Version
+     */
+    id: string;
     maxDailyCallsPerConsumer: number;
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;

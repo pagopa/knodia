@@ -30,9 +30,22 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
   const bffDetail = Route.useLoaderData();
+  const { eserviceId, knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
   const navigate = useNavigate();
-  const onClose = () => navigate({ to: "/consumption/e-services" });
 
-  return <RequestAgreementModal eservice={eservice} onClose={onClose} />;
+  const onClose = () =>
+    navigate({
+      params: { id: eserviceId },
+      search: { knodeId },
+      to: "/consumption/e-services/$id",
+    });
+
+  return (
+    <RequestAgreementModal
+      eservice={eservice}
+      knodeId={knodeId}
+      onClose={onClose}
+    />
+  );
 }

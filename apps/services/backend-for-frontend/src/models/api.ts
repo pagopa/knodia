@@ -416,6 +416,9 @@ export const API_ConsumerEserviceDetails = z
       })
       .meta({ id: "ConsumerEserviceDetailsInterfaceDocument" }),
     isSignalHubEnabled: z.boolean(),
+    latestVersionId: z.uuid().meta({
+      description: "Unique identifier of the latest E-service version",
+    }),
     maxDailyCalls: z
       .strictObject({
         perConsumer: z.number().int().meta({ format: "int32" }),

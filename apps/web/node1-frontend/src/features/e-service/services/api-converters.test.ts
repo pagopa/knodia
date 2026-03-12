@@ -27,6 +27,7 @@ function createBffDetail(
       name: "API Specs",
     },
     isSignalHubEnabled: false,
+    latestVersionId: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
     maxDailyCalls: {
       perConsumer: 1000,
       perKnode: 10000,

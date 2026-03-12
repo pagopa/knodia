@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
 import { SettingsCard } from "@/components/SettingCard";
+import { useCreateAgreement } from "@/features/e-service/hooks/useCreateAgreement";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
 import { AttributeGroupContainer } from "../AttributeGroupContainer";
@@ -18,14 +19,26 @@ type ModalState = "error" | "form";
 
 interface RequestAgreementModalProps {
   eservice: ConsumptionEserviceDetail;
+  knodeId: string;
   onClose: () => void;
 }
 
 export function RequestAgreementModal({
   eservice,
+  knodeId,
   onClose,
 }: RequestAgreementModalProps) {
   const [modalState, setModalState] = useState<ModalState>("form");
+
+  const { createAgreement, isPending } = useCreateAgreement({
+    eserviceId: eservice.id,
+    knodeId,
+    onError: () => setModalState("error"),
+  });
+
+  const handleConfirm = () => {
+    createAgreement(eservice.latestVersionId);
+  };
 
   return (
     <FullPageModal onClose={onClose} title="Request Agreement">
@@ -33,8 +46,9 @@ export function RequestAgreementModal({
         {modalState === "form" ? (
           <FormContent
             eservice={eservice}
+            isPending={isPending}
             onCancel={onClose}
-            onConfirm={() => handleRequestAgreement(eservice, setModalState)}
+            onConfirm={handleConfirm}
           />
         ) : (
           <ErrorContent onClose={onClose} />
@@ -63,10 +77,12 @@ function ErrorContent({ onClose }: { onClose: () => void }) {
 
 function FormContent({
   eservice,
+  isPending,
   onCancel,
   onConfirm,
 }: {
   eservice: ConsumptionEserviceDetail;
+  isPending: boolean;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
@@ -125,23 +141,10 @@ function FormContent({
       <ModalFooter
         cancelLabel="Cancel"
         confirmLabel="Request agreement"
+        isDisabled={isPending}
         onCancel={onCancel}
         onConfirm={onConfirm}
       />
     </div>
   );
-}
-
-// TODO: replace with actual BFF agreement mutation when endpoint is available
-async function handleRequestAgreement(
-  _eservice: ConsumptionEserviceDetail,
-  setModalState: (state: ModalState) => void,
-): Promise<void> {
-  try {
-    // await bffApi.createAgreement({ client, body: { eserviceId: eservice.id } });
-    // On success: navigate to agreement detail or show success state
-    throw new Error("BFF agreement endpoint not implemented");
-  } catch {
-    setModalState("error");
-  }
 }

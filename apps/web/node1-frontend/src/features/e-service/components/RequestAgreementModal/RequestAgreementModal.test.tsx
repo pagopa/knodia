@@ -1,10 +1,15 @@
+import { http, HttpResponse } from "msw";
 import { describe, expect, it, vi } from "vitest";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
+import { server } from "@/test/msw/server";
 import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
 import { RequestAgreementModal } from "./RequestAgreementModal";
+
+const BASE_URL = "http://localhost:3000/bff";
+const TEST_KNODE_ID = "knode-test-123";
 
 function createEservice(
   overrides?: Partial<ConsumptionEserviceDetail>,
@@ -21,6 +26,8 @@ function createEservice(
     identificationRequired: false,
     interfaceDocument: { checksum: "abc123", name: "API Specs" },
     isSignalHubEnabled: false,
+    latestVersionId:
+      "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" as ConsumptionEserviceDetail["latestVersionId"],
     maxDailyCalls: { perConsumer: 1000, perKnode: 10000 },
     mode: "ProvideData",
     name: "Test E-Service",
@@ -43,9 +50,28 @@ function renderModal(onClose = vi.fn()) {
     eservice,
     onClose,
     ...renderWithProviders(
-      <RequestAgreementModal eservice={eservice} onClose={onClose} />,
+      <RequestAgreementModal
+        eservice={eservice}
+        knodeId={TEST_KNODE_ID}
+        onClose={onClose}
+      />,
     ),
   };
+}
+
+function useErrorHandler() {
+  server.use(
+    http.post(`${BASE_URL}/consumer/agreements`, () =>
+      HttpResponse.json(
+        {
+          correlationId: "test",
+          status: 500,
+          title: "Internal Server Error",
+        },
+        { status: 500 },
+      ),
+    ),
+  );
 }
 
 describe("RequestAgreementModal", () => {
@@ -63,7 +89,27 @@ describe("RequestAgreementModal", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows error state when 'Request agreement' is clicked", async () => {
+  it("navigates to eservice detail page on successful agreement creation", async () => {
+    server.use(
+      http.post(`${BASE_URL}/consumer/agreements`, () =>
+        HttpResponse.json({ id: "new-agreement-123" }, { status: 201 }),
+      ),
+    );
+
+    const { router, user } = renderModal();
+
+    await user.click(screen.getByRole("button", { name: "Request agreement" }));
+
+    await waitFor(() => {
+      expect(router.state.location.pathname).toBe(
+        "/consumption/e-services/f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      );
+    });
+  });
+
+  it("shows error state when agreement creation fails", async () => {
+    useErrorHandler();
+
     const { user } = renderModal();
 
     await user.click(screen.getByRole("button", { name: "Request agreement" }));
@@ -80,6 +126,8 @@ describe("RequestAgreementModal", () => {
   });
 
   it("calls onClose when 'Close' is clicked in error state", async () => {
+    useErrorHandler();
+
     const onClose = vi.fn();
     const { user } = renderModal(onClose);
 
@@ -106,13 +154,15 @@ describe("RequestAgreementModal", () => {
   it("shows identification info when required", () => {
     const eservice = createEservice({ identificationRequired: true });
     renderWithProviders(
-      <RequestAgreementModal eservice={eservice} onClose={vi.fn()} />,
+      <RequestAgreementModal
+        eservice={eservice}
+        knodeId={TEST_KNODE_ID}
+        onClose={vi.fn()}
+      />,
     );
 
     expect(
-      screen.getByText(
-        /log into the Producer Knode to complete the identification process/,
-      ),
+      screen.getByText(/you will be required to log in to the Producer Knode/i),
     ).toBeInTheDocument();
   });
 });
