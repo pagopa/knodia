@@ -8,3 +8,15 @@ export const downloadFile = (file: File | null | undefined) => {
   link.click();
   URL.revokeObjectURL(url);
 };
+
+export const downloadResponseAsFile = (
+  data: unknown,
+  fileName: string,
+  contentType: string,
+) => {
+  const content =
+    typeof data === "string" ? data : JSON.stringify(data, null, 2);
+
+  const file = new File([content], fileName, { type: contentType });
+  downloadFile(file);
+};
