@@ -33,17 +33,6 @@ export type Problem = {
     title: string;
 };
 
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
-};
-
-/**
- * Unique identifier of the Organization
- */
-export type OrganizationId = string;
-
 /**
  * Name of the Keychain
  */
@@ -57,6 +46,17 @@ export type KeychainLocalizedName = {
 export type KeychainLocalizedDescription = {
     en: string;
 };
+
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
 
 /**
  * Unique identifier of the Keychain
@@ -184,3 +184,48 @@ export type CreateConsumerKeychainResponses = {
 };
 
 export type CreateConsumerKeychainResponse = CreateConsumerKeychainResponses[keyof CreateConsumerKeychainResponses];
+
+export type DeleteConsumerKeychainData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type DeleteConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteConsumerKeychainError = DeleteConsumerKeychainErrors[keyof DeleteConsumerKeychainErrors];
+
+export type DeleteConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteConsumerKeychainResponse = DeleteConsumerKeychainResponses[keyof DeleteConsumerKeychainResponses];
