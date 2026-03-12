@@ -2,6 +2,7 @@ import type { AgreementState } from "@knodia/agreement-models";
 import type {
   EserviceId,
   EserviceVersionId,
+  ExternalId,
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
@@ -47,7 +48,7 @@ export const assertNoConflictingAgreementsExist = async ({
   eserviceId,
   readmodelService,
 }: {
-  consumerId: OrganizationId;
+  consumerId: ExternalId<OrganizationId>;
   consumerKnodeId: KnodeId;
   eserviceId: EserviceId;
   readmodelService: ReadmodelService;
