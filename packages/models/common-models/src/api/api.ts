@@ -30,7 +30,6 @@ export const API_FileDownload = z.string().meta({
   id: "FileDownload",
 });
 
-
 export const API_OrganizationId = z.uuid().meta({
   description: "Unique identifier of the Organization",
   id: "OrganizationId",

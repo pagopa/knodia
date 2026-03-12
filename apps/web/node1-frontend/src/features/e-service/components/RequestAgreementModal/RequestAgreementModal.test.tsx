@@ -89,6 +89,29 @@ describe("RequestAgreementModal", () => {
     ).toBeInTheDocument();
   });
 
+  it("sends the correct agreement seed in the request body", async () => {
+    let capturedBody: unknown;
+
+    server.use(
+      http.post(`${BASE_URL}/consumer/agreements`, async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({ id: "new-agreement-123" }, { status: 201 });
+      }),
+    );
+
+    const { user } = renderModal();
+
+    await user.click(screen.getByRole("button", { name: "Request agreement" }));
+
+    await waitFor(() => {
+      expect(capturedBody).toEqual({
+        eserviceId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+        eserviceVersionId: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+        knodeId: TEST_KNODE_ID,
+      });
+    });
+  });
+
   it("navigates to eservice detail page on successful agreement creation", async () => {
     server.use(
       http.post(`${BASE_URL}/consumer/agreements`, () =>
@@ -104,6 +127,9 @@ describe("RequestAgreementModal", () => {
       expect(router.state.location.pathname).toBe(
         "/consumption/e-services/f47ac10b-58cc-4372-a567-0e02b2c3d479",
       );
+      expect(router.state.location.search).toEqual({
+        knodeId: TEST_KNODE_ID,
+      });
     });
   });
 

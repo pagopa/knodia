@@ -60,7 +60,6 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
       };
     },
 
-
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,
