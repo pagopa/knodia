@@ -152,6 +152,10 @@ export type CreateOrganizationErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type CreateOrganizationError = CreateOrganizationErrors[keyof CreateOrganizationErrors];
