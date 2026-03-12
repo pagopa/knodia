@@ -28,3 +28,11 @@ export const API_GetOrganizationsQueryParams = API_PaginationQueryParams;
 export type API_GetOrganizationsQueryParams = z.infer<
   typeof API_GetOrganizationsQueryParams
 >;
+
+export const API_OrganizationSeed = z
+  .strictObject({
+    attributes: z.array(API_Attribute),
+    name: z.string().min(1),
+  })
+  .meta({ id: "OrganizationSeed" });
+export type API_OrganizationSeed = z.infer<typeof API_OrganizationSeed>;
