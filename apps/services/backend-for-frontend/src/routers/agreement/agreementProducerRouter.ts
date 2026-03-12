@@ -82,7 +82,8 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           );
         }
 
-        // TODO: should this use the remote-resources-manager to fetch the consumer organization from agreement.consumer.knodeId?
+        // TODO: fetch consumer organizations in batch before the loop (same pattern as eservices above:
+        // extract unique consumer IDs, add an organizationId filter to getOrganizations, batch-fetch, zip via Map)
         const consumer: Organization = {
           attributes: [],
           createdAt: new Date(),
