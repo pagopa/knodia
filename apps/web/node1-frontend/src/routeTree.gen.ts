@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as CallbackIndexRouteImport } from './routes/callback/index'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedOperatorsRouteImport } from './routes/_authenticated/operators'
 import { Route as AuthenticatedKeychainsRouteImport } from './routes/_authenticated/keychains'
@@ -36,6 +37,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const LoginIndexRoute = LoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallbackIndexRoute = CallbackIndexRouteImport.update({
+  id: '/callback/',
+  path: '/callback/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/keychains': typeof AuthenticatedKeychainsRoute
   '/operators': typeof AuthenticatedOperatorsRoute
   '/': typeof AuthenticatedIndexRoute
+  '/callback': typeof CallbackIndexRoute
   '/login': typeof LoginIndexRoute
   '/consumption/e-services': typeof AuthenticatedConsumptionEServicesRouteRoute
   '/production/e-services': typeof AuthenticatedProductionEServicesRouteRouteWithChildren
@@ -163,6 +170,7 @@ export interface FileRoutesByTo {
   '/keychains': typeof AuthenticatedKeychainsRoute
   '/operators': typeof AuthenticatedOperatorsRoute
   '/': typeof AuthenticatedIndexRoute
+  '/callback': typeof CallbackIndexRoute
   '/login': typeof LoginIndexRoute
   '/consumption/e-services': typeof AuthenticatedConsumptionEServicesRouteRoute
   '/production/e-services': typeof AuthenticatedProductionEServicesRouteRouteWithChildren
@@ -185,6 +193,7 @@ export interface FileRoutesById {
   '/_authenticated/keychains': typeof AuthenticatedKeychainsRoute
   '/_authenticated/operators': typeof AuthenticatedOperatorsRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/callback/': typeof CallbackIndexRoute
   '/login/': typeof LoginIndexRoute
   '/_authenticated/consumption/e-services': typeof AuthenticatedConsumptionEServicesRouteRoute
   '/_authenticated/production/e-services': typeof AuthenticatedProductionEServicesRouteRouteWithChildren
@@ -207,6 +216,7 @@ export interface FileRouteTypes {
     | '/keychains'
     | '/operators'
     | '/'
+    | '/callback'
     | '/login'
     | '/consumption/e-services'
     | '/production/e-services'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/keychains'
     | '/operators'
     | '/'
+    | '/callback'
     | '/login'
     | '/consumption/e-services'
     | '/production/e-services'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/_authenticated/keychains'
     | '/_authenticated/operators'
     | '/_authenticated/'
+    | '/callback/'
     | '/login/'
     | '/_authenticated/consumption/e-services'
     | '/_authenticated/production/e-services'
@@ -266,6 +278,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  CallbackIndexRoute: typeof CallbackIndexRoute
   LoginIndexRoute: typeof LoginIndexRoute
 }
 
@@ -283,6 +296,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/callback/': {
+      id: '/callback/'
+      path: '/callback'
+      fullPath: '/callback'
+      preLoaderRoute: typeof CallbackIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/': {
@@ -474,6 +494,7 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  CallbackIndexRoute: CallbackIndexRoute,
   LoginIndexRoute: LoginIndexRoute,
 }
 export const routeTree = rootRouteImport

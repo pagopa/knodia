@@ -1,5 +1,6 @@
 import { EventStoreEserviceConfig } from "@knodia/db-event-store-eservice/config";
 import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
+import { ReadmodelOrganizationConfig } from "@knodia/db-readmodel-organization/config";
 import {
   AuthConfig,
   HTTPServerConfig,
@@ -11,6 +12,7 @@ const EserviceProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(EventStoreEserviceConfig)
   .and(ReadmodelEserviceConfig)
+  .and(ReadmodelOrganizationConfig)
   .and(
     z
       .object({

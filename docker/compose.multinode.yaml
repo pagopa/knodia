@@ -42,7 +42,6 @@ services:
       - ../migration/event-store:/flyway/databases/orion_event_store:ro
       - ../migration/read-model:/flyway/databases/orion_readmodel:ro
       - ../migration/remote-resource:/flyway/databases/orion_remote_resource:ro
-      - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root
@@ -64,7 +63,6 @@ services:
       - ../migration/event-store:/flyway/databases/lynx_event_store:ro
       - ../migration/read-model:/flyway/databases/lynx_readmodel:ro
       - ../migration/remote-resource:/flyway/databases/lynx_remote_resource:ro
-      - ../migration/roles:/flyway/roles:ro
       - ../scripts/flyway:/flyway/scripts:ro
     environment:
       FLYWAY_USER: root

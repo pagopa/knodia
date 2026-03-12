@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@knodia/attribute-models": "workspace:*",
-    "@knodia/common-models": "workspace:*"
+    "@knodia/common-models": "workspace:*",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",

@@ -1,6 +1,10 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
-import type { InternalAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import {
@@ -12,11 +16,15 @@ import {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
+import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
 import { retrieveEservice } from "../utils/readmodelUtils.ts";
-import { assertEserviceVersionIsActive } from "../utils/validators.ts";
+import {
+  assertEserviceVersionIsActive,
+  assertNoConflictingAgreementsExist,
+} from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -45,6 +53,13 @@ export function agreementServiceBuilder(
         { requestBody: { consumer, eserviceId, eserviceVersionId } },
         `Creating Agreement ${agreementId}`,
       );
+
+      await assertNoConflictingAgreementsExist({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await assertEserviceVersionIsActive(
@@ -76,6 +91,14 @@ export function agreementServiceBuilder(
       );
 
       return agreement;
+    },
+    async getAgreements(
+      requestQuery: API_GetAgreementsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<Agreement>> {
+      logger.info({ requestQuery }, "Getting Agreements with query params");
+
+      return await readmodelService.getAgreements(requestQuery);
     },
   };
 }
