@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package organization.v1;
+
+message OrganizationV1 {
+  string id = 1;
+  string name = 2;
+  repeated OrganizationAttributeV1 attributes = 3;
+  int64 createdAt = 4;
+  int64 updatedAt = 5;
+}
+
+message OrganizationAttributeV1 {
+  string scheme = 1;
+  string code = 2;
+}
