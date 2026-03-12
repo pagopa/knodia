@@ -1,5 +1,9 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  EserviceVersionId,
+} from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -7,6 +11,7 @@ import {
   readmodelAgreementAttribute,
 } from "@knodia/db-readmodel-agreement";
 import { aggregateAgreements } from "@knodia/db-readmodel-agreement/converters";
+import { agreementReadmodelServiceBuilder } from "@knodia/db-readmodel-agreement/services";
 import {
   type ListResult,
   type WithMetadata,
@@ -24,8 +29,13 @@ import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+  const agreementReadmodelService =
+    agreementReadmodelServiceBuilder(readmodelDb);
   const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
   return {
+    async getAgreement(agreementId: AgreementId) {
+      return await agreementReadmodelService.getAgreementById(agreementId);
+    },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
     ): Promise<ListResult<Agreement>> {

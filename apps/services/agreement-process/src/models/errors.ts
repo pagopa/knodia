@@ -1,4 +1,5 @@
 import type {
+  AgreementId,
   EserviceId,
   EserviceVersionId,
   KnodeId,
@@ -18,6 +19,7 @@ const errorCodes = {
   ESERVICE_VERSION_NOT_FOUND: "0002",
   ESERVICE_VERSION_NOT_IN_EXPECTED_STATE: "0003",
   AGREEMENT_ALREADY_EXISTS: "0004",
+  AGREEMENT_NOT_FOUND: "0005",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -41,6 +43,15 @@ export function agreementAlreadyExists({
     detail: `Agreement already exists for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Agreement already exists",
+  });
+}
+
+export function agreementNotFound(id: AgreementId) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_FOUND",
+    detail: `Agreement with id ${id} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Agreement Not Found",
   });
 }
 
