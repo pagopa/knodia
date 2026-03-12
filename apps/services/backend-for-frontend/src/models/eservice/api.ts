@@ -278,8 +278,6 @@ export type API_ProducerEserviceDetails = z.infer<
   typeof API_ProducerEserviceDetails
 >;
 
-export const API_FileDownload = z.string().meta({ format: "binary" });
-
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
   keywords: z.string().min(1),

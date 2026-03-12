@@ -40,6 +40,11 @@ export type Pagination = {
 };
 
 /**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
  * Unique identifier of the Organization
  */
 export type OrganizationId = string;
@@ -266,6 +271,47 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type DownloadEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/eservices/{eserviceId}/interface';
+};
+
+export type DownloadEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DownloadEserviceLatestVersionInterfaceError = DownloadEserviceLatestVersionInterfaceErrors[keyof DownloadEserviceLatestVersionInterfaceErrors];
+
+export type DownloadEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
 
 export type CreateAgreementData = {
     body: AgreementSeed;
