@@ -91,11 +91,10 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
- * Organization with only id, knodeId, and name
+ * Organization with only id and name
  */
 export type CompactOrganization = {
     id: string;
-    knodeId: KnodeId;
     name: string;
 };
 
@@ -383,7 +382,6 @@ export type ProducerAgreement = {
     consumer: CompactOrganization;
     eservice: CompactEservice;
     id: string;
-    producer?: CompactOrganization;
     state: AgreementState;
 };
 
@@ -403,6 +401,25 @@ export type SessionResponse = {
 
 export type RefreshRequest = {
     refreshToken: string;
+};
+
+/**
+ * Name of the Keychain
+ */
+export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Description of the Keychain
+ */
+export type KeychainLocalizedDescription = {
+    en: string;
+};
+
+export type ConsumerKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
 };
 
 export type GetStatusData = {
@@ -597,7 +614,7 @@ export type GetProducerEserviceDetailsErrors = {
      */
     403: Problem;
     /**
-     * Not Found
+     * E-service not found
      */
     404: Problem;
 };
@@ -606,7 +623,7 @@ export type GetProducerEserviceDetailsError = GetProducerEserviceDetailsErrors[k
 
 export type GetProducerEserviceDetailsResponses = {
     /**
-     * Producer E-service details retrieved successfully
+     * E-service details retrieved successfully
      */
     200: ProducerEserviceDetails;
 };
@@ -645,12 +662,84 @@ export type GetProducerEserviceLatestVersionInterfaceError = GetProducerEservice
 
 export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
-     * Producer E-service interface document downloaded successfully
+     * E-service interface document downloaded successfully
      */
     200: Blob | File;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
+
+export type CreateConsumerKeychainData = {
+    body: ConsumerKeychainSeed;
+    path?: never;
+    query?: never;
+    url: '/consumerKeychains';
+};
+
+export type CreateConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerKeychainError = CreateConsumerKeychainErrors[keyof CreateConsumerKeychainErrors];
+
+export type CreateConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerKeychainResponse = CreateConsumerKeychainResponses[keyof CreateConsumerKeychainResponses];
+
+export type DeleteConsumerKeychainData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type DeleteConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteConsumerKeychainError = DeleteConsumerKeychainErrors[keyof DeleteConsumerKeychainErrors];
+
+export type DeleteConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteConsumerKeychainResponse = DeleteConsumerKeychainResponses[keyof DeleteConsumerKeychainResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
@@ -776,42 +865,3 @@ export type GetProducerAgreementsResponses = {
 };
 
 export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];
-
-export type GetProducerAgreementDetailsData = {
-    body?: never;
-    path: {
-        agreementId: string;
-    };
-    query?: never;
-    url: '/producer/agreements/{agreementId}';
-};
-
-export type GetProducerAgreementDetailsErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-};
-
-export type GetProducerAgreementDetailsError = GetProducerAgreementDetailsErrors[keyof GetProducerAgreementDetailsErrors];
-
-export type GetProducerAgreementDetailsResponses = {
-    /**
-     * Producer Agreement details retrieved successfully
-     */
-    200: ProducerAgreement;
-};
-
-export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];

@@ -1,6 +1,8 @@
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { remoteResourceDbServiceBuilder } from "@knodia/db-remote-resource/services";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -14,6 +16,8 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import type { RemoteResourcesManagerConfig } from "./config/config.ts";
 
@@ -28,13 +32,16 @@ import { eserviceServiceBuilder } from "./services/eserviceService.ts";
 export function buildApp({
   config,
   knodeUrl,
+  remoteResourceDb,
 }: {
   config: AuthConfig & LoggerConfig;
   knodeUrl: string;
+  remoteResourceDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
     knodeUrl,
   });
+
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -77,7 +84,10 @@ export function buildApp({
       eserviceService: eserviceServiceBuilder(k2kGatewayClient),
     });
     protectedApp.register(agreementRouter, {
-      agreementService: agreementServiceBuilder(k2kGatewayClient),
+      agreementService: agreementServiceBuilder(
+        k2kGatewayClient,
+        remoteResourceDbServiceBuilder(remoteResourceDb),
+      ),
     });
   });
 
@@ -85,5 +95,27 @@ export function buildApp({
 }
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
-  return buildApp({ config, knodeUrl: config.knodeUrl });
+  const remoteResourcePool = new Pool({
+    database: config.remoteResourceDbName,
+    host: config.remoteResourceDbHost,
+    password: config.remoteResourceDbPassword,
+    port: config.remoteResourceDbPort,
+    ssl: config.remoteResourceDbUseSsl
+      ? { rejectUnauthorized: false }
+      : undefined,
+    user: config.remoteResourceDbUser,
+  });
+  const remoteResourceDb = drizzle(remoteResourcePool);
+
+  const app = buildApp({
+    config,
+    knodeUrl: config.knodeUrl,
+    remoteResourceDb,
+  });
+
+  app.addHook("onClose", async () => {
+    await remoteResourcePool.end();
+  });
+
+  return app;
 }

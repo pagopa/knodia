@@ -20,10 +20,9 @@ import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
-import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { type Eservice } from "@knodia/eservice-models";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 
@@ -40,7 +39,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
     ): Promise<ListResult<Agreement>> {
-      const { limit, offset, producerId } = requestQuery;
+      const {
+        consumerId,
+        consumerKnodeId,
+        eserviceId,
+        limit,
+        offset,
+        producerId,
+        state,
+      } = requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -55,14 +62,24 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               agreementId: readmodelAgreement.id,
             })
             .from(readmodelAgreement)
-            .innerJoin(
-              readmodelEservice,
-              eq(readmodelAgreement.eserviceId, readmodelEservice.id),
-            )
             .where(
-              producerId
-                ? eq(readmodelAgreement.producerId, producerId)
-                : undefined,
+              and(
+                producerId
+                  ? eq(readmodelAgreement.producerId, producerId)
+                  : undefined,
+                eserviceId
+                  ? eq(readmodelAgreement.eserviceId, eserviceId)
+                  : undefined,
+                consumerId
+                  ? eq(readmodelAgreement.consumerId, consumerId)
+                  : undefined,
+                consumerKnodeId
+                  ? eq(readmodelAgreement.consumerKnodeId, consumerKnodeId)
+                  : undefined,
+                state && state.length > 0
+                  ? inArray(readmodelAgreement.state, state)
+                  : undefined,
+              ),
             )
             .$dynamic();
 
@@ -89,10 +106,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 readmodelAgreement.id,
                 readmodelAgreementAttribute.agreementId,
               ),
-            )
-            .innerJoin(
-              readmodelEservice,
-              eq(readmodelAgreement.eserviceId, readmodelEservice.id),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),

@@ -189,22 +189,19 @@ components:
         - Bearer
         - DPoP
     CompactOrganization:
-      description: Organization with only id, knodeId, and name
+      description: Organization with only id and name
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
           minLength: 5
           maxLength: 60
       required:
         - id
-        - knodeId
         - name
       additionalProperties: false
     InterfaceDocumentSeed:
@@ -797,9 +794,6 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        producer:
-          allOf:
-            - $ref: "#/components/schemas/CompactOrganization"
         state:
           $ref: "#/components/schemas/AgreementState"
       required:
@@ -847,6 +841,39 @@ components:
           type: string
       required:
         - refreshToken
+      additionalProperties: false
+    KeychainLocalizedName:
+      description: Name of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    KeychainLocalizedDescription:
+      description: Description of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    ConsumerKeychainSeed:
+      type: object
+      properties:
+        description:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - name
       additionalProperties: false
 paths:
   /status:
@@ -1088,7 +1115,7 @@ paths:
       operationId: getProducerEserviceDetails
       tags:
         - eservice
-      description: Retrieve a Producer E-service with all its details
+      description: Retrieve an E-service with all its details
       parameters:
         - schema:
             type: string
@@ -1099,11 +1126,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service details retrieved successfully
+          description: E-service details retrieved successfully
           content:
             application/json:
               schema:
-                description: Producer E-service details retrieved successfully
+                description: E-service details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEserviceDetails"
         "400":
@@ -1131,11 +1158,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Not Found
+          description: E-service not found
           content:
             application/problem+json:
               schema:
-                description: Not Found
+                description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:
@@ -1143,8 +1170,7 @@ paths:
       operationId: getProducerEserviceLatestVersionInterface
       tags:
         - eservice
-      description: Download the interface document for the latest version of a
-        Producer E-service
+      description: Download the interface document for the latest version of an E-service
       parameters:
         - schema:
             type: string
@@ -1155,12 +1181,12 @@ paths:
           required: true
       responses:
         "200":
-          description: Producer E-service interface document downloaded successfully
+          description: E-service interface document downloaded successfully
           content:
             application/octet-stream:
               schema:
                 format: binary
-                description: Producer E-service interface document downloaded successfully
+                description: E-service interface document downloaded successfully
                 type: string
         "400":
           description: Bad Request
@@ -1192,6 +1218,100 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains:
+    post:
+      operationId: createConsumerKeychain
+      tags:
+        - consumerKeychain
+      description: Create a new Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConsumerKeychainSeed"
+      responses:
+        "201":
+          description: Consumer Keychain created successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}:
+    delete:
+      operationId: deleteConsumerKeychain
+      tags:
+        - consumerKeychain
+      description: Delete a Consumer Keychain
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "204":
+          description: Consumer Keychain deleted successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
@@ -1380,61 +1500,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /producer/agreements/{agreementId}:
-    get:
-      operationId: getProducerAgreementDetails
-      tags:
-        - agreement
-      description: Retrieve a Producer Agreement with all its details
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: agreementId
-          required: true
-      responses:
-        "200":
-          description: Producer Agreement details retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Producer Agreement details retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/ProducerAgreement"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                description: Not Found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -1447,5 +1512,7 @@ tags:
     name: auth
   - description: E-services routes
     name: eservice
+  - description: Consumer Keychains routes
+    name: consumerKeychain
   - description: Agreement routes
     name: agreement

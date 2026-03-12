@@ -7,7 +7,9 @@ DECLARE
         '${NAMESPACE}_agreement_process_user',
         '${NAMESPACE}_agreement_rmw_user',
         '${NAMESPACE}_keychain_process_user',
-        '${NAMESPACE}_keychain_rmw_user'
+        '${NAMESPACE}_keychain_rmw_user',
+        '${NAMESPACE}_remote_resources_manager_user',
+        '${NAMESPACE}_organization_process_user'
     ];
 BEGIN
     FOREACH role_name IN ARRAY role_names LOOP

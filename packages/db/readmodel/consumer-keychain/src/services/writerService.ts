@@ -1,8 +1,9 @@
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
 import { type ConsumerKeychain } from "@knodia/keychain-models";
-import { eq } from "drizzle-orm";
+import { and, eq, lte } from "drizzle-orm";
 
 import {
   readmodelConsumerKeychain,
@@ -18,6 +19,19 @@ export type ConsumerKeychainWriterService = ReturnType<
 
 export function consumerKeychainWriterServiceBuilder(db: NodePgDatabase) {
   return {
+    async deleteConsumerKeychain(
+      consumerKeychainId: ConsumerKeychainId,
+      metadataVersion: number,
+    ): Promise<void> {
+      await db
+        .delete(readmodelConsumerKeychain)
+        .where(
+          and(
+            eq(readmodelConsumerKeychain.id, consumerKeychainId),
+            lte(readmodelConsumerKeychain.metadataVersion, metadataVersion),
+          ),
+        );
+    },
     async upsertConsumerKeychain(
       consumerKeychain: ConsumerKeychain,
       metadataVersion: number,

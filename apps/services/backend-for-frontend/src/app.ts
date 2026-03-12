@@ -1,4 +1,3 @@
-import { KnodeId } from "@knodia/common-models/ids";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -20,6 +19,7 @@ import { agreementProducerRouter } from "./routers/agreement/agreementProducerRo
 import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
+import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
@@ -30,10 +30,9 @@ function buildApp({ config }: { config: BffProcessConfig }) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
+    keychainProcessUrl: config.keychainProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
-  const knodeId = KnodeId.parse(config.knodeId);
-
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
   const authService = authServiceBuilder(tokenGenerator);
@@ -60,6 +59,10 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             name: apiTags.eservice,
           },
           {
+            description: "Consumer Keychains routes",
+            name: apiTags.consumerKeychain,
+          },
+          {
             description: "Agreement routes",
             name: apiTags.agreement,
           },
@@ -83,14 +86,17 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
     });
+    protectedApp.register(consumerKeychainRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
+    });
     protectedApp.register(eserviceConsumerRouter, {
-      knodeId,
+      knodeId: config.knodeId,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,
-      knodeId,
+      knodeId: config.knodeId,
     });
   });
 

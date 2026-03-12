@@ -26,7 +26,7 @@ import {
 } from "../utils/readmodelUtils.ts";
 import {
   assertEserviceVersionIsActive,
-  assertRequesterIsProducer,
+  assertNoConflictingAgreementsExist,
 } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -56,6 +56,13 @@ export function agreementServiceBuilder(
         { requestBody: { consumer, eserviceId, eserviceVersionId } },
         `Creating Agreement ${agreementId}`,
       );
+
+      await assertNoConflictingAgreementsExist({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await assertEserviceVersionIsActive(
@@ -90,12 +97,11 @@ export function agreementServiceBuilder(
     },
     async getAgreement(
       agreementId: AgreementId,
-      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Agreement> {
       logger.info(`Getting Agreement with ID ${agreementId}`);
 
       const agreement = await retrieveAgreement(agreementId, readmodelService);
-      assertRequesterIsProducer(agreement.producerId, authData);
 
       return agreement;
     },
