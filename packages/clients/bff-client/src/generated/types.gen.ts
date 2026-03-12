@@ -47,6 +47,11 @@ export type Pagination = {
 };
 
 /**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -664,7 +669,7 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
      * E-service interface document downloaded successfully
      */
-    200: Blob | File;
+    200: FileDownload;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
@@ -823,6 +828,47 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
+
+export type GetConsumerEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/eservices/{eserviceId}/interface';
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceError = GetConsumerEserviceLatestVersionInterfaceErrors[keyof GetConsumerEserviceLatestVersionInterfaceErrors];
+
+export type GetConsumerEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;
