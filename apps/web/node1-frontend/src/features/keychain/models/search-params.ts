@@ -4,7 +4,7 @@ import { keychainType, type KeychainType } from "./commons";
 
 export const keychainSearchDefaultValues = {
   offset: 0,
-  type: "consumer" satisfies KeychainType,
+  type: "consumption" satisfies KeychainType,
 } as const;
 
 export const keychainSearchSchema = z.object({

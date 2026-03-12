@@ -47,8 +47,8 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
     };
 
     match(seed.type)
-      .with("consumer", () => createConsumerKeychain({ body }))
-      .with("producer", () => {
+      .with("consumption", () => createConsumerKeychain({ body }))
+      .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
       })
       .with("api", () => {
@@ -145,7 +145,7 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
               {keychainTypeOptions.map((option) => (
                 <SelectItem
                   id={option.id}
-                  isDisabled={option.id !== "consumer"}
+                  isDisabled={option.id !== "consumption"}
                   key={option.id}
                 >
                   {option.label}

@@ -3,8 +3,8 @@ import z from "zod";
 import { keychainType, type KeychainType } from "./commons";
 
 export const keychainTypeOptions = [
-  { id: "consumer", label: "Consumer" },
-  { id: "producer", label: "Producer" },
+  { id: "consumption", label: "Consumer" },
+  { id: "production", label: "Producer" },
   { id: "api", label: "API" },
 ] as const satisfies readonly { id: KeychainType; label: string }[];
 
@@ -23,7 +23,7 @@ export const createKeychainFormSchema = z.object({
 export const createKeychainFormDefaultValues: CreateKeychainFormValues = {
   description: undefined,
   name: "",
-  type: "consumer",
+  type: "consumption",
 };
 
 export type CreateKeychainFormValues = z.infer<typeof createKeychainFormSchema>;

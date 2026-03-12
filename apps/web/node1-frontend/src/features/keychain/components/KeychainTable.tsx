@@ -86,8 +86,8 @@ export function KeychainTable({
 
 function getKeychainDetailsHref(type: KeychainType) {
   return match(type)
-    .with("consumer", () => "/keychains/consumption/$id" as const)
-    .with("producer", () => {
+    .with("consumption", () => "/keychains/consumption/$id" as const)
+    .with("production", () => {
       throw new Error("Producer keychains are not supported yet.");
     })
     .with("api", () => {
