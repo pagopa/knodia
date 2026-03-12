@@ -20,11 +20,9 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
-import {
-  API_KeychainLocalizedDescription,
-  API_KeychainLocalizedName,
-} from "@knodia/keychain-models/api";
 import { z } from "zod";
+
+import { API_CompactOrganization } from "../organization/api.ts";
 
 const API_InterfaceDocumentSeed = z
   .strictObject({
@@ -110,25 +108,6 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
-
-export const API_ConsumerKeychainSeed = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.optional(),
-    name: API_KeychainLocalizedName,
-  })
-  .meta({ id: "ConsumerKeychainSeed" });
-export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
-
-export const API_ConsumerKeychainPatch = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.nullable().optional(),
-    name: API_KeychainLocalizedName.optional(),
-  })
-  .meta({ id: "ConsumerKeychainPatch" });
-
-export type API_ConsumerKeychainPatch = z.infer<
-  typeof API_ConsumerKeychainPatch
->;
 
 export const API_ProducerEservice = z
   .strictObject({
@@ -327,16 +306,6 @@ export type API_GetConsumerCatalogEserviceSearchParams = z.infer<
   typeof API_GetConsumerCatalogEserviceSearchParams
 >;
 
-const API_CompactOrganization = z
-  .strictObject({
-    id: z.uuid(),
-    name: API_LocalizedName,
-  })
-  .meta({
-    description: "Organization with only id and name",
-    id: "CompactOrganization",
-  });
-
 const API_ConsumerCatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -434,36 +403,12 @@ export type API_ConsumerEserviceDetails = z.infer<
   typeof API_ConsumerEserviceDetails
 >;
 
-export const API_Keychain = z
+export const API_CompactEservice = z
   .strictObject({
     id: z.uuid(),
-    keysCount: z.number().int().min(0).meta({ format: "int32" }),
-    membersCount: z.number().int().min(0).meta({ format: "int32" }),
-    name: API_KeychainLocalizedName,
+    name: API_LocalizedName,
   })
-  .meta({ id: "Keychain" });
-export type API_Keychain = z.infer<typeof API_Keychain>;
-
-export const API_Keychains = z
-  .strictObject({
-    items: z.array(API_Keychain),
-    pagination: API_Pagination,
-  })
-  .meta({ id: "Keychains" });
-export type API_Keychains = z.infer<typeof API_Keychains>;
-
-export const API_KeychainDetails = z
-  .strictObject({
-    createdAt: z.iso.datetime(),
-    description: API_KeychainLocalizedDescription.optional(),
-    id: z.uuid(),
-    name: API_KeychainLocalizedName,
-    updatedAt: z.iso.datetime(),
-  })
-  .meta({ id: "KeychainDetails" });
-export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
-
-export const API_ConsumerKeychainsQueryParams = API_PaginationQueryParams;
-export type API_ConsumerKeychainsQueryParams = z.infer<
-  typeof API_ConsumerKeychainsQueryParams
->;
+  .meta({
+    description: "E-service with only id and name",
+    id: "CompactEservice",
+  });

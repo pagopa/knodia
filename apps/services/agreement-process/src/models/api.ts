@@ -55,6 +55,9 @@ export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
     .uuid()
     .optional()
     .meta({ description: "Filter by E-service ID" }),
+  producerId: API_OrganizationId.optional().meta({
+    description: "Filter by Producer Organization ID",
+  }),
   state: arrayQueryParam(API_AgreementState).optional().meta({
     description: "Filter by Agreement State",
   }),

@@ -11,7 +11,6 @@ import {
 } from "../agreement.ts";
 import { aggregateAgreement } from "../converters/aggregators.ts";
 
-/** @knipignore */
 export function agreementReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
     async getAgreementById(

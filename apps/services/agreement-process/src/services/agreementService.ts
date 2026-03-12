@@ -20,7 +20,10 @@ import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
-import { retrieveEservice } from "../utils/readmodelUtils.ts";
+import {
+  retrieveAgreement,
+  retrieveEservice,
+} from "../utils/readmodelUtils.ts";
 import {
   assertEserviceVersionIsActive,
   assertNoConflictingAgreementsExist,
@@ -89,6 +92,16 @@ export function agreementServiceBuilder(
       await eventStoreWriter.insertEvent(
         createAgreementActivatedV1Event(agreement, correlationId),
       );
+
+      return agreement;
+    },
+    async getAgreement(
+      agreementId: AgreementId,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<Agreement> {
+      logger.info(`Getting Agreement with ID ${agreementId}`);
+
+      const agreement = await retrieveAgreement(agreementId, readmodelService);
 
       return agreement;
     },
