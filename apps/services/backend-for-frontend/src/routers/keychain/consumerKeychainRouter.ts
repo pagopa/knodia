@@ -4,10 +4,12 @@ import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
+import { z } from "zod";
 
 import { API_ConsumerKeychainSeed } from "../../models/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -53,5 +55,41 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Deleting Consumer Keychain with ID ${req.params.consumerKeychainId}`,
+      );
+
+      await keychainProcessApi.deleteConsumerKeychain({
+        client: keychainProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { consumerKeychainId: req.params.consumerKeychainId },
+      });
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Delete a Consumer Keychain",
+      operationId: "deleteConsumerKeychain",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Consumer Keychain deleted successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId",
   });
 };
