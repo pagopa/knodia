@@ -3,7 +3,7 @@ import type { EserviceId } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { CORRELATION_ID_HEADER } from "@knodia/fastify-zod-api-commons/models";
+import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -27,36 +27,26 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
   return {
     async downloadEserviceLatestVersionInterface(
       eserviceId: ExternalResource<EserviceId>,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<{ buffer: Buffer; contentType: string; fileName: string }> {
       logger.info(
         { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
         `Downloading interface of E-service ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
 
-      const headers = { [CORRELATION_ID_HEADER]: correlationId };
-      const path = { eserviceId: eserviceId.id };
-
-      const [{ data: metadata }, { data: blob }] = await Promise.all([
-        k2kGatewayApi.getEserviceLatestVersionInterface({
+      const { data: blob, headers } =
+        await k2kGatewayApi.downloadEserviceLatestVersionInterface({
           client: k2kGatewayClient,
-          headers,
-          path,
-        }),
-        k2kGatewayApi.downloadEserviceLatestVersionInterface({
-          client: k2kGatewayClient,
-          headers,
-          path,
-        }),
-      ]);
+          path: { eserviceId: eserviceId.id },
+          responseType: "arraybuffer",
+        });
 
       return {
-        buffer:
-          typeof blob === "string"
-            ? Buffer.from(blob)
-            : Buffer.from(await blob.arrayBuffer()),
-        contentType: metadata.contentType,
-        fileName: metadata.name,
+        buffer: Buffer.from(blob as unknown as ArrayBuffer),
+        contentType: headers["content-type"] ?? "application/octet-stream",
+        fileName: parseContentDispositionFileName(
+          headers["content-disposition"],
+        ),
       };
     },
 

@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
 import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
@@ -105,5 +106,39 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "internal" },
+      ]);
+
+      const agreement = await agreementService.getAgreement(
+        req.params.agreementId,
+        ctx,
+      );
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an Agreement by its ID",
+      headers: KnodiaServiceHeaders,
+      operationId: "getAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId",
   });
 };

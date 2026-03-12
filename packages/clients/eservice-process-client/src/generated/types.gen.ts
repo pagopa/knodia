@@ -295,6 +295,10 @@ export type GetEservicesData = {
          */
         offset: number;
         /**
+         * Filter by E-service ID
+         */
+        eserviceId?: Array<string>;
+        /**
          * Filter by E-service data mode
          */
         mode?: EserviceMode;

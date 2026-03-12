@@ -587,18 +587,36 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/octet-stream:
+            application/json: &a1
               schema:
                 description: E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
+            application/x-yaml: *a1
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":

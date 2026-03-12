@@ -4,32 +4,33 @@ import { requestContext } from "@fastify/request-context";
 import { API_FileDownload } from "@knodia/common-models/api";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
+import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerCatalogEserviceSearchResults,
   API_ConsumerEserviceDetails,
   API_GetConsumerCatalogEserviceSearchParams,
   API_GetConsumerCatalogEservicesQueryParams,
   API_GetConsumerEserviceDetailsQueryParams,
-} from "../../models/api.ts";
+} from "../../models/eservice/api.ts";
 import {
   toAPI_ConsumerCatalogEserviceSearchResult,
   toAPI_ConsumerEserviceDetails,
-} from "../../models/apiConverter.ts";
-import { apiTags } from "../../models/apiTags.ts";
+} from "../../models/eservice/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
-interface RemoteResourcesManagerRouterOptions {
+interface EserviceConsumerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
-  RemoteResourcesManagerRouterOptions
+  EserviceConsumerRouterOptions
 > = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
@@ -53,7 +54,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
             Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
-            { en: "Producer name" }, // TODO: retrieve producer name
+            "Producer name", // TODO: retrieve producer name
           ),
         ),
       });
@@ -128,37 +129,26 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         `Downloading interface of consumer E-service with ID ${req.params.eserviceId}`,
       );
 
-      const headers = getKnodiaServiceHeaders(req, correlationId);
-      const path = { eserviceId: req.params.eserviceId };
-      const query = { knodeId: req.query.knodeId };
+      const { data: blob, headers: downloadHeaders } =
+        await remoteResourcesManagerApi.downloadEserviceLatestVersionInterface({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { eserviceId: req.params.eserviceId },
+          query: { knodeId: req.query.knodeId },
+          responseType: "arraybuffer",
+        });
 
-      const [{ data: detail }, { data: blob, headers: downloadHeaders }] =
-        await Promise.all([
-          remoteResourcesManagerApi.getEserviceDetails({
-            client: remoteResourcesManagerClient,
-            headers,
-            path,
-            query,
-          }),
-          remoteResourcesManagerApi.downloadEserviceLatestVersionInterface({
-            client: remoteResourcesManagerClient,
-            headers,
-            path,
-            query,
-          }),
-        ]);
-
-      const buffer =
-        typeof blob === "string"
-          ? Buffer.from(blob)
-          : Buffer.from(await blob.arrayBuffer());
+      const contentType =
+        downloadHeaders["content-type"] ?? "application/octet-stream";
+      const fileName = parseContentDispositionFileName(
+        downloadHeaders["content-disposition"],
+      );
 
       res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${detail.interfaceDocument.name}"`,
-        "Content-Type":
-          downloadHeaders["content-type"] ?? "application/octet-stream",
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Type": contentType,
       });
-      res.raw.end(buffer);
+      res.raw.end(Buffer.from(blob as unknown as ArrayBuffer));
     },
     method: "GET",
     schema: {
@@ -166,13 +156,15 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         "Download the interface document for the latest version of an E-service",
       operationId: "getConsumerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
-      produces: ["application/octet-stream"],
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
       querystring: API_GetConsumerEserviceDetailsQueryParams,
       response: {
         200: API_FileDownload.meta({
           description: "E-service interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
       summary: "Download consumer E-service latest version interface",

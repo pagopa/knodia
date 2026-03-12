@@ -9,7 +9,7 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
-import { API_AgreementSeed } from "../../models/api.ts";
+import { API_AgreementSeed } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";

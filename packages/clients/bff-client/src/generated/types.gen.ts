@@ -51,15 +51,17 @@ export type CreatedResource = {
     id: string;
 };
 
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
 /**
  * Unique Knode identifier
  */
 export type KnodeId = 'Orion' | 'Lynx';
+
+export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+
+export type Attribute = {
+    code: string;
+    scheme: string;
+};
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
@@ -94,26 +96,11 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
- * Name of the Keychain
+ * Organization with only id and name
  */
-export type KeychainLocalizedName = {
-    en: string;
-};
-
-/**
- * Description of the Keychain
- */
-export type KeychainLocalizedDescription = {
-    en: string;
-};
-
-/**
- * Seed data to create a new agreement
- */
-export type AgreementSeed = {
-    eserviceId: string;
-    eserviceVersionId: string;
-    knodeId: KnodeId;
+export type CompactOrganization = {
+    id: string;
+    name: string;
 };
 
 export type InterfaceDocumentSeed = {
@@ -183,11 +170,6 @@ export type EserviceSeed = {
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
-};
-
-export type ConsumerKeychainSeed = {
-    description?: KeychainLocalizedDescription;
-    name: KeychainLocalizedName;
 };
 
 export type ProducerEservice = {
@@ -328,14 +310,6 @@ export type GetConsumerCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
-/**
- * Organization with only id and name
- */
-export type CompactOrganization = {
-    id: string;
-    name: LocalizedName;
-};
-
 export type ConsumerCatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
@@ -394,7 +368,7 @@ export type ConsumerEserviceDetails = {
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
     isSignalHubEnabled: boolean;
     /**
-     * Unique identifier of the latest E-service Version
+     * Unique identifier of the latest E-service version
      */
     latestVersionId: string;
     maxDailyCalls: ConsumerEserviceDetailsMaxDailyCalls;
@@ -403,6 +377,35 @@ export type ConsumerEserviceDetails = {
     producer: ConsumerEserviceDetailsProducer;
     requiredAttributes: Array<Array<ConsumerRequiredAttribute>>;
     state: EserviceVersionState;
+};
+
+/**
+ * E-service with only id and name
+ */
+export type CompactEservice = {
+    id: string;
+    name: LocalizedName;
+};
+
+/**
+ * Seed data to create a new agreement
+ */
+export type AgreementSeed = {
+    eserviceId: string;
+    eserviceVersionId: string;
+    knodeId: KnodeId;
+};
+
+export type ProducerAgreement = {
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    id: string;
+    state: AgreementState;
+};
+
+export type ProducerAgreements = {
+    items: Array<ProducerAgreement>;
+    pagination: Pagination;
 };
 
 export type SessionRequest = {
@@ -416,6 +419,25 @@ export type SessionResponse = {
 
 export type RefreshRequest = {
     refreshToken: string;
+};
+
+/**
+ * Name of the Keychain
+ */
+export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Description of the Keychain
+ */
+export type KeychainLocalizedDescription = {
+    en: string;
+};
+
+export type ConsumerKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
 };
 
 export type GetStatusData = {
@@ -698,6 +720,45 @@ export type CreateConsumerKeychainResponses = {
 
 export type CreateConsumerKeychainResponse = CreateConsumerKeychainResponses[keyof CreateConsumerKeychainResponses];
 
+export type DeleteConsumerKeychainData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type DeleteConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type DeleteConsumerKeychainError = DeleteConsumerKeychainErrors[keyof DeleteConsumerKeychainErrors];
+
+export type DeleteConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain deleted successfully
+     */
+    204: void;
+};
+
+export type DeleteConsumerKeychainResponse = DeleteConsumerKeychainResponses[keyof DeleteConsumerKeychainResponses];
+
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
     path?: never;
@@ -798,6 +859,14 @@ export type GetConsumerEserviceLatestVersionInterfaceErrors = {
      */
     400: Problem;
     /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
      * Not Found
      */
     404: Problem;
@@ -846,3 +915,45 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type GetProducerAgreementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producer/agreements';
+};
+
+export type GetProducerAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerAgreementsError = GetProducerAgreementsErrors[keyof GetProducerAgreementsErrors];
+
+export type GetProducerAgreementsResponses = {
+    /**
+     * Producer Agreements retrieved successfully
+     */
+    200: ProducerAgreements;
+};
+
+export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];

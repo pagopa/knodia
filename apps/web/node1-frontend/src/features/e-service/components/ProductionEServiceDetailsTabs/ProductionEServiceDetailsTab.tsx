@@ -2,7 +2,7 @@ import { bffApi } from "@knodia/bff-client";
 import { Banner, Divider } from "@knodia/ui-kit/ui";
 
 import { client } from "@/libs/axios";
-import { downloadFile } from "@/utils/downloadFile";
+import { downloadResponseAsFile } from "@/utils/downloadFile";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { AttributeGroupContainer } from "../AttributeGroupContainer";
@@ -89,11 +89,11 @@ function DocumentsSectionAdapter() {
       path: { eserviceId: id },
     });
 
-    const file = new File([response.data], interfaceDocument.prettyName.en, {
-      type: response.headers["content-type"],
-    });
-
-    downloadFile(file);
+    downloadResponseAsFile(
+      response.data,
+      interfaceDocument.prettyName.en,
+      response.headers["content-type"],
+    );
   }
 
   return (

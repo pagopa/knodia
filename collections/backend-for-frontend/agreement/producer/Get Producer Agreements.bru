@@ -1,0 +1,18 @@
+meta {
+  name: Get Producer Agreements
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producer/agreements?limit=50&offset=0
+  body: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

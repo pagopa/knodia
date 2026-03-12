@@ -31,7 +31,7 @@ import { Section } from "@/features/e-service/components/Section";
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { client } from "@/libs/axios";
-import { downloadFile } from "@/utils/downloadFile";
+import { downloadResponseAsFile } from "@/utils/downloadFile";
 
 const eserviceQuery = (eserviceId: string, knodeId: string) =>
   getConsumerEserviceDetailsOptions({
@@ -168,7 +168,6 @@ function RouteComponent() {
   const { knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
 
-  // TODO: add user-visible error feedback
   async function downloadInterfaceDocument() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
       client,
@@ -176,11 +175,11 @@ function RouteComponent() {
       query: { knodeId: knodeId as bffApi.KnodeId },
     });
 
-    const file = new File([response.data], eservice.interfaceDocument.name, {
-      type: response.headers["content-type"],
-    });
-
-    downloadFile(file);
+    downloadResponseAsFile(
+      response.data,
+      eservice.interfaceDocument.name,
+      response.headers["content-type"],
+    );
   }
 
   return (

@@ -61,7 +61,7 @@ export const getEserviceDetails = <ThrowOnError extends boolean = true>(options:
  * Download the interface document for the latest version of an E-service
  */
 export const downloadEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<DownloadEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<DownloadEserviceLatestVersionInterfaceResponses, DownloadEserviceLatestVersionInterfaceErrors, ThrowOnError>({
-    responseType: 'blob',
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/eservices/{eserviceId}/interface',
     ...options

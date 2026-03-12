@@ -126,13 +126,15 @@ export const eserviceRouter: FastifyPluginAsyncZod<
         "Download the interface document for the latest version of an E-service",
       operationId: "downloadEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
-      produces: ["application/octet-stream"],
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
       querystring: API_GetEserviceDetailsQueryParams,
       response: {
         200: API_FileDownload.meta({
           description: "E-service interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
       summary: "Download E-service latest version interface",

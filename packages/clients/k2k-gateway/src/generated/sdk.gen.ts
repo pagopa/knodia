@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -65,24 +65,13 @@ export const getEserviceLatestVersion = <ThrowOnError extends boolean = true>(op
 });
 
 /**
- * Get E-service latest Version Interface Document
- *
- * Retrieve the Interface Document of the latest Version of an E-service
- */
-export const getEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionInterfaceErrors, ThrowOnError>({
-    responseType: 'json',
-    url: '/eservices/{eserviceId}/versions/latest/interface',
-    ...options
-});
-
-/**
- * Download E-service latest Version Interface Document
+ * Download E-service latest version interface
  *
  * Download the Interface Document for the latest Version of an E-service
  */
 export const downloadEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<DownloadEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<DownloadEserviceLatestVersionInterfaceResponses, DownloadEserviceLatestVersionInterfaceErrors, ThrowOnError>({
-    responseType: 'blob',
-    url: '/eservices/{eserviceId}/versions/latest/interface/download',
+    responseType: 'json',
+    url: '/eservices/{eserviceId}/versions/latest/interface',
     ...options
 });
 
@@ -99,4 +88,24 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Retrieve an Agreement
+ */
+export const getAgreement = <ThrowOnError extends boolean = true>(options: Options<GetAgreementData, ThrowOnError>) => (options.client ?? client).get<GetAgreementResponses, GetAgreementErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/agreements/{agreementId}',
+    ...options
+});
+
+/**
+ * Get Organization
+ *
+ * Retrieve an Organization
+ */
+export const getOrganization = <ThrowOnError extends boolean = true>(options: Options<GetOrganizationData, ThrowOnError>) => (options.client ?? client).get<GetOrganizationResponses, GetOrganizationErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/organizations/{organizationId}',
+    ...options
 });

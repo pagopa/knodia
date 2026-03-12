@@ -1,4 +1,6 @@
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type { ConsumerKeychain } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -7,7 +9,7 @@ import {
 } from "@knodia/db-readmodel-commons/utils";
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-consumer-keychain";
 import { aggregateConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
-import { type ConsumerKeychain } from "@knodia/keychain-models";
+import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-consumer-keychain/services";
 import { eq } from "drizzle-orm";
 
 import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";
@@ -15,7 +17,15 @@ import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+  const consumerKeychainReadmodelService =
+    consumerKeychainReadmodelServiceBuilder(readmodelDb);
+
   return {
+    async getConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
+      return await consumerKeychainReadmodelService.getConsumerKeychainById(
+        consumerKeychainId,
+      );
+    },
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
     ): Promise<ListResult<ConsumerKeychain>> {

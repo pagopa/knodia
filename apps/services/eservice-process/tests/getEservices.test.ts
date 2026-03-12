@@ -1,4 +1,6 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { EserviceId } from "@knodia/common-models/ids";
 import type z from "zod";
 
 import { SortDirection } from "@knodia/db-readmodel-commons/models";
@@ -108,6 +110,23 @@ describe("GET /eservices (getEservices)", () => {
       },
       testCase: "filter by state",
       totalCount: 7,
+    },
+    {
+      expectedResult: [
+        mockEservices[0],
+        mockEservices[1],
+        mockEservices[2],
+      ] as Eservice[],
+      query: {
+        ...defaultQuery,
+        eserviceId: [
+          mockEservices[0]!.id,
+          mockEservices[1]!.id,
+          mockEservices[2]!.id,
+        ] as EserviceId[],
+      },
+      testCase: "filter by E-service ID",
+      totalCount: 3,
     },
     {
       expectedResult: [

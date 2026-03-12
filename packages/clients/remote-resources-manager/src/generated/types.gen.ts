@@ -139,9 +139,6 @@ export type EserviceDetailsLatestVersion = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
-    /**
-     * Unique identifier of the Version
-     */
     id: string;
     maxDailyCallsPerConsumer: number;
     maxDailyCallsPerKnode: number;
@@ -291,6 +288,14 @@ export type DownloadEserviceLatestVersionInterfaceErrors = {
      * Bad Request
      */
     400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
     /**
      * Not Found
      */
