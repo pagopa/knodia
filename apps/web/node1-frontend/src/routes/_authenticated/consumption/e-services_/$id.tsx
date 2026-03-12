@@ -224,6 +224,8 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
+      {/* TODO: if an agreement already exists for this eservice, hide ConsumptionRequirementsSection
+          and show "Your Org's consumption status" section instead */}
       <ConsumptionRequirementsSection
         eserviceId={eservice.id}
         identificationRequired={eservice.identificationRequired}
