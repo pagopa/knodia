@@ -22,8 +22,8 @@ export function toCatalogSearchResultUI(
     mode: result.mode,
     name: result.name.en,
     organization: {
-      initials: getOrganizationInitials(result.producer.name.en),
-      name: result.producer.name.en,
+      initials: getOrganizationInitials(result.producer.name),
+      name: result.producer.name,
     },
     state: result.latestVersionState,
   };

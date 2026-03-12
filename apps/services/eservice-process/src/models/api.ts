@@ -23,6 +23,9 @@ import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
+  eserviceId: arrayQueryParam(z.uuid()).optional().meta({
+    description: "Filter by E-service ID",
+  }),
   mode: API_EserviceMode.optional().meta({
     description: "Filter by E-service data mode",
   }),
