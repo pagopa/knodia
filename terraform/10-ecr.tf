@@ -1,25 +1,23 @@
 locals {
-  computed_be_repository_dir = "../apps/services/"
-  computed_be_repository_names = [
-    for d in distinct([
-      for f in fileset(path.root, "${local.computed_be_repository_dir}*/*") :
-      dirname(f)
-    ]) :
-    "knodia-be-${replace(d, local.computed_be_repository_dir, "")}"
-  ]
+  ecr_sources = {
+    be    = { dir = "../apps/services/", prefix = "knodia-be-", trim_suffix = "" }
+    web   = { dir = "../apps/web/", prefix = "knodia-web-", trim_suffix = "-frontend" }
+    infra = { dir = "../apps/infra/", prefix = "knodia-infra-", trim_suffix = "" }
+  }
 
-  computed_fe_repository_dir = "../apps/web/"
-  computed_fe_repository_names = [
-    for d in distinct([
-      for f in fileset(path.root, "${local.computed_fe_repository_dir}*/*") :
-      dirname(f)
-    ]) :
-    "knodia-web-${trimsuffix(replace(d, local.computed_fe_repository_dir, ""), "-frontend")}"
-  ]
+  computed_repository_names = flatten([
+    for key, src in local.ecr_sources : [
+      for d in distinct([
+        for f in fileset(path.root, "${src.dir}*/*") :
+        dirname(f)
+      ]) :
+      "${src.prefix}${trimsuffix(replace(d, src.dir, ""), src.trim_suffix)}"
+    ]
+  ])
 }
 
 resource "aws_ecr_repository" "app" {
-  for_each = toset(concat(local.computed_be_repository_names, local.computed_fe_repository_names))
+  for_each = toset(local.computed_repository_names)
 
   image_tag_mutability = contains(["test", "prod"], var.env) ? "IMMUTABLE" : "MUTABLE"
   name                 = each.key
