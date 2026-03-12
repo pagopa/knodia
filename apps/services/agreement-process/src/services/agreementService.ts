@@ -97,7 +97,7 @@ export function agreementServiceBuilder(
     },
     async getAgreement(
       agreementId: AgreementId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Agreement> {
       logger.info(`Getting Agreement with ID ${agreementId}`);
 
