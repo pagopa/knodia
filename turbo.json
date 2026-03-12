@@ -10,7 +10,15 @@
       "dependsOn": ["generate-protobuf", "^generate-api-client", "^typecheck"]
     },
     "generate-api-client": {
-      "dependsOn": ["^generate-openapi"],
+      "dependsOn": [
+        "@knodia/agreement-process#generate-openapi",
+        "@knodia/backend-for-frontend#generate-openapi",
+        "@knodia/eservice-process#generate-openapi",
+        "@knodia/k2k-gateway#generate-openapi",
+        "@knodia/keychain-process#generate-openapi",
+        "@knodia/organization-process#generate-openapi",
+        "@knodia/remote-resources-manager#generate-openapi"
+      ],
       "outputs": ["src/generated/**"]
     },
     "generate-openapi": {

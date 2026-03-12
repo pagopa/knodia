@@ -25,16 +25,7 @@
     },
     "packages/clients/**/*": {
       "entry": ["src/generated/**/*.ts"],
-      "ignore": ["src/generated/**/*.ts"],
-      "ignoreDependencies": [
-        "@knodia/agreement-process",
-        "@knodia/backend-for-frontend",
-        "@knodia/eservice-process",
-        "@knodia/k2k-gateway",
-        "@knodia/keychain-process",
-        "@knodia/organization-process",
-        "@knodia/remote-resources-manager"
-      ]
+      "ignore": ["src/generated/**/*.ts"]
     },
     "packages/models/*-models": {
       "entry": ["src/generated/**/*.ts"],

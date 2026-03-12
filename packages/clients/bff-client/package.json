@@ -13,7 +13,6 @@
     "./tanstack-query": "./src/tanstack-query.ts"
   },
   "devDependencies": {
-    "@knodia/backend-for-frontend": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",

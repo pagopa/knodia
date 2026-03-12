@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
-    "@knodia/organization-process": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
     "typescript": "catalog:"

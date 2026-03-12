@@ -12,7 +12,6 @@
     ".": "./src/index.ts"
   },
   "devDependencies": {
-    "@knodia/eservice-process": "workspace:*",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "eslint": "catalog:",
