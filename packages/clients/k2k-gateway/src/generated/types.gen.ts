@@ -40,6 +40,11 @@ export type Pagination = {
 };
 
 /**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
  * Unique identifier of the Organization
  */
 export type OrganizationId = string;
@@ -50,6 +55,11 @@ export type OrganizationId = string;
 export type CreatedResource = {
     id: string;
 };
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'ORION' | 'LYNX';
 
 /**
  * Identifies an Attribute standardized within Knodia
@@ -264,12 +274,59 @@ export type EserviceVersion = {
 };
 
 /**
+ * Unique identifier of the Agreement
+ */
+export type AgreementId = string;
+
+/**
+ * Consumer Organization of the Agreement
+ */
+export type AgreementConsumer = {
+    id: OrganizationId;
+    knodeId: KnodeId;
+};
+
+/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
     consumerId: OrganizationId;
     eserviceId: EserviceId;
     eserviceVersionId: EserviceVersionId;
+};
+
+/**
+ * Describes the states an Agreement can be in
+ */
+export type AgreementState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+
+/**
+ * Agreement between a Consumer and a Producer for an E-service
+ */
+export type Agreement = {
+    /**
+     * Describes the Attributes of the E-service that the Consumer possesses when the Agreement is activated (must satisfy at least one Attribute for each Required Attribute Group defined by the E-service)
+     */
+    attributes: Array<Attribute>;
+    consumer: AgreementConsumer;
+    eserviceId: EserviceId;
+    eserviceVersionId: EserviceVersionId;
+    id: AgreementId;
+    producerId: OrganizationId;
+    state: AgreementState;
+    updatedAt: string;
+};
+
+export type Organization = {
+    /**
+     * Attributes associated with the Organization
+     */
+    attributes: Array<Attribute>;
+    id: OrganizationId;
+    /**
+     * Human-readable name of the Organization
+     */
+    name: string;
 };
 
 export type GetStatusData = {
@@ -384,6 +441,37 @@ export type GetEserviceLatestVersionResponses = {
 
 export type GetEserviceLatestVersionResponse = GetEserviceLatestVersionResponses[keyof GetEserviceLatestVersionResponses];
 
+export type DownloadEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: EserviceId;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/versions/latest/interface';
+};
+
+export type DownloadEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type DownloadEserviceLatestVersionInterfaceError = DownloadEserviceLatestVersionInterfaceErrors[keyof DownloadEserviceLatestVersionInterfaceErrors];
+
+export type DownloadEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service Interface Document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
+
 export type CreateAgreementData = {
     body: AgreementSeed;
     path?: never;
@@ -416,3 +504,65 @@ export type CreateAgreementResponses = {
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
+
+export type GetAgreementData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}';
+};
+
+export type GetAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetAgreementError = GetAgreementErrors[keyof GetAgreementErrors];
+
+export type GetAgreementResponses = {
+    /**
+     * Agreement retrieved successfully
+     */
+    200: Agreement;
+};
+
+export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: OrganizationId;
+    };
+    query?: never;
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];

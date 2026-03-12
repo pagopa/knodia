@@ -20,8 +20,14 @@ import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
-import { retrieveEservice } from "../utils/readmodelUtils.ts";
-import { assertEserviceVersionIsActive } from "../utils/validators.ts";
+import {
+  retrieveAgreement,
+  retrieveEservice,
+} from "../utils/readmodelUtils.ts";
+import {
+  assertEserviceVersionIsActive,
+  assertNoConflictingAgreementsExist,
+} from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -51,6 +57,13 @@ export function agreementServiceBuilder(
         `Creating Agreement ${agreementId}`,
       );
 
+      await assertNoConflictingAgreementsExist({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
+
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await assertEserviceVersionIsActive(
         eservice,
@@ -79,6 +92,16 @@ export function agreementServiceBuilder(
       await eventStoreWriter.insertEvent(
         createAgreementActivatedV1Event(agreement, correlationId),
       );
+
+      return agreement;
+    },
+    async getAgreement(
+      agreementId: AgreementId,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<Agreement> {
+      logger.info(`Getting Agreement with ID ${agreementId}`);
+
+      const agreement = await retrieveAgreement(agreementId, readmodelService);
 
       return agreement;
     },

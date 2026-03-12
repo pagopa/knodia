@@ -20,11 +20,9 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
-import {
-  API_KeychainLocalizedDescription,
-  API_KeychainLocalizedName,
-} from "@knodia/keychain-models/api";
 import { z } from "zod";
+
+import { API_CompactOrganization } from "../organization/api.ts";
 
 const API_InterfaceDocumentSeed = z
   .strictObject({
@@ -110,14 +108,6 @@ export const API_EserviceSeed = z
   })
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
-
-export const API_ConsumerKeychainSeed = z
-  .strictObject({
-    description: API_KeychainLocalizedDescription.optional(),
-    name: API_KeychainLocalizedName,
-  })
-  .meta({ id: "ConsumerKeychainSeed" });
-export type API_ConsumerKeychainSeed = z.infer<typeof API_ConsumerKeychainSeed>;
 
 export const API_ProducerEservice = z
   .strictObject({
@@ -288,8 +278,6 @@ export type API_ProducerEserviceDetails = z.infer<
   typeof API_ProducerEserviceDetails
 >;
 
-export const API_FileDownload = z.string().meta({ format: "binary" });
-
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
   category: API_EserviceCategory,
   keywords: z.string().min(1),
@@ -315,16 +303,6 @@ export const API_GetConsumerCatalogEserviceSearchParams = z
 export type API_GetConsumerCatalogEserviceSearchParams = z.infer<
   typeof API_GetConsumerCatalogEserviceSearchParams
 >;
-
-const API_CompactOrganization = z
-  .strictObject({
-    id: z.uuid(),
-    name: API_LocalizedName,
-  })
-  .meta({
-    description: "Organization with only id and name",
-    id: "CompactOrganization",
-  });
 
 const API_ConsumerCatalogEserviceSearchResult = z
   .strictObject({
@@ -422,3 +400,13 @@ export const API_ConsumerEserviceDetails = z
 export type API_ConsumerEserviceDetails = z.infer<
   typeof API_ConsumerEserviceDetails
 >;
+
+export const API_CompactEservice = z
+  .strictObject({
+    id: z.uuid(),
+    name: API_LocalizedName,
+  })
+  .meta({
+    description: "E-service with only id and name",
+    id: "CompactEservice",
+  });

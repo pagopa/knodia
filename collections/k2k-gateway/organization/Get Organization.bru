@@ -1,0 +1,14 @@
+meta {
+  name: Get Organization
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/organizations/:organizationId
+  body: none
+  auth: none
+}
+
+params:path {
+  organizationId: {{organizationId}}
+}

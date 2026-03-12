@@ -17,6 +17,7 @@
     "./fastify": "./src/utils/fastify.ts",
     "./generateOpenapi": "./src/utils/generateOpenapi.ts",
     "./health": "./src/routers/healthRouter.ts",
+    "./http": "./src/utils/http.ts",
     "./models": "./src/models/index.ts",
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
     "./security": "./src/utils/openapi-zod-plugin/security.ts",

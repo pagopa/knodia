@@ -10,6 +10,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
+        AGREEMENT_PROCESS_URL: z.url(),
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
         COOKIE_DOMAIN: z.string().optional(),
@@ -34,6 +35,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           .default(3600),
       })
       .transform((c) => ({
+        agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
         cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
         cookie: {

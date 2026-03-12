@@ -1,4 +1,10 @@
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  EserviceVersionId,
+  KnodeId,
+  OrganizationId,
+} from "@knodia/common-models/ids";
 import type { EserviceVersionState } from "@knodia/eservice-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -7,17 +13,47 @@ import { constants } from "http2";
 
 const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 
+/* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   ESERVICE_NOT_FOUND: "0001",
   ESERVICE_VERSION_NOT_FOUND: "0002",
   ESERVICE_VERSION_NOT_IN_EXPECTED_STATE: "0003",
+  AGREEMENT_ALREADY_EXISTS: "0004",
+  AGREEMENT_NOT_FOUND: "0005",
 } as const;
+/* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "agreement-process",
 });
+
+export function agreementAlreadyExists({
+  consumerId,
+  consumerKnodeId,
+  eserviceId,
+}: {
+  consumerId: OrganizationId;
+  consumerKnodeId: KnodeId;
+  eserviceId: EserviceId;
+}) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_ALREADY_EXISTS",
+    detail: `Agreement already exists for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Agreement already exists",
+  });
+}
+
+export function agreementNotFound(id: AgreementId) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_FOUND",
+    detail: `Agreement with id ${id} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Agreement Not Found",
+  });
+}
 
 export function eserviceNotFound(id: EserviceId) {
   return createApiError<ErrorCodes>({

@@ -17,6 +17,7 @@ import type { BffProcessConfig } from "./config/config.ts";
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { agreementProducerRouter } from "./routers/agreement/agreementProducerRouter.ts";
 import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
@@ -26,6 +27,7 @@ import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   const clients = getKnodiaClients({
+    agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
     keychainProcessUrl: config.keychainProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
@@ -56,8 +58,12 @@ export function buildAppFromConfig(config: BffProcessConfig) {
             name: apiTags.eservice,
           },
           {
-            description: "Consumer keychains routes",
+            description: "Consumer Keychains routes",
             name: apiTags.consumerKeychain,
+          },
+          {
+            description: "Agreement routes",
+            name: apiTags.agreement,
           },
         ],
       },
@@ -94,7 +100,12 @@ export function buildAppFromConfig(config: BffProcessConfig) {
       keychainProcessClient: clients.keychainProcessClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
+      config,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(agreementProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
+      eserviceProcessClient: clients.eserviceProcessClient,
     });
   });
 
