@@ -2,6 +2,7 @@ import type { Organization } from "@knodia/organization-models";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
 import {
   agreementProcessApi,
   type AgreementProcessClient,
@@ -16,9 +17,14 @@ import {
   API_Problem,
   genericError,
 } from "@knodia/fastify-zod-api-commons/models";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
 
 import {
   API_GetProducerAgreementsQueryParams,
+  API_ProducerAgreement,
   API_ProducerAgreements,
 } from "../../models/agreement/api.ts";
 import { toAPI_ProducerAgreement } from "../../models/agreement/apiConverter.ts";
@@ -30,13 +36,19 @@ interface AgreementProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
   eserviceProcessClient: EserviceProcessClient;
   knodeId: KnodeId;
+  organizationProcessClient: OrganizationProcessClient;
 }
 
 export const agreementProducerRouter: FastifyPluginAsyncZod<
   AgreementProducerRouterOptions
 > = async (
   fastify,
-  { agreementProcessClient, eserviceProcessClient, knodeId },
+  {
+    agreementProcessClient,
+    eserviceProcessClient,
+    knodeId,
+    organizationProcessClient,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -148,17 +160,20 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         path: { eserviceId: agreement.eserviceId },
       });
 
-      // TODO: fetch this with organization-process
-      const producer = getOrganization(unsafeBrandId(agreement.producerId));
-      if (!producer) {
-        throw genericInternalError("Producer organization not found");
-      }
+      const { data: producer } = await organizationProcessApi.getOrganization({
+        client: organizationProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { organizationId: agreement.producerId },
+      });
 
-      // TODO: should this use the remote-resources-manager to fetch the consumer organization from agreement.consumer.knodeId?
-      const consumer = getOrganization(unsafeBrandId(agreement.consumer.id));
-      if (!consumer) {
-        throw genericInternalError("Consumer organization not found");
-      }
+      // TODO: fetch this with RRM
+      const consumer: Organization = {
+        attributes: [],
+        createdAt: new Date(),
+        id: unsafeBrandId(agreement.consumer.id),
+        name: "Consumer Organization Name",
+        updatedAt: new Date(),
+      };
 
       res.status(200).send(
         toAPI_ProducerAgreement({
