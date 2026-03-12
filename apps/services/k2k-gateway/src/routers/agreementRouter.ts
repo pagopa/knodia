@@ -134,7 +134,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
           consumerKnodeId: callerKnodeId,
           limit: req.query.limit,
           offset: req.query.offset,
-          state: state ? toProcessAPI_AgreementState(state) : undefined,
+          state: state ? [toProcessAPI_AgreementState(state)] : undefined,
         },
       });
 

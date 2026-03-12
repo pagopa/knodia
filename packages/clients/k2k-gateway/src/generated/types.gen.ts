@@ -317,6 +317,11 @@ export type Agreement = {
     updatedAt: string;
 };
 
+export type Agreements = {
+    pagination: Pagination;
+    results: Array<Agreement>;
+};
+
 export type Organization = {
     /**
      * Attributes associated with the Organization
@@ -471,6 +476,56 @@ export type DownloadEserviceLatestVersionInterfaceResponses = {
 };
 
 export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
+
+export type GetAgreementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: string;
+        /**
+         * Filter by Agreement State
+         */
+        state?: AgreementState;
+    };
+    url: '/agreements';
+};
+
+export type GetAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
+
+export type GetAgreementsResponses = {
+    /**
+     * Agreements retrieved successfully
+     */
+    200: Agreements;
+};
+
+export type GetAgreementsResponse = GetAgreementsResponses[keyof GetAgreementsResponses];
 
 export type CreateAgreementData = {
     body: AgreementSeed;
