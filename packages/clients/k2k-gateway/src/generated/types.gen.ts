@@ -50,13 +50,6 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
-/**
  * Unique Knode identifier
  */
 export type KnodeId = 'ORION' | 'LYNX';
@@ -317,6 +310,14 @@ export type Agreement = {
     updatedAt: string;
 };
 
+/**
+ * Unique identifier of the created Agreement resource along with the E-service Producer ID
+ */
+export type CreatedAgreementResource = {
+    id: string;
+    producerId: OrganizationId;
+};
+
 export type Organization = {
     /**
      * Attributes associated with the Organization
@@ -500,7 +501,7 @@ export type CreateAgreementResponses = {
     /**
      * Agreement created successfully
      */
-    201: CreatedResource;
+    201: CreatedAgreementResource;
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];

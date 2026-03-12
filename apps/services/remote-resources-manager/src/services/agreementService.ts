@@ -1,4 +1,3 @@
-import type { API_CreatedResource } from "@knodia/common-models/api";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -8,21 +7,24 @@ import {
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 
-import type { API_AgreementSeed } from "../models/agreement/api.ts";
+import type {
+  API_AgreementSeed,
+  API_CreatedAgreementResource,
+} from "../models/agreement/api.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
 export function agreementServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: will be used to persist remote agreements
-  _remoteResourceDbService: RemoteResourceDbService,
+
+  remoteResourceDbService: RemoteResourceDbService,
 ) {
   return {
     async createAgreement(
       reqBody: API_AgreementSeed,
       { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<API_CreatedResource> {
-      const { knodeId, ...bodyWithoutKnodeId } = reqBody;
+    ): Promise<API_CreatedAgreementResource> {
+      const { consumerId, eserviceId, eserviceVersionId, knodeId } = reqBody;
 
       logger.info(
         { requestBody: reqBody },
@@ -32,11 +34,22 @@ export function agreementServiceBuilder(
       // TODO: add assertOrganizationExists(consumerId) to check if the seed consumerId exists before calling the K2K Gateway API
 
       const { data } = await k2kGatewayApi.createAgreement({
-        body: bodyWithoutKnodeId,
+        body: {
+          consumerId,
+          eserviceId,
+          eserviceVersionId,
+        },
         client: k2kGatewayClient,
       });
 
-      // TODO: save the remote agreement in the remote resources database
+      await remoteResourceDbService.insertAgreement({
+        agreementId: data.id,
+        consumerId,
+        eserviceId,
+        eserviceVersionId,
+        knodeId,
+        producerId: data.producerId,
+      });
 
       return data;
     },
