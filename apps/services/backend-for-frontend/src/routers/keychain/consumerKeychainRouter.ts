@@ -11,17 +11,17 @@ import {
 } from "@knodia/keychain-process-client";
 import { z } from "zod";
 
+import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_KeychainDetails,
   API_Keychains,
-} from "../../models/api.ts";
+} from "../../models/keychain/api.ts";
 import {
   toAPI_Keychain,
   toAPI_KeychainDetails,
-} from "../../models/apiConverter.ts";
-import { apiTags } from "../../models/apiTags.ts";
+} from "../../models/keychain/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface ConsumerKeychainRouterOptions {

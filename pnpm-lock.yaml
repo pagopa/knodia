@@ -460,6 +460,12 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
+      '@knodia/agreement-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/agreement-process-client
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
@@ -487,6 +493,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/organization-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/organization-models
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
@@ -721,6 +730,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/organization-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/organization-process-client
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator
@@ -1315,6 +1327,28 @@ importers:
         version: 5.9.3
 
   packages/clients/keychain-process-client:
+    dependencies:
+      '@knodia/openapi-client-generator':
+        specifier: workspace:*
+        version: link:../../openapi-client-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  packages/clients/organization-process-client:
     dependencies:
       '@knodia/openapi-client-generator':
         specifier: workspace:*

@@ -1,0 +1,13 @@
+meta {
+  name: Get Agreement
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/agreements/:agreementId
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}

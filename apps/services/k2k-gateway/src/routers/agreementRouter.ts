@@ -11,8 +11,15 @@ import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
-import { API_AgreementSeed } from "../models/agreement/api.ts";
-import { toProcessAPI_AgreementSeed } from "../models/agreement/apiConverter.ts";
+import {
+  API_Agreement,
+  API_AgreementIdPathParam,
+  API_AgreementSeed,
+} from "../models/agreement/api.ts";
+import {
+  toAPI_Agreement,
+  toProcessAPI_AgreementSeed,
+} from "../models/agreement/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
@@ -66,5 +73,39 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Getting Agreement with ID ${req.params.agreementId}`);
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await agreementProcessApi.getAgreement({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      res.send(toAPI_Agreement(data));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an Agreement",
+      operationId: "getAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId",
   });
 };
