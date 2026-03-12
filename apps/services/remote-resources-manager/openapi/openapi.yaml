@@ -99,17 +99,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -137,6 +126,21 @@ components:
         - eserviceId
         - eserviceVersionId
         - knodeId
+      additionalProperties: false
+    CreatedAgreementResource:
+      description: Unique identifier of the created Agreement resource along with the
+        E-service Producer ID
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producerId:
+          $ref: "#/components/schemas/OrganizationId"
+      required:
+        - id
+        - producerId
       additionalProperties: false
     Attribute:
       type: object
@@ -576,7 +580,7 @@ paths:
               schema:
                 description: Agreement created successfully
                 allOf:
-                  - $ref: "#/components/schemas/CreatedResource"
+                  - $ref: "#/components/schemas/CreatedAgreementResource"
         "400":
           description: Bad Request
           content:
