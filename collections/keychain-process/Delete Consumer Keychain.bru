@@ -1,0 +1,19 @@
+meta {
+  name: Delete Consumer Keychain
+  type: http
+}
+
+delete {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId
+  body: none
+  auth: none
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { createConsumerKeychain, createEservice, createSession, getConsumerCatalogEservices, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, type Options, refreshSession } from '../sdk.gen.ts';
-import type { CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse } from '../types.gen.ts';
+import { createConsumerKeychain, createEservice, createSession, deleteConsumerKeychain, getConsumerCatalogEservices, getConsumerEserviceDetails, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, type Options, refreshSession } from '../sdk.gen.ts';
+import type { CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -204,8 +204,6 @@ export const getProducerEserviceDetailsOptions = (options: Options<GetProducerEs
 export const getProducerEserviceLatestVersionInterfaceQueryKey = (options: Options<GetProducerEserviceLatestVersionInterfaceData>) => createQueryKey('getProducerEserviceLatestVersionInterface', options);
 
 /**
- * Download producer E-service latest version interface
- *
  * Download the interface document for the latest version of an E-service
  */
 export const getProducerEserviceLatestVersionInterfaceOptions = (options: Options<GetProducerEserviceLatestVersionInterfaceData>) => queryOptions<GetProducerEserviceLatestVersionInterfaceResponse, AxiosError<GetProducerEserviceLatestVersionInterfaceError>, GetProducerEserviceLatestVersionInterfaceResponse, ReturnType<typeof getProducerEserviceLatestVersionInterfaceQueryKey>>({
@@ -228,6 +226,23 @@ export const createConsumerKeychainMutation = (options?: Partial<Options<CreateC
     const mutationOptions: UseMutationOptions<CreateConsumerKeychainResponse, AxiosError<CreateConsumerKeychainError>, Options<CreateConsumerKeychainData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await createConsumerKeychain({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Delete a Consumer Keychain
+ */
+export const deleteConsumerKeychainMutation = (options?: Partial<Options<DeleteConsumerKeychainData>>): UseMutationOptions<DeleteConsumerKeychainResponse, AxiosError<DeleteConsumerKeychainError>, Options<DeleteConsumerKeychainData>> => {
+    const mutationOptions: UseMutationOptions<DeleteConsumerKeychainResponse, AxiosError<DeleteConsumerKeychainError>, Options<DeleteConsumerKeychainData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await deleteConsumerKeychain({
                 ...options,
                 ...fnOptions,
                 throwOnError: true
@@ -275,24 +290,4 @@ export const getConsumerEserviceDetailsOptions = (options: Options<GetConsumerEs
         return data;
     },
     queryKey: getConsumerEserviceDetailsQueryKey(options)
-});
-
-export const getConsumerEserviceLatestVersionInterfaceQueryKey = (options: Options<GetConsumerEserviceLatestVersionInterfaceData>) => createQueryKey('getConsumerEserviceLatestVersionInterface', options);
-
-/**
- * Download consumer E-service latest version interface
- *
- * Download the interface document for the latest version of an E-service
- */
-export const getConsumerEserviceLatestVersionInterfaceOptions = (options: Options<GetConsumerEserviceLatestVersionInterfaceData>) => queryOptions<GetConsumerEserviceLatestVersionInterfaceResponse, AxiosError<GetConsumerEserviceLatestVersionInterfaceError>, GetConsumerEserviceLatestVersionInterfaceResponse, ReturnType<typeof getConsumerEserviceLatestVersionInterfaceQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getConsumerEserviceLatestVersionInterface({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerEserviceLatestVersionInterfaceQueryKey(options)
 });
