@@ -74,6 +74,33 @@ services:
       flyway-orion:
         condition: service_completed_successfully
 
+  readmodel-seed:
+    security_opt:
+      - no-new-privileges:true
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
+    container_name: knodia-multinode-readmodel-seed
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
+    volumes:
+      - ./readmodel-seed:/seed:ro
+    environment:
+      PGHOST: postgres
+      PGUSER: root
+      PGPASSWORD: root
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        for pair in "orion_readmodel:local_orion" "lynx_readmodel:local_lynx"; do
+          db=$${pair%%:*}
+          ns=$${pair##*:}
+          for f in /seed/*.sql; do
+            sed "s/\$${NAMESPACE}/$$ns/g" "$$f" | psql -d "$$db"
+          done
+        done
+        echo 'Read-model seeded'
+
   # ============================================================
   # Kafka
   # ============================================================

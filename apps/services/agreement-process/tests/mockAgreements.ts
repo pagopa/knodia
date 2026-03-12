@@ -2,11 +2,8 @@
 import type { Eservice } from "@knodia/eservice-models";
 
 import { Agreement } from "@knodia/agreement-models";
-import {
-  generateId,
-  KnodeId,
-  type OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId, type OrganizationId } from "@knodia/common-models/ids";
 import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 
@@ -32,7 +29,7 @@ const eservice2: Eservice = {
 };
 const eserviceVersion2 = eservice2.versions[0]!;
 
-export const consumerId = generateId<OrganizationId>();
+export const consumerId = generateExternalId<OrganizationId>();
 export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(0),
@@ -97,7 +94,7 @@ export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(5),
     consumer: {
-      id: generateId(),
+      id: generateExternalId(),
       knodeId: KnodeId.parse("Lynx"),
     },
     eserviceId: eservice2.id,
@@ -109,7 +106,7 @@ export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(6),
     consumer: {
-      id: generateId(),
+      id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,
@@ -121,7 +118,7 @@ export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(7),
     consumer: {
-      id: generateId(),
+      id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,
@@ -133,7 +130,7 @@ export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(8),
     consumer: {
-      id: generateId(),
+      id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,
@@ -145,7 +142,7 @@ export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(9),
     consumer: {
-      id: generateId(),
+      id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),
     },
     eserviceId: eservice2.id,

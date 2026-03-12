@@ -2,7 +2,8 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_FileDownload } from "@knodia/common-models/api";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -70,7 +71,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const detail = await eserviceService.getEserviceDetails(
         {
-          id: unsafeBrandId(req.params.eserviceId),
+          id: unsafeBrandExternalId(req.params.eserviceId),
           knodeId: KnodeId.parse(req.query.knodeId),
         },
         ctx,
@@ -108,7 +109,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const { buffer, contentType, fileName } =
         await eserviceService.downloadEserviceLatestVersionInterface(
           {
-            id: unsafeBrandId(req.params.eserviceId),
+            id: unsafeBrandExternalId(req.params.eserviceId),
             knodeId: KnodeId.parse(req.query.knodeId),
           },
           ctx,

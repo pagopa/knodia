@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { OrganizationId, UserId } from "../brandedIds.ts";
+import { OrganizationId, UserId } from "../ids/brandedIds.ts";
 import { NonEmptyArray } from "../types.ts";
 import { UserRole } from "./roles.ts";
 
