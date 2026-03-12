@@ -60,12 +60,12 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       const eserviceIds = new Set(
         data.items.map((agreement) => agreement.eserviceId),
       );
-      // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
       const eservices = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
           eserviceId: Array.from(eserviceIds),
+          // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
           limit: eserviceIds.size,
           offset: 0,
         },
