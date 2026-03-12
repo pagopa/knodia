@@ -1,14 +1,13 @@
 import { config } from "@/config/config";
 
 /*
- * The UI session token lives in localStorage so it persists across tabs.
- * It is sent as Authorization: Bearer on every API call — moving it to an
- * HttpOnly cookie would require proxying all protected routes through the BFF.
- * XSS can still read it; its TTL should be configured to be short (minutes)
- * to limit the exposure window.
- * The refresh token (24h) is the higher-value target and is stored in an
- * HttpOnly cookie, which the browser sends automatically but JavaScript
- * cannot access via document.cookie or any other API.
+ * The UI session token (short-lived, minutes) is stored in localStorage and
+ * sent as an explicit Authorization: Bearer header.
+ *
+ * The refresh token (long-lived, days) needs stronger protection — if stolen,
+ * it can mint new session tokens until it expires. It is stored in an HttpOnly
+ * cookie, invisible to JavaScript, and only sent to the BFF's /auth endpoints
+ * (Path=/auth, SameSite=Strict).
  */
 const AUTH_TOKEN_KEY = "knodia_auth_token";
 
