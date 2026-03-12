@@ -1,0 +1,9 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "generate-api-client": {
+      "dependsOn": ["@knodia/backend-for-frontend#generate-openapi"]
+    }
+  }
+}
