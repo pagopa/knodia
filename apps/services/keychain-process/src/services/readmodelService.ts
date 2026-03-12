@@ -1,6 +1,6 @@
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
-import type { ConsumerKeychain } from "@knodia/keychain-models";
+import type { FlatConsumerKeychain } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -8,7 +8,7 @@ import {
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-consumer-keychain";
-import { aggregateConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
+import { aggregateFlatConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
 import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-consumer-keychain/services";
 import { eq } from "drizzle-orm";
 
@@ -28,7 +28,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     },
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
-    ): Promise<ListResult<ConsumerKeychain>> {
+    ): Promise<ListResult<FlatConsumerKeychain>> {
       const { limit, offset } = params;
 
       return await readmodelDb.transaction(async (tx) => {
@@ -64,7 +64,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const keychains = aggregateConsumerKeychains(queryRes);
+        const keychains = aggregateFlatConsumerKeychains(queryRes);
 
         return {
           results: keychains.map((e) => e.data),
