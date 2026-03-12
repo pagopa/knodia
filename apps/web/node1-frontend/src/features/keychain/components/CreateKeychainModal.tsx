@@ -1,3 +1,6 @@
+import type { bffApi } from "@knodia/bff-client";
+
+import { createConsumerKeychainMutation } from "@knodia/bff-client/tanstack-query";
 import {
   Modal,
   Select,
@@ -6,10 +9,15 @@ import {
   TextField,
 } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { match } from "ts-pattern";
 
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
+import { client } from "@/libs/axios";
 
 import {
+  createKeychainFormDefaultValues,
   createKeychainFormSchema,
   type CreateKeychainFormValues,
   keychainTypeOptions,
@@ -18,22 +26,41 @@ import {
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onCreate?: (value: CreateKeychainFormValues) => Promise<void> | void;
 }
 
-export function CreateKeychainModal({ isOpen, onClose, onCreate }: Props) {
-  const defaultValues: CreateKeychainFormValues = {
-    description: undefined,
-    name: "",
-    type: "consumer",
-  };
+export function CreateKeychainModal({ isOpen, onClose }: Props) {
+  const navigate = useNavigate();
+
+  const { isPending, mutate: createConsumerKeychain } = useMutation({
+    ...createConsumerKeychainMutation({
+      client,
+    }),
+    onSuccess: ({ id }) => {
+      navigate({ params: { id }, to: "/keychains/consumption/$id" });
+    },
+  });
+
+  function handleCreateKeychain(seed: CreateKeychainFormValues) {
+    const body: bffApi.ConsumerKeychainSeed = {
+      description: seed.description ? { en: seed.description } : undefined,
+      name: { en: seed.name },
+    };
+
+    match(seed.type)
+      .with("consumer", () => createConsumerKeychain({ body }))
+      .with("producer", () => {
+        throw new Error("Producer keychains are not supported yet.");
+      })
+      .with("api", () => {
+        throw new Error("API keychains are not supported yet.");
+      })
+      .exhaustive();
+  }
 
   const form = useForm({
-    defaultValues,
+    defaultValues: createKeychainFormDefaultValues,
     onSubmit: async ({ value }) => {
-      await onCreate?.(value);
-      form.reset();
-      onClose();
+      handleCreateKeychain(value);
     },
     validationLogic: revalidateLogic(),
     validators: {
@@ -45,6 +72,7 @@ export function CreateKeychainModal({ isOpen, onClose, onCreate }: Props) {
     <Modal
       actionLabel="Create"
       cancelLabel="Cancel"
+      confirmButtonProps={{ isPending }}
       isOpen={isOpen}
       kind="default"
       onConfirm={() => void form.handleSubmit()}
@@ -109,7 +137,7 @@ export function CreateKeychainModal({ isOpen, onClose, onCreate }: Props) {
               onChange={(key) =>
                 field.handleChange(
                   keychainTypeOptions.find((option) => option.id === key)?.id ??
-                    defaultValues.type,
+                    createKeychainFormDefaultValues.type,
                 )
               }
               value={field.state.value}

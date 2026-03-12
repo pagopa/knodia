@@ -1,9 +1,4 @@
-import type { bffApi } from "@knodia/bff-client";
-
-import {
-  createConsumerKeychainMutation,
-  getConsumerKeychainsOptions,
-} from "@knodia/bff-client/tanstack-query";
+import { getConsumerKeychainsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Button,
   Pagination,
@@ -13,12 +8,9 @@ import {
   TabPanels,
   Tabs,
 } from "@knodia/ui-kit/ui";
-import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useState } from "react";
-import { match } from "ts-pattern";
-
-import type { CreateKeychainFormValues } from "@/features/keychain/models/create-keychain-form";
 
 import { PageHeader } from "@/components/PageHeader";
 import { CreateKeychainModal } from "@/features/keychain/components/CreateKeychainModal";
@@ -62,34 +54,8 @@ function RouteComponent() {
     placeholderData: keepPreviousData,
   });
 
-  const { mutate: createConsumerKeychain } = useMutation({
-    ...createConsumerKeychainMutation({
-      client,
-    }),
-    onSuccess: ({ id }) => {
-      navigate({ params: { id }, to: "/keychains/consumption/$id" });
-    },
-  });
-
   function handleSearchChange(values: Partial<typeof search>) {
     navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
-  }
-
-  function handleCreateKeychain(seed: CreateKeychainFormValues) {
-    const body: bffApi.ConsumerKeychainSeed = {
-      description: seed.description ? { en: seed.description } : undefined,
-      name: { en: seed.name },
-    };
-
-    match(seed.type)
-      .with("consumer", () => createConsumerKeychain({ body }))
-      .with("producer", () => {
-        throw new Error("Producer keychains are not supported yet.");
-      })
-      .with("api", () => {
-        throw new Error("API keychains are not supported yet.");
-      })
-      .exhaustive();
   }
 
   return (
@@ -150,7 +116,6 @@ function RouteComponent() {
       <CreateKeychainModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onCreate={handleCreateKeychain}
       />
     </>
   );

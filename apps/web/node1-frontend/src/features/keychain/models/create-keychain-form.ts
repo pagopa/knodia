@@ -20,4 +20,10 @@ export const createKeychainFormSchema = z.object({
   type: keychainType,
 });
 
+export const createKeychainFormDefaultValues: CreateKeychainFormValues = {
+  description: undefined,
+  name: "",
+  type: "consumer",
+};
+
 export type CreateKeychainFormValues = z.infer<typeof createKeychainFormSchema>;
