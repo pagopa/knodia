@@ -451,6 +451,24 @@ components:
         - eserviceId
         - eserviceVersionId
       additionalProperties: false
+    Organization:
+      type: object
+      properties:
+        attributes:
+          description: Attributes associated with the Organization
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        id:
+          $ref: "#/components/schemas/OrganizationId"
+        name:
+          description: Human-readable name of the Organization
+          type: string
+      required:
+        - attributes
+        - id
+        - name
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -646,6 +664,45 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /organizations/{organizationId}:
+    get:
+      operationId: getOrganization
+      summary: Get Organization
+      tags:
+        - resource
+        - organization
+      description: Retrieve an Organization
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/OrganizationId"
+          in: path
+          name: organizationId
+          required: true
+      responses:
+        "200":
+          description: Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Organization retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Organization"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Organization not found
+          content:
+            application/problem+json:
+              schema:
+                description: Organization not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Knode to Knode API
     url: /
@@ -660,3 +717,5 @@ tags:
     name: agreement
   - description: Routes related to E-services
     name: eservice
+  - description: Routes related to Organizations
+    name: organization
