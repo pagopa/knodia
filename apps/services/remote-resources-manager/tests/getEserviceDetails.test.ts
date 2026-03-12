@@ -23,6 +23,7 @@ const allowedTestTokens: TestToken[] = [
 
 const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
+const getOrganizationMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -34,6 +35,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
       ...original.k2kGatewayApi,
       getEservice: getEserviceMock,
       getEserviceLatestVersion: getEserviceLatestVersionMock,
+      getOrganization: getOrganizationMock,
     },
   };
 });
@@ -85,15 +87,22 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const expectedApiDetail = zocker(API_EserviceDetails).generate();
   const k2kEservice = toK2KEservice(expectedApiDetail);
   const k2kVersion = toK2KEserviceVersion(expectedApiDetail);
+  const k2kOrganization: k2kGatewayApi.Organization = {
+    attributes: [],
+    id: k2kEservice.producerId,
+    name: expectedApiDetail.producer.name.en,
+  };
 
   beforeEach(() => {
     getEserviceMock.mockReset();
     getEserviceLatestVersionMock.mockReset();
+    getOrganizationMock.mockReset();
   });
 
   it("should return 200 with converted detail on success", async () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get(`/eservices/${eserviceId}`)
@@ -113,14 +122,19 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
         path: expectedPath,
       }),
     );
+    expect(getOrganizationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: { organizationId: k2kEservice.producerId },
+      }),
+    );
 
     expect(response.json()).toEqual({
       ...expectedApiDetail,
       producer: {
         email: "info@example.com",
-        id: expectedApiDetail.producer.id,
+        id: k2kOrganization.id,
         knodeName: "Knode",
-        name: { en: "Producer name" },
+        name: { en: k2kOrganization.name },
         notes: "Notes",
       },
     });
