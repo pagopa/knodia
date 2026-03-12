@@ -8,11 +8,13 @@
     "lint:autofix": "eslint . --fix"
   },
   "exports": {
-    ".": "./src/organizations.ts"
+    ".": "./src/organizations.ts",
+    "./api": "./src/api.ts"
   },
   "dependencies": {
     "@knodia/attribute-models": "workspace:*",
-    "@knodia/common-models": "workspace:*"
+    "@knodia/common-models": "workspace:*",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",

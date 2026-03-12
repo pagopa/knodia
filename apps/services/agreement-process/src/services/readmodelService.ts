@@ -1,5 +1,9 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  EserviceVersionId,
+} from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -7,6 +11,7 @@ import {
   readmodelAgreementAttribute,
 } from "@knodia/db-readmodel-agreement";
 import { aggregateAgreements } from "@knodia/db-readmodel-agreement/converters";
+import { agreementReadmodelServiceBuilder } from "@knodia/db-readmodel-agreement/services";
 import {
   type ListResult,
   type WithMetadata,
@@ -15,23 +20,34 @@ import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
-import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { type Eservice } from "@knodia/eservice-models";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+  const agreementReadmodelService =
+    agreementReadmodelServiceBuilder(readmodelDb);
   const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
   return {
+    async getAgreement(agreementId: AgreementId) {
+      return await agreementReadmodelService.getAgreementById(agreementId);
+    },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
     ): Promise<ListResult<Agreement>> {
-      const { consumerId, consumerKnodeId, limit, offset, state } =
-        requestQuery;
+      const {
+        consumerId,
+        consumerKnodeId,
+        eserviceId,
+        limit,
+        offset,
+        producerId,
+        state,
+      } = requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -46,19 +62,23 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               agreementId: readmodelAgreement.id,
             })
             .from(readmodelAgreement)
-            .innerJoin(
-              readmodelEservice,
-              eq(readmodelAgreement.eserviceId, readmodelEservice.id),
-            )
             .where(
               and(
+                producerId
+                  ? eq(readmodelAgreement.producerId, producerId)
+                  : undefined,
+                eserviceId
+                  ? eq(readmodelAgreement.eserviceId, eserviceId)
+                  : undefined,
                 consumerId
                   ? eq(readmodelAgreement.consumerId, consumerId)
                   : undefined,
                 consumerKnodeId
                   ? eq(readmodelAgreement.consumerKnodeId, consumerKnodeId)
                   : undefined,
-                state ? eq(readmodelAgreement.state, state) : undefined,
+                state && state.length > 0
+                  ? inArray(readmodelAgreement.state, state)
+                  : undefined,
               ),
             )
             .$dynamic();
@@ -86,10 +106,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 readmodelAgreement.id,
                 readmodelAgreementAttribute.agreementId,
               ),
-            )
-            .innerJoin(
-              readmodelEservice,
-              eq(readmodelAgreement.eserviceId, readmodelEservice.id),
             )
             .orderBy(...orderByFilters),
           getTableTotalCount(tx, createFilterQuery()),

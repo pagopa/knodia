@@ -12,6 +12,8 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import {
+  API_Agreement,
+  API_AgreementIdPathParam,
   API_Agreements,
   API_AgreementSeed,
   API_GetAgreementsQueryParams,
@@ -80,6 +82,40 @@ export const agreementRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
+      logger.info(`Getting Agreement with ID ${req.params.agreementId}`);
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await agreementProcessApi.getAgreement({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      res.send(toAPI_Agreement(data));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve an Agreement",
+      operationId: "getAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
       logger.info(
         { requestQuery: req.query },
         "Getting Agreements with query params",
@@ -98,7 +134,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
           consumerKnodeId: callerKnodeId,
           limit: req.query.limit,
           offset: req.query.offset,
-          state: state ? toProcessAPI_AgreementState(state) : undefined,
+          state: state ? [toProcessAPI_AgreementState(state)] : undefined,
         },
       });
 
@@ -117,8 +153,6 @@ export const agreementRouter: FastifyPluginAsyncZod<
           description: "Agreements retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
       },
       tags: [apiTags.agreement],
     },

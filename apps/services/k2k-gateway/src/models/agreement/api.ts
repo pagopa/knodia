@@ -5,19 +5,14 @@ import {
 } from "@knodia/common-models/api";
 import { z } from "zod";
 
+import { API_KnodeId } from "../api.ts";
 import { API_Attribute } from "../attribute/api.ts";
 import { API_EserviceId, API_EserviceVersionId } from "../eservice/api.ts";
 
 const API_AgreementId = z.uuid().meta({
-  description: "Unique identifier for the Agreement",
+  description: "Unique identifier of the Agreement",
   id: "AgreementId",
 });
-
-export const API_KnodeId = z.enum(["ORION", "LYNX"]).meta({
-  description: "Unique Knode identifier",
-  id: "KnodeId",
-});
-export type API_KnodeId = z.infer<typeof API_KnodeId>;
 
 export const API_AgreementConsumer = z
   .strictObject({
@@ -51,10 +46,9 @@ export const API_AgreementState = z
 export type API_AgreementState = z.infer<typeof API_AgreementState>;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
+  consumerId: API_OrganizationId.optional().meta({
+    description: "Filter by Consumer ID",
+  }),
   state: API_AgreementState.optional().meta({
     description: "Filter by Agreement State",
   }),
@@ -62,6 +56,10 @@ export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
 export type API_GetAgreementsQueryParams = z.infer<
   typeof API_GetAgreementsQueryParams
 >;
+
+export const API_AgreementIdPathParam = z.strictObject({
+  agreementId: API_AgreementId,
+});
 
 export const API_Agreement = z
   .strictObject({

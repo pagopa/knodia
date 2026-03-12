@@ -1,4 +1,5 @@
 import type { API_CreatedResource } from "@knodia/common-models/api";
+import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
@@ -22,6 +23,8 @@ export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
 export function agreementServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: will be used to persist remote agreements
+  _remoteResourceDbService: RemoteResourceDbService,
 ) {
   return {
     async createAgreement(

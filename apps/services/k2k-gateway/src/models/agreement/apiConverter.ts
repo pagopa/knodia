@@ -3,12 +3,12 @@ import type { KnodeId } from "@knodia/common-models/ids";
 
 import { match } from "ts-pattern";
 
+import type { API_KnodeId } from "../api.ts";
 import type {
   API_Agreement,
   API_AgreementConsumer,
   API_AgreementSeed,
   API_AgreementState,
-  API_KnodeId,
 } from "./api.ts";
 
 export function toAPI_Agreement(
@@ -39,7 +39,6 @@ export function toProcessAPI_AgreementSeed(
     eserviceVersionId: agreementSeed.eserviceVersionId,
   };
 }
-
 export function toProcessAPI_AgreementState(
   state: API_AgreementState,
 ): agreementProcessApi.AgreementState {
@@ -49,6 +48,7 @@ export function toProcessAPI_AgreementState(
     .with("ARCHIVED", () => "Archived" as const)
     .exhaustive();
 }
+
 function toAPI_AgreementConsumer(
   consumer: agreementProcessApi.AgreementConsumer,
 ): API_AgreementConsumer {

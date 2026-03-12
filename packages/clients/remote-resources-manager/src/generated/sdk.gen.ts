@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -56,12 +56,14 @@ export const getEserviceDetails = <ThrowOnError extends boolean = true>(options:
 });
 
 /**
- * Retrieve a list of Agreements
+ * Download E-service latest version interface
+ *
+ * Download the interface document for the latest version of an E-service
  */
-export const getAgreements = <ThrowOnError extends boolean = true>(options: Options<GetAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetAgreementsResponses, GetAgreementsErrors, ThrowOnError>({
+export const downloadEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<DownloadEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<DownloadEserviceLatestVersionInterfaceResponses, DownloadEserviceLatestVersionInterfaceErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/agreements',
+    url: '/eservices/{eserviceId}/interface',
     ...options
 });
 

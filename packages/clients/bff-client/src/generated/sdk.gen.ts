@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses } from './types.gen.ts';
+import type { CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -88,12 +88,37 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
+ * Download producer E-service latest version interface
+ *
  * Download the interface document for the latest version of an E-service
  */
 export const getProducerEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetProducerEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEserviceLatestVersionInterfaceErrors, ThrowOnError>({
-    responseType: 'blob',
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/producer/eservices/{eserviceId}/interface',
+    ...options
+});
+
+/**
+ * Create a new Consumer Keychain
+ */
+export const createConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateConsumerKeychainResponses, CreateConsumerKeychainErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete a Consumer Keychain
+ */
+export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteConsumerKeychainResponses, DeleteConsumerKeychainErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains/{consumerKeychainId}',
     ...options
 });
 
@@ -122,5 +147,27 @@ export const getConsumerEserviceDetails = <ThrowOnError extends boolean = true>(
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumer/eservices/{eserviceId}',
+    ...options
+});
+
+/**
+ * Download consumer E-service latest version interface
+ *
+ * Download the interface document for the latest version of an E-service
+ */
+export const getConsumerEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetConsumerEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEserviceLatestVersionInterfaceErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumer/eservices/{eserviceId}/interface',
+    ...options
+});
+
+/**
+ * Retrieve a paginated list of Agreements produced by the logged-in user's organization
+ */
+export const getProducerAgreements = <ThrowOnError extends boolean = true>(options: Options<GetProducerAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetProducerAgreementsResponses, GetProducerAgreementsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/producer/agreements',
     ...options
 });
