@@ -218,8 +218,17 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {
-      const { limit, mode, offset, producerId, q, sortBy, sortOrder, state } =
-        params;
+      const {
+        eserviceId,
+        limit,
+        mode,
+        offset,
+        producerId,
+        q,
+        sortBy,
+        sortOrder,
+        state,
+      } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -246,6 +255,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               and(
                 producerId
                   ? eq(readmodelEservice.producerId, producerId)
+                  : undefined,
+                eserviceId && eserviceId.length > 0
+                  ? inArray(readmodelEservice.id, eserviceId)
                   : undefined,
                 mode ? eq(readmodelEservice.mode, mode) : undefined,
                 state && state.length > 0

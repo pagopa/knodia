@@ -131,6 +131,10 @@ export type GetAgreementsData = {
          */
         eserviceId?: string;
         /**
+         * Filter by Producer Organization ID
+         */
+        producerId?: OrganizationId;
+        /**
          * Filter by Agreement State
          */
         state?: Array<AgreementState>;

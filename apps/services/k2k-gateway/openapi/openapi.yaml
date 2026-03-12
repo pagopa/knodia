@@ -103,12 +103,6 @@ components:
       required:
         - id
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - ORION
-        - LYNX
     Attribute:
       description: Identifies an Attribute standardized within Knodia
       type: object
@@ -442,23 +436,6 @@ components:
         - updatedAt
         - versionNumber
       additionalProperties: false
-    AgreementId:
-      description: Unique identifier of the Agreement
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    AgreementConsumer:
-      description: Consumer Organization of the Agreement
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/OrganizationId"
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - id
-        - knodeId
-      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -474,50 +451,23 @@ components:
         - eserviceId
         - eserviceVersionId
       additionalProperties: false
-    AgreementState:
-      description: Describes the states an Agreement can be in
-      type: string
-      enum:
-        - ACTIVE
-        - SUSPENDED
-        - ARCHIVED
-    Agreement:
-      description: Agreement between a Consumer and a Producer for an E-service
+    Organization:
       type: object
       properties:
         attributes:
-          description: Describes the Attributes of the E-service that the Consumer
-            possesses when the Agreement is activated (must satisfy at least one
-            Attribute for each Required Attribute Group defined by the
-            E-service)
+          description: Attributes associated with the Organization
           type: array
           items:
             $ref: "#/components/schemas/Attribute"
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          $ref: "#/components/schemas/EserviceId"
-        eserviceVersionId:
-          $ref: "#/components/schemas/EserviceVersionId"
         id:
-          $ref: "#/components/schemas/AgreementId"
-        producerId:
           $ref: "#/components/schemas/OrganizationId"
-        state:
-          $ref: "#/components/schemas/AgreementState"
-        updatedAt:
+        name:
+          description: Human-readable name of the Organization
           type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
       required:
         - attributes
-        - consumer
-        - eserviceId
-        - eserviceVersionId
         - id
-        - producerId
-        - state
-        - updatedAt
+        - name
       additionalProperties: false
 paths:
   /status:
@@ -714,28 +664,29 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}:
+  /organizations/{organizationId}:
     get:
-      operationId: getAgreement
+      operationId: getOrganization
+      summary: Get Organization
       tags:
         - resource
-        - agreement
-      description: Retrieve an Agreement
+        - organization
+      description: Retrieve an Organization
       parameters:
         - schema:
-            $ref: "#/components/schemas/AgreementId"
+            $ref: "#/components/schemas/OrganizationId"
           in: path
-          name: agreementId
+          name: organizationId
           required: true
       responses:
         "200":
-          description: Agreement retrieved successfully
+          description: Organization retrieved successfully
           content:
             application/json:
               schema:
-                description: Agreement retrieved successfully
+                description: Organization retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Agreement"
+                  - $ref: "#/components/schemas/Organization"
         "400":
           description: Bad Request
           content:
@@ -745,11 +696,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Not Found
+          description: Organization not found
           content:
             application/problem+json:
               schema:
-                description: Not Found
+                description: Organization not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
@@ -766,3 +717,5 @@ tags:
     name: agreement
   - description: Routes related to E-services
     name: eservice
+  - description: Routes related to Organizations
+    name: organization

@@ -12,7 +12,12 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { createConsumerKeychainCreatedV1Event } from "../models/keychainEventFactory.ts";
+import {
+  createConsumerKeychainCreatedV1Event,
+  createConsumerKeychainDeletedV1Event,
+} from "../models/keychainEventFactory.ts";
+import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
+import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
   typeof consumerKeychainServiceBuilder
@@ -54,6 +59,30 @@ export function consumerKeychainServiceBuilder(
       );
 
       return consumerKeychain;
+    },
+    async deleteConsumerKeychain(
+      consumerKeychainId: ConsumerKeychainId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<void> {
+      logger.info(`Deleting Consumer Keychain ${consumerKeychainId}`);
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      await eventStoreWriter.insertEvent(
+        createConsumerKeychainDeletedV1Event(
+          consumerKeychain.data,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
     },
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,

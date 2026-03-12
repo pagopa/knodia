@@ -52,11 +52,6 @@ export type CreatedResource = {
 };
 
 /**
- * Unique Knode identifier
- */
-export type KnodeId = 'ORION' | 'LYNX';
-
-/**
  * Identifies an Attribute standardized within Knodia
  */
 export type Attribute = {
@@ -269,19 +264,6 @@ export type EserviceVersion = {
 };
 
 /**
- * Unique identifier of the Agreement
- */
-export type AgreementId = string;
-
-/**
- * Consumer Organization of the Agreement
- */
-export type AgreementConsumer = {
-    id: OrganizationId;
-    knodeId: KnodeId;
-};
-
-/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -290,26 +272,16 @@ export type AgreementSeed = {
     eserviceVersionId: EserviceVersionId;
 };
 
-/**
- * Describes the states an Agreement can be in
- */
-export type AgreementState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
-
-/**
- * Agreement between a Consumer and a Producer for an E-service
- */
-export type Agreement = {
+export type Organization = {
     /**
-     * Describes the Attributes of the E-service that the Consumer possesses when the Agreement is activated (must satisfy at least one Attribute for each Required Attribute Group defined by the E-service)
+     * Attributes associated with the Organization
      */
     attributes: Array<Attribute>;
-    consumer: AgreementConsumer;
-    eserviceId: EserviceId;
-    eserviceVersionId: EserviceVersionId;
-    id: AgreementId;
-    producerId: OrganizationId;
-    state: AgreementState;
-    updatedAt: string;
+    id: OrganizationId;
+    /**
+     * Human-readable name of the Organization
+     */
+    name: string;
 };
 
 export type GetStatusData = {
@@ -457,33 +429,33 @@ export type CreateAgreementResponses = {
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
 
-export type GetAgreementData = {
+export type GetOrganizationData = {
     body?: never;
     path: {
-        agreementId: AgreementId;
+        organizationId: OrganizationId;
     };
     query?: never;
-    url: '/agreements/{agreementId}';
+    url: '/organizations/{organizationId}';
 };
 
-export type GetAgreementErrors = {
+export type GetOrganizationErrors = {
     /**
      * Bad Request
      */
     400: Problem;
     /**
-     * Not Found
+     * Organization not found
      */
     404: Problem;
 };
 
-export type GetAgreementError = GetAgreementErrors[keyof GetAgreementErrors];
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
 
-export type GetAgreementResponses = {
+export type GetOrganizationResponses = {
     /**
-     * Agreement retrieved successfully
+     * Organization retrieved successfully
      */
-    200: Agreement;
+    200: Organization;
 };
 
-export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
