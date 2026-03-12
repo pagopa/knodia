@@ -32,7 +32,7 @@ const getOrganization = (
   token: TestToken = allowedTestTokens[0]!,
 ) => injectAppRequest(token).get(`/organizations/${organizationId}`);
 
-describe("GET /organizations/:organizationId (getOrganizationById)", () => {
+describe("GET /organizations/:organizationId (getOrganization)", () => {
   beforeAll(async () => {
     await organizationWriterService.upsertOrganization(mockOrganization, 0);
   });

@@ -35,7 +35,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const { data } = await organizationProcessApi.getOrganizationById({
+      const { data } = await organizationProcessApi.getOrganization({
         client: organizationProcessClient,
         headers,
         path: { organizationId: req.params.organizationId },

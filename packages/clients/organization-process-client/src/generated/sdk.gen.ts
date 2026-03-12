@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { GetOrganizationByIdData, GetOrganizationByIdErrors, GetOrganizationByIdResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -40,7 +40,7 @@ export const getOrganizations = <ThrowOnError extends boolean = true>(options: O
 /**
  * Retrieve an Organization by its ID
  */
-export const getOrganizationById = <ThrowOnError extends boolean = true>(options: Options<GetOrganizationByIdData, ThrowOnError>) => (options.client ?? client).get<GetOrganizationByIdResponses, GetOrganizationByIdErrors, ThrowOnError>({
+export const getOrganization = <ThrowOnError extends boolean = true>(options: Options<GetOrganizationData, ThrowOnError>) => (options.client ?? client).get<GetOrganizationResponses, GetOrganizationErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/organizations/{organizationId}',

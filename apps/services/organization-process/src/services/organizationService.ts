@@ -16,7 +16,7 @@ export type OrganizationService = ReturnType<typeof organizationServiceBuilder>;
 
 export function organizationServiceBuilder(readmodelService: ReadmodelService) {
   return {
-    async getOrganizationById(
+    async getOrganization(
       organizationId: OrganizationId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Organization> {

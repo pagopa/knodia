@@ -66,7 +66,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const organization = await organizationService.getOrganizationById(
+      const organization = await organizationService.getOrganization(
         req.params.organizationId,
         ctx,
       );
@@ -77,7 +77,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Retrieve an Organization by its ID",
       headers: KnodiaServiceHeaders,
-      operationId: "getOrganizationById",
+      operationId: "getOrganization",
       params: API_OrganizationIdPathParam,
       response: {
         200: API_Organization.meta({

@@ -229,7 +229,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /organizations/{organizationId}:
     get:
-      operationId: getOrganizationById
+      operationId: getOrganization
       tags:
         - organization
       description: Retrieve an Organization by its ID

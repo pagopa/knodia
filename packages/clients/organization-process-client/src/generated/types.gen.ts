@@ -121,7 +121,7 @@ export type GetOrganizationsResponses = {
 
 export type GetOrganizationsResponse = GetOrganizationsResponses[keyof GetOrganizationsResponses];
 
-export type GetOrganizationByIdData = {
+export type GetOrganizationData = {
     body?: never;
     headers: {
         /**
@@ -136,7 +136,7 @@ export type GetOrganizationByIdData = {
     url: '/organizations/{organizationId}';
 };
 
-export type GetOrganizationByIdErrors = {
+export type GetOrganizationErrors = {
     /**
      * Bad Request
      */
@@ -155,13 +155,13 @@ export type GetOrganizationByIdErrors = {
     404: Problem;
 };
 
-export type GetOrganizationByIdError = GetOrganizationByIdErrors[keyof GetOrganizationByIdErrors];
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
 
-export type GetOrganizationByIdResponses = {
+export type GetOrganizationResponses = {
     /**
      * Organization retrieved successfully
      */
     200: Organization;
 };
 
-export type GetOrganizationByIdResponse = GetOrganizationByIdResponses[keyof GetOrganizationByIdResponses];
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
