@@ -1,0 +1,23 @@
+import z from "zod";
+
+import { keychainType, type KeychainType } from "./commons";
+
+export const keychainTypeOptions = [
+  { id: "consumer", label: "Consumer" },
+  { id: "producer", label: "Producer" },
+  { id: "api", label: "API" },
+] as const satisfies readonly { id: KeychainType; label: string }[];
+
+export const createKeychainFormSchema = z.object({
+  description: z
+    .string()
+    .max(250, "Description must be at most 250 characters.")
+    .optional(),
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(60, "Name must be at most 60 characters."),
+  type: keychainType,
+});
+
+export type CreateKeychainFormValues = z.infer<typeof createKeychainFormSchema>;
