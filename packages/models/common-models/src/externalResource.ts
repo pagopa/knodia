@@ -1,6 +1,7 @@
 import z from "zod";
 
-import { type IDS, KnodeId } from "./brandedIds.ts";
+import { type IDS } from "./ids/brandedIds.ts";
+import { KnodeId } from "./ids/ids.ts";
 
 export const ExternalId = <T extends IDS>() =>
   z

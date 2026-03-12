@@ -11,9 +11,6 @@ export type IDS =
   | PurposeId
   | UserId;
 
-export const KnodeId = z.enum(["Orion", "Lynx"]);
-export type KnodeId = z.infer<typeof KnodeId>;
-
 export const CorrelationId = z.uuid().brand<"CorrelationId">();
 export type CorrelationId = z.infer<typeof CorrelationId>;
 
