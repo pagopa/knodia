@@ -1323,6 +1323,9 @@ importers:
         specifier: 'catalog:'
         version: 1.13.5
     devDependencies:
+      '@knodia/agreement-process':
+        specifier: workspace:*
+        version: link:../../../apps/services/agreement-process
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -1348,6 +1351,9 @@ importers:
         specifier: 'catalog:'
         version: 1.13.5
     devDependencies:
+      '@knodia/backend-for-frontend':
+        specifier: workspace:*
+        version: link:../../../apps/services/backend-for-frontend
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -1370,6 +1376,9 @@ importers:
         specifier: 'catalog:'
         version: 1.13.5
     devDependencies:
+      '@knodia/eservice-process':
+        specifier: workspace:*
+        version: link:../../../apps/services/eservice-process
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -1395,6 +1404,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
+      '@knodia/k2k-gateway':
+        specifier: workspace:*
+        version: link:../../../apps/services/k2k-gateway
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
@@ -1417,6 +1429,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
+      '@knodia/keychain-process':
+        specifier: workspace:*
+        version: link:../../../apps/services/keychain-process
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
@@ -1439,6 +1454,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
+      '@knodia/organization-process':
+        specifier: workspace:*
+        version: link:../../../apps/services/organization-process
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
@@ -1461,6 +1479,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
+      '@knodia/remote-resources-manager':
+        specifier: workspace:*
+        version: link:../../../apps/services/remote-resources-manager
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
