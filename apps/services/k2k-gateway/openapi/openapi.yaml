@@ -87,6 +87,10 @@ components:
         - offset
         - total
       additionalProperties: false
+    FileDownload:
+      description: Binary file content
+      format: binary
+      type: string
     OrganizationId:
       description: Unique identifier of the Organization
       type: string
@@ -683,6 +687,48 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/versions/latest/interface:
+    get:
+      operationId: downloadEserviceLatestVersionInterface
+      summary: Download E-service latest version interface
+      tags:
+        - resource
+        - eservice
+      description: Download the Interface Document for the latest Version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service Interface Document downloaded successfully
+          content:
+            application/json: &a1
+              schema:
+                description: E-service Interface Document downloaded successfully
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
+            application/x-yaml: *a1
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /agreements:

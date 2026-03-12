@@ -106,6 +106,10 @@ components:
         - offset
         - total
       additionalProperties: false
+    FileDownload:
+      description: Binary file content
+      format: binary
+      type: string
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -1168,6 +1172,7 @@ paths:
   /producer/eservices/{eserviceId}/interface:
     get:
       operationId: getProducerEserviceLatestVersionInterface
+      summary: Download producer E-service latest version interface
       tags:
         - eservice
       description: Download the interface document for the latest version of an E-service
@@ -1183,11 +1188,14 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/octet-stream:
+            application/json: &a1
               schema:
-                format: binary
                 description: E-service interface document downloaded successfully
-                type: string
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
+            application/x-yaml: *a1
         "400":
           description: Bad Request
           content:
@@ -1440,6 +1448,70 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/eservices/{eserviceId}/interface:
+    get:
+      operationId: getConsumerEserviceLatestVersionInterface
+      summary: Download consumer E-service latest version interface
+      tags:
+        - eservice
+      description: Download the interface document for the latest version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service interface document downloaded successfully
+          content:
+            application/json: &a2
+              schema:
+                description: E-service interface document downloaded successfully
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a2
+            application/x-yaml: *a2
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/agreements:
