@@ -1,12 +1,9 @@
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
-import type { keychainProcessApi } from "@knodia/keychain-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
   API_ConsumerCatalogEserviceSearchResult,
   API_ConsumerEserviceDetails,
-  API_Keychain,
-  API_KeychainDetails,
   API_ProducerEservice,
   API_ProducerEserviceDetails,
 } from "./api.ts";
@@ -127,24 +124,4 @@ export const toAPI_ConsumerCatalogEserviceSearchResult = (
     id: catalogEserviceSearchResult.producerId,
     name: producerName,
   },
-});
-
-export const toAPI_KeychainDetails = (
-  keychain: keychainProcessApi.Keychain,
-): API_KeychainDetails => ({
-  createdAt: keychain.createdAt,
-  description: keychain.description,
-  id: keychain.id,
-  name: keychain.name,
-  updatedAt: keychain.updatedAt,
-});
-
-export const toAPI_Keychain = (
-  keychain: keychainProcessApi.Keychain,
-  counters: { keysCount: number; membersCount: number },
-): API_Keychain => ({
-  id: keychain.id,
-  keysCount: counters.keysCount,
-  membersCount: counters.membersCount,
-  name: keychain.name,
 });
