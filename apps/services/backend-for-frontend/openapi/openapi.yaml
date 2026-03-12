@@ -819,6 +819,35 @@ components:
         - items
         - pagination
       additionalProperties: false
+    ConsumerAgreements:
+      type: object
+      properties:
+        counters:
+          type: object
+          properties:
+            activeAgreements:
+              description: Number of active agreements
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            archivedAgreements:
+              description: Number of archived agreements
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            suspendedAgreements:
+              description: Number of suspended agreements
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+          required:
+            - activeAgreements
+            - archivedAgreements
+            - suspendedAgreements
+          additionalProperties: false
+      required:
+        - counters
+      additionalProperties: false
     SessionRequest:
       type: object
       properties:
@@ -1548,6 +1577,45 @@ paths:
                 description: Producer Agreements retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/agreements:
+    get:
+      operationId: getConsumerAgreements
+      tags:
+        - agreement
+      description: Retrieve a list of Consumer Agreements
+      responses:
+        "200":
+          description: Consumer Agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Agreements retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerAgreements"
         "400":
           description: Bad Request
           content:
