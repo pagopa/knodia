@@ -1,0 +1,18 @@
+meta {
+  name: Get Organization
+  type: http
+}
+
+get {
+  url: {{host-organization-process}}/organizations/:organizationId
+  body: none
+}
+
+params:path {
+  organizationId: {{organizationId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

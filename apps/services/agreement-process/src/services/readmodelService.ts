@@ -29,8 +29,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
     ): Promise<ListResult<Agreement>> {
-      const { consumerId, consumerKnodeId, eserviceId, limit, offset, state } =
-        requestQuery;
+      const {
+        consumerId,
+        consumerKnodeId,
+        eserviceId,
+        limit,
+        offset,
+        producerId,
+        state,
+      } = requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -47,6 +54,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .from(readmodelAgreement)
             .where(
               and(
+                producerId
+                  ? eq(readmodelAgreement.producerId, producerId)
+                  : undefined,
                 eserviceId
                   ? eq(readmodelAgreement.eserviceId, eserviceId)
                   : undefined,

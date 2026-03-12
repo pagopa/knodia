@@ -24,6 +24,8 @@
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:",
     "@fastify/request-context": "catalog:",
+    "@knodia/agreement-models": "workspace:*",
+    "@knodia/agreement-process-client": "workspace:*",
     "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/eservice-models": "workspace:*",
@@ -33,6 +35,7 @@
     "@knodia/keychain-models": "workspace:*",
     "@knodia/keychain-process-client": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/organization-models": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "fastify": "catalog:",
