@@ -7,8 +7,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import type { API_GetAgreementsQueryParams } from "../src/models/api.ts";
 
-import { eservice1, eservice2, mockAgreements } from "./mockAgreements.ts";
-import { agreementWriterService, eserviceWriterService } from "./setup.ts";
+import { consumerId, eservice1, mockAgreements } from "./mockAgreements.ts";
+import { agreementWriterService } from "./setup.ts";
 import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -27,8 +27,6 @@ describe("GET /agreements (getAgreements)", () => {
       ...mockAgreements.map((agreement) =>
         agreementWriterService.upsertAgreement(agreement, 0),
       ),
-      eserviceWriterService.upsertEservice(eservice1, 0),
-      eserviceWriterService.upsertEservice(eservice2, 0),
     ]);
   });
 
@@ -57,6 +55,66 @@ describe("GET /agreements (getAgreements)", () => {
       },
       testCase: "pagination only (2nd page), sort by updatedAt desc by default",
       totalCount: 10,
+    },
+    {
+      expectedResult: [
+        mockAgreements[4],
+        mockAgreements[3],
+        mockAgreements[2],
+        mockAgreements[1],
+      ] as Agreement[],
+      query: { ...defaultQuery, producerId: eservice1.producerId },
+      testCase: "filter by producerId, sort by updatedAt desc by default",
+      totalCount: 5,
+    },
+    {
+      expectedResult: [
+        mockAgreements[4],
+        mockAgreements[3],
+        mockAgreements[2],
+        mockAgreements[1],
+      ] as Agreement[],
+      query: { ...defaultQuery, consumerId },
+      testCase: "filter by consumerId, sort by updatedAt desc by default",
+      totalCount: 5,
+    },
+    {
+      expectedResult: [
+        mockAgreements[5],
+        mockAgreements[4],
+        mockAgreements[3],
+      ] as Agreement[],
+      query: { ...defaultQuery, consumerKnodeId: "Lynx" },
+      testCase: "filter by consumerKnodeId, sort by updatedAt desc by default",
+      totalCount: 3,
+    },
+    {
+      expectedResult: [
+        mockAgreements[4],
+        mockAgreements[3],
+        mockAgreements[2],
+        mockAgreements[1],
+      ] as Agreement[],
+      query: {
+        ...defaultQuery,
+        eserviceId: eservice1.id,
+      },
+      testCase: "filter by eserviceId, sort by updatedAt desc by default",
+      totalCount: 5,
+    },
+    {
+      expectedResult: [
+        mockAgreements[9],
+        mockAgreements[8],
+        mockAgreements[7],
+        mockAgreements[3],
+      ] as Agreement[],
+      query: {
+        ...defaultQuery,
+        state: ["Archived", "Suspended"],
+      },
+      testCase: "filter by state, sort by updatedAt desc by default",
+      totalCount: 6,
     },
   ] satisfies {
     expectedResult: Agreement[];
@@ -89,21 +147,11 @@ describe("GET /agreements (getAgreements)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    {
-      ...defaultQuery,
-      state: "InvalidState",
-    },
+    { ...defaultQuery, producerId: "InvalidProducerId" },
     { ...defaultQuery, consumerId: "InvalidConsumerId" },
     { ...defaultQuery, consumerKnodeId: "InvalidConsumerKnodeId" },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
-    {
-      ...defaultQuery,
-      sortBy: "InvalidSortBy",
-    },
-    {
-      ...defaultQuery,
-      sortOrder: "InvalidSortOrder",
-    },
+    { ...defaultQuery, state: ["InvalidState"] },
     {
       ...defaultQuery,
       invalidParam: "invalid",

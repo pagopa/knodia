@@ -2,6 +2,7 @@
 import type {
   EserviceId,
   EserviceInterfaceId,
+  OrganizationId,
 } from "@knodia/common-models/ids";
 import type {
   ListResult,
@@ -28,6 +29,7 @@ import {
   toEserviceVersionInterface,
 } from "@knodia/db-readmodel-eservice/converters";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
+import { organizationReadmodelServiceBuilder } from "@knodia/db-readmodel-organization/services";
 import {
   type Eservice,
   EserviceInterface,
@@ -45,6 +47,8 @@ export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
+  const organizationReadmodelService =
+    organizationReadmodelServiceBuilder(readmodelDb);
 
   const latestVersionSubquery = (
     tx: NodePgDatabase,
@@ -214,8 +218,17 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getEservices(
       params: API_GetEservicesQueryParams,
     ): Promise<ListResult<Eservice>> {
-      const { limit, mode, offset, producerId, q, sortBy, sortOrder, state } =
-        params;
+      const {
+        eserviceId,
+        limit,
+        mode,
+        offset,
+        producerId,
+        q,
+        sortBy,
+        sortOrder,
+        state,
+      } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -242,6 +255,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               and(
                 producerId
                   ? eq(readmodelEservice.producerId, producerId)
+                  : undefined,
+                eserviceId && eserviceId.length > 0
+                  ? inArray(readmodelEservice.id, eserviceId)
                   : undefined,
                 mode ? eq(readmodelEservice.mode, mode) : undefined,
                 state && state.length > 0
@@ -304,6 +320,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     ): Promise<EserviceInterface | undefined> {
       return await eserviceReadmodelService.getEserviceVersionInterfaceById(
         interfaceId,
+      );
+    },
+    async getOrganizationById(organizationId: OrganizationId) {
+      return await organizationReadmodelService.getOrganizationById(
+        organizationId,
       );
     },
   };

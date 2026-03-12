@@ -312,6 +312,18 @@ export type Agreement = {
     updatedAt: string;
 };
 
+export type Organization = {
+    /**
+     * Attributes associated with the Organization
+     */
+    attributes: Array<Attribute>;
+    id: OrganizationId;
+    /**
+     * Human-readable name of the Organization
+     */
+    name: string;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -487,3 +499,34 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: OrganizationId;
+    };
+    query?: never;
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];

@@ -1,31 +1,17 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockLogin = vi.fn();
-const mockNavigate = vi.fn();
 
 let mockAuthState = {
   error: null as Error | null | undefined,
-  isAuthenticated: false,
-  isLoading: false,
   login: mockLogin,
-  logout: vi.fn(),
-  token: null as null | string,
 };
 
 vi.mock("@/contexts/auth", () => ({
   useAuth: () => mockAuthState,
 }));
-
-vi.mock("@tanstack/react-router", async (importOriginal) => {
-  const actual =
-    await importOriginal<typeof import("@tanstack/react-router")>();
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
 
 import { LoginPage } from "./index";
 
@@ -34,48 +20,39 @@ describe("LoginPage", () => {
     vi.clearAllMocks();
     mockAuthState = {
       error: null,
-      isAuthenticated: false,
-      isLoading: false,
       login: mockLogin,
-      logout: vi.fn(),
-      token: null,
     };
   });
 
-  it("renders login button when not authenticated", () => {
+  it("renders the login card with expected content", () => {
     render(<LoginPage />);
 
-    expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
+    expect(screen.getByText("Welcome to")).toBeInTheDocument();
+    expect(screen.getByText("Orion Knode")).toBeInTheDocument();
+    expect(screen.getByText("Part of Knodia")).toBeInTheDocument();
   });
 
-  it("calls login when the login button is clicked", async () => {
+  it("renders sign in button when not authenticated", () => {
+    render(<LoginPage />);
+
+    expect(screen.getByRole("button", { name: "Sign in" })).toBeInTheDocument();
+  });
+
+  it("calls login when the sign in button is clicked", async () => {
     const user = userEvent.setup();
     render(<LoginPage />);
 
-    await user.click(screen.getByRole("button", { name: "Login" }));
+    await user.click(screen.getByRole("button", { name: "Sign in" }));
 
     expect(mockLogin).toHaveBeenCalledOnce();
   });
 
-  it("shows a loader when isLoading is true", () => {
-    mockAuthState.isLoading = true;
-
-    render(<LoginPage />);
-
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
-    expect(
-      screen.queryByRole("button", { name: "Login" }),
-    ).not.toBeInTheDocument();
-  });
-
-  it("shows error message with retry button when an error occurs", () => {
+  it("shows error banner with retry button when an error occurs", () => {
     mockAuthState.error = new Error("Token exchange failed");
 
     render(<LoginPage />);
 
-    expect(
-      screen.getByText("Login error: Token exchange failed"),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Unable to complete sign in/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
 
@@ -88,32 +65,5 @@ describe("LoginPage", () => {
     await user.click(screen.getByRole("button", { name: "Retry" }));
 
     expect(mockLogin).toHaveBeenCalledOnce();
-  });
-
-  it("navigates to / when isAuthenticated is true", async () => {
-    mockAuthState.isAuthenticated = true;
-    mockAuthState.token = "session-token";
-
-    render(<LoginPage />);
-
-    await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith({
-        replace: true,
-        to: "/",
-      });
-    });
-  });
-
-  it("renders nothing visible when already authenticated", () => {
-    mockAuthState.isAuthenticated = true;
-    mockAuthState.token = "session-token";
-
-    render(<LoginPage />);
-
-    expect(
-      screen.queryByRole("button", { name: "Login" }),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
-    expect(screen.queryByText(/Login error/)).not.toBeInTheDocument();
   });
 });

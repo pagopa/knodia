@@ -23,7 +23,7 @@ export const eservice1: Eservice = {
 };
 const eserviceVersion1 = eservice1.versions[0]!;
 
-export const eservice2: Eservice = {
+const eservice2: Eservice = {
   ...getMockEservice({ latestVersionState: "Active", seed: 1 }),
   name: {
     en: "Test Eservice 2",
@@ -32,7 +32,7 @@ export const eservice2: Eservice = {
 };
 const eserviceVersion2 = eservice2.versions[0]!;
 
-const consumerId = generateExternalId<OrganizationId>();
+export const consumerId = generateExternalId<OrganizationId>();
 export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(0),
