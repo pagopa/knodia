@@ -34,6 +34,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     organizationProcessUrl: config.organizationProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
+
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
   const authService = authServiceBuilder(tokenGenerator);
