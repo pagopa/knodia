@@ -1,5 +1,4 @@
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
-import type { FileManager } from "@knodia/file-manager";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -13,7 +12,6 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
-import { initFileManager } from "@knodia/file-manager";
 import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
@@ -32,12 +30,10 @@ import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 export function buildApp({
   config,
   eventStoreDb,
-  fileManager,
   readmodelDb,
 }: {
-  config: AuthConfig & LoggerConfig & { eserviceInterfacesS3Bucket: string };
+  config: AuthConfig & LoggerConfig;
   eventStoreDb: NodePgDatabase;
-  fileManager: FileManager;
   readmodelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
@@ -74,14 +70,13 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(eserviceRouter, {
-      eserviceInterfacesS3Bucket: config.eserviceInterfacesS3Bucket,
-      eserviceService: eserviceServiceBuilder(
+    protectedApp.register(
+      eserviceRouter,
+      eserviceServiceBuilder(
         eserviceEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
       ),
-      fileManager,
-    });
+    );
   });
 
   return app;
@@ -108,12 +103,9 @@ export function buildAppFromConfig(config: EserviceProcessConfig) {
   });
   const readmodelDb = drizzle(readmodelPool);
 
-  const fileManager = initFileManager();
-
   const app = buildApp({
     config,
     eventStoreDb,
-    fileManager,
     readmodelDb,
   });
 

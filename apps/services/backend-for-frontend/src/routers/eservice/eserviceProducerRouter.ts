@@ -251,32 +251,25 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         `Downloading interface of Producer E-service with ID ${req.params.eserviceId}`,
       );
 
-      const headers = getKnodiaServiceHeaders(req, correlationId);
-      const path = { eserviceId: req.params.eserviceId };
-
-      const [{ data: metadata }, { data: blob }] = await Promise.all([
-        eserviceProcessApi.getEserviceLatestVersionInterface({
+      const { data } =
+        await eserviceProcessApi.getEserviceLatestVersionInterface({
           client: eserviceProcessClient,
-          headers,
-          path,
-        }),
-        eserviceProcessApi.downloadEserviceLatestVersionInterface({
-          client: eserviceProcessClient,
-          headers,
-          path,
-        }),
-      ]);
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: {
+            eserviceId: req.params.eserviceId,
+          },
+        });
 
-      const buffer =
-        typeof blob === "string"
-          ? Buffer.from(blob)
-          : Buffer.from(await blob.arrayBuffer());
+      const { content } = await fileManager.getBytes({
+        bucket: config.eserviceInterfacesS3Bucket,
+        key: data.path,
+      });
 
       res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${metadata.name}"`,
-        "Content-Type": metadata.contentType,
+        "Content-Disposition": `attachment; filename="${data.name}"`,
+        "Content-Type": data.contentType,
       });
-      res.raw.end(buffer);
+      res.raw.end(content);
     },
     method: "GET",
     schema: {

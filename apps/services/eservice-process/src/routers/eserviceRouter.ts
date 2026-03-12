@@ -1,8 +1,6 @@
-import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_FileDownload } from "@knodia/common-models/api";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
@@ -31,18 +29,10 @@ import {
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
-interface EserviceRouterOptions {
-  eserviceInterfacesS3Bucket: string;
-  eserviceService: EserviceService;
-  fileManager: FileManager;
-}
-
-export const eserviceRouter: FastifyPluginAsyncZod<
-  EserviceRouterOptions
-  // eslint-disable-next-line max-lines-per-function
-> = async (
+// eslint-disable-next-line max-lines-per-function
+export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify,
-  { eserviceInterfacesS3Bucket, eserviceService, fileManager },
+  eserviceService,
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -216,52 +206,6 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
-        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
-      ]);
-
-      const eserviceVersionInterface =
-        await eserviceService.getEserviceLatestVersionInterface(
-          unsafeBrandId(req.params.eserviceId),
-          ctx,
-        );
-
-      const { content } = await fileManager.getBytes({
-        bucket: eserviceInterfacesS3Bucket,
-        key: eserviceVersionInterface.path,
-      });
-
-      res.raw.writeHead(200, {
-        "Content-Disposition": `attachment; filename="${eserviceVersionInterface.name}"`,
-        "Content-Type": eserviceVersionInterface.contentType,
-      });
-      res.raw.end(content);
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Download the interface document for the latest version of an E-service",
-      headers: KnodiaServiceHeaders,
-      operationId: "downloadEserviceLatestVersionInterface",
-      params: API_EserviceIdPathParam,
-      produces: ["application/octet-stream"],
-      response: {
-        200: API_FileDownload.meta({
-          description: "E-service interface document downloaded successfully",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Not Found" }),
-      },
-      tags: [apiTags.eservice],
-    },
-    url: "/eservices/:eserviceId/versions/latest/interface/download",
   });
 
   fastify.route({

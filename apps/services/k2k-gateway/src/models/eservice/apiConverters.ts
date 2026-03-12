@@ -7,7 +7,6 @@ import type {
   API_Eservice,
   API_EserviceMode,
   API_EserviceVersion,
-  API_EserviceVersionInterfaceDocument,
   API_EserviceVersionState,
 } from "./api.ts";
 
@@ -67,17 +66,6 @@ export const toAPI_Eservice = (
   name: eservice.name,
   producerId: eservice.producerId,
   updatedAt: eservice.updatedAt,
-});
-
-export const toAPI_EserviceVersionInterfaceDocument = (
-  doc: eserviceProcessApi.EserviceVersionInterfaceDocument,
-): API_EserviceVersionInterfaceDocument => ({
-  checksum: doc.checksum,
-  contentType: doc.contentType,
-  id: doc.id,
-  name: doc.name,
-  prettyName: doc.prettyName,
-  updatedAt: doc.updatedAt,
 });
 
 export const toAPI_EserviceVersion = (
