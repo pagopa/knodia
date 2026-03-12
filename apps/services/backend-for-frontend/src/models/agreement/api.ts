@@ -38,17 +38,15 @@ export const API_ConsumerAgreements = z
         .number()
         .int()
         .min(0)
-        .meta({ description: "Number of active agreements" }),
-      archivedAgreements: z
-        .number()
-        .int()
-        .min(0)
-        .meta({ description: "Number of archived agreements" }),
-      suspendedAgreements: z
-        .number()
-        .int()
-        .min(0)
-        .meta({ description: "Number of suspended agreements" }),
+        .meta({ description: "Number of active agreements", format: "int32" }),
+      archivedAgreements: z.number().int().min(0).meta({
+        description: "Number of archived agreements",
+        format: "int32",
+      }),
+      suspendedAgreements: z.number().int().min(0).meta({
+        description: "Number of suspended agreements",
+        format: "int32",
+      }),
     }),
     // TODO: add results (agreements with needed action)
   })
