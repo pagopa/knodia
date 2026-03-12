@@ -3,6 +3,7 @@ import type { EserviceId } from "@knodia/common-models/ids";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -24,6 +25,31 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
 export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
   return {
+    async downloadEserviceLatestVersionInterface(
+      eserviceId: ExternalResource<EserviceId>,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<{ buffer: Buffer; contentType: string; fileName: string }> {
+      logger.info(
+        { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
+        `Downloading interface of E-service ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
+      );
+
+      const { data: blob, headers } =
+        await k2kGatewayApi.downloadEserviceLatestVersionInterface({
+          client: k2kGatewayClient,
+          path: { eserviceId: eserviceId.id },
+          responseType: "arraybuffer",
+        });
+
+      return {
+        buffer: Buffer.from(blob as unknown as ArrayBuffer),
+        contentType: headers["content-type"] ?? "application/octet-stream",
+        fileName: parseContentDispositionFileName(
+          headers["content-disposition"],
+        ),
+      };
+    },
+
     async getCatalogEservices(
       reqBody: API_GetCatalogEserviceSearchParams,
       reqQuery: API_GetCatalogEservicesQueryParams,

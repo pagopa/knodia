@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -65,6 +65,17 @@ export const getEserviceLatestVersion = <ThrowOnError extends boolean = true>(op
 });
 
 /**
+ * Download E-service latest version interface
+ *
+ * Download the Interface Document for the latest Version of an E-service
+ */
+export const downloadEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<DownloadEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<DownloadEserviceLatestVersionInterfaceResponses, DownloadEserviceLatestVersionInterfaceErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/eservices/{eserviceId}/versions/latest/interface',
+    ...options
+});
+
+/**
  * Create a new Agreement
  *
  * Create a new Agreement for a Consumer to access a Producer's E-service
@@ -77,6 +88,15 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
         'Content-Type': 'application/json',
         ...options.headers
     }
+});
+
+/**
+ * Retrieve an Agreement
+ */
+export const getAgreement = <ThrowOnError extends boolean = true>(options: Options<GetAgreementData, ThrowOnError>) => (options.client ?? client).get<GetAgreementResponses, GetAgreementErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/agreements/{agreementId}',
+    ...options
 });
 
 /**

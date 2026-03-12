@@ -1,0 +1,22 @@
+meta {
+  name: Download Eservice Interface
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/eservices/:eserviceId/interface?knodeId=Lynx
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+params:query {
+  knodeId: Lynx
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
