@@ -57,6 +57,11 @@ export type Organizations = {
     pagination: Pagination;
 };
 
+export type OrganizationSeed = {
+    attributes: Array<Attribute>;
+    name: string;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -120,6 +125,45 @@ export type GetOrganizationsResponses = {
 };
 
 export type GetOrganizationsResponse = GetOrganizationsResponses[keyof GetOrganizationsResponses];
+
+export type CreateOrganizationData = {
+    body: OrganizationSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/organizations';
+};
+
+export type CreateOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateOrganizationError = CreateOrganizationErrors[keyof CreateOrganizationErrors];
+
+export type CreateOrganizationResponses = {
+    /**
+     * Organization created successfully
+     */
+    201: Organization;
+};
+
+export type CreateOrganizationResponse = CreateOrganizationResponses[keyof CreateOrganizationResponses];
 
 export type GetOrganizationData = {
     body?: never;
