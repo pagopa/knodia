@@ -60,6 +60,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       const eserviceIds = new Set(
         data.items.map((agreement) => agreement.eserviceId),
       );
+      // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
       const eservices = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
@@ -73,31 +74,29 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         eservices.data.items.map((eservice) => [eservice.id, eservice]),
       );
 
-      const items = await Promise.all(
-        data.items.map(async (agreement) => {
-          const eservice = eserviceMap.get(agreement.eserviceId);
-          if (!eservice) {
-            throw genericError(
-              `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
-            );
-          }
+      const items = data.items.map((agreement) => {
+        const eservice = eserviceMap.get(agreement.eserviceId);
+        if (!eservice) {
+          throw genericError(
+            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+          );
+        }
 
-          // TODO: should this use the remote-resources-manager to fetch the consumer organization from agreement.consumer.knodeId?
-          const consumer: Organization = {
-            attributes: [],
-            createdAt: new Date(),
-            id: unsafeBrandId(agreement.consumer.id),
-            name: "Consumer Organization Name",
-            updatedAt: new Date(),
-          };
+        // TODO: should this use the remote-resources-manager to fetch the consumer organization from agreement.consumer.knodeId?
+        const consumer: Organization = {
+          attributes: [],
+          createdAt: new Date(),
+          id: unsafeBrandId(agreement.consumer.id),
+          name: "Consumer Organization Name",
+          updatedAt: new Date(),
+        };
 
-          return toAPI_ProducerAgreement({
-            agreement,
-            consumer,
-            eservice,
-          });
-        }),
-      );
+        return toAPI_ProducerAgreement({
+          agreement,
+          consumer,
+          eservice,
+        });
+      });
 
       res.send({
         items,
