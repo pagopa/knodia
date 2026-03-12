@@ -2,11 +2,8 @@
 import type { Eservice } from "@knodia/eservice-models";
 
 import { Agreement } from "@knodia/agreement-models";
-import {
-  generateExternalId,
-  KnodeId,
-  type OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId, type OrganizationId } from "@knodia/common-models/ids";
 import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 

@@ -14,14 +14,6 @@ export type IDS =
 export const KnodeId = z.enum(["Orion", "Lynx"]);
 export type KnodeId = z.infer<typeof KnodeId>;
 
-export const ExternalId = <T extends IDS>() =>
-  z
-    .uuid()
-    .brand<`ExternalId:${T extends string & z.core.$brand<infer B> ? B : never}`>();
-export type ExternalId<T extends IDS> = z.infer<
-  ReturnType<typeof ExternalId<T>>
->;
-
 export const CorrelationId = z.uuid().brand<"CorrelationId">();
 export type CorrelationId = z.infer<typeof CorrelationId>;
 
@@ -49,18 +41,8 @@ export type ConsumerKeychainId = z.infer<typeof ConsumerKeychainId>;
 export const PurposeId = z.uuid().brand<"PurposeId">();
 export type PurposeId = z.infer<typeof PurposeId>;
 
-export function generateExternalId<T extends IDS>(): ExternalId<T> {
-  return crypto.randomUUID() as ExternalId<T>;
-}
-
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
-}
-
-export function unsafeBrandExternalId<T extends IDS>(
-  id: string,
-): ExternalId<T> {
-  return z.uuid().parse(id) as ExternalId<T>;
 }
 
 export function unsafeBrandId<T extends IDS>(id: string): T {

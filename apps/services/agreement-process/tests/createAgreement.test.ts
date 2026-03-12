@@ -5,12 +5,8 @@ import {
   AgreementState,
   toAgreementV1,
 } from "@knodia/agreement-models";
-import {
-  generateExternalId,
-  generateId,
-  KnodeId,
-  OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";

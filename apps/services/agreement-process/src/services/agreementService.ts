@@ -1,4 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -11,7 +12,6 @@ import {
   AgreementId,
   EserviceId,
   EserviceVersionId,
-  ExternalId,
   generateId,
   KnodeId,
   OrganizationId,

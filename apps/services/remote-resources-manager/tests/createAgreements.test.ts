@@ -3,12 +3,8 @@ import type { Agreement } from "@knodia/agreement-models";
 import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import {
-  generateId,
-  KnodeId,
-  unsafeBrandExternalId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { generateId, KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";

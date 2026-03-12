@@ -1,8 +1,5 @@
-import type {
-  AgreementId,
-  ExternalId,
-  KnodeId,
-} from "@knodia/common-models/ids";
+import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { and, eq } from "drizzle-orm";

@@ -1,10 +1,10 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { Agreement, AgreementState } from "@knodia/agreement-models";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type AgreementId,
   KnodeId,
-  unsafeBrandExternalId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {

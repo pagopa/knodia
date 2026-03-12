@@ -1,8 +1,8 @@
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
   EserviceId,
   EserviceVersionId,
-  ExternalId,
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
