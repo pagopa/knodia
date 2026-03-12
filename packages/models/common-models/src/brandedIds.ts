@@ -1,5 +1,19 @@
 import z from "zod";
 
+export type IDS =
+  | AgreementId
+  | ConsumerKeychainId
+  | CorrelationId
+  | EserviceId
+  | EserviceInterfaceId
+  | EserviceVersionId
+  | OrganizationId
+  | PurposeId
+  | UserId;
+
+export const KnodeId = z.enum(["Orion", "Lynx"]);
+export type KnodeId = z.infer<typeof KnodeId>;
+
 export const ExternalId = <T extends IDS>() =>
   z
     .uuid()
@@ -26,9 +40,6 @@ export type OrganizationId = z.infer<typeof OrganizationId>;
 export const UserId = z.uuid().brand<"UserId">();
 export type UserId = z.infer<typeof UserId>;
 
-export const KnodeId = z.enum(["Orion", "Lynx"]).brand<"KnodeId">();
-export type KnodeId = z.infer<typeof KnodeId>;
-
 export const AgreementId = z.uuid().brand<"AgreementId">();
 export type AgreementId = z.infer<typeof AgreementId>;
 
@@ -36,18 +47,6 @@ export const ConsumerKeychainId = z.uuid().brand<"ConsumerKeychainId">();
 export type ConsumerKeychainId = z.infer<typeof ConsumerKeychainId>;
 
 export const PurposeId = z.uuid().brand<"PurposeId">();
-export type IDS =
-  | AgreementId
-  | ConsumerKeychainId
-  | CorrelationId
-  | EserviceId
-  | EserviceInterfaceId
-  | EserviceVersionId
-  | KnodeId
-  | OrganizationId
-  | PurposeId
-  | UserId;
-
 export type PurposeId = z.infer<typeof PurposeId>;
 
 export function generateExternalId<T extends IDS>(): ExternalId<T> {

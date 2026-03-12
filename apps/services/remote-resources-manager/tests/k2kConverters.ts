@@ -1,4 +1,5 @@
 import type { Agreement, AgreementState } from "@knodia/agreement-models";
+import type { KnodeId } from "@knodia/common-models/ids";
 import type {
   API_AccessTokenType,
   API_EserviceMode,
@@ -6,7 +7,6 @@ import type {
 } from "@knodia/eservice-models/api";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { genericInternalError } from "@knodia/common-models/errors";
 import { match } from "ts-pattern";
 
 export const toK2KVersionState = (
@@ -57,10 +57,8 @@ const toK2KAgreementState = (
     .with("Archived", () => "ARCHIVED" as const)
     .exhaustive();
 
-const toK2KKnodeId = (knodeId: string): k2kGatewayApi.KnodeId =>
+const toK2KKnodeId = (knodeId: KnodeId): k2kGatewayApi.KnodeId =>
   match(knodeId)
     .with("Orion", () => "ORION" as const)
     .with("Lynx", () => "LYNX" as const)
-    .otherwise(() => {
-      throw genericInternalError(`Unknown KnodeId: ${knodeId}`);
-    });
+    .exhaustive();
