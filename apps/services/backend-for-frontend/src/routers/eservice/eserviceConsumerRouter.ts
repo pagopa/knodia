@@ -11,26 +11,26 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
+import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerCatalogEserviceSearchResults,
   API_ConsumerEserviceDetails,
   API_GetConsumerCatalogEserviceSearchParams,
   API_GetConsumerCatalogEservicesQueryParams,
   API_GetConsumerEserviceDetailsQueryParams,
-} from "../../models/api.ts";
+} from "../../models/eservice/api.ts";
 import {
   toAPI_ConsumerCatalogEserviceSearchResult,
   toAPI_ConsumerEserviceDetails,
-} from "../../models/apiConverter.ts";
-import { apiTags } from "../../models/apiTags.ts";
+} from "../../models/eservice/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
-interface RemoteResourcesManagerRouterOptions {
+interface EserviceConsumerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
-  RemoteResourcesManagerRouterOptions
+  EserviceConsumerRouterOptions
 > = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
@@ -54,7 +54,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
             Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
-            { en: "Producer name" }, // TODO: retrieve producer name
+            "Producer name", // TODO: retrieve producer name
           ),
         ),
       });

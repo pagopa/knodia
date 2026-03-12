@@ -73,33 +73,18 @@ components:
         - status
         - title
       additionalProperties: false
-    SessionRequest:
-      type: object
-      properties:
-        oidcToken:
-          type: string
-      required:
-        - oidcToken
-      additionalProperties: false
-    SessionResponse:
-      type: object
-      properties:
-        refreshToken:
-          type: string
-        uiSessionToken:
-          type: string
-      required:
-        - refreshToken
-        - uiSessionToken
-      additionalProperties: false
-    RefreshRequest:
-      type: object
-      properties:
-        refreshToken:
-          type: string
-      required:
-        - refreshToken
-      additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
+    AgreementState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     Pagination:
       type: object
       properties:
@@ -135,6 +120,17 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - id
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
       additionalProperties: false
     EserviceVersionState:
       type: string
@@ -196,44 +192,21 @@ components:
       enum:
         - Bearer
         - DPoP
-    Attribute:
+    CompactOrganization:
+      description: Organization with only id and name
       type: object
       properties:
-        code:
+        id:
           type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
-    KeychainLocalizedName:
-      description: Name of the Keychain
-      type: object
-      properties:
-        en:
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
           type: string
           minLength: 5
           maxLength: 60
       required:
-        - en
-      additionalProperties: false
-    KeychainLocalizedDescription:
-      description: Description of the Keychain
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
+        - id
+        - name
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object
@@ -335,17 +308,6 @@ components:
         - maxDailyCallsPerKnode
         - name
         - requiredAttributes
-      additionalProperties: false
-    ConsumerKeychainSeed:
-      type: object
-      properties:
-        description:
-          allOf:
-            - $ref: "#/components/schemas/KeychainLocalizedDescription"
-        name:
-          $ref: "#/components/schemas/KeychainLocalizedName"
-      required:
-        - name
       additionalProperties: false
     ProducerEservice:
       type: object
@@ -629,20 +591,6 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
-    CompactOrganization:
-      description: Organization with only id and name
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          $ref: "#/components/schemas/LocalizedName"
-      required:
-        - id
-        - name
-      additionalProperties: false
     ConsumerCatalogEserviceSearchResult:
       type: object
       properties:
@@ -824,6 +772,112 @@ components:
         - producer
         - requiredAttributes
         - state
+      additionalProperties: false
+    CompactEservice:
+      description: E-service with only id and name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+      required:
+        - id
+        - name
+      additionalProperties: false
+    ProducerAgreement:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+      required:
+        - consumer
+        - eservice
+        - id
+        - state
+      additionalProperties: false
+    ProducerAgreements:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProducerAgreement"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - items
+        - pagination
+      additionalProperties: false
+    SessionRequest:
+      type: object
+      properties:
+        oidcToken:
+          type: string
+      required:
+        - oidcToken
+      additionalProperties: false
+    SessionResponse:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+        uiSessionToken:
+          type: string
+      required:
+        - refreshToken
+        - uiSessionToken
+      additionalProperties: false
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+      additionalProperties: false
+    KeychainLocalizedName:
+      description: Name of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    KeychainLocalizedDescription:
+      description: Description of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    ConsumerKeychainSeed:
+      type: object
+      properties:
+        description:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - name
       additionalProperties: false
 paths:
   /status:
@@ -1460,6 +1514,64 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /producer/agreements:
+    get:
+      operationId: getProducerAgreements
+      tags:
+        - agreement
+      description: Retrieve a paginated list of Agreements produced by the logged-in
+        user's organization
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: Producer Agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Agreements retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ProducerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -1472,5 +1584,7 @@ tags:
     name: auth
   - description: E-services routes
     name: eservice
-  - description: Consumer keychains routes
+  - description: Consumer Keychains routes
     name: consumerKeychain
+  - description: Agreement routes
+    name: agreement

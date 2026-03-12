@@ -33,18 +33,12 @@ export type Problem = {
     title: string;
 };
 
-export type SessionRequest = {
-    oidcToken: string;
-};
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
 
-export type SessionResponse = {
-    refreshToken: string;
-    uiSessionToken: string;
-};
-
-export type RefreshRequest = {
-    refreshToken: string;
-};
+export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
 export type Pagination = {
     limit: number;
@@ -62,6 +56,11 @@ export type FileDownload = Blob | File;
  */
 export type CreatedResource = {
     id: string;
+};
+
+export type Attribute = {
+    code: string;
+    scheme: string;
 };
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
@@ -96,28 +95,12 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
 /**
- * Unique Knode identifier
+ * Organization with only id and name
  */
-export type KnodeId = 'Orion' | 'Lynx';
-
-/**
- * Name of the Keychain
- */
-export type KeychainLocalizedName = {
-    en: string;
-};
-
-/**
- * Description of the Keychain
- */
-export type KeychainLocalizedDescription = {
-    en: string;
+export type CompactOrganization = {
+    id: string;
+    name: string;
 };
 
 export type InterfaceDocumentSeed = {
@@ -187,11 +170,6 @@ export type EserviceSeed = {
      * Required attributes for the E-service
      */
     requiredAttributes: Array<Array<Attribute>>;
-};
-
-export type ConsumerKeychainSeed = {
-    description?: KeychainLocalizedDescription;
-    name: KeychainLocalizedName;
 };
 
 export type ProducerEservice = {
@@ -332,14 +310,6 @@ export type GetConsumerCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
-/**
- * Organization with only id and name
- */
-export type CompactOrganization = {
-    id: string;
-    name: LocalizedName;
-};
-
 export type ConsumerCatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
@@ -403,6 +373,58 @@ export type ConsumerEserviceDetails = {
     producer: ConsumerEserviceDetailsProducer;
     requiredAttributes: Array<Array<ConsumerRequiredAttribute>>;
     state: EserviceVersionState;
+};
+
+/**
+ * E-service with only id and name
+ */
+export type CompactEservice = {
+    id: string;
+    name: LocalizedName;
+};
+
+export type ProducerAgreement = {
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    id: string;
+    state: AgreementState;
+};
+
+export type ProducerAgreements = {
+    items: Array<ProducerAgreement>;
+    pagination: Pagination;
+};
+
+export type SessionRequest = {
+    oidcToken: string;
+};
+
+export type SessionResponse = {
+    refreshToken: string;
+    uiSessionToken: string;
+};
+
+export type RefreshRequest = {
+    refreshToken: string;
+};
+
+/**
+ * Name of the Keychain
+ */
+export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Description of the Keychain
+ */
+export type KeychainLocalizedDescription = {
+    en: string;
+};
+
+export type ConsumerKeychainSeed = {
+    description?: KeychainLocalizedDescription;
+    name: KeychainLocalizedName;
 };
 
 export type GetStatusData = {
@@ -847,3 +869,45 @@ export type GetConsumerEserviceLatestVersionInterfaceResponses = {
 };
 
 export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
+
+export type GetProducerAgreementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/producer/agreements';
+};
+
+export type GetProducerAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerAgreementsError = GetProducerAgreementsErrors[keyof GetProducerAgreementsErrors];
+
+export type GetProducerAgreementsResponses = {
+    /**
+     * Producer Agreements retrieved successfully
+     */
+    200: ProducerAgreements;
+};
+
+export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];
