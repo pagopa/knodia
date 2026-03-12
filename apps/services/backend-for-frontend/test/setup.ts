@@ -8,6 +8,7 @@ let app: ReturnType<typeof buildAppFromConfig>;
 beforeAll(async () => {
   app = buildAppFromConfig({
     acceptedAudiences: ["test-audience"],
+    agreementProcessUrl: "http://localhost:0",
     cognitoIssuer: "https://cognito-idp.eu-west-1.amazonaws.com/pool-id",
     cognitoJwksUrl:
       "https://cognito-idp.eu-west-1.amazonaws.com/pool-id/.well-known/jwks.json",
