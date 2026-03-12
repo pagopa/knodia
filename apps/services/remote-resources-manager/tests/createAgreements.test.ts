@@ -2,7 +2,6 @@
 import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { API_CreatedResource } from "@knodia/common-models/api";
 import {
   generateId,
   KnodeId,
@@ -15,7 +14,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { Agreement } from "../../../../packages/models/agreement-models/src/agreement.ts";
 
-import { type API_AgreementSeed } from "../src/models/agreement/api.ts";
+import {
+  type API_AgreementSeed,
+  API_CreatedAgreementResource,
+} from "../src/models/agreement/api.ts";
 import { toK2KAgreement } from "./k2kConverters.ts";
 import { remoteResourceDbService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
@@ -62,8 +64,9 @@ describe("POST /agreements (createAgreement)", () => {
     eserviceId: unsafeBrandId(body.eserviceId),
     eserviceVersionId: unsafeBrandId(body.eserviceVersionId),
   };
-  const mockK2KResponse: API_CreatedResource = {
+  const mockK2KResponse: API_CreatedAgreementResource = {
     id: agreement.id,
+    producerId: agreement.producerId,
   };
 
   beforeEach(() => {
