@@ -1,14 +1,16 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_CreatedResource } from "@knodia/common-models/api";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import type { AgreementService } from "../services/agreementService.ts";
 
-import { API_AgreementSeed } from "../models/agreement/api.ts";
+import {
+  API_AgreementSeed,
+  API_CreatedAgreementResource,
+} from "../models/agreement/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface AgreementRouterOptions {
@@ -34,7 +36,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       description: "Create a new Agreement",
       operationId: "createAgreement",
       response: {
-        201: API_CreatedResource.meta({
+        201: API_CreatedAgreementResource.meta({
           description: "Agreement created successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

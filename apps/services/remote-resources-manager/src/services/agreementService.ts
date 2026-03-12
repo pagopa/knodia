@@ -1,4 +1,3 @@
-import type { API_CreatedResource } from "@knodia/common-models/api";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -8,7 +7,10 @@ import {
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 
-import type { API_AgreementSeed } from "../models/agreement/api.ts";
+import type {
+  API_AgreementSeed,
+  API_CreatedAgreementResource,
+} from "../models/agreement/api.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -21,7 +23,7 @@ export function agreementServiceBuilder(
     async createAgreement(
       reqBody: API_AgreementSeed,
       { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<API_CreatedResource> {
+    ): Promise<API_CreatedAgreementResource> {
       const { consumerId, eserviceId, eserviceVersionId, knodeId } = reqBody;
 
       logger.info(
@@ -39,18 +41,14 @@ export function agreementServiceBuilder(
         },
         client: k2kGatewayClient,
       });
-      const { data: agreement } = await k2kGatewayApi.getAgreement({
-        client: k2kGatewayClient,
-        path: { agreementId: createdAgreement.id },
-      });
 
       await remoteResourceDbService.insertAgreement({
-        agreementId: agreement.id,
+        agreementId: createdAgreement.id,
         consumerId,
         eserviceId,
         eserviceVersionId,
         knodeId,
-        producerId: agreement.producerId,
+        producerId: createdAgreement.producerId,
       });
 
       return createdAgreement;
