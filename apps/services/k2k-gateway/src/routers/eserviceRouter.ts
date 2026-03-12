@@ -1,12 +1,15 @@
 import type { EserviceProcessClient } from "@knodia/eservice-process-client";
+import type { FileManager } from "@knodia/file-manager";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_FileDownload } from "@knodia/common-models/api";
 import { eserviceProcessApi } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
+import { config } from "../config/config.ts";
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CatalogEserviceSearchResults,
@@ -25,12 +28,14 @@ import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface EserviceRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
+  fileManager: FileManager;
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 export const eserviceRouter: FastifyPluginAsyncZod<
   EserviceRouterOptions
-> = async (fastify, { eserviceProcessClient, tokenProvider }) => {
+  // eslint-disable-next-line max-lines-per-function
+> = async (fastify, { eserviceProcessClient, fileManager, tokenProvider }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -179,5 +184,55 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Downloading interface of E-service with ID ${req.params.eserviceId}`,
+      );
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data: metadata } =
+        await eserviceProcessApi.getEserviceLatestVersionInterface({
+          client: eserviceProcessClient,
+          headers,
+          path: { eserviceId: req.params.eserviceId },
+        });
+
+      const { content } = await fileManager.getBytes({
+        bucket: config.eserviceInterfacesS3Bucket,
+        key: metadata.path,
+      });
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="${metadata.name}"`,
+        "Content-Type": metadata.contentType,
+      });
+      res.raw.end(content);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Download the Interface Document for the latest Version of an E-service",
+      operationId: "downloadEserviceLatestVersionInterface",
+      params: API_EserviceIdPathParam,
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
+      response: {
+        200: API_FileDownload.meta({
+          description: "E-service Interface Document downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Download E-service latest version interface",
+      tags: [apiTags.resource, apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/versions/latest/interface",
   });
 };
