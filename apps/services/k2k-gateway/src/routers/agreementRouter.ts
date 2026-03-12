@@ -53,12 +53,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      res.status(201).send(
-        API_CreatedAgreementResource.parse({
-          id: data.id,
-          producerId: data.producerId,
-        }),
-      );
+      res.status(201).send({
+        id: data.id,
+        producerId: data.producerId,
+      });
     },
     method: "POST",
     schema: {
