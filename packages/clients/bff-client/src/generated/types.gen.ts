@@ -400,12 +400,7 @@ export type SessionRequest = {
 };
 
 export type SessionResponse = {
-    refreshToken: string;
     uiSessionToken: string;
-};
-
-export type RefreshRequest = {
-    refreshToken: string;
 };
 
 /**
