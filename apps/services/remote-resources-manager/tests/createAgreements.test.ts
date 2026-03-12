@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { Agreement } from "@knodia/agreement-models";
 import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
@@ -11,8 +12,6 @@ import {
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-import type { Agreement } from "../../../../packages/models/agreement-models/src/agreement.ts";
 
 import {
   type API_AgreementSeed,
