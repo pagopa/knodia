@@ -492,7 +492,7 @@ export type GetAgreementsData = {
         /**
          * Filter by Consumer ID
          */
-        consumerId?: string;
+        consumerId?: OrganizationId;
         /**
          * Filter by Agreement State
          */
@@ -506,14 +506,6 @@ export type GetAgreementsErrors = {
      * Bad Request
      */
     400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
 };
 
 export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];

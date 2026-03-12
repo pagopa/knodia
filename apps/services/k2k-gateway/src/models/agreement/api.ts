@@ -46,10 +46,9 @@ export const API_AgreementState = z
 export type API_AgreementState = z.infer<typeof API_AgreementState>;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
+  consumerId: API_OrganizationId.optional().meta({
+    description: "Filter by Consumer ID",
+  }),
   state: API_AgreementState.optional().meta({
     description: "Filter by Agreement State",
   }),
