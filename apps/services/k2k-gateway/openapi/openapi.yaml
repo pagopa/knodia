@@ -798,6 +798,7 @@ paths:
     get:
       operationId: getAgreements
       tags:
+        - resource
         - agreement
       description: Retrieve a list of Agreements
       parameters:
