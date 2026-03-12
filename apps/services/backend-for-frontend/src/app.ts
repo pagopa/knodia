@@ -92,7 +92,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       keychainProcessClient: clients.keychainProcessClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
-      knodeId: config.knodeId,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementProducerRouter, {

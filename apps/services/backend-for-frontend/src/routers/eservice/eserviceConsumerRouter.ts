@@ -1,4 +1,3 @@
-import type { KnodeId } from "@knodia/common-models/ids";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -27,13 +26,12 @@ import {
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceConsumerRouterOptions {
-  knodeId: KnodeId;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   EserviceConsumerRouterOptions
-> = async (fastify, { knodeId, remoteResourcesManagerClient }) => {
+> = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -56,7 +54,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
             Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
-            { knodeId, name: "Producer name" }, // TODO: retrieve producer name,
+            { knodeId: req.body.knodeId, name: "Producer name" }, // TODO: retrieve producer name,
           ),
         ),
       });
