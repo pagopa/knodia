@@ -59,7 +59,7 @@ export function eserviceServiceBuilder(
         `Creating E-service ${eserviceId} for producer ${producerId}`,
       );
 
-      assertOrganizationExists(producerId);
+      await assertOrganizationExists(producerId, readmodelService);
 
       for (const attr of seed.requiredAttributes.flat()) {
         if (getAttribute(attr) === undefined) {

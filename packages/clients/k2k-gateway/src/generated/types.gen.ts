@@ -40,6 +40,11 @@ export type Pagination = {
 };
 
 /**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
  * Unique identifier of the Organization
  */
 export type OrganizationId = string;
@@ -50,6 +55,11 @@ export type OrganizationId = string;
 export type CreatedResource = {
     id: string;
 };
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'ORION' | 'LYNX';
 
 /**
  * Identifies an Attribute standardized within Knodia
@@ -264,14 +274,9 @@ export type EserviceVersion = {
 };
 
 /**
- * Unique identifier for the Agreement
+ * Unique identifier of the Agreement
  */
 export type AgreementId = string;
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'ORION' | 'LYNX';
 
 /**
  * Consumer Organization of the Agreement
@@ -312,9 +317,16 @@ export type Agreement = {
     updatedAt: string;
 };
 
-export type Agreements = {
-    pagination: Pagination;
-    results: Array<Agreement>;
+export type Organization = {
+    /**
+     * Attributes associated with the Organization
+     */
+    attributes: Array<Attribute>;
+    id: OrganizationId;
+    /**
+     * Human-readable name of the Organization
+     */
+    name: string;
 };
 
 export type GetStatusData = {
@@ -429,55 +441,36 @@ export type GetEserviceLatestVersionResponses = {
 
 export type GetEserviceLatestVersionResponse = GetEserviceLatestVersionResponses[keyof GetEserviceLatestVersionResponses];
 
-export type GetAgreementsData = {
+export type DownloadEserviceLatestVersionInterfaceData = {
     body?: never;
-    path?: never;
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-        /**
-         * Filter by Consumer ID
-         */
-        consumerId?: string;
-        /**
-         * Filter by Agreement State
-         */
-        state?: AgreementState;
+    path: {
+        eserviceId: EserviceId;
     };
-    url: '/agreements';
+    query?: never;
+    url: '/eservices/{eserviceId}/versions/latest/interface';
 };
 
-export type GetAgreementsErrors = {
+export type DownloadEserviceLatestVersionInterfaceErrors = {
     /**
      * Bad Request
      */
     400: Problem;
     /**
-     * Unauthorized
+     * Not Found
      */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
+    404: Problem;
 };
 
-export type GetAgreementsError = GetAgreementsErrors[keyof GetAgreementsErrors];
+export type DownloadEserviceLatestVersionInterfaceError = DownloadEserviceLatestVersionInterfaceErrors[keyof DownloadEserviceLatestVersionInterfaceErrors];
 
-export type GetAgreementsResponses = {
+export type DownloadEserviceLatestVersionInterfaceResponses = {
     /**
-     * Agreements retrieved successfully
+     * E-service Interface Document downloaded successfully
      */
-    200: Agreements;
+    200: FileDownload;
 };
 
-export type GetAgreementsResponse = GetAgreementsResponses[keyof GetAgreementsResponses];
+export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
 
 export type CreateAgreementData = {
     body: AgreementSeed;
@@ -511,3 +504,65 @@ export type CreateAgreementResponses = {
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
+
+export type GetAgreementData = {
+    body?: never;
+    path: {
+        agreementId: AgreementId;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}';
+};
+
+export type GetAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetAgreementError = GetAgreementErrors[keyof GetAgreementErrors];
+
+export type GetAgreementResponses = {
+    /**
+     * Agreement retrieved successfully
+     */
+    200: Agreement;
+};
+
+export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: OrganizationId;
+    };
+    query?: never;
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];

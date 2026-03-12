@@ -87,6 +87,10 @@ components:
         - offset
         - total
       additionalProperties: false
+    FileDownload:
+      description: Binary file content
+      format: binary
+      type: string
     OrganizationId:
       description: Unique identifier of the Organization
       type: string
@@ -103,6 +107,12 @@ components:
       required:
         - id
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - ORION
+        - LYNX
     Attribute:
       description: Identifies an Attribute standardized within Knodia
       type: object
@@ -437,16 +447,10 @@ components:
         - versionNumber
       additionalProperties: false
     AgreementId:
-      description: Unique identifier for the Agreement
+      description: Unique identifier of the Agreement
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - ORION
-        - LYNX
     AgreementConsumer:
       description: Consumer Organization of the Agreement
       type: object
@@ -519,18 +523,23 @@ components:
         - state
         - updatedAt
       additionalProperties: false
-    Agreements:
+    Organization:
       type: object
       properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
+        attributes:
+          description: Attributes associated with the Organization
           type: array
           items:
-            $ref: "#/components/schemas/Agreement"
+            $ref: "#/components/schemas/Attribute"
+        id:
+          $ref: "#/components/schemas/OrganizationId"
+        name:
+          description: Human-readable name of the Organization
+          type: string
       required:
-        - pagination
-        - results
+        - attributes
+        - id
+        - name
       additionalProperties: false
 paths:
   /status:
@@ -680,6 +689,48 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /eservices/{eserviceId}/versions/latest/interface:
+    get:
+      operationId: downloadEserviceLatestVersionInterface
+      summary: Download E-service latest version interface
+      tags:
+        - resource
+        - eservice
+      description: Download the Interface Document for the latest Version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/EserviceId"
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service Interface Document downloaded successfully
+          content:
+            application/json: &a1
+              schema:
+                description: E-service Interface Document downloaded successfully
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
+            application/x-yaml: *a1
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /agreements:
     post:
       operationId: createAgreement
@@ -727,53 +778,28 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /agreements/{agreementId}:
     get:
-      operationId: getAgreements
+      operationId: getAgreement
       tags:
+        - resource
         - agreement
-      description: Retrieve a list of Agreements
+      description: Retrieve an Agreement
       parameters:
         - schema:
-            format: int32
-            type: number
-            minimum: 1
-            maximum: 50
-          in: query
-          name: limit
+            $ref: "#/components/schemas/AgreementId"
+          in: path
+          name: agreementId
           required: true
-          description: Maximum number of items returned
-        - schema:
-            format: int32
-            type: number
-            minimum: 0
-          in: query
-          name: offset
-          required: true
-          description: Pagination starting position
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: consumerId
-          required: false
-          description: Filter by Consumer ID
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/AgreementState"
-          in: query
-          name: state
-          required: false
-          description: Filter by Agreement State
       responses:
         "200":
-          description: Agreements retrieved successfully
+          description: Agreement retrieved successfully
           content:
             application/json:
               schema:
-                description: Agreements retrieved successfully
+                description: Agreement retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Agreements"
+                  - $ref: "#/components/schemas/Agreement"
         "400":
           description: Bad Request
           content:
@@ -782,20 +808,51 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
+        "404":
+          description: Not Found
           content:
             application/problem+json:
               schema:
-                description: Unauthorized
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
+  /organizations/{organizationId}:
+    get:
+      operationId: getOrganization
+      summary: Get Organization
+      tags:
+        - resource
+        - organization
+      description: Retrieve an Organization
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/OrganizationId"
+          in: path
+          name: organizationId
+          required: true
+      responses:
+        "200":
+          description: Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Organization retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Organization"
+        "400":
+          description: Bad Request
           content:
             application/problem+json:
               schema:
-                description: Forbidden
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Organization not found
+          content:
+            application/problem+json:
+              schema:
+                description: Organization not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
@@ -812,3 +869,5 @@ tags:
     name: agreement
   - description: Routes related to E-services
     name: eservice
+  - description: Routes related to Organizations
+    name: organization

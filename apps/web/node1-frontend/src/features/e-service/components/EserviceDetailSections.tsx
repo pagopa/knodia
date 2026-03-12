@@ -1,3 +1,5 @@
+import { toastQueue } from "@knodia/ui-kit/ui";
+
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { SettingsCard } from "@/components/SettingCard";
 import { formatNumber } from "@/utils/formatters";
@@ -34,11 +36,27 @@ export function DocumentsSection({
 }: {
   checksum: string;
   name: string;
-  onDownload?: () => void;
+  onDownload?: () => Promise<void>;
 }) {
+  async function handleDownload() {
+    try {
+      await onDownload?.();
+    } catch {
+      toastQueue.add({
+        description: "Retry later",
+        kind: "error",
+        title: "Download failed",
+      });
+    }
+  }
+
   return (
     <Section title="Documents">
-      <DocumentRecap name={name} onDownload={onDownload} showDownloadButton />
+      <DocumentRecap
+        name={name}
+        onDownload={handleDownload}
+        showDownloadButton
+      />
       <CopyableValueField className="mt-6" label="Checksum:" value={checksum} />
     </Section>
   );

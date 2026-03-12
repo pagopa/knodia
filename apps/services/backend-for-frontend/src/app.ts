@@ -15,9 +15,11 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { agreementProducerRouter } from "./routers/agreement/agreementProducerRouter.ts";
 import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
+import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
@@ -26,7 +28,9 @@ export function buildAppFromConfig(config: BffProcessConfig) {
 
 function buildApp({ config }: { config: BffProcessConfig }) {
   const clients = getKnodiaClients({
+    agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
+    keychainProcessUrl: config.keychainProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
@@ -55,6 +59,14 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             description: "E-services routes",
             name: apiTags.eservice,
           },
+          {
+            description: "Consumer Keychains routes",
+            name: apiTags.consumerKeychain,
+          },
+          {
+            description: "Agreement routes",
+            name: apiTags.agreement,
+          },
         ],
       },
     },
@@ -75,8 +87,15 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
     });
+    protectedApp.register(consumerKeychainRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
+    });
     protectedApp.register(eserviceConsumerRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(agreementProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
+      eserviceProcessClient: clients.eserviceProcessClient,
     });
   });
 

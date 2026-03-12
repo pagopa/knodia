@@ -4,10 +4,12 @@ import {
 } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 export const API_AgreementSeed = z
@@ -43,14 +45,20 @@ export const API_Agreements = z
 export type API_Agreements = z.infer<typeof API_Agreements>;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
+  consumerId: API_OrganizationId.optional().meta({
+    description: "Filter by Consumer ID",
+  }),
   consumerKnodeId: API_KnodeId.optional().meta({
     description: "Filter by Consumer Knode ID",
   }),
-  state: API_AgreementState.optional().meta({
+  eserviceId: z
+    .uuid()
+    .optional()
+    .meta({ description: "Filter by E-service ID" }),
+  producerId: API_OrganizationId.optional().meta({
+    description: "Filter by Producer Organization ID",
+  }),
+  state: arrayQueryParam(API_AgreementState).optional().meta({
     description: "Filter by Agreement State",
   }),
 });

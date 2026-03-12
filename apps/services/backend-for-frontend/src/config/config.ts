@@ -10,10 +10,12 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
+        AGREEMENT_PROCESS_URL: z.url(),
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
+        KEYCHAIN_PROCESS_URL: z.url(),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -30,10 +32,12 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           .default(3600),
       })
       .transform((c) => ({
+        agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
         cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
+        keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         refreshJwt: {
           secondsDuration: c.REFRESH_JWT_SECONDS_DURATION,
         },
