@@ -22,5 +22,12 @@ export async function handleKeychainEvent(
         message.version,
       );
     })
+    .with({ type: "ConsumerKeychainDeletedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "consumerKeychain");
+      await consumerKeychainWriterService.deleteConsumerKeychain(
+        fromConsumerKeychainV1(msg.data.consumerKeychain).id,
+        message.version,
+      );
+    })
     .exhaustive();
 }

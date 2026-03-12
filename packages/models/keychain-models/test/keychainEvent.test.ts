@@ -5,7 +5,10 @@ import { describe, expect, it } from "vitest";
 
 import type { ConsumerKeychain } from "../src/keychain.ts";
 
-import { ConsumerKeychainCreatedV1 } from "../src/generated/v1/keychainEvents.ts";
+import {
+  ConsumerKeychainCreatedV1,
+  ConsumerKeychainDeletedV1,
+} from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
 import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
 
@@ -32,30 +35,44 @@ describe("KeychainEventV1 codec", () => {
     users: [generateId()],
   };
 
-  it("encodes and decodes a ConsumerKeychainCreatedV1 payload (KeychainEventV1 full codec)", () => {
-    const event: KeychainEventV1 = {
-      data: {
-        consumerKeychain: toConsumerKeychainV1(consumerKeychain),
-      },
-      type: "ConsumerKeychainCreatedV1",
-    };
-    const encoded = KeychainEventV1.encode(event);
-    expect(encoded).toMatchObject({ type: "ConsumerKeychainCreatedV1" });
-    expect(encoded.data).toBeInstanceOf(Uint8Array);
+  const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
+  const value = { consumerKeychain: consumerKeychainV1 };
+  const cases = [
+    {
+      message: ConsumerKeychainCreatedV1,
+      type: "ConsumerKeychainCreatedV1" as const,
+    },
+    {
+      message: ConsumerKeychainDeletedV1,
+      type: "ConsumerKeychainDeletedV1" as const,
+    },
+  ];
 
-    const decoded = KeychainEventV1.decode(encoded);
-    expect(decoded).toMatchObject(event);
-  });
+  it.each(cases)(
+    "encodes and decodes a $type payload (KeychainEventV1 full codec)",
+    ({ type }) => {
+      const event: KeychainEventV1 = {
+        data: value,
+        type,
+      };
+      const encoded = KeychainEventV1.encode(event);
+      expect(encoded).toMatchObject({ type });
+      expect(encoded.data).toBeInstanceOf(Uint8Array);
 
-  it("encodes and decodes a ConsumerKeychainCreatedV1 payload (protobufBinaryCodec-only)", () => {
-    const codec = protobufBinaryCodec(ConsumerKeychainCreatedV1);
-    const value = {
-      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
-    };
-    const bytes = codec.encode(value);
-    expect(bytes).toBeInstanceOf(Uint8Array);
-    expect(codec.decode(bytes)).toEqual(value);
-  });
+      const decoded = KeychainEventV1.decode(encoded);
+      expect(decoded).toMatchObject(event);
+    },
+  );
+
+  it.each(cases)(
+    "encodes and decodes a $type payload (protobufBinaryCodec-only)",
+    ({ message }) => {
+      const codec = protobufBinaryCodec(message);
+      const bytes = codec.encode(value);
+      expect(bytes).toBeInstanceOf(Uint8Array);
+      expect(codec.decode(bytes)).toEqual(value);
+    },
+  );
 
   it("decodes a KafkaMessageEnvelope with KeychainEventV1 data", () => {
     const toHex = (value: Uint8Array) => Buffer.from(value).toString("hex");
