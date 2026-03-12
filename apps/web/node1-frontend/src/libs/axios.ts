@@ -1,4 +1,4 @@
-import { createBffApiClient } from "@knodia/bff-client";
+import { bffApi, createBffApiClient } from "@knodia/bff-client";
 import axios, { type InternalAxiosRequestConfig, isAxiosError } from "axios";
 
 import { config } from "@/config/config";
@@ -58,9 +58,8 @@ function refreshOnce(): Promise<boolean> {
 
 async function tryRefreshToken(): Promise<boolean> {
   try {
-    const { data } = await axios.post<{
-      uiSessionToken: string;
-    }>(`${config.bffUrl}/auth/ui-session/refresh`, undefined, {
+    const { data } = await bffApi.refreshSession({
+      client,
       withCredentials: true,
     });
 

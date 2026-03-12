@@ -1,6 +1,8 @@
-import { createSessionMutation } from "@knodia/bff-client/tanstack-query";
+import {
+  createSessionMutation,
+  logoutMutation,
+} from "@knodia/bff-client/tanstack-query";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import {
   AuthProvider as OidcProvider,
@@ -66,6 +68,10 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const { mutate: bffLogout } = useMutation(
+    logoutMutation({ client, withCredentials: true }),
+  );
+
   // After OIDC login completes, exchange the Cognito token for a BFF session.
   useEffect(() => {
     if (user?.access_token && !uiSessionToken) {
@@ -81,14 +87,8 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   }, [signinRedirect]);
 
   const logout = useCallback(async () => {
-    // Call BFF logout to clear the refresh token cookie
-    try {
-      await axios.post(`${config.bffUrl}/auth/logout`, undefined, {
-        withCredentials: true,
-      });
-    } catch {
-      // Best-effort: proceed with logout even if the call fails
-    }
+    // Best-effort: clear the refresh token cookie
+    bffLogout({ withCredentials: true });
 
     // removeUser() can throw — ensure cleanup and redirect happen regardless
     try {
@@ -98,7 +98,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
       setUiSessionToken(null);
       redirectToLogout();
     }
-  }, [removeUser]);
+  }, [bffLogout, removeUser]);
 
   return (
     <AuthContext.Provider
