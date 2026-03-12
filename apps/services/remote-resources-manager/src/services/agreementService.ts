@@ -22,8 +22,7 @@ export function agreementServiceBuilder(
       reqBody: API_AgreementSeed,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_CreatedResource> {
-      const { knodeId, ...bodyWithoutKnodeId } = reqBody;
-      const { consumerId, eserviceId, eserviceVersionId } = bodyWithoutKnodeId;
+      const { consumerId, eserviceId, eserviceVersionId, knodeId } = reqBody;
 
       logger.info(
         { requestBody: reqBody },
@@ -33,7 +32,11 @@ export function agreementServiceBuilder(
       // TODO: add assertOrganizationExists(consumerId) to check if the seed consumerId exists before calling the K2K Gateway API
 
       const { data: createdAgreement } = await k2kGatewayApi.createAgreement({
-        body: bodyWithoutKnodeId,
+        body: {
+          consumerId,
+          eserviceId,
+          eserviceVersionId,
+        },
         client: k2kGatewayClient,
       });
       const { data: agreement } = await k2kGatewayApi.getAgreement({
