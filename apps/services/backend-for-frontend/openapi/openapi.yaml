@@ -73,33 +73,6 @@ components:
         - status
         - title
       additionalProperties: false
-    SessionRequest:
-      type: object
-      properties:
-        oidcToken:
-          type: string
-      required:
-        - oidcToken
-      additionalProperties: false
-    SessionResponse:
-      type: object
-      properties:
-        refreshToken:
-          type: string
-        uiSessionToken:
-          type: string
-      required:
-        - refreshToken
-        - uiSessionToken
-      additionalProperties: false
-    RefreshRequest:
-      type: object
-      properties:
-        refreshToken:
-          type: string
-      required:
-        - refreshToken
-      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -136,6 +109,23 @@ components:
       required:
         - id
       additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
+      additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
     EserviceVersionState:
       type: string
       enum:
@@ -196,23 +186,25 @@ components:
       enum:
         - Bearer
         - DPoP
-    Attribute:
+    AgreementSeed:
+      description: Seed data to create a new agreement
       type: object
       properties:
-        code:
+        eserviceId:
           type: string
-        scheme:
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        eserviceVersionId:
           type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
       required:
-        - code
-        - scheme
+        - eserviceId
+        - eserviceVersionId
+        - knodeId
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     InterfaceDocumentSeed:
       type: object
       properties:
@@ -792,6 +784,33 @@ components:
         - requiredAttributes
         - state
       additionalProperties: false
+    SessionRequest:
+      type: object
+      properties:
+        oidcToken:
+          type: string
+      required:
+        - oidcToken
+      additionalProperties: false
+    SessionResponse:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+        uiSessionToken:
+          type: string
+      required:
+        - refreshToken
+        - uiSessionToken
+      additionalProperties: false
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required:
+        - refreshToken
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -1312,6 +1331,52 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/agreements:
+    post:
+      operationId: createConsumerAgreement
+      summary: Create a consumer agreement
+      tags:
+        - agreement
+      description: Create a new Agreement for the consumer to access a Producer's E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgreementSeed"
+      responses:
+        "201":
+          description: Agreement created successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -1322,5 +1387,7 @@ tags:
     name: health
   - description: Authentication routes
     name: auth
+  - description: Agreements routes
+    name: agreement
   - description: E-services routes
     name: eservice
