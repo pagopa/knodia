@@ -794,7 +794,7 @@ components:
         - name
       additionalProperties: false
     AgreementSeed:
-      description: Seed data to create a new agreement
+      description: Seed data to create a new Agreement
       type: object
       properties:
         eserviceId:

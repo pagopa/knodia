@@ -44,7 +44,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
 
-      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
+      res.status(201).send({ id: data.id });
     },
     method: "POST",
     schema: {

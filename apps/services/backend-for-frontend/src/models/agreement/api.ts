@@ -16,7 +16,7 @@ export const API_AgreementSeed = z
     knodeId: API_KnodeId,
   })
   .meta({
-    description: "Seed data to create a new agreement",
+    description: "Seed data to create a new Agreement",
     id: "AgreementSeed",
   });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;

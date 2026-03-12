@@ -388,7 +388,7 @@ export type CompactEservice = {
 };
 
 /**
- * Seed data to create a new agreement
+ * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
     eserviceId: string;
