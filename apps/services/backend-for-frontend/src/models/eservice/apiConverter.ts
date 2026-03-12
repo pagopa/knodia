@@ -114,7 +114,7 @@ export const toAPI_ConsumerCatalogEserviceSearchResult = (
   hasRequiredAttributes: boolean,
   producer: {
     knodeId: API_KnodeId;
-    name: string; // TODO: update with producer process API_LocalizedName
+    name: string;
   },
 ): API_ConsumerCatalogEserviceSearchResult => ({
   categories: catalogEserviceSearchResult.categories,
