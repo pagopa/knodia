@@ -17,7 +17,6 @@ export const toAPI_ProducerAgreement = ({
   agreement: agreementProcessApi.Agreement;
   consumer: Organization; // TODO: update with remoteResourcesManagerApi.Organization when available
   eservice: eserviceProcessApi.Eservice;
-  producer?: organizationProcessApi.Organization & { knodeId: API_KnodeId };
 }): API_ProducerAgreement => ({
   consumer: {
     id: consumer.id,
