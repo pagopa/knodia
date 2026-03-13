@@ -13,10 +13,12 @@ import type { EserviceService } from "../services/eserviceService.ts";
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CatalogEserviceSearchResults,
+  API_ConsumerEservices,
   API_EserviceDetails,
   API_EserviceIdPathParam,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
+  API_GetConsumerEservicesQueryParams,
   API_GetEserviceDetailsQueryParams,
 } from "../models/eservice/api.ts";
 
@@ -98,6 +100,39 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const eservices = await eserviceService.getConsumerEservices(
+        req.query,
+        ctx,
+      );
+
+      res.send(eservices);
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve Consumer E-services",
+      operationId: "getConsumerEservices",
+      querystring: API_GetConsumerEservicesQueryParams,
+      response: {
+        200: API_ConsumerEservices.meta({
+          description: "Consumer E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Get Consumer E-services",
+      tags: [apiTags.eservice],
+    },
+    url: "/consumer/eservices",
   });
 
   fastify.route({

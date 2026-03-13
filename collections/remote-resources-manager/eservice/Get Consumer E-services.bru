@@ -1,0 +1,22 @@
+meta {
+  name: Get Consumer E-services
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/consumer/eservices
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  consumerId: {{consumerId}}
+  ~agreementState: Active
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

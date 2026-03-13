@@ -1,5 +1,7 @@
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -12,6 +14,7 @@ import {
   API_LocalizedDescription,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
 import { z } from "zod";
 
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
@@ -100,7 +103,7 @@ export const API_EserviceVersionDetails = z
     requiredAttributes: z.array(z.array(API_Attribute)),
     state: API_EserviceVersionState,
   })
-  .meta({ id: "API_EserviceVersionDetails" });
+  .meta({ id: "EserviceVersionDetails" });
 
 const API_EserviceDetailsInterfaceDocument = z
   .strictObject({
@@ -135,3 +138,49 @@ export const API_EserviceDetails = z
   })
   .meta({ id: "EserviceDetails" });
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
+
+const API_ConsumerEserviceVersion = API_EserviceVersionDetails.pick({
+  id: true,
+  requiredAttributes: true,
+  state: true,
+}).meta({
+  id: "ConsumerEserviceVersionDetails",
+});
+
+export const API_ConsumerEservice = z
+  .strictObject({
+    agreement: z.strictObject({
+      id: z.uuid(),
+      state: API_AgreementState,
+    }),
+    // TODO: add purposes and consumerKeychains
+    categories: z.array(API_EserviceCategory),
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the E-service has been updated in the last 3 days",
+    }),
+    id: z.uuid(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producer: API_CompactOrganization,
+    version: API_ConsumerEserviceVersion,
+  })
+  .meta({ id: "ConsumerEservice" });
+export type API_ConsumerEservice = z.infer<typeof API_ConsumerEservice>;
+
+export const API_ConsumerEservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerEservice),
+  })
+  .meta({ id: "ConsumerEservices" });
+export type API_ConsumerEservices = z.infer<typeof API_ConsumerEservices>;
+
+export const API_GetConsumerEservicesQueryParams =
+  API_PaginationQueryParams.extend({
+    agreementState: API_AgreementState.optional(),
+    consumerId: API_OrganizationId,
+  });
+export type API_GetConsumerEservicesQueryParams = z.infer<
+  typeof API_GetConsumerEservicesQueryParams
+>;

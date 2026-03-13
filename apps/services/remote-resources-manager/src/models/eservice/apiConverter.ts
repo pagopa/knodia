@@ -66,7 +66,7 @@ const toAPI_AccessTokenType = (
     .with("DPOP", () => API_AccessTokenType.enum.DPoP)
     .exhaustive();
 
-const toAPI_EserviceVersionState = (
+export const toAPI_EserviceVersionState = (
   versionState: k2kGatewayApi.EserviceVersionState,
 ): API_EserviceVersionState =>
   match(versionState)
@@ -75,7 +75,7 @@ const toAPI_EserviceVersionState = (
     .with("ARCHIVED", () => API_EserviceVersionState.enum.Archived)
     .exhaustive();
 
-const toAPI_EserviceMode = (
+export const toAPI_EserviceMode = (
   mode: k2kGatewayApi.EserviceMode,
 ): API_EserviceMode =>
   match(mode)

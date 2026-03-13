@@ -1128,6 +1128,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/organization-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
@@ -1959,6 +1962,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../models/common-models
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../readmodel/commons
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
