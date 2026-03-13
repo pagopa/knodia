@@ -1,9 +1,14 @@
 import type { Organization } from "@knodia/organization-models";
 
+import { eventStoreOrganizationEvents } from "@knodia/db-event-store-organization";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 import { expect } from "vitest";
 
-import { app } from "./setup.ts";
+import { app, eventStoreDb } from "./setup.ts";
+
+export async function getAllOrganizationEvents() {
+  return await eventStoreDb.select().from(eventStoreOrganizationEvents);
+}
 
 export const injectAppRequest = createInjectAppRequest(() => app);
 

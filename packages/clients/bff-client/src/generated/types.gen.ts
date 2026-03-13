@@ -33,13 +33,6 @@ export type Problem = {
     title: string;
 };
 
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
-
 export type Pagination = {
     limit: number;
     offset: number;
@@ -57,6 +50,13 @@ export type FileDownload = Blob | File;
 export type CreatedResource = {
     id: string;
 };
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
 export type Attribute = {
     code: string;
@@ -381,6 +381,15 @@ export type ConsumerEserviceDetails = {
 export type CompactEservice = {
     id: string;
     name: LocalizedName;
+};
+
+/**
+ * Seed data to create a new Agreement
+ */
+export type AgreementSeed = {
+    eserviceId: string;
+    eserviceVersionId: string;
+    knodeId: KnodeId;
 };
 
 export type ProducerAgreement = {
@@ -886,6 +895,39 @@ export type GetConsumerEserviceLatestVersionInterfaceResponses = {
 };
 
 export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
+
+export type CreateConsumerAgreementData = {
+    body: AgreementSeed;
+    path?: never;
+    query?: never;
+    url: '/consumer/agreements';
+};
+
+export type CreateConsumerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerAgreementError = CreateConsumerAgreementErrors[keyof CreateConsumerAgreementErrors];
+
+export type CreateConsumerAgreementResponses = {
+    /**
+     * Agreement created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;

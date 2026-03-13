@@ -9,7 +9,7 @@
     "apps/services/keychain-process"
   ],
   "ignoreIssues": {
-    "packages/models/common-models/src/brandedIds.ts": ["exports", "types"],
+    "packages/models/common-models/src/ids/brandedIds.ts": ["exports", "types"],
     "packages/db/event-store/writer/src/keychainEventWriter.ts": [
       "exports",
       "types"

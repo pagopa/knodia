@@ -57,16 +57,16 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             name: apiTags.auth,
           },
           {
+            description: "Agreements routes",
+            name: apiTags.agreement,
+          },
+          {
             description: "E-services routes",
             name: apiTags.eservice,
           },
           {
             description: "Consumer Keychains routes",
             name: apiTags.consumerKeychain,
-          },
-          {
-            description: "Agreement routes",
-            name: apiTags.agreement,
           },
         ],
       },
@@ -92,6 +92,9 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       keychainProcessClient: clients.keychainProcessClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(agreementConsumerRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementProducerRouter, {

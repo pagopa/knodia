@@ -33,29 +33,6 @@ export type Problem = {
     title: string;
 };
 
-export type Pagination = {
-    limit: number;
-    offset: number;
-    total: number;
-};
-
-/**
- * Binary file content
- */
-export type FileDownload = Blob | File;
-
-/**
- * Unique identifier of the Organization
- */
-export type OrganizationId = string;
-
-/**
- * Unique identifier of the created resource
- */
-export type CreatedResource = {
-    id: string;
-};
-
 /**
  * Unique Knode identifier
  */
@@ -73,6 +50,22 @@ export type Attribute = {
     scheme: string;
 };
 
+export type Pagination = {
+    limit: number;
+    offset: number;
+    total: number;
+};
+
+/**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
 /**
  * Seed data to create a new agreement
  */
@@ -81,6 +74,14 @@ export type AgreementSeed = {
     eserviceId: string;
     eserviceVersionId: string;
     knodeId: KnodeId;
+};
+
+/**
+ * Unique identifier of the created Agreement resource along with the E-service Producer ID
+ */
+export type CreatedAgreementResource = {
+    id: string;
+    producerId: OrganizationId;
 };
 
 /**
@@ -427,7 +428,7 @@ export type CreateAgreementResponses = {
     /**
      * Agreement created successfully
      */
-    201: CreatedResource;
+    201: CreatedAgreementResource;
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];

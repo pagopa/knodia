@@ -1,3 +1,4 @@
+import type { Agreement, AgreementState } from "@knodia/agreement-models";
 import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type {
   API_AccessTokenType,
@@ -33,6 +34,31 @@ const toK2KAccessTokenType = (
     .with("DPoP", () => "DPOP" as const)
     .exhaustive();
 
+export const toK2KAgreement = (
+  agreement: Agreement,
+): k2kGatewayApi.Agreement => ({
+  attributes: agreement.attributes,
+  consumer: {
+    id: agreement.consumer.id,
+    knodeId: toK2KKnodeId(agreement.consumer.knodeId),
+  },
+  eserviceId: agreement.eserviceId,
+  eserviceVersionId: agreement.eserviceVersionId,
+  id: agreement.id,
+  producerId: agreement.producerId,
+  state: toK2KAgreementState(agreement.state),
+  updatedAt: "",
+});
+
+const toK2KAgreementState = (
+  state: AgreementState,
+): k2kGatewayApi.AgreementState =>
+  match(state)
+    .with("Active", () => "ACTIVE" as const)
+    .with("Suspended", () => "SUSPENDED" as const)
+    .with("Archived", () => "ARCHIVED" as const)
+    .exhaustive();
+
 export const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
   match(knodeId)
     .with("Orion", () => "ORION" as const)
@@ -40,41 +66,42 @@ export const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
     .exhaustive();
 
 export const toK2KEservice = (
-  apiDetail: API_EserviceDetails,
+  apiEserviceDetails: API_EserviceDetails,
 ): k2kGatewayApi.Eservice => ({
-  categories: apiDetail.categories,
-  description: apiDetail.description,
-  id: apiDetail.id,
+  categories: apiEserviceDetails.categories,
+  description: apiEserviceDetails.description,
+  id: apiEserviceDetails.id,
   isConsumerOperatorIdentificationRequired:
-    apiDetail.isConsumerOperatorIdentificationRequired,
-  isSignalHubEnabled: apiDetail.isSignalHubEnabled,
-  mode: toK2KMode(apiDetail.mode),
-  name: apiDetail.name,
-  producerId: apiDetail.producer.id,
+    apiEserviceDetails.isConsumerOperatorIdentificationRequired,
+  isSignalHubEnabled: apiEserviceDetails.isSignalHubEnabled,
+  mode: toK2KMode(apiEserviceDetails.mode),
+  name: apiEserviceDetails.name,
+  producerId: apiEserviceDetails.producer.id,
   updatedAt: new Date().toISOString(),
 });
 
 export const toK2KEserviceVersion = (
-  apiDetail: API_EserviceDetails,
+  apiEserviceDetails: API_EserviceDetails,
 ): k2kGatewayApi.EserviceVersion => ({
-  accessTokenAudience: apiDetail.latestVersion.accessTokenAudience,
-  accessTokenDuration: apiDetail.latestVersion.accessTokenDuration,
+  accessTokenAudience: apiEserviceDetails.latestVersion.accessTokenAudience,
+  accessTokenDuration: apiEserviceDetails.latestVersion.accessTokenDuration,
   accessTokenType: toK2KAccessTokenType(
-    apiDetail.latestVersion.accessTokenType,
+    apiEserviceDetails.latestVersion.accessTokenType,
   ),
   id: crypto.randomUUID(),
   interfaceDocument: {
-    checksum: apiDetail.interfaceDocument.checksum,
+    checksum: apiEserviceDetails.interfaceDocument.checksum,
     contentType: "application/yaml",
     id: crypto.randomUUID(),
-    name: apiDetail.interfaceDocument.name,
-    prettyName: apiDetail.interfaceDocument.prettyName,
+    name: apiEserviceDetails.interfaceDocument.name,
+    prettyName: apiEserviceDetails.interfaceDocument.prettyName,
     updatedAt: new Date().toISOString(),
   },
-  maxDailyCallsPerConsumer: apiDetail.latestVersion.maxDailyCallsPerConsumer,
-  maxDailyCallsPerKnode: apiDetail.latestVersion.maxDailyCallsPerKnode,
-  requiredAttributes: apiDetail.latestVersion.requiredAttributes,
-  state: toK2KVersionState(apiDetail.latestVersion.state),
+  maxDailyCallsPerConsumer:
+    apiEserviceDetails.latestVersion.maxDailyCallsPerConsumer,
+  maxDailyCallsPerKnode: apiEserviceDetails.latestVersion.maxDailyCallsPerKnode,
+  requiredAttributes: apiEserviceDetails.latestVersion.requiredAttributes,
+  state: toK2KVersionState(apiEserviceDetails.latestVersion.state),
   updatedAt: new Date().toISOString(),
   versionNumber: 1,
 });
