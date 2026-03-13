@@ -1,4 +1,5 @@
 import {
+  API_CreatedResource,
   API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
@@ -80,6 +81,14 @@ export const API_Agreement = z
     id: "Agreement",
   });
 export type API_Agreement = z.infer<typeof API_Agreement>;
+
+export const API_CreatedAgreementResource = API_CreatedResource.extend({
+  producerId: API_OrganizationId,
+}).meta({
+  description:
+    "Unique identifier of the created Agreement resource along with the E-service Producer ID",
+  id: "CreatedAgreementResource",
+});
 
 export const API_Agreements = z
   .strictObject({

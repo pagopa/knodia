@@ -1,3 +1,4 @@
+import type { Agreement, AgreementState } from "@knodia/agreement-models";
 import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type {
   API_AccessTokenType,
@@ -33,7 +34,32 @@ const toK2KAccessTokenType = (
     .with("DPoP", () => "DPOP" as const)
     .exhaustive();
 
-export const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
+export const toK2KAgreement = (
+  agreement: Agreement,
+): k2kGatewayApi.Agreement => ({
+  attributes: agreement.attributes,
+  consumer: {
+    id: agreement.consumer.id,
+    knodeId: toK2KKnodeId(agreement.consumer.knodeId),
+  },
+  eserviceId: agreement.eserviceId,
+  eserviceVersionId: agreement.eserviceVersionId,
+  id: agreement.id,
+  producerId: agreement.producerId,
+  state: toK2KAgreementState(agreement.state),
+  updatedAt: "",
+});
+
+const toK2KAgreementState = (
+  state: AgreementState,
+): k2kGatewayApi.AgreementState =>
+  match(state)
+    .with("Active", () => "ACTIVE" as const)
+    .with("Suspended", () => "SUSPENDED" as const)
+    .with("Archived", () => "ARCHIVED" as const)
+    .exhaustive();
+
+const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
   match(knodeId)
     .with("Orion", () => "ORION" as const)
     .with("Lynx", () => "LYNX" as const)
