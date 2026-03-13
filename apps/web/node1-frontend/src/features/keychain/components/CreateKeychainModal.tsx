@@ -21,7 +21,7 @@ import {
   createKeychainFormSchema,
   type CreateKeychainFormValues,
   keychainTypeOptions,
-} from "../models/create-keychain-form";
+} from "../models/keychain-forms";
 
 interface Props {
   isOpen: boolean;

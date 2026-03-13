@@ -8,7 +8,7 @@ export const keychainTypeOptions = [
   { id: "api", label: "API" },
 ] as const satisfies readonly { id: KeychainType; label: string }[];
 
-export const createKeychainFormSchema = z.object({
+const baseKeychainFormSchema = z.object({
   description: z
     .string()
     .max(250, "Description must be at most 250 characters.")
@@ -17,6 +17,12 @@ export const createKeychainFormSchema = z.object({
     .string()
     .min(1, "Name is required")
     .max(60, "Name must be at most 60 characters."),
+});
+
+export const editKeychainFormSchema = baseKeychainFormSchema;
+export type EditKeychainFormValues = z.infer<typeof editKeychainFormSchema>;
+
+export const createKeychainFormSchema = baseKeychainFormSchema.extend({
   type: keychainType,
 });
 
