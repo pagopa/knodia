@@ -20,9 +20,8 @@ import {
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
 import { z } from "zod";
-
-import { API_CompactOrganization } from "../organization/api.ts";
 
 const API_InterfaceDocumentSeed = z
   .strictObject({
