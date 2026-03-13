@@ -1101,6 +1101,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models

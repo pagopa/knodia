@@ -1,5 +1,6 @@
 import { eventstoreTemplate } from "./packages/test-commons/src/eventstore"
 import { readmodelTemplate } from "./packages/test-commons/src/readmodel"
+import { remoteResourceDbTemplate } from "./packages/test-commons/src/remoteResourceDb"
 import { setupKafkaTestContainer } from "./packages/test-commons/src/testcontainers/kafka"
 import { setupMinioTestContainer } from "./packages/test-commons/src/testcontainers/minio"
 import { runTestFlywayMigrations, setupPostgresTestContainer } from "./packages/test-commons/src/testcontainers/postgres"
@@ -20,7 +21,7 @@ export default async function setup(project: TestProject) {
   await runTestFlywayMigrations({
     connectionString: postgresConnectionString,
     network,
-    templates: [eventstoreTemplate, readmodelTemplate],
+    templates: [eventstoreTemplate, readmodelTemplate, remoteResourceDbTemplate],
   });
 
   project.provide("POSTGRES_CONNECTION_STRING", postgresConnectionString);

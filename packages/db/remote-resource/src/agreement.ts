@@ -26,3 +26,6 @@ export const remoteResourceAgreement = agreementSchema.table(
 
 export type NewRemoteResourceAgreement =
   typeof remoteResourceAgreement.$inferInsert;
+
+export type RemoteResourceAgreementSQL =
+  typeof remoteResourceAgreement.$inferSelect;
