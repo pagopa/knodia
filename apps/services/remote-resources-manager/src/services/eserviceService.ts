@@ -68,9 +68,31 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
         query: reqQuery,
       });
 
+      const uniqueProducerIds = [
+        ...new Set(data.results.map((r) => r.producerId)),
+      ];
+
+      const organizations = await Promise.all(
+        uniqueProducerIds.map((organizationId) =>
+          k2kGatewayApi.getOrganization({
+            client: k2kGatewayClient,
+            path: { organizationId },
+          }),
+        ),
+      );
+
+      const producerNamesMap = new Map(
+        organizations.map(({ data: org }) => [org.id, org.name]),
+      );
+
       return {
         pagination: data.pagination,
-        results: data.results.map(toAPI_CatalogEserviceSearchResult),
+        results: data.results.map((r) =>
+          toAPI_CatalogEserviceSearchResult(
+            r,
+            producerNamesMap.get(r.producerId) ?? "",
+          ),
+        ),
       };
     },
 

@@ -54,7 +54,6 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
             Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
-            "Producer name", // TODO: retrieve producer name
           ),
         ),
       });

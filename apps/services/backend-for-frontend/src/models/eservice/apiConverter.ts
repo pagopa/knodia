@@ -111,7 +111,6 @@ export const toAPI_ConsumerEserviceDetails = (
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,
   hasRequiredAttributes: boolean,
-  producerName: string,
 ): API_ConsumerCatalogEserviceSearchResult => ({
   categories: catalogEserviceSearchResult.categories,
   description: catalogEserviceSearchResult.description,
@@ -120,8 +119,5 @@ export const toAPI_ConsumerCatalogEserviceSearchResult = (
   latestVersionState: catalogEserviceSearchResult.latestVersionState,
   mode: catalogEserviceSearchResult.mode,
   name: catalogEserviceSearchResult.name,
-  producer: {
-    id: catalogEserviceSearchResult.producerId,
-    name: producerName,
-  },
+  producer: catalogEserviceSearchResult.producer,
 });
