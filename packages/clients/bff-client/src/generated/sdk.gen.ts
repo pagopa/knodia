@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses } from './types.gen.ts';
+import type { CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -100,6 +100,16 @@ export const getProducerEserviceLatestVersionInterface = <ThrowOnError extends b
 });
 
 /**
+ * Retrieve a paginated list of Consumer keychains for the logged-in user's organization
+ */
+export const getConsumerKeychains = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainsResponses, GetConsumerKeychainsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains',
+    ...options
+});
+
+/**
  * Create a new Consumer Keychain
  */
 export const createConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<CreateConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<CreateConsumerKeychainResponses, CreateConsumerKeychainErrors, ThrowOnError>({
@@ -117,6 +127,16 @@ export const createConsumerKeychain = <ThrowOnError extends boolean = true>(opti
  * Delete a Consumer Keychain
  */
 export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteConsumerKeychainResponses, DeleteConsumerKeychainErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains/{consumerKeychainId}',
+    ...options
+});
+
+/**
+ * Retrieve a Consumer Keychain with all its details
+ */
+export const getConsumerKeychainDetails = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainDetailsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainDetailsResponses, GetConsumerKeychainDetailsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}',
     ...options
