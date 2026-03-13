@@ -17,5 +17,3 @@ export const keychainSearchSchema = z.object({
     .default(keychainSearchDefaultValues.type)
     .catch(keychainSearchDefaultValues.type),
 });
-
-export type KeychainSearchParams = z.infer<typeof keychainSearchSchema>;
