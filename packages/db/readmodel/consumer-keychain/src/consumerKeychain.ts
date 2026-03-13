@@ -150,6 +150,7 @@ export interface ConsumerKeychainItemsSQL {
 export type ConsumerKeychainKeySQL = InferSelectModel<
   typeof readmodelConsumerKeychainKey
 >;
+
 export type ConsumerKeychainPurposeSQL = InferSelectModel<
   typeof readmodelConsumerKeychainPurpose
 >;
@@ -159,6 +160,9 @@ export type ConsumerKeychainSQL = InferSelectModel<
 export type ConsumerKeychainUserSQL = InferSelectModel<
   typeof readmodelConsumerKeychainUser
 >;
+export interface FlatConsumerKeychainItemsSQL {
+  consumerKeychainSQL: ConsumerKeychainSQL;
+}
 
 export type NewReadmodelConsumerKeychain =
   typeof readmodelConsumerKeychain.$inferInsert;
