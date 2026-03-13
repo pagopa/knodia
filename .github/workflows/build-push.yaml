@@ -18,8 +18,45 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  terraform:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    environment: ecr
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
+          role-session-name: knodia-tf-${{ github.run_number }}
+
+      - name: Read terraform version
+        working-directory: terraform/
+        run: |
+          echo "TERRAFORM_VERSION=$(cat ./.terraform-version)" >> $GITHUB_ENV
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Apply
+        working-directory: terraform/
+        env:
+          ENV: dev
+        run: |
+          terraform fmt -check -recursive
+          ./terraform.sh apply "$ENV" -auto-approve
+
   find_dockerfiles:
     name: Find Dockerfiles
+    needs: terraform
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.set_packages_output.outputs.packages }}
