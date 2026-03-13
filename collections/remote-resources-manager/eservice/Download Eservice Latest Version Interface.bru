@@ -1,0 +1,23 @@
+meta {
+  name: Download Eservice Latest Version Interface
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/eservices/:eserviceId/interface?knodeId=Lynx
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+params:query {
+  knodeId: Lynx
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

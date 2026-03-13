@@ -39,6 +39,16 @@ export function toProcessAPI_AgreementSeed(
     eserviceVersionId: agreementSeed.eserviceVersionId,
   };
 }
+export function toProcessAPI_AgreementState(
+  state: API_AgreementState,
+): agreementProcessApi.AgreementState {
+  return match(state)
+    .with("ACTIVE", () => "Active" as const)
+    .with("SUSPENDED", () => "Suspended" as const)
+    .with("ARCHIVED", () => "Archived" as const)
+    .exhaustive();
+}
+
 function toAPI_AgreementConsumer(
   consumer: agreementProcessApi.AgreementConsumer,
 ): API_AgreementConsumer {

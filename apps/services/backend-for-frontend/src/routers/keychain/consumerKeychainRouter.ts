@@ -47,7 +47,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
 
-      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
+      res.status(201).send({ id: data.id });
     },
     method: "POST",
     schema: {
@@ -148,7 +148,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Getting Consumer Keychain with ID ${req.params.consumerKeychainId} details`,
+        `Getting Consumer Keychain details with ID ${req.params.consumerKeychainId}`,
       );
 
       const { data: consumerKeychain } =
@@ -162,12 +162,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve a Consumer keychain with all its details",
+      description: "Retrieve a Consumer Keychain with all its details",
       operationId: "getConsumerKeychainDetails",
       params: API_ConsumerKeychainIdPathParam,
       response: {
         200: API_KeychainDetails.meta({
-          description: "Consumer keychain details retrieved successfully",
+          description: "Consumer Keychain details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
