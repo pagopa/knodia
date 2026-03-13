@@ -96,17 +96,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    CreatedResource:
-      description: Unique identifier of the created resource
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - id
-      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -523,6 +512,34 @@ components:
         - state
         - updatedAt
       additionalProperties: false
+    CreatedAgreementResource:
+      description: Unique identifier of the created Agreement resource along with the
+        E-service Producer ID
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producerId:
+          $ref: "#/components/schemas/OrganizationId"
+      required:
+        - id
+        - producerId
+      additionalProperties: false
+    Agreements:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Agreement"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     Organization:
       type: object
       properties:
@@ -753,7 +770,7 @@ paths:
               schema:
                 description: Agreement created successfully
                 allOf:
-                  - $ref: "#/components/schemas/CreatedResource"
+                  - $ref: "#/components/schemas/CreatedAgreementResource"
         "400":
           description: Bad Request
           content:
@@ -776,6 +793,61 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getAgreements
+      tags:
+        - resource
+        - agreement
+      description: Retrieve a list of Agreements
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/OrganizationId"
+          in: query
+          name: consumerId
+          required: false
+          description: Filter by Consumer ID
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Agreement State
+      responses:
+        "200":
+          description: Agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Agreements retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Agreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /agreements/{agreementId}:

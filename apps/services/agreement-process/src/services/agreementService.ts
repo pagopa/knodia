@@ -1,4 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -43,7 +44,7 @@ export function agreementServiceBuilder(
         eserviceVersionId,
       }: {
         consumer: {
-          id: OrganizationId;
+          id: ExternalId<OrganizationId>;
           knodeId: KnodeId;
         };
         eserviceId: EserviceId;
@@ -107,7 +108,7 @@ export function agreementServiceBuilder(
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<ListResult<Agreement>> {
       logger.info({ requestQuery }, "Getting Agreements with query params");
 
