@@ -4,7 +4,6 @@ import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import {
   type K2K2GatewayApiClient,
@@ -154,7 +153,6 @@ export function eserviceServiceBuilder(
               name: eservice.name,
               producer: {
                 id: eservice.producerId,
-                knodeId: API_KnodeId.parse(remoteAgreement.knodeId),
                 name: "Producer Name", // TODO: get producer name with remoteAgreement.producerId
               },
               version: {

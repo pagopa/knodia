@@ -36,7 +36,7 @@ function createBffDetail(
     producer: {
       email: "info@ursa.com",
       id: "00000000-0000-4000-8000-000000000099",
-      knodeName: "Lynx Knode",
+      knodeId: "Lynx",
       name: { en: "Ursa Major" },
       notes: "Open Mon-Fri",
     },
@@ -142,7 +142,7 @@ describe("toConsumptionEserviceDetail", () => {
     });
     expect(result.mode).toBe("ProvideData");
     expect(result.producer.email).toBe("info@ursa.com");
-    expect(result.producer.knodeName).toBe("Lynx Knode");
+    expect(result.producer.knodeId).toBe("Lynx");
     expect(result.producer.notes).toBe("Open Mon-Fri");
     expect(result.requiredAttributes).toEqual([
       [{ code: "NUTS3", possessed: true, scheme: "eu" }],

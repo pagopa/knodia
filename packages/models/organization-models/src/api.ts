@@ -1,5 +1,4 @@
 import { OrganizationId } from "@knodia/common-models/ids";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
 import z from "zod";
 
 const minOrganizationNameLength = 5;
@@ -14,10 +13,9 @@ export type API_OrganizationIdPathParam = z.infer<
 export const API_CompactOrganization = z
   .strictObject({
     id: z.uuid(),
-    knodeId: API_KnodeId,
     name: z.string().min(minOrganizationNameLength),
   })
   .meta({
-    description: "Organization with only id, knodeId, and name",
+    description: "Organization with only id, and name",
     id: "CompactOrganization",
   });

@@ -143,7 +143,7 @@ function ProducerContactPopover({
       <Popover
         className="max-w-md"
         placement="bottom start"
-        title={`${producer.name} – ${producer.knodeName}`}
+        title={`${producer.name} – ${producer.knodeId}`}
       >
         <dl className="body-sm flex flex-col gap-1">
           <div className="flex gap-2">

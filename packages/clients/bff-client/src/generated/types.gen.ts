@@ -59,11 +59,10 @@ export type KnodeId = 'Orion' | 'Lynx';
 export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
 /**
- * Organization with only id, knodeId, and name
+ * Organization with only id, and name
  */
 export type CompactOrganization = {
     id: string;
-    knodeId: KnodeId;
     name: string;
 };
 
@@ -330,7 +329,7 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeName: string;
+    knodeId: KnodeId;
     name: LocalizedName;
     notes: string;
 };
