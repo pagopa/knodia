@@ -1,4 +1,9 @@
-import { API_OrganizationId } from "@knodia/common-models/api";
+import {
+  API_CreatedResource,
+  API_OrganizationId,
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
 import { z } from "zod";
 
 import { API_KnodeId } from "../api.ts";
@@ -41,6 +46,18 @@ export const API_AgreementState = z
   });
 export type API_AgreementState = z.infer<typeof API_AgreementState>;
 
+export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
+  consumerId: API_OrganizationId.optional().meta({
+    description: "Filter by Consumer ID",
+  }),
+  state: API_AgreementState.optional().meta({
+    description: "Filter by Agreement State",
+  }),
+});
+export type API_GetAgreementsQueryParams = z.infer<
+  typeof API_GetAgreementsQueryParams
+>;
+
 export const API_AgreementIdPathParam = z.strictObject({
   agreementId: API_AgreementId,
 });
@@ -64,3 +81,19 @@ export const API_Agreement = z
     id: "Agreement",
   });
 export type API_Agreement = z.infer<typeof API_Agreement>;
+
+export const API_CreatedAgreementResource = API_CreatedResource.extend({
+  producerId: API_OrganizationId,
+}).meta({
+  description:
+    "Unique identifier of the created Agreement resource along with the E-service Producer ID",
+  id: "CreatedAgreementResource",
+});
+
+export const API_Agreements = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_Agreement),
+  })
+  .meta({ id: "Agreements" });
+export type API_Agreements = z.infer<typeof API_Agreements>;

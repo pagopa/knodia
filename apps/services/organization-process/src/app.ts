@@ -2,6 +2,7 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { organizationEventStoreWriterBuilder } from "@knodia/db-event-store-writer/organization";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -28,9 +29,11 @@ import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
   config,
+  eventStoreDb,
   readmodelDb,
 }: {
   config: AuthConfig & LoggerConfig;
+  eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
@@ -69,7 +72,10 @@ export function buildApp({
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
     protectedApp.register(
       organizationRouter,
-      organizationServiceBuilder(readmodelServiceBuilder(readmodelDb)),
+      organizationServiceBuilder(
+        organizationEventStoreWriterBuilder(eventStoreDb),
+        readmodelServiceBuilder(readmodelDb),
+      ),
     );
   });
 
@@ -77,6 +83,16 @@ export function buildApp({
 }
 
 export function buildAppFromConfig(config: OrganizationProcessConfig) {
+  const eventStorePool = new Pool({
+    database: config.eventStoreDbName,
+    host: config.eventStoreDbHost,
+    password: config.eventStoreDbPassword,
+    port: config.eventStoreDbPort,
+    ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.eventStoreDbUser,
+  });
+  const eventStoreDb = drizzle(eventStorePool);
+
   const readmodelPool = new Pool({
     database: config.readmodelDbName,
     host: config.readmodelDbHost,
@@ -89,10 +105,12 @@ export function buildAppFromConfig(config: OrganizationProcessConfig) {
 
   const app = buildApp({
     config,
+    eventStoreDb,
     readmodelDb,
   });
 
   app.addHook("onClose", async () => {
+    await eventStorePool.end();
     await readmodelPool.end();
   });
 
