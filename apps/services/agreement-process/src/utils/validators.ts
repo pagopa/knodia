@@ -7,7 +7,6 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import type { Eservice, EserviceVersionState } from "@knodia/eservice-models";
-import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
