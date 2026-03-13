@@ -1466,7 +1466,7 @@ paths:
       operationId: getConsumerKeychainDetails
       tags:
         - consumerKeychain
-      description: Retrieve a Consumer keychain with all its details
+      description: Retrieve a Consumer Keychain with all its details
       parameters:
         - schema:
             type: string
@@ -1477,11 +1477,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Consumer keychain details retrieved successfully
+          description: Consumer Keychain details retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer keychain details retrieved successfully
+                description: Consumer Keychain details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainDetails"
         "400":

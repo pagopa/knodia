@@ -849,7 +849,7 @@ export type GetConsumerKeychainDetailsError = GetConsumerKeychainDetailsErrors[k
 
 export type GetConsumerKeychainDetailsResponses = {
     /**
-     * Consumer keychain details retrieved successfully
+     * Consumer Keychain details retrieved successfully
      */
     200: KeychainDetails;
 };
