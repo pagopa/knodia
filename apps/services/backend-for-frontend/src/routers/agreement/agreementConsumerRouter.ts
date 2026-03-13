@@ -1,10 +1,6 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import {
-  agreementProcessApi,
-  type AgreementProcessClient,
-} from "@knodia/agreement-process-client";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -22,16 +18,12 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface AgreementConsumerRouterOptions {
-  agreementProcessClient: AgreementProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const agreementConsumerRouter: FastifyPluginAsyncZod<
   AgreementConsumerRouterOptions
-> = async (
-  fastify,
-  { agreementProcessClient, remoteResourcesManagerClient },
-) => {
+> = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -90,34 +82,34 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         { data: suspendedAgreements },
         { data: archivedAgreements },
       ] = await Promise.all([
-        agreementProcessApi.getAgreements({
-          client: agreementProcessClient,
+        remoteResourcesManagerApi.getAgreements({
+          client: remoteResourcesManagerClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           query: {
             consumerId,
             limit: 1,
             offset: 0,
-            state: ["Active"],
+            state: "Active",
           },
         }),
-        agreementProcessApi.getAgreements({
-          client: agreementProcessClient,
+        remoteResourcesManagerApi.getAgreements({
+          client: remoteResourcesManagerClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           query: {
             consumerId,
             limit: 1,
             offset: 0,
-            state: ["Suspended"],
+            state: "Suspended",
           },
         }),
-        agreementProcessApi.getAgreements({
-          client: agreementProcessClient,
+        remoteResourcesManagerApi.getAgreements({
+          client: remoteResourcesManagerClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           query: {
             consumerId,
             limit: 1,
             offset: 0,
-            state: ["Archived"],
+            state: "Archived",
           },
         }),
       ]);
