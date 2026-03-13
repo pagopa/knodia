@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { z, ZodError } from "zod";
 
-import { generateId } from "../src/brandedIds.ts";
 import { KafkaMessageEnvelope } from "../src/events.ts";
+import { generateId } from "../src/ids/brandedIds.ts";
 
 describe("KafkaMessageEnvelope.decode", () => {
   const toHex = (value: string) => Buffer.from(value, "utf8").toString("hex");

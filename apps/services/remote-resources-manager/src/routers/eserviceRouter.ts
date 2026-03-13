@@ -1,7 +1,9 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { API_FileDownload } from "@knodia/common-models/api";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -69,7 +71,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       const detail = await eserviceService.getEserviceDetails(
         {
-          id: unsafeBrandId(req.params.eserviceId),
+          id: unsafeBrandExternalId(req.params.eserviceId),
           knodeId: KnodeId.parse(req.query.knodeId),
         },
         ctx,
@@ -96,5 +98,49 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const { buffer, contentType, fileName } =
+        await eserviceService.downloadEserviceLatestVersionInterface(
+          {
+            id: unsafeBrandExternalId(req.params.eserviceId),
+            knodeId: KnodeId.parse(req.query.knodeId),
+          },
+          ctx,
+        );
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="${fileName}"`,
+        "Content-Type": contentType,
+      });
+      res.raw.end(buffer);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Download the interface document for the latest version of an E-service",
+      operationId: "downloadEserviceLatestVersionInterface",
+      params: API_EserviceIdPathParam,
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
+      querystring: API_GetEserviceDetailsQueryParams,
+      response: {
+        200: API_FileDownload.meta({
+          description: "E-service interface document downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Download E-service latest version interface",
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/interface",
   });
 };

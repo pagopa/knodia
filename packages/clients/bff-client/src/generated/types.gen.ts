@@ -33,13 +33,6 @@ export type Problem = {
     title: string;
 };
 
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
-
 export type Pagination = {
     limit: number;
     offset: number;
@@ -47,11 +40,23 @@ export type Pagination = {
 };
 
 /**
+ * Binary file content
+ */
+export type FileDownload = Blob | File;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
     id: string;
 };
+
+/**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
 export type Attribute = {
     code: string;
@@ -378,6 +383,15 @@ export type CompactEservice = {
     name: LocalizedName;
 };
 
+/**
+ * Seed data to create a new Agreement
+ */
+export type AgreementSeed = {
+    eserviceId: string;
+    eserviceVersionId: string;
+    knodeId: KnodeId;
+};
+
 export type ProducerAgreement = {
     consumer: CompactOrganization;
     eservice: CompactEservice;
@@ -689,7 +703,7 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
      * E-service interface document downloaded successfully
      */
-    200: Blob | File;
+    200: FileDownload;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
@@ -840,7 +854,7 @@ export type GetConsumerKeychainDetailsError = GetConsumerKeychainDetailsErrors[k
 
 export type GetConsumerKeychainDetailsResponses = {
     /**
-     * Consumer keychain details retrieved successfully
+     * Consumer Keychain details retrieved successfully
      */
     200: KeychainDetails;
 };
@@ -968,6 +982,80 @@ export type GetConsumerEserviceDetailsResponses = {
 };
 
 export type GetConsumerEserviceDetailsResponse = GetConsumerEserviceDetailsResponses[keyof GetConsumerEserviceDetailsResponses];
+
+export type GetConsumerEserviceLatestVersionInterfaceData = {
+    body?: never;
+    path: {
+        eserviceId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/eservices/{eserviceId}/interface';
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceError = GetConsumerEserviceLatestVersionInterfaceErrors[keyof GetConsumerEserviceLatestVersionInterfaceErrors];
+
+export type GetConsumerEserviceLatestVersionInterfaceResponses = {
+    /**
+     * E-service interface document downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
+
+export type CreateConsumerAgreementData = {
+    body: AgreementSeed;
+    path?: never;
+    query?: never;
+    url: '/consumer/agreements';
+};
+
+export type CreateConsumerAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerAgreementError = CreateConsumerAgreementErrors[keyof CreateConsumerAgreementErrors];
+
+export type CreateConsumerAgreementResponses = {
+    /**
+     * Agreement created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;

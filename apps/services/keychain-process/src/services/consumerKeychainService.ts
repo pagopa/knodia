@@ -5,7 +5,10 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { ConsumerKeychain } from "@knodia/keychain-models";
+import type {
+  ConsumerKeychain,
+  FlatConsumerKeychain,
+} from "@knodia/keychain-models";
 
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import { match, P } from "ts-pattern";
@@ -105,7 +108,7 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ListResult<ConsumerKeychain>> {
+    ): Promise<ListResult<FlatConsumerKeychain>> {
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);

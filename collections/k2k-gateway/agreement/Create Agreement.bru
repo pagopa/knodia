@@ -1,13 +1,11 @@
 meta {
   name: Create Agreement
   type: http
-  seq: 1
 }
 
 post {
   url: {{host-k2k-gateway}}/agreements
   body: json
-  auth: none
 }
 
 headers {
@@ -23,5 +21,6 @@ body:json {
 }
 
 vars:post-response {
-  agreementId: res.body.id
+  agreementId: res.body.id,
+  producerId: res.body.producerId
 }
