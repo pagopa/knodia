@@ -92,7 +92,7 @@ export type API_GetEserviceDetailsQueryParams = z.infer<
   typeof API_GetEserviceDetailsQueryParams
 >;
 
-export const API_EserviceVersionDetails = z
+const API_EserviceVersionDetails = z
   .strictObject({
     accessTokenAudience: z.array(z.string()),
     accessTokenDuration: z.number().int().meta({ format: "int32" }),
