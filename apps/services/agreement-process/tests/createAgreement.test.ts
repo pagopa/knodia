@@ -2,21 +2,19 @@
 import {
   Agreement,
   AgreementEventV1,
+  AgreementState,
   toAgreementV1,
 } from "@knodia/agreement-models";
-import {
-  generateExternalId,
-  generateId,
-  KnodeId,
-  OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockEservice } from "@knodia/test-commons/utils";
+import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
-import { eserviceWriterService } from "./setup.ts";
+import { agreementCreationConflictingStates } from "../src/utils/validators.ts";
+import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import { getAllAgreementEvents, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
@@ -37,49 +35,72 @@ describe("POST /agreements (createAgreement)", async () => {
     eserviceVersionId: eservice.versions[0]!.id,
   };
 
-  it("should correctly create agreement creation event", async () => {
-    await eserviceWriterService.upsertEservice(eservice, 1);
+  const allowedAgreementStatesForCreation: (AgreementState | undefined)[] = [
+    ...AgreementState.options.filter(
+      (state) => !agreementCreationConflictingStates.includes(state),
+    ),
+    undefined,
+  ];
+  it.each(allowedAgreementStatesForCreation)(
+    "should correctly create agreement creation event (state of the existing agreement: %s)",
+    async (state) => {
+      if (state) {
+        const agreement: Agreement = {
+          ...getMockAgreement(),
+          consumer: {
+            id: consumerId,
+            knodeId: KnodeId.parse(body.consumer.knodeId),
+          },
+          eserviceId: eservice.id,
+          state,
+        };
 
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/agreements")
-      .body(body);
-    expect(response.statusCode).toBe(201);
+        await agreementWriterService.upsertAgreement(agreement, 1);
+      }
 
-    const responseBody = response.json<API_Agreement>();
+      await eserviceWriterService.upsertEservice(eservice, 1);
 
-    const expectedAgreement: Agreement = {
-      attributes: [],
-      consumer: {
-        id: consumerId,
-        knodeId: KnodeId.parse(body.consumer.knodeId),
-      },
-      createdAt: new Date(responseBody.createdAt),
-      eserviceId: eservice.id,
-      eserviceVersionId: eserviceVersion.id,
-      id: expect.any(String),
-      producerId: eservice.producerId,
-      state: "Active",
-      updatedAt: new Date(responseBody.updatedAt),
-    };
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/agreements")
+        .body(body);
+      expect(response.statusCode).toBe(201);
 
-    expect(responseBody).toMatchObject(toAPI_Agreement(expectedAgreement));
+      const responseBody = response.json<API_Agreement>();
 
-    const events = await getAllAgreementEvents();
-    expect(events).toHaveLength(1);
+      const expectedAgreement: Agreement = {
+        attributes: [],
+        consumer: {
+          id: consumerId,
+          knodeId: KnodeId.parse(body.consumer.knodeId),
+        },
+        createdAt: new Date(responseBody.createdAt),
+        eserviceId: eservice.id,
+        eserviceVersionId: eserviceVersion.id,
+        id: expect.any(String),
+        producerId: eservice.producerId,
+        state: "Active",
+        updatedAt: new Date(responseBody.updatedAt),
+      };
 
-    const createdEvent = events[0];
+      expect(responseBody).toMatchObject(toAPI_Agreement(expectedAgreement));
 
-    expect(createdEvent).toMatchObject({
-      streamId: responseBody.id,
-      type: "AgreementActivatedV1",
-      version: 0,
-    });
+      const events = await getAllAgreementEvents();
+      expect(events).toHaveLength(1);
 
-    const createdEventData = AgreementEventV1.parse(createdEvent).data;
-    expect(createdEventData.agreement).toMatchObject(
-      toAgreementV1(expectedAgreement),
-    );
-  });
+      const createdEvent = events[0];
+
+      expect(createdEvent).toMatchObject({
+        streamId: responseBody.id,
+        type: "AgreementActivatedV1",
+        version: 0,
+      });
+
+      const createdEventData = AgreementEventV1.parse(createdEvent).data;
+      expect(createdEventData.agreement).toMatchObject(
+        toAgreementV1(expectedAgreement),
+      );
+    },
+  );
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],
@@ -149,6 +170,28 @@ describe("POST /agreements (createAgreement)", async () => {
       .body(body);
     expect(response.statusCode).toBe(409);
   });
+
+  it.each(agreementCreationConflictingStates)(
+    "should return 409 if an agreement in state %s already exists",
+    async (state) => {
+      const agreement: Agreement = {
+        ...getMockAgreement(),
+        consumer: {
+          id: consumerId,
+          knodeId: KnodeId.parse(body.consumer.knodeId),
+        },
+        eserviceId: eservice.id,
+        state,
+      };
+
+      await agreementWriterService.upsertAgreement(agreement, 1);
+
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/agreements")
+        .body(body);
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",

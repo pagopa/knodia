@@ -2,11 +2,8 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
-import {
-  KnodeId,
-  unsafeBrandExternalId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -77,6 +74,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "internal" },
       ]);
 
       const { results, totalCount } = await agreementService.getAgreements(

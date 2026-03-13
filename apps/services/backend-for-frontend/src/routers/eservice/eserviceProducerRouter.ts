@@ -2,7 +2,10 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_CreatedResource } from "@knodia/common-models/api";
+import {
+  API_CreatedResource,
+  API_FileDownload,
+} from "@knodia/common-models/api";
 import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
@@ -13,29 +16,28 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { config } from "../../config/config.ts";
+import { apiTags } from "../../models/apiTags.ts";
 import {
   API_EserviceSeed,
-  API_FileDownload,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
-} from "../../models/api.ts";
+} from "../../models/eservice/api.ts";
 import {
   toAPI_ProducerEservice,
   toAPI_ProducerEserviceDetails,
-} from "../../models/apiConverter.ts";
-import { apiTags } from "../../models/apiTags.ts";
+} from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
-interface EserviceRouterOptions {
+interface EserviceProducerRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
 }
 
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceProducerRouter: FastifyPluginAsyncZod<
-  EserviceRouterOptions
+  EserviceProducerRouterOptions
   // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
   fastify.route({
@@ -77,7 +79,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         client: eserviceProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
-      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
+      res.status(201).send({ id: data.id });
     },
     method: "POST",
     schema: {
@@ -275,7 +277,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         "Download the interface document for the latest version of an E-service",
       operationId: "getProducerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
-      produces: ["application/octet-stream"],
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
       response: {
         200: API_FileDownload.meta({
           description: "E-service interface document downloaded successfully",
@@ -285,6 +287,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
+      summary: "Download producer E-service latest version interface",
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId/interface",

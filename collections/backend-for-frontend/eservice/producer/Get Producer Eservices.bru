@@ -1,0 +1,23 @@
+meta {
+  name: Get Producer Eservices
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producer/eservices?offset=0&limit=50
+  body: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+  ~q:
+  ~state: Active
+  ~mode: ProvideData
+  ~sortBy: name
+  ~sortOrder: asc
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

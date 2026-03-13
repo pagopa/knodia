@@ -1,4 +1,6 @@
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type { FlatConsumerKeychain } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -6,8 +8,8 @@ import {
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-consumer-keychain";
-import { aggregateConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
-import { type ConsumerKeychain } from "@knodia/keychain-models";
+import { aggregateFlatConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
+import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-consumer-keychain/services";
 import { eq } from "drizzle-orm";
 
 import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";
@@ -15,10 +17,18 @@ import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+  const consumerKeychainReadmodelService =
+    consumerKeychainReadmodelServiceBuilder(readmodelDb);
+
   return {
+    async getConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
+      return await consumerKeychainReadmodelService.getConsumerKeychainById(
+        consumerKeychainId,
+      );
+    },
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
-    ): Promise<ListResult<ConsumerKeychain>> {
+    ): Promise<ListResult<FlatConsumerKeychain>> {
       const { limit, offset } = params;
 
       return await readmodelDb.transaction(async (tx) => {
@@ -36,6 +46,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
+          .orderBy(...orderByFilters)
           .limit(limit)
           .offset(offset)
           .as("paginatedIds");
@@ -54,7 +65,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           getTableTotalCount(tx, createFilterQuery()),
         ]);
 
-        const keychains = aggregateConsumerKeychains(queryRes);
+        const keychains = aggregateFlatConsumerKeychains(queryRes);
 
         return {
           results: keychains.map((e) => e.data),

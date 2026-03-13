@@ -2,11 +2,8 @@
 import type { Eservice } from "@knodia/eservice-models";
 
 import { Agreement } from "@knodia/agreement-models";
-import {
-  generateExternalId,
-  KnodeId,
-  type OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId, type OrganizationId } from "@knodia/common-models/ids";
 import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 
@@ -23,7 +20,7 @@ export const eservice1: Eservice = {
 };
 const eserviceVersion1 = eservice1.versions[0]!;
 
-export const eservice2: Eservice = {
+const eservice2: Eservice = {
   ...getMockEservice({ latestVersionState: "Active", seed: 1 }),
   name: {
     en: "Test Eservice 2",
@@ -32,7 +29,7 @@ export const eservice2: Eservice = {
 };
 const eserviceVersion2 = eservice2.versions[0]!;
 
-const consumerId = generateExternalId<OrganizationId>();
+export const consumerId = generateExternalId<OrganizationId>();
 export const mockAgreements: Agreement[] = [
   {
     ...getMockAgreement(0),

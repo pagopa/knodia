@@ -1,5 +1,7 @@
-import type { ExternalResource } from "@knodia/common-models/externalResource";
-
+import {
+  type ExternalResource,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
 import {
   KnodeId,
   OrganizationId,

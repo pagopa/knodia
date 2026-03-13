@@ -1,4 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -11,7 +12,6 @@ import {
   AgreementId,
   EserviceId,
   EserviceVersionId,
-  ExternalId,
   generateId,
   KnodeId,
   OrganizationId,
@@ -27,7 +27,7 @@ import {
 } from "../utils/readmodelUtils.ts";
 import {
   assertEserviceVersionIsActive,
-  assertRequesterIsProducer,
+  assertNoConflictingAgreementsExist,
 } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -57,6 +57,13 @@ export function agreementServiceBuilder(
         { requestBody: { consumer, eserviceId, eserviceVersionId } },
         `Creating Agreement ${agreementId}`,
       );
+
+      await assertNoConflictingAgreementsExist({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await assertEserviceVersionIsActive(
@@ -91,24 +98,17 @@ export function agreementServiceBuilder(
     },
     async getAgreement(
       agreementId: AgreementId,
-      {
-        authData,
-        logger,
-      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<Agreement> {
       logger.info(`Getting Agreement with ID ${agreementId}`);
 
       const agreement = await retrieveAgreement(agreementId, readmodelService);
 
-      if (authData.tokenType === "ui-session") {
-        assertRequesterIsProducer(agreement.producerId, authData);
-      }
-
       return agreement;
     },
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<ListResult<Agreement>> {
       logger.info({ requestQuery }, "Getting Agreements with query params");
 
