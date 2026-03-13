@@ -2,7 +2,10 @@ import type { FileManager } from "@knodia/file-manager";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_CreatedResource } from "@knodia/common-models/api";
+import {
+  API_CreatedResource,
+  API_FileDownload,
+} from "@knodia/common-models/api";
 import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
@@ -16,7 +19,6 @@ import { config } from "../../config/config.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_EserviceSeed,
-  API_FileDownload,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
@@ -77,7 +79,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         client: eserviceProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
-      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
+      res.status(201).send({ id: data.id });
     },
     method: "POST",
     schema: {
@@ -275,7 +277,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         "Download the interface document for the latest version of an E-service",
       operationId: "getProducerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
-      produces: ["application/octet-stream"],
+      produces: ["application/json", "application/yaml", "application/x-yaml"],
       response: {
         200: API_FileDownload.meta({
           description: "E-service interface document downloaded successfully",
@@ -285,6 +287,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
+      summary: "Download producer E-service latest version interface",
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId/interface",

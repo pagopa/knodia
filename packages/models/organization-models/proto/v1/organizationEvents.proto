@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package organization.v1;
+
+import "v1/organization.proto";
+
+message OrganizationCreatedV1 {
+  OrganizationV1 organization = 1;
+}

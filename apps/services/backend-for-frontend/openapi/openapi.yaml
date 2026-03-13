@@ -73,18 +73,6 @@ components:
         - status
         - title
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
-    AgreementState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
     Pagination:
       type: object
       properties:
@@ -106,6 +94,10 @@ components:
         - offset
         - total
       additionalProperties: false
+    FileDownload:
+      description: Binary file content
+      format: binary
+      type: string
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -117,6 +109,18 @@ components:
       required:
         - id
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
+    AgreementState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     Attribute:
       type: object
       properties:
@@ -783,6 +787,25 @@ components:
         - id
         - name
       additionalProperties: false
+    AgreementSeed:
+      description: Seed data to create a new Agreement
+      type: object
+      properties:
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        eserviceVersionId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - eserviceId
+        - eserviceVersionId
+        - knodeId
+      additionalProperties: false
     ProducerAgreement:
       type: object
       properties:
@@ -1232,6 +1255,7 @@ paths:
   /producer/eservices/{eserviceId}/interface:
     get:
       operationId: getProducerEserviceLatestVersionInterface
+      summary: Download producer E-service latest version interface
       tags:
         - eservice
       description: Download the interface document for the latest version of an E-service
@@ -1247,11 +1271,14 @@ paths:
         "200":
           description: E-service interface document downloaded successfully
           content:
-            application/octet-stream:
+            application/json: &a1
               schema:
-                format: binary
                 description: E-service interface document downloaded successfully
-                type: string
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a1
+            application/x-yaml: *a1
         "400":
           description: Bad Request
           content:
@@ -1617,6 +1644,116 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/eservices/{eserviceId}/interface:
+    get:
+      operationId: getConsumerEserviceLatestVersionInterface
+      summary: Download consumer E-service latest version interface
+      tags:
+        - eservice
+      description: Download the interface document for the latest version of an E-service
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: eserviceId
+          required: true
+      responses:
+        "200":
+          description: E-service interface document downloaded successfully
+          content:
+            application/json: &a2
+              schema:
+                description: E-service interface document downloaded successfully
+                format: binary
+                allOf:
+                  - $ref: "#/components/schemas/FileDownload"
+            application/yaml: *a2
+            application/x-yaml: *a2
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/agreements:
+    post:
+      operationId: createConsumerAgreement
+      summary: Create a consumer agreement
+      tags:
+        - agreement
+      description: Create a new Agreement for the consumer to access a Producer's E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AgreementSeed"
+      responses:
+        "201":
+          description: Agreement created successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/agreements:
     get:
       operationId: getProducerAgreements
@@ -1685,9 +1822,9 @@ tags:
     name: health
   - description: Authentication routes
     name: auth
+  - description: Agreements routes
+    name: agreement
   - description: E-services routes
     name: eservice
   - description: Consumer Keychains routes
     name: consumerKeychain
-  - description: Agreement routes
-    name: agreement

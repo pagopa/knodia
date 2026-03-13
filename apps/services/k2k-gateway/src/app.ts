@@ -6,6 +6,7 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import { initFileManager } from "@knodia/file-manager";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import type { K2KGatewayConfig } from "./config/config.ts";
@@ -50,6 +51,7 @@ function buildApp({
     eserviceProcessUrl,
     organizationProcessUrl,
   });
+  const fileManager = initFileManager();
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
   const app = createFastifyApp({
     fastifyOptions: {
@@ -94,6 +96,7 @@ function buildApp({
   app.register(healthRouter);
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
+    fileManager,
     tokenProvider,
   });
   app.register(agreementRouter, {

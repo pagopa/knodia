@@ -16,6 +16,8 @@
   "dependencies": {
     "@fontsource-variable/inter": "catalog:",
     "@phosphor-icons/react": "catalog:",
+    "@react-aria/toast": "catalog:",
+    "@react-stately/toast": "catalog:",
     "@tailwindcss/vite": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",

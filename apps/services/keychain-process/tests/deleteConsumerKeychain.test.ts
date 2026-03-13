@@ -46,13 +46,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)
 
     const deletedEventData = KeychainEventV1.parse(deletedEvent).data;
     expect(deletedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1({
-        ...consumerKeychain,
-        // TODO: Remove after KN-259
-        keys: [],
-        purposes: [],
-        users: [],
-      }),
+      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
     });
   });
 
