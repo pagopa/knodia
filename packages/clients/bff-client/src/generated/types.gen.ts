@@ -330,7 +330,7 @@ export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
     knodeName: string;
-    name: LocalizedName;
+    name: string;
     notes: string;
 };
 

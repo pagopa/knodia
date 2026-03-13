@@ -90,7 +90,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const k2kOrganization: k2kGatewayApi.Organization = {
     attributes: [],
     id: k2kEservice.producerId,
-    name: expectedApiDetail.producer.name.en,
+    name: expectedApiDetail.producer.name,
   };
 
   beforeEach(() => {
@@ -134,7 +134,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
         email: "info@example.com",
         id: k2kOrganization.id,
         knodeName: "Knode",
-        name: { en: k2kOrganization.name },
+        name: k2kOrganization.name,
         notes: "Notes",
       },
     });
