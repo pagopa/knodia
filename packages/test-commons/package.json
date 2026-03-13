@@ -38,6 +38,7 @@
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",
     "./readmodel": "./src/readmodel.ts",
+    "./remoteResourceDb": "./src/remoteResourceDb.ts",
     "./utils": "./src/utils/index.ts"
   }
 }

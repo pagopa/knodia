@@ -1,0 +1,26 @@
+meta {
+  name: Get Agreements
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/agreements?offset=0&limit=50
+  body: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~consumerId: {{consumerId}}
+  ~state: Active
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  agreements: res.body.results
+}
