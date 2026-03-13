@@ -8,7 +8,10 @@ import {
   aggregateByPKString,
   throwIfMultipleOrEmpty,
 } from "@knodia/db-readmodel-commons/utils";
-import { ConsumerKeychain } from "@knodia/keychain-models";
+import {
+  ConsumerKeychain,
+  FlatConsumerKeychain,
+} from "@knodia/keychain-models";
 
 import {
   type ConsumerKeychainItemsSQL,
@@ -21,7 +24,10 @@ import {
   readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
-import { buildConsumerKeychain } from "./converters.ts";
+import {
+  buildConsumerKeychain,
+  buildFlatConsumerKeychain,
+} from "./converters.ts";
 
 type ConsumerKeychainAggregatorInput = {
   consumerKeychain: ConsumerKeychainSQL;
@@ -38,6 +44,28 @@ export const aggregateConsumerKeychain = (
   }
 
   return buildConsumerKeychain(toConsumerKeychainAggregator(queryRes));
+};
+
+export const aggregateFlatConsumerKeychain = (
+  queryRes: ConsumerKeychainAggregatorInput,
+): undefined | WithMetadata<FlatConsumerKeychain> => {
+  if (queryRes.length === 0) {
+    return undefined;
+  }
+
+  return buildFlatConsumerKeychain(toConsumerKeychainAggregator(queryRes));
+};
+
+export const aggregateFlatConsumerKeychains = (
+  queryRes: ConsumerKeychainAggregatorInput,
+): WithMetadata<FlatConsumerKeychain>[] => {
+  const { consumerKeychainsSQL } = toConsumerKeychainsAggregator(queryRes);
+
+  return consumerKeychainsSQL.map((consumerKeychainSQL) =>
+    buildFlatConsumerKeychain({
+      consumerKeychainSQL,
+    }),
+  );
 };
 
 export const aggregateConsumerKeychains = (

@@ -2,7 +2,10 @@ import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/key
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { ConsumerKeychain } from "@knodia/keychain-models";
+import type {
+  ConsumerKeychain,
+  FlatConsumerKeychain,
+} from "@knodia/keychain-models";
 
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 
@@ -87,7 +90,7 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ListResult<ConsumerKeychain>> {
+    ): Promise<ListResult<FlatConsumerKeychain>> {
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);
