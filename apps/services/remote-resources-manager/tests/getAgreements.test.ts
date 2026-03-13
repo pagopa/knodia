@@ -41,6 +41,7 @@ const toK2KResult = (apiResult: API_Agreement): k2kGatewayApi.Agreement => ({
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
 ];
 
 describe("GET /agreements (getAgreements)", () => {
