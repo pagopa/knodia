@@ -367,10 +367,6 @@ export type ConsumerEserviceDetails = {
     identificationRequired: boolean;
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
     isSignalHubEnabled: boolean;
-    /**
-     * Unique identifier of the latest E-service version
-     */
-    latestVersionId: string;
     maxDailyCalls: ConsumerEserviceDetailsMaxDailyCalls;
     mode: EserviceMode;
     name: LocalizedName;
