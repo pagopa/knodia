@@ -5,6 +5,7 @@ import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
@@ -36,7 +37,7 @@ export function KeychainEditAction({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <>
+    <DialogTrigger>
       <Button
         hierarchy="neutral"
         kind="tonal"
@@ -45,15 +46,13 @@ export function KeychainEditAction({
       >
         Edit
       </Button>
-      {isOpen && (
-        <EditKeychainModal
-          isOpen={isOpen}
-          keychain={keychain}
-          onClose={() => setIsOpen(false)}
-          type={type}
-        />
-      )}
-    </>
+      <EditKeychainModal
+        isOpen={isOpen}
+        keychain={keychain}
+        onClose={() => setIsOpen(false)}
+        type={type}
+      />
+    </DialogTrigger>
   );
 }
 
@@ -67,6 +66,7 @@ function EditKeychainModal({
     ...updateConsumerKeychainMutation({
       client,
     }),
+    onSuccess: () => onClose(),
   });
 
   function handleEditKeychain(seed: EditKeychainFormValues) {
