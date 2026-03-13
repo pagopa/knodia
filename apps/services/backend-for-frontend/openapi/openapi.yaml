@@ -1611,6 +1611,44 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getConsumerAgreements
+      tags:
+        - agreement
+      description: Retrieve a list of Consumer Agreements
+      responses:
+        "200":
+          description: Consumer Agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Agreements retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/agreements:
     get:
       operationId: getProducerAgreements
@@ -1645,45 +1683,6 @@ paths:
                 description: Producer Agreements retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerAgreements"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /consumer/agreements:
-    get:
-      operationId: getConsumerAgreements
-      tags:
-        - agreement
-      description: Retrieve a list of Consumer Agreements
-      responses:
-        "200":
-          description: Consumer Agreements retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Consumer Agreements retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/ConsumerAgreements"
         "400":
           description: Bad Request
           content:

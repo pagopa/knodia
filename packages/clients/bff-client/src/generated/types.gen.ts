@@ -896,6 +896,39 @@ export type GetConsumerEserviceLatestVersionInterfaceResponses = {
 
 export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
 
+export type GetConsumerAgreementsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/consumer/agreements';
+};
+
+export type GetConsumerAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetConsumerAgreementsErrors];
+
+export type GetConsumerAgreementsResponses = {
+    /**
+     * Consumer Agreements retrieved successfully
+     */
+    200: ConsumerAgreements;
+};
+
+export type GetConsumerAgreementsResponse = GetConsumerAgreementsResponses[keyof GetConsumerAgreementsResponses];
+
 export type CreateConsumerAgreementData = {
     body: AgreementSeed;
     path?: never;
@@ -970,36 +1003,3 @@ export type GetProducerAgreementsResponses = {
 };
 
 export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];
-
-export type GetConsumerAgreementsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/consumer/agreements';
-};
-
-export type GetConsumerAgreementsErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetConsumerAgreementsErrors];
-
-export type GetConsumerAgreementsResponses = {
-    /**
-     * Consumer Agreements retrieved successfully
-     */
-    200: ConsumerAgreements;
-};
-
-export type GetConsumerAgreementsResponse = GetConsumerAgreementsResponses[keyof GetConsumerAgreementsResponses];
