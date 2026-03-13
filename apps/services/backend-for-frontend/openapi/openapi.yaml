@@ -204,8 +204,7 @@ components:
           $ref: "#/components/schemas/KnodeId"
         name:
           type: string
-          minLength: 5
-          maxLength: 60
+          minLength: 1
       required:
         - id
         - knodeId
