@@ -2,18 +2,8 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "tags": ["-knipignore"],
   "includeEntryExports": true,
-  "ignoreWorkspaces": [
-    "packages/models/keychain-models",
-    "packages/db/readmodel/consumer-keychain",
-    "packages/db/event-store/keychain",
-    "apps/services/keychain-process"
-  ],
   "ignoreIssues": {
-    "packages/models/common-models/src/ids/brandedIds.ts": ["exports", "types"],
-    "packages/db/event-store/writer/src/keychainEventWriter.ts": [
-      "exports",
-      "types"
-    ]
+    "packages/models/common-models/src/ids/brandedIds.ts": ["exports", "types"]
   },
   "workspaces": {
     ".": {
