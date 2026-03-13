@@ -70,13 +70,7 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
 
     const updatedEventData = KeychainEventV1.parse(updatedEvent).data;
     expect(updatedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1({
-        ...expectedConsumerKeychain,
-        // TODO: Remove after KN-259
-        keys: [],
-        purposes: [],
-        users: [],
-      }),
+      consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
     });
   });
 
