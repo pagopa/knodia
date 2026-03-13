@@ -31,11 +31,17 @@ export const API_ProducerAgreement = z
     consumer: API_CompactOrganization,
     eservice: API_CompactEservice,
     id: z.uuid(),
-    producer: API_CompactOrganization.optional(),
     state: API_AgreementState,
   })
   .meta({ id: "ProducerAgreement" });
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
+
+export const API_ProducerAgreementDetails = API_ProducerAgreement.extend({
+  producer: API_CompactOrganization,
+}).meta({ id: "ProducerAgreementDetails" });
+export type API_ProducerAgreementDetails = z.infer<
+  typeof API_ProducerAgreementDetails
+>;
 
 export const API_ProducerAgreements = z
   .strictObject({

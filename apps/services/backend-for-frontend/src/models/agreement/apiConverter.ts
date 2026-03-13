@@ -4,13 +4,15 @@ import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { Organization } from "@knodia/organization-models";
 import type { organizationProcessApi } from "@knodia/organization-process-client";
 
-import type { API_ProducerAgreement } from "./api.ts";
+import type {
+  API_ProducerAgreement,
+  API_ProducerAgreementDetails,
+} from "./api.ts";
 
 export const toAPI_ProducerAgreement = ({
   agreement,
   consumer,
   eservice,
-  producer,
 }: {
   agreement: agreementProcessApi.Agreement;
   consumer: Organization; // TODO: update with remoteResourcesManagerApi.Organization when available
@@ -28,13 +30,23 @@ export const toAPI_ProducerAgreement = ({
   },
   id: agreement.id,
   state: agreement.state,
-  ...(producer
-    ? {
-        producer: {
-          id: producer.id,
-          knodeId: producer.knodeId,
-          name: producer.name,
-        },
-      }
-    : {}),
+});
+
+export const toAPI_ProducerAgreementDetails = ({
+  agreement,
+  consumer,
+  eservice,
+  producer,
+}: {
+  agreement: agreementProcessApi.Agreement;
+  consumer: Organization; // TODO: update with remoteResourcesManagerApi.Organization when available
+  eservice: eserviceProcessApi.Eservice;
+  producer: organizationProcessApi.Organization & { knodeId: API_KnodeId };
+}): API_ProducerAgreementDetails => ({
+  ...toAPI_ProducerAgreement({ agreement, consumer, eservice }),
+  producer: {
+    id: producer.id,
+    knodeId: producer.knodeId,
+    name: producer.name,
+  },
 });

@@ -397,8 +397,15 @@ export type ProducerAgreement = {
     consumer: CompactOrganization;
     eservice: CompactEservice;
     id: string;
-    producer?: CompactOrganization;
     state: AgreementState;
+};
+
+export type ProducerAgreementDetails = {
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    id: string;
+    state: AgreementState;
+    producer: CompactOrganization;
 };
 
 export type ProducerAgreements = {
@@ -990,7 +997,7 @@ export type GetProducerAgreementDetailsResponses = {
     /**
      * Producer Agreement details retrieved successfully
      */
-    200: ProducerAgreement;
+    200: ProducerAgreementDetails;
 };
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];

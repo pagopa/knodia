@@ -24,10 +24,13 @@ import {
 
 import {
   API_GetProducerAgreementsQueryParams,
-  API_ProducerAgreement,
+  API_ProducerAgreementDetails,
   API_ProducerAgreements,
 } from "../../models/agreement/api.ts";
-import { toAPI_ProducerAgreement } from "../../models/agreement/apiConverter.ts";
+import {
+  toAPI_ProducerAgreement,
+  toAPI_ProducerAgreementDetails,
+} from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
@@ -178,7 +181,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       };
 
       res.status(200).send(
-        toAPI_ProducerAgreement({
+        toAPI_ProducerAgreementDetails({
           agreement,
           consumer,
           eservice,
@@ -195,7 +198,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       operationId: "getProducerAgreementDetails",
       params: API_AgreementIdPathParam,
       response: {
-        200: API_ProducerAgreement.meta({
+        200: API_ProducerAgreementDetails.meta({
           description: "Producer Agreement details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

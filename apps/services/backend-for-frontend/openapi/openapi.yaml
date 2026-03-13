@@ -820,9 +820,6 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        producer:
-          allOf:
-            - $ref: "#/components/schemas/CompactOrganization"
         state:
           $ref: "#/components/schemas/AgreementState"
       required:
@@ -830,6 +827,28 @@ components:
         - eservice
         - id
         - state
+      additionalProperties: false
+    ProducerAgreementDetails:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+      required:
+        - consumer
+        - eservice
+        - id
+        - state
+        - producer
       additionalProperties: false
     ProducerAgreements:
       type: object
@@ -1666,7 +1685,7 @@ paths:
               schema:
                 description: Producer Agreement details retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ProducerAgreement"
+                  - $ref: "#/components/schemas/ProducerAgreementDetails"
         "400":
           description: Bad Request
           content:
