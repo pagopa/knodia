@@ -41,6 +41,7 @@ export const toAPI_EserviceDetails = (
     accessTokenAudience: version.accessTokenAudience,
     accessTokenDuration: version.accessTokenDuration,
     accessTokenType: toAPI_AccessTokenType(version.accessTokenType),
+    id: version.id,
     maxDailyCallsPerConsumer: version.maxDailyCallsPerConsumer,
     maxDailyCallsPerKnode: version.maxDailyCallsPerKnode,
     requiredAttributes: version.requiredAttributes,
@@ -51,7 +52,7 @@ export const toAPI_EserviceDetails = (
   producer: {
     email: "info@example.com", // TODO: retrieve real data from producer knode
     id: eservice.producerId,
-    knodeName: "Knode", // TODO: retrieve real data from producer knode
+    knodeId: "Orion", // TODO: retrieve real data from producer knode
     name: { en: "Producer name" }, // TODO: retrieve real data from producer knode
     notes: "Notes", // TODO: retrieve real data from producer knode
   },

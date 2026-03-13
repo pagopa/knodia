@@ -89,17 +89,18 @@ export type API_GetEserviceDetailsQueryParams = z.infer<
   typeof API_GetEserviceDetailsQueryParams
 >;
 
-const API_EserviceDetailsLatestVersion = z
+export const API_EserviceVersionDetails = z
   .strictObject({
     accessTokenAudience: z.array(z.string()),
     accessTokenDuration: z.number().int().meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType,
+    id: z.uuid(),
     maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
     maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
     requiredAttributes: z.array(z.array(API_Attribute)),
     state: API_EserviceVersionState,
   })
-  .meta({ id: "EserviceDetailsLatestVersion" });
+  .meta({ id: "API_EserviceVersionDetails" });
 
 const API_EserviceDetailsInterfaceDocument = z
   .strictObject({
@@ -113,7 +114,7 @@ const API_EserviceDetailsProducer = z
   .strictObject({
     email: z.string(),
     id: z.uuid(),
-    knodeName: z.string(),
+    knodeId: API_KnodeId,
     name: API_LocalizedName,
     notes: z.string(),
   })
@@ -127,7 +128,7 @@ export const API_EserviceDetails = z
     interfaceDocument: API_EserviceDetailsInterfaceDocument,
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
-    latestVersion: API_EserviceDetailsLatestVersion,
+    latestVersion: API_EserviceVersionDetails,
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producer: API_EserviceDetailsProducer,
