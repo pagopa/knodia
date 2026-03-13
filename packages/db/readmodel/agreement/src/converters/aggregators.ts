@@ -5,7 +5,6 @@ import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type AgreementId,
   KnodeId,
-  unsafeBrandExternalId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {

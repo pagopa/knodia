@@ -5,7 +5,6 @@ import {
 import {
   KnodeId,
   OrganizationId,
-  unsafeBrandExternalId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
