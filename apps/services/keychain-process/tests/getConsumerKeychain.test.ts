@@ -1,17 +1,15 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_Keychain } from "../src/models/api.ts";
 
 import { toAPI_Keychain } from "../src/models/apiConverter.ts";
 import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
-import { consumerKeychainWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
-const consumerKeychain = mockConsumerKeychains[0] ?? getMockConsumerKeychain();
+const consumerKeychain = mockConsumerKeychains[0]!;
 const VALID_CONSUMER_KEYCHAIN_ID = consumerKeychain.id;
 const NON_EXISTENT_CONSUMER_KEYCHAIN_ID = generateId<ConsumerKeychainId>();
 
@@ -26,20 +24,11 @@ const getConsumerKeychain = (
 ) => injectAppRequest(token).get(`/consumerKeychains/${consumerKeychainId}`);
 
 describe("GET /consumerKeychains/:consumerKeychainId (getConsumerKeychain)", () => {
-  beforeAll(async () => {
-    await Promise.all(
-      mockConsumerKeychains.map((consumerKeychain) =>
-        consumerKeychainWriterService.upsertConsumerKeychain(
-          consumerKeychain,
-          0,
-        ),
-      ),
-    );
-  });
-
   it.each(allowedTestTokens)(
     "should return the consumer keychain with correct shape ($type, $roles)",
     async (token) => {
+      await seedConsumerKeychain(consumerKeychain);
+
       const response = await getConsumerKeychain(
         VALID_CONSUMER_KEYCHAIN_ID,
         token,
@@ -53,6 +42,8 @@ describe("GET /consumerKeychains/:consumerKeychainId (getConsumerKeychain)", () 
   );
 
   it("should return the same consumer keychain as the list endpoint", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
     const uiToken: TestToken = {
       roles: ["administrative"],
       type: "ui-session",
@@ -83,6 +74,8 @@ describe("GET /consumerKeychains/:consumerKeychainId (getConsumerKeychain)", () 
   );
 
   it("should return 404 for non-existent consumer keychain id", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
     const response = await getConsumerKeychain(
       NON_EXISTENT_CONSUMER_KEYCHAIN_ID,
     );
