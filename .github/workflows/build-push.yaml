@@ -93,7 +93,7 @@ jobs:
   build_push_image:
     name: "${{ matrix.package.section }}/${{ matrix.package.name }}"
     needs: [find_dockerfiles]
-    runs-on: ["TBD"]
+    runs-on: ubuntu-latest
     environment: ecr
     permissions:
       contents: read
@@ -108,6 +108,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
+          role-session-name: knodia-tf-${{ github.run_number }}
 
       - name: Login to Amazon ECR
         id: login-ecr
