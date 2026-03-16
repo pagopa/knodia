@@ -17,7 +17,10 @@ export const assertEserviceIsActive = async (
   readmodelService: ReadmodelService,
 ) => {
   const activeVersion =
-    await readmodelService.getActiveEserviceVersion(eserviceId);
+    await readmodelService.getEserviceVersionByStates({
+      eserviceId,
+      states: ["Active"],
+    });
 
   if (!activeVersion) {
     throw eserviceNotActive(eserviceId);
@@ -35,10 +38,11 @@ export const assertActiveAgreementExists = async ({
   eserviceId: EserviceId;
   readmodelService: ReadmodelService;
 }) => {
-  const activeAgreement = await readmodelService.getActiveAgreement({
+  const activeAgreement = await readmodelService.getAgreementByStates({
     consumerId,
     consumerKnodeId,
     eserviceId,
+    states: ["Active"],
   });
 
   if (!activeAgreement) {
