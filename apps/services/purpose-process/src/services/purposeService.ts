@@ -66,6 +66,8 @@ export function purposeServiceBuilder(
         readmodelService,
       });
 
+      // TODO form ansewers validation against the Knode purpose form JSON schema
+
       const now = new Date();
       const purpose: Purpose = {
         consumer,
