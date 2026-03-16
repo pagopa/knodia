@@ -60,9 +60,7 @@ export const toK2KAgreementState = (
     .with("Archived", () => "ARCHIVED" as const)
     .exhaustive();
 
-export const toK2KKnodeId = (
-  knodeId: API_KnodeId,
-): k2kGatewayApi.KnodeId =>
+export const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
   match(knodeId)
     .with("Orion", () => "ORION" as const)
     .with("Lynx", () => "LYNX" as const)

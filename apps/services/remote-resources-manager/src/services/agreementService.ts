@@ -1,4 +1,3 @@
-import type { API_CreatedResource } from "@knodia/common-models/api";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
