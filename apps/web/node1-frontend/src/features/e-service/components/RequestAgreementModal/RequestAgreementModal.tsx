@@ -1,3 +1,5 @@
+import type { KnodeId } from "@knodia/common-models/ids";
+
 import { Banner, Divider, Empty } from "@knodia/ui-kit/ui";
 import { SealCheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
@@ -19,7 +21,7 @@ type ModalState = "error" | "form";
 
 interface RequestAgreementModalProps {
   eservice: ConsumptionEserviceDetail;
-  knodeId: string;
+  knodeId: KnodeId;
   onClose: () => void;
 }
 

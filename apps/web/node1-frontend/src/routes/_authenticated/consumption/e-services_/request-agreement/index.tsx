@@ -7,11 +7,11 @@ import { requestAgreementSearchSchema } from "@/features/e-service/models/search
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { client } from "@/libs/axios";
 
-const eserviceQuery = (eserviceId: string, knodeId: string) =>
+const eserviceQuery = (eserviceId: string, knodeId: bffApi.KnodeId) =>
   getConsumerEserviceDetailsOptions({
     client,
     path: { eserviceId },
-    query: { knodeId: knodeId as bffApi.KnodeId },
+    query: { knodeId },
   });
 
 export const Route = createFileRoute(

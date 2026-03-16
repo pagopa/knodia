@@ -9,7 +9,7 @@ import { renderWithProviders, screen, waitFor } from "@/test/utils";
 import { RequestAgreementModal } from "./RequestAgreementModal";
 
 const BASE_URL = "http://localhost:3000/bff";
-const TEST_KNODE_ID = "knode-test-123";
+const TEST_KNODE_ID = "Orion" as const;
 
 function createEservice(
   overrides?: Partial<ConsumptionEserviceDetail>,

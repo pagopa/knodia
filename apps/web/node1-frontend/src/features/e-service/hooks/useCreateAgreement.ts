@@ -1,6 +1,9 @@
-import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
+import type {
+  EserviceId,
+  EserviceVersionId,
+  KnodeId,
+} from "@knodia/common-models/ids";
 
-import { bffApi } from "@knodia/bff-client";
 import { createConsumerAgreementMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
@@ -9,7 +12,7 @@ import { client } from "@/libs/axios";
 
 interface UseCreateAgreementParams {
   eserviceId: EserviceId;
-  knodeId: string;
+  knodeId: KnodeId;
   onError: () => void;
 }
 
@@ -37,7 +40,7 @@ export function useCreateAgreement({
       body: {
         eserviceId,
         eserviceVersionId,
-        knodeId: knodeId as bffApi.KnodeId,
+        knodeId,
       },
     });
   };

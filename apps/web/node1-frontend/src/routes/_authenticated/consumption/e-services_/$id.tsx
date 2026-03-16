@@ -33,11 +33,11 @@ import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-c
 import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 
-const eserviceQuery = (eserviceId: string, knodeId: string) =>
+const eserviceQuery = (eserviceId: string, knodeId: bffApi.KnodeId) =>
   getConsumerEserviceDetailsOptions({
     client,
     path: { eserviceId },
-    query: { knodeId: knodeId as bffApi.KnodeId },
+    query: { knodeId },
   });
 
 export const Route = createFileRoute(
@@ -172,7 +172,7 @@ function RouteComponent() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
       client,
       path: { eserviceId: bffDetail.id },
-      query: { knodeId: knodeId as bffApi.KnodeId },
+      query: { knodeId },
     });
 
     downloadResponseAsFile(
