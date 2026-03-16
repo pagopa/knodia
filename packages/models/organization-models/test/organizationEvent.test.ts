@@ -5,9 +5,9 @@ import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
 import { OrganizationCreatedV1 } from "../src/generated/v1/organizationEvents.ts";
+import { Organization } from "../src/organization.ts";
 import { OrganizationEventV1 } from "../src/organizationEvent.ts";
 import { toOrganizationV1 } from "../src/organizationProtobufConverterToV1.ts";
-import { Organization } from "../src/organizations.ts";
 
 describe("OrganizationEventV1 codec", () => {
   const organization = zocker(Organization).generate();
