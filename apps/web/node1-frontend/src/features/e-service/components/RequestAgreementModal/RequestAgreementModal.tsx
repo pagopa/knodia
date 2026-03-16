@@ -118,32 +118,29 @@ function FormContent({
         </Banner>
       </div>
 
-      <Divider />
+      {eservice.identificationRequired && (
+        <>
+          <Divider />
 
-      <div>
-        <h3 className="headline-sm-em text-primary-light-high-contrast mb-4">
-          {eservice.identificationRequired
-            ? "Identification required"
-            : "Identification not required"}
-        </h3>
-        {eservice.identificationRequired ? (
-          <Banner kind="informative">
-            <div className="flex flex-col gap-2">
-              <div className="title-sm-em text-info-light-high-contrast">
-                To activate the agreement, you will be required to log in to the
-                Producer Knode
+          <div>
+            <h3 className="headline-sm-em text-primary-light-high-contrast mb-4">
+              Identification required
+            </h3>
+            <Banner kind="informative">
+              <div className="flex flex-col gap-2">
+                <div className="title-sm-em text-info-light-high-contrast">
+                  To activate the agreement, you will be required to log in to
+                  the Producer Knode
+                </div>
+                <span className="body-md text-secondary-light-mid-contrast">
+                  You will find the login link on the Agreement page once the
+                  Producer Knode confirms your Agreement request.
+                </span>
               </div>
-              <span className="body-md text-secondary-light-mid-contrast">
-                You will find the login link on the Agreement page once the
-                Producer Knode confirms your Agreement request.
-              </span>
-            </div>
-          </Banner>
-        ) : (
-          // TODO: text is not final, waiting for definitive copy
-          <Banner kind="neutral">Identification not required</Banner>
-        )}
-      </div>
+            </Banner>
+          </div>
+        </>
+      )}
 
       <ModalFooter
         cancelLabel="Cancel"
