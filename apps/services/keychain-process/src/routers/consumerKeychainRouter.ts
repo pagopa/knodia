@@ -6,6 +6,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   KnodiaServiceHeaders,
+  MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
@@ -86,9 +87,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "getConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: API_Keychain.meta({
-          description: "Consumer Keychain retrieved successfully",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Consumer Keychain retrieved successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
@@ -120,9 +124,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       headers: KnodiaServiceHeaders,
       operationId: "createConsumerKeychain",
       response: {
-        201: API_Keychain.meta({
-          description: "Consumer Keychain created successfully",
-        }),
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Consumer Keychain created successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

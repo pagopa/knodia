@@ -30,7 +30,7 @@ const baseTransform = createJsonSchemaTransform({
 });
 
 const zodObjectToResponseHeaders = (
-  zodSchema: z.ZodObject,
+  zodSchema: z.ZodObject<Record<string, z.ZodTypeAny>>,
 ): Record<string, OpenAPIV3.HeaderObject> =>
   Object.fromEntries(
     Object.entries(zodSchema.shape).map(([name, propSchema]) => {
@@ -41,9 +41,8 @@ const zodObjectToResponseHeaders = (
       return [
         name,
         {
-          required:
-            (propSchema as unknown as { _zod: { def: { type: string } } })._zod
-              ?.def?.type !== "optional",
+          // If parsing undefined fails, it's required
+          required: !propSchema.safeParse(undefined).success,
           schema: schema as OpenAPIV3.SchemaObject,
           ...(typeof description === "string" ? { description } : {}),
         },
@@ -72,22 +71,21 @@ const extractResponseHeaders = (
   if (!operationId) return { ...input, schema: schemaRest };
 
   // Route-level responseHeaders → apply to all responses
-  if (responseHeaders && "shape" in (responseHeaders as object)) {
+  if (responseHeaders instanceof z.ZodObject) {
     responseHeadersStore.set(
       operationId,
-      zodObjectToResponseHeaders(responseHeaders as z.ZodObject),
+      zodObjectToResponseHeaders(responseHeaders),
     );
   }
 
   // Per-response headers → extract from { properties, headers } entries
-  const response = schemaRest.response as Record<string, unknown> | undefined;
+  const response = schemaRest.response;
   if (response) {
-    for (const [statusCode, val] of Object.entries(response)) {
-      const entry = val as null | Record<string, unknown>;
-      if (entry && "properties" in entry && "headers" in entry) {
+    for (const [statusCode, entry] of Object.entries(response)) {
+      if (isResponseEntryWithHeaders(entry)) {
         responseHeadersStore.set(
           `${operationId}:${statusCode}`,
-          zodObjectToResponseHeaders(entry["headers"] as z.ZodObject),
+          zodObjectToResponseHeaders(entry.headers),
         );
       }
     }
@@ -98,3 +96,14 @@ const extractResponseHeaders = (
 
 export const zodToJsonSchemaTransform: typeof baseTransform = (input) =>
   baseTransform(extractResponseHeaders(input));
+
+const ResponseEntryWithHeadersSchema = z.object({
+  headers: z.instanceof(z.ZodObject),
+  properties: z.unknown(),
+});
+
+function isResponseEntryWithHeaders(
+  value: unknown,
+): value is z.infer<typeof ResponseEntryWithHeadersSchema> {
+  return ResponseEntryWithHeadersSchema.safeParse(value).success;
+}
