@@ -1,6 +1,7 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
 import { Banner, Divider, Empty } from "@knodia/ui-kit/ui";
+import { SealCheckIcon } from "@phosphor-icons/react";
 import { useState } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
@@ -114,14 +115,15 @@ function FormContent({
           ))}
         </ul>
 
-        <Banner
-          className="mt-6"
-          kind={eservice.hasRequiredAttributes ? "success" : "warning"}
-        >
-          {eservice.hasRequiredAttributes
-            ? "Your organization has the required attributes."
-            : "Your organization does not have the required attributes."}
-        </Banner>
+        {eservice.hasRequiredAttributes ? (
+          <Banner className="mt-6" icon={<SealCheckIcon />} kind="neutral">
+            Your organization has the required attributes.
+          </Banner>
+        ) : (
+          <Banner className="mt-6" kind="warning">
+            Your organization does not have the required attributes.
+          </Banner>
+        )}
       </div>
 
       {eservice.identificationRequired && (
