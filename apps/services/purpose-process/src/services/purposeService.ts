@@ -5,7 +5,7 @@ import type { Purpose } from "@knodia/purpose-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { purposeNotFound } from "../models/errors.ts";
+import { retrievePurpose } from "../utils/readmodelUtils.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
@@ -17,13 +17,7 @@ export function purposeServiceBuilder(readmodelService: ReadmodelService) {
     ): Promise<Purpose> {
       logger.info(`Getting Purpose with ID ${purposeId}`);
 
-      const result = await readmodelService.getPurpose(purposeId);
-
-      if (!result) {
-        throw purposeNotFound(purposeId);
-      }
-
-      return result.data;
+      return await retrievePurpose(purposeId, readmodelService);
     },
   };
 }
