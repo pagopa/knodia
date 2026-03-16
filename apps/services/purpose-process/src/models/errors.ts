@@ -15,9 +15,8 @@ const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   PURPOSE_NOT_FOUND: "0001",
-  ESERVICE_NOT_FOUND: "0002",
-  ESERVICE_NOT_ACTIVE: "0003",
-  ACTIVE_AGREEMENT_NOT_FOUND: "0004",
+  ESERVICE_NOT_ACTIVE: "0002",
+  ACTIVE_AGREEMENT_NOT_FOUND: "0003",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -26,33 +25,6 @@ type ErrorCodes = keyof typeof errorCodes;
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "purpose-process",
 });
-
-export function purposeNotFound(id: PurposeId) {
-  return createApiError<ErrorCodes>({
-    code: "PURPOSE_NOT_FOUND",
-    detail: `Purpose with id ${id} not found`,
-    status: HTTP_STATUS_NOT_FOUND,
-    title: "Purpose Not Found",
-  });
-}
-
-export function eserviceNotFound(id: EserviceId) {
-  return createApiError<ErrorCodes>({
-    code: "ESERVICE_NOT_FOUND",
-    detail: `E-service with id ${id} not found`,
-    status: HTTP_STATUS_NOT_FOUND,
-    title: "E-service Not Found",
-  });
-}
-
-export function eserviceNotActive(id: EserviceId) {
-  return createApiError<ErrorCodes>({
-    code: "ESERVICE_NOT_ACTIVE",
-    detail: `E-service ${id} has no active version`,
-    status: HTTP_STATUS_CONFLICT,
-    title: "E-service Not Active",
-  });
-}
 
 export function activeAgreementNotFound({
   consumerId,
@@ -68,5 +40,23 @@ export function activeAgreementNotFound({
     detail: `No active agreement found for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Active Agreement Not Found",
+  });
+}
+
+export function eserviceNotActive(id: EserviceId) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_NOT_ACTIVE",
+    detail: `E-service ${id} has no active version`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "E-service Not Active",
+  });
+}
+
+export function purposeNotFound(id: PurposeId) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_NOT_FOUND",
+    detail: `Purpose with id ${id} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Purpose Not Found",
   });
 }

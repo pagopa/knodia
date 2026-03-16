@@ -1104,9 +1104,6 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
-      '@knodia/agreement-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/agreement-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
@@ -1119,18 +1116,12 @@ importers:
       '@knodia/db-readmodel-agreement':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/agreement
-      '@knodia/db-readmodel-commons':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/commons
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
       '@knodia/db-readmodel-purpose':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/purpose
-      '@knodia/eservice-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/eservice-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons

@@ -1,21 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { generateExternalId } from "@knodia/common-models/externalResource";
-import { generateId, KnodeId, type OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import { PurposeEventV1, toPurposeV1 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import {
-  getMockAgreement,
-  getMockEservice,
-} from "@knodia/test-commons/utils";
+import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type { API_Purpose } from "../src/models/api.ts";
 
 import { API_PurposeSeed } from "../src/models/api.ts";
-import {
-  agreementWriterService,
-  eserviceWriterService,
-} from "./setup.ts";
+import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import { getAllPurposeEvents, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
@@ -108,14 +106,14 @@ describe("POST /purposes (createPurpose)", () => {
     },
   );
 
-  it("should return 404 if the e-service does not exist", async () => {
+  it("should return 409 if the e-service does not exist", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/purposes")
       .body({
         ...body,
         eserviceId: generateId(),
       } satisfies API_PurposeSeed);
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(409);
   });
 
   it("should return 409 if the e-service has no active version", async () => {
