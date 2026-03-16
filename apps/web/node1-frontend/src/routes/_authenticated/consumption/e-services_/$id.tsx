@@ -56,16 +56,14 @@ export const Route = createFileRoute(
 
 function ConsumptionRequirementsSection({
   eserviceId,
+  hasRequiredAttributes,
   identificationRequired,
   knodeId,
   requiredAttributes,
 }: Pick<
   ConsumptionEserviceDetail,
-  "identificationRequired" | "requiredAttributes"
+  "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
 > & { eserviceId: string; knodeId: string }) {
-  const hasRequiredAttributes =
-    requiredAttributes.length > 0 &&
-    requiredAttributes.every((group) => group.some((attr) => attr.possessed));
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -228,6 +226,7 @@ function RouteComponent() {
           and show "Your Org's consumption status" section instead */}
       <ConsumptionRequirementsSection
         eserviceId={eservice.id}
+        hasRequiredAttributes={eservice.hasRequiredAttributes}
         identificationRequired={eservice.identificationRequired}
         knodeId={knodeId}
         requiredAttributes={eservice.requiredAttributes}

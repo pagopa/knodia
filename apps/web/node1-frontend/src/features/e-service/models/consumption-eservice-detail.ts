@@ -9,6 +9,7 @@ export interface ConsumptionEserviceDetail {
   };
   categories: bffApi.EserviceCategory[];
   description: string;
+  hasRequiredAttributes: boolean;
   id: EserviceId;
   identificationRequired: boolean;
   interfaceDocument: bffApi.ConsumerEserviceDetailsInterfaceDocument;

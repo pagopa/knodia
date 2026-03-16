@@ -22,6 +22,7 @@ function createEservice(
     },
     categories: [{ code: "birth-place", scheme: "eu-categories" }],
     description: "Test description",
+    hasRequiredAttributes: true,
     id: "f47ac10b-58cc-4372-a567-0e02b2c3d479" as ConsumptionEserviceDetail["id"],
     identificationRequired: false,
     interfaceDocument: { checksum: "abc123", name: "API Specs" },
@@ -175,6 +176,29 @@ describe("RequestAgreementModal", () => {
 
     await user.click(screen.getByRole("button", { name: "Cancel" }));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("disables confirm and shows warning when attributes are missing", () => {
+    const eservice = createEservice({
+      hasRequiredAttributes: false,
+      requiredAttributes: [[{ code: "NUTS3", possessed: false, scheme: "eu" }]],
+    });
+    renderWithProviders(
+      <RequestAgreementModal
+        eservice={eservice}
+        knodeId={TEST_KNODE_ID}
+        onClose={vi.fn()}
+      />,
+    );
+
+    expect(
+      screen.getByText(
+        "Your organization does not have the required attributes.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Request agreement" }),
+    ).toBeDisabled();
   });
 
   it("shows identification info when required", () => {
