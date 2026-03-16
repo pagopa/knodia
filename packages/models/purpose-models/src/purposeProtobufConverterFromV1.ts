@@ -10,12 +10,12 @@ import {
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
-import { Purpose } from "./purpose.ts";
 import {
   type PurposeConsumerV1,
   PurposeStateV1,
   type PurposeV1,
 } from "./generated/v1/purpose.ts";
+import { Purpose } from "./purpose.ts";
 
 export const fromPurposeV1 = (input: PurposeV1): Purpose => {
   assertRequired(input.consumer, "Purpose consumer is undefined");
@@ -36,9 +36,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
   };
 };
 
-const fromPurposeStateV1 = (
-  input: PurposeStateV1,
-): Purpose["state"] =>
+const fromPurposeStateV1 = (input: PurposeStateV1): Purpose["state"] =>
   match(input)
     .with(PurposeStateV1.ACTIVE, () => "Active" as const)
     .with(PurposeStateV1.SUSPENDED, () => "Suspended" as const)

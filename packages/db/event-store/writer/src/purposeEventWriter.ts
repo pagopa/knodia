@@ -1,5 +1,5 @@
-import type { PurposeEventV1 } from "@knodia/purpose-models";
 import type { PurposeId } from "@knodia/common-models/ids";
+import type { PurposeEventV1 } from "@knodia/purpose-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eventStorePurposeEvents } from "@knodia/db-event-store-purpose";
@@ -9,12 +9,12 @@ import {
   type NewEventStoreEvent,
 } from "./eventWriter.ts";
 
-export type PurposeEventStoreWriter = ReturnType<
-  typeof purposeEventStoreWriterBuilder
->;
 export type NewEventStorePurposeEvent = NewEventStoreEvent<
   PurposeEventV1,
   PurposeId
+>;
+export type PurposeEventStoreWriter = ReturnType<
+  typeof purposeEventStoreWriterBuilder
 >;
 
 export const purposeEventStoreWriterBuilder = (db: NodePgDatabase) =>

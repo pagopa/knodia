@@ -1,5 +1,10 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { EserviceId, KnodeId, OrganizationId, PurposeId } from "@knodia/common-models/ids";
+import type {
+  EserviceId,
+  KnodeId,
+  OrganizationId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
