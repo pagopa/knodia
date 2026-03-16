@@ -27,5 +27,4 @@ RUN chown -R app:app /app && chmod -R 700 /app
 USER app
 
 WORKDIR /app/${SERVICE_PATH}
-EXPOSE 3000
 CMD ["node", "src/index.ts"]
