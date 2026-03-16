@@ -25,7 +25,7 @@ export const toAPI_CatalogEserviceSearchResult = (
 export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
-  organization: k2kGatewayApi.Organization,
+  producer: k2kGatewayApi.Organization,
 ): API_EserviceDetails => ({
   categories: eservice.categories,
   description: eservice.description,
@@ -51,9 +51,9 @@ export const toAPI_EserviceDetails = (
   name: eservice.name,
   producer: {
     email: "info@example.com", // TODO: retrieve real data from producer knode
-    id: organization.id,
+    id: producer.id,
     knodeName: "Knode", // TODO: retrieve real data from producer knode
-    name: organization.name,
+    name: producer.name,
     notes: "Notes", // TODO: retrieve real data from producer knode
   },
 });
