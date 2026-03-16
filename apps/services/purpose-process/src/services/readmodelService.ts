@@ -19,7 +19,7 @@ export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const purposeReadmodelService = purposeReadmodelServiceBuilder(readmodelDb);
   return {
-    async getAgreementByStates({
+    async agreementExistsByStates({
       consumerId,
       consumerKnodeId,
       eserviceId,
@@ -29,8 +29,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       consumerKnodeId: KnodeId;
       eserviceId: EserviceId;
       states: AgreementState[];
-    }) {
-      const [first] = await readmodelDb
+    }): Promise<boolean> {
+      const result = await readmodelDb
         .select({ id: readmodelAgreement.id })
         .from(readmodelAgreement)
         .where(
@@ -43,16 +43,16 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         )
         .limit(1);
 
-      return first;
+      return result.length > 0;
     },
-    async getEserviceVersionByStates({
+    async eserviceVersionExistsByStates({
       eserviceId,
       states,
     }: {
       eserviceId: EserviceId;
       states: EserviceVersionState[];
-    }) {
-      const [first] = await readmodelDb
+    }): Promise<boolean> {
+      const result = await readmodelDb
         .select({ id: readmodelEserviceVersion.id })
         .from(readmodelEserviceVersion)
         .where(
@@ -63,7 +63,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         )
         .limit(1);
 
-      return first;
+      return result.length > 0;
     },
     async getPurpose(purposeId: PurposeId) {
       return await purposeReadmodelService.getPurposeById(purposeId);
