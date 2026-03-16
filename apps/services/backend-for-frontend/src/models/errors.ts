@@ -7,7 +7,7 @@ const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = constants;
 const errorCodes = {
   POLLING_MAX_RETRIES_EXCEEDED: "0001",
 };
-export type ErrorCodes = keyof typeof errorCodes;
+type ErrorCodes = keyof typeof errorCodes;
 
 export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   forceGenericProblemOn500: true,

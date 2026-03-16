@@ -9,6 +9,67 @@ import z from "zod";
 import { config } from "../config/config.ts";
 import { pollingMaxRetriesExceeded } from "../models/errors.ts";
 
+export function createPollingByCondition<T>(
+  fetch: () => Promise<T>,
+  config: {
+    defaultPollingMaxRetries: number;
+    defaultPollingRetryDelay: number;
+  },
+) {
+  return async function poll({
+    condition,
+    maxRetries = config.defaultPollingMaxRetries,
+    retryDelay = config.defaultPollingRetryDelay,
+  }: {
+    condition: (pollingResult: T) => boolean;
+    maxRetries?: number;
+    retryDelay?: number;
+  }): Promise<T> {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      await delay(retryDelay);
+      try {
+        const pollingResult = await fetch();
+        if (condition(pollingResult)) return pollingResult;
+      } catch (error: unknown) {
+        // If the error is 404, continue polling
+        if (is404AxiosError(error)) continue;
+        throw error;
+      }
+    }
+
+    throw pollingMaxRetriesExceeded(maxRetries, retryDelay);
+  };
+}
+
+export function createPollingUntilDeletion(
+  fetch: () => Promise<unknown>,
+  config: {
+    defaultPollingMaxRetries: number;
+    defaultPollingRetryDelay: number;
+  },
+) {
+  return async function poll({
+    maxRetries = config.defaultPollingMaxRetries,
+    retryDelay = config.defaultPollingRetryDelay,
+  }: {
+    maxRetries?: number;
+    retryDelay?: number;
+  }): Promise<void> {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      await delay(retryDelay);
+      try {
+        await fetch();
+      } catch (error: unknown) {
+        // If the error is 404, it means the resource has been deleted, so we can stop polling
+        if (is404AxiosError(error)) return;
+        throw error;
+      }
+    }
+
+    throw pollingMaxRetriesExceeded(maxRetries, retryDelay);
+  };
+}
+
 /**
  Default polling check function that checks if the polled resource's version is greater than
  the version of the resource of a given response.
@@ -48,67 +109,6 @@ export function pollResourceWithMetadata<T>(
     defaultPollingMaxRetries: config.defaultPollingMaxRetries,
     defaultPollingRetryDelay: config.defaultPollingRetryDelay,
   });
-}
-
-function createPollingByCondition<T>(
-  fetch: () => Promise<T>,
-  config: {
-    defaultPollingMaxRetries: number;
-    defaultPollingRetryDelay: number;
-  },
-) {
-  return async function poll({
-    condition,
-    maxRetries = config.defaultPollingMaxRetries,
-    retryDelay = config.defaultPollingRetryDelay,
-  }: {
-    condition: (pollingResult: T) => boolean;
-    maxRetries?: number;
-    retryDelay?: number;
-  }): Promise<T> {
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      await delay(retryDelay);
-      try {
-        const pollingResult = await fetch();
-        if (condition(pollingResult)) return pollingResult;
-      } catch (error: unknown) {
-        // If the error is 404, continue polling
-        if (is404AxiosError(error)) continue;
-        throw error;
-      }
-    }
-
-    throw pollingMaxRetriesExceeded(maxRetries, retryDelay);
-  };
-}
-
-function createPollingUntilDeletion(
-  fetch: () => Promise<unknown>,
-  config: {
-    defaultPollingMaxRetries: number;
-    defaultPollingRetryDelay: number;
-  },
-) {
-  return async function poll({
-    maxRetries = config.defaultPollingMaxRetries,
-    retryDelay = config.defaultPollingRetryDelay,
-  }: {
-    maxRetries?: number;
-    retryDelay?: number;
-  }): Promise<void> {
-    for (let attempt = 0; attempt < maxRetries; attempt++) {
-      await delay(retryDelay);
-      try {
-        await fetch();
-      } catch (error: unknown) {
-        // If the error is 404, it means the resource has been deleted, so we can stop polling
-        if (is404AxiosError(error)) return;
-        throw error;
-      }
-    }
-
-    throw pollingMaxRetriesExceeded(maxRetries, retryDelay);
-  };
 }
 
 function delay(ms: number): Promise<void> {
