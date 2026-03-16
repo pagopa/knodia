@@ -75,7 +75,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Deleting Consumer Keychain with ID ${req.params.consumerKeychainId}`,
       );
 
-      await keychainProcessApi.deleteConsumerKeychain({
+      const response = await keychainProcessApi.deleteConsumerKeychain({
         client: keychainProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         path: { consumerKeychainId: req.params.consumerKeychainId },

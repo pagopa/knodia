@@ -1,5 +1,8 @@
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
-import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type {
   InternalAuthData,
   UISessionAuthData,
@@ -94,12 +97,13 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<ConsumerKeychain> {
+    ): Promise<WithMetadata<ConsumerKeychain>> {
       logger.info(`Getting Consumer Keychain with ID ${consumerKeychainId}`);
 
-      return (
-        await retrieveConsumerKeychain(consumerKeychainId, readmodelService)
-      ).data;
+      return await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
     },
 
     async getConsumerKeychains(
