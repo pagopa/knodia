@@ -5,14 +5,14 @@ import { getMockPurpose } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import { aggregatePurpose } from "../src/converters/aggregators.ts";
-import { toPurposeSQL } from "../src/converters/splitters.ts";
+import { splitPurposeIntoObjectsSQL } from "../src/converters/splitters.ts";
 
 describe("Purpose Aggregators", () => {
   it("should convert Purpose SQL objects into a Purpose business object", () => {
     const purpose = getMockPurpose();
     const metadataVersion = 1;
 
-    const purposeSQL = toPurposeSQL(purpose, metadataVersion);
+    const { purposeSQL } = splitPurposeIntoObjectsSQL(purpose, metadataVersion);
 
     const aggregatedPurpose = aggregatePurpose([{ purpose: purposeSQL }]);
 

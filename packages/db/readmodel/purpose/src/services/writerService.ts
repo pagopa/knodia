@@ -4,7 +4,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
 import { eq } from "drizzle-orm";
 
-import { toPurposeSQL } from "../converters/splitters.ts";
+import { splitPurposeIntoObjectsSQL } from "../converters/splitters.ts";
 import { readmodelPurpose } from "../purpose.ts";
 
 export type PurposeWriterService = ReturnType<
@@ -17,7 +17,10 @@ export function purposeWriterServiceBuilder(db: NodePgDatabase) {
       purpose: Purpose,
       metadataVersion: number,
     ): Promise<void> {
-      const purposeSQL = toPurposeSQL(purpose, metadataVersion);
+      const { purposeSQL } = splitPurposeIntoObjectsSQL(
+        purpose,
+        metadataVersion,
+      );
 
       await db.transaction(async (tx) => {
         const shouldUpsert = await checkMetadataVersion(

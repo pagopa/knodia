@@ -42,4 +42,8 @@ export const readmodelPurpose = purposeSchema.table(
 );
 
 export type NewReadmodelPurpose = typeof readmodelPurpose.$inferInsert;
+
+export interface PurposeItemsSQL {
+  purposeSQL: PurposeSQL;
+}
 export type PurposeSQL = typeof readmodelPurpose.$inferSelect;
