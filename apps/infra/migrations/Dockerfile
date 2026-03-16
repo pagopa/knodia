@@ -1,3 +1,3 @@
 FROM flyway/flyway:11@sha256:782c5c207ffb5ac6336139fda4f4295bd9991ef63ad36919406d4268740069bb
 
-COPY migration/ /migration
+COPY --chown=1001:1001 migration/ /migration
