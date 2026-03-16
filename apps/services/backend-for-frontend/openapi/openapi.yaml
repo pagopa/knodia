@@ -193,19 +193,21 @@ components:
         - Bearer
         - DPoP
     CompactOrganization:
-      description: Organization with only id and name
+      description: Organization with only id, knodeId, and name
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
-          minLength: 5
-          maxLength: 60
+          minLength: 1
       required:
         - id
+        - knodeId
         - name
       additionalProperties: false
     InterfaceDocumentSeed:
@@ -825,6 +827,28 @@ components:
         - id
         - state
       additionalProperties: false
+    ProducerAgreementDetails:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+      required:
+        - consumer
+        - eservice
+        - id
+        - state
+        - producer
+      additionalProperties: false
     ProducerAgreements:
       type: object
       properties:
@@ -897,6 +921,70 @@ components:
           $ref: "#/components/schemas/KeychainLocalizedName"
       required:
         - name
+      additionalProperties: false
+    Keychain:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        keysCount:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        membersCount:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - id
+        - keysCount
+        - membersCount
+        - name
+      additionalProperties: false
+    Keychains:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Keychain"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - items
+        - pagination
+      additionalProperties: false
+    KeychainDetails:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        description:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - createdAt
+        - id
+        - name
+        - updatedAt
       additionalProperties: false
 paths:
   /status:
@@ -1138,7 +1226,7 @@ paths:
       operationId: getProducerEserviceDetails
       tags:
         - eservice
-      description: Retrieve an E-service with all its details
+      description: Retrieve a Producer E-service with all its details
       parameters:
         - schema:
             type: string
@@ -1149,11 +1237,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service details retrieved successfully
+          description: Producer E-service details retrieved successfully
           content:
             application/json:
               schema:
-                description: E-service details retrieved successfully
+                description: Producer E-service details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEserviceDetails"
         "400":
@@ -1181,11 +1269,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: E-service not found
+          description: Not Found
           content:
             application/problem+json:
               schema:
-                description: E-service not found
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:
@@ -1194,7 +1282,8 @@ paths:
       summary: Download producer E-service latest version interface
       tags:
         - eservice
-      description: Download the interface document for the latest version of an E-service
+      description: Download the interface document for the latest version of a
+        Producer E-service
       parameters:
         - schema:
             type: string
@@ -1205,11 +1294,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service interface document downloaded successfully
+          description: Producer E-service interface document downloaded successfully
           content:
             application/json: &a1
               schema:
-                description: E-service interface document downloaded successfully
+                description: Producer E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
@@ -1292,6 +1381,63 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getConsumerKeychains
+      tags:
+        - consumerKeychain
+      description: Retrieve a paginated list of Consumer keychains for the logged-in
+        user's organization
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: Consumer keychains retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer keychains retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychains"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}:
     delete:
       operationId: deleteConsumerKeychain
@@ -1339,6 +1485,60 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getConsumerKeychainDetails
+      tags:
+        - consumerKeychain
+      description: Retrieve a Consumer Keychain with all its details
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "200":
+          description: Consumer Keychain details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/KeychainDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
@@ -1635,6 +1835,61 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/agreements/{agreementId}:
+    get:
+      operationId: getProducerAgreementDetails
+      tags:
+        - agreement
+      description: Retrieve a Producer Agreement with all its details
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: agreementId
+          required: true
+      responses:
+        "200":
+          description: Producer Agreement details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Agreement details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ProducerAgreementDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
