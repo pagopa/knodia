@@ -6,7 +6,6 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   KnodiaServiceHeaders,
-  MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
@@ -83,7 +82,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description: "Retrieve a Consumer Keychain by its ID",
-      headers: KnodiaServiceHeaders.and(MetadataVersionHeader),
+      headers: KnodiaServiceHeaders,
       operationId: "getConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
@@ -118,7 +117,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       body: API_ConsumerKeychainSeed,
       description: "Create a new Consumer Keychain",
-      headers: KnodiaServiceHeaders.and(MetadataVersionHeader),
+      headers: KnodiaServiceHeaders,
       operationId: "createConsumerKeychain",
       response: {
         201: API_Keychain.meta({
