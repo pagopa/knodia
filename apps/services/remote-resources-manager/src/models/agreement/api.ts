@@ -14,7 +14,6 @@ import { z } from "zod";
 
 export const API_AgreementSeed = z
   .strictObject({
-    consumerId: API_OrganizationId,
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
     knodeId: API_KnodeId,

@@ -1,6 +1,7 @@
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-
 import { genericInternalError } from "@knodia/common-models/errors";
+import { EventStoreConfig } from "@knodia/db-event-store-config/config";
+import { ReadmodelConfig } from "@knodia/db-readmodel-config/config";
+import { RemoteResourceDbConfig } from "@knodia/db-remote-resource/config";
 import {
   asc,
   count,
@@ -12,6 +13,7 @@ import {
   SQL,
 } from "drizzle-orm";
 import { toCamelCase } from "drizzle-orm/casing";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   type AnyPgColumn,
   type AnyPgTable,
@@ -22,9 +24,57 @@ import {
   PgTable,
   PgText,
 } from "drizzle-orm/pg-core";
-import { match } from "ts-pattern";
+import { Pool } from "pg";
+import { match, P } from "ts-pattern";
 
 import { SortDirection } from "../models/models.ts";
+
+export const makeDrizzleConnection = (
+  dbConfig: EventStoreConfig | ReadmodelConfig | RemoteResourceDbConfig,
+): { db: NodePgDatabase; pool: Pool } => {
+  const pool = match(dbConfig)
+    .with(
+      { eventStoreDbHost: P.string },
+      (c) =>
+        new Pool({
+          database: c.eventStoreDbName,
+          host: c.eventStoreDbHost,
+          password: c.eventStoreDbPassword,
+          port: c.eventStoreDbPort,
+          ssl: c.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
+          user: c.eventStoreDbUser,
+        }),
+    )
+    .with(
+      { readmodelDbHost: P.string },
+      (c) =>
+        new Pool({
+          database: c.readmodelDbName,
+          host: c.readmodelDbHost,
+          password: c.readmodelDbPassword,
+          port: c.readmodelDbPort,
+          ssl: c.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+          user: c.readmodelDbUser,
+        }),
+    )
+    .with(
+      { remoteResourceDbHost: P.string },
+      (c) =>
+        new Pool({
+          database: c.remoteResourceDbName,
+          host: c.remoteResourceDbHost,
+          password: c.remoteResourceDbPassword,
+          port: c.remoteResourceDbPort,
+          ssl: c.remoteResourceDbUseSsl
+            ? { rejectUnauthorized: false }
+            : undefined,
+          user: c.remoteResourceDbUser,
+        }),
+    )
+    .exhaustive();
+
+  return { db: drizzle(pool), pool };
+};
 
 export const checkMetadataVersion = async (
   tx: NodePgDatabase,

@@ -4,8 +4,17 @@ import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { generateId, KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  generateId,
+  KnodeId,
+  OrganizationId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -41,19 +50,20 @@ const allowedTestTokens: TestToken[] = [
 describe("POST /agreements (createAgreement)", () => {
   const eservice = getMockEservice({ latestVersionState: "Active" });
   const k2kBody: k2kGatewayApi.AgreementSeed = {
-    consumerId: generateId(),
+    consumerId: TEST_ORGANIZATION_ID,
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
   };
   const body: API_AgreementSeed = {
-    ...k2kBody,
+    eserviceId: eservice.id,
+    eserviceVersionId: eservice.versions[0]!.id,
     knodeId: "Orion",
   };
 
   const agreement: Agreement = {
     ...getMockAgreement(),
     consumer: {
-      id: unsafeBrandExternalId(body.consumerId),
+      id: unsafeBrandExternalId(TEST_ORGANIZATION_ID),
       knodeId: KnodeId.parse(body.knodeId),
     },
     eserviceId: unsafeBrandId(body.eserviceId),
@@ -149,4 +159,15 @@ describe("POST /agreements (createAgreement)", () => {
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return 403 if the organization does not exist", async () => {
+    const response = await injectAppRequest({
+      organizationId: generateId<OrganizationId>(),
+      roles: ["technical"],
+      type: "ui-session",
+    })
+      .post("/agreements")
+      .body(body);
+    expect(response.statusCode).toBe(403);
+  });
 });
