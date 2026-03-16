@@ -2,7 +2,6 @@ import type { KnodeId } from "@knodia/common-models/ids";
 
 import { Banner, Divider, Empty } from "@knodia/ui-kit/ui";
 import { SealCheckIcon } from "@phosphor-icons/react";
-import { useState } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -17,8 +16,6 @@ import { ModalFooter } from "../ModalFooter";
 const CONSUMER_ORG_NAME = "Ursa";
 const CONSUMER_KNODE_NAME = "Orion Knode";
 
-type ModalState = "error" | "form";
-
 interface RequestAgreementModalProps {
   eservice: ConsumptionEserviceDetail;
   knodeId: KnodeId;
@@ -30,12 +27,9 @@ export function RequestAgreementModal({
   knodeId,
   onClose,
 }: RequestAgreementModalProps) {
-  const [modalState, setModalState] = useState<ModalState>("form");
-
-  const { createAgreement, isPending } = useCreateAgreement({
+  const { createAgreement, isError, isPending } = useCreateAgreement({
     eserviceId: eservice.id,
     knodeId,
-    onError: () => setModalState("error"),
   });
 
   const handleConfirm = () => {
@@ -45,7 +39,7 @@ export function RequestAgreementModal({
   return (
     <FullPageModal onClose={onClose} title="Request Agreement">
       <div className="mx-auto max-w-[640px] px-6 py-10">
-        {modalState === "form" ? (
+        {!isError ? (
           <FormContent
             eservice={eservice}
             isPending={isPending}

@@ -13,19 +13,16 @@ import { client } from "@/libs/axios";
 interface UseCreateAgreementParams {
   eserviceId: EserviceId;
   knodeId: KnodeId;
-  onError: () => void;
 }
 
 export function useCreateAgreement({
   eserviceId,
   knodeId,
-  onError,
 }: UseCreateAgreementParams) {
   const navigate = useNavigate();
 
-  const { isPending, mutate } = useMutation({
+  const { isError, isPending, mutate } = useMutation({
     ...createConsumerAgreementMutation({ client }),
-    onError,
     onSuccess: () => {
       navigate({
         params: { id: eserviceId },
@@ -45,5 +42,5 @@ export function useCreateAgreement({
     });
   };
 
-  return { createAgreement, isPending };
+  return { createAgreement, isError, isPending };
 }
