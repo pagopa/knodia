@@ -58,14 +58,6 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
-/**
- * Organization with only id, and name
- */
-export type CompactOrganization = {
-    id: string;
-    name: string;
-};
-
 export type Attribute = {
     code: string;
     scheme: string;
@@ -102,6 +94,15 @@ export type EserviceCategory = {
 };
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
+
+/**
+ * Organization with only id, knodeId, and name
+ */
+export type CompactOrganization = {
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
 
 export type InterfaceDocumentSeed = {
     /**
@@ -329,7 +330,7 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
+    knodeName: string;
     name: LocalizedName;
     notes: string;
 };
@@ -397,6 +398,14 @@ export type ProducerAgreement = {
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
+};
+
+export type ProducerAgreementDetails = {
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    id: string;
+    state: AgreementState;
+    producer: CompactOrganization;
 };
 
 export type ProducerAgreements = {
@@ -648,7 +657,7 @@ export type GetProducerEserviceDetailsErrors = {
      */
     403: Problem;
     /**
-     * E-service not found
+     * Not Found
      */
     404: Problem;
 };
@@ -657,7 +666,7 @@ export type GetProducerEserviceDetailsError = GetProducerEserviceDetailsErrors[k
 
 export type GetProducerEserviceDetailsResponses = {
     /**
-     * E-service details retrieved successfully
+     * Producer E-service details retrieved successfully
      */
     200: ProducerEserviceDetails;
 };
@@ -696,7 +705,7 @@ export type GetProducerEserviceLatestVersionInterfaceError = GetProducerEservice
 
 export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
-     * E-service interface document downloaded successfully
+     * Producer E-service interface document downloaded successfully
      */
     200: FileDownload;
 };
@@ -1054,3 +1063,42 @@ export type GetProducerAgreementsResponses = {
 };
 
 export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];
+
+export type GetProducerAgreementDetailsData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/producer/agreements/{agreementId}';
+};
+
+export type GetProducerAgreementDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetProducerAgreementDetailsError = GetProducerAgreementDetailsErrors[keyof GetProducerAgreementDetailsErrors];
+
+export type GetProducerAgreementDetailsResponses = {
+    /**
+     * Producer Agreement details retrieved successfully
+     */
+    200: ProducerAgreementDetails;
+};
+
+export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
