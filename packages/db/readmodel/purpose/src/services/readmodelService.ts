@@ -5,7 +5,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { eq } from "drizzle-orm";
 
-import { toPurpose } from "../converters/converters.ts";
+import { aggregatePurpose } from "../converters/aggregators.ts";
 import { readmodelPurpose } from "../purpose.ts";
 
 export function purposeReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
@@ -14,16 +14,13 @@ export function purposeReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       purposeId: PurposeId,
     ): Promise<undefined | WithMetadata<Purpose>> {
       const queryRes = await readmodelDb
-        .select()
+        .select({
+          purpose: readmodelPurpose,
+        })
         .from(readmodelPurpose)
         .where(eq(readmodelPurpose.id, purposeId));
 
-      const [first] = queryRes;
-      if (!first) {
-        return undefined;
-      }
-
-      return toPurpose(first);
+      return aggregatePurpose(queryRes);
     },
   };
 }

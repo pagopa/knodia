@@ -1,2 +1,2 @@
-export * from "./converters.ts";
+export * from "./aggregators.ts";
 export * from "./splitters.ts";
