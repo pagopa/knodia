@@ -1,5 +1,6 @@
 import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
@@ -14,6 +15,8 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import type { PurposeProcessConfig } from "./config/config.ts";
 
@@ -21,8 +24,15 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 import { purposeServiceBuilder } from "./services/purposeService.ts";
+import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
-export function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
+export function buildApp({
+  config,
+  readmodelDb,
+}: {
+  config: AuthConfig & LoggerConfig;
+  readmodelDb: NodePgDatabase;
+}) {
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -57,12 +67,34 @@ export function buildApp({ config }: { config: AuthConfig & LoggerConfig }) {
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(purposeRouter, purposeServiceBuilder());
+    protectedApp.register(
+      purposeRouter,
+      purposeServiceBuilder(readmodelServiceBuilder(readmodelDb)),
+    );
   });
 
   return app;
 }
 
 export function buildAppFromConfig(config: PurposeProcessConfig) {
-  return buildApp({ config });
+  const readmodelPool = new Pool({
+    database: config.readmodelDbName,
+    host: config.readmodelDbHost,
+    password: config.readmodelDbPassword,
+    port: config.readmodelDbPort,
+    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.readmodelDbUser,
+  });
+  const readmodelDb = drizzle(readmodelPool);
+
+  const app = buildApp({
+    config,
+    readmodelDb,
+  });
+
+  app.addHook("onClose", async () => {
+    await readmodelPool.end();
+  });
+
+  return app;
 }
