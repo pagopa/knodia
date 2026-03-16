@@ -7,6 +7,7 @@ meta {
 get {
   url: {{host-organization-process}}/organizations?offset=0&limit=50
   body: none
+  auth: none
 }
 
 params:query {
@@ -17,4 +18,8 @@ params:query {
 headers {
   X-Correlation-Id: {{correlation-id}}
   Authorization: {{ui-session-jwt}}
+}
+
+vars:post-response {
+  organizationId: res.body.items[0].id
 }
