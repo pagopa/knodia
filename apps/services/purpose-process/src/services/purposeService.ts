@@ -1,7 +1,14 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { KnodeId, OrganizationId, PurposeId } from "@knodia/common-models/ids";
+import type {
+  KnodeId,
+  OrganizationId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
-import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { Purpose } from "@knodia/purpose-models";
 
@@ -38,7 +45,7 @@ export function purposeServiceBuilder(
         formAnswers: Record<string, unknown>;
         name: { en: string };
       },
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<Purpose> {
       const purposeId = generateId<PurposeId>();
       logger.info(

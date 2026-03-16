@@ -21,86 +21,84 @@ interface PurposeRouterOptions {
   purposeService: PurposeService;
 }
 
-export const purposeRouter: FastifyPluginAsyncZod<PurposeRouterOptions> =
-  async (fastify, { purposeService }) => {
-    fastify.route({
-      handler: async (req, res) => {
-        const ctx = validateAuthorization(getContextValues(requestContext), [
-          {
-            tokenType: "ui-session",
-            userRoles: ["administrative", "technical"],
-          },
-        ]);
+export const purposeRouter: FastifyPluginAsyncZod<
+  PurposeRouterOptions
+> = async (fastify, { purposeService }) => {
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
 
-        const purpose = await purposeService.createPurpose(
-          {
-            consumer: {
-              id: unsafeBrandExternalId(req.body.consumer.id),
-              knodeId: KnodeId.parse(req.body.consumer.knodeId),
-            },
-            dailyCalls: req.body.dailyCalls,
-            description: req.body.description,
-            eserviceId: unsafeBrandId(req.body.eserviceId),
-            formAnswers: req.body.formAnswers,
-            name: req.body.name,
+      const purpose = await purposeService.createPurpose(
+        {
+          consumer: {
+            id: unsafeBrandExternalId(req.body.consumer.id),
+            knodeId: KnodeId.parse(req.body.consumer.knodeId),
           },
-          ctx,
-        );
-
-        res.status(201).send(toAPI_Purpose(purpose));
-      },
-      method: "POST",
-      schema: {
-        body: API_PurposeSeed,
-        description: "Create a new Purpose",
-        headers: KnodiaServiceHeaders,
-        operationId: "createPurpose",
-        response: {
-          201: API_Purpose.meta({
-            description: "Purpose created successfully",
-          }),
-          400: API_Problem.meta({ description: "Bad Request" }),
-          401: API_Problem.meta({ description: "Unauthorized" }),
-          403: API_Problem.meta({ description: "Forbidden" }),
+          dailyCalls: req.body.dailyCalls,
+          description: req.body.description,
+          eserviceId: unsafeBrandId(req.body.eserviceId),
+          formAnswers: req.body.formAnswers,
+          name: req.body.name,
         },
-        tags: [apiTags.purpose],
+        ctx,
+      );
+
+      res.status(201).send(toAPI_Purpose(purpose));
+    },
+    method: "POST",
+    schema: {
+      body: API_PurposeSeed,
+      description: "Create a new Purpose",
+      headers: KnodiaServiceHeaders,
+      operationId: "createPurpose",
+      response: {
+        201: API_Purpose.meta({
+          description: "Purpose created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
       },
-      url: "/purposes",
-    });
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes",
+  });
 
-    fastify.route({
-      handler: async (req, res) => {
-        const ctx = validateAuthorization(getContextValues(requestContext), [
-          {
-            tokenType: "ui-session",
-            userRoles: ["administrative", "technical"],
-          },
-        ]);
-
-        const purpose = await purposeService.getPurpose(
-          req.params.purposeId,
-          ctx,
-        );
-
-        res.status(200).send(toAPI_Purpose(purpose));
-      },
-      method: "GET",
-      schema: {
-        description: "Retrieve a Purpose by its ID",
-        headers: KnodiaServiceHeaders,
-        operationId: "getPurpose",
-        params: API_PurposeIdPathParam,
-        response: {
-          200: API_Purpose.meta({
-            description: "Purpose retrieved successfully",
-          }),
-          400: API_Problem.meta({ description: "Bad Request" }),
-          401: API_Problem.meta({ description: "Unauthorized" }),
-          403: API_Problem.meta({ description: "Forbidden" }),
-          404: API_Problem.meta({ description: "Purpose not found" }),
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        {
+          tokenType: "ui-session",
+          userRoles: ["administrative", "technical"],
         },
-        tags: [apiTags.purpose],
+      ]);
+
+      const purpose = await purposeService.getPurpose(
+        req.params.purposeId,
+        ctx,
+      );
+
+      res.status(200).send(toAPI_Purpose(purpose));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Purpose by its ID",
+      headers: KnodiaServiceHeaders,
+      operationId: "getPurpose",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Purpose not found" }),
       },
-      url: "/purposes/:purposeId",
-    });
-  };
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/:purposeId",
+  });
+};

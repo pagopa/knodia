@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { generateExternalId } from "@knodia/common-models/externalResource";
-import { generateId, KnodeId, type OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import { PurposeEventV1, toPurposeV1 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
@@ -10,10 +14,7 @@ import type { API_Purpose } from "../src/models/api.ts";
 import { API_PurposeSeed } from "../src/models/api.ts";
 import { getAllPurposeEvents, injectAppRequest } from "./utils.ts";
 
-const allowedTestTokens: TestToken[] = [
-  { roles: ["administrative"], type: "ui-session" },
-  { roles: ["technical"], type: "ui-session" },
-];
+const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 const consumerId = generateExternalId<OrganizationId>();
 
