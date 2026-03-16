@@ -58,6 +58,14 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
+/**
+ * Organization with only id, and name
+ */
+export type CompactOrganization = {
+    id: string;
+    name: string;
+};
+
 export type Attribute = {
     code: string;
     scheme: string;
@@ -94,15 +102,6 @@ export type EserviceCategory = {
 };
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
-
-/**
- * Organization with only id, knodeId, and name
- */
-export type CompactOrganization = {
-    id: string;
-    knodeId: KnodeId;
-    name: string;
-};
 
 export type InterfaceDocumentSeed = {
     /**
@@ -330,7 +329,7 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeName: string;
+    knodeId: KnodeId;
     name: LocalizedName;
     notes: string;
 };
