@@ -1,0 +1,36 @@
+meta {
+  name: Create Purpose
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{host-purpose-process}}/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "consumer": {
+      "id": "a1b2c3d4-e5f6-4890-abcd-ef1234567890",
+      "knodeId": "Orion"
+    },
+    "dailyCalls": 1000,
+    "description": {
+      "en": "Test purpose for local development"
+    },
+    "eserviceId": "b2c3d4e5-f6a7-4901-bcde-f12345678901",
+    "formAnswers": {
+      "question1": "answer1"
+    },
+    "name": {
+      "en": "My Test Purpose"
+    }
+  }
+}

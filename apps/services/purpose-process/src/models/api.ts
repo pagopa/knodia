@@ -8,6 +8,23 @@ import {
 } from "@knodia/purpose-models/api";
 import z from "zod";
 
+export const API_PurposeSeed = z
+  .strictObject({
+    consumer: API_PurposeConsumer,
+    dailyCalls: z
+      .number()
+      .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
+      .meta({ format: "int32" }),
+    description: API_LocalizedPurposeDescription,
+    eserviceId: z.uuid(),
+    formAnswers: z.record(z.string(), z.unknown()),
+    name: API_LocalizedPurposeName,
+  })
+  .meta({ id: "PurposeSeed" });
+export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
+
 export const API_Purpose = z
   .strictObject({
     consumer: API_PurposeConsumer,

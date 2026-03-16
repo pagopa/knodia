@@ -1,16 +1,71 @@
-import type { PurposeId } from "@knodia/common-models/ids";
+import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { KnodeId, OrganizationId, PurposeId } from "@knodia/common-models/ids";
+import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type { Purpose } from "@knodia/purpose-models";
 
+import { EserviceId, generateId } from "@knodia/common-models/ids";
+
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
 import { retrievePurpose } from "../utils/readmodelUtils.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
-export function purposeServiceBuilder(readmodelService: ReadmodelService) {
+export function purposeServiceBuilder(
+  eventStoreWriter: PurposeEventStoreWriter,
+  readmodelService: ReadmodelService,
+) {
   return {
+    async createPurpose(
+      {
+        consumer,
+        dailyCalls,
+        description,
+        eserviceId,
+        formAnswers,
+        name,
+      }: {
+        consumer: {
+          id: ExternalId<OrganizationId>;
+          knodeId: KnodeId;
+        };
+        dailyCalls: number;
+        description: { en: string };
+        eserviceId: EserviceId;
+        formAnswers: Record<string, unknown>;
+        name: { en: string };
+      },
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<Purpose> {
+      const purposeId = generateId<PurposeId>();
+      logger.info(
+        { requestBody: { consumer, eserviceId, name } },
+        `Creating Purpose ${purposeId}`,
+      );
+
+      const now = new Date();
+      const purpose: Purpose = {
+        consumer,
+        createdAt: now,
+        dailyCalls,
+        description,
+        eserviceId,
+        formAnswers,
+        id: purposeId,
+        name,
+        state: "Active",
+        updatedAt: now,
+      };
+
+      await eventStoreWriter.insertEvent(
+        createPurposeActivatedV1Event(purpose, correlationId),
+      );
+
+      return purpose;
+    },
     async getPurpose(
       purposeId: PurposeId,
       { logger }: AuthorizedContext<UISessionAuthData>,

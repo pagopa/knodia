@@ -4,14 +4,18 @@
   "scripts": {
     "dev": "tsc --watch",
     "typecheck": "tsc",
+    "generate-protobuf": "buf generate --template ../../../buf.gen.yaml",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
+    "@bufbuild/protobuf": "catalog:",
     "@knodia/common-models": "workspace:*",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@bufbuild/buf": "catalog:",
     "@knodia/eslint-config": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",

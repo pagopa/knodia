@@ -2,6 +2,7 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { purposeEventStoreWriterBuilder } from "@knodia/db-event-store-writer/purpose";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -28,9 +29,11 @@ import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
   config,
+  eventStoreDb,
   readmodelDb,
 }: {
   config: AuthConfig & LoggerConfig;
+  eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
   const app = createFastifyApp({
@@ -67,16 +70,28 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(
-      purposeRouter,
-      purposeServiceBuilder(readmodelServiceBuilder(readmodelDb)),
-    );
+    protectedApp.register(purposeRouter, {
+      purposeService: purposeServiceBuilder(
+        purposeEventStoreWriterBuilder(eventStoreDb),
+        readmodelServiceBuilder(readmodelDb),
+      ),
+    });
   });
 
   return app;
 }
 
 export function buildAppFromConfig(config: PurposeProcessConfig) {
+  const eventStorePool = new Pool({
+    database: config.eventStoreDbName,
+    host: config.eventStoreDbHost,
+    password: config.eventStoreDbPassword,
+    port: config.eventStoreDbPort,
+    ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.eventStoreDbUser,
+  });
+  const eventStoreDb = drizzle(eventStorePool);
+
   const readmodelPool = new Pool({
     database: config.readmodelDbName,
     host: config.readmodelDbHost,
@@ -89,10 +104,12 @@ export function buildAppFromConfig(config: PurposeProcessConfig) {
 
   const app = buildApp({
     config,
+    eventStoreDb,
     readmodelDb,
   });
 
   app.addHook("onClose", async () => {
+    await eventStorePool.end();
     await readmodelPool.end();
   });
 
