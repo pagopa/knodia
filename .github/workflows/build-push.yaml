@@ -18,10 +18,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  setup:
+    name: Determine environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.env.outputs.environment }}
+      env_name: ${{ steps.env.outputs.env_name }}
+    steps:
+      - id: env
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "environment=ecr-test" >> "$GITHUB_OUTPUT"
+            echo "env_name=test" >> "$GITHUB_OUTPUT"
+          else
+            echo "environment=ecr-dev" >> "$GITHUB_OUTPUT"
+            echo "env_name=dev" >> "$GITHUB_OUTPUT"
+          fi
+
   terraform:
     name: Terraform Apply
+    needs: setup
     runs-on: ubuntu-latest
-    environment: ecr
+    environment: ${{ needs.setup.outputs.environment }}
     permissions:
       contents: read
       id-token: write
@@ -49,14 +67,14 @@ jobs:
       - name: Terraform Apply
         working-directory: terraform/
         env:
-          ENV: dev
+          ENV: ${{ needs.setup.outputs.env_name }}
         run: |
           terraform fmt -check -recursive
           ./terraform.sh apply "$ENV" -auto-approve
 
   find_dockerfiles:
     name: Find Dockerfiles
-    needs: terraform
+    needs: [setup, terraform]
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.set_packages_output.outputs.packages }}
@@ -92,9 +110,9 @@ jobs:
 
   build_push_image:
     name: "${{ matrix.package.section }}/${{ matrix.package.name }}"
-    needs: [find_dockerfiles]
+    needs: [setup, find_dockerfiles]
     runs-on: ubuntu-latest
-    environment: ecr
+    environment: ${{ needs.setup.outputs.environment }}
     permissions:
       contents: read
       id-token: write
