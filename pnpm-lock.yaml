@@ -502,6 +502,9 @@ importers:
       '@knodia/organization-models':
         specifier: workspace:*
         version: link:../../../packages/models/organization-models
+      '@knodia/organization-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/organization-process-client
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
