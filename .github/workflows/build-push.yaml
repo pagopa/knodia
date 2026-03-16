@@ -158,8 +158,6 @@ jobs:
         with:
           context: .
           file: ${{ matrix.package.path }}/Dockerfile
-          build-args: |
-            NODE_REGISTRY=${{ vars.NODE_REGISTRY }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
