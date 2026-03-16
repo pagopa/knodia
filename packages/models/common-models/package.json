@@ -16,7 +16,7 @@
     "./errors": "./src/errors.ts",
     "./event": "./src/events.ts",
     "./externalResource": "./src/externalResource.ts",
-    "./ids": "./src/brandedIds.ts",
+    "./ids": "./src/ids/index.ts",
     "./localization": "./src/localization.ts",
     "./protobuf": "./src/protobuf.ts",
     "./types": "./src/types.ts",
