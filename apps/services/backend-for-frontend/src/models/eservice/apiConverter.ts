@@ -1,3 +1,4 @@
+import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -112,7 +113,10 @@ export const toAPI_ConsumerEserviceDetails = (
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,
   hasRequiredAttributes: boolean,
-  producerName: string,
+  producer: {
+    knodeId: API_KnodeId;
+    name: string;
+  },
 ): API_ConsumerCatalogEserviceSearchResult => ({
   categories: catalogEserviceSearchResult.categories,
   description: catalogEserviceSearchResult.description,
@@ -123,6 +127,7 @@ export const toAPI_ConsumerCatalogEserviceSearchResult = (
   name: catalogEserviceSearchResult.name,
   producer: {
     id: catalogEserviceSearchResult.producerId,
-    name: producerName,
+    knodeId: producer.knodeId,
+    name: producer.name,
   },
 });

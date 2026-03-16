@@ -32,6 +32,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
     keychainProcessUrl: config.keychainProcessUrl,
+    organizationProcessUrl: config.organizationProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
@@ -100,6 +101,8 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
     });
   });
 
