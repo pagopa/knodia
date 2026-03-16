@@ -40,7 +40,7 @@ export function consumerKeychainServiceBuilder(
     async createConsumerKeychain(
       seed: API_ConsumerKeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ConsumerKeychain> {
+    ): Promise<WithMetadata<ConsumerKeychain>> {
       const consumerKeychainId = generateId<ConsumerKeychainId>();
 
       const { organizationId: ownerId } = authData;
@@ -63,11 +63,14 @@ export function consumerKeychainServiceBuilder(
         users: [],
       };
 
-      await eventStoreWriter.insertEvent(
+      const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainCreatedV1Event(consumerKeychain, correlationId),
       );
 
-      return consumerKeychain;
+      return {
+        data: consumerKeychain,
+        metadata: { version: newVersion },
+      };
     },
     async deleteConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,

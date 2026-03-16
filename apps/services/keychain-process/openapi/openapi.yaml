@@ -277,6 +277,12 @@ paths:
           name: x-correlation-id
           required: true
           description: Unique identifier of the request
+        - schema:
+            type: string
+          in: header
+          name: x-metadata-version
+          required: true
+          description: Metadata version of the relevant resource
       responses:
         "201":
           description: Consumer Keychain created successfully
@@ -331,6 +337,12 @@ paths:
           name: x-correlation-id
           required: true
           description: Unique identifier of the request
+        - schema:
+            type: string
+          in: header
+          name: x-metadata-version
+          required: true
+          description: Metadata version of the relevant resource
       responses:
         "200":
           description: Consumer Keychain retrieved successfully

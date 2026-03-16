@@ -6,6 +6,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   KnodiaServiceHeaders,
+  MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
@@ -82,7 +83,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description: "Retrieve a Consumer Keychain by its ID",
-      headers: KnodiaServiceHeaders,
+      headers: KnodiaServiceHeaders.and(MetadataVersionHeader),
       operationId: "getConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
@@ -105,15 +106,19 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const consumerKeychain =
-        await consumerKeychainService.createConsumerKeychain(req.body, ctx);
+      const {
+        data: consumerKeychain,
+        metadata: { version },
+      } = await consumerKeychainService.createConsumerKeychain(req.body, ctx);
+
+      setMetadataVersionHeader(res, version);
       res.status(201).send(toAPI_Keychain(consumerKeychain));
     },
     method: "POST",
     schema: {
       body: API_ConsumerKeychainSeed,
       description: "Create a new Consumer Keychain",
-      headers: KnodiaServiceHeaders,
+      headers: KnodiaServiceHeaders.and(MetadataVersionHeader),
       operationId: "createConsumerKeychain",
       response: {
         201: API_Keychain.meta({
