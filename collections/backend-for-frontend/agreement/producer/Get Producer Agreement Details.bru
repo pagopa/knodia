@@ -1,0 +1,17 @@
+meta {
+  name: Get Producer Agreement Details
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producer/agreements/:agreementId
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

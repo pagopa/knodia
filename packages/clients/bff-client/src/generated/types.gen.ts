@@ -96,10 +96,11 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
- * Organization with only id and name
+ * Organization with only id, knodeId, and name
  */
 export type CompactOrganization = {
     id: string;
+    knodeId: KnodeId;
     name: string;
 };
 
@@ -399,6 +400,14 @@ export type ProducerAgreement = {
     state: AgreementState;
 };
 
+export type ProducerAgreementDetails = {
+    consumer: CompactOrganization;
+    eservice: CompactEservice;
+    id: string;
+    state: AgreementState;
+    producer: CompactOrganization;
+};
+
 export type ProducerAgreements = {
     items: Array<ProducerAgreement>;
     pagination: Pagination;
@@ -434,6 +443,26 @@ export type KeychainLocalizedDescription = {
 export type ConsumerKeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
+};
+
+export type Keychain = {
+    id: string;
+    keysCount: number;
+    membersCount: number;
+    name: KeychainLocalizedName;
+};
+
+export type Keychains = {
+    items: Array<Keychain>;
+    pagination: Pagination;
+};
+
+export type KeychainDetails = {
+    createdAt: string;
+    description?: KeychainLocalizedDescription;
+    id: string;
+    name: KeychainLocalizedName;
+    updatedAt: string;
 };
 
 export type GetStatusData = {
@@ -628,7 +657,7 @@ export type GetProducerEserviceDetailsErrors = {
      */
     403: Problem;
     /**
-     * E-service not found
+     * Not Found
      */
     404: Problem;
 };
@@ -637,7 +666,7 @@ export type GetProducerEserviceDetailsError = GetProducerEserviceDetailsErrors[k
 
 export type GetProducerEserviceDetailsResponses = {
     /**
-     * E-service details retrieved successfully
+     * Producer E-service details retrieved successfully
      */
     200: ProducerEserviceDetails;
 };
@@ -676,12 +705,54 @@ export type GetProducerEserviceLatestVersionInterfaceError = GetProducerEservice
 
 export type GetProducerEserviceLatestVersionInterfaceResponses = {
     /**
-     * E-service interface document downloaded successfully
+     * Producer E-service interface document downloaded successfully
      */
     200: FileDownload;
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
+
+export type GetConsumerKeychainsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumerKeychains';
+};
+
+export type GetConsumerKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerKeychainsError = GetConsumerKeychainsErrors[keyof GetConsumerKeychainsErrors];
+
+export type GetConsumerKeychainsResponses = {
+    /**
+     * Consumer keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetConsumerKeychainsResponse = GetConsumerKeychainsResponses[keyof GetConsumerKeychainsResponses];
 
 export type CreateConsumerKeychainData = {
     body: ConsumerKeychainSeed;
@@ -754,6 +825,45 @@ export type DeleteConsumerKeychainResponses = {
 };
 
 export type DeleteConsumerKeychainResponse = DeleteConsumerKeychainResponses[keyof DeleteConsumerKeychainResponses];
+
+export type GetConsumerKeychainDetailsData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type GetConsumerKeychainDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainDetailsError = GetConsumerKeychainDetailsErrors[keyof GetConsumerKeychainDetailsErrors];
+
+export type GetConsumerKeychainDetailsResponses = {
+    /**
+     * Consumer Keychain details retrieved successfully
+     */
+    200: KeychainDetails;
+};
+
+export type GetConsumerKeychainDetailsResponse = GetConsumerKeychainDetailsResponses[keyof GetConsumerKeychainDetailsResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
@@ -953,3 +1063,42 @@ export type GetProducerAgreementsResponses = {
 };
 
 export type GetProducerAgreementsResponse = GetProducerAgreementsResponses[keyof GetProducerAgreementsResponses];
+
+export type GetProducerAgreementDetailsData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/producer/agreements/{agreementId}';
+};
+
+export type GetProducerAgreementDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetProducerAgreementDetailsError = GetProducerAgreementDetailsErrors[keyof GetProducerAgreementDetailsErrors];
+
+export type GetProducerAgreementDetailsResponses = {
+    /**
+     * Producer Agreement details retrieved successfully
+     */
+    200: ProducerAgreementDetails;
+};
+
+export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];

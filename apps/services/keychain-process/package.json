@@ -23,7 +23,8 @@
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zocker": "catalog:"
   },
   "dependencies": {
     "@fastify/request-context": "catalog:",
@@ -32,8 +33,8 @@
     "@knodia/db-event-store-writer": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-consumer-keychain": "workspace:*",
-    "@knodia/keychain-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",

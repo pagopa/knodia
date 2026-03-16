@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses } from './types.gen.ts';
+import type { CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -78,7 +78,7 @@ export const createEservice = <ThrowOnError extends boolean = true>(options: Opt
 });
 
 /**
- * Retrieve an E-service with all its details
+ * Retrieve a Producer E-service with all its details
  */
 export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(options: Options<GetProducerEserviceDetailsData, ThrowOnError>) => (options.client ?? client).get<GetProducerEserviceDetailsResponses, GetProducerEserviceDetailsErrors, ThrowOnError>({
     responseType: 'json',
@@ -90,12 +90,22 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 /**
  * Download producer E-service latest version interface
  *
- * Download the interface document for the latest version of an E-service
+ * Download the interface document for the latest version of a Producer E-service
  */
 export const getProducerEserviceLatestVersionInterface = <ThrowOnError extends boolean = true>(options: Options<GetProducerEserviceLatestVersionInterfaceData, ThrowOnError>) => (options.client ?? client).get<GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEserviceLatestVersionInterfaceErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/producer/eservices/{eserviceId}/interface',
+    ...options
+});
+
+/**
+ * Retrieve a paginated list of Consumer keychains for the logged-in user's organization
+ */
+export const getConsumerKeychains = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainsResponses, GetConsumerKeychainsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains',
     ...options
 });
 
@@ -117,6 +127,16 @@ export const createConsumerKeychain = <ThrowOnError extends boolean = true>(opti
  * Delete a Consumer Keychain
  */
 export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteConsumerKeychainResponses, DeleteConsumerKeychainErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains/{consumerKeychainId}',
+    ...options
+});
+
+/**
+ * Retrieve a Consumer Keychain with all its details
+ */
+export const getConsumerKeychainDetails = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainDetailsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainDetailsResponses, GetConsumerKeychainDetailsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}',
     ...options
@@ -185,5 +205,15 @@ export const getProducerAgreements = <ThrowOnError extends boolean = true>(optio
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/producer/agreements',
+    ...options
+});
+
+/**
+ * Retrieve a Producer Agreement with all its details
+ */
+export const getProducerAgreementDetails = <ThrowOnError extends boolean = true>(options: Options<GetProducerAgreementDetailsData, ThrowOnError>) => (options.client ?? client).get<GetProducerAgreementDetailsResponses, GetProducerAgreementDetailsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/producer/agreements/{agreementId}',
     ...options
 });
