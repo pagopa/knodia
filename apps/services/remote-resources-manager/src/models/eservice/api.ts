@@ -1,7 +1,6 @@
 import { API_AgreementState } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
-  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -179,7 +178,6 @@ export type API_ConsumerEservices = z.infer<typeof API_ConsumerEservices>;
 export const API_GetConsumerEservicesQueryParams =
   API_PaginationQueryParams.extend({
     agreementState: API_AgreementState.optional(),
-    consumerId: API_OrganizationId,
   });
 export type API_GetConsumerEservicesQueryParams = z.infer<
   typeof API_GetConsumerEservicesQueryParams

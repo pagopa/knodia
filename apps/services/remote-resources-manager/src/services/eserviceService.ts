@@ -3,7 +3,7 @@ import type { RemoteResourceDbService } from "@knodia/db-remote-resource/service
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
+import { type EserviceId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import {
@@ -87,18 +87,18 @@ export function eserviceServiceBuilder(
 
     async getConsumerEservices(
       reqQuery: API_GetConsumerEservicesQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_ConsumerEservices> {
       logger.info(
         { requestQuery: reqQuery },
         `Getting Consumer E-services with query parameters`,
       );
 
-      const { agreementState, consumerId, limit, offset } = reqQuery;
+      const { agreementState, limit, offset } = reqQuery;
 
       const remoteAgreements =
         await remoteResourceDbService.getAgreementsByConsumerId({
-          consumerId: unsafeBrandId(consumerId),
+          consumerId: authData.organizationId,
           limit: limit,
           offset: offset,
         });
