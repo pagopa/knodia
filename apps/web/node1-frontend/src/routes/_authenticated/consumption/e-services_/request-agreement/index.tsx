@@ -2,8 +2,8 @@ import { bffApi } from "@knodia/bff-client";
 import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { RequestAgreementModal } from "@/features/e-service/components/RequestAgreementModal/RequestAgreementModal";
-import { requestAgreementSearchSchema } from "@/features/e-service/models/search-params";
+import { RequestAgreementModal } from "@/features/agreement/components/RequestAgreementModal/RequestAgreementModal";
+import { requestAgreementSearchSchema } from "@/features/agreement/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { client } from "@/libs/axios";
 

@@ -2,6 +2,7 @@ import { attributes } from "@knodia/attribute-models";
 import { Banner, Button, Select } from "@knodia/ui-kit/ui";
 import { TrashIcon } from "@phosphor-icons/react";
 
+import { ModalFooter } from "@/components/ModalFooter";
 import { useStepsContext } from "@/contexts/steps";
 import { useAttributesStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
@@ -11,7 +12,6 @@ import {
   toSchemeRefKey,
 } from "@/features/e-service/utils/schemeRef";
 
-import { ModalFooter } from "../../ModalFooter";
 import { StepHeader } from "../components/StepHeader";
 
 export function AttributesStep() {

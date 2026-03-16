@@ -1,10 +1,10 @@
 import { Banner, FileUpload } from "@knodia/ui-kit/ui";
 
+import { ModalFooter } from "@/components/ModalFooter";
 import { useStepsContext } from "@/contexts/steps";
 import { useDocsStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { ModalFooter } from "../../ModalFooter";
 import { RemovableDocumentRecap } from "../components/RemovableDocumentRecap";
 import { StepHeader } from "../components/StepHeader";
 

@@ -8,11 +8,11 @@ import {
   TextField,
 } from "@knodia/ui-kit/ui";
 
+import { ModalFooter } from "@/components/ModalFooter";
 import { useStepsContext } from "@/contexts/steps";
 import { useTechnicalStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { ModalFooter } from "../../ModalFooter";
 import { StepHeader } from "../components/StepHeader";
 
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;

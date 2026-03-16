@@ -2,7 +2,7 @@ import { getAttribute } from "@knodia/attribute-models";
 import { BookOpenTextIcon, SealCheckIcon } from "@phosphor-icons/react";
 import { Fragment } from "react";
 
-import type { SchemeRef } from "../types/schemeRef";
+import type { SchemeRef } from "@/types/schemeRef";
 
 interface AttributeWithPossession extends SchemeRef {
   possessed?: boolean;

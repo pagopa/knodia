@@ -5,12 +5,11 @@ import { SealCheckIcon } from "@phosphor-icons/react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
+import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
+import { ModalFooter } from "@/components/ModalFooter";
 import { SettingsCard } from "@/components/SettingCard";
-import { useCreateAgreement } from "@/features/e-service/hooks/useCreateAgreement";
+import { useCreateAgreement } from "@/features/agreement/hooks/useCreateAgreement";
 import { FullPageModal } from "@/layouts/FullPageModal";
-
-import { AttributeGroupContainer } from "../AttributeGroupContainer";
-import { ModalFooter } from "../ModalFooter";
 
 // TODO: use real consumer organization info from BFF (same pattern as Navbar.tsx)
 const CONSUMER_ORG_NAME = "Ursa";

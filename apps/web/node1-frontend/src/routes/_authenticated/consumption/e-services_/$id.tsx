@@ -16,8 +16,8 @@ import { DialogTrigger } from "react-aria-components";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
+import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { PageHeader } from "@/components/PageHeader";
-import { AttributeGroupContainer } from "@/features/e-service/components/AttributeGroupContainer";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
   AccessTokenSettingsSection,
