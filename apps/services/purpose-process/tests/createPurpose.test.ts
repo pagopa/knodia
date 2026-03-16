@@ -1,39 +1,62 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { generateExternalId } from "@knodia/common-models/externalResource";
-import {
-  generateId,
-  KnodeId,
-  type OrganizationId,
-} from "@knodia/common-models/ids";
+import { generateId, KnodeId, type OrganizationId } from "@knodia/common-models/ids";
 import { PurposeEventV1, toPurposeV1 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  getMockAgreement,
+  getMockEservice,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type { API_Purpose } from "../src/models/api.ts";
 
 import { API_PurposeSeed } from "../src/models/api.ts";
+import {
+  agreementWriterService,
+  eserviceWriterService,
+} from "./setup.ts";
 import { getAllPurposeEvents, injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
+const eservice = getMockEservice({ latestVersionState: "Active" });
 const consumerId = generateExternalId<OrganizationId>();
+const consumerKnodeId = KnodeId.parse("Orion");
 
 const body: API_PurposeSeed = {
   consumer: {
     id: consumerId,
-    knodeId: "Orion",
+    knodeId: consumerKnodeId,
   },
   dailyCalls: 1000,
   description: { en: "A test purpose description" },
-  eserviceId: generateId(),
+  eserviceId: eservice.id,
   formAnswers: { question1: "answer1" },
   name: { en: "Test Purpose" },
 };
 
+const setupEserviceAndAgreement = async () => {
+  await eserviceWriterService.upsertEservice(eservice, 1);
+  await agreementWriterService.upsertAgreement(
+    {
+      ...getMockAgreement(),
+      consumer: { id: consumerId, knodeId: consumerKnodeId },
+      eserviceId: eservice.id,
+      eserviceVersionId: eservice.versions[0]!.id,
+      producerId: eservice.producerId,
+      state: "Active",
+    },
+    1,
+  );
+};
+
 describe("POST /purposes (createPurpose)", () => {
   it.each(allowedTestTokens)(
-    "should correctly create purpose and write event ($type, $roles)",
+    "should correctly create purpose and write event ($type)",
     async (token) => {
+      await setupEserviceAndAgreement();
+
       const response = await injectAppRequest(token)
         .post("/purposes")
         .body(body);
@@ -44,7 +67,7 @@ describe("POST /purposes (createPurpose)", () => {
       expect(responseBody).toMatchObject({
         consumer: {
           id: consumerId,
-          knodeId: "Orion",
+          knodeId: consumerKnodeId,
         },
         dailyCalls: body.dailyCalls,
         description: body.description,
@@ -70,10 +93,7 @@ describe("POST /purposes (createPurpose)", () => {
       const createdEventData = PurposeEventV1.parse(createdEvent).data;
       expect(createdEventData.purpose).toMatchObject(
         toPurposeV1({
-          consumer: {
-            id: consumerId,
-            knodeId: KnodeId.parse("Orion"),
-          },
+          consumer: { id: consumerId, knodeId: consumerKnodeId },
           createdAt: new Date(responseBody.createdAt),
           dailyCalls: body.dailyCalls,
           description: body.description,
@@ -87,6 +107,47 @@ describe("POST /purposes (createPurpose)", () => {
       );
     },
   );
+
+  it("should return 404 if the e-service does not exist", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        eserviceId: generateId(),
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 409 if the e-service has no active version", async () => {
+    const suspendedEservice = getMockEservice({
+      latestVersionState: "Suspended",
+      seed: 10,
+    });
+    await eserviceWriterService.upsertEservice(suspendedEservice, 1);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        eserviceId: suspendedEservice.id,
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 409 if no active agreement exists for the consumer/eservice pair", async () => {
+    await eserviceWriterService.upsertEservice(eservice, 1);
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        consumer: {
+          id: generateExternalId<OrganizationId>(),
+          knodeId: consumerKnodeId,
+        },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(409);
+  });
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],

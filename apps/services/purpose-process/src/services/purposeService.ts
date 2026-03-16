@@ -17,7 +17,11 @@ import { EserviceId, generateId } from "@knodia/common-models/ids";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
-import { retrievePurpose } from "../utils/readmodelUtils.ts";
+import { retrieveEservice, retrievePurpose } from "../utils/readmodelUtils.ts";
+import {
+  assertActiveAgreementExists,
+  assertEserviceIsActive,
+} from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
@@ -52,6 +56,16 @@ export function purposeServiceBuilder(
         { requestBody: { consumer, eserviceId, name } },
         `Creating Purpose ${purposeId}`,
       );
+
+      await retrieveEservice(eserviceId, readmodelService);
+      await assertEserviceIsActive(eserviceId, readmodelService);
+
+      await assertActiveAgreementExists({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
 
       const now = new Date();
       const purpose: Purpose = {
