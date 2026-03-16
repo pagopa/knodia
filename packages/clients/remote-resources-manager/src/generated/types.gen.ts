@@ -45,11 +45,6 @@ export type AgreementConsumer = {
     knodeId: KnodeId;
 };
 
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
 export type Pagination = {
     limit: number;
     offset: number;
@@ -65,6 +60,11 @@ export type FileDownload = Blob | File;
  * Unique identifier of the Organization
  */
 export type OrganizationId = string;
+
+export type Attribute = {
+    code: string;
+    scheme: string;
+};
 
 /**
  * Seed data to create a new Agreement
