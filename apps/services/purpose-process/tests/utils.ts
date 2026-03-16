@@ -8,7 +8,7 @@ import { app } from "./setup.ts";
 
 export const injectAppRequest = createInjectAppRequest(() => app);
 
-export function toExpectAPI_Purpose(purpose: Purpose | API_Purpose) {
+export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
   return {
     consumer: purpose.consumer,
     createdAt:
