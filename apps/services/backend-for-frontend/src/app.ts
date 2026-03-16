@@ -17,6 +17,7 @@ import type { BffProcessConfig } from "./config/config.ts";
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
+import { agreementConsumerRouter } from "./routers/agreement/agreementConsumerRouter.ts";
 import { agreementProducerRouter } from "./routers/agreement/agreementProducerRouter.ts";
 import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
@@ -30,6 +31,7 @@ export function buildAppFromConfig(config: BffProcessConfig) {
     agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
     keychainProcessUrl: config.keychainProcessUrl,
+    organizationProcessUrl: config.organizationProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
@@ -54,16 +56,16 @@ export function buildAppFromConfig(config: BffProcessConfig) {
             name: apiTags.auth,
           },
           {
+            description: "Agreements routes",
+            name: apiTags.agreement,
+          },
+          {
             description: "E-services routes",
             name: apiTags.eservice,
           },
           {
             description: "Consumer Keychains routes",
             name: apiTags.consumerKeychain,
-          },
-          {
-            description: "Agreement routes",
-            name: apiTags.agreement,
           },
         ],
       },
@@ -103,9 +105,14 @@ export function buildAppFromConfig(config: BffProcessConfig) {
       config,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
+    protectedApp.register(agreementConsumerRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
     });
   });
 

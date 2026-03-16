@@ -81,7 +81,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         client: eserviceProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
-      res.status(201).send(API_CreatedResource.parse({ id: data.id }));
+      res.status(201).send({ id: data.id });
     },
     method: "POST",
     schema: {
@@ -227,17 +227,17 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve an E-service with all its details",
+      description: "Retrieve a Producer E-service with all its details",
       operationId: "getProducerEserviceDetails",
       params: API_EserviceIdPathParam,
       response: {
         200: API_ProducerEserviceDetails.meta({
-          description: "E-service details retrieved successfully",
+          description: "Producer E-service details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "E-service not found" }),
+        404: API_Problem.meta({ description: "Not Found" }),
       },
       tags: [apiTags.eservice],
     },
@@ -276,13 +276,14 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Download the interface document for the latest version of an E-service",
+        "Download the interface document for the latest version of a Producer E-service",
       operationId: "getProducerEserviceLatestVersionInterface",
       params: API_EserviceIdPathParam,
       produces: ["application/json", "application/yaml", "application/x-yaml"],
       response: {
         200: API_FileDownload.meta({
-          description: "E-service interface document downloaded successfully",
+          description:
+            "Producer E-service interface document downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

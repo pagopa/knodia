@@ -3,10 +3,23 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import z from "zod";
 
 import { API_CompactEservice } from "../eservice/api.ts";
 import { API_CompactOrganization } from "../organization/api.ts";
+
+export const API_AgreementSeed = z
+  .strictObject({
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description: "Seed data to create a new Agreement",
+    id: "AgreementSeed",
+  });
+export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
 export const API_GetProducerAgreementsQueryParams = API_PaginationQueryParams;
 export type API_GetProducerAgreementsQueryParams = z.infer<
@@ -22,6 +35,13 @@ export const API_ProducerAgreement = z
   })
   .meta({ id: "ProducerAgreement" });
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
+
+export const API_ProducerAgreementDetails = API_ProducerAgreement.extend({
+  producer: API_CompactOrganization,
+}).meta({ id: "ProducerAgreementDetails" });
+export type API_ProducerAgreementDetails = z.infer<
+  typeof API_ProducerAgreementDetails
+>;
 
 export const API_ProducerAgreements = z
   .strictObject({

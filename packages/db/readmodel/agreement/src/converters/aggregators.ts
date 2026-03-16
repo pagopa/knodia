@@ -1,6 +1,7 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { Agreement, AgreementState } from "@knodia/agreement-models";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type AgreementId,
   KnodeId,
@@ -41,7 +42,7 @@ const buildAgreement = ({
       toAgreementAttribute,
     ),
     consumer: {
-      id: unsafeBrandId(agreementSQL.consumerId),
+      id: unsafeBrandExternalId(agreementSQL.consumerId),
       knodeId: KnodeId.parse(agreementSQL.consumerKnodeId),
     },
     createdAt: agreementSQL.createdAt,

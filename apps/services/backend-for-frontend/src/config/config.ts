@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import {
   AuthConfig,
   HTTPServerConfig,
@@ -19,6 +20,8 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         ESERVICE_PROCESS_URL: z.url(),
         KEYCHAIN_PROCESS_URL: z.url(),
         REDIS_URL: z.url(),
+        KNODE_ID: KnodeId,
+        ORGANIZATION_PROCESS_URL: z.url(),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -46,6 +49,8 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         redisUrl: c.REDIS_URL,
+        knodeId: c.KNODE_ID,
+        organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
         refreshJwt: {
           secondsDuration: c.REFRESH_JWT_SECONDS_DURATION,
         },

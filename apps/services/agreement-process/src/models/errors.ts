@@ -1,3 +1,4 @@
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
   EserviceId,
@@ -34,7 +35,7 @@ export function agreementAlreadyExists({
   consumerKnodeId,
   eserviceId,
 }: {
-  consumerId: OrganizationId;
+  consumerId: ExternalId<OrganizationId>;
   consumerKnodeId: KnodeId;
   eserviceId: EserviceId;
 }) {

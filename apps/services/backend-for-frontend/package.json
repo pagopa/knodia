@@ -38,6 +38,7 @@
     "@knodia/keychain-process-client": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/organization-models": "workspace:*",
+    "@knodia/organization-process-client": "workspace:*",
     "@knodia/remote-resources-manager-client": "workspace:*",
     "@knodia/token-generator": "workspace:*",
     "fastify": "catalog:",

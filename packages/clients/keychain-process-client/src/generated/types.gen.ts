@@ -229,3 +229,48 @@ export type DeleteConsumerKeychainResponses = {
 };
 
 export type DeleteConsumerKeychainResponse = DeleteConsumerKeychainResponses[keyof DeleteConsumerKeychainResponses];
+
+export type GetConsumerKeychainData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type GetConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainError = GetConsumerKeychainErrors[keyof GetConsumerKeychainErrors];
+
+export type GetConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain retrieved successfully
+     */
+    200: Keychain;
+};
+
+export type GetConsumerKeychainResponse = GetConsumerKeychainResponses[keyof GetConsumerKeychainResponses];

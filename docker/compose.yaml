@@ -43,6 +43,30 @@ services:
       postgres:
         condition: service_healthy
 
+  readmodel-seed:
+    security_opt:
+      - no-new-privileges:true
+    image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
+    container_name: knodia-readmodel-seed
+    depends_on:
+      flyway:
+        condition: service_completed_successfully
+    volumes:
+      - ./readmodel-seed:/seed:ro
+    environment:
+      PGHOST: postgres
+      PGUSER: root
+      PGPASSWORD: root
+      PGDATABASE: readmodel
+      NAMESPACE: local
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        for f in /seed/*.sql; do
+          sed "s/\$${NAMESPACE}/$$NAMESPACE/g" "$$f" | psql
+        done
+
   kafka:
     security_opt:
       - no-new-privileges:true

@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -55,6 +55,16 @@ export const createConsumerKeychain = <ThrowOnError extends boolean = true>(opti
  * Delete a Consumer Keychain
  */
 export const deleteConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<DeleteConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<DeleteConsumerKeychainResponses, DeleteConsumerKeychainErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains/{consumerKeychainId}',
+    ...options
+});
+
+/**
+ * Retrieve a Consumer Keychain by its ID
+ */
+export const getConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainResponses, GetConsumerKeychainErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}',
     ...options
