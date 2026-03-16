@@ -1,4 +1,5 @@
 import type { Agreement, AgreementState } from "@knodia/agreement-models";
+import type { API_AgreementState } from "@knodia/agreement-models/api";
 import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type {
   API_AccessTokenType,
@@ -51,8 +52,8 @@ export const toK2KAgreement = (
   updatedAt: agreement.updatedAt.toISOString(),
 });
 
-const toK2KAgreementState = (
-  state: AgreementState,
+export const toK2KAgreementState = (
+  state: AgreementState | API_AgreementState,
 ): k2kGatewayApi.AgreementState =>
   match(state)
     .with("Active", () => "ACTIVE" as const)
@@ -60,7 +61,9 @@ const toK2KAgreementState = (
     .with("Archived", () => "ARCHIVED" as const)
     .exhaustive();
 
-export const toK2KKnodeId = (knodeId: API_KnodeId): k2kGatewayApi.KnodeId =>
+export const toK2KKnodeId = (
+  knodeId: API_KnodeId,
+): k2kGatewayApi.KnodeId =>
   match(knodeId)
     .with("Orion", () => "ORION" as const)
     .with("Lynx", () => "LYNX" as const)
