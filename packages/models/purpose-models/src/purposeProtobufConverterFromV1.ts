@@ -23,14 +23,14 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
   assertRequired(input.description, "Purpose description is undefined");
 
   return {
+    ...input,
     consumer: fromPurposeConsumerV1(input.consumer),
     createdAt: new Date(input.createdAt),
-    dailyCalls: input.dailyCalls,
-    description: { en: input.description.en },
+    description: input.description,
     eserviceId: unsafeBrandId(input.eserviceId),
     formAnswers: input.formAnswers as Record<string, unknown>,
     id: unsafeBrandId(input.id),
-    name: { en: input.name.en },
+    name: input.name,
     state: fromPurposeStateV1(input.state),
     updatedAt: new Date(input.updatedAt),
   };
