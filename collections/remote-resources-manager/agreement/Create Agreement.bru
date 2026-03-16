@@ -1,6 +1,7 @@
 meta {
   name: Create Agreement
   type: http
+  seq: 1
 }
 
 post {
@@ -20,6 +21,10 @@ body:json {
     "eserviceVersionId": "{{eserviceVersionId}}",
     "knodeId": "{{other-knode-id}}"
   }
+}
+
+vars:pre-request {
+  consumerId: 00000000-0000-4000-8000-000000000002
 }
 
 vars:post-response {
