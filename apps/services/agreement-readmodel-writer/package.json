@@ -15,7 +15,6 @@
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
@@ -24,13 +23,13 @@
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-agreement": "workspace:*",
+    "@knodia/db-readmodel-config": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",
     "pino": "catalog:",
-    "pg": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   }

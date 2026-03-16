@@ -15,13 +15,13 @@
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
+    "@knodia/db-readmodel-config": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/common-models": "workspace:*",
@@ -31,7 +31,6 @@
     "drizzle-orm": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
-    "pg": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   }

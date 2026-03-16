@@ -3,6 +3,8 @@ import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { agreementEventStoreWriterBuilder } from "@knodia/db-event-store-writer/agreement";
+import { makeDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
+import { ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -16,8 +18,6 @@ import {
   bearerAuthSecurity,
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
 
 import type { AgreementProcessConfig } from "./config/config.ts";
 
@@ -82,25 +82,12 @@ export function buildApp({
 }
 
 export function buildAppFromConfig(config: AgreementProcessConfig) {
-  const eventStorePool = new Pool({
-    database: config.eventStoreDbName,
-    host: config.eventStoreDbHost,
-    password: config.eventStoreDbPassword,
-    port: config.eventStoreDbPort,
-    ssl: config.eventStoreDbUseSsl ? { rejectUnauthorized: false } : undefined,
-    user: config.eventStoreDbUser,
-  });
-  const eventStoreDb = drizzle(eventStorePool);
-
-  const readmodelPool = new Pool({
-    database: config.readmodelDbName,
-    host: config.readmodelDbHost,
-    password: config.readmodelDbPassword,
-    port: config.readmodelDbPort,
-    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
-    user: config.readmodelDbUser,
-  });
-  const readmodelDb = drizzle(readmodelPool);
+  const { db: eventStoreDb, pool: eventStorePool } = makeDrizzleConnection(
+    ReadmodelConfig.parse(config),
+  );
+  const { db: readmodelDb, pool: readmodelPool } = makeDrizzleConnection(
+    ReadmodelConfig.parse(config),
+  );
 
   const app = buildApp({
     config,
