@@ -4,10 +4,10 @@ import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
+import { PurposeActivatedV1 } from "../src/generated/v1/purposeEvents.ts";
 import { Purpose } from "../src/purpose.ts";
 import { PurposeEventV1 } from "../src/purposeEvent.ts";
 import { toPurposeV1 } from "../src/purposeProtobufConverterToV1.ts";
-import { PurposeActivatedV1 } from "../src/generated/v1/purposeEvents.ts";
 
 describe("PurposeEventV1 codec", () => {
   const purpose = {
