@@ -46,6 +46,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .$dynamic();
 
         const paginatedIds = createFilterQuery()
+          .orderBy(...orderByFilters)
           .limit(limit)
           .offset(offset)
           .as("paginatedIds");

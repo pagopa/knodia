@@ -445,6 +445,26 @@ export type ConsumerKeychainSeed = {
     name: KeychainLocalizedName;
 };
 
+export type Keychain = {
+    id: string;
+    keysCount: number;
+    membersCount: number;
+    name: KeychainLocalizedName;
+};
+
+export type Keychains = {
+    items: Array<Keychain>;
+    pagination: Pagination;
+};
+
+export type KeychainDetails = {
+    createdAt: string;
+    description?: KeychainLocalizedDescription;
+    id: string;
+    name: KeychainLocalizedName;
+    updatedAt: string;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -692,6 +712,48 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
 
+export type GetConsumerKeychainsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumerKeychains';
+};
+
+export type GetConsumerKeychainsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerKeychainsError = GetConsumerKeychainsErrors[keyof GetConsumerKeychainsErrors];
+
+export type GetConsumerKeychainsResponses = {
+    /**
+     * Consumer keychains retrieved successfully
+     */
+    200: Keychains;
+};
+
+export type GetConsumerKeychainsResponse = GetConsumerKeychainsResponses[keyof GetConsumerKeychainsResponses];
+
 export type CreateConsumerKeychainData = {
     body: ConsumerKeychainSeed;
     path?: never;
@@ -763,6 +825,45 @@ export type DeleteConsumerKeychainResponses = {
 };
 
 export type DeleteConsumerKeychainResponse = DeleteConsumerKeychainResponses[keyof DeleteConsumerKeychainResponses];
+
+export type GetConsumerKeychainDetailsData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type GetConsumerKeychainDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainDetailsError = GetConsumerKeychainDetailsErrors[keyof GetConsumerKeychainDetailsErrors];
+
+export type GetConsumerKeychainDetailsResponses = {
+    /**
+     * Consumer Keychain details retrieved successfully
+     */
+    200: KeychainDetails;
+};
+
+export type GetConsumerKeychainDetailsResponse = GetConsumerKeychainDetailsResponses[keyof GetConsumerKeychainDetailsResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
