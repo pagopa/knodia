@@ -1,5 +1,4 @@
 import type { Agreement, AgreementState } from "@knodia/agreement-models";
-import type { API_AgreementState } from "@knodia/agreement-models/api";
 import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type {
   API_AccessTokenType,
@@ -53,7 +52,7 @@ export const toK2KAgreement = (
 });
 
 export const toK2KAgreementState = (
-  state: AgreementState | API_AgreementState,
+  state: AgreementState,
 ): k2kGatewayApi.AgreementState =>
   match(state)
     .with("Active", () => "ACTIVE" as const)
