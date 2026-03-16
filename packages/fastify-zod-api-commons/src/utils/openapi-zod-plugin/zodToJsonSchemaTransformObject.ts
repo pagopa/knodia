@@ -1,14 +1,21 @@
+/*
+ * Document-level transform (`transformObject` in @fastify/swagger config).
+ *
+ * Runs once after all routes have been processed.
+ *
+ * We wrap the base jsonSchemaTransformObject from fastify-type-provider-zod
+ * to apply additional transformations on top.
+ */
+
 import type { OpenAPIV3 } from "openapi-types";
 
-import {
-  createJsonSchemaTransform,
-  createJsonSchemaTransformObject,
-} from "fastify-type-provider-zod";
+import { createJsonSchemaTransformObject } from "fastify-type-provider-zod";
 
 import { healthRouterTag } from "../../routers/healthRouter.ts";
 import { OPENAPI_3_0_ZOD_TO_JSON_SCHEMA } from "./constants.ts";
+import { responseHeadersStore } from "./responseHeadersStore.ts";
 
-const zodToJsonSchemaTransformObject = createJsonSchemaTransformObject({
+const baseTransformObject = createJsonSchemaTransformObject({
   zodToJsonConfig: {
     target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
   },
@@ -146,11 +153,45 @@ const removeUnusedComponents = (
   return openapi;
 };
 
-export const zodToJsonSchemaTransform = createJsonSchemaTransform({
-  zodToJsonConfig: {
-    target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
-  },
-});
+const addResponseHeadersToOpenapi = (
+  openapi: Partial<OpenAPIV3.Document>,
+): Partial<OpenAPIV3.Document> => {
+  if (!openapi.paths || responseHeadersStore.size === 0) return openapi;
+
+  for (const pathItem of Object.values(openapi.paths)) {
+    if (!pathItem) continue;
+
+    for (const operation of Object.values(pathItem)) {
+      if (!operation || typeof operation !== "object") continue;
+      if (!("operationId" in operation) || !operation.operationId) continue;
+      if (!("responses" in operation) || !operation.responses) continue;
+
+      const operationId = operation.operationId as string;
+      const routeHeaders = responseHeadersStore.get(operationId);
+
+      for (const [statusCode, response] of Object.entries(
+        operation.responses,
+      )) {
+        if ("$ref" in response) continue;
+
+        const perResponseHeaders = responseHeadersStore.get(
+          `${operationId}:${statusCode}`,
+        );
+
+        if (routeHeaders || perResponseHeaders) {
+          response.headers = {
+            ...response.headers,
+            ...routeHeaders,
+            ...perResponseHeaders,
+          };
+        }
+      }
+    }
+  }
+
+  responseHeadersStore.clear();
+  return openapi;
+};
 
 const applyOpenApiTransforms = (
   openapi: Partial<OpenAPIV3.Document>,
@@ -160,13 +201,15 @@ const applyOpenApiTransforms = (
 ): Partial<OpenAPIV3.Document> =>
   transforms.reduce((acc, transform) => transform(acc), openapi);
 
-export const zodToJsonSchemaTransformAndCleanObject: typeof zodToJsonSchemaTransformObject =
-  (openapi) =>
-    applyOpenApiTransforms(
-      zodToJsonSchemaTransformObject(openapi) as Partial<OpenAPIV3.Document>,
-      [
-        removeZodInputSchemasFromOpenapi,
-        updateErrorResponseContentsWithProblemJson,
-        removeUnusedComponents,
-      ],
-    );
+export const zodToJsonSchemaTransformObject: typeof baseTransformObject = (
+  openapi,
+) =>
+  applyOpenApiTransforms(
+    baseTransformObject(openapi) as Partial<OpenAPIV3.Document>,
+    [
+      removeZodInputSchemasFromOpenapi,
+      updateErrorResponseContentsWithProblemJson,
+      addResponseHeadersToOpenapi,
+      removeUnusedComponents,
+    ],
+  );
