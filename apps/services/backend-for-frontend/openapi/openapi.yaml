@@ -193,19 +193,21 @@ components:
         - Bearer
         - DPoP
     CompactOrganization:
-      description: Organization with only id and name
+      description: Organization with only id, knodeId, and name
       type: object
       properties:
         id:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
-          minLength: 5
-          maxLength: 60
+          minLength: 1
       required:
         - id
+        - knodeId
         - name
       additionalProperties: false
     InterfaceDocumentSeed:
@@ -825,6 +827,28 @@ components:
         - id
         - state
       additionalProperties: false
+    ProducerAgreementDetails:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+      required:
+        - consumer
+        - eservice
+        - id
+        - state
+        - producer
+      additionalProperties: false
     ProducerAgreements:
       type: object
       properties:
@@ -1202,7 +1226,7 @@ paths:
       operationId: getProducerEserviceDetails
       tags:
         - eservice
-      description: Retrieve an E-service with all its details
+      description: Retrieve a Producer E-service with all its details
       parameters:
         - schema:
             type: string
@@ -1213,11 +1237,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service details retrieved successfully
+          description: Producer E-service details retrieved successfully
           content:
             application/json:
               schema:
-                description: E-service details retrieved successfully
+                description: Producer E-service details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerEserviceDetails"
         "400":
@@ -1245,11 +1269,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: E-service not found
+          description: Not Found
           content:
             application/problem+json:
               schema:
-                description: E-service not found
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/interface:
@@ -1258,7 +1282,8 @@ paths:
       summary: Download producer E-service latest version interface
       tags:
         - eservice
-      description: Download the interface document for the latest version of an E-service
+      description: Download the interface document for the latest version of a
+        Producer E-service
       parameters:
         - schema:
             type: string
@@ -1269,11 +1294,11 @@ paths:
           required: true
       responses:
         "200":
-          description: E-service interface document downloaded successfully
+          description: Producer E-service interface document downloaded successfully
           content:
             application/json: &a1
               schema:
-                description: E-service interface document downloaded successfully
+                description: Producer E-service interface document downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
@@ -1810,6 +1835,61 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/agreements/{agreementId}:
+    get:
+      operationId: getProducerAgreementDetails
+      tags:
+        - agreement
+      description: Retrieve a Producer Agreement with all its details
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: agreementId
+          required: true
+      responses:
+        "200":
+          description: Producer Agreement details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Agreement details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ProducerAgreementDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
