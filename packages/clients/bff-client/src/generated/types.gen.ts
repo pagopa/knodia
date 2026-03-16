@@ -45,6 +45,11 @@ export type Pagination = {
 export type FileDownload = Blob | File;
 
 /**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -323,8 +328,8 @@ export type ConsumerCatalogEserviceSearchResult = {
 };
 
 export type ConsumerCatalogEserviceSearchResults = {
+    items: Array<ConsumerCatalogEserviceSearchResult>;
     pagination: Pagination;
-    results: Array<ConsumerCatalogEserviceSearchResult>;
 };
 
 export type ConsumerEserviceDetailsProducer = {
@@ -337,8 +342,8 @@ export type ConsumerEserviceDetailsProducer = {
 
 export type ConsumerRequiredAttribute = {
     code: string;
-    possessed: boolean;
     scheme: string;
+    possessed: boolean;
 };
 
 export type ConsumerEserviceDetailsAccessToken = {
@@ -382,6 +387,29 @@ export type ConsumerEserviceDetails = {
 export type CompactEservice = {
     id: string;
     name: LocalizedName;
+};
+
+export type ConsumerEservice = {
+    agreement: {
+        id: string;
+        state: AgreementState;
+    };
+    categories: Array<EserviceCategory>;
+    /**
+     * Indicates whether the E-service has been updated in the last 3 days
+     */
+    hasRecentlyBeenUpdated: boolean;
+    id: string;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producer: CompactOrganization;
+    requiredAttributes: Array<Array<Attribute>>;
+    state: EserviceVersionState;
+};
+
+export type ConsumerEservices = {
+    items: Array<ConsumerEservice>;
+    pagination: Pagination;
 };
 
 /**
@@ -988,6 +1016,54 @@ export type GetConsumerEserviceLatestVersionInterfaceResponses = {
 };
 
 export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
+
+export type GetConsumerEservicesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        agreementState?: AgreementState;
+        consumerId: OrganizationId;
+    };
+    url: '/consumer/eservices';
+};
+
+export type GetConsumerEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
+
+export type GetConsumerEservicesResponses = {
+    /**
+     * Consumer E-services retrieved successfully
+     */
+    200: ConsumerEservices;
+};
+
+export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof GetConsumerEservicesResponses];
 
 export type CreateConsumerAgreementData = {
     body: AgreementSeed;

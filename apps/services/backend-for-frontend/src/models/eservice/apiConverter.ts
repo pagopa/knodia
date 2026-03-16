@@ -4,6 +4,7 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 
 import type {
   API_ConsumerCatalogEserviceSearchResult,
+  API_ConsumerEservice,
   API_ConsumerEserviceDetails,
   API_ProducerEservice,
   API_ProducerEserviceDetails,
@@ -107,6 +108,20 @@ export const toAPI_ConsumerEserviceDetails = (
       })),
   ),
   state: detail.latestVersion.state,
+});
+
+export const toAPI_ConsumerEservice = (
+  consumerEservice: remoteResourcesManagerApi.ConsumerEservice,
+): API_ConsumerEservice => ({
+  agreement: consumerEservice.agreement,
+  categories: consumerEservice.categories,
+  hasRecentlyBeenUpdated: consumerEservice.hasRecentlyBeenUpdated,
+  id: consumerEservice.id,
+  mode: consumerEservice.mode,
+  name: consumerEservice.name,
+  producer: consumerEservice.producer,
+  requiredAttributes: consumerEservice.version.requiredAttributes,
+  state: consumerEservice.version.state,
 });
 
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
