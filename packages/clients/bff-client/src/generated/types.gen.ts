@@ -59,10 +59,11 @@ export type KnodeId = 'Orion' | 'Lynx';
 export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
 /**
- * Organization with only id, and name
+ * Organization with only id, knodeId, and name
  */
 export type CompactOrganization = {
     id: string;
+    knodeId: KnodeId;
     name: string;
 };
 

@@ -132,10 +132,11 @@ export type EserviceCategory = {
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
 /**
- * Organization with only id, and name
+ * Organization with only id, knodeId, and name
  */
 export type CompactOrganization = {
     id: string;
+    knodeId: KnodeId;
     name: string;
 };
 
