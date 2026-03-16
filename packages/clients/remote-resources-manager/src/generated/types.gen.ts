@@ -352,7 +352,6 @@ export type GetConsumerEservicesData = {
          */
         offset: number;
         agreementState?: AgreementState;
-        consumerId: OrganizationId;
     };
     url: '/consumer/eservices';
 };

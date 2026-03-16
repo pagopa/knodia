@@ -772,11 +772,6 @@ paths:
           in: query
           name: agreementState
           required: false
-        - schema:
-            $ref: "#/components/schemas/OrganizationId"
-          in: query
-          name: consumerId
-          required: true
       responses:
         "200":
           description: Consumer E-services retrieved successfully
