@@ -8,9 +8,16 @@ import {
 } from "@knodia/k2k-gateway-client";
 
 import type {
+  API_Agreements,
   API_AgreementSeed,
   API_CreatedAgreementResource,
+  API_GetAgreementsQueryParams,
 } from "../models/agreement/api.ts";
+
+import {
+  toAPI_Agreement,
+  toK2KAPI_AgreementState,
+} from "../models/agreement/apiConverter.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -52,6 +59,29 @@ export function agreementServiceBuilder(
       });
 
       return data;
+    },
+    async getAgreements(
+      requestQuery: API_GetAgreementsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Agreements> {
+      logger.info({ requestQuery }, "Getting Agreements with query params");
+
+      const { data } = await k2kGatewayApi.getAgreements({
+        client: k2kGatewayClient,
+        query: {
+          consumerId: requestQuery.consumerId,
+          limit: requestQuery.limit,
+          offset: requestQuery.offset,
+          state: requestQuery.state
+            ? toK2KAPI_AgreementState(requestQuery.state)
+            : undefined,
+        },
+      });
+
+      return {
+        pagination: data.pagination,
+        results: data.results.map(toAPI_Agreement),
+      };
     },
   };
 }
