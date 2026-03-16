@@ -45,11 +45,6 @@ export type Pagination = {
 export type FileDownload = Blob | File;
 
 /**
- * Unique identifier of the Organization
- */
-export type OrganizationId = string;
-
-/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -1030,7 +1025,6 @@ export type GetConsumerEservicesData = {
          */
         offset: number;
         agreementState?: AgreementState;
-        consumerId: OrganizationId;
     };
     url: '/consumer/eservices';
 };

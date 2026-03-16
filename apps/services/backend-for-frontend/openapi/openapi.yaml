@@ -98,11 +98,6 @@ components:
       description: Binary file content
       format: binary
       type: string
-    OrganizationId:
-      description: Unique identifier of the Organization
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -1834,11 +1829,6 @@ paths:
           in: query
           name: agreementState
           required: false
-        - schema:
-            $ref: "#/components/schemas/OrganizationId"
-          in: query
-          name: consumerId
-          required: true
       responses:
         "200":
           description: Consumer E-services retrieved successfully
