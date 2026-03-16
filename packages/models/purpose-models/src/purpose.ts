@@ -16,32 +16,29 @@ export const maxDescriptionLength = 250;
 export const minDailyCalls = 0;
 export const maxDailyCalls = 1_000_000_000;
 
-export const LocalizedPurposeName = LocalizedText(minNameLength, maxNameLength);
-export type LocalizedPurposeName = z.infer<typeof LocalizedPurposeName>;
+const LocalizedName = LocalizedText(minNameLength, maxNameLength);
+type LocalizedName = z.infer<typeof LocalizedName>;
 
-export const LocalizedPurposeDescription = LocalizedText(
+const LocalizedDescription = LocalizedText(
   minDescriptionLength,
   maxDescriptionLength,
 );
-export type LocalizedPurposeDescription = z.infer<
-  typeof LocalizedPurposeDescription
->;
+type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 
-export const PurposeState = z.enum(["Active", "Suspended", "Archived"]);
-export type PurposeState = z.infer<typeof PurposeState>;
+const PurposeState = z.enum(["Active", "Suspended", "Archived"]);
+type PurposeState = z.infer<typeof PurposeState>;
 
 export const Purpose = z.strictObject({
   consumer: ExternalResource<OrganizationId>(),
   createdAt: z.coerce.date(),
   dailyCalls: z.int().min(minDailyCalls).max(maxDailyCalls),
-  description: LocalizedPurposeDescription,
+  description: LocalizedDescription,
   eserviceId: EserviceId,
-
   formAnswers: z.record(z.string(), z.unknown()),
   // ^ generic key-value pairs for form answers,
   // validated at runtime based on the JSON schema form of the Knode
   id: PurposeId,
-  name: LocalizedPurposeName,
+  name: LocalizedName,
   state: PurposeState,
   updatedAt: z.coerce.date(),
 });
