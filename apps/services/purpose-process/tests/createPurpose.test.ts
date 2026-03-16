@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { Purpose } from "@knodia/purpose-models";
+
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   generateId,
@@ -14,7 +16,11 @@ import type { API_Purpose } from "../src/models/api.ts";
 
 import { API_PurposeSeed } from "../src/models/api.ts";
 import { agreementWriterService, eserviceWriterService } from "./setup.ts";
-import { getAllPurposeEvents, injectAppRequest } from "./utils.ts";
+import {
+  getAllPurposeEvents,
+  injectAppRequest,
+  toExpectAPI_Purpose,
+} from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
@@ -62,20 +68,20 @@ describe("POST /purposes (createPurpose)", () => {
 
       const responseBody = response.json<API_Purpose>();
 
-      expect(responseBody).toMatchObject({
-        consumer: {
-          id: consumerId,
-          knodeId: consumerKnodeId,
-        },
+      const expectedPurpose: Purpose = {
+        consumer: { id: consumerId, knodeId: consumerKnodeId },
+        createdAt: new Date(responseBody.createdAt),
         dailyCalls: body.dailyCalls,
         description: body.description,
-        eserviceId: body.eserviceId,
+        eserviceId: eservice.id,
+        formAnswers: body.formAnswers,
+        id: expect.any(String),
         name: body.name,
         state: "Active",
-      });
-      expect(responseBody.id).toBeDefined();
-      expect(responseBody.createdAt).toBeDefined();
-      expect(responseBody.updatedAt).toBeDefined();
+        updatedAt: new Date(responseBody.updatedAt),
+      };
+
+      expect(responseBody).toMatchObject(toExpectAPI_Purpose(expectedPurpose));
 
       const events = await getAllPurposeEvents();
       expect(events).toHaveLength(1);
@@ -90,18 +96,7 @@ describe("POST /purposes (createPurpose)", () => {
 
       const createdEventData = PurposeEventV1.parse(createdEvent).data;
       expect(createdEventData.purpose).toMatchObject(
-        toPurposeV1({
-          consumer: { id: consumerId, knodeId: consumerKnodeId },
-          createdAt: new Date(responseBody.createdAt),
-          dailyCalls: body.dailyCalls,
-          description: body.description,
-          eserviceId: expect.any(String),
-          formAnswers: body.formAnswers,
-          id: responseBody.id,
-          name: body.name,
-          state: "Active",
-          updatedAt: new Date(responseBody.updatedAt),
-        }),
+        toPurposeV1(expectedPurpose),
       );
     },
   );
@@ -116,23 +111,23 @@ describe("POST /purposes (createPurpose)", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("should return 409 if the e-service has no active version", async () => {
-    const suspendedEservice = getMockEservice({
-      latestVersionState: "Suspended",
+  it("should return 409 if the e-service version is not active", async () => {
+    const archivedEservice = getMockEservice({
+      latestVersionState: "Archived",
       seed: 10,
     });
-    await eserviceWriterService.upsertEservice(suspendedEservice, 1);
+    await eserviceWriterService.upsertEservice(archivedEservice, 1);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/purposes")
       .body({
         ...body,
-        eserviceId: suspendedEservice.id,
+        eserviceId: archivedEservice.id,
       } satisfies API_PurposeSeed);
     expect(response.statusCode).toBe(409);
   });
 
-  it("should return 409 if no active agreement exists for the consumer/eservice pair", async () => {
+  it("should return 409 if no agreement exists for the consumer/eservice pair", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
@@ -143,6 +138,35 @@ describe("POST /purposes (createPurpose)", () => {
           id: generateExternalId<OrganizationId>(),
           knodeId: consumerKnodeId,
         },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 409 if the agreement exists but is not active", async () => {
+    const otherEservice = getMockEservice({
+      latestVersionState: "Active",
+      seed: 20,
+    });
+    const otherConsumerId = generateExternalId<OrganizationId>();
+    await eserviceWriterService.upsertEservice(otherEservice, 1);
+    await agreementWriterService.upsertAgreement(
+      {
+        ...getMockAgreement(20),
+        consumer: { id: otherConsumerId, knodeId: consumerKnodeId },
+        eserviceId: otherEservice.id,
+        eserviceVersionId: otherEservice.versions[0]!.id,
+        producerId: otherEservice.producerId,
+        state: "Archived",
+      },
+      1,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        consumer: { id: otherConsumerId, knodeId: consumerKnodeId },
+        eserviceId: otherEservice.id,
       } satisfies API_PurposeSeed);
     expect(response.statusCode).toBe(409);
   });
