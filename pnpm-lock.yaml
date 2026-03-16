@@ -502,6 +502,9 @@ importers:
       '@knodia/organization-models':
         specifier: workspace:*
         version: link:../../../packages/models/organization-models
+      '@knodia/organization-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/organization-process-client
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
@@ -873,6 +876,9 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+      zocker:
+        specifier: 'catalog:'
+        version: 3.0.0(zod@4.2.0)
 
   apps/services/keychain-readmodel-writer:
     dependencies:
@@ -1101,6 +1107,9 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
       '@knodia/attribute-models':
         specifier: workspace:*
         version: link:../../../packages/models/attribute-models
@@ -8506,6 +8515,7 @@ packages:
   rolldown-vite@7.2.5:
     resolution: {integrity: sha512-u09tdk/huMiN8xwoiBbig197jKdCamQTtOruSalOzbqGje3jdHiV0njQlAW0YvzoahkirFePNQ4RYlfnRQpXZA==}
     engines: {node: ^20.19.0 || >=22.12.0}
+    deprecated: Use 7.3.1 for migration purposes. For the most recent updates, migrate to Vite 8 once you're ready.
     hasBin: true
     peerDependencies:
       '@types/node': ^20.19.0 || >=22.12.0

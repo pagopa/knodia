@@ -14,6 +14,7 @@ import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
+  { type: "internal" },
 ];
 
 describe("GET /agreements (getAgreements)", () => {

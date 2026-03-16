@@ -1,5 +1,7 @@
-import type { ExternalResource } from "@knodia/common-models/externalResource";
-
+import {
+  type ExternalResource,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
 import {
   KnodeId,
   OrganizationId,
@@ -44,6 +46,6 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
 const fromAgreementConsumerV1 = (
   input: AgreementConsumerV1,
 ): ExternalResource<OrganizationId> => ({
-  id: unsafeBrandId(input.id),
+  id: unsafeBrandExternalId(input.id),
   knodeId: KnodeId.parse(input.knodeId),
 });
