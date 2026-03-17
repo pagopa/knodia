@@ -10,6 +10,7 @@ import z from "zod";
 
 export const API_Purpose = z
   .strictObject({
+    // formAnswers is intentionally excluded — it will be served via a dedicated route
     consumer: API_PurposeConsumer,
     createdAt: z.iso.datetime(),
     dailyCalls: z
