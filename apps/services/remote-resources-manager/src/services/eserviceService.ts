@@ -25,14 +25,12 @@ import type {
 import { toAPI_AgreementState } from "../models/agreement/apiConverter.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
+  toAPI_ConsumerEservice,
   toAPI_EserviceDetails,
-  toAPI_EserviceMode,
-  toAPI_EserviceVersionState,
 } from "../models/eservice/apiConverter.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
-// eslint-disable-next-line max-lines-per-function
 export function eserviceServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
   remoteResourceDbService: RemoteResourceDbService,
@@ -133,15 +131,23 @@ export function eserviceServiceBuilder(
       const results: API_ConsumerEservice[] = (
         await Promise.all(
           remoteAgreements.results.map(async (remoteAgreement) => {
+            const { data: agreement } = await k2kGatewayApi.getAgreement({
+              client: k2kGatewayClient,
+              path: { agreementId: remoteAgreement.agreementId },
+            });
+
+            if (
+              agreementState &&
+              toAPI_AgreementState(agreement.state) !== agreementState
+            ) {
+              return null;
+            }
+
             const [
-              { data: agreement },
               { data: eservice },
               { data: eserviceVersion },
+              { data: producer },
             ] = await Promise.all([
-              k2kGatewayApi.getAgreement({
-                client: k2kGatewayClient,
-                path: { agreementId: remoteAgreement.agreementId },
-              }),
               k2kGatewayApi.getEservice({
                 client: k2kGatewayClient,
                 path: { eserviceId: remoteAgreement.eserviceId },
@@ -151,45 +157,21 @@ export function eserviceServiceBuilder(
                 client: k2kGatewayClient,
                 path: { eserviceId: remoteAgreement.eserviceId },
               }),
-              // TODO: get producer with remoteAgreement.producerId
+              k2kGatewayApi.getOrganization({
+                client: k2kGatewayClient,
+                path: { organizationId: remoteAgreement.producerId },
+              }),
             ]);
 
-            const apiAgreementState = toAPI_AgreementState(agreement.state);
-            if (agreementState && apiAgreementState !== agreementState) {
-              return null;
-            }
-
-            const hasRecentlyBeenUpdated = (dateString: string): boolean => {
-              const updatedAt = new Date(dateString);
-              const threeDaysAgo = new Date();
-              threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
-              return updatedAt >= threeDaysAgo;
-            };
-
-            return {
-              agreement: {
-                id: agreement.id,
-                state: apiAgreementState,
-              },
-              categories: eservice.categories,
-              hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(
-                eservice.updatedAt,
-              ),
-              id: eservice.id,
-              mode: toAPI_EserviceMode(eservice.mode),
-              name: eservice.name,
+            return toAPI_ConsumerEservice({
+              agreement,
+              eservice,
+              eserviceVersion,
               producer: {
-                id: eservice.producerId,
+                ...producer,
                 knodeId: API_KnodeId.parse(remoteAgreement.knodeId),
-                name: "Producer Name", // TODO: get producer name with remoteAgreement.producerId
               },
-              version: {
-                id: eserviceVersion.id,
-                requiredAttributes: eserviceVersion.requiredAttributes,
-                state: toAPI_EserviceVersionState(eserviceVersion.state),
-              },
-            } satisfies API_ConsumerEservice;
+            });
           }),
         )
       ).filter((x): x is API_ConsumerEservice => x !== null);
@@ -198,7 +180,7 @@ export function eserviceServiceBuilder(
         pagination: {
           limit: limit,
           offset: offset,
-          total: remoteAgreements.totalCount,
+          total: results.length,
         },
         results,
       };
