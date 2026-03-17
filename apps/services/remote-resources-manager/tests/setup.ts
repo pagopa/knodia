@@ -15,12 +15,6 @@ let remoteResourceDb: Awaited<
 >;
 let remoteResourceDbService: RemoteResourceDbService;
 
-async function resetTestDatabases() {
-  await Promise.all([
-    resetTestDatabase(remoteResourceDb, remoteResourceAgreement),
-  ]);
-}
-
 beforeAll(async () => {
   const connectionString = inject("POSTGRES_CONNECTION_STRING");
 
@@ -42,7 +36,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await resetTestDatabases();
+  await resetTestDatabase(remoteResourceDb, remoteResourceAgreement);
 });
 
 afterAll(async () => {
