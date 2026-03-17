@@ -146,13 +146,16 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const consumerKeychain =
-        await consumerKeychainService.updateConsumerKeychain(
-          req.params.consumerKeychainId,
-          req.body,
-          ctx,
-        );
+      const {
+        data: consumerKeychain,
+        metadata: { version },
+      } = await consumerKeychainService.updateConsumerKeychain(
+        req.params.consumerKeychainId,
+        req.body,
+        ctx,
+      );
 
+      setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_Keychain(consumerKeychain));
     },
     method: "PATCH",
@@ -164,9 +167,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "updateConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: API_Keychain.meta({
-          description: "Consumer Keychain updated successfully",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Consumer Keychain updated successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
@@ -115,12 +116,16 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Updating Consumer Keychain with ID ${req.params.consumerKeychainId}`,
       );
 
-      await keychainProcessApi.updateConsumerKeychain({
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.updateConsumerKeychain({
         body: req.body,
         client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
+
+      await pollConsumerKeychain(response, headers);
 
       res.status(204).send();
     },

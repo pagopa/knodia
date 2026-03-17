@@ -125,7 +125,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       update: API_ConsumerKeychainPatch,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<ConsumerKeychain> {
+    ): Promise<WithMetadata<ConsumerKeychain>> {
       logger.info(`Updating Consumer Keychain ${consumerKeychainId}`);
 
       const consumerKeychain = await retrieveConsumerKeychain(
@@ -149,7 +149,7 @@ export function consumerKeychainServiceBuilder(
         updatedAt: new Date(),
       };
 
-      await eventStoreWriter.insertEvent(
+      const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainUpdatedV1Event(
           updatedConsumerKeychain,
           correlationId,
@@ -157,7 +157,10 @@ export function consumerKeychainServiceBuilder(
         ),
       );
 
-      return updatedConsumerKeychain;
+      return {
+        data: updatedConsumerKeychain,
+        metadata: { version: newVersion },
+      };
     },
   };
 }

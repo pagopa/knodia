@@ -1,5 +1,8 @@
 import type { EserviceEventStoreWriter } from "@knodia/db-event-store-writer/eservice";
-import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type {
   Eservice,
   EserviceInterface,
@@ -51,7 +54,7 @@ export function eserviceServiceBuilder(
     async createEservice(
       seed: API_EserviceSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<Eservice> {
+    ): Promise<WithMetadata<Eservice>> {
       const eserviceId = generateId<EserviceId>();
       const { organizationId: producerId } = authData;
 
@@ -128,7 +131,7 @@ export function eserviceServiceBuilder(
         ],
       };
 
-      await eventStoreWriter.insertEvent(
+      const { newVersion } = await eventStoreWriter.insertEvent(
         createEserviceVersionActivatedV1Event(
           eservice,
           eserviceVersionId,
@@ -136,7 +139,7 @@ export function eserviceServiceBuilder(
         ),
       );
 
-      return eservice;
+      return { data: eservice, metadata: { version: newVersion } };
     },
     async getCatalogEservices(
       body: API_GetCatalogEserviceSearchParams,
@@ -150,7 +153,7 @@ export function eserviceServiceBuilder(
     async getEservice(
       eserviceId: EserviceId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<Eservice> {
+    ): Promise<WithMetadata<Eservice>> {
       logger.info(`Getting E-service with ID ${eserviceId}`);
 
       return await retrieveEservice(eserviceId, readmodelService);
