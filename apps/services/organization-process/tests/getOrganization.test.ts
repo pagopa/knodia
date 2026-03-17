@@ -5,12 +5,15 @@ import type { TestToken } from "@knodia/test-commons/auth";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_Organization } from "../src/models/api.ts";
 
-import { organizationWriterService } from "./setup.ts";
-import { injectAppRequest, toExpectAPI_Organization } from "./utils.ts";
+import {
+  injectAppRequest,
+  seedOrganization,
+  toExpectAPI_Organization,
+} from "./utils.ts";
 
 const mockOrganization: Organization = {
   ...getMockOrganization(0),
@@ -33,13 +36,11 @@ const getOrganization = (
 ) => injectAppRequest(token).get(`/organizations/${organizationId}`);
 
 describe("GET /organizations/:organizationId (getOrganization)", () => {
-  beforeAll(async () => {
-    await organizationWriterService.upsertOrganization(mockOrganization, 0);
-  });
-
   it.each(allowedTestTokens)(
     "should return the organization with correct shape ($type, $roles)",
     async (token) => {
+      await seedOrganization(mockOrganization);
+
       const response = await getOrganization(VALID_ORGANIZATION_ID, token);
 
       expect(response.statusCode).toBe(200);

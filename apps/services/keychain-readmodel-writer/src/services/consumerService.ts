@@ -4,7 +4,7 @@ import type { KeychainEventEnvelopeV1 } from "@knodia/keychain-models";
 
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import { fromConsumerKeychainV1 } from "@knodia/keychain-models";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 export async function handleKeychainEvent(
   message: KeychainEventEnvelopeV1,
@@ -15,13 +15,18 @@ export async function handleKeychainEvent(
   },
 ): Promise<void> {
   return match(message)
-    .with({ type: "ConsumerKeychainCreatedV1" }, async (msg) => {
-      assertDataExistsInEvent(msg, "consumerKeychain");
-      await consumerKeychainWriterService.upsertConsumerKeychain(
-        fromConsumerKeychainV1(msg.data.consumerKeychain),
-        message.version,
-      );
-    })
+    .with(
+      {
+        type: P.union("ConsumerKeychainCreatedV1", "ConsumerKeychainUpdatedV1"),
+      },
+      async (msg) => {
+        assertDataExistsInEvent(msg, "consumerKeychain");
+        await consumerKeychainWriterService.upsertConsumerKeychain(
+          fromConsumerKeychainV1(msg.data.consumerKeychain),
+          message.version,
+        );
+      },
+    )
     .with({ type: "ConsumerKeychainDeletedV1" }, async (msg) => {
       assertDataExistsInEvent(msg, "consumerKeychain");
       await consumerKeychainWriterService.deleteConsumerKeychain(

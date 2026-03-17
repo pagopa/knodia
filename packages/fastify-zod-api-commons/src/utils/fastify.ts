@@ -56,6 +56,18 @@ export const createFastifyApp = ({
     },
   });
 
+  app.addContentTypeParser(
+    "application/merge-patch+json",
+    { parseAs: "string" },
+    (_req, body, done) => {
+      try {
+        done(null, JSON.parse(body.toString()));
+      } catch (error) {
+        done(error as Error);
+      }
+    },
+  );
+
   app.setErrorHandler((error, _, res) => {
     const errorRes = makeApiProblem(error);
 
