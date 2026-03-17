@@ -37,7 +37,7 @@ export function RequestAgreementModal({
 
   return (
     <FullPageModal onClose={onClose} title="Request Agreement">
-      <div className="mx-auto max-w-[640px] px-6 py-10">
+      <div className="mx-auto max-w-160 px-6 py-10">
         {!isError ? (
           <FormContent
             eservice={eservice}

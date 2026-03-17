@@ -23,13 +23,12 @@ export function useCreateAgreement({
 
   const { isError, isPending, mutate } = useMutation({
     ...createConsumerAgreementMutation({ client }),
-    onSuccess: () => {
+    onSuccess: () =>
       navigate({
         params: { id: eserviceId },
         search: { knodeId },
         to: "/consumption/e-services/$id",
-      });
-    },
+      }),
   });
 
   const createAgreement = (eserviceVersionId: EserviceVersionId) => {
