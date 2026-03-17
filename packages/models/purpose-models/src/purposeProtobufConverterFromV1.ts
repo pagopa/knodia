@@ -9,6 +9,7 @@ import {
 } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
+import z from "zod";
 
 import {
   type PurposeConsumerV1,
@@ -29,7 +30,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
     createdAt: new Date(input.createdAt),
     description: input.description,
     eserviceId: unsafeBrandId(input.eserviceId),
-    formAnswers: input.formAnswers as Record<string, unknown>,
+    formAnswers: z.record(z.string(), z.unknown()).parse(input.formAnswers),
     id: unsafeBrandId(input.id),
     name: input.name,
     state: fromPurposeStateV1(input.state),
