@@ -1,6 +1,13 @@
 import { AxiosError, type AxiosResponse } from "axios";
 import { describe, expect, it, vi } from "vitest";
 
+vi.mock("../src/config/config.ts", () => ({
+  config: {
+    defaultPollingMaxRetries: 5,
+    defaultPollingRetryDelay: 1000,
+  },
+}));
+
 import { pollingMaxRetriesExceeded } from "../src/models/errors.ts";
 import {
   createPollingByCondition,
