@@ -1,4 +1,5 @@
 import { organizationWriterServiceBuilder } from "@knodia/db-readmodel-organization/writer";
+import { remoteResourceAgreement } from "@knodia/db-remote-resource";
 import {
   type RemoteResourceDbService,
   remoteResourceDbServiceBuilder,
@@ -6,8 +7,11 @@ import {
 import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { setupRemoteResourceTestDatabase } from "@knodia/test-commons/remoteResourceDb";
-import { getMockOrganization } from "@knodia/test-commons/utils";
-import { beforeAll, inject } from "vitest";
+import {
+  getMockOrganization,
+  resetTestDatabase,
+} from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
@@ -49,6 +53,15 @@ beforeAll(async () => {
     },
     0,
   );
+});
+
+afterEach(async () => {
+  await resetTestDatabase(readmodelDb, remoteResourceAgreement);
+});
+
+afterAll(async () => {
+  await readmodelDb.$client.end();
+  await remoteResourceDb.$client.end();
 });
 
 export { app, remoteResourceDbService };

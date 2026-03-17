@@ -5,7 +5,8 @@ import { createLogger } from "@knodia/logger";
 import { config } from "./config/config.ts";
 import { createProcessMessage } from "./utils/utils.ts";
 
-const { db: readmodelDb } = makeReadmodelDrizzleConnection(config);
+const { db: readmodelDb, pool: readmodelPool } =
+  makeReadmodelDrizzleConnection(config);
 
 const logger = createLogger({
   config,
@@ -17,4 +18,5 @@ await runConsumer(
   createProcessMessage(readmodelDb, logger),
   config,
   logger,
+  readmodelPool,
 );
