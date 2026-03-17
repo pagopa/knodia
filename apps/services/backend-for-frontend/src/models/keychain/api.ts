@@ -49,3 +49,14 @@ export const API_ConsumerKeychainsQueryParams = API_PaginationQueryParams;
 export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
 >;
+
+export const API_ConsumerKeychainPatch = z
+  .strictObject({
+    description: API_KeychainLocalizedDescription.nullable().optional(),
+    name: API_KeychainLocalizedName.optional(),
+  })
+  .meta({ id: "ConsumerKeychainPatch" });
+
+export type API_ConsumerKeychainPatch = z.infer<
+  typeof API_ConsumerKeychainPatch
+>;
