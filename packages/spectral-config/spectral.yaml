@@ -14,6 +14,7 @@ rules:
     off # our Problem schema has no "detail";
     # also, our generated OpenAPI files have allOf when there is a $ref + description,
     # in line with OpenAPI 3.0 spec
+  missing-ratelimit: off # we don't have rate limits in our APIs (yet)
 
   # Hints
   has-x-api-id: off # we don't use x-api-id custom field

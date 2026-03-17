@@ -643,7 +643,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Eservice"
           headers:
-            x-metadata-version:
+            metadata-version:
               required: true
               schema:
                 type: string
@@ -711,7 +711,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Eservice"
           headers:
-            x-metadata-version:
+            metadata-version:
               required: true
               schema:
                 type: string
