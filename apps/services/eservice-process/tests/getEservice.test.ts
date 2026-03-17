@@ -2,13 +2,12 @@
 import { EserviceId, generateId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_Eservice } from "../src/models/api.ts";
 
 import { mockEservices } from "./mockEservices.ts";
-import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, seedEservice } from "./utils.ts";
 
 const eservice = mockEservices[0]!;
 const VALID_ESERVICE_ID = eservice.id;
@@ -26,17 +25,11 @@ const getEservice = (
 ) => injectAppRequest(token).get(`/eservices/${eserviceId}`);
 
 describe("GET /eservices/:eserviceId (getEservice)", () => {
-  beforeAll(async () => {
-    await Promise.all(
-      mockEservices.map((eservice) =>
-        eserviceWriterService.upsertEservice(eservice, 0),
-      ),
-    );
-  });
-
   it.each(allowedTestTokens)(
     "should return the e-service with correct shape ($type, $roles)",
     async (token) => {
+      await seedEservice(eservice);
+
       const response = await getEservice(VALID_ESERVICE_ID, token);
 
       expect(response.statusCode).toBe(200);
@@ -47,6 +40,8 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
   );
 
   it("should return the same e-service as the list endpoint", async () => {
+    await Promise.all(mockEservices.map(seedEservice));
+
     const uiToken: TestToken = {
       roles: ["administrative"],
       type: "ui-session",
