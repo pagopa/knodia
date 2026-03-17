@@ -50,3 +50,25 @@ export const API_ProducerAgreements = z
   })
   .meta({ id: "ProducerAgreements" });
 export type API_ProducerAgreements = z.infer<typeof API_ProducerAgreements>;
+
+export const API_ConsumerAgreements = z
+  .strictObject({
+    counters: z.strictObject({
+      activeAgreements: z
+        .number()
+        .int()
+        .min(0)
+        .meta({ description: "Number of active agreements", format: "int32" }),
+      archivedAgreements: z.number().int().min(0).meta({
+        description: "Number of archived agreements",
+        format: "int32",
+      }),
+      suspendedAgreements: z.number().int().min(0).meta({
+        description: "Number of suspended agreements",
+        format: "int32",
+      }),
+    }),
+    // TODO: add results (agreements with needed action)
+  })
+  .meta({ id: "ConsumerAgreements" });
+export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;
