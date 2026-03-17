@@ -1,6 +1,8 @@
+import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
-import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
+import { resetTestDatabase } from "../../../../packages/test-commons/src/utils/dbIsolation.ts";
 import { buildApp } from "../src/app.ts";
 
 let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
@@ -23,12 +25,8 @@ beforeAll(async () => {
   });
 });
 
-beforeEach(async () => {
-  await readmodelDb.execute("BEGIN");
-});
-
 afterEach(async () => {
-  await readmodelDb.execute("ROLLBACK");
+  await resetTestDatabase(readmodelDb, readmodelPurpose);
 });
 
 afterAll(async () => {
