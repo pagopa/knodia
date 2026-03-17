@@ -14,6 +14,7 @@ import { toK2KMode, toK2KVersionState } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getCatalogEservicesMock = vi.hoisted(() => vi.fn());
+const getOrganizationMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -24,17 +25,22 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
       getCatalogEservices: getCatalogEservicesMock,
+      getOrganization: getOrganizationMock,
     },
   };
 });
 
 const toK2KResult = (
   apiResult: API_CatalogEserviceSearchResultType,
-): k2kGatewayApi.CatalogEserviceSearchResult => ({
-  ...apiResult,
-  latestVersionState: toK2KVersionState(apiResult.latestVersionState),
-  mode: toK2KMode(apiResult.mode),
-});
+): k2kGatewayApi.CatalogEserviceSearchResult => {
+  const { producer, ...rest } = apiResult;
+  return {
+    ...rest,
+    latestVersionState: toK2KVersionState(apiResult.latestVersionState),
+    mode: toK2KMode(apiResult.mode),
+    producerId: producer.id,
+  };
+};
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
@@ -60,11 +66,19 @@ describe("POST /catalog (getCatalogEservices)", () => {
 
   beforeEach(() => {
     getCatalogEservicesMock.mockReset();
+    getOrganizationMock.mockReset();
   });
 
   it("should return 200 with converted results on success", async () => {
     getCatalogEservicesMock.mockResolvedValue({
       data: mockK2kResponse,
+    });
+    getOrganizationMock.mockResolvedValue({
+      data: {
+        attributes: [],
+        id: expectedApiResult.producer.id,
+        name: expectedApiResult.producer.name,
+      },
     });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
@@ -78,6 +92,12 @@ describe("POST /catalog (getCatalogEservices)", () => {
       expect.objectContaining({
         body: { keywords: "test" },
         query: parsedDefaultQuery,
+      }),
+    );
+
+    expect(getOrganizationMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: { organizationId: expectedApiResult.producer.id },
       }),
     );
 

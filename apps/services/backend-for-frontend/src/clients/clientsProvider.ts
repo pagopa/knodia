@@ -11,6 +11,10 @@ import {
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
 import {
+  createOrganizationProcessApiClient,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
+import {
   createRemoteResourcesManagerApiClient,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
@@ -19,6 +23,7 @@ interface KnodiaClients {
   agreementProcessClient: AgreementProcessClient;
   eserviceProcessClient: EserviceProcessClient;
   keychainProcessClient: KeychainProcessClient;
+  organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
@@ -26,11 +31,13 @@ export function getKnodiaClients({
   agreementProcessUrl,
   eserviceProcessUrl,
   keychainProcessUrl,
+  organizationProcessUrl,
   remoteResourcesManagerUrl,
 }: {
   agreementProcessUrl: string;
   eserviceProcessUrl: string;
   keychainProcessUrl: string;
+  organizationProcessUrl: string;
   remoteResourcesManagerUrl: string;
 }): KnodiaClients {
   return {
@@ -42,6 +49,9 @@ export function getKnodiaClients({
     }),
     keychainProcessClient: createKeychainProcessApiClient({
       baseURL: keychainProcessUrl,
+    }),
+    organizationProcessClient: createOrganizationProcessApiClient({
+      baseURL: organizationProcessUrl,
     }),
     remoteResourcesManagerClient: createRemoteResourcesManagerApiClient({
       baseURL: remoteResourcesManagerUrl,

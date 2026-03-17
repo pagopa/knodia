@@ -3,13 +3,16 @@ import type { Agreement } from "@knodia/agreement-models";
 import type z from "zod";
 
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_GetAgreementsQueryParams } from "../src/models/api.ts";
 
 import { consumerId, eservice1, mockAgreements } from "./mockAgreements.ts";
-import { agreementWriterService } from "./setup.ts";
-import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
+import {
+  injectAppRequest,
+  seedAgreement,
+  toExpectAPI_Agreement,
+} from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
@@ -17,19 +20,15 @@ const allowedTestTokens: TestToken[] = [
   { type: "internal" },
 ];
 
+const seedAgreements = async () => {
+  await Promise.all(mockAgreements.map(seedAgreement));
+};
+
 describe("GET /agreements (getAgreements)", () => {
   const defaultQuery = {
     limit: "4",
     offset: "0",
   };
-
-  beforeAll(async () => {
-    await Promise.all([
-      ...mockAgreements.map((agreement) =>
-        agreementWriterService.upsertAgreement(agreement, 0),
-      ),
-    ]);
-  });
 
   it.each([
     {
@@ -125,6 +124,8 @@ describe("GET /agreements (getAgreements)", () => {
   }[])(
     "should return agreements with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
+      await seedAgreements();
+
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/agreements")
         .query(query);

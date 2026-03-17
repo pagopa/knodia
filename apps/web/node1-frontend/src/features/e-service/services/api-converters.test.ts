@@ -37,7 +37,7 @@ function createBffDetail(
       email: "info@ursa.com",
       id: "00000000-0000-4000-8000-000000000099",
       knodeName: "Lynx Knode",
-      name: { en: "Ursa Major" },
+      name: "Ursa Major",
       notes: "Open Mon-Fri",
     },
     requiredAttributes: [[{ code: "NUTS3", possessed: true, scheme: "eu" }]],

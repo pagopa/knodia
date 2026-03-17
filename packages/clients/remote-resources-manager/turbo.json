@@ -1,0 +1,9 @@
+{
+  "$schema": "./../../../node_modules/turbo/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "generate-api-client": {
+      "dependsOn": ["@knodia/remote-resources-manager#generate-openapi"]
+    }
+  }
+}

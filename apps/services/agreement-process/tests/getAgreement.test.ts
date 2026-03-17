@@ -2,13 +2,16 @@
 
 import { AgreementId, generateId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_Agreement } from "../src/models/api.ts";
 
 import { mockAgreements } from "./mockAgreements.ts";
-import { agreementWriterService } from "./setup.ts";
-import { injectAppRequest, toExpectAPI_Agreement } from "./utils.ts";
+import {
+  injectAppRequest,
+  seedAgreement,
+  toExpectAPI_Agreement,
+} from "./utils.ts";
 
 const agreement = mockAgreements[0]!;
 const VALID_AGREEMENT_ID = agreement.id;
@@ -26,17 +29,10 @@ const getAgreement = (
 ) => injectAppRequest(token).get(`/agreements/${agreementId}`);
 
 describe("GET /agreements/:agreementId (getAgreement)", () => {
-  beforeAll(async () => {
-    await Promise.all([
-      ...mockAgreements.map((agreement) =>
-        agreementWriterService.upsertAgreement(agreement, 0),
-      ),
-    ]);
-  });
-
   it.each(allowedTestTokens)(
     "should return the agreement with correct shape ($type, $roles)",
     async (token) => {
+      await seedAgreement(agreement);
       const response = await getAgreement(VALID_AGREEMENT_ID, token);
 
       expect(response.statusCode).toBe(200);
@@ -47,6 +43,8 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
   );
 
   it("should return the same agreement as the list endpoint", async () => {
+    await seedAgreement(agreement);
+
     const listResponse = await injectAppRequest(allowedTestTokens[0]!)
       .get("/agreements")
       .query({ limit: "50", offset: "0" });
