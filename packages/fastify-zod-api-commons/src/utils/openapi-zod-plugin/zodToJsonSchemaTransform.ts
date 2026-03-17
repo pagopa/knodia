@@ -51,6 +51,14 @@ const zodObjectToResponseHeaders = (
     }),
   );
 
+const hasResponseHeaders = (
+  val: unknown,
+): val is { headers: unknown; properties: unknown } =>
+  val !== null &&
+  typeof val === "object" &&
+  "properties" in val &&
+  "headers" in val;
+
 /**
  * Extract response headers from the input schema before the base transform runs.
  *
@@ -83,11 +91,10 @@ const extractResponseHeaders = (
   const response = schemaRest.response as Record<string, unknown> | undefined;
   if (response) {
     for (const [statusCode, val] of Object.entries(response)) {
-      const entry = val as null | Record<string, unknown>;
-      if (entry && "properties" in entry && "headers" in entry) {
+      if (hasResponseHeaders(val)) {
         responseHeadersStore.set(
           `${operationId}:${statusCode}`,
-          zodObjectToResponseHeaders(entry["headers"] as z.ZodObject),
+          zodObjectToResponseHeaders(val.headers as z.ZodObject),
         );
       }
     }
