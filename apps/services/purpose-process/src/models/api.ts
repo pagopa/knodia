@@ -4,6 +4,7 @@ import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
   API_PurposeConsumer,
+  API_PurposeFormAnswers,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
@@ -19,7 +20,7 @@ export const API_PurposeSeed = z
       .meta({ format: "int32" }),
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
-    formAnswers: z.record(z.string(), z.unknown()),
+    formAnswers: API_PurposeFormAnswers,
     name: API_LocalizedPurposeName,
   })
   .meta({ id: "PurposeSeed" });

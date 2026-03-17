@@ -9,14 +9,13 @@ import {
 } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
-import z from "zod";
 
 import {
   type PurposeConsumerV1,
   PurposeStateV1,
   type PurposeV1,
 } from "./generated/v1/purpose.ts";
-import { Purpose } from "./purpose.ts";
+import { Purpose, PurposeFormAnswers } from "./purpose.ts";
 
 /** @knipignore - will be used when implementing rmw */
 export const fromPurposeV1 = (input: PurposeV1): Purpose => {
@@ -30,7 +29,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
     createdAt: new Date(input.createdAt),
     description: input.description,
     eserviceId: unsafeBrandId(input.eserviceId),
-    formAnswers: z.record(z.string(), z.unknown()).parse(input.formAnswers),
+    formAnswers: PurposeFormAnswers.parse(input.formAnswers),
     id: unsafeBrandId(input.id),
     name: input.name,
     state: fromPurposeStateV1(input.state),
