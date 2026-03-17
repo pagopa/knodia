@@ -4,6 +4,7 @@ import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
+import { genericError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -87,12 +88,15 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
 
       return {
         pagination: data.pagination,
-        results: data.results.map((r) =>
-          toAPI_CatalogEserviceSearchResult(
-            r,
-            producerNamesMap.get(r.producerId) ?? "",
-          ),
-        ),
+        results: data.results.map((r) => {
+          const producerName = producerNamesMap.get(r.producerId);
+          if (!producerName) {
+            throw genericError(
+              `Producer Organization ${r.producerId} not found for E-service ${r.id}`,
+            );
+          }
+          return toAPI_CatalogEserviceSearchResult(r, producerName);
+        }),
       };
     },
 
