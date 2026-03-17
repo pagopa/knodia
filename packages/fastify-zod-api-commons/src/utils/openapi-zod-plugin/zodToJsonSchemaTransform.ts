@@ -74,10 +74,7 @@ const extractResponseHeaders = (
   if (!schema) return input;
 
   const { responseHeaders, ...schemaRest } = schema;
-  const rawMethod = (route as { method?: string | string[] }).method;
-  const method = Array.isArray(rawMethod)
-    ? rawMethod[0]?.toLowerCase()
-    : rawMethod?.toLowerCase();
+  const method = (route as { method?: string }).method?.toLowerCase();
   if (!method) return { ...input, schema: schemaRest };
 
   const routeKey = `${method}:${url}`;
