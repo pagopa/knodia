@@ -19,7 +19,7 @@ describe("Purpose Splitters", () => {
       dailyCalls: purpose.dailyCalls,
       description: purpose.description,
       eserviceId: purpose.eserviceId,
-      formAnswers: purpose.formAnswers,
+      formAnswersJson: purpose.formAnswersJson,
       id: purpose.id,
       metadataVersion,
       name: purpose.name,

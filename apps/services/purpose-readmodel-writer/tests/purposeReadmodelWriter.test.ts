@@ -23,7 +23,7 @@ describe("Purpose read model writer tests", async () => {
   it("PurposeActivatedV1", async () => {
     const purpose: Purpose = {
       ...getMockPurpose(),
-      formAnswers: { question1: "answer1" },
+      formAnswersJson: { question1: "answer1" },
     };
     const eventData = protobufBinaryCodec(
       purposeEvents.PurposeActivatedV1,
