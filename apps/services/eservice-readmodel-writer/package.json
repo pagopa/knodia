@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
-    "@knodia/db-readmodel-config": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-eservice": "workspace:*",
     "@knodia/common-models": "workspace:*",

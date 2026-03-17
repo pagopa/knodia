@@ -23,7 +23,6 @@
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-agreement": "workspace:*",
-    "@knodia/db-readmodel-config": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
