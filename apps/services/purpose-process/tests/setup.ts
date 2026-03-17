@@ -1,7 +1,9 @@
+import { eventStorePurposeEvents } from "@knodia/db-event-store-purpose";
 import {
   type AgreementWriterService,
   agreementWriterServiceBuilder,
 } from "@knodia/db-readmodel-agreement/writer";
+import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
@@ -19,6 +21,13 @@ let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
 let eserviceWriterService: EserviceWriterService;
 let agreementWriterService: AgreementWriterService;
+
+async function resetTestDatabases() {
+  await Promise.all([
+    resetTestDatabase(eventStoreDb, eventStorePurposeEvents),
+    resetTestDatabase(readmodelDb, readmodelPurpose, readmodelEservice),
+  ]);
+}
 
 beforeAll(async () => {
   const connectionString = inject("POSTGRES_CONNECTION_STRING");
@@ -43,7 +52,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await resetTestDatabase(readmodelDb, readmodelPurpose);
+  await resetTestDatabases();
 });
 
 afterAll(async () => {
