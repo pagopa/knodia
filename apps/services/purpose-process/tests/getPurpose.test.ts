@@ -4,7 +4,7 @@ import { generateId, type PurposeId } from "@knodia/common-models/ids";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { toPurposeSQL } from "@knodia/db-readmodel-purpose/converters";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import type { API_Purpose } from "../src/models/api.ts";
 
@@ -27,7 +27,7 @@ const getPurpose = (purposeId: string, token: TestToken = defaultToken) =>
   injectAppRequest(token).get(`/purposes/${purposeId}`);
 
 describe("GET /purposes/:purposeId (getPurpose)", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await Promise.all(
       mockPurposes.map((p) =>
         readmodelDb.insert(readmodelPurpose).values(toPurposeSQL(p, 0)),
