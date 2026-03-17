@@ -11,8 +11,10 @@ import type {
 } from "@knodia/keychain-models";
 
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
+import { match, P } from "ts-pattern";
 
 import type {
+  API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
 } from "../models/api.ts";
@@ -21,6 +23,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
+  createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
@@ -109,6 +112,45 @@ export function consumerKeychainServiceBuilder(
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);
+    },
+
+    async updateConsumerKeychain(
+      consumerKeychainId: ConsumerKeychainId,
+      update: API_ConsumerKeychainPatch,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ConsumerKeychain> {
+      logger.info(`Updating Consumer Keychain ${consumerKeychainId}`);
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      const updatedConsumerKeychain: ConsumerKeychain = {
+        ...consumerKeychain.data,
+        description: match(update.description)
+          .with(null, () => undefined)
+          .with(undefined, () => consumerKeychain.data.description)
+          .with(P.nonNullable, (desc) => desc)
+          .exhaustive(),
+        name: update.name ?? consumerKeychain.data.name,
+        updatedAt: new Date(),
+      };
+
+      await eventStoreWriter.insertEvent(
+        createConsumerKeychainUpdatedV1Event(
+          updatedConsumerKeychain,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
+
+      return updatedConsumerKeychain;
     },
   };
 }
