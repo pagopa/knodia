@@ -88,7 +88,7 @@ export function eserviceVersionNotInExpectedState(
 ) {
   return createApiError<ErrorCodes>({
     code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATE",
-    detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: ${allowedStates}`,
+    detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: [${allowedStates.join(", ")}]`,
     status: HTTP_STATUS_CONFLICT,
     title: "E-service Version Not in Expected State",
   });
