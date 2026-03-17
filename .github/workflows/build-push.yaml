@@ -1,0 +1,162 @@
+name: "Build & Push"
+
+on:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "*"
+    paths:
+      - "apps/**"
+      - "collections/**"
+      - "migrations/**"
+      - "packages/**"
+      - ".github/workflows/build-push.yaml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    name: Determine environment
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.env.outputs.environment }}
+      env_name: ${{ steps.env.outputs.env_name }}
+    steps:
+      - id: env
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "environment=ecr-test" >> "$GITHUB_OUTPUT"
+            echo "env_name=test" >> "$GITHUB_OUTPUT"
+          else
+            echo "environment=ecr-dev" >> "$GITHUB_OUTPUT"
+            echo "env_name=dev" >> "$GITHUB_OUTPUT"
+          fi
+
+  terraform:
+    name: Terraform Apply
+    needs: setup
+    runs-on: ubuntu-latest
+    environment: ${{ needs.setup.outputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
+          role-session-name: knodia-tf-${{ github.run_number }}
+
+      - name: Read terraform version
+        working-directory: terraform/
+        run: |
+          echo "TERRAFORM_VERSION=$(cat ./.terraform-version)" >> $GITHUB_ENV
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@5e8dbf3c6d9deaf4193ca7a8fb23f2ac83bb6c85 # v4
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Terraform Apply
+        working-directory: terraform/
+        env:
+          ENV: ${{ needs.setup.outputs.env_name }}
+        run: |
+          terraform fmt -check -recursive
+          ./terraform.sh apply "$ENV" -auto-approve
+
+  find_dockerfiles:
+    name: Find Dockerfiles
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.set_packages_output.outputs.packages }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Find packages
+        id: set_packages_output
+        run: |
+          set -euo pipefail
+
+          DOCKERFILES=$(find apps -maxdepth 3 -mindepth 3 -type f -name "Dockerfile" | sort -u)
+
+          if [ -z "$DOCKERFILES" ]; then
+            echo "::error::No Dockerfiles found"
+            exit 1
+          fi
+
+          PACKAGES=$(echo "$DOCKERFILES" | jq -R -s -c '
+            split("\n") | map(select(. != "")) | map(. | split("/") | {
+              name: .[-2],
+              section: .[-3],
+              path: (.[:-1] | join("/")),
+              repo: ((if .[-3] == "services" then "knodia-be-"
+                      elif .[-3] == "web" then "knodia-web-"
+                      elif .[-3] == "infra" then "knodia-infra-"
+                      else "knodia-" end) + .[-2])
+            }) | unique_by(.name)
+          ')
+          echo "packages=$PACKAGES" >> $GITHUB_OUTPUT
+
+  build_push_image:
+    name: "${{ matrix.package.section }}/${{ matrix.package.name }}"
+    needs: [setup, terraform, find_dockerfiles]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.setup.outputs.environment }}
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.find_dockerfiles.outputs.packages) }}
+    env:
+        DOCKER_BUILD_SUMMARY: "false"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ vars.IAM_ROLE_ARN }}
+          role-session-name: knodia-tf-${{ github.run_number }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 # v2
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ matrix.package.repo }}
+          flavor: |
+            latest=false
+            prefix=
+            suffix=
+          tags: |
+            type=ref,event=branch
+            type=ref,event=tag
+
+      - name: Build and push Docker image
+        id: build_push
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7
+        with:
+          context: .
+          file: ${{ matrix.package.path }}/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

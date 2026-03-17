@@ -143,6 +143,11 @@ export type GetCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
+export type CatalogEserviceSearchResultProducer = {
+    id: string;
+    name: string;
+};
+
 export type CatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
@@ -151,7 +156,7 @@ export type CatalogEserviceSearchResult = {
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
-    producerId: string;
+    producer: CatalogEserviceSearchResultProducer;
     updatedAt: string;
 };
 
@@ -185,7 +190,7 @@ export type EserviceDetailsProducer = {
     email: string;
     id: string;
     knodeName: string;
-    name: LocalizedName;
+    name: string;
     notes: string;
 };
 
