@@ -41,7 +41,7 @@ export function toConsumptionEserviceDetail(
     categories: detail.categories,
     description: detail.description.en,
     hasRequiredAttributes:
-      detail.requiredAttributes.length > 0 &&
+      detail.requiredAttributes.length === 0 ||
       detail.requiredAttributes.every((group) =>
         group.some((attr) => attr.possessed),
       ),

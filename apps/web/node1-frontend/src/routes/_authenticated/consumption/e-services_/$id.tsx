@@ -77,16 +77,18 @@ function ConsumptionRequirementsSection({
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Attributes
           </h3>
-          <ul className="gap-2 flex flex-col" role="list">
-            {requiredAttributes.map((group, index) => (
-              <li key={index}>
-                <AttributeGroupContainer attributes={group} />
-              </li>
-            ))}
-          </ul>
+          {requiredAttributes.length > 0 && (
+            <ul className="gap-2 flex flex-col mb-6" role="list">
+              {requiredAttributes.map((group, index) => (
+                <li key={index}>
+                  <AttributeGroupContainer attributes={group} />
+                </li>
+              ))}
+            </ul>
+          )}
 
           <Banner
-            className="mt-6 [&>div:last-child]:flex-1"
+            className="[&>div:last-child]:flex-1"
             icon={hasRequiredAttributes ? <SealCheckIcon /> : <WarningIcon />}
             kind={hasRequiredAttributes ? "neutral" : "warning"}
           >
