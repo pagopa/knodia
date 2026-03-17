@@ -3,19 +3,22 @@ import type z from "zod";
 
 import { ConsumerKeychain } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_GetConsumerKeychainsQueryParams } from "../src/models/api.ts";
 
 import { toAPI_Keychain } from "../src/models/apiConverter.ts";
 import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
-import { consumerKeychainWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
 ];
+
+const seedConsumerKeychains = async () => {
+  await Promise.all(mockConsumerKeychains.map(seedConsumerKeychain));
+};
 
 describe("GET /consumerKeychains (getConsumerKeychains)", () => {
   const defaultQuery = {
@@ -28,17 +31,6 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
       return updatedAtDiff !== 0 ? updatedAtDiff : a.id.localeCompare(b.id);
     },
   );
-
-  beforeAll(async () => {
-    await Promise.all(
-      mockConsumerKeychains.map((consumerKeychain) =>
-        consumerKeychainWriterService.upsertConsumerKeychain(
-          consumerKeychain,
-          0,
-        ),
-      ),
-    );
-  });
 
   it.each([
     {
@@ -64,6 +56,8 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
   }[])(
     "should return consumer keychains with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
+      await seedConsumerKeychains();
+
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/consumerKeychains")
 
