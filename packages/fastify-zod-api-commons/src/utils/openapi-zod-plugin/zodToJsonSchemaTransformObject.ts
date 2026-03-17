@@ -158,14 +158,15 @@ const addResponseHeadersToOpenapi = (
 ): Partial<OpenAPIV3.Document> => {
   if (!openapi.paths || responseHeadersStore.size === 0) return openapi;
 
-  for (const [url, pathItem] of Object.entries(openapi.paths)) {
+  for (const pathItem of Object.values(openapi.paths)) {
     if (!pathItem) continue;
 
-    for (const [method, operation] of Object.entries(pathItem)) {
+    for (const operation of Object.values(pathItem)) {
       if (!operation || typeof operation !== "object") continue;
+      if (!("operationId" in operation) || !operation.operationId) continue;
       if (!("responses" in operation) || !operation.responses) continue;
 
-      const routeKey = `${method}:${url}`;
+      const routeKey = operation.operationId as string;
       const routeHeaders = responseHeadersStore.get(routeKey);
 
       for (const [statusCode, response] of Object.entries(

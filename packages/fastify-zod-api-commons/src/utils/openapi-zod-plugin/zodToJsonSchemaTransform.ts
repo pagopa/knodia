@@ -9,6 +9,7 @@
  * to apply additional transformations on top.
  */
 
+import type { FastifySchema } from "fastify";
 import type { OpenAPIV3 } from "openapi-types";
 
 import { createJsonSchemaTransform } from "fastify-type-provider-zod";
@@ -50,6 +51,19 @@ const zodObjectToResponseHeaders = (
     }),
   );
 
+function assertOperationIdExists(
+  input: Parameters<typeof baseTransform>[0],
+): asserts input is Parameters<typeof baseTransform>[0] & {
+  schema: FastifySchema & { operationId: string };
+} {
+  const { route, schema } = input;
+  if (!schema.operationId) {
+    throw new Error(
+      `Missing operationId in schema for route ${route.method} ${route.url}.`,
+    );
+  }
+}
+
 /**
  * Extract response headers from the input schema before the base transform runs.
  *
@@ -63,22 +77,13 @@ const zodObjectToResponseHeaders = (
 const extractResponseHeaders = (
   input: Parameters<typeof baseTransform>[0],
 ): Parameters<typeof baseTransform>[0] => {
-  const { route, schema, url } = input;
-  if (!schema) return input;
-
-  const { responseHeaders, ...schemaRest } = schema;
-  const rawMethod = (route as { method?: string | string[] }).method;
-  const method = (
-    Array.isArray(rawMethod) ? rawMethod[0] : rawMethod
-  )?.toLowerCase();
-  if (!method) return { ...input, schema: schemaRest };
-
-  const routeKey = `${method}:${url}`;
+  const { responseHeaders, ...schemaRest } = input.schema;
 
   // Route-level responseHeaders → apply to all responses
   if (responseHeaders) {
+    assertOperationIdExists(input);
     responseHeadersStore.set(
-      routeKey,
+      input.schema.operationId,
       zodObjectToResponseHeaders(responseHeaders as z.ZodObject),
     );
   }
@@ -88,8 +93,9 @@ const extractResponseHeaders = (
   if (response) {
     for (const [statusCode, val] of Object.entries(response)) {
       if (isResponseEntryWithHeaders(val)) {
+        assertOperationIdExists(input);
         responseHeadersStore.set(
-          `${routeKey}:${statusCode}`,
+          `${input.schema.operationId}:${statusCode}`,
           zodObjectToResponseHeaders(val.headers),
         );
       }

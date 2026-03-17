@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { generateId, OrganizationId } from "@knodia/common-models/ids";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   ConsumerKeychain,
   KeychainEventV1,
@@ -26,12 +27,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-let seed = 0;
-function getSeededConsumerKeychain() {
-  const consumerKeychain = getMockConsumerKeychain(seed);
-  seed += 1;
-  return consumerKeychain;
-}
+const consumerKeychain = getMockConsumerKeychain();
 
 describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)", () => {
   it.each([
@@ -52,7 +48,6 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
   ])(
     "should correctly create consumer keychain update event with body %S",
     async ({ body }) => {
-      const consumerKeychain = getSeededConsumerKeychain();
       await seedConsumerKeychain(consumerKeychain);
 
       const response = await injectAppRequest({
@@ -63,6 +58,7 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
         .patch(`/consumerKeychains/${consumerKeychain.id}`)
         .body(body);
 
+      expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
       expect(response.statusCode).toBe(200);
 
       const responseBody = response.json<API_Keychain>();
@@ -104,7 +100,6 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const consumerKeychain = getSeededConsumerKeychain();
       await seedConsumerKeychain(consumerKeychain);
 
       const response = await injectAppRequest({
@@ -121,7 +116,7 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
 
   it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
     const consumerKeychain: ConsumerKeychain = {
-      ...getSeededConsumerKeychain(),
+      ...getMockConsumerKeychain(),
       ownerId: generateId<OrganizationId>(),
     };
 
@@ -145,7 +140,6 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (spec) => {
-      const consumerKeychain = getSeededConsumerKeychain();
       const response = await injectAppRequest(spec)
         .patch(`/consumerKeychains/${consumerKeychain.id}`)
         .body({ name: { en: "Updated Consumer keychain name" } });

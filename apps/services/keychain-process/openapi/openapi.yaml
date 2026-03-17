@@ -430,6 +430,12 @@ paths:
                 description: Consumer Keychain updated successfully
                 allOf:
                   - $ref: "#/components/schemas/Keychain"
+          headers:
+            x-metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the relevant resource
         "400":
           description: Bad Request
           content:

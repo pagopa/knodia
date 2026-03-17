@@ -642,6 +642,12 @@ paths:
                 description: E-service created successfully
                 allOf:
                   - $ref: "#/components/schemas/Eservice"
+          headers:
+            x-metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the relevant resource
         "400":
           description: Bad Request
           content:
@@ -704,6 +710,12 @@ paths:
                 description: E-service retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Eservice"
+          headers:
+            x-metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the relevant resource
         "400":
           description: Bad Request
           content:
