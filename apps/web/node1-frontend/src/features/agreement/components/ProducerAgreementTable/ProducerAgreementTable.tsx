@@ -1,6 +1,17 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Avatar, ButtonLink, Empty, Loader } from "@knodia/ui-kit/ui";
+import {
+  Avatar,
+  ButtonLink,
+  Cell,
+  Column,
+  Empty,
+  Loader,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+} from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 
@@ -33,31 +44,19 @@ export function ProducerAgreementTable({
     );
   }
 
-  // TODO: Replace with React Aria Table component from ui-kit
   return (
-    <table className="w-full">
-      <thead>
-        <tr className="border-b border-slate-200 text-left">
-          <th className="pb-3 label-md text-primary-light-low-contrast">
-            E-Service
-          </th>
-          <th className="pb-3 label-md text-primary-light-low-contrast">
-            Consumer
-          </th>
-          <th className="pb-3 label-md text-primary-light-low-contrast">
-            Status
-          </th>
-          <th className="pb-3" />
-        </tr>
-      </thead>
-      <tbody>
-        {agreements.map((agreement) => (
-          <tr
-            className="border-b border-slate-100 align-middle"
-            key={agreement.id}
-          >
-            <td className="py-3 body-md">{agreement.eservice.name.en}</td>
-            <td className="py-3">
+    <Table aria-label="Producer agreements">
+      <TableHeader>
+        <Column isRowHeader>E-Service</Column>
+        <Column>Consumer</Column>
+        <Column>Status</Column>
+        <Column />
+      </TableHeader>
+      <TableBody items={agreements}>
+        {(agreement) => (
+          <Row id={agreement.id}>
+            <Cell className="body-md">{agreement.eservice.name.en}</Cell>
+            <Cell>
               <div className="flex items-center gap-2">
                 <Avatar
                   className="bg-brand-dark text-white"
@@ -66,13 +65,13 @@ export function ProducerAgreementTable({
                   size="sm"
                 />
               </div>
-            </td>
-            <td className="py-3">
+            </Cell>
+            <Cell>
               <AgreementStateChip
                 state={agreement.state as ProducerAgreementState}
               />
-            </td>
-            <td className="py-3 text-right">
+            </Cell>
+            <Cell className="text-right">
               <ButtonLinkWithPreload
                 aria-label="Go to agreement"
                 hierarchy="neutral"
@@ -83,10 +82,10 @@ export function ProducerAgreementTable({
               >
                 <ArrowRightIcon />
               </ButtonLinkWithPreload>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+            </Cell>
+          </Row>
+        )}
+      </TableBody>
+    </Table>
   );
 }
