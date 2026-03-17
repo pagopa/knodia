@@ -1,0 +1,14 @@
+meta {
+  name: Get Consumer Agreements
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/agreements
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

@@ -8,6 +8,7 @@ import type { ConsumerKeychain } from "../src/keychain.ts";
 import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
+  ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
 import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
@@ -45,6 +46,10 @@ describe("KeychainEventV1 codec", () => {
     {
       message: ConsumerKeychainDeletedV1,
       type: "ConsumerKeychainDeletedV1" as const,
+    },
+    {
+      message: ConsumerKeychainUpdatedV1,
+      type: "ConsumerKeychainUpdatedV1" as const,
     },
   ];
 

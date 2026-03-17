@@ -6,12 +6,15 @@ import type z from "zod";
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_GetOrganizationsQueryParams } from "../src/models/api.ts";
 
-import { organizationWriterService } from "./setup.ts";
-import { injectAppRequest, toExpectAPI_Organization } from "./utils.ts";
+import {
+  injectAppRequest,
+  seedOrganization,
+  toExpectAPI_Organization,
+} from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
@@ -44,14 +47,6 @@ describe("GET /organizations (getOrganizations)", () => {
     offset: "0",
   };
 
-  beforeAll(async () => {
-    await Promise.all(
-      mockOrganizations.map((org) =>
-        organizationWriterService.upsertOrganization(org, 0),
-      ),
-    );
-  });
-
   it.each([
     {
       expectedResult: [
@@ -78,6 +73,8 @@ describe("GET /organizations (getOrganizations)", () => {
   }[])(
     "should return organizations with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
+      await Promise.all(mockOrganizations.map(seedOrganization));
+
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/organizations")
         .query(query);
