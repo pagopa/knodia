@@ -20,17 +20,17 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-const consumerKeychain = getMockConsumerKeychain();
+const mockConsumerKeychain = getMockConsumerKeychain();
 
 describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)", () => {
   it("should correctly create consumer keychain deletion event", async () => {
-    await seedConsumerKeychain(consumerKeychain);
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const deleteResponse = await injectAppRequest({
       ...allowedTestTokens[0]!,
-      organizationId: consumerKeychain.ownerId,
+      organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
-    }).delete(`/consumerKeychains/${consumerKeychain.id}`);
+    }).delete(`/consumerKeychains/${mockConsumerKeychain.id}`);
 
     expect(deleteResponse.statusCode).toBe(204);
 
@@ -39,20 +39,20 @@ describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)
     const deletedEvent = events[1];
 
     expect(deletedEvent).toMatchObject({
-      streamId: consumerKeychain.id,
+      streamId: mockConsumerKeychain.id,
       type: "ConsumerKeychainDeletedV1",
       version: 1,
     });
 
     const deletedEventData = KeychainEventV1.parse(deletedEvent).data;
     expect(deletedEventData).toMatchObject({
-      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+      consumerKeychain: toConsumerKeychainV1(mockConsumerKeychain),
     });
   });
 
   it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
     const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(1),
+      ...mockConsumerKeychain,
       ownerId: generateId<OrganizationId>(),
     };
 
@@ -77,7 +77,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId (deleteConsumerKeychain)
     "should return 403 for unauthorized token ($type)",
     async (spec) => {
       const response = await injectAppRequest(spec).delete(
-        `/consumerKeychains/${consumerKeychain.id}`,
+        `/consumerKeychains/${mockConsumerKeychain.id}`,
       );
       expect(response.statusCode).toBe(403);
     },

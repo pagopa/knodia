@@ -8,13 +8,12 @@ import { Eservice, EserviceMode } from "@knodia/eservice-models";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
-import { beforeAll, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import type { API_GetEservicesQueryParams } from "../src/models/api.ts";
 
 import { mockEservices, producerId } from "./mockEservices.ts";
-import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, seedEservice } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
@@ -26,14 +25,6 @@ describe("GET /eservices (getEservices)", () => {
     limit: "4",
     offset: "0",
   };
-
-  beforeAll(async () => {
-    await Promise.all(
-      mockEservices.map((eservice) =>
-        eserviceWriterService.upsertEservice(eservice, 0),
-      ),
-    );
-  });
 
   it.each([
     {
@@ -166,6 +157,8 @@ describe("GET /eservices (getEservices)", () => {
   }[])(
     "should return e-services with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
+      await Promise.all(mockEservices.map(seedEservice));
+
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/eservices")
 

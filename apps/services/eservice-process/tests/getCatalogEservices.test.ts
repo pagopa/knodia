@@ -19,8 +19,7 @@ import type {
 } from "../src/models/api.ts";
 
 import { mockEservices } from "./mockEservices.ts";
-import { eserviceWriterService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, seedEservice } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
@@ -64,13 +63,8 @@ describe("POST /catalog (getCatalogEservices)", () => {
     withActiveLatestVersion(mockEservices.at(9)!),
   ].sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
-  const seedEservices = async (eservices: Eservice[]) => {
-    await Promise.all(
-      eservices.map((eservice) =>
-        eserviceWriterService.upsertEservice(eservice, 0),
-      ),
-    );
-  };
+  const seedEservices = async (eservices: Eservice[]) =>
+    await Promise.all(eservices.map(seedEservice));
 
   it.each([
     {
