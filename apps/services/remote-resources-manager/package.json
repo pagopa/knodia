@@ -32,7 +32,6 @@
     "@knodia/attribute-models": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
-    "@knodia/db-readmodel-config": "workspace:*",
     "@knodia/db-readmodel-organization": "workspace:*",
     "@knodia/db-remote-resource": "workspace:*",
     "@knodia/eservice-models": "workspace:*",

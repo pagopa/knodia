@@ -2,10 +2,9 @@ import type { AuthConfig } from "@knodia/fastify-zod-api-commons/config";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { makeDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
-import { ReadmodelConfig } from "@knodia/db-readmodel-config/config";
-import { RemoteResourceDbConfig } from "@knodia/db-remote-resource/config";
+import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { remoteResourceDbServiceBuilder } from "@knodia/db-remote-resource/services";
+import { makeRemoteResourceDrizzleConnection } from "@knodia/db-remote-resource/utils";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import {
   createFastifyApp,
@@ -101,10 +100,9 @@ export function buildApp({
 
 export function buildAppFromConfig(config: RemoteResourcesManagerConfig) {
   const { db: remoteResourceDb, pool: remoteResourcePool } =
-    makeDrizzleConnection(RemoteResourceDbConfig.parse(config));
-  const { db: readmodelDb, pool: readmodelPool } = makeDrizzleConnection(
-    ReadmodelConfig.parse(config),
-  );
+    makeRemoteResourceDrizzleConnection(config);
+  const { db: readmodelDb, pool: readmodelPool } =
+    makeReadmodelDrizzleConnection(config);
 
   const app = buildApp({
     config,

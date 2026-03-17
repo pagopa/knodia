@@ -10,8 +10,6 @@
   "dependencies": {
     "@knodia/common-models": "workspace:*",
     "@knodia/db-readmodel-config": "workspace:*",
-    "@knodia/db-event-store-config": "workspace:*",
-    "@knodia/db-remote-resource": "workspace:*",
     "drizzle-orm": "catalog:",
     "pg": "catalog:",
     "ts-pattern": "catalog:",
