@@ -10,7 +10,11 @@ import {
   Divider,
   Popover,
 } from "@knodia/ui-kit/ui";
-import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
+import {
+  AddressBookIcon,
+  SealCheckIcon,
+  WarningIcon,
+} from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
@@ -81,8 +85,8 @@ function ConsumptionRequirementsSection({
 
           <Banner
             className="mt-6 [&>div:last-child]:flex-1"
-            icon={<SealCheckIcon />}
-            kind="neutral"
+            icon={hasRequiredAttributes ? <SealCheckIcon /> : <WarningIcon />}
+            kind={hasRequiredAttributes ? "neutral" : "warning"}
           >
             <div className="flex items-center justify-between gap-4">
               <span>
@@ -90,19 +94,20 @@ function ConsumptionRequirementsSection({
                   ? "Your organization has the required attributes."
                   : "Your organization does not have the required attributes."}
               </span>
-              <ButtonLink
-                className="shrink-0"
-                hierarchy="brand"
-                href={{
-                  search: { eserviceId, knodeId },
-                  to: "/consumption/e-services/request-agreement",
-                }}
-                isDisabled={!hasRequiredAttributes}
-                kind="filled"
-                size="md"
-              >
-                Request Agreement
-              </ButtonLink>
+              {hasRequiredAttributes && (
+                <ButtonLink
+                  className="shrink-0"
+                  hierarchy="brand"
+                  href={{
+                    search: { eserviceId, knodeId },
+                    to: "/consumption/e-services/request-agreement",
+                  }}
+                  kind="filled"
+                  size="md"
+                >
+                  Request Agreement
+                </ButtonLink>
+              )}
             </div>
           </Banner>
         </div>
