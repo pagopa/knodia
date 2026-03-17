@@ -38,6 +38,7 @@ vi.mock("@knodia/db-remote-resource/services", () => ({
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
 ];
 
 const toK2KAgreement = (
