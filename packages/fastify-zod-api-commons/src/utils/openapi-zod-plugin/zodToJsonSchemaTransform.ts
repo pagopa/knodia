@@ -50,9 +50,6 @@ const zodObjectToResponseHeaders = (
     }),
   );
 
-const isZodObject = (val: unknown): val is z.ZodObject =>
-  val !== null && typeof val === "object" && "shape" in val;
-
 const hasResponseHeaders = (
   val: unknown,
 ): val is { headers: unknown; properties: unknown } =>
@@ -74,18 +71,23 @@ const hasResponseHeaders = (
 const extractResponseHeaders = (
   input: Parameters<typeof baseTransform>[0],
 ): Parameters<typeof baseTransform>[0] => {
-  const { schema } = input;
+  const { route, schema, url } = input;
   if (!schema) return input;
 
   const { responseHeaders, ...schemaRest } = schema;
-  const operationId = schemaRest.operationId as string | undefined;
-  if (!operationId) return { ...input, schema: schemaRest };
+  const rawMethod = (route as { method?: string | string[] }).method;
+  const method = Array.isArray(rawMethod)
+    ? rawMethod[0]?.toLowerCase()
+    : rawMethod?.toLowerCase();
+  if (!method) return { ...input, schema: schemaRest };
+
+  const routeKey = `${method}:${url}`;
 
   // Route-level responseHeaders → apply to all responses
-  if (isZodObject(responseHeaders)) {
+  if (responseHeaders) {
     responseHeadersStore.set(
-      operationId,
-      zodObjectToResponseHeaders(responseHeaders),
+      routeKey,
+      zodObjectToResponseHeaders(responseHeaders as z.ZodObject),
     );
   }
 
@@ -95,7 +97,7 @@ const extractResponseHeaders = (
     for (const [statusCode, val] of Object.entries(response)) {
       if (hasResponseHeaders(val)) {
         responseHeadersStore.set(
-          `${operationId}:${statusCode}`,
+          `${routeKey}:${statusCode}`,
           zodObjectToResponseHeaders(val.headers as z.ZodObject),
         );
       }

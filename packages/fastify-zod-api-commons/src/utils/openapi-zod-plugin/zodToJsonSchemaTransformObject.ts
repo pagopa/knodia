@@ -153,21 +153,31 @@ const removeUnusedComponents = (
   return openapi;
 };
 
+const HTTP_METHODS = [
+  "get",
+  "put",
+  "post",
+  "delete",
+  "options",
+  "head",
+  "patch",
+  "trace",
+] as const;
+
 const addResponseHeadersToOpenapi = (
   openapi: Partial<OpenAPIV3.Document>,
 ): Partial<OpenAPIV3.Document> => {
   if (!openapi.paths || responseHeadersStore.size === 0) return openapi;
 
-  for (const pathItem of Object.values(openapi.paths)) {
+  for (const [url, pathItem] of Object.entries(openapi.paths)) {
     if (!pathItem) continue;
 
-    for (const operation of Object.values(pathItem)) {
-      if (!operation || typeof operation !== "object") continue;
-      if (!("operationId" in operation) || !operation.operationId) continue;
-      if (!("responses" in operation) || !operation.responses) continue;
+    for (const method of HTTP_METHODS) {
+      const operation = pathItem[method];
+      if (!operation || !operation.responses) continue;
 
-      const operationId = operation.operationId as string;
-      const routeHeaders = responseHeadersStore.get(operationId);
+      const routeKey = `${method}:${url}`;
+      const routeHeaders = responseHeadersStore.get(routeKey);
 
       for (const [statusCode, response] of Object.entries(
         operation.responses,
@@ -175,7 +185,7 @@ const addResponseHeadersToOpenapi = (
         if ("$ref" in response) continue;
 
         const perResponseHeaders = responseHeadersStore.get(
-          `${operationId}:${statusCode}`,
+          `${routeKey}:${statusCode}`,
         );
 
         if (routeHeaders || perResponseHeaders) {
