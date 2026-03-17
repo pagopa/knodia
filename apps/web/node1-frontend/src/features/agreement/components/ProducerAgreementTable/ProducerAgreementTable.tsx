@@ -15,8 +15,6 @@ import {
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 
-import type { ProducerAgreementState } from "@/features/agreement/models/types";
-
 import { getOrganizationInitials } from "@/utils/getOrganizationInitials";
 
 import { AgreementStateChip } from "./AgreementStateChip";
@@ -65,9 +63,7 @@ export function ProducerAgreementTable({
               />
             </Cell>
             <Cell>
-              <AgreementStateChip
-                state={agreement.state as ProducerAgreementState}
-              />
+              <AgreementStateChip state={agreement.state} />
             </Cell>
             <Cell className="text-right">
               <ButtonLinkWithPreload
