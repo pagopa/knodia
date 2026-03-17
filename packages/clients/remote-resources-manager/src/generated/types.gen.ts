@@ -190,7 +190,7 @@ export type EserviceDetailsProducer = {
     email: string;
     id: string;
     knodeName: string;
-    name: LocalizedName;
+    name: string;
     notes: string;
 };
 

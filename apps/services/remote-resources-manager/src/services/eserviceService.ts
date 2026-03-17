@@ -122,7 +122,12 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
         }),
       ]);
 
-      return toAPI_EserviceDetails(eservice, version);
+      const { data: producer } = await k2kGatewayApi.getOrganization({
+        client: k2kGatewayClient,
+        path: { organizationId: eservice.producerId },
+      });
+
+      return toAPI_EserviceDetails(eservice, version, producer);
     },
   };
 }
