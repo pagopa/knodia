@@ -1,3 +1,5 @@
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
+
 import { bffApi } from "@knodia/bff-client";
 import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
@@ -10,7 +12,11 @@ import {
   Divider,
   Popover,
 } from "@knodia/ui-kit/ui";
-import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
+import {
+  AddressBookIcon,
+  SealCheckIcon,
+  WarningIcon,
+} from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
@@ -63,7 +69,7 @@ function ConsumptionRequirementsSection({
 }: Pick<
   ConsumptionEserviceDetail,
   "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
-> & { eserviceId: string; knodeId: string }) {
+> & { eserviceId: EserviceId; knodeId: KnodeId }) {
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -71,18 +77,20 @@ function ConsumptionRequirementsSection({
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Attributes
           </h3>
-          <ul className="gap-2 flex flex-col" role="list">
-            {requiredAttributes.map((group, index) => (
-              <li key={index}>
-                <AttributeGroupContainer attributes={group} />
-              </li>
-            ))}
-          </ul>
+          {requiredAttributes.length > 0 && (
+            <ul className="gap-2 flex flex-col mb-6" role="list">
+              {requiredAttributes.map((group, index) => (
+                <li key={index}>
+                  <AttributeGroupContainer attributes={group} />
+                </li>
+              ))}
+            </ul>
+          )}
 
           <Banner
-            className="mt-6 [&>div:last-child]:flex-1"
-            icon={<SealCheckIcon />}
-            kind="neutral"
+            className="[&>div:last-child]:flex-1"
+            icon={hasRequiredAttributes ? <SealCheckIcon /> : <WarningIcon />}
+            kind={hasRequiredAttributes ? "neutral" : "warning"}
           >
             <div className="flex items-center justify-between gap-4">
               <span>
@@ -90,19 +98,20 @@ function ConsumptionRequirementsSection({
                   ? "Your organization has the required attributes."
                   : "Your organization does not have the required attributes."}
               </span>
-              <ButtonLink
-                className="shrink-0"
-                hierarchy="brand"
-                href={{
-                  search: { eserviceId, knodeId },
-                  to: "/consumption/e-services/request-agreement",
-                }}
-                isDisabled={!hasRequiredAttributes}
-                kind="filled"
-                size="md"
-              >
-                Request Agreement
-              </ButtonLink>
+              {hasRequiredAttributes && (
+                <ButtonLink
+                  className="shrink-0"
+                  hierarchy="brand"
+                  href={{
+                    search: { eserviceId, knodeId },
+                    to: "/consumption/e-services/request-agreement",
+                  }}
+                  kind="filled"
+                  size="md"
+                >
+                  Request Agreement
+                </ButtonLink>
+              )}
             </div>
           </Banner>
         </div>
