@@ -49,7 +49,6 @@ beforeAll(async () => {
     {
       ...getMockOrganization(),
       id: TEST_ORGANIZATION_ID,
-      name: "Test Organization",
     },
     0,
   );
