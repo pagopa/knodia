@@ -21,12 +21,12 @@ import {
 } from "../models/errors.ts";
 import { retrieveEserviceLatestVersion } from "./readmodelUtils.ts";
 
-export const assertAgreementCanBeActivated = async (
+export const assertAgreementCanBeCreated = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
-  const allowedEserviceVersionStatesForActivation: EserviceVersionState[] = [
+  const allowedEserviceVersionStatesForCreation: EserviceVersionState[] = [
     "Active",
   ];
   const allowedEserviceVersionStates: EserviceVersionState[] = [
@@ -48,7 +48,7 @@ export const assertAgreementCanBeActivated = async (
   assertEserviceVersionIsInExpectedStates(
     eservice.id,
     eserviceLatestVersion,
-    allowedEserviceVersionStatesForActivation,
+    allowedEserviceVersionStatesForCreation,
   );
 };
 
