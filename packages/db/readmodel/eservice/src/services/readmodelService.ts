@@ -1,13 +1,12 @@
 import type {
   EserviceId,
   EserviceInterfaceId,
-  EserviceVersionId,
 } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { Eservice, EserviceInterface } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { and, eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import {
   aggregateEservice,
@@ -24,7 +23,7 @@ import {
 
 export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
-    async getEServiceById(
+    async getEserviceById(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<Eservice>> {
       const queryRes = await readmodelDb
@@ -41,37 +40,35 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
 
       return aggregateEservice(queryRes);
     },
-    async getEServiceVersionById(
-      eserviceId: EserviceId,
-      eserviceVersionId: EserviceVersionId,
-    ) {
-      const queryRes = await readmodelDb
-        .select({
-          requiredAttribute: readmodelEserviceVersionRequiredAttribute,
-          version: readmodelEserviceVersion,
-        })
-        .from(readmodelEserviceVersion)
-        .leftJoin(
-          readmodelEserviceVersionRequiredAttribute,
-          and(
-            eq(
-              readmodelEserviceVersionRequiredAttribute.eserviceId,
-              readmodelEserviceVersion.eserviceId,
-            ),
+    async getEserviceLatestVersion(eserviceId: EserviceId) {
+      return await readmodelDb.transaction(async (tx) => {
+        const latestEserviceVersion = latestEserviceVersionSubquery(
+          tx,
+          eserviceId,
+        );
+
+        const queryRes = await tx
+          .select({
+            requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+            version: readmodelEserviceVersion,
+          })
+          .from(readmodelEserviceVersion)
+          .innerJoin(
+            latestEserviceVersion,
+            eq(readmodelEserviceVersion.id, latestEserviceVersion.id),
+          )
+          .leftJoin(
+            readmodelEserviceVersionRequiredAttribute,
             eq(
               readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
               readmodelEserviceVersion.id,
             ),
-          ),
-        )
-        .where(
-          and(
-            eq(readmodelEserviceVersion.eserviceId, eserviceId),
-            eq(readmodelEserviceVersion.id, eserviceVersionId),
-          ),
-        );
+          )
+          .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
+          .orderBy(desc(readmodelEserviceVersion.versionNumber));
 
-      return aggregateEserviceVersion(queryRes);
+        return aggregateEserviceVersion(queryRes);
+      });
     },
     async getEserviceVersionInterfaceById(
       interfaceId: EserviceInterfaceId,
@@ -90,3 +87,19 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     },
   };
 }
+
+export const latestEserviceVersionSubquery = (
+  tx: NodePgDatabase,
+  eserviceIdFilter: EserviceId | typeof readmodelEservice.id,
+) =>
+  tx
+    .select({
+      id: readmodelEserviceVersion.id,
+      state: readmodelEserviceVersion.state,
+      versionNumber: readmodelEserviceVersion.versionNumber,
+    })
+    .from(readmodelEserviceVersion)
+    .where(eq(readmodelEserviceVersion.eserviceId, eserviceIdFilter))
+    .orderBy(desc(readmodelEserviceVersion.versionNumber))
+    .limit(1)
+    .as("latestEserviceVersion");

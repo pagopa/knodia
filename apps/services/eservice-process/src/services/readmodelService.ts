@@ -20,22 +20,22 @@ import {
   readmodelEservice,
   readmodelEserviceCategory,
   readmodelEserviceInterface,
-  readmodelEserviceVersion,
-  readmodelEserviceVersionRequiredAttribute,
 } from "@knodia/db-readmodel-eservice";
 import {
   aggregateEservices,
-  aggregateEserviceVersion,
   toEserviceVersionInterface,
 } from "@knodia/db-readmodel-eservice/converters";
-import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
+import {
+  eserviceReadmodelServiceBuilder,
+  latestEserviceVersionSubquery,
+} from "@knodia/db-readmodel-eservice/services";
 import { organizationReadmodelServiceBuilder } from "@knodia/db-readmodel-organization/services";
 import {
   type Eservice,
   EserviceInterface,
   EserviceVersionState,
 } from "@knodia/eservice-models";
-import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
 
 import type {
   API_GetCatalogEserviceSearchParams,
@@ -49,22 +49,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
   const organizationReadmodelService =
     organizationReadmodelServiceBuilder(readmodelDb);
-
-  const latestVersionSubquery = (
-    tx: NodePgDatabase,
-    eserviceIdFilter: EserviceId | typeof readmodelEservice.id,
-  ) =>
-    tx
-      .select({
-        id: readmodelEserviceVersion.id,
-        state: readmodelEserviceVersion.state,
-        versionNumber: readmodelEserviceVersion.versionNumber,
-      })
-      .from(readmodelEserviceVersion)
-      .where(eq(readmodelEserviceVersion.eserviceId, eserviceIdFilter))
-      .orderBy(desc(readmodelEserviceVersion.versionNumber))
-      .limit(1)
-      .as("latestVersion");
 
   return {
     async getCatalogEservices(
@@ -83,7 +67,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           table: readmodelEservice,
         });
 
-        const latestEserviceVersion = latestVersionSubquery(
+        const latestEserviceVersion = latestEserviceVersionSubquery(
           tx,
           readmodelEservice.id,
         );
@@ -164,47 +148,31 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getEservice(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<Eservice>> {
-      return await eserviceReadmodelService.getEServiceById(eserviceId);
+      return await eserviceReadmodelService.getEserviceById(eserviceId);
     },
     async getEserviceLatestVersion(eserviceId: EserviceId) {
-      return await readmodelDb.transaction(async (tx) => {
-        const latestVersion = latestVersionSubquery(tx, eserviceId);
-
-        const queryRes = await tx
-          .select({
-            requiredAttribute: readmodelEserviceVersionRequiredAttribute,
-            version: readmodelEserviceVersion,
-          })
-          .from(readmodelEserviceVersion)
-          .innerJoin(
-            latestVersion,
-            eq(readmodelEserviceVersion.id, latestVersion.id),
-          )
-          .leftJoin(
-            readmodelEserviceVersionRequiredAttribute,
-            eq(
-              readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
-              readmodelEserviceVersion.id,
-            ),
-          )
-          .where(eq(readmodelEserviceVersion.eserviceId, eserviceId))
-          .orderBy(desc(readmodelEserviceVersion.versionNumber));
-
-        return aggregateEserviceVersion(queryRes);
-      });
+      return await eserviceReadmodelService.getEserviceLatestVersion(
+        eserviceId,
+      );
     },
     async getEserviceLatestVersionInterface(
       eserviceId: EserviceId,
     ): Promise<EserviceInterface | undefined> {
       return await readmodelDb.transaction(async (tx) => {
-        const latestVersion = latestVersionSubquery(tx, eserviceId);
+        const latestEserviceVersion = latestEserviceVersionSubquery(
+          tx,
+          eserviceId,
+        );
 
         const queryRes = await tx
           .select()
           .from(readmodelEserviceInterface)
           .innerJoin(
-            latestVersion,
-            eq(readmodelEserviceInterface.eserviceVersionId, latestVersion.id),
+            latestEserviceVersion,
+            eq(
+              readmodelEserviceInterface.eserviceVersionId,
+              latestEserviceVersion.id,
+            ),
           )
           .where(eq(readmodelEserviceInterface.eserviceId, eserviceId))
           .limit(1);
@@ -237,7 +205,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           table: readmodelEservice,
         });
 
-        const latestEserviceVersion = latestVersionSubquery(
+        const latestEserviceVersion = latestEserviceVersionSubquery(
           tx,
           readmodelEservice.id,
         );

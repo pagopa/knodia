@@ -1,8 +1,4 @@
-import type {
-  AgreementId,
-  EserviceId,
-  EserviceVersionId,
-} from "@knodia/common-models/ids";
+import type { AgreementId, EserviceId } from "@knodia/common-models/ids";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
@@ -25,21 +21,18 @@ export const retrieveEservice = async (
   return eservice.data;
 };
 
-export const retrieveEserviceVersion = async (
+export const retrieveEserviceLatestVersion = async (
   eserviceId: EserviceId,
-  eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
-  const eserviceVersion = await readmodelService.getEserviceVersion(
-    eserviceId,
-    eserviceVersionId,
-  );
+  const eserviceLatestVersion =
+    await readmodelService.getEserviceLatestVersion(eserviceId);
 
-  if (!eserviceVersion) {
-    throw eserviceVersionNotFound(eserviceId, eserviceVersionId);
+  if (!eserviceLatestVersion) {
+    throw eserviceVersionNotFound(eserviceId);
   }
 
-  return eserviceVersion;
+  return eserviceLatestVersion;
 };
 
 export const retrieveAgreement = async (

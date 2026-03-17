@@ -6,33 +6,53 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type { Eservice, EserviceVersionState } from "@knodia/eservice-models";
+import type {
+  Eservice,
+  EserviceVersion,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
   eserviceVersionNotInExpectedState,
+  eserviceVersionNotLatest,
 } from "../models/errors.ts";
-import { retrieveEserviceVersion } from "./readmodelUtils.ts";
+import { retrieveEserviceLatestVersion } from "./readmodelUtils.ts";
 
-export const assertEserviceVersionIsActive = async (
+export const assertAgreementCanBeActivated = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
   const allowedStates: EserviceVersionState[] = ["Active"];
 
-  const eserviceVersion = await retrieveEserviceVersion(
+  const eserviceLatestVersion = await retrieveEserviceLatestVersion(
     eservice.id,
-    eserviceVersionId,
     readmodelService,
   );
 
+  if (eserviceLatestVersion.id !== eserviceVersionId) {
+    throw eserviceVersionNotLatest(eserviceVersionId, eserviceLatestVersion.id);
+  }
+
+  assertEserviceVersionIsInExpectedStates(
+    eservice.id,
+    eserviceLatestVersion,
+    allowedStates,
+  );
+};
+
+const assertEserviceVersionIsInExpectedStates = (
+  eserviceId: EserviceId,
+  eserviceVersion: Omit<EserviceVersion, "interfaceDocument">,
+  allowedStates: EserviceVersionState[],
+) => {
   if (!allowedStates.includes(eserviceVersion.state)) {
     throw eserviceVersionNotInExpectedState(
-      eservice.id,
-      eserviceVersionId,
+      eserviceId,
+      eserviceVersion.id,
       allowedStates,
     );
   }

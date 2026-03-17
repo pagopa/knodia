@@ -1,9 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type {
-  AgreementId,
-  EserviceId,
-  EserviceVersionId,
-} from "@knodia/common-models/ids";
+import type { AgreementId, EserviceId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -122,15 +118,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getEservice(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<Eservice>> {
-      return await eserviceReadmodelService.getEServiceById(eserviceId);
+      return await eserviceReadmodelService.getEserviceById(eserviceId);
     },
-    async getEserviceVersion(
-      eserviceId: EserviceId,
-      eserviceVersionId: EserviceVersionId,
-    ) {
-      return await eserviceReadmodelService.getEServiceVersionById(
+    async getEserviceLatestVersion(eserviceId: EserviceId) {
+      return await eserviceReadmodelService.getEserviceLatestVersion(
         eserviceId,
-        eserviceVersionId,
       );
     },
   };
