@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-imports */
-import type { ConsumerKeychainWriterService } from "@knodia/db-readmodel-consumer-keychain/writer";
+import type { KeychainWriterService } from "@knodia/db-readmodel-keychain/writer";
 import type { KeychainEventEnvelopeV1 } from "@knodia/keychain-models";
 
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
@@ -11,7 +11,7 @@ export async function handleKeychainEvent(
   {
     consumerKeychainWriterService,
   }: {
-    consumerKeychainWriterService: ConsumerKeychainWriterService;
+    consumerKeychainWriterService: KeychainWriterService;
   },
 ): Promise<void> {
   return match(message)

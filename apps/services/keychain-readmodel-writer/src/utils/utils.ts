@@ -5,7 +5,7 @@ import type { Logger } from "pino";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
 /* eslint-disable no-restricted-imports */
-import { consumerKeychainWriterServiceBuilder } from "@knodia/db-readmodel-consumer-keychain/writer";
+import { keychainWriterBuilder } from "@knodia/db-readmodel-keychain/writer";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { KeychainEventV1 } from "@knodia/keychain-models";
 
@@ -15,8 +15,7 @@ export const createProcessMessage = (
   readmodelDb: NodePgDatabase,
   logger: Logger,
 ) => {
-  const consumerKeychainWriterService =
-    consumerKeychainWriterServiceBuilder(readmodelDb);
+  const consumerKeychainWriterService = keychainWriterBuilder(readmodelDb);
 
   return async function processMessage({
     message,

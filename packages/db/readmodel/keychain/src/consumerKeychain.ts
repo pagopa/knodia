@@ -12,13 +12,13 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-import { readmodelConsumerKeychainConfig } from "../config/config.ts";
+import { readmodelKeychainConfig } from "../config/config.ts";
 
-export const consumerKeychainSchema = pgSchema(
-  readmodelConsumerKeychainConfig.readmodelDbConsumerKeychainSchema,
+export const keychainSchema = pgSchema(
+  readmodelKeychainConfig.readmodelDbKeychainSchema,
 );
 
-export const readmodelConsumerKeychain = consumerKeychainSchema.table(
+export const readmodelConsumerKeychain = keychainSchema.table(
   "consumer_keychain",
   {
     createdAt: timestamp("created_at", {
@@ -43,7 +43,7 @@ export const readmodelConsumerKeychain = consumerKeychainSchema.table(
   ],
 );
 
-export const readmodelConsumerKeychainUser = consumerKeychainSchema.table(
+export const readmodelConsumerKeychainUser = keychainSchema.table(
   "consumer_keychain_user",
   {
     consumerKeychainId: uuid("consumer_keychain_id").notNull(),
@@ -71,7 +71,7 @@ export const readmodelConsumerKeychainUser = consumerKeychainSchema.table(
   ],
 );
 
-export const readmodelConsumerKeychainPurpose = consumerKeychainSchema.table(
+export const readmodelConsumerKeychainPurpose = keychainSchema.table(
   "consumer_keychain_purpose",
   {
     consumerKeychainId: uuid("consumer_keychain_id").notNull(),
@@ -103,7 +103,7 @@ export const readmodelConsumerKeychainPurpose = consumerKeychainSchema.table(
   ],
 );
 
-export const readmodelConsumerKeychainKey = consumerKeychainSchema.table(
+export const readmodelConsumerKeychainKey = keychainSchema.table(
   "consumer_keychain_key",
   {
     algorithm: text().notNull(),

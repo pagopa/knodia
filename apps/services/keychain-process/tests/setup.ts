@@ -1,9 +1,9 @@
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
-import { readmodelConsumerKeychain } from "@knodia/db-readmodel-consumer-keychain";
+import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
 import {
-  type ConsumerKeychainWriterService,
-  consumerKeychainWriterServiceBuilder,
-} from "@knodia/db-readmodel-consumer-keychain/writer";
+  keychainWriterBuilder,
+  type KeychainWriterService,
+} from "@knodia/db-readmodel-keychain/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
@@ -14,7 +14,7 @@ import { buildApp } from "../src/app.ts";
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
 let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
-let consumerKeychainWriterService: ConsumerKeychainWriterService;
+let consumerKeychainWriterService: KeychainWriterService;
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -41,8 +41,7 @@ beforeAll(async () => {
     readmodelDb,
   });
 
-  consumerKeychainWriterService =
-    consumerKeychainWriterServiceBuilder(readmodelDb);
+  consumerKeychainWriterService = keychainWriterBuilder(readmodelDb);
 });
 
 afterEach(async () => {
