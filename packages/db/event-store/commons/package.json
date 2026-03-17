@@ -20,7 +20,6 @@
     "typescript": "catalog:"
   },
   "exports": {
-    "./models": "./src/models/index.ts",
     "./utils": "./src/utils/utils.ts"
   }
 }
