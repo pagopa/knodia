@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { createConsumerAgreement, createConsumerKeychain, createEservice, createSession, deleteConsumerKeychain, getConsumerAgreements, getConsumerCatalogEservices, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerKeychainDetails, getConsumerKeychains, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, type Options, refreshSession } from '../sdk.gen.ts';
-import type { CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse } from '../types.gen.ts';
+import { createConsumerAgreement, createConsumerKeychain, createEservice, createSession, deleteConsumerKeychain, getConsumerAgreements, getConsumerCatalogEservices, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerKeychainDetails, getConsumerKeychains, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getStatus, type Options, refreshSession, updateConsumerKeychain } from '../sdk.gen.ts';
+import type { CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetStatusData, GetStatusResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -317,6 +317,23 @@ export const getConsumerKeychainDetailsOptions = (options: Options<GetConsumerKe
     },
     queryKey: getConsumerKeychainDetailsQueryKey(options)
 });
+
+/**
+ * Update a Consumer Keychain
+ */
+export const updateConsumerKeychainMutation = (options?: Partial<Options<UpdateConsumerKeychainData>>): UseMutationOptions<UpdateConsumerKeychainResponse, AxiosError<UpdateConsumerKeychainError>, Options<UpdateConsumerKeychainData>> => {
+    const mutationOptions: UseMutationOptions<UpdateConsumerKeychainResponse, AxiosError<UpdateConsumerKeychainError>, Options<UpdateConsumerKeychainData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateConsumerKeychain({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 /**
  * Search for E-services
