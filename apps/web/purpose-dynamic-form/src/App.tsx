@@ -11,6 +11,7 @@ import {
 import { Pa31Page } from "./demo/Pa31Page";
 import { TwoFormAjvPage } from "./demo/TwoFormAjvPage";
 import { TwoFormJsonFormsPage } from "./demo/TwoFormJsonFormsPage";
+import { TwoFormUIKitPage } from "./demo/TwoFormUIKitPage";
 import { TwoFormZodPage } from "./demo/TwoFormZodPage";
 
 const rootRoute = createRootRoute({
@@ -41,6 +42,12 @@ const rootRoute = createRootRoute({
             to="/two-form-jsonforms"
           >
             Two-form (JSON Forms)
+          </Link>
+          <Link
+            className="text-sm font-medium px-3 py-1 rounded text-gray-600 hover:text-gray-900 [&.active]:bg-blue-100 [&.active]:text-blue-700"
+            to="/two-form-uikit"
+          >
+            Two-form (UI Kit)
           </Link>
         </div>
       </nav>
@@ -79,12 +86,19 @@ const twoFormJsonFormsRoute = createRoute({
   path: "/two-form-jsonforms",
 });
 
+const twoFormUIKitRoute = createRoute({
+  component: TwoFormUIKitPage,
+  getParentRoute: () => rootRoute,
+  path: "/two-form-uikit",
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   pa31Route,
   twoFormZodRoute,
   twoFormAjvRoute,
   twoFormJsonFormsRoute,
+  twoFormUIKitRoute,
 ]);
 
 const router = createRouter({ routeTree });

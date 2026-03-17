@@ -19,6 +19,7 @@
     "@tanstack/react-router": "catalog:",
     "ajv": "8.18.0",
     "react": "catalog:",
+    "@knodia/ui-kit": "workspace:*",
     "react-aria-components": "catalog:",
     "react-dom": "catalog:",
     "tailwindcss": "catalog:",

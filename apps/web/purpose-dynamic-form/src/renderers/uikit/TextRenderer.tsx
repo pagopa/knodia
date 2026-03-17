@@ -1,0 +1,61 @@
+import { TextArea, TextField } from "@knodia/ui-kit/ui";
+
+import type { ControlElement } from "../../engine/types";
+
+interface Props {
+  control: ControlElement;
+  error?: string | undefined;
+  maxLength?: number | undefined;
+  onChange: (value: string) => void;
+  value: string;
+}
+
+export function TextRenderer({
+  control,
+  error,
+  maxLength,
+  onChange,
+  value,
+}: Props) {
+  const isTextarea = control.options?.widget === "textarea";
+
+  if (isTextarea) {
+    return (
+      <div className="flex flex-col gap-1">
+        <TextArea
+          description={control.options?.infoLabel}
+          errorMessage={error}
+          isInvalid={!!error}
+          label={control.label}
+          onChange={onChange}
+          value={value}
+          {...(maxLength !== undefined && { maxLength })}
+        />
+        {maxLength != null && (
+          <span className="text-xs text-primary-light-low-contrast self-end">
+            {value.length}/{maxLength}
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <TextField
+        description={control.options?.infoLabel}
+        errorMessage={error}
+        isInvalid={!!error}
+        label={control.label}
+        onChange={onChange}
+        value={value}
+        {...(maxLength !== undefined && { maxLength })}
+      />
+      {maxLength != null && (
+        <span className="text-xs text-primary-light-low-contrast self-end">
+          {value.length}/{maxLength}
+        </span>
+      )}
+    </div>
+  );
+}

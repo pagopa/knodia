@@ -4,7 +4,7 @@ A dynamic form engine that generates forms from two standard spec files: **JSON 
 
 ## Stack
 
-React 19, Zod 4, AJV, react-aria-components, Tailwind CSS 4, TanStack Router, ts-pattern, Vite, Vitest.
+React 19, Zod 4, AJV, react-aria-components, @knodia/ui-kit, Tailwind CSS 4, TanStack Router, ts-pattern, Vite, Vitest.
 
 ## Getting started
 
@@ -25,7 +25,7 @@ src/
   schemas/       JSON Schema + UI Schema spec files (pa31, two-form)
   engine/        Pure logic: schema parsing, dependency resolution, Zod generation
   hooks/         React hooks: dynamic form state, visible fields
-  renderers/     react-aria renderers + alternative JSON Forms renderers (swappable)
+  renderers/     react-aria renderers, ui-kit renderers, and JSON Forms renderers (swappable)
   components/    Form layout components (DynamicForm with group-based section rendering)
   demo/          Demo pages
 ```
@@ -87,7 +87,7 @@ Key behavior: **visibility drives everything**. Hidden fields retain their value
 
 The architecture has three independent decoupling points:
 
-1. **Rendering**: the `renderers/` directory contains all design-system-specific code (currently react-aria-components). Replace these files to use Material UI, Radix, Chakra, or any other component library. The engine and hooks layers are untouched.
+1. **Rendering**: the `renderers/` directory contains all design-system-specific code. Three implementations exist side by side: plain react-aria-components (`renderers/`), @knodia/ui-kit (`renderers/uikit/`), and JSON Forms (`renderers/jsonforms/`). Replace or add renderer sets to use any other component library. The engine and hooks layers are untouched.
 
 2. **Validation**: the engine exposes a `ValidateFn` interface: `(values, visibleFields) => Record<string, string>`. Both `createZodValidator` and `createAjvValidator` implement it. Swap in any validation library by implementing this signature.
 
