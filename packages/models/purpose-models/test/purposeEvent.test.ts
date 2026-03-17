@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
@@ -7,13 +8,14 @@ import { zocker } from "zocker";
 import { PurposeActivatedV1 } from "../src/generated/v1/purposeEvents.ts";
 import { Purpose } from "../src/purpose.ts";
 import { PurposeEventV1 } from "../src/purposeEvent.ts";
+import { fromPurposeV1 } from "../src/purposeProtobufConverterFromV1.ts";
 import { toPurposeV1 } from "../src/purposeProtobufConverterToV1.ts";
 
 describe("PurposeEventV1 codec", () => {
   const purpose = {
     ...zocker(Purpose).generate(),
-    // formAnswers must contain only string values to survive protobuf map<string, string> roundtrip
-    formAnswers: { question1: "answer1", question2: "answer2" },
+    // formAnswersJson must be JSON-serializable for the string roundtrip
+    formAnswersJson: { flag: true, nested: { n: 42 }, question1: "answer1" },
   };
 
   it("encodes and decodes a PurposeActivatedV1 payload (PurposeEventV1 full codec)", () => {
@@ -28,7 +30,7 @@ describe("PurposeEventV1 codec", () => {
     expect(encoded.data).toBeInstanceOf(Uint8Array);
 
     const decoded = PurposeEventV1.decode(encoded);
-    expect(decoded).toMatchObject(event);
+    expect(fromPurposeV1(decoded.data.purpose!)).toEqual(purpose);
   });
 
   it("encodes and decodes a PurposeActivatedV1 payload (protobufBinaryCodec-only)", () => {
@@ -38,7 +40,9 @@ describe("PurposeEventV1 codec", () => {
     };
     const bytes = codec.encode(value);
     expect(bytes).toBeInstanceOf(Uint8Array);
-    expect(codec.decode(bytes)).toEqual(value);
+
+    const decoded = codec.decode(bytes);
+    expect(fromPurposeV1(decoded.purpose!)).toEqual(purpose);
   });
 
   it("decodes a KafkaMessageEnvelope with PurposeEventV1 data", () => {
@@ -70,6 +74,6 @@ describe("PurposeEventV1 codec", () => {
     };
 
     const decoded = KafkaMessageEnvelope(PurposeEventV1).decode(envelope);
-    expect(decoded).toMatchObject(event);
+    expect(fromPurposeV1(decoded.data.purpose!)).toEqual(purpose);
   });
 });

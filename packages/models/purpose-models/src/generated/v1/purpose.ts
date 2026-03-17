@@ -60,14 +60,9 @@ export interface PurposeV1 {
   description: LocalizedTextV1 | undefined;
   dailyCalls: number;
   state: PurposeStateV1;
-  formAnswers: { [key: string]: string };
+  formAnswersJson: string;
   createdAt: number;
   updatedAt: number;
-}
-
-export interface PurposeV1_FormAnswersEntry {
-  key: string;
-  value: string;
 }
 
 export interface PurposeConsumerV1 {
@@ -88,7 +83,7 @@ function createBasePurposeV1(): PurposeV1 {
     description: undefined,
     dailyCalls: 0,
     state: 0,
-    formAnswers: {},
+    formAnswersJson: "",
     createdAt: 0,
     updatedAt: 0,
   };
@@ -117,9 +112,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.state !== 0) {
       writer.uint32(56).int32(message.state);
     }
-    Object.entries(message.formAnswers).forEach(([key, value]) => {
-      PurposeV1_FormAnswersEntry.encode({ key: key as any, value }, writer.uint32(66).fork()).join();
-    });
+    if (message.formAnswersJson !== "") {
+      writer.uint32(66).string(message.formAnswersJson);
+    }
     if (message.createdAt !== 0) {
       writer.uint32(72).int64(message.createdAt);
     }
@@ -197,10 +192,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
             break;
           }
 
-          const entry8 = PurposeV1_FormAnswersEntry.decode(reader, reader.uint32());
-          if (entry8.value !== undefined) {
-            message.formAnswers[entry8.key] = entry8.value;
-          }
+          message.formAnswersJson = reader.string();
           continue;
         }
         case 9: {
@@ -237,12 +229,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
       description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
       dailyCalls: isSet(object.dailyCalls) ? globalThis.Number(object.dailyCalls) : 0,
       state: isSet(object.state) ? purposeStateV1FromJSON(object.state) : 0,
-      formAnswers: isObject(object.formAnswers)
-        ? Object.entries(object.formAnswers).reduce<{ [key: string]: string }>((acc, [key, value]) => {
-          acc[key] = String(value);
-          return acc;
-        }, {})
-        : {},
+      formAnswersJson: isSet(object.formAnswersJson) ? globalThis.String(object.formAnswersJson) : "",
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
     };
@@ -271,14 +258,8 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.state !== 0) {
       obj.state = purposeStateV1ToJSON(message.state);
     }
-    if (message.formAnswers) {
-      const entries = Object.entries(message.formAnswers);
-      if (entries.length > 0) {
-        obj.formAnswers = {};
-        entries.forEach(([k, v]) => {
-          obj.formAnswers[k] = v;
-        });
-      }
+    if (message.formAnswersJson !== "") {
+      obj.formAnswersJson = message.formAnswersJson;
     }
     if (message.createdAt !== 0) {
       obj.createdAt = Math.round(message.createdAt);
@@ -307,93 +288,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
       : undefined;
     message.dailyCalls = object.dailyCalls ?? 0;
     message.state = object.state ?? 0;
-    message.formAnswers = Object.entries(object.formAnswers ?? {}).reduce<{ [key: string]: string }>(
-      (acc, [key, value]) => {
-        if (value !== undefined) {
-          acc[key] = globalThis.String(value);
-        }
-        return acc;
-      },
-      {},
-    );
+    message.formAnswersJson = object.formAnswersJson ?? "";
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
-    return message;
-  },
-};
-
-function createBasePurposeV1_FormAnswersEntry(): PurposeV1_FormAnswersEntry {
-  return { key: "", value: "" };
-}
-
-export const PurposeV1_FormAnswersEntry: MessageFns<PurposeV1_FormAnswersEntry> = {
-  encode(message: PurposeV1_FormAnswersEntry, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.key !== "") {
-      writer.uint32(10).string(message.key);
-    }
-    if (message.value !== "") {
-      writer.uint32(18).string(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): PurposeV1_FormAnswersEntry {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBasePurposeV1_FormAnswersEntry();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.key = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.value = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  fromJSON(object: any): PurposeV1_FormAnswersEntry {
-    return {
-      key: isSet(object.key) ? globalThis.String(object.key) : "",
-      value: isSet(object.value) ? globalThis.String(object.value) : "",
-    };
-  },
-
-  toJSON(message: PurposeV1_FormAnswersEntry): unknown {
-    const obj: any = {};
-    if (message.key !== "") {
-      obj.key = message.key;
-    }
-    if (message.value !== "") {
-      obj.value = message.value;
-    }
-    return obj;
-  },
-
-  create<I extends Exact<DeepPartial<PurposeV1_FormAnswersEntry>, I>>(base?: I): PurposeV1_FormAnswersEntry {
-    return PurposeV1_FormAnswersEntry.fromPartial(base ?? ({} as any));
-  },
-  fromPartial<I extends Exact<DeepPartial<PurposeV1_FormAnswersEntry>, I>>(object: I): PurposeV1_FormAnswersEntry {
-    const message = createBasePurposeV1_FormAnswersEntry();
-    message.key = object.key ?? "";
-    message.value = object.value ?? "";
     return message;
   },
 };
@@ -553,10 +450,6 @@ function longToNumber(int64: { toString(): string }): number {
     throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
   }
   return num;
-}
-
-function isObject(value: any): boolean {
-  return typeof value === "object" && value !== null;
 }
 
 function isSet(value: any): boolean {

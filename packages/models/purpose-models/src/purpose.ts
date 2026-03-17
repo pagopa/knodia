@@ -28,7 +28,7 @@ type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 export const PurposeState = z.enum(["Active", "Suspended", "Archived"]);
 export type PurposeState = z.infer<typeof PurposeState>;
 
-// Generic key-value pairs for form answers,
+// Generic key-value pairs for form answers (serialized as JSON string in protobuf),
 // validated at runtime based on the JSON schema form of the Knode
 export const PurposeFormAnswers = z.record(z.string(), z.unknown());
 export type PurposeFormAnswers = z.infer<typeof PurposeFormAnswers>;
@@ -39,7 +39,7 @@ export const Purpose = z.strictObject({
   dailyCalls: z.int().min(minDailyCalls).max(maxDailyCalls),
   description: LocalizedDescription,
   eserviceId: EserviceId,
-  formAnswers: PurposeFormAnswers,
+  formAnswersJson: PurposeFormAnswers,
   id: PurposeId,
   name: LocalizedName,
   state: PurposeState,

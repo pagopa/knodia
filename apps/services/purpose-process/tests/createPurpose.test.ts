@@ -7,7 +7,7 @@ import {
   KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
-import { PurposeEventV1, toPurposeV1 } from "@knodia/purpose-models";
+import { fromPurposeV1, PurposeEventV1 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -36,7 +36,7 @@ const body: API_PurposeSeed = {
   dailyCalls: 1000,
   description: { en: "A test purpose description" },
   eserviceId: eservice.id,
-  formAnswers: { question1: "answer1" },
+  formAnswersJson: { question1: "answer1" },
   name: { en: "Test Purpose" },
 };
 
@@ -74,7 +74,7 @@ describe("POST /purposes (createPurpose)", () => {
         dailyCalls: body.dailyCalls,
         description: body.description,
         eserviceId: eservice.id,
-        formAnswers: body.formAnswers,
+        formAnswersJson: body.formAnswersJson,
         id: expect.any(String),
         name: body.name,
         state: "Active",
@@ -95,9 +95,8 @@ describe("POST /purposes (createPurpose)", () => {
       });
 
       const createdEventData = PurposeEventV1.parse(createdEvent).data;
-      expect(createdEventData.purpose).toMatchObject(
-        toPurposeV1(expectedPurpose),
-      );
+      const createdPurpose = fromPurposeV1(createdEventData.purpose!);
+      expect(createdPurpose).toMatchObject(expectedPurpose);
     },
   );
 

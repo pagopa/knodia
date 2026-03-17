@@ -20,7 +20,7 @@ export const API_PurposeSeed = z
       .meta({ format: "int32" }),
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
-    formAnswers: API_PurposeFormAnswers,
+    formAnswersJson: API_PurposeFormAnswers,
     name: API_LocalizedPurposeName,
   })
   .meta({ id: "PurposeSeed" });
@@ -28,7 +28,7 @@ export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
 
 export const API_Purpose = z
   .strictObject({
-    // formAnswers is intentionally excluded — it can be retrieved via a separate route
+    // formAnswersJson is intentionally excluded — it can be retrieved via a separate route
     consumer: API_PurposeConsumer,
     createdAt: z.iso.datetime(),
     dailyCalls: z

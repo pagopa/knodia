@@ -39,7 +39,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
           dailyCalls: req.body.dailyCalls,
           description: req.body.description,
           eserviceId: unsafeBrandId(req.body.eserviceId),
-          formAnswers: req.body.formAnswers,
+          formAnswersJson: req.body.formAnswersJson,
           name: req.body.name,
         },
         ctx,

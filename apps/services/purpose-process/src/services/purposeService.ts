@@ -36,7 +36,7 @@ export function purposeServiceBuilder(
         dailyCalls,
         description,
         eserviceId,
-        formAnswers,
+        formAnswersJson,
         name,
       }: {
         consumer: {
@@ -46,7 +46,7 @@ export function purposeServiceBuilder(
         dailyCalls: number;
         description: { en: string };
         eserviceId: EserviceId;
-        formAnswers: Record<string, unknown>;
+        formAnswersJson: Record<string, unknown>;
         name: { en: string };
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
@@ -75,7 +75,7 @@ export function purposeServiceBuilder(
         dailyCalls,
         description,
         eserviceId,
-        formAnswers,
+        formAnswersJson,
         id: purposeId,
         name,
         state: "Active",

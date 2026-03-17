@@ -29,7 +29,9 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
     createdAt: new Date(input.createdAt),
     description: input.description,
     eserviceId: unsafeBrandId(input.eserviceId),
-    formAnswers: PurposeFormAnswers.parse(input.formAnswers),
+    formAnswersJson: PurposeFormAnswers.parse(
+      JSON.parse(input.formAnswersJson),
+    ),
     id: unsafeBrandId(input.id),
     name: input.name,
     state: fromPurposeStateV1(input.state),

@@ -14,8 +14,7 @@ const toPurposeStateV1 = (state: Purpose["state"]): PurposeStateV1 =>
 export const toPurposeV1 = (purpose: Purpose): PurposeV1 => ({
   ...purpose,
   createdAt: purpose.createdAt.getTime(),
-  // TODO: protobuf map<string, string> loses non-string values — revisit when formAnswers schema is finalized
-  formAnswers: purpose.formAnswers as Record<string, string>,
+  formAnswersJson: JSON.stringify(purpose.formAnswersJson),
   state: toPurposeStateV1(purpose.state),
   updatedAt: purpose.updatedAt.getTime(),
 });
