@@ -337,6 +337,19 @@ components:
             - keywords
             - knodeId
           additionalProperties: false
+    CatalogEserviceSearchResultProducer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: string
+      required:
+        - id
+        - name
+      additionalProperties: false
     CatalogEserviceSearchResult:
       type: object
       properties:
@@ -362,10 +375,8 @@ components:
           $ref: "#/components/schemas/EserviceMode"
         name:
           $ref: "#/components/schemas/LocalizedName"
-        producerId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producer:
+          $ref: "#/components/schemas/CatalogEserviceSearchResultProducer"
         updatedAt:
           type: string
           format: date-time
@@ -378,7 +389,7 @@ components:
         - latestVersionState
         - mode
         - name
-        - producerId
+        - producer
         - updatedAt
       additionalProperties: false
     CatalogEserviceSearchResults:
@@ -471,7 +482,7 @@ components:
         knodeId:
           $ref: "#/components/schemas/KnodeId"
         name:
-          $ref: "#/components/schemas/LocalizedName"
+          type: string
         notes:
           type: string
       required:

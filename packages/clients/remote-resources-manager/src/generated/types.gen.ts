@@ -131,15 +131,6 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
-/**
- * Organization with only id, knodeId, and name
- */
-export type CompactOrganization = {
-    id: string;
-    knodeId: KnodeId;
-    name: string;
-};
-
 export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
     knodeId: KnodeId;
@@ -152,6 +143,11 @@ export type GetCatalogEserviceSearchParams = {
     knodeId: KnodeId;
 };
 
+export type CatalogEserviceSearchResultProducer = {
+    id: string;
+    name: string;
+};
+
 export type CatalogEserviceSearchResult = {
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
@@ -160,7 +156,7 @@ export type CatalogEserviceSearchResult = {
     latestVersionState: EserviceVersionState;
     mode: EserviceMode;
     name: LocalizedName;
-    producerId: string;
+    producer: CatalogEserviceSearchResultProducer;
     updatedAt: string;
 };
 
@@ -174,11 +170,10 @@ export type CatalogEserviceSearchResults = {
  */
 export type EserviceId = string;
 
-export type EserviceVersionDetails = {
+export type EserviceDetailsLatestVersion = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
-    id: string;
     maxDailyCallsPerConsumer: number;
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;
@@ -194,8 +189,8 @@ export type EserviceDetailsInterfaceDocument = {
 export type EserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
-    name: LocalizedName;
+    knodeName: string;
+    name: string;
     notes: string;
 };
 
@@ -206,38 +201,10 @@ export type EserviceDetails = {
     interfaceDocument: EserviceDetailsInterfaceDocument;
     isConsumerOperatorIdentificationRequired: boolean;
     isSignalHubEnabled: boolean;
-    latestVersion: EserviceVersionDetails;
+    latestVersion: EserviceDetailsLatestVersion;
     mode: EserviceMode;
     name: LocalizedName;
     producer: EserviceDetailsProducer;
-};
-
-export type ConsumerEserviceVersionDetails = {
-    id: string;
-    requiredAttributes: Array<Array<Attribute>>;
-    state: EserviceVersionState;
-};
-
-export type ConsumerEservice = {
-    agreement: {
-        id: string;
-        state: AgreementState;
-    };
-    categories: Array<EserviceCategory>;
-    /**
-     * Indicates whether the E-service has been updated in the last 3 days
-     */
-    hasRecentlyBeenUpdated: boolean;
-    id: string;
-    mode: EserviceMode;
-    name: LocalizedName;
-    producer: CompactOrganization;
-    version: ConsumerEserviceVersionDetails;
-};
-
-export type ConsumerEservices = {
-    pagination: Pagination;
-    results: Array<ConsumerEservice>;
 };
 
 export type GetStatusData = {
@@ -338,53 +305,6 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
-
-export type GetConsumerEservicesData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-        agreementState?: AgreementState;
-    };
-    url: '/consumer/eservices';
-};
-
-export type GetConsumerEservicesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-};
-
-export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
-
-export type GetConsumerEservicesResponses = {
-    /**
-     * Consumer E-services retrieved successfully
-     */
-    200: ConsumerEservices;
-};
-
-export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof GetConsumerEservicesResponses];
 
 export type DownloadEserviceLatestVersionInterfaceData = {
     body?: never;

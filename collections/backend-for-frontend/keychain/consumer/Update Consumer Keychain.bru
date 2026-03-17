@@ -1,0 +1,33 @@
+meta {
+  name: Update Consumer Keychain
+  type: http
+}
+
+patch {
+  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId
+  body: json
+  auth: none
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+headers {
+  Content-Type: application/merge-patch+json
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "{{updatedConsumerKeychainName}}"
+    },
+    "description": null
+  }
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("updatedConsumerKeychainName", `Updated Consumer Keychain ${random}`)
+}

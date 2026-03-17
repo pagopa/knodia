@@ -14,17 +14,29 @@ import type {
 
 export const toAPI_CatalogEserviceSearchResult = (
   catalogEservice: k2kGatewayApi.CatalogEserviceSearchResult,
+  producerName: string,
 ): API_CatalogEserviceSearchResult => ({
-  ...catalogEservice,
+  categories: catalogEservice.categories,
+  description: catalogEservice.description,
+  id: catalogEservice.id,
+  latestVersionRequiredAttributes:
+    catalogEservice.latestVersionRequiredAttributes,
   latestVersionState: toAPI_EserviceVersionState(
     catalogEservice.latestVersionState,
   ),
   mode: toAPI_EserviceMode(catalogEservice.mode),
+  name: catalogEservice.name,
+  producer: {
+    id: catalogEservice.producerId,
+    name: producerName,
+  },
+  updatedAt: catalogEservice.updatedAt,
 });
 
 export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
+  producer: k2kGatewayApi.Organization,
 ): API_EserviceDetails => ({
   categories: eservice.categories,
   description: eservice.description,
@@ -51,9 +63,9 @@ export const toAPI_EserviceDetails = (
   name: eservice.name,
   producer: {
     email: "info@example.com", // TODO: retrieve real data from producer knode
-    id: eservice.producerId,
+    id: producer.id,
     knodeId: "Orion", // TODO: retrieve real data from producer knode
-    name: { en: "Producer name" }, // TODO: retrieve real data from producer knode
+    name: producer.name,
     notes: "Notes", // TODO: retrieve real data from producer knode
   },
 });
