@@ -10,6 +10,7 @@ import {
 } from "@knodia/agreement-models";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import { EserviceVersionState } from "@knodia/eservice-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockAgreement,
@@ -168,20 +169,23 @@ describe("POST /agreements (createAgreement)", async () => {
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 409 if the e-service version is not the latest", async () => {
-    const date = new Date();
-    const oldDate = new Date(date.getTime() - 100000);
+  it("should return 409 if the e-service version is not the latest in a valid state", async () => {
     const eserviceVersion1: EserviceVersion = {
       ...getMockEserviceVersion(),
-      updatedAt: oldDate,
+      versionNumber: 1,
     };
     const eserviceVersion2: EserviceVersion = {
       ...getMockEserviceVersion(1),
-      updatedAt: date,
+      versionNumber: 2,
+    };
+    const eserviceVersion3: EserviceVersion = {
+      ...getMockEserviceVersion(2),
+      state: "Draft" as EserviceVersionState,
+      versionNumber: 3,
     };
     const eserviceWithMultipleVersions: Eservice = {
       ...eservice,
-      versions: [{ ...eserviceVersion1, updatedAt: oldDate }, eserviceVersion2],
+      versions: [eserviceVersion1, eserviceVersion2, eserviceVersion3],
     };
     await eserviceWriterService.upsertEservice(eserviceWithMultipleVersions, 1);
 

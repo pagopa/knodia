@@ -26,11 +26,19 @@ export const assertAgreementCanBeActivated = async (
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
-  const allowedStates: EserviceVersionState[] = ["Active"];
+  const allowedEserviceVersionStatesForActivation: EserviceVersionState[] = [
+    "Active",
+  ];
+  const allowedEserviceVersionStates: EserviceVersionState[] = [
+    "Active",
+    "Suspended",
+    "Archived",
+  ];
 
   const eserviceLatestVersion = await retrieveEserviceLatestVersion(
     eservice.id,
     readmodelService,
+    allowedEserviceVersionStates,
   );
 
   if (eserviceLatestVersion.id !== eserviceVersionId) {
@@ -40,7 +48,7 @@ export const assertAgreementCanBeActivated = async (
   assertEserviceVersionIsInExpectedStates(
     eservice.id,
     eserviceLatestVersion,
-    allowedStates,
+    allowedEserviceVersionStatesForActivation,
   );
 };
 
