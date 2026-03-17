@@ -26,7 +26,12 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-const mockConsumerKeychain = getMockConsumerKeychain();
+let seed = 0;
+function getSeededConsumerKeychain() {
+  const consumerKeychain = getMockConsumerKeychain(seed);
+  seed += 1;
+  return consumerKeychain;
+}
 
 describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)", () => {
   it.each([
@@ -47,26 +52,27 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
   ])(
     "should correctly create consumer keychain update event with body %S",
     async ({ body }) => {
-      await seedConsumerKeychain(mockConsumerKeychain);
+      const consumerKeychain = getSeededConsumerKeychain();
+      await seedConsumerKeychain(consumerKeychain);
 
       const response = await injectAppRequest({
         ...allowedTestTokens[0]!,
-        organizationId: mockConsumerKeychain.ownerId,
+        organizationId: consumerKeychain.ownerId,
         type: "ui-session",
       })
-        .patch(`/consumerKeychains/${mockConsumerKeychain.id}`)
+        .patch(`/consumerKeychains/${consumerKeychain.id}`)
         .body(body);
 
       expect(response.statusCode).toBe(200);
 
       const responseBody = response.json<API_Keychain>();
       const expectedConsumerKeychain: ConsumerKeychain = {
-        ...mockConsumerKeychain,
+        ...consumerKeychain,
         description:
           body.description === null
             ? undefined
-            : (body.description ?? mockConsumerKeychain.description),
-        name: body.name ?? mockConsumerKeychain.name,
+            : (body.description ?? consumerKeychain.description),
+        name: body.name ?? consumerKeychain.name,
         updatedAt: new Date(responseBody.updatedAt),
       };
 
@@ -75,11 +81,11 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
       const events = await getAllKeychainEvents();
 
       const updatedEvent = events.filter(
-        (e) => e.streamId === mockConsumerKeychain.id,
+        (e) => e.streamId === consumerKeychain.id,
       )[1];
 
       expect(updatedEvent).toMatchObject({
-        streamId: mockConsumerKeychain.id,
+        streamId: consumerKeychain.id,
         type: "ConsumerKeychainUpdatedV1",
         version: 1,
       });
@@ -98,14 +104,15 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      await seedConsumerKeychain(mockConsumerKeychain);
+      const consumerKeychain = getSeededConsumerKeychain();
+      await seedConsumerKeychain(consumerKeychain);
 
       const response = await injectAppRequest({
         ...allowedTestTokens[0]!,
-        organizationId: mockConsumerKeychain.ownerId,
+        organizationId: consumerKeychain.ownerId,
         type: "ui-session",
       })
-        .patch(`/consumerKeychains/${mockConsumerKeychain.id}`)
+        .patch(`/consumerKeychains/${consumerKeychain.id}`)
         .body(body as never);
 
       expect(response.statusCode).toBe(400);
@@ -114,7 +121,7 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
 
   it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
     const consumerKeychain: ConsumerKeychain = {
-      ...mockConsumerKeychain,
+      ...getSeededConsumerKeychain(),
       ownerId: generateId<OrganizationId>(),
     };
 
@@ -138,8 +145,9 @@ describe("PATCH /consumerKeychains/:consumerKeychainId (ConsumerKeychainPatch)",
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (spec) => {
+      const consumerKeychain = getSeededConsumerKeychain();
       const response = await injectAppRequest(spec)
-        .patch(`/consumerKeychains/${mockConsumerKeychain.id}`)
+        .patch(`/consumerKeychains/${consumerKeychain.id}`)
         .body({ name: { en: "Updated Consumer keychain name" } });
 
       expect(response.statusCode).toBe(403);
