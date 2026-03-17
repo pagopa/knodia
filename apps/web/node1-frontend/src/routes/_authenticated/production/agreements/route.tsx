@@ -11,7 +11,7 @@ import {
 } from "@/features/agreement/models/search-params";
 import { client } from "@/libs/axios";
 
-const AGREEMENTS_PAGE_LIMIT = 10;
+const AGREEMENTS_PAGE_LIMIT = 9;
 
 const agreementsQuery = (offset: number) =>
   getProducerAgreementsOptions({
@@ -42,7 +42,7 @@ function RouteComponent() {
   });
 
   return (
-    <>
+    <div className="flex min-h-full flex-col">
       <PageHeader overline="Production" title="Agreements" />
 
       <ProducerAgreementTable
@@ -51,7 +51,7 @@ function RouteComponent() {
       />
 
       <Pagination
-        className="mx-auto mt-6"
+        className="mx-auto mt-auto pt-6"
         limit={data?.pagination.limit ?? 0}
         offset={offset}
         onOffsetChange={(offset) =>
@@ -59,6 +59,6 @@ function RouteComponent() {
         }
         totalItems={data?.pagination.total ?? 0}
       />
-    </>
+    </div>
   );
 }
