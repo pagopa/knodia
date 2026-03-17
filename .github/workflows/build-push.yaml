@@ -77,7 +77,6 @@ jobs:
 
   find_dockerfiles:
     name: Find Dockerfiles
-    needs: [setup, terraform]
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.set_packages_output.outputs.packages }}
@@ -111,7 +110,7 @@ jobs:
 
   build_push_image:
     name: "${{ matrix.package.section }}/${{ matrix.package.name }}"
-    needs: [setup, find_dockerfiles]
+    needs: [setup, terraform, find_dockerfiles]
     runs-on: ubuntu-latest
     environment: ${{ needs.setup.outputs.environment }}
     permissions:
