@@ -163,7 +163,7 @@ describe("POST /agreements (createAgreement)", () => {
   it("should return 403 if the organization does not exist", async () => {
     const response = await injectAppRequest({
       organizationId: generateId<OrganizationId>(),
-      roles: ["technical"],
+      roles: ["administrative"],
       type: "ui-session",
     })
       .post("/agreements")
