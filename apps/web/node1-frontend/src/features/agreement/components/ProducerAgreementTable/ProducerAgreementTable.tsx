@@ -57,14 +57,12 @@ export function ProducerAgreementTable({
           <Row id={agreement.id}>
             <Cell className="body-md">{agreement.eservice.name.en}</Cell>
             <Cell>
-              <div className="flex items-center gap-2">
-                <Avatar
-                  className="bg-brand-dark text-white"
-                  fallback={getOrganizationInitials(agreement.consumer.name)}
-                  name={agreement.consumer.name}
-                  size="sm"
-                />
-              </div>
+              <Avatar
+                className="bg-brand-dark text-white"
+                fallback={getOrganizationInitials(agreement.consumer.name)}
+                name={agreement.consumer.name}
+                size="sm"
+              />
             </Cell>
             <Cell>
               <AgreementStateChip
