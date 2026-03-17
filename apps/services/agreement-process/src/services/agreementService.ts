@@ -26,7 +26,7 @@ import {
   retrieveEservice,
 } from "../utils/readmodelUtils.ts";
 import {
-  assertEserviceVersionIsActive,
+  assertEserviceVersionIsActiveOrSuspended,
   assertNoConflictingAgreementsExist,
 } from "../utils/validators.ts";
 
@@ -66,7 +66,7 @@ export function agreementServiceBuilder(
       });
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
-      await assertEserviceVersionIsActive(
+      await assertEserviceVersionIsActiveOrSuspended(
         eservice,
         eserviceVersionId,
         readmodelService,

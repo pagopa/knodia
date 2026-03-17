@@ -16,12 +16,17 @@ import {
 } from "../models/errors.ts";
 import { retrieveEserviceVersion } from "./readmodelUtils.ts";
 
-export const assertEserviceVersionIsActive = async (
+const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
+  "Active",
+  "Suspended",
+];
+
+export const assertEserviceVersionIsActiveOrSuspended = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
-  const allowedStates: EserviceVersionState[] = ["Active"];
+  const allowedStates = agreementCreationAllowedEserviceVersionStates;
 
   const eserviceVersion = await retrieveEserviceVersion(
     eservice.id,
