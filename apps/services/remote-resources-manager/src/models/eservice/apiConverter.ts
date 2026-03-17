@@ -14,12 +14,23 @@ import type {
 
 export const toAPI_CatalogEserviceSearchResult = (
   catalogEservice: k2kGatewayApi.CatalogEserviceSearchResult,
+  producerName: string,
 ): API_CatalogEserviceSearchResult => ({
-  ...catalogEservice,
+  categories: catalogEservice.categories,
+  description: catalogEservice.description,
+  id: catalogEservice.id,
+  latestVersionRequiredAttributes:
+    catalogEservice.latestVersionRequiredAttributes,
   latestVersionState: toAPI_EserviceVersionState(
     catalogEservice.latestVersionState,
   ),
   mode: toAPI_EserviceMode(catalogEservice.mode),
+  name: catalogEservice.name,
+  producer: {
+    id: catalogEservice.producerId,
+    name: producerName,
+  },
+  updatedAt: catalogEservice.updatedAt,
 });
 
 export const toAPI_EserviceDetails = (
