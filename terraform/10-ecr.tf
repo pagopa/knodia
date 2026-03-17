@@ -1,8 +1,8 @@
 locals {
   ecr_sources = {
-    be    = { dir = "../apps/services/", prefix = "knodia-be-", trim_suffix = "" }
-    web   = { dir = "../apps/web/", prefix = "knodia-web-", trim_suffix = "-frontend" }
-    infra = { dir = "../apps/infra/", prefix = "knodia-infra-", trim_suffix = "" }
+    be    = { dir = "../apps/services/", prefix = "knodia-be-" }
+    web   = { dir = "../apps/web/", prefix = "knodia-web-" }
+    infra = { dir = "../apps/infra/", prefix = "knodia-infra-" }
   }
 
   computed_repository_names = flatten([
@@ -11,7 +11,7 @@ locals {
         for f in fileset(path.root, "${src.dir}*/*") :
         dirname(f)
       ]) :
-      "${src.prefix}${trimsuffix(replace(d, src.dir, ""), src.trim_suffix)}"
+      "${src.prefix}${replace(d, src.dir, "")}"
     ]
   ])
 }
