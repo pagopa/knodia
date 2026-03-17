@@ -1,0 +1,4 @@
+/* Hide group sections when all their controls are hidden by JSON Forms rules */
+fieldset:not(:has(.control)) {
+  display: none;
+}

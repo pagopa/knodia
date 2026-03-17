@@ -1,0 +1,42 @@
+{
+  "name": "purpose-dynamic-form",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc -b",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "test": "vitest run",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@jsonforms/core": "3.7.0",
+    "@jsonforms/react": "3.7.0",
+    "@jsonforms/vanilla-renderers": "3.7.0",
+    "@tailwindcss/vite": "catalog:",
+    "@tanstack/react-router": "catalog:",
+    "ajv": "8.18.0",
+    "react": "catalog:",
+    "react-aria-components": "catalog:",
+    "react-dom": "catalog:",
+    "tailwindcss": "catalog:",
+    "ts-pattern": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "catalog:",
+    "eslint": "catalog:",
+    "globals": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}
