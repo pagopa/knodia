@@ -13,6 +13,7 @@ import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
+  API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_KeychainDetails,
@@ -64,6 +65,45 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body, requestParams: req.params },
+        `Updating Consumer Keychain with ID ${req.params.consumerKeychainId}`,
+      );
+
+      await keychainProcessApi.updateConsumerKeychain({
+        body: req.body,
+        client: keychainProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { consumerKeychainId: req.params.consumerKeychainId },
+      });
+
+      res.status(204).send();
+    },
+    method: "PATCH",
+    schema: {
+      body: API_ConsumerKeychainPatch,
+      consumes: ["application/merge-patch+json"],
+      description: "Update a Consumer Keychain",
+      operationId: "updateConsumerKeychain",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Consumer Keychain updated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId",
   });
 
   fastify.route({

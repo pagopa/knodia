@@ -18,6 +18,10 @@ export interface ConsumerKeychainDeletedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
 }
 
+export interface ConsumerKeychainUpdatedV1 {
+  consumerKeychain: ConsumerKeychainV1 | undefined;
+}
+
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
   return { consumerKeychain: undefined };
 }
@@ -139,6 +143,70 @@ export const ConsumerKeychainDeletedV1: MessageFns<ConsumerKeychainDeletedV1> = 
   },
   fromPartial<I extends Exact<DeepPartial<ConsumerKeychainDeletedV1>, I>>(object: I): ConsumerKeychainDeletedV1 {
     const message = createBaseConsumerKeychainDeletedV1();
+    message.consumerKeychain = (object.consumerKeychain !== undefined && object.consumerKeychain !== null)
+      ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseConsumerKeychainUpdatedV1(): ConsumerKeychainUpdatedV1 {
+  return { consumerKeychain: undefined };
+}
+
+export const ConsumerKeychainUpdatedV1: MessageFns<ConsumerKeychainUpdatedV1> = {
+  encode(message: ConsumerKeychainUpdatedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.consumerKeychain !== undefined) {
+      ConsumerKeychainV1.encode(message.consumerKeychain, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ConsumerKeychainUpdatedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConsumerKeychainUpdatedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.consumerKeychain = ConsumerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConsumerKeychainUpdatedV1 {
+    return {
+      consumerKeychain: isSet(object.consumerKeychain)
+        ? ConsumerKeychainV1.fromJSON(object.consumerKeychain)
+        : undefined,
+    };
+  },
+
+  toJSON(message: ConsumerKeychainUpdatedV1): unknown {
+    const obj: any = {};
+    if (message.consumerKeychain !== undefined) {
+      obj.consumerKeychain = ConsumerKeychainV1.toJSON(message.consumerKeychain);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ConsumerKeychainUpdatedV1>, I>>(base?: I): ConsumerKeychainUpdatedV1 {
+    return ConsumerKeychainUpdatedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ConsumerKeychainUpdatedV1>, I>>(object: I): ConsumerKeychainUpdatedV1 {
+    const message = createBaseConsumerKeychainUpdatedV1();
     message.consumerKeychain = (object.consumerKeychain !== undefined && object.consumerKeychain !== null)
       ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
       : undefined;
