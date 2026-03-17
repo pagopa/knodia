@@ -12,7 +12,11 @@ import {
 import { EserviceVersionState } from "@knodia/eservice-models";
 import { fromPurposeV1, PurposeEventV1 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
+import {
+  getMockAgreement,
+  getMockEservice,
+  MOCK_PURPOSE_FORM_ANSWERS,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type { API_Purpose } from "../src/models/api.ts";
@@ -39,7 +43,7 @@ const body: API_PurposeSeed = {
   dailyCalls: 1000,
   description: { en: "A test purpose description" },
   eserviceId: eservice.id,
-  formAnswersJson: { question1: "answer1" },
+  formAnswersJson: MOCK_PURPOSE_FORM_ANSWERS,
   name: { en: "Test Purpose" },
 };
 

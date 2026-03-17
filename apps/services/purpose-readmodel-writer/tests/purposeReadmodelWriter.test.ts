@@ -21,10 +21,7 @@ import { getAllPurposes } from "./utils.ts";
 
 describe("Purpose read model writer tests", async () => {
   it("PurposeActivatedV1", async () => {
-    const purpose: Purpose = {
-      ...getMockPurpose(),
-      formAnswersJson: { question1: "answer1" },
-    };
+    const purpose: Purpose = getMockPurpose();
     const eventData = protobufBinaryCodec(
       purposeEvents.PurposeActivatedV1,
     ).encode({
