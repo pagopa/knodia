@@ -45,10 +45,6 @@ beforeAll(async () => {
     consumerKeychainWriterServiceBuilder(readmodelDb);
 });
 
-beforeEach(async () => {
-  await resetTestDatabases();
-});
-
 afterEach(async () => {
   await resetTestDatabases();
 });
