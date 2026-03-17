@@ -32,6 +32,7 @@ import {
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
+// eslint-disable-next-line max-lines-per-function
 export function eserviceServiceBuilder(
   k2kGatewayClient: K2K2GatewayApiClient,
   remoteResourceDbService: RemoteResourceDbService,
