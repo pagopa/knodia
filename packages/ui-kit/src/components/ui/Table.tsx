@@ -8,7 +8,6 @@ import {
   TableBody as RACTableBody,
   TableHeader as RACTableHeader,
   type RowProps,
-  type TableBodyProps,
   type TableHeaderProps,
   type TableProps,
 } from "react-aria-components";
@@ -57,9 +56,7 @@ export function Table(props: TableProps) {
   );
 }
 
-export function TableBody<T extends object>(props: TableBodyProps<T>) {
-  return <RACTableBody<T> {...props} />;
-}
+export { RACTableBody as TableBody };
 
 export function TableHeader<T extends object>(props: TableHeaderProps<T>) {
   return (
