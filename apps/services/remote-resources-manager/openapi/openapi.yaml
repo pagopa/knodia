@@ -448,7 +448,7 @@ components:
         knodeName:
           type: string
         name:
-          $ref: "#/components/schemas/LocalizedName"
+          type: string
         notes:
           type: string
       required:
