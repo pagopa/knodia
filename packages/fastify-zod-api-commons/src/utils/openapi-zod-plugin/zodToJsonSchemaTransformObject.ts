@@ -153,17 +153,6 @@ const removeUnusedComponents = (
   return openapi;
 };
 
-const HTTP_METHODS = [
-  "get",
-  "put",
-  "post",
-  "delete",
-  "options",
-  "head",
-  "patch",
-  "trace",
-] as const;
-
 const addResponseHeadersToOpenapi = (
   openapi: Partial<OpenAPIV3.Document>,
 ): Partial<OpenAPIV3.Document> => {
@@ -172,9 +161,9 @@ const addResponseHeadersToOpenapi = (
   for (const [url, pathItem] of Object.entries(openapi.paths)) {
     if (!pathItem) continue;
 
-    for (const method of HTTP_METHODS) {
-      const operation = pathItem[method];
-      if (!operation || !operation.responses) continue;
+    for (const [method, operation] of Object.entries(pathItem)) {
+      if (!operation || typeof operation !== "object") continue;
+      if (!("responses" in operation) || !operation.responses) continue;
 
       const routeKey = `${method}:${url}`;
       const routeHeaders = responseHeadersStore.get(routeKey);
