@@ -45,7 +45,9 @@ export function RadioRenderer({
             key={opt.value}
             value={opt.value}
           >
-            <div className="mt-0.5 size-4 shrink-0 rounded-full border-2 border-gray-300 group-selected:border-blue-600" />
+            <div className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 group-selected:border-blue-600">
+              <div className="hidden size-2 rounded-full bg-blue-600 group-selected:block" />
+            </div>
             {opt.label}
           </Radio>
         ))}
