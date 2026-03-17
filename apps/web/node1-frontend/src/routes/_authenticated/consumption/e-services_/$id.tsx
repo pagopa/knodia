@@ -1,3 +1,5 @@
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
+
 import { bffApi } from "@knodia/bff-client";
 import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
@@ -67,7 +69,7 @@ function ConsumptionRequirementsSection({
 }: Pick<
   ConsumptionEserviceDetail,
   "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
-> & { eserviceId: string; knodeId: string }) {
+> & { eserviceId: EserviceId; knodeId: KnodeId }) {
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
