@@ -1,0 +1,5 @@
+# Ignore everything
+*
+
+# Allow only SQL files from the migrations directory
+!migration/**/*.sql

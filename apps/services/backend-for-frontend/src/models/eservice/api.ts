@@ -348,7 +348,7 @@ const API_ConsumerEserviceDetailsProducer = z
     email: z.string(),
     id: z.uuid(),
     knodeId: API_KnodeId,
-    name: API_LocalizedName,
+    name: z.string(),
     notes: z.string(),
   })
   .meta({ id: "ConsumerEserviceDetailsProducer" });

@@ -323,22 +323,22 @@ export type ConsumerCatalogEserviceSearchResult = {
 };
 
 export type ConsumerCatalogEserviceSearchResults = {
-    items: Array<ConsumerCatalogEserviceSearchResult>;
     pagination: Pagination;
+    results: Array<ConsumerCatalogEserviceSearchResult>;
 };
 
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
     knodeId: KnodeId;
-    name: LocalizedName;
+    name: string;
     notes: string;
 };
 
 export type ConsumerRequiredAttribute = {
     code: string;
-    scheme: string;
     possessed: boolean;
+    scheme: string;
 };
 
 export type ConsumerEserviceDetailsAccessToken = {
@@ -384,29 +384,6 @@ export type CompactEservice = {
     name: LocalizedName;
 };
 
-export type ConsumerEservice = {
-    agreement: {
-        id: string;
-        state: AgreementState;
-    };
-    categories: Array<EserviceCategory>;
-    /**
-     * Indicates whether the E-service has been updated in the last 3 days
-     */
-    hasRecentlyBeenUpdated: boolean;
-    id: string;
-    mode: EserviceMode;
-    name: LocalizedName;
-    producer: CompactOrganization;
-    requiredAttributes: Array<Array<Attribute>>;
-    state: EserviceVersionState;
-};
-
-export type ConsumerEservices = {
-    items: Array<ConsumerEservice>;
-    pagination: Pagination;
-};
-
 /**
  * Seed data to create a new Agreement
  */
@@ -434,6 +411,23 @@ export type ProducerAgreementDetails = {
 export type ProducerAgreements = {
     items: Array<ProducerAgreement>;
     pagination: Pagination;
+};
+
+export type ConsumerAgreements = {
+    counters: {
+        /**
+         * Number of active agreements
+         */
+        activeAgreements: number;
+        /**
+         * Number of archived agreements
+         */
+        archivedAgreements: number;
+        /**
+         * Number of suspended agreements
+         */
+        suspendedAgreements: number;
+    };
 };
 
 export type SessionRequest = {
@@ -486,6 +480,11 @@ export type KeychainDetails = {
     id: string;
     name: KeychainLocalizedName;
     updatedAt: string;
+};
+
+export type ConsumerKeychainPatch = {
+    description?: KeychainLocalizedDescription | null;
+    name?: KeychainLocalizedName;
 };
 
 export type GetStatusData = {
@@ -888,6 +887,45 @@ export type GetConsumerKeychainDetailsResponses = {
 
 export type GetConsumerKeychainDetailsResponse = GetConsumerKeychainDetailsResponses[keyof GetConsumerKeychainDetailsResponses];
 
+export type UpdateConsumerKeychainData = {
+    body: ConsumerKeychainPatch;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type UpdateConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type UpdateConsumerKeychainError = UpdateConsumerKeychainErrors[keyof UpdateConsumerKeychainErrors];
+
+export type UpdateConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain updated successfully
+     */
+    204: void;
+};
+
+export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
+
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
     path?: never;
@@ -1012,24 +1050,14 @@ export type GetConsumerEserviceLatestVersionInterfaceResponses = {
 
 export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
 
-export type GetConsumerEservicesData = {
+export type GetConsumerAgreementsData = {
     body?: never;
     path?: never;
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-        agreementState?: AgreementState;
-    };
-    url: '/consumer/eservices';
+    query?: never;
+    url: '/consumer/agreements';
 };
 
-export type GetConsumerEservicesErrors = {
+export type GetConsumerAgreementsErrors = {
     /**
      * Bad Request
      */
@@ -1042,22 +1070,18 @@ export type GetConsumerEservicesErrors = {
      * Forbidden
      */
     403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
 };
 
-export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
+export type GetConsumerAgreementsError = GetConsumerAgreementsErrors[keyof GetConsumerAgreementsErrors];
 
-export type GetConsumerEservicesResponses = {
+export type GetConsumerAgreementsResponses = {
     /**
-     * Consumer E-services retrieved successfully
+     * Consumer Agreements retrieved successfully
      */
-    200: ConsumerEservices;
+    200: ConsumerAgreements;
 };
 
-export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof GetConsumerEservicesResponses];
+export type GetConsumerAgreementsResponse = GetConsumerAgreementsResponses[keyof GetConsumerAgreementsResponses];
 
 export type CreateConsumerAgreementData = {
     body: AgreementSeed;

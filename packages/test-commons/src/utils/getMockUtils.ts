@@ -1,4 +1,4 @@
-import { Agreement } from "@knodia/agreement-models";
+import { Agreement, AgreementState } from "@knodia/agreement-models";
 import {
   Eservice,
   EserviceCategory,
@@ -9,13 +9,22 @@ import { ConsumerKeychain } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { zocker } from "zocker";
 
-export function getMockAgreement(seed = 0): Agreement {
-  return zocker(Agreement)
-    .array({
-      min: 1,
-    })
-    .setSeed(seed)
-    .generate();
+export function getMockAgreement({
+  seed = 0,
+  state = "Active",
+}: {
+  seed?: number;
+  state?: AgreementState;
+} = {}): Agreement {
+  return {
+    ...zocker(Agreement)
+      .array({
+        min: 1,
+      })
+      .setSeed(seed)
+      .generate(),
+    state,
+  };
 }
 
 export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {

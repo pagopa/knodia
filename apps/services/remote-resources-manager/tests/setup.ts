@@ -1,9 +1,11 @@
+import { remoteResourceAgreement } from "@knodia/db-remote-resource";
 import {
   type RemoteResourceDbService,
   remoteResourceDbServiceBuilder,
 } from "@knodia/db-remote-resource/services";
 import { setupRemoteResourceTestDatabase } from "@knodia/test-commons/remoteResourceDb";
-import { beforeAll, inject } from "vitest";
+import { resetTestDatabase } from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
@@ -31,6 +33,14 @@ beforeAll(async () => {
   });
 
   remoteResourceDbService = remoteResourceDbServiceBuilder(remoteResourceDb);
+});
+
+afterEach(async () => {
+  await resetTestDatabase(remoteResourceDb, remoteResourceAgreement);
+});
+
+afterAll(async () => {
+  await Promise.all([remoteResourceDb.$client.end()]);
 });
 
 export { app, remoteResourceDbService };
