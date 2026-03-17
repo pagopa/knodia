@@ -1,33 +1,47 @@
+import type { AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
+import type { EserviceVersionState } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
-  activeAgreementNotFound,
-  eserviceNotActive,
+  agreementNotInExpectedState,
+  eserviceVersionNotInExpectedState,
 } from "../models/errors.ts";
 
-export const assertEserviceIsActive = async (
+const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
+  "Active",
+  "Suspended",
+];
+
+const purposeCreationAllowedAgreementStates: AgreementState[] = [
+  "Active",
+  "Suspended",
+];
+
+export const assertEserviceIsActiveOrSuspended = async (
   eserviceId: EserviceId,
   readmodelService: ReadmodelService,
 ) => {
-  const activeEserviceExists =
-    await readmodelService.eserviceVersionExistsByStates({
-      eserviceId,
-      states: ["Active"],
-    });
+  const exists = await readmodelService.eserviceVersionExistsByStates({
+    eserviceId,
+    states: purposeCreationAllowedEserviceVersionStates,
+  });
 
-  if (!activeEserviceExists) {
-    throw eserviceNotActive(eserviceId);
+  if (!exists) {
+    throw eserviceVersionNotInExpectedState(
+      eserviceId,
+      purposeCreationAllowedEserviceVersionStates,
+    );
   }
 };
 
-export const assertActiveAgreementExists = async ({
+export const assertActiveOrSuspendedAgreementExists = async ({
   consumerId,
   consumerKnodeId,
   eserviceId,
@@ -38,15 +52,16 @@ export const assertActiveAgreementExists = async ({
   eserviceId: EserviceId;
   readmodelService: ReadmodelService;
 }) => {
-  const activeAgreementExists = await readmodelService.agreementExistsByStates({
+  const exists = await readmodelService.agreementExistsByStates({
     consumerId,
     consumerKnodeId,
     eserviceId,
-    states: ["Active"],
+    states: purposeCreationAllowedAgreementStates,
   });
 
-  if (!activeAgreementExists) {
-    throw activeAgreementNotFound({
+  if (!exists) {
+    throw agreementNotInExpectedState({
+      allowedStates: purposeCreationAllowedAgreementStates,
       consumerId,
       consumerKnodeId,
       eserviceId,

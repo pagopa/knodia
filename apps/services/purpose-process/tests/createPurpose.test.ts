@@ -1,12 +1,15 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Purpose } from "@knodia/purpose-models";
 
+import { AgreementState } from "@knodia/agreement-models";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   generateId,
   KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
+import { EserviceVersionState } from "@knodia/eservice-models";
 import { fromPurposeV1, PurposeEventV1 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
@@ -110,21 +113,62 @@ describe("POST /purposes (createPurpose)", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("should return 409 if the e-service version is not active", async () => {
-    const archivedEservice = getMockEservice({
-      latestVersionState: "Archived",
-      seed: 10,
-    });
-    await eserviceWriterService.upsertEservice(archivedEservice, 1);
+  const allowedEserviceVersionStates: EserviceVersionState[] = [
+    "Active",
+    "Suspended",
+  ];
+  const notAllowedEserviceVersionStates = EserviceVersionState.options.filter(
+    (s) => !allowedEserviceVersionStates.includes(s),
+  );
 
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/purposes")
-      .body({
-        ...body,
-        eserviceId: archivedEservice.id,
-      } satisfies API_PurposeSeed);
-    expect(response.statusCode).toBe(409);
-  });
+  it.each(allowedEserviceVersionStates)(
+    "should succeed if the e-service version is %s",
+    async (state) => {
+      const testEservice = getMockEservice({
+        latestVersionState: state,
+        seed: allowedEserviceVersionStates.indexOf(state) + 10,
+      });
+      await eserviceWriterService.upsertEservice(testEservice, 1);
+      await agreementWriterService.upsertAgreement(
+        {
+          ...getMockAgreement(allowedEserviceVersionStates.indexOf(state) + 10),
+          consumer: { id: consumerId, knodeId: consumerKnodeId },
+          eserviceId: testEservice.id,
+          eserviceVersionId: testEservice.versions[0]!.id,
+          producerId: testEservice.producerId,
+          state: "Active",
+        },
+        1,
+      );
+
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/purposes")
+        .body({
+          ...body,
+          eserviceId: testEservice.id,
+        } satisfies API_PurposeSeed);
+      expect(response.statusCode).toBe(201);
+    },
+  );
+
+  it.each(notAllowedEserviceVersionStates)(
+    "should return 409 if the e-service version is %s",
+    async (state) => {
+      const testEservice = getMockEservice({
+        latestVersionState: state,
+        seed: notAllowedEserviceVersionStates.indexOf(state) + 30,
+      });
+      await eserviceWriterService.upsertEservice(testEservice, 1);
+
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/purposes")
+        .body({
+          ...body,
+          eserviceId: testEservice.id,
+        } satisfies API_PurposeSeed);
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it("should return 409 if no agreement exists for the consumer/eservice pair", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
@@ -141,34 +185,74 @@ describe("POST /purposes (createPurpose)", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("should return 409 if the agreement exists but is not active", async () => {
-    const otherEservice = getMockEservice({
-      latestVersionState: "Active",
-      seed: 20,
-    });
-    const otherConsumerId = generateExternalId<OrganizationId>();
-    await eserviceWriterService.upsertEservice(otherEservice, 1);
-    await agreementWriterService.upsertAgreement(
-      {
-        ...getMockAgreement(20),
-        consumer: { id: otherConsumerId, knodeId: consumerKnodeId },
-        eserviceId: otherEservice.id,
-        eserviceVersionId: otherEservice.versions[0]!.id,
-        producerId: otherEservice.producerId,
-        state: "Archived",
-      },
-      1,
-    );
+  const allowedAgreementStates: AgreementState[] = ["Active", "Suspended"];
+  const notAllowedAgreementStates = AgreementState.options.filter(
+    (s) => !allowedAgreementStates.includes(s),
+  );
 
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/purposes")
-      .body({
-        ...body,
-        consumer: { id: otherConsumerId, knodeId: consumerKnodeId },
-        eserviceId: otherEservice.id,
-      } satisfies API_PurposeSeed);
-    expect(response.statusCode).toBe(409);
-  });
+  it.each(allowedAgreementStates)(
+    "should succeed if the agreement is %s",
+    async (state) => {
+      const testEservice = getMockEservice({
+        latestVersionState: "Active",
+        seed: allowedAgreementStates.indexOf(state) + 40,
+      });
+      const testConsumerId = generateExternalId<OrganizationId>();
+      await eserviceWriterService.upsertEservice(testEservice, 1);
+      await agreementWriterService.upsertAgreement(
+        {
+          ...getMockAgreement(allowedAgreementStates.indexOf(state) + 40),
+          consumer: { id: testConsumerId, knodeId: consumerKnodeId },
+          eserviceId: testEservice.id,
+          eserviceVersionId: testEservice.versions[0]!.id,
+          producerId: testEservice.producerId,
+          state,
+        },
+        1,
+      );
+
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/purposes")
+        .body({
+          ...body,
+          consumer: { id: testConsumerId, knodeId: consumerKnodeId },
+          eserviceId: testEservice.id,
+        } satisfies API_PurposeSeed);
+      expect(response.statusCode).toBe(201);
+    },
+  );
+
+  it.each(notAllowedAgreementStates)(
+    "should return 409 if the agreement is %s",
+    async (state) => {
+      const testEservice = getMockEservice({
+        latestVersionState: "Active",
+        seed: notAllowedAgreementStates.indexOf(state) + 50,
+      });
+      const testConsumerId = generateExternalId<OrganizationId>();
+      await eserviceWriterService.upsertEservice(testEservice, 1);
+      await agreementWriterService.upsertAgreement(
+        {
+          ...getMockAgreement(notAllowedAgreementStates.indexOf(state) + 50),
+          consumer: { id: testConsumerId, knodeId: consumerKnodeId },
+          eserviceId: testEservice.id,
+          eserviceVersionId: testEservice.versions[0]!.id,
+          producerId: testEservice.producerId,
+          state,
+        },
+        1,
+      );
+
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/purposes")
+        .body({
+          ...body,
+          consumer: { id: testConsumerId, knodeId: consumerKnodeId },
+          eserviceId: testEservice.id,
+        } satisfies API_PurposeSeed);
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],

@@ -19,8 +19,8 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
 import { retrievePurpose } from "../utils/readmodelUtils.ts";
 import {
-  assertActiveAgreementExists,
-  assertEserviceIsActive,
+  assertActiveOrSuspendedAgreementExists,
+  assertEserviceIsActiveOrSuspended,
 } from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
@@ -57,9 +57,9 @@ export function purposeServiceBuilder(
         `Creating Purpose ${purposeId}`,
       );
 
-      await assertEserviceIsActive(eserviceId, readmodelService);
+      await assertEserviceIsActiveOrSuspended(eserviceId, readmodelService);
 
-      await assertActiveAgreementExists({
+      await assertActiveOrSuspendedAgreementExists({
         consumerId: consumer.id,
         consumerKnodeId: consumer.knodeId,
         eserviceId,

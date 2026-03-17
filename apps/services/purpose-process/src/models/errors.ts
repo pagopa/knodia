@@ -1,3 +1,4 @@
+import type { AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
@@ -5,6 +6,7 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
+import type { EserviceVersionState } from "@knodia/eservice-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -15,8 +17,8 @@ const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   PURPOSE_NOT_FOUND: "0001",
-  ESERVICE_NOT_ACTIVE: "0002",
-  ACTIVE_AGREEMENT_NOT_FOUND: "0003",
+  ESERVICE_VERSION_NOT_IN_EXPECTED_STATE: "0002",
+  AGREEMENT_NOT_IN_EXPECTED_STATE: "0003",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -26,29 +28,34 @@ export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   serviceName: "purpose-process",
 });
 
-export function activeAgreementNotFound({
+export function agreementNotInExpectedState({
+  allowedStates,
   consumerId,
   consumerKnodeId,
   eserviceId,
 }: {
+  allowedStates: AgreementState[];
   consumerId: ExternalId<OrganizationId>;
   consumerKnodeId: KnodeId;
   eserviceId: EserviceId;
 }) {
   return createApiError<ErrorCodes>({
-    code: "ACTIVE_AGREEMENT_NOT_FOUND",
-    detail: `No active agreement found for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
+    code: "AGREEMENT_NOT_IN_EXPECTED_STATE",
+    detail: `No agreement in state [${allowedStates.join(", ")}] found for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
     status: HTTP_STATUS_CONFLICT,
-    title: "Active Agreement Not Found",
+    title: "Agreement Not in Expected State",
   });
 }
 
-export function eserviceNotActive(id: EserviceId) {
+export function eserviceVersionNotInExpectedState(
+  eserviceId: EserviceId,
+  allowedStates: EserviceVersionState[],
+) {
   return createApiError<ErrorCodes>({
-    code: "ESERVICE_NOT_ACTIVE",
-    detail: `E-service ${id} has no active version`,
+    code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATE",
+    detail: `E-service ${eserviceId} has no version in state [${allowedStates.join(", ")}]`,
     status: HTTP_STATUS_CONFLICT,
-    title: "E-service Not Active",
+    title: "E-service Version Not in Expected State",
   });
 }
 
