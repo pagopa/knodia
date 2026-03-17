@@ -4,20 +4,16 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": [
-        "generate-openapi",
-        "generate-artifacts"
-      ]
+      "dependsOn": ["^typecheck"]
     },
     "typecheck": {
-      "dependsOn": ["generate-artifacts", "^typecheck"]
+      "dependsOn": ["generate-protobuf", "^generate-api-client", "^typecheck"]
     },
     "generate-api-client": {
-      "dependsOn": ["^generate-api-client"],
       "outputs": ["src/generated/**"]
     },
     "generate-openapi": {
-      "dependsOn": ["generate-artifacts"],
+      "dependsOn": ["typecheck"],
       "outputs": ["openapi/openapi.yaml"]
     },
     "generate-protobuf": {

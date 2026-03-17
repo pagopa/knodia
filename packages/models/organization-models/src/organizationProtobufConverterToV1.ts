@@ -1,5 +1,5 @@
 import type { OrganizationV1 } from "./generated/v1/organization.ts";
-import type { Organization } from "./organizations.ts";
+import type { Organization } from "./organization.ts";
 
 export const toOrganizationV1 = (
   organization: Organization,
