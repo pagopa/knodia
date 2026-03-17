@@ -331,7 +331,7 @@ export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
     knodeName: string;
-    name: LocalizedName;
+    name: string;
     notes: string;
 };
 
@@ -480,6 +480,11 @@ export type KeychainDetails = {
     id: string;
     name: KeychainLocalizedName;
     updatedAt: string;
+};
+
+export type ConsumerKeychainPatch = {
+    description?: KeychainLocalizedDescription | null;
+    name?: KeychainLocalizedName;
 };
 
 export type GetStatusData = {
@@ -881,6 +886,45 @@ export type GetConsumerKeychainDetailsResponses = {
 };
 
 export type GetConsumerKeychainDetailsResponse = GetConsumerKeychainDetailsResponses[keyof GetConsumerKeychainDetailsResponses];
+
+export type UpdateConsumerKeychainData = {
+    body: ConsumerKeychainPatch;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type UpdateConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type UpdateConsumerKeychainError = UpdateConsumerKeychainErrors[keyof UpdateConsumerKeychainErrors];
+
+export type UpdateConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain updated successfully
+     */
+    204: void;
+};
+
+export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;

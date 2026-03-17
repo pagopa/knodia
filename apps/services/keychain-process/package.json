@@ -42,6 +42,7 @@
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "pino-pretty": "catalog:",
+    "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
 }

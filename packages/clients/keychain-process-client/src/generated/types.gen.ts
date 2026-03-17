@@ -82,6 +82,11 @@ export type ConsumerKeychainSeed = {
     name: KeychainLocalizedName;
 };
 
+export type ConsumerKeychainPatch = {
+    description?: KeychainLocalizedDescription | null;
+    name?: KeychainLocalizedName;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -274,3 +279,48 @@ export type GetConsumerKeychainResponses = {
 };
 
 export type GetConsumerKeychainResponse = GetConsumerKeychainResponses[keyof GetConsumerKeychainResponses];
+
+export type UpdateConsumerKeychainData = {
+    body: ConsumerKeychainPatch;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}';
+};
+
+export type UpdateConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type UpdateConsumerKeychainError = UpdateConsumerKeychainErrors[keyof UpdateConsumerKeychainErrors];
+
+export type UpdateConsumerKeychainResponses = {
+    /**
+     * Consumer Keychain updated successfully
+     */
+    200: Keychain;
+};
+
+export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
