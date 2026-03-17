@@ -27,6 +27,7 @@ export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
 
 export const API_Purpose = z
   .strictObject({
+    // formAnswers is intentionally excluded — it can be retrieved via a separate route
     consumer: API_PurposeConsumer,
     createdAt: z.iso.datetime(),
     dailyCalls: z

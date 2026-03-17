@@ -24,14 +24,12 @@ export const readmodelPurpose = purposeSchema.table(
       .defaultNow()
       .notNull(),
     dailyCalls: integer("daily_calls").notNull(),
-    description: jsonb().notNull().$type<{ en: string }>(),
+    description: jsonb().notNull(),
     eserviceId: uuid("eservice_id").notNull(),
-    formAnswers: jsonb("form_answers")
-      .notNull()
-      .$type<Record<string, unknown>>(),
+    formAnswers: jsonb("form_answers").notNull(),
     id: uuid().primaryKey().notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
-    name: jsonb().notNull().$type<{ en: string }>(),
+    name: jsonb().notNull(),
     state: text().notNull(),
     updatedAt: timestamp("updated_at", {
       mode: "date",

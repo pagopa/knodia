@@ -6,10 +6,12 @@ import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
+import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
-import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
+import { resetTestDatabase } from "../../../../packages/test-commons/src/utils/dbIsolation.ts";
 import { buildApp } from "../src/app.ts";
 
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
@@ -40,18 +42,8 @@ beforeAll(async () => {
   agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
 });
 
-beforeEach(async () => {
-  await Promise.all([
-    eventStoreDb.execute("BEGIN"),
-    readmodelDb.execute("BEGIN"),
-  ]);
-});
-
 afterEach(async () => {
-  await Promise.all([
-    eventStoreDb.execute("ROLLBACK"),
-    readmodelDb.execute("ROLLBACK"),
-  ]);
+  await resetTestDatabase(readmodelDb, readmodelPurpose);
 });
 
 afterAll(async () => {

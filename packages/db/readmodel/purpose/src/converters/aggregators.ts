@@ -1,18 +1,33 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
-import type { Purpose } from "@knodia/purpose-models";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { LocalizedText } from "@knodia/common-models/localization";
 import {
   aggregateByPKString,
   throwIfMultipleOrEmpty,
 } from "@knodia/db-readmodel-commons/utils";
+import {
+  maxDescriptionLength,
+  maxNameLength,
+  minDescriptionLength,
+  minNameLength,
+  type Purpose,
+  PurposeState,
+} from "@knodia/purpose-models";
+import z from "zod";
 
 import { type PurposeSQL, readmodelPurpose } from "../purpose.ts";
 
 type PurposeAggregatorInput = {
   purpose: PurposeSQL;
 }[];
+
+const LocalizedName = LocalizedText(minNameLength, maxNameLength);
+const LocalizedDescription = LocalizedText(
+  minDescriptionLength,
+  maxDescriptionLength,
+);
 
 const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
   const purpose: Purpose = {
@@ -22,12 +37,14 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     },
     createdAt: purposeSQL.createdAt,
     dailyCalls: purposeSQL.dailyCalls,
-    description: purposeSQL.description,
+    description: LocalizedDescription.parse(purposeSQL.description),
     eserviceId: unsafeBrandId(purposeSQL.eserviceId),
-    formAnswers: purposeSQL.formAnswers,
+    formAnswers: z
+      .record(z.string(), z.unknown())
+      .parse(purposeSQL.formAnswers),
     id: unsafeBrandId(purposeSQL.id),
-    name: purposeSQL.name,
-    state: purposeSQL.state as Purpose["state"],
+    name: LocalizedName.parse(purposeSQL.name),
+    state: PurposeState.parse(purposeSQL.state),
     updatedAt: purposeSQL.updatedAt,
   };
   return {

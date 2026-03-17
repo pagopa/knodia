@@ -25,8 +25,8 @@ const LocalizedDescription = LocalizedText(
 );
 type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 
-const PurposeState = z.enum(["Active", "Suspended", "Archived"]);
-type PurposeState = z.infer<typeof PurposeState>;
+export const PurposeState = z.enum(["Active", "Suspended", "Archived"]);
+export type PurposeState = z.infer<typeof PurposeState>;
 
 export const Purpose = z.strictObject({
   consumer: ExternalResource<OrganizationId>(),
