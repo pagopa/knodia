@@ -7,7 +7,7 @@ import {
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
-import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
