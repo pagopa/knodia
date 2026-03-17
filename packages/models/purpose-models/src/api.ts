@@ -26,7 +26,7 @@ export type API_PurposeConsumer = z.infer<typeof API_PurposeConsumer>;
 export const API_LocalizedPurposeName = LocalizedText(
   minNameLength,
   maxNameLength,
-).meta({ description: "Name of the Purpose", id: "PurposeLocalizedName" });
+).meta({ description: "Name of the Purpose", id: "LocalizedPurposeName" });
 export type API_LocalizedPurposeName = z.infer<typeof API_LocalizedPurposeName>;
 
 export const API_LocalizedPurposeDescription = LocalizedText(
@@ -34,7 +34,7 @@ export const API_LocalizedPurposeDescription = LocalizedText(
   maxDescriptionLength,
 ).meta({
   description: "Description of the Purpose",
-  id: "PurposeLocalizedDescription",
+  id: "LocalizedPurposeDescription",
 });
 export type API_LocalizedPurposeDescription = z.infer<
   typeof API_LocalizedPurposeDescription
