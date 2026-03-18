@@ -24,7 +24,8 @@ export function AgreementStateChip({
       ))
       // TODO: Currently only Active and Suspended are handled
       .with("Archived", () => {
-        throw new Error("Unexpected agreement state: Archived");
+        console.warn("Unhandled agreement state: Archived");
+        return null;
       })
       .exhaustive()
   );
