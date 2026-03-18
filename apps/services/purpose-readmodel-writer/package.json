@@ -29,8 +29,8 @@
     "@knodia/logger": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "drizzle-orm": "catalog:",
-    "pg": "catalog:",
     "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   }
