@@ -1,0 +1,23 @@
+meta {
+  name: Get Agreement
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/agreements/:agreementId?knodeId={{other-knode-id}}
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
