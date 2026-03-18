@@ -38,13 +38,10 @@ export const toAPI_CatalogEserviceSearchResult = (
 
 export const toAPI_AgreementDetail = (
   agreement?: k2kGatewayApi.Agreement,
-): API_AgreementDetail | undefined => {
-  if (!agreement) return undefined;
-  return {
-    id: agreement.id,
-    state: toAPI_AgreementState(agreement.state),
-  };
-};
+): API_AgreementDetail | undefined =>
+  agreement
+    ? { id: agreement.id, state: toAPI_AgreementState(agreement.state) }
+    : agreement;
 
 export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
