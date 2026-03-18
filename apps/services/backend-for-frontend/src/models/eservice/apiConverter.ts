@@ -83,6 +83,7 @@ export const toAPI_ConsumerEserviceDetails = (
     duration: detail.latestVersion.accessTokenDuration,
     type: detail.latestVersion.accessTokenType,
   },
+  agreement: detail.agreement,
   categories: detail.categories,
   description: detail.description,
   id: detail.id,

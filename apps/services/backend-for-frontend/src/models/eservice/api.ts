@@ -1,3 +1,4 @@
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
   API_Pagination,
@@ -361,6 +362,13 @@ const API_ConsumerRequiredAttribute = z
   })
   .meta({ id: "ConsumerRequiredAttribute" });
 
+const API_ConsumerEserviceDetailsAgreement = z
+  .strictObject({
+    id: z.uuid(),
+    state: API_AgreementState,
+  })
+  .meta({ id: "ConsumerEserviceDetailsAgreement" });
+
 export const API_ConsumerEserviceDetails = z
   .strictObject({
     accessToken: z
@@ -373,6 +381,7 @@ export const API_ConsumerEserviceDetails = z
         type: API_AccessTokenType,
       })
       .meta({ id: "ConsumerEserviceDetailsAccessToken" }),
+    agreement: API_ConsumerEserviceDetailsAgreement.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
