@@ -20,8 +20,8 @@ const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   PURPOSE_NOT_FOUND: "0001",
-  ESERVICE_VERSION_NOT_IN_EXPECTED_STATE: "0002",
-  AGREEMENT_NOT_IN_EXPECTED_STATE: "0003",
+  ESERVICE_VERSION_NOT_IN_EXPECTED_STATES: "0002",
+  AGREEMENT_NOT_IN_EXPECTED_STATES: "0003",
   ESERVICE_MODE_NOT_ALLOWED: "0004",
   ESERVICE_NOT_FOUND: "0005",
   AGREEMENT_NOT_FOUND: "0006",
@@ -51,7 +51,7 @@ export function agreementNotFound({
   });
 }
 
-export function agreementNotInExpectedState({
+export function agreementNotInExpectedStates({
   allowedStates,
   consumerId,
   consumerKnodeId,
@@ -63,10 +63,10 @@ export function agreementNotInExpectedState({
   eserviceId: EserviceId;
 }) {
   return createApiError<ErrorCodes>({
-    code: "AGREEMENT_NOT_IN_EXPECTED_STATE",
+    code: "AGREEMENT_NOT_IN_EXPECTED_STATES",
     detail: `No agreement in state [${allowedStates.join(", ")}] found for Consumer = ${consumerId}, Consumer Knode = ${consumerKnodeId}, E-service = ${eserviceId}`,
     status: HTTP_STATUS_CONFLICT,
-    title: "Agreement Not in Expected State",
+    title: "Agreement Not in Expected States",
   });
 }
 
@@ -92,15 +92,15 @@ export function eserviceNotFound(eserviceId: EserviceId) {
   });
 }
 
-export function eserviceVersionNotInExpectedState(
+export function eserviceVersionNotInExpectedStates(
   eserviceId: EserviceId,
   allowedStates: EserviceVersionState[],
 ) {
   return createApiError<ErrorCodes>({
-    code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATE",
+    code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATES",
     detail: `E-service ${eserviceId} has no version in state [${allowedStates.join(", ")}]`,
     status: HTTP_STATUS_CONFLICT,
-    title: "E-service Version Not in Expected State",
+    title: "E-service Version Not in Expected States",
   });
 }
 
