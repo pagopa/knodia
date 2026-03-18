@@ -15,7 +15,11 @@ function RouteComponent() {
     <div className="flex min-h-full flex-col">
       <PageHeader
         actions={
-          <Button hierarchy="neutral" kind="ghost">
+          <Button
+            hierarchy="neutral"
+            kind="ghost"
+            onPress={() => navigate({ to: "/consumption/agreements/archive" })}
+          >
             <ArchiveIcon />
             Archive
           </Button>
