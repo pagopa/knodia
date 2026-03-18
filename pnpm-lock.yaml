@@ -1083,6 +1083,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/db-event-store-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/commons
       '@knodia/db-event-store-purpose':
         specifier: workspace:*
         version: link:../../../packages/db/event-store/purpose
