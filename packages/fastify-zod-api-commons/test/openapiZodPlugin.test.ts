@@ -1,6 +1,7 @@
 import type { OpenAPIV3 } from "openapi-types";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import z from "zod";
 
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
 import {
@@ -86,5 +87,29 @@ describe("openapiZodPlugin", () => {
     expect(openapiYaml).toContain("title: Test API");
     expect(openapiYaml).toContain("version: 1.0.0");
     expect(openapiYaml).toContain("/test");
+  });
+
+  it("throws when a route is missing operationId", async () => {
+    const app = buildTestApp();
+
+    app.route({
+      handler: async () => ({ ok: true }),
+      method: "GET",
+      schema: {
+        response: {
+          200: z.object({ ok: z.boolean() }),
+        },
+        tags: [testTags.test],
+      },
+      url: "/missing-operation-id",
+    });
+
+    await app.ready();
+
+    expect(() => app.swagger()).toThrowError(
+      "Missing operationId in schema for route GET /missing-operation-id.",
+    );
+
+    await app.close();
   });
 });

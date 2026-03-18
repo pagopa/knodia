@@ -6,7 +6,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
@@ -41,31 +44,31 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   ConsumerKeychainRouterOptions
 > = async (fastify, { keychainProcessClient }) => {
   const retrieveConsumerKeychainById = async (
-    header: ReturnType<typeof getKnodiaServiceHeaders>,
-    consumerKeychainId: ConsumerKeychainId,
+    consumerKeychainId: string,
+    headers: KnodiaServiceHeaders,
   ) =>
     await keychainProcessApi.getConsumerKeychain({
       client: keychainProcessClient,
-      headers: header,
+      headers,
       path: { consumerKeychainId },
     });
 
   const pollConsumerKeychain = (
-    response: AxiosResponse,
-    headers: ReturnType<typeof getKnodiaServiceHeaders>,
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
   ) =>
     pollResourceWithMetadata(() =>
-      retrieveConsumerKeychainById(headers, response.data.id),
+      retrieveConsumerKeychainById(response.data.id, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
 
   const pollConsumerKeychainUntilDeletion = (
-    headers: ReturnType<typeof getKnodiaServiceHeaders>,
     consumerKeychainId: ConsumerKeychainId,
+    headers: KnodiaServiceHeaders,
   ) =>
     pollResourceUntilDeletion(() =>
-      retrieveConsumerKeychainById(headers, consumerKeychainId),
+      retrieveConsumerKeychainById(consumerKeychainId, headers),
     )({});
 
   fastify.route({
@@ -168,8 +171,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       });
 
       await pollConsumerKeychainUntilDeletion(
-        headers,
         req.params.consumerKeychainId,
+        headers,
       );
 
       res.status(204).send();

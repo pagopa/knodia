@@ -1,5 +1,4 @@
 import {
-  genericError,
   METADATA_VERSION_HEADER,
   missingHeader,
 } from "@knodia/fastify-zod-api-commons/models";
@@ -115,25 +114,17 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function getMetadataVersionFromHeaders(
+export function getMetadataVersionFromHeaders(
   headers: AxiosResponse["headers"],
 ): number {
-  const rawHeaderValue = headers[METADATA_VERSION_HEADER];
-
-  if (!rawHeaderValue) {
-    throw missingHeader(METADATA_VERSION_HEADER);
-  }
-
   const version = z.coerce
     .number()
     .int()
     .nonnegative()
-    .safeParse(rawHeaderValue);
+    .safeParse(headers[METADATA_VERSION_HEADER]);
 
   if (!version.success || isNaN(version.data)) {
-    throw genericError(
-      `Invalid ${METADATA_VERSION_HEADER} header value: ${rawHeaderValue}`,
-    );
+    throw missingHeader(METADATA_VERSION_HEADER);
   }
 
   return version.data;
@@ -151,7 +142,7 @@ function is404AxiosError(error: unknown): boolean {
  * @param targetVersion - The target version number to compare against
  * @returns A function that takes a polled resource and returns true if its version is >= target version
  */
-function isPolledVersionAtLeastTargetVersion(
+export function isPolledVersionAtLeastTargetVersion(
   targetVersion: number,
 ): (polledResponse: AxiosResponse) => boolean {
   return (polledResponse: AxiosResponse) =>

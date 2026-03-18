@@ -9,7 +9,6 @@
  * to apply additional transformations on top.
  */
 
-import type { FastifySchema } from "fastify";
 import type { OpenAPIV3 } from "openapi-types";
 
 import { createJsonSchemaTransform } from "fastify-type-provider-zod";
@@ -51,18 +50,24 @@ const zodObjectToResponseHeaders = (
     }),
   );
 
-function assertOperationIdExists(
-  input: Parameters<typeof baseTransform>[0],
-): asserts input is Parameters<typeof baseTransform>[0] & {
-  schema: FastifySchema & { operationId: string };
-} {
-  const { route, schema } = input;
-  if (!schema.operationId) {
-    throw new Error(
-      `Missing operationId in schema for route ${route.method} ${route.url}.`,
-    );
+type TransformInput = Parameters<typeof baseTransform>[0];
+type TransformStep = (input: TransformInput) => TransformInput;
+
+const shouldSkipOperationIdCheck = ({ route }: TransformInput): boolean =>
+  route.url.startsWith("/docs/");
+
+const enforceOperationId = (input: TransformInput): TransformInput => {
+  if (!shouldSkipOperationIdCheck(input)) {
+    const { route, schema } = input;
+    if (!schema.operationId) {
+      throw new Error(
+        `Missing operationId in schema for route ${route.method} ${route.url}.`,
+      );
+    }
   }
-}
+
+  return input;
+};
 
 /**
  * Extract response headers from the input schema before the base transform runs.
@@ -74,16 +79,16 @@ function assertOperationIdExists(
  * - Route-level `responseHeaders: z.object(...)` → applies to all responses
  * - Per-response `{ properties: ZodSchema, headers: z.object(...) }` → applies to that status only
  */
-const extractResponseHeaders = (
-  input: Parameters<typeof baseTransform>[0],
-): Parameters<typeof baseTransform>[0] => {
+const extractResponseHeaders = (input: TransformInput): TransformInput => {
   const { responseHeaders, ...schemaRest } = input.schema;
+  const operationId = input.schema.operationId;
+
+  if (!operationId) return input;
 
   // Route-level responseHeaders → apply to all responses
   if (responseHeaders) {
-    assertOperationIdExists(input);
     responseHeadersStore.set(
-      input.schema.operationId,
+      operationId,
       zodObjectToResponseHeaders(responseHeaders as z.ZodObject),
     );
   }
@@ -93,9 +98,8 @@ const extractResponseHeaders = (
   if (response) {
     for (const [statusCode, val] of Object.entries(response)) {
       if (isResponseEntryWithHeaders(val)) {
-        assertOperationIdExists(input);
         responseHeadersStore.set(
-          `${input.schema.operationId}:${statusCode}`,
+          `${operationId}:${statusCode}`,
           zodObjectToResponseHeaders(val.headers),
         );
       }
@@ -105,8 +109,15 @@ const extractResponseHeaders = (
   return { ...input, schema: schemaRest };
 };
 
+const applyTransformSteps = (
+  input: TransformInput,
+  steps: TransformStep[],
+): TransformInput => steps.reduce((acc, step) => step(acc), input);
+
 export const zodToJsonSchemaTransform: typeof baseTransform = (input) =>
-  baseTransform(extractResponseHeaders(input));
+  baseTransform(
+    applyTransformSteps(input, [enforceOperationId, extractResponseHeaders]),
+  );
 
 const ResponseEntryWithHeadersSchema = z.object({
   headers: z.instanceof(z.ZodObject),

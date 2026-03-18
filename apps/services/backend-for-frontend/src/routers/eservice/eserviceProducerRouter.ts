@@ -7,18 +7,17 @@ import {
   API_CreatedResource,
   API_FileDownload,
 } from "@knodia/common-models/api";
-import {
-  EserviceId,
-  EserviceInterfaceId,
-  generateId,
-} from "@knodia/common-models/ids";
+import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 
 import { config } from "../../config/config.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -50,20 +49,20 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
   // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
   const retrieveEservice = async (
-    header: ReturnType<typeof getKnodiaServiceHeaders>,
-    eserviceId: EserviceId,
+    eserviceId: string,
+    headers: KnodiaServiceHeaders,
   ) =>
     await eserviceProcessApi.getEservice({
       client: eserviceProcessClient,
-      headers: header,
+      headers,
       path: { eserviceId },
     });
 
   const pollEservice = (
-    response: AxiosResponse,
-    headers: ReturnType<typeof getKnodiaServiceHeaders>,
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
   ) =>
-    pollResourceWithMetadata(() => retrieveEservice(headers, response.data.id))(
+    pollResourceWithMetadata(() => retrieveEservice(response.data.id, headers))(
       {
         condition: isPolledVersionAtLeastResponseVersion(response),
       },

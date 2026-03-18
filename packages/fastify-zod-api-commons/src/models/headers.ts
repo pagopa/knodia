@@ -10,7 +10,7 @@ export const METADATA_VERSION_HEADER = "metadata-version";
 
 export const MetadataVersionHeader = z.object({
   [METADATA_VERSION_HEADER]: z.string().meta({
-    description: "Metadata version of the relevant resource",
+    description: "Metadata version of the resource",
   }),
 });
 
@@ -22,6 +22,7 @@ export const KnodiaServiceHeaders = z.looseObject({
   // the openapi generation to include it in the schema of every endpoint,
   // as we use securitySchemes for that.
 });
+export type KnodiaServiceHeaders = z.infer<typeof KnodiaServiceHeaders>;
 
 export function setMetadataVersionHeader(
   res: FastifyReply,

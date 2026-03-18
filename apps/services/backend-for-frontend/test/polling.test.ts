@@ -1,3 +1,7 @@
+import {
+  METADATA_VERSION_HEADER,
+  missingHeader,
+} from "@knodia/fastify-zod-api-commons/models";
 import { AxiosError, type AxiosResponse } from "axios";
 import { describe, expect, it, vi } from "vitest";
 
@@ -12,6 +16,9 @@ import { pollingMaxRetriesExceeded } from "../src/models/errors.ts";
 import {
   createPollingByCondition,
   createPollingUntilDeletion,
+  getMetadataVersionFromHeaders,
+  isPolledVersionAtLeastResponseVersion,
+  isPolledVersionAtLeastTargetVersion,
 } from "../src/utils/polling.ts";
 
 describe("createPollingByCondition", () => {
@@ -192,5 +199,83 @@ describe("createPollingUntilDeletion", () => {
     ).rejects.toThrowError("Generic error");
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+const makeResponse = (
+  version?: AxiosResponse["headers"][typeof METADATA_VERSION_HEADER],
+): AxiosResponse =>
+  ({
+    data: {},
+    headers:
+      version === undefined ? {} : { [METADATA_VERSION_HEADER]: version },
+    status: 200,
+    statusText: "OK",
+  }) as AxiosResponse;
+
+describe("getMetadataVersionFromHeaders", () => {
+  it("Should parse a valid metadata version header", () => {
+    expect(getMetadataVersionFromHeaders(makeResponse("3").headers)).toBe(3);
+  });
+
+  it.each([undefined, "-1", "1.5", "abc"])(
+    "Should throw for invalid metadata version header %p",
+    (version) => {
+      expect(() =>
+        getMetadataVersionFromHeaders(makeResponse(version).headers),
+      ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+    },
+  );
+});
+
+describe("isPolledVersionAtLeastResponseVersion", () => {
+  it("Should return true when the polled version matches the response version", () => {
+    const condition = isPolledVersionAtLeastResponseVersion(makeResponse("2"));
+
+    expect(condition(makeResponse("2"))).toBe(true);
+  });
+
+  it("Should return true when the polled version is greater than the response version", () => {
+    const condition = isPolledVersionAtLeastResponseVersion(makeResponse("2"));
+
+    expect(condition(makeResponse("3"))).toBe(true);
+  });
+
+  it("Should return false when the polled version is lower than the response version", () => {
+    const condition = isPolledVersionAtLeastResponseVersion(makeResponse("2"));
+
+    expect(condition(makeResponse("1"))).toBe(false);
+  });
+
+  it("Should throw when the initial response is missing the metadata version header", () => {
+    expect(() =>
+      isPolledVersionAtLeastResponseVersion(makeResponse()),
+    ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+  });
+});
+
+describe("isPolledVersionAtLeastTargetVersion", () => {
+  it("Should return true when the polled version matches the target version", () => {
+    expect(isPolledVersionAtLeastTargetVersion(4)(makeResponse("4"))).toBe(
+      true,
+    );
+  });
+
+  it("Should return true when the polled version exceeds the target version", () => {
+    expect(isPolledVersionAtLeastTargetVersion(4)(makeResponse("5"))).toBe(
+      true,
+    );
+  });
+
+  it("Should return false when the polled version is below the target version", () => {
+    expect(isPolledVersionAtLeastTargetVersion(4)(makeResponse("3"))).toBe(
+      false,
+    );
+  });
+
+  it("Should throw when the polled response is missing the metadata version header", () => {
+    expect(() =>
+      isPolledVersionAtLeastTargetVersion(4)(makeResponse()),
+    ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
   });
 });
