@@ -69,6 +69,22 @@ export function createPollingUntilDeletion(
   };
 }
 
+export function getMetadataVersionFromHeaders(
+  headers: AxiosResponse["headers"],
+): number {
+  const version = z.coerce
+    .number()
+    .int()
+    .nonnegative()
+    .safeParse(headers[METADATA_VERSION_HEADER]);
+
+  if (!version.success || isNaN(version.data)) {
+    throw missingHeader(METADATA_VERSION_HEADER);
+  }
+
+  return version.data;
+}
+
 /**
  Default polling check function that checks if the polled resource's version is greater than
  the version of the resource of a given response.
@@ -83,6 +99,21 @@ export function isPolledVersionAtLeastResponseVersion(
   return isPolledVersionAtLeastTargetVersion(
     getMetadataVersionFromHeaders(response.headers),
   );
+}
+
+/**
+ * Generic check function that verifies if a polled resource's version meets or exceeds a target version.
+ * Use this when only metadata (with a version number) is available rather than a full resource response.
+ * For cases where a complete response object is available, use isPolledVersionAtLeastResponseVersion instead.
+ *
+ * @param targetVersion - The target version number to compare against
+ * @returns A function that takes a polled resource and returns true if its version is >= target version
+ */
+export function isPolledVersionAtLeastTargetVersion(
+  targetVersion: number,
+): (polledResponse: AxiosResponse) => boolean {
+  return (polledResponse: AxiosResponse) =>
+    getMetadataVersionFromHeaders(polledResponse.headers) >= targetVersion;
 }
 
 export function pollResourceUntilDeletion(
@@ -114,37 +145,6 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function getMetadataVersionFromHeaders(
-  headers: AxiosResponse["headers"],
-): number {
-  const version = z.coerce
-    .number()
-    .int()
-    .nonnegative()
-    .safeParse(headers[METADATA_VERSION_HEADER]);
-
-  if (!version.success || isNaN(version.data)) {
-    throw missingHeader(METADATA_VERSION_HEADER);
-  }
-
-  return version.data;
-}
-
 function is404AxiosError(error: unknown): boolean {
   return isAxiosError(error) && error.response?.status === 404;
-}
-
-/**
- * Generic check function that verifies if a polled resource's version meets or exceeds a target version.
- * Use this when only metadata (with a version number) is available rather than a full resource response.
- * For cases where a complete response object is available, use isPolledVersionAtLeastResponseVersion instead.
- *
- * @param targetVersion - The target version number to compare against
- * @returns A function that takes a polled resource and returns true if its version is >= target version
- */
-export function isPolledVersionAtLeastTargetVersion(
-  targetVersion: number,
-): (polledResponse: AxiosResponse) => boolean {
-  return (polledResponse: AxiosResponse) =>
-    getMetadataVersionFromHeaders(polledResponse.headers) >= targetVersion;
 }

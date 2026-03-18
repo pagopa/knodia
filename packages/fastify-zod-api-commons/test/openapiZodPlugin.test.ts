@@ -1,7 +1,6 @@
 import type { OpenAPIV3 } from "openapi-types";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import z from "zod";
 
 import { healthRouter, healthRouterTag } from "../src/routers/healthRouter.ts";
 import {
