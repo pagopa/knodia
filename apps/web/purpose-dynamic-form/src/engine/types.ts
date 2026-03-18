@@ -1,5 +1,10 @@
 // JSON Schema types (subset we support)
 
+export interface AndCondition {
+  conditions: RuleCondition[];
+  type: "AND";
+}
+
 export interface ControlElement {
   label?: string;
   options?: ControlOptions;
@@ -11,14 +16,14 @@ export interface ControlElement {
 // Form values
 export type FormValues = Record<string, string | string[]>;
 
+// UI Schema types (JSON Forms format + extensions)
+
 export interface GroupElement {
   elements: UISchemaElement[];
   label?: string;
   options?: { description?: string };
   type: "Group";
 }
-
-// UI Schema types (JSON Forms format + extensions)
 
 export interface JsonSchema {
   $schema?: string;
@@ -47,10 +52,11 @@ export interface LabelElement {
   type: "Label";
 }
 
-export type RuleCondition =
-  | { conditions: RuleCondition[]; type: "AND" }
+export type LeafCondition =
   | { schema: { const: string }; scope: string }
   | { schema: { contains: { const: string } }; scope: string };
+
+export type RuleCondition = AndCondition | LeafCondition;
 
 export type UISchema = GroupElement | LayoutElement;
 

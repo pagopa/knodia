@@ -1,4 +1,5 @@
 import type {
+  AndCondition,
   FormValues,
   LabelElement,
   RuleCondition,
@@ -11,26 +12,25 @@ export function evaluateCondition(
   condition: RuleCondition,
   values: FormValues,
 ): boolean {
-  if ("type" in condition && condition.type === "AND") {
+  if (isAndCondition(condition)) {
     return condition.conditions.every((c) => evaluateCondition(c, values));
   }
 
-  const leaf = condition as Exclude<RuleCondition, { type: "AND" }>;
-  const fieldName = scopeToFieldName(leaf.scope);
+  const fieldName = scopeToFieldName(condition.scope);
   const value = values[fieldName];
 
-  if ("const" in leaf.schema) {
+  if ("const" in condition.schema) {
     if (Array.isArray(value)) {
-      return value.includes(leaf.schema.const);
+      return value.includes(condition.schema.const);
     }
-    return value === leaf.schema.const;
+    return value === condition.schema.const;
   }
 
-  if ("contains" in leaf.schema) {
+  if ("contains" in condition.schema) {
     if (Array.isArray(value)) {
-      return value.includes(leaf.schema.contains.const);
+      return value.includes(condition.schema.contains.const);
     }
-    return value === leaf.schema.contains.const;
+    return value === condition.schema.contains.const;
   }
 
   return false;
@@ -79,9 +79,12 @@ export function scopeToFieldName(scope: string): string {
 }
 
 function collectScopes(condition: RuleCondition): string[] {
-  if ("type" in condition && condition.type === "AND") {
+  if (isAndCondition(condition)) {
     return condition.conditions.flatMap(collectScopes);
   }
-  const leaf = condition as Exclude<RuleCondition, { type: "AND" }>;
-  return [scopeToFieldName(leaf.scope)];
+  return [scopeToFieldName(condition.scope)];
+}
+
+function isAndCondition(c: RuleCondition): c is AndCondition {
+  return "type" in c && c.type === "AND";
 }
