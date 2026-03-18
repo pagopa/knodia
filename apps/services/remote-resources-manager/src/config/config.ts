@@ -1,3 +1,4 @@
+import { ReadmodelOrganizationConfig } from "@knodia/db-readmodel-organization/config";
 import { RemoteResourceDbConfig } from "@knodia/db-remote-resource/config";
 import {
   AuthConfig,
@@ -10,6 +11,7 @@ import { z } from "zod";
 const RemoteResourcesManagerConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(RemoteResourceDbConfig)
+  .and(ReadmodelOrganizationConfig)
   .and(
     z
       .object({
