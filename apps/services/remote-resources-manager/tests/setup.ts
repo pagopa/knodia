@@ -55,7 +55,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await resetTestDatabase(readmodelDb, remoteResourceAgreement);
+  await resetTestDatabase(remoteResourceDb, remoteResourceAgreement);
 });
 
 afterAll(async () => {
