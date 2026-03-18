@@ -4,7 +4,7 @@
   "includeEntryExports": true,
   "ignoreWorkspaces": [
     "packages/models/keychain-models",
-    "packages/db/readmodel/consumer-keychain",
+    "packages/db/readmodel/keychain",
     "packages/db/event-store/keychain",
     "apps/services/keychain-process"
   ],
