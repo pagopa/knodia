@@ -1,9 +1,11 @@
 import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
 
+import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
 import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { resetTestDatabase } from "@knodia/test-commons/utils";
 import { createTestLogger } from "@knodia/test-commons/utils";
-import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { createProcessMessage } from "../src/utils/utils.ts";
 
@@ -26,12 +28,8 @@ beforeAll(async () => {
   processMessage = createProcessMessage(readmodelDb, logger);
 });
 
-beforeEach(async () => {
-  await readmodelDb.execute("BEGIN");
-});
-
 afterEach(async () => {
-  await readmodelDb.execute("ROLLBACK");
+  await resetTestDatabase(readmodelDb, readmodelConsumerKeychain);
 });
 
 afterAll(async () => {

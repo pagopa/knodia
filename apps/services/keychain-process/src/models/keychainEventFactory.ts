@@ -34,3 +34,19 @@ export const createConsumerKeychainDeletedV1Event = (
   },
   streamId: keychain.id,
 });
+
+export const createConsumerKeychainUpdatedV1Event = (
+  keychain: ConsumerKeychain,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      consumerKeychain: toConsumerKeychainV1(keychain),
+    },
+    type: "ConsumerKeychainUpdatedV1",
+  },
+  streamId: keychain.id,
+});

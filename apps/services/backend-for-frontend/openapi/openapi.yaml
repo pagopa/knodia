@@ -651,7 +651,7 @@ components:
         knodeName:
           type: string
         name:
-          $ref: "#/components/schemas/LocalizedName"
+          type: string
         notes:
           type: string
       required:
@@ -744,6 +744,11 @@ components:
           $ref: "#/components/schemas/ConsumerEserviceDetailsInterfaceDocument"
         isSignalHubEnabled:
           type: boolean
+        latestVersionId:
+          description: Unique identifier of the latest E-service version
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         maxDailyCalls:
           $ref: "#/components/schemas/ConsumerEserviceDetailsMaxDailyCalls"
         mode:
@@ -768,6 +773,7 @@ components:
         - identificationRequired
         - interfaceDocument
         - isSignalHubEnabled
+        - latestVersionId
         - maxDailyCalls
         - mode
         - name
@@ -861,6 +867,38 @@ components:
       required:
         - items
         - pagination
+      additionalProperties: false
+    ConsumerAgreements:
+      type: object
+      properties:
+        counters:
+          type: object
+          properties:
+            activeAgreements:
+              description: Number of active agreements
+              format: int32
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            archivedAgreements:
+              description: Number of archived agreements
+              format: int32
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+            suspendedAgreements:
+              description: Number of suspended agreements
+              format: int32
+              type: integer
+              minimum: 0
+              maximum: 9007199254740991
+          required:
+            - activeAgreements
+            - archivedAgreements
+            - suspendedAgreements
+          additionalProperties: false
+      required:
+        - counters
       additionalProperties: false
     SessionRequest:
       type: object
@@ -985,6 +1023,17 @@ components:
         - id
         - name
         - updatedAt
+      additionalProperties: false
+    ConsumerKeychainPatch:
+      type: object
+      properties:
+        description:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedDescription"
+        name:
+          allOf:
+            - $ref: "#/components/schemas/KeychainLocalizedName"
       additionalProperties: false
 paths:
   /status:
@@ -1439,6 +1488,60 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}:
+    patch:
+      operationId: updateConsumerKeychain
+      tags:
+        - consumerKeychain
+      description: Update a Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema:
+              $ref: "#/components/schemas/ConsumerKeychainPatch"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "204":
+          description: Consumer Keychain updated successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     delete:
       operationId: deleteConsumerKeychain
       tags:
@@ -1755,6 +1858,44 @@ paths:
                 description: Agreement created successfully
                 allOf:
                   - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getConsumerAgreements
+      tags:
+        - agreement
+      description: Retrieve a list of Consumer Agreements
+      responses:
+        "200":
+          description: Consumer Agreements retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Agreements retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerAgreements"
         "400":
           description: Bad Request
           content:

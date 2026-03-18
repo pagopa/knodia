@@ -40,18 +40,24 @@ export function toConsumptionEserviceDetail(
     },
     categories: detail.categories,
     description: detail.description.en,
+    hasRequiredAttributes:
+      detail.requiredAttributes.length === 0 ||
+      detail.requiredAttributes.every((group) =>
+        group.some((attr) => attr.possessed),
+      ),
     id: unsafeBrandId(detail.id),
     identificationRequired: detail.identificationRequired,
     interfaceDocument: detail.interfaceDocument,
     isSignalHubEnabled: detail.isSignalHubEnabled,
+    latestVersionId: unsafeBrandId(detail.latestVersionId),
     maxDailyCalls: detail.maxDailyCalls,
     mode: detail.mode,
     name: detail.name.en,
     producer: {
       email: detail.producer.email,
-      initials: getOrganizationInitials(detail.producer.name.en),
+      initials: getOrganizationInitials(detail.producer.name),
       knodeName: detail.producer.knodeName,
-      name: detail.producer.name.en,
+      name: detail.producer.name,
       notes: detail.producer.notes,
     },
     requiredAttributes: detail.requiredAttributes,

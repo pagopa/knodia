@@ -12,12 +12,12 @@ get {
 params:query {
   limit: 50
   offset: 0
-  ~consumerId: {{consumerId}}
+  ~consumerId: {{organizationId}}
   ~state: ACTIVE
 }
 
 headers {
-  ~Authorization: 
+  ~Authorization:
 }
 
 vars:post-response {

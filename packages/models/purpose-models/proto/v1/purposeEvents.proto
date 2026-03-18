@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package purpose.v1;
+
+import "v1/purpose.proto";
+
+message PurposeActivatedV1 {
+  PurposeV1 purpose = 1;
+}
