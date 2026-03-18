@@ -143,8 +143,6 @@ components:
       description: Seed data to create a new Agreement
       type: object
       properties:
-        consumerId:
-          $ref: "#/components/schemas/OrganizationId"
         eserviceId:
           type: string
           format: uuid
@@ -156,7 +154,6 @@ components:
         knodeId:
           $ref: "#/components/schemas/KnodeId"
       required:
-        - consumerId
         - eserviceId
         - eserviceVersionId
         - knodeId
