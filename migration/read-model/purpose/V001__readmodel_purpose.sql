@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_purpose."purpose" (
 	"daily_calls" integer NOT NULL,
 	"description" jsonb NOT NULL,
 	"eservice_id" uuid NOT NULL,
-	"form_answers_json" jsonb NOT NULL,
+	"form_answers" jsonb NOT NULL,
 	"id" uuid PRIMARY KEY NOT NULL,
 	"metadata_version" bigint NOT NULL,
 	"name" jsonb NOT NULL,
