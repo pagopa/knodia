@@ -47,12 +47,12 @@ export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
   );
 
   const step = steps[currentStep] as StepConfig;
-  const { allValues, visibleFieldNames } = useVisibleFields(uischema, values);
+  const { visibleFieldNames } = useVisibleFields(uischema, values);
 
   const stepVisibleFields = useMemo(() => {
-    const stepVisible = getVisibleFields(step.stepUischema, allValues);
+    const stepVisible = getVisibleFields(step.stepUischema, values);
     return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
-  }, [step.stepUischema, allValues, visibleFieldNames]);
+  }, [step.stepUischema, values, visibleFieldNames]);
 
   const handleChange = useCallback(
     (fieldName: string, newValue: string | string[]) => {
@@ -125,7 +125,6 @@ export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
 
             <form id={formId} onSubmit={handleSubmit}>
               <FormStep
-                allValues={allValues}
                 errors={errors}
                 jsonSchema={jsonSchema}
                 onChange={handleChange}
@@ -178,7 +177,6 @@ export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
 }
 
 function FormStep({
-  allValues,
   errors,
   jsonSchema,
   onChange,
@@ -186,7 +184,6 @@ function FormStep({
   values,
   visibleFieldNames,
 }: {
-  allValues: FormValues;
   errors: Record<string, string>;
   jsonSchema: JsonSchema;
   onChange: (fieldName: string, value: string | string[]) => void;
@@ -203,17 +200,16 @@ function FormStep({
           (el) =>
             (el.type === "Control" &&
               visibleFieldNames.has(scopeToFieldName(el.scope))) ||
-            (el.type === "Label" && isLabelVisible(el, allValues)),
+            (el.type === "Label" && isLabelVisible(el, values)),
         ),
       ),
-    [groups, visibleFieldNames, allValues],
+    [groups, visibleFieldNames, values],
   );
 
   return (
     <>
       {visibleGroups.map((group, groupIndex) => (
         <GroupSection
-          allValues={allValues}
           errors={errors}
           group={group}
           isLast={groupIndex === visibleGroups.length - 1}

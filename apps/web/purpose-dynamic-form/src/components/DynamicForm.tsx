@@ -18,7 +18,6 @@ import { useVisibleFields } from "../hooks/useVisibleFields";
 import { GroupSection } from "./GroupSection";
 
 interface Props {
-  externalValues?: FormValues;
   jsonSchema: JsonSchema;
   onSubmit?: (values: FormValues) => void;
   uischema: UISchema;
@@ -26,7 +25,6 @@ interface Props {
 }
 
 export function DynamicForm({
-  externalValues = {},
   jsonSchema,
   onSubmit,
   uischema,
@@ -39,11 +37,7 @@ export function DynamicForm({
   const [submitted, setSubmitted] = useState(false);
 
   const groups = useMemo(() => collectGroups(uischema), [uischema]);
-  const { allValues, visibleFieldNames } = useVisibleFields(
-    uischema,
-    values,
-    externalValues,
-  );
+  const { visibleFieldNames } = useVisibleFields(uischema, values);
 
   const handleChange = useCallback(
     (fieldName: string, newValue: string | string[]) => {
@@ -64,8 +58,7 @@ export function DynamicForm({
       e.preventDefault();
       setSubmitted(true);
 
-      const allVals = { ...externalValues, ...values };
-      const visible = getVisibleFields(uischema, allVals);
+      const visible = getVisibleFields(uischema, values);
       const fieldErrors = validate(values, visible);
 
       if (Object.keys(fieldErrors).length > 0) {
@@ -82,7 +75,7 @@ export function DynamicForm({
       }
       onSubmit?.(filtered);
     },
-    [values, externalValues, uischema, validate, onSubmit],
+    [values, uischema, validate, onSubmit],
   );
 
   const visibleGroups = useMemo(
@@ -92,17 +85,16 @@ export function DynamicForm({
           (el) =>
             (el.type === "Control" &&
               visibleFieldNames.has(scopeToFieldName(el.scope))) ||
-            (el.type === "Label" && isLabelVisible(el, allValues)),
+            (el.type === "Label" && isLabelVisible(el, values)),
         ),
       ),
-    [groups, visibleFieldNames, allValues],
+    [groups, visibleFieldNames, values],
   );
 
   return (
     <form className="flex flex-col" onSubmit={handleSubmit}>
       {visibleGroups.map((group, groupIndex) => (
         <GroupSection
-          allValues={allValues}
           errors={errors}
           group={group}
           isLast={groupIndex === visibleGroups.length - 1}

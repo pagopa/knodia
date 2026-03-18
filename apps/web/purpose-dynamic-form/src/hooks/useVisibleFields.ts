@@ -8,19 +8,10 @@ import {
 } from "../engine/dependencyResolver";
 import { collectControls } from "../engine/uischemaParser";
 
-export function useVisibleFields(
-  uischema: UISchema,
-  values: FormValues,
-  externalValues?: FormValues,
-) {
-  const allValues = useMemo(
-    () => ({ ...externalValues, ...values }),
-    [externalValues, values],
-  );
-
+export function useVisibleFields(uischema: UISchema, values: FormValues) {
   const visibleFieldNames = useMemo(
-    () => getVisibleFields(uischema, allValues),
-    [uischema, allValues],
+    () => getVisibleFields(uischema, values),
+    [uischema, values],
   );
 
   const controls = useMemo(() => collectControls(uischema), [uischema]);
@@ -31,5 +22,5 @@ export function useVisibleFields(
     [controls, visibleFieldNames],
   );
 
-  return { allValues, visibleControls, visibleFieldNames };
+  return { visibleControls, visibleFieldNames };
 }

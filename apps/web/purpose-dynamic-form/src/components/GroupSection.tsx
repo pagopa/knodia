@@ -6,7 +6,6 @@ import { FieldRenderer } from "../renderers/FieldRenderer";
 import { InfoBanner } from "../renderers/InfoBanner";
 
 interface GroupSectionProps {
-  allValues: FormValues;
   errors: Record<string, string>;
   group: GroupLayout;
   isLast: boolean;
@@ -17,7 +16,6 @@ interface GroupSectionProps {
 }
 
 export function GroupSection({
-  allValues,
   errors,
   group,
   isLast,
@@ -42,14 +40,14 @@ export function GroupSection({
       )}
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
-          if (!isLabelVisible(element, allValues)) return null;
+          if (!isLabelVisible(element, values)) return null;
           return <InfoBanner key={`label-${i}`} text={element.text} />;
         }
         const fieldName = scopeToFieldName(element.scope);
         if (!visibleFieldNames.has(fieldName)) return null;
         return (
           <FieldRenderer
-            allValues={allValues}
+            allValues={values}
             control={element}
             error={errors[fieldName]}
             jsonSchema={jsonSchema}
