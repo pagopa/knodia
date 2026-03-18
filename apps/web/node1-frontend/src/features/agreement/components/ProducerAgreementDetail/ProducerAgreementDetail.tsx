@@ -6,6 +6,7 @@ import { createLink } from "@tanstack/react-router";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
+import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
 import { AgreementStateChip } from "../ProducerAgreementTable/AgreementStateChip";
 
@@ -33,14 +34,16 @@ export function ProducerAgreementDetail({
 
       <div className="flex flex-col gap-4">
         <SettingsCard label="E-Service">
-          {/* TODO: Add "Available" chip next to the eservice name (requires eservice state in the API response) */}
-          <RouterLink
-            params={{ id: agreement.eservice.id }}
-            to="/production/e-services/$id"
-            variant="inline"
-          >
-            {agreement.eservice.name.en}
-          </RouterLink>
+          <span className="flex items-center gap-6">
+            <RouterLink
+              params={{ id: agreement.eservice.id }}
+              to="/production/e-services/$id"
+              variant="inline"
+            >
+              {agreement.eservice.name.en}
+            </RouterLink>
+            <EserviceStateChip state={agreement.eserviceState} />
+          </span>
         </SettingsCard>
 
         <div className="grid grid-cols-2 gap-4">

@@ -19,6 +19,7 @@ function createAgreementDetails(
       id: "eservice-1",
       name: { en: "Birth Certificate API" },
     },
+    eserviceState: "Active",
     id: "agreement-1",
     producer: {
       id: "producer-1",
@@ -73,6 +74,12 @@ describe("ProducerAgreementDetail", () => {
     renderDetail(createAgreementDetails({ state: "Suspended" }));
 
     expect(screen.getByText("Suspended")).toBeInTheDocument();
+  });
+
+  it("renders the eservice state chip", () => {
+    renderDetail();
+
+    expect(screen.getByText("Available")).toBeInTheDocument();
   });
 
   it("renders the consumer contact popover button", () => {

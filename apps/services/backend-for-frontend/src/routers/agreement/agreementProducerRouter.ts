@@ -158,18 +158,24 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         path: { agreementId: req.params.agreementId },
       });
 
-      const [{ data: eservice }, { data: producer }] = await Promise.all([
-        eserviceProcessApi.getEservice({
-          client: eserviceProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          path: { eserviceId: agreement.eserviceId },
-        }),
-        organizationProcessApi.getOrganization({
-          client: organizationProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          path: { organizationId: agreement.producerId },
-        }),
-      ]);
+      const [{ data: eservice }, { data: latestVersion }, { data: producer }] =
+        await Promise.all([
+          eserviceProcessApi.getEservice({
+            client: eserviceProcessClient,
+            headers: getKnodiaServiceHeaders(req, correlationId),
+            path: { eserviceId: agreement.eserviceId },
+          }),
+          eserviceProcessApi.getEserviceLatestVersion({
+            client: eserviceProcessClient,
+            headers: getKnodiaServiceHeaders(req, correlationId),
+            path: { eserviceId: agreement.eserviceId },
+          }),
+          organizationProcessApi.getOrganization({
+            client: organizationProcessClient,
+            headers: getKnodiaServiceHeaders(req, correlationId),
+            path: { organizationId: agreement.producerId },
+          }),
+        ]);
 
       // TODO: fetch this with RRM
       const consumer: Organization = {
@@ -185,6 +191,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           agreement,
           consumer,
           eservice,
+          eserviceState: latestVersion.state,
           producer: {
             ...producer,
             knodeId,
