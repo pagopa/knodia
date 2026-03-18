@@ -142,7 +142,7 @@ export function eserviceServiceBuilder(
             eserviceId: eserviceId.id,
             knodeId: eserviceId.knodeId,
           },
-          "Multiple agreements found for consumer and eservice, using first match",
+          `Multiple agreements found for consumer and eservice for Knode: ${eserviceId.knodeId}`,
         );
       }
 
