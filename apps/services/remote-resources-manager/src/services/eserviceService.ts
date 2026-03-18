@@ -115,7 +115,7 @@ export function eserviceServiceBuilder(
 
       const path = { eserviceId: eserviceId.id };
 
-      const [{ data: eservice }, { data: version }, localAgreements] =
+      const [{ data: eservice }, { data: version }, remoteAgreements] =
         await Promise.all([
           k2kGatewayApi.getEservice({
             client: k2kGatewayClient,
@@ -132,13 +132,13 @@ export function eserviceServiceBuilder(
           ),
         ]);
 
-      const localAgreement = localAgreements[0];
+      const remoteAgreement = remoteAgreements[0];
 
-      if (localAgreements.length > 1) {
+      if (remoteAgreements.length > 1) {
         logger.warn(
           {
             consumerId: authData.organizationId,
-            count: localAgreements.length,
+            count: remoteAgreements.length,
             eserviceId: eserviceId.id,
             knodeId: eserviceId.knodeId,
           },
@@ -151,11 +151,11 @@ export function eserviceServiceBuilder(
           client: k2kGatewayClient,
           path: { organizationId: eservice.producerId },
         }),
-        localAgreement
+        remoteAgreement
           ? k2kGatewayApi
               .getAgreement({
                 client: k2kGatewayClient,
-                path: { agreementId: localAgreement.agreementId },
+                path: { agreementId: remoteAgreement.agreementId },
               })
               .then(({ data }) => data)
           : Promise.resolve(undefined),
