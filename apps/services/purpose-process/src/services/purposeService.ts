@@ -1,9 +1,5 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  KnodeId,
-  OrganizationId,
-  PurposeId,
-} from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type { OrganizationId, PurposeId } from "@knodia/common-models/ids";
 import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
 import type {
   InternalAuthData,
@@ -13,7 +9,13 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 
 import { EserviceId, generateId } from "@knodia/common-models/ids";
 import { EserviceMode } from "@knodia/eservice-models";
-import { type Purpose, PurposeState } from "@knodia/purpose-models";
+import {
+  LocalizedPurposeDescription,
+  LocalizedPurposeName,
+  type Purpose,
+  PurposeFormAnswers,
+  PurposeState,
+} from "@knodia/purpose-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -45,15 +47,12 @@ export function purposeServiceBuilder(
         formAnswersJson,
         name,
       }: {
-        consumer: {
-          id: ExternalId<OrganizationId>;
-          knodeId: KnodeId;
-        };
+        consumer: ExternalResource<OrganizationId>;
         dailyCalls: number;
-        description: { en: string };
+        description: LocalizedPurposeDescription;
         eserviceId: EserviceId;
-        formAnswersJson: Record<string, unknown>;
-        name: { en: string };
+        formAnswersJson: PurposeFormAnswers;
+        name: LocalizedPurposeName;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<Purpose> {
