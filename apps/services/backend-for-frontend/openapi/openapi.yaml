@@ -675,7 +675,7 @@ components:
         - possessed
         - scheme
       additionalProperties: false
-    ConsumerEserviceDetailsAgreement:
+    AgreementDetail:
       type: object
       properties:
         id:
@@ -743,7 +743,7 @@ components:
           $ref: "#/components/schemas/ConsumerEserviceDetailsAccessToken"
         agreement:
           allOf:
-            - $ref: "#/components/schemas/ConsumerEserviceDetailsAgreement"
+            - $ref: "#/components/schemas/AgreementDetail"
         categories:
           type: array
           items:
