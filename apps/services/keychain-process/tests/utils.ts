@@ -6,7 +6,7 @@ import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/k
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 
 import { createConsumerKeychainCreatedV1Event } from "../src/models/keychainEventFactory.ts";
-import { app, consumerKeychainWriterService, eventStoreDb } from "./setup.ts";
+import { app, eventStoreDb, keychainWriterService } from "./setup.ts";
 
 export async function getAllKeychainEvents() {
   return await eventStoreDb.select().from(eventStoreKeychainEvents);
@@ -18,8 +18,5 @@ export async function seedConsumerKeychain(consumerKeychain: ConsumerKeychain) {
   await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
     createConsumerKeychainCreatedV1Event(consumerKeychain, generateId()),
   );
-  await consumerKeychainWriterService.upsertConsumerKeychain(
-    consumerKeychain,
-    0,
-  );
+  await keychainWriterService.upsertConsumerKeychain(consumerKeychain, 0);
 }

@@ -93,6 +93,7 @@ export const toAPI_ConsumerEserviceDetails = (
     name: detail.interfaceDocument.prettyName.en,
   },
   isSignalHubEnabled: detail.isSignalHubEnabled,
+  latestVersionId: detail.latestVersion.id,
   maxDailyCalls: {
     perConsumer: detail.latestVersion.maxDailyCallsPerConsumer,
     perKnode: detail.latestVersion.maxDailyCallsPerKnode,

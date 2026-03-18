@@ -7,6 +7,7 @@ import {
 } from "@knodia/eservice-models";
 import { ConsumerKeychain } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
+import { Purpose } from "@knodia/purpose-models";
 import { zocker } from "zocker";
 
 export function getMockAgreement({
@@ -78,4 +79,8 @@ export function getMockEserviceVersion(seed = 0): EserviceVersion {
 
 export function getMockOrganization(seed = 0): Organization {
   return zocker(Organization).setSeed(seed).generate();
+}
+
+export function getMockPurpose(seed = 0): Purpose {
+  return zocker(Purpose).setSeed(seed).generate();
 }

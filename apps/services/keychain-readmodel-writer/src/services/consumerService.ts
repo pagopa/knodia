@@ -1,5 +1,4 @@
-/* eslint-disable no-restricted-imports */
-import type { ConsumerKeychainWriterService } from "@knodia/db-readmodel-consumer-keychain/writer";
+import type { KeychainWriterService } from "@knodia/db-readmodel-keychain/writer";
 import type { KeychainEventEnvelopeV1 } from "@knodia/keychain-models";
 
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
@@ -9,9 +8,9 @@ import { match, P } from "ts-pattern";
 export async function handleKeychainEvent(
   message: KeychainEventEnvelopeV1,
   {
-    consumerKeychainWriterService,
+    keychainWriterService,
   }: {
-    consumerKeychainWriterService: ConsumerKeychainWriterService;
+    keychainWriterService: KeychainWriterService;
   },
 ): Promise<void> {
   return match(message)
@@ -21,7 +20,7 @@ export async function handleKeychainEvent(
       },
       async (msg) => {
         assertDataExistsInEvent(msg, "consumerKeychain");
-        await consumerKeychainWriterService.upsertConsumerKeychain(
+        await keychainWriterService.upsertConsumerKeychain(
           fromConsumerKeychainV1(msg.data.consumerKeychain),
           message.version,
         );
@@ -29,7 +28,7 @@ export async function handleKeychainEvent(
     )
     .with({ type: "ConsumerKeychainDeletedV1" }, async (msg) => {
       assertDataExistsInEvent(msg, "consumerKeychain");
-      await consumerKeychainWriterService.deleteConsumerKeychain(
+      await keychainWriterService.deleteConsumerKeychain(
         fromConsumerKeychainV1(msg.data.consumerKeychain).id,
         message.version,
       );

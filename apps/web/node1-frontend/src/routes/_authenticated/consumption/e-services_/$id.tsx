@@ -1,3 +1,5 @@
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
+
 import { bffApi } from "@knodia/bff-client";
 import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
@@ -6,17 +8,22 @@ import {
   Breadcrumb,
   Breadcrumbs,
   Button,
+  ButtonLink,
   Divider,
   Popover,
 } from "@knodia/ui-kit/ui";
-import { AddressBookIcon, SealCheckIcon } from "@phosphor-icons/react";
+import {
+  AddressBookIcon,
+  SealCheckIcon,
+  WarningIcon,
+} from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
+import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { PageHeader } from "@/components/PageHeader";
-import { AttributeGroupContainer } from "@/features/e-service/components/AttributeGroupContainer";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
   AccessTokenSettingsSection,
@@ -32,11 +39,11 @@ import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-c
 import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 
-const eserviceQuery = (eserviceId: string, knodeId: string) =>
+const eserviceQuery = (eserviceId: string, knodeId: bffApi.KnodeId) =>
   getConsumerEserviceDetailsOptions({
     client,
     path: { eserviceId },
-    query: { knodeId: knodeId as bffApi.KnodeId },
+    query: { knodeId },
   });
 
 export const Route = createFileRoute(
@@ -54,15 +61,15 @@ export const Route = createFileRoute(
 });
 
 function ConsumptionRequirementsSection({
+  eserviceId,
+  hasRequiredAttributes,
   identificationRequired,
+  knodeId,
   requiredAttributes,
 }: Pick<
   ConsumptionEserviceDetail,
-  "identificationRequired" | "requiredAttributes"
->) {
-  const hasRequiredAttributes =
-    requiredAttributes.length > 0 &&
-    requiredAttributes.every((group) => group.some((attr) => attr.possessed));
+  "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
+> & { eserviceId: EserviceId; knodeId: KnodeId }) {
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -70,22 +77,20 @@ function ConsumptionRequirementsSection({
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Attributes
           </h3>
-          <ul className="gap-2 flex flex-col" role="list">
-            {requiredAttributes.map((group, index) => (
-              <li key={index}>
-                <AttributeGroupContainer attributes={group} />
-              </li>
-            ))}
-          </ul>
+          {requiredAttributes.length > 0 && (
+            <ul className="gap-2 flex flex-col mb-6" role="list">
+              {requiredAttributes.map((group, index) => (
+                <li key={index}>
+                  <AttributeGroupContainer attributes={group} />
+                </li>
+              ))}
+            </ul>
+          )}
 
-          {/* TODO: "Request Agreement" button behavior:
-              - Has required attributes + e-service available: redirect to Request Agreement flow
-              - Has required attributes + e-service unavailable: show message that user can't proceed
-              - Lacks required attributes: show informative message (button already disabled) */}
           <Banner
-            className="mt-6 [&>div:last-child]:flex-1"
-            icon={<SealCheckIcon />}
-            kind="neutral"
+            className="[&>div:last-child]:flex-1"
+            icon={hasRequiredAttributes ? <SealCheckIcon /> : <WarningIcon />}
+            kind={hasRequiredAttributes ? "neutral" : "warning"}
           >
             <div className="flex items-center justify-between gap-4">
               <span>
@@ -93,15 +98,20 @@ function ConsumptionRequirementsSection({
                   ? "Your organization has the required attributes."
                   : "Your organization does not have the required attributes."}
               </span>
-              <Button
-                className="shrink-0"
-                hierarchy="brand"
-                isDisabled={!hasRequiredAttributes}
-                kind="filled"
-                size="md"
-              >
-                Request Agreement
-              </Button>
+              {hasRequiredAttributes && (
+                <ButtonLink
+                  className="shrink-0"
+                  hierarchy="brand"
+                  href={{
+                    search: { eserviceId, knodeId },
+                    to: "/consumption/e-services/request-agreement",
+                  }}
+                  kind="filled"
+                  size="md"
+                >
+                  Request Agreement
+                </ButtonLink>
+              )}
             </div>
           </Banner>
         </div>
@@ -169,7 +179,7 @@ function RouteComponent() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
       client,
       path: { eserviceId: bffDetail.id },
-      query: { knodeId: knodeId as bffApi.KnodeId },
+      query: { knodeId },
     });
 
     downloadResponseAsFile(
@@ -221,8 +231,13 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
+      {/* TODO: if an agreement already exists for this eservice, hide ConsumptionRequirementsSection
+          and show "Your Org's consumption status" section instead */}
       <ConsumptionRequirementsSection
+        eserviceId={eservice.id}
+        hasRequiredAttributes={eservice.hasRequiredAttributes}
         identificationRequired={eservice.identificationRequired}
+        knodeId={knodeId}
         requiredAttributes={eservice.requiredAttributes}
       />
 
