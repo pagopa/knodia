@@ -88,7 +88,8 @@ function AgreementActionButton({
       ))
       // TODO: Only Active and Suspended states are supported. Archived is not handled yet.
       .with("Archived", () => {
-        throw new Error("Unexpected agreement state: Archived");
+        console.warn("Unhandled agreement state: Archived");
+        return null;
       })
       .exhaustive()
   );
