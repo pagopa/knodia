@@ -48,7 +48,7 @@ export const toK2KAgreement = (
   id: agreement.id,
   producerId: agreement.producerId,
   state: toK2KAgreementState(agreement.state),
-  updatedAt: "",
+  updatedAt: agreement.updatedAt.toISOString(),
 });
 
 const toK2KAgreementState = (
