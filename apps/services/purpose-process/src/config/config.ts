@@ -1,3 +1,4 @@
+import { ReadmodelPurposeConfig } from "@knodia/db-readmodel-purpose/config";
 import {
   AuthConfig,
   HTTPServerConfig,
@@ -5,7 +6,9 @@ import {
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
-const PurposeProcessConfig = LoggerConfig.and(HTTPServerConfig).and(AuthConfig);
+const PurposeProcessConfig = LoggerConfig.and(HTTPServerConfig)
+  .and(AuthConfig)
+  .and(ReadmodelPurposeConfig);
 export type PurposeProcessConfig = z.infer<typeof PurposeProcessConfig>;
 
 export const config = PurposeProcessConfig.parse(process.env);
