@@ -19,6 +19,7 @@ export function ProducerAgreementDetail({
     <>
       <PageHeader
         actions={
+          // TODO: Suspend button is always disabled — implement suspend/reactivate logic
           <Button hierarchy="danger" isDisabled kind="tonal" size="md">
             Suspend
           </Button>
@@ -31,6 +32,7 @@ export function ProducerAgreementDetail({
 
       <div className="flex flex-col gap-4">
         <SettingsCard label="E-Service">
+          {/* TODO: Add "Available" chip next to the eservice name (requires eservice state in the API response) */}
           <RouterLink
             params={{ id: agreement.eservice.id }}
             to="/production/e-services/$id"
@@ -49,6 +51,8 @@ export function ProducerAgreementDetail({
           </SettingsCard>
         </div>
       </div>
+
+      {/* TODO: Implement Purposes section */}
     </>
   );
 }
