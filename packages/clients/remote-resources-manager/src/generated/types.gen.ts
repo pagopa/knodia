@@ -67,7 +67,7 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
- * Seed data to create a new agreement
+ * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
     consumerId: OrganizationId;
@@ -104,6 +104,20 @@ export type Agreement = {
 export type Agreements = {
     pagination: Pagination;
     results: Array<Agreement>;
+};
+
+/**
+ * Agreement for an E-service
+ */
+export type AgreementDetails = {
+    attributes: Array<Attribute>;
+    consumer: AgreementConsumer;
+    eserviceId: string;
+    eserviceVersionId: string;
+    id: string;
+    producerId: OrganizationId;
+    state: AgreementState;
+    updatedAt: string;
 };
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
@@ -438,3 +452,44 @@ export type CreateAgreementResponses = {
 };
 
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
+
+export type GetAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/agreements/{agreementId}';
+};
+
+export type GetAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Agreement not found
+     */
+    404: Problem;
+};
+
+export type GetAgreementError = GetAgreementErrors[keyof GetAgreementErrors];
+
+export type GetAgreementResponses = {
+    /**
+     * Agreement retrieved successfully
+     */
+    200: AgreementDetails;
+};
+
+export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
