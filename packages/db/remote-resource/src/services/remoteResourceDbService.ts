@@ -49,7 +49,7 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
             eq(remoteResourceAgreement.eserviceId, eserviceId),
             eq(remoteResourceAgreement.knodeId, knodeId),
           ),
-        )
+        );
     },
     async insertAgreement(
       remoteAgreement: NewRemoteResourceAgreement,
