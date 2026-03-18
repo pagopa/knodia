@@ -38,17 +38,20 @@ export function ConsumerAgreementsSummary() {
   return (
     <>
       <div className="grid grid-cols-3 gap-4">
+        {/* TODO: Add agreement status filter search param when navigating to e-services list */}
         <AgreementCounterCard
           count={counters.active}
           icon={<CheckIcon />}
           kind="success"
           label="Active"
+          onViewAll={() => navigate({ to: "/consumption/e-services" })}
         />
         <AgreementCounterCard
           count={counters.suspended}
           icon={<XIcon />}
           kind="error"
           label="Suspended"
+          onViewAll={() => navigate({ to: "/consumption/e-services" })}
         />
         <AgreementCounterCard
           count={counters.archived}
@@ -75,7 +78,7 @@ function AgreementCounterCard({
   icon: React.ReactNode;
   kind: "error" | "neutral" | "success";
   label: string;
-  onViewAll?: () => void;
+  onViewAll: () => void;
 }) {
   const { cardBg, iconBg } = match(kind)
     .with("success", () => ({
@@ -115,7 +118,6 @@ function AgreementCounterCard({
       <div>
         <Button
           hierarchy="neutral"
-          isDisabled={!onViewAll}
           kind="outlined"
           onPress={onViewAll}
           size="sm"
