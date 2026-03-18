@@ -88,7 +88,7 @@ export const toK2KEserviceVersion = (
   accessTokenType: toK2KAccessTokenType(
     apiEserviceDetails.latestVersion.accessTokenType,
   ),
-  id: crypto.randomUUID(),
+  id: apiEserviceDetails.latestVersion.id,
   interfaceDocument: {
     checksum: apiEserviceDetails.interfaceDocument.checksum,
     contentType: "application/yaml",

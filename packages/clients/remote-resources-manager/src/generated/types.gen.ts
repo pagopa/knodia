@@ -187,6 +187,7 @@ export type EserviceDetailsLatestVersion = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
+    id: string;
     maxDailyCallsPerConsumer: number;
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;

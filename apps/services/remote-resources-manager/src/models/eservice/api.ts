@@ -101,6 +101,7 @@ const API_EserviceDetailsLatestVersion = z
     accessTokenAudience: z.array(z.string()),
     accessTokenDuration: z.number().int().meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType,
+    id: z.uuid(),
     maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
     maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
     requiredAttributes: z.array(z.array(API_Attribute)),

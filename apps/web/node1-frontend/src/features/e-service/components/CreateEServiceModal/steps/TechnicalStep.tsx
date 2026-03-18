@@ -8,11 +8,11 @@ import {
   TextField,
 } from "@knodia/ui-kit/ui";
 
+import { ModalFooter } from "@/components/ModalFooter";
 import { useStepsContext } from "@/contexts/steps";
 import { useTechnicalStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 
-import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
 
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;
@@ -45,7 +45,7 @@ export function TechnicalStep() {
 
       <form.Subscribe selector={(state) => state.canSubmit}>
         {(canSubmit) => (
-          <Footer
+          <ModalFooter
             isDisabled={!canSubmit}
             onCancel={prevStep}
             onConfirm={form.handleSubmit}
