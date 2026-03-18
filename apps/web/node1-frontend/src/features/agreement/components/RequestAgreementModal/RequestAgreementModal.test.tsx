@@ -35,7 +35,7 @@ function createEservice(
     producer: {
       email: "info@ursa.com",
       initials: "UM",
-      knodeName: "Lynx Knode",
+      knodeId: "Lynx",
       name: "Ursa Major",
       notes: "Open Mon-Fri",
     },
