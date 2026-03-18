@@ -40,7 +40,7 @@ export function GroupSection({
       )}
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
-          if (!isLabelVisible(element, values)) return null;
+          if (!isLabelVisible(element, values, visibleFieldNames)) return null;
           return <InfoBanner key={`label-${i}`} text={element.text} />;
         }
         const fieldName = scopeToFieldName(element.scope);

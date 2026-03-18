@@ -225,7 +225,8 @@ function TanstackFormStep({
           (el) =>
             (el.type === "Control" &&
               visibleFieldNames.has(scopeToFieldName(el.scope))) ||
-            (el.type === "Label" && isLabelVisible(el, values)),
+            (el.type === "Label" &&
+              isLabelVisible(el, values, visibleFieldNames)),
         ),
       ),
     [groups, visibleFieldNames, values],

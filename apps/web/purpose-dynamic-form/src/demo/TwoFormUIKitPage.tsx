@@ -213,7 +213,8 @@ function FormStep({
           (el) =>
             (el.type === "Control" &&
               visibleFieldNames.has(scopeToFieldName(el.scope))) ||
-            (el.type === "Label" && isLabelVisible(el, values)),
+            (el.type === "Label" &&
+              isLabelVisible(el, values, visibleFieldNames)),
         ),
       ),
     [groups, visibleFieldNames, values],
@@ -283,7 +284,7 @@ function GroupSection({
       )}
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
-          if (!isLabelVisible(element, values)) return null;
+          if (!isLabelVisible(element, values, visibleFieldNames)) return null;
           return <InfoBanner key={`label-${i}`} text={element.text} />;
         }
         const fieldName = scopeToFieldName(element.scope);

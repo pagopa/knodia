@@ -65,12 +65,23 @@ export function getVisibleFields(
 export function isLabelVisible(
   label: LabelElement,
   allValues: FormValues,
+  visibleFieldNames: Set<string>,
 ): boolean {
   if (!label.rule) return true;
+  const scopes = collectScopes(label.rule.condition);
+  if (scopes.some((s) => !visibleFieldNames.has(s))) return false;
   const conditionMet = evaluateCondition(label.rule.condition, allValues);
   return label.rule.effect === "SHOW" ? conditionMet : !conditionMet;
 }
 
 export function scopeToFieldName(scope: string): string {
   return scope.replace("#/properties/", "");
+}
+
+function collectScopes(condition: RuleCondition): string[] {
+  if ("type" in condition && condition.type === "AND") {
+    return condition.conditions.flatMap(collectScopes);
+  }
+  const leaf = condition as Exclude<RuleCondition, { type: "AND" }>;
+  return [scopeToFieldName(leaf.scope)];
 }
