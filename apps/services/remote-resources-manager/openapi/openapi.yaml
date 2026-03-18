@@ -511,7 +511,7 @@ components:
         - name
         - notes
       additionalProperties: false
-    EserviceDetailsAgreement:
+    AgreementDetail:
       type: object
       properties:
         id:
@@ -529,7 +529,7 @@ components:
       properties:
         agreement:
           allOf:
-            - $ref: "#/components/schemas/EserviceDetailsAgreement"
+            - $ref: "#/components/schemas/AgreementDetail"
         categories:
           type: array
           items:
