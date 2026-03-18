@@ -13,11 +13,9 @@ import {
 } from "../consumerKeychain.ts";
 import { splitConsumerKeychainIntoObjectsSQL } from "../converters/splitters.ts";
 
-export type ConsumerKeychainWriterService = ReturnType<
-  typeof consumerKeychainWriterServiceBuilder
->;
+export type KeychainWriterService = ReturnType<typeof keychainWriterBuilder>;
 
-export function consumerKeychainWriterServiceBuilder(db: NodePgDatabase) {
+export function keychainWriterBuilder(db: NodePgDatabase) {
   return {
     async deleteConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
