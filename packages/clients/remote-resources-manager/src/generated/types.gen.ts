@@ -208,13 +208,13 @@ export type EserviceDetailsProducer = {
     notes: string;
 };
 
-export type EserviceDetailsAgreement = {
+export type AgreementDetail = {
     id: string;
     state: AgreementState;
 };
 
 export type EserviceDetails = {
-    agreement?: EserviceDetailsAgreement;
+    agreement?: AgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;

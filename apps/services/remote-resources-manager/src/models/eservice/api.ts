@@ -128,16 +128,16 @@ const API_EserviceDetailsProducer = z
   })
   .meta({ id: "EserviceDetailsProducer" });
 
-const API_EserviceDetailsAgreement = z
+const API_AgreementDetail = z
   .strictObject({
     id: z.uuid(),
     state: API_AgreementState,
   })
-  .meta({ id: "EserviceDetailsAgreement" });
+  .meta({ id: "AgreementDetail" });
 
 export const API_EserviceDetails = z
   .strictObject({
-    agreement: API_EserviceDetailsAgreement.optional(),
+    agreement: API_AgreementDetail.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
