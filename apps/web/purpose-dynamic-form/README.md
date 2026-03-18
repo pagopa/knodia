@@ -4,7 +4,7 @@ A dynamic form engine that generates forms from two standard spec files: **JSON 
 
 ## Stack
 
-React 19, Zod 4, AJV, react-aria-components, @knodia/ui-kit, Tailwind CSS 4, TanStack Router, ts-pattern, Vite, Vitest.
+React 19, Zod 4, AJV, TanStack Form, react-aria-components, @knodia/ui-kit, Tailwind CSS 4, TanStack Router, ts-pattern, Vite, Vitest.
 
 ## Getting started
 
@@ -91,7 +91,7 @@ The architecture has three independent decoupling points:
 
 2. **Validation**: the engine exposes a `ValidateFn` interface: `(values, visibleFields) => Record<string, string>`. Both `createZodValidator` and `createAjvValidator` implement it. Swap in any validation library by implementing this signature.
 
-3. **Form state**: `DynamicForm` manages state with plain `useState`. The engine functions accept and return simple `Record<string, string | string[]>` values, compatible with any state management approach.
+3. **Form state**: `DynamicForm` manages state with plain `useState`. The `TwoFormTanstackAjvPage` demo shows the same engine powered by TanStack Form instead, using `useForm` for state and AJV for validation. The engine functions accept and return simple `Record<string, string | string[]>` values, compatible with any state management approach.
 
 ## Two-form model
 
@@ -100,10 +100,4 @@ The intended real-world usage has two forms:
 1. **Static form**: a hardcoded React component with fixed questions
 2. **Dynamic form**: rendered by this engine from JSON Schema + UI Schema
 
-The static form passes its values to the dynamic form via the `externalValues` prop. Inside `useVisibleFields`, these are merged:
-
-```ts
-allValues = { ...externalValues, ...values };
-```
-
-Visibility rules and conditional requirements evaluate against `allValues`, so the dynamic form can react to the static form's answers without any coupling in code. Only the dynamic form's own fields are validated and submitted.
+The static form's fields are defined in the same JSON Schema and UI Schema as the dynamic form's fields. The engine handles both in a single form, using visibility rules and conditional requirements to show/hide fields based on current values. Only visible fields are validated and submitted.
