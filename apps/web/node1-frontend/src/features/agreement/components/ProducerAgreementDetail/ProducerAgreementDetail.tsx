@@ -9,7 +9,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
-import { AgreementStateChip } from "../ProducerAgreementTable/AgreementStateChip";
+import { AgreementStateChip } from "../AgreementStateChip";
 
 const RouterLink = createLink(Link);
 
