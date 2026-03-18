@@ -74,4 +74,13 @@ describe("ProducerAgreementDetail", () => {
 
     expect(screen.getByText("Suspended")).toBeInTheDocument();
   });
+
+  it("renders the consumer contact popover button", () => {
+    renderDetail();
+
+    const contactButton = screen.getByRole("button", {
+      name: "View contact info",
+    });
+    expect(contactButton).toBeInTheDocument();
+  });
 });

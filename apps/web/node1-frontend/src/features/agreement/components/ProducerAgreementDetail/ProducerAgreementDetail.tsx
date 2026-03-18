@@ -3,6 +3,7 @@ import type { bffApi } from "@knodia/bff-client";
 import { Button, Link } from "@knodia/ui-kit/ui";
 import { createLink } from "@tanstack/react-router";
 
+import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
 
@@ -47,7 +48,16 @@ export function ProducerAgreementDetail({
             {agreement.producer.name} - {agreement.producer.knodeId} Knode
           </SettingsCard>
           <SettingsCard label="Consumer">
-            {agreement.consumer.name} - {agreement.consumer.knodeId} Knode
+            <span className="flex items-center gap-2">
+              {agreement.consumer.name} - {agreement.consumer.knodeId} Knode
+              {/* TODO: Replace mocked contact info with real data from the API when available in ProducerAgreementDetails */}
+              <OrganizationContactPopover
+                email="contact@example.com"
+                knodeName={agreement.consumer.knodeId}
+                name={agreement.consumer.name}
+                notes="—"
+              />
+            </span>
           </SettingsCard>
         </div>
       </div>
