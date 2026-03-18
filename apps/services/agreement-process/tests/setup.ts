@@ -1,14 +1,18 @@
+import { eventStoreAgreementEvents } from "@knodia/db-event-store-agreement";
+import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
 import {
   type AgreementWriterService,
   agreementWriterServiceBuilder,
 } from "@knodia/db-readmodel-agreement/writer";
+import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import {
   type EserviceWriterService,
   eserviceWriterServiceBuilder,
 } from "@knodia/db-readmodel-eservice/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
-import { afterAll, afterEach, beforeAll, beforeEach, inject } from "vitest";
+import { resetTestDatabase } from "@knodia/test-commons/utils";
+import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
@@ -17,6 +21,13 @@ let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
 let eserviceWriterService: EserviceWriterService;
 let agreementWriterService: AgreementWriterService;
+
+async function resetTestDatabases() {
+  await Promise.all([
+    resetTestDatabase(eventStoreDb, eventStoreAgreementEvents),
+    resetTestDatabase(readmodelDb, readmodelAgreement, readmodelEservice),
+  ]);
+}
 
 beforeAll(async () => {
   const connectionString = inject("POSTGRES_CONNECTION_STRING");
@@ -40,19 +51,8 @@ beforeAll(async () => {
   agreementWriterService = agreementWriterServiceBuilder(readmodelDb);
 });
 
-beforeEach(async () => {
-  await Promise.all([
-    eventStoreDb.execute("BEGIN"),
-    readmodelDb.execute("BEGIN"),
-  ]);
-});
-
 afterEach(async () => {
-  await Promise.all([
-    eventStoreDb.execute("ROLLBACK"),
-    readmodelDb.execute("ROLLBACK"),
-    eventStoreDb.execute("TRUNCATE TABLE test_agreement.events"), // TODO: workaround to clean table before ROLLBACK fix
-  ]);
+  await resetTestDatabases();
 });
 
 afterAll(async () => {

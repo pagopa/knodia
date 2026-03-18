@@ -10,6 +10,7 @@ import {
   type EventSchema,
   KafkaMessageEnvelope,
 } from "@knodia/common-models/event";
+import { Pool } from "pg";
 
 export function assertDataExistsInEvent<
   TEventZodType extends EventSchema,
@@ -52,7 +53,20 @@ export function decodeKafkaMessageEvent<TEvent extends EventSchema>(
   }
 }
 
-export function processExit({
+export async function processExitAndDisconnect({
+  logger,
+  readmodelPool,
+}: {
+  logger: Logger;
+  readmodelPool: Pool;
+}) {
+  await readmodelPool.end();
+  logger.debug("Readmodel pool closed successfully");
+
+  processExit({ logger });
+}
+
+function processExit({
   exitStatusCode = 1,
   logger,
 }: {

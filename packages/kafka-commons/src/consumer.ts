@@ -5,19 +5,21 @@ import type {
 import type { Logger } from "pino";
 
 import { kafkaMessageProcessError } from "@knodia/common-models/errors";
+import { Pool } from "pg";
 
 import type { KafkaConsumerConfig } from "./config/config.ts";
 
 import { checkTopicsExist } from "./admin.ts";
 import { initKafka } from "./kafka.ts";
 import { errorEventsListener } from "./listeners.ts";
-import { processExit } from "./utils/utils.ts";
+import { processExitAndDisconnect } from "./utils/utils.ts";
 
 export async function runConsumer(
   topics: string[],
   consumerHandler: (messagePayload: EachMessagePayload) => Promise<void>,
   config: KafkaConsumerConfig,
   logger: Logger,
+  readmodelPool: Pool,
 ) {
   try {
     logger.debug(`Kafka consumer connecting to topics: ${topics}`);
@@ -30,14 +32,14 @@ export async function runConsumer(
       "retry.backoff.max.ms": 3000,
     });
 
-    errorEventsListener(consumer, logger);
+    errorEventsListener(consumer, logger, readmodelPool);
 
     await consumer.connect();
     logger.debug("Kafka consumer connected");
 
     const topicExists = await checkTopicsExist(kafka, topics, logger);
     if (!topicExists) {
-      processExit({ logger });
+      await processExitAndDisconnect({ logger, readmodelPool });
     }
 
     await consumer.subscribe({ topics });
@@ -62,7 +64,7 @@ export async function runConsumer(
     });
   } catch (e) {
     logger.error(`Generic error occurs during consumer initialization: ${e}`);
-    processExit({ logger });
+    await processExitAndDisconnect({ logger, readmodelPool });
   }
 }
 

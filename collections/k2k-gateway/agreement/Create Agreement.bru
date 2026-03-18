@@ -9,18 +9,18 @@ post {
 }
 
 headers {
-  ~Authorization: 
+  ~Authorization:
 }
 
 body:json {
   {
-    "consumerId": "{{consumerId}}",
+    "consumerId": "{{organizationId}}",
     "eserviceId": "{{eserviceId}}",
     "eserviceVersionId": "{{eserviceVersionId}}"
   }
 }
 
 vars:post-response {
-  agreementId: res.body.id,
+  agreementId: res.body.id
   producerId: res.body.producerId
 }

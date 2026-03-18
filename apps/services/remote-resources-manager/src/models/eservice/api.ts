@@ -43,6 +43,13 @@ export type API_GetCatalogEserviceSearchParams = z.infer<
   typeof API_GetCatalogEserviceSearchParams
 >;
 
+const API_CatalogEserviceSearchResultProducer = z
+  .strictObject({
+    id: z.uuid(),
+    name: z.string(),
+  })
+  .meta({ id: "CatalogEserviceSearchResultProducer" });
+
 export const API_CatalogEserviceSearchResult = z
   .strictObject({
     categories: z.array(API_EserviceCategory),
@@ -52,7 +59,7 @@ export const API_CatalogEserviceSearchResult = z
     latestVersionState: API_EserviceVersionState,
     mode: API_EserviceMode,
     name: API_LocalizedName,
-    producerId: z.uuid(),
+    producer: API_CatalogEserviceSearchResultProducer,
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "CatalogEserviceSearchResult" });
@@ -94,6 +101,7 @@ const API_EserviceDetailsLatestVersion = z
     accessTokenAudience: z.array(z.string()),
     accessTokenDuration: z.number().int().meta({ format: "int32" }),
     accessTokenType: API_AccessTokenType,
+    id: z.uuid(),
     maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
     maxDailyCallsPerKnode: z.number().int().meta({ format: "int32" }),
     requiredAttributes: z.array(z.array(API_Attribute)),
@@ -114,7 +122,7 @@ const API_EserviceDetailsProducer = z
     email: z.string(),
     id: z.uuid(),
     knodeName: z.string(),
-    name: API_LocalizedName,
+    name: z.string(),
     notes: z.string(),
   })
   .meta({ id: "EserviceDetailsProducer" });

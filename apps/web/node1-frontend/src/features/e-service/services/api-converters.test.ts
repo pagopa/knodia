@@ -27,6 +27,7 @@ function createBffDetail(
       name: "API Specs",
     },
     isSignalHubEnabled: false,
+    latestVersionId: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
     maxDailyCalls: {
       perConsumer: 1000,
       perKnode: 10000,
@@ -37,7 +38,7 @@ function createBffDetail(
       email: "info@ursa.com",
       id: "00000000-0000-4000-8000-000000000099",
       knodeName: "Lynx Knode",
-      name: { en: "Ursa Major" },
+      name: "Ursa Major",
       notes: "Open Mon-Fri",
     },
     requiredAttributes: [[{ code: "NUTS3", possessed: true, scheme: "eu" }]],
@@ -122,6 +123,12 @@ describe("toConsumptionEserviceDetail", () => {
     const result = toConsumptionEserviceDetail(createBffDetail());
 
     expect(result.id).toBe("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+  });
+
+  it("brands the latestVersionId", () => {
+    const result = toConsumptionEserviceDetail(createBffDetail());
+
+    expect(result.latestVersionId).toBe("a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d");
   });
 
   it("passes through fields unchanged", () => {

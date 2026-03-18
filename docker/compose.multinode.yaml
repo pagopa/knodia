@@ -360,6 +360,7 @@ services:
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
+      READMODEL_DB_ORGANIZATION_SCHEMA: local_orion_organization
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -618,7 +619,7 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_orion_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -643,7 +644,7 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_orion_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
       KAFKA_BROKERS: kafka:9092
       KAFKA_LOG_LEVEL: INFO
       KAFKA_CLIENT_ID: kafka-keychain-client-orion
@@ -759,6 +760,7 @@ services:
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
       READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      READMODEL_DB_ORGANIZATION_SCHEMA: local_lynx_organization
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -1017,7 +1019,7 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_lynx_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -1042,7 +1044,7 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_lynx_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
       KAFKA_BROKERS: kafka:9092
       KAFKA_LOG_LEVEL: INFO
       KAFKA_CLIENT_ID: kafka-keychain-client-lynx
