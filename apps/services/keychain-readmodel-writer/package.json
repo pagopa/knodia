@@ -24,7 +24,7 @@
     "@knodia/common-models": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
-    "@knodia/db-readmodel-consumer-keychain": "workspace:*",
+    "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",

@@ -19,7 +19,7 @@ export const API_AgreementSeed = z
     knodeId: API_KnodeId,
   })
   .meta({
-    description: "Seed data to create a new agreement",
+    description: "Seed data to create a new Agreement",
     id: "AgreementSeed",
   });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
@@ -33,6 +33,13 @@ export const API_CreatedAgreementResource = API_CreatedResource.extend({
 });
 export type API_CreatedAgreementResource = z.infer<
   typeof API_CreatedAgreementResource
+>;
+
+export const API_GetAgreementQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetAgreementQueryParams = z.infer<
+  typeof API_GetAgreementQueryParams
 >;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
@@ -75,3 +82,20 @@ export const API_Agreements = z
   })
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
+
+export const API_AgreementDetails = z
+  .strictObject({
+    attributes: z.array(API_Attribute),
+    consumer: API_AgreementConsumer,
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+    id: z.uuid(),
+    producerId: API_OrganizationId,
+    state: API_AgreementState,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({
+    description: "Agreement for an E-service",
+    id: "AgreementDetails",
+  });
+export type API_AgreementDetails = z.infer<typeof API_AgreementDetails>;

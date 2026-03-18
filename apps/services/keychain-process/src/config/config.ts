@@ -1,5 +1,5 @@
 import { EventStoreKeychainConfig } from "@knodia/db-event-store-keychain/config";
-import { ReadmodelConsumerKeychainConfig } from "@knodia/db-readmodel-consumer-keychain/config";
+import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
 import {
   AuthConfig,
   HTTPServerConfig,
@@ -10,7 +10,7 @@ import { z } from "zod";
 const KeychainProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
   .and(EventStoreKeychainConfig)
-  .and(ReadmodelConsumerKeychainConfig);
+  .and(ReadmodelKeychainConfig);
 export type KeychainProcessConfig = z.infer<typeof KeychainProcessConfig>;
 
 export const config = KeychainProcessConfig.parse(process.env);

@@ -6,6 +6,7 @@ meta {
 post {
   url: {{host-remote-resources-manager}}/agreements
   body: json
+  auth: none
 }
 
 headers {
@@ -22,6 +23,6 @@ body:json {
 }
 
 vars:post-response {
-  agreementId: res.body.id,
+  agreementId: res.body.id
   producerId: res.body.producerId
 }
