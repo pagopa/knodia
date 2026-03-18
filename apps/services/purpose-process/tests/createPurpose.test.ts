@@ -123,7 +123,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(notAllowedEserviceModes.indexOf(mode) + 60),
+          ...getMockAgreement({
+            seed: notAllowedEserviceModes.indexOf(mode) + 60,
+          }),
           consumer: { id: consumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
@@ -174,7 +176,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(allowedEserviceVersionStates.indexOf(state) + 10),
+          ...getMockAgreement({
+            seed: allowedEserviceVersionStates.indexOf(state) + 10,
+          }),
           consumer: { id: consumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
@@ -250,7 +254,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(allowedAgreementStates.indexOf(state) + 40),
+          ...getMockAgreement({
+            seed: allowedAgreementStates.indexOf(state) + 40,
+          }),
           consumer: { id: testConsumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
@@ -285,7 +291,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(notAllowedAgreementStates.indexOf(state) + 50),
+          ...getMockAgreement({
+            seed: notAllowedAgreementStates.indexOf(state) + 50,
+          }),
           consumer: { id: testConsumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
