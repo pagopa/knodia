@@ -2,12 +2,17 @@
 
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
+import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import { API_EserviceDetails } from "../src/models/eservice/api.ts";
-import { toK2KEservice, toK2KEserviceVersion } from "./k2kConverters.ts";
+import {
+  toK2KEservice,
+  toK2KEserviceVersion,
+  toK2KKnodeId,
+} from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -17,6 +22,8 @@ const allowedTestTokens: TestToken[] = [
 const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
 const getOrganizationMock = vi.hoisted(() => vi.fn());
+const getAgreementMock = vi.hoisted(() => vi.fn());
+const getByConsumerIdAndEserviceIdMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -26,6 +33,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     ...original,
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
+      getAgreement: getAgreementMock,
       getEservice: getEserviceMock,
       getEserviceLatestVersion: getEserviceLatestVersionMock,
       getOrganization: getOrganizationMock,
@@ -33,11 +41,22 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   };
 });
 
+vi.mock("@knodia/db-remote-resource/services", () => ({
+  remoteResourceDbServiceBuilder: () => ({
+    getByAgreementId: vi.fn(),
+    getByConsumerIdAndEserviceId: getByConsumerIdAndEserviceIdMock,
+    insertAgreement: vi.fn(),
+  }),
+}));
+
+// eslint-disable-next-line max-lines-per-function
 describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const eserviceId = crypto.randomUUID();
-  const knodeId = "Orion";
+  const knodeId = "Orion" as const;
 
-  const expectedApiDetail = zocker(API_EserviceDetails).generate();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { agreement, ...expectedApiDetail } =
+    zocker(API_EserviceDetails).generate();
   const k2kEservice = toK2KEservice(expectedApiDetail);
   const k2kVersion = toK2KEserviceVersion(expectedApiDetail);
   const k2kOrganization: k2kGatewayApi.Organization = {
@@ -46,16 +65,32 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     name: expectedApiDetail.producer.name,
   };
 
+  const buildK2KAgreement = (
+    overrides: Partial<k2kGatewayApi.Agreement> &
+      Pick<k2kGatewayApi.Agreement, "id" | "state">,
+  ): k2kGatewayApi.Agreement => ({
+    attributes: [],
+    consumer: { id: TEST_ORGANIZATION_ID, knodeId: toK2KKnodeId(knodeId) },
+    eserviceId,
+    eserviceVersionId: crypto.randomUUID(),
+    producerId: k2kEservice.producerId,
+    updatedAt: new Date().toISOString(),
+    ...overrides,
+  });
+
   beforeEach(() => {
     getEserviceMock.mockReset();
     getEserviceLatestVersionMock.mockReset();
     getOrganizationMock.mockReset();
+    getAgreementMock.mockReset();
+    getByConsumerIdAndEserviceIdMock.mockReset();
   });
 
-  it("should return 200 with converted detail on success", async () => {
+  it("should return 200 with converted detail and no agreement when none exists", async () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
     getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getByConsumerIdAndEserviceIdMock.mockResolvedValue([]);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get(`/eservices/${eserviceId}`)
@@ -80,8 +115,16 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
         path: { organizationId: k2kEservice.producerId },
       }),
     );
+    expect(getByConsumerIdAndEserviceIdMock).toHaveBeenCalledWith(
+      TEST_ORGANIZATION_ID,
+      eserviceId,
+      knodeId,
+    );
+    expect(getAgreementMock).not.toHaveBeenCalled();
 
-    expect(response.json()).toEqual({
+    const body = response.json();
+    expect(body.agreement).toBeUndefined();
+    expect(body).toEqual({
       ...expectedApiDetail,
       producer: {
         email: "info@example.com",
@@ -90,6 +133,96 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
         name: k2kOrganization.name,
         notes: "Notes",
       },
+    });
+  });
+
+  it("should return 200 with agreement when one exists in DB", async () => {
+    const agreementId = crypto.randomUUID();
+    const k2kAgreement = buildK2KAgreement({
+      id: agreementId,
+      state: "ACTIVE",
+    });
+
+    getEserviceMock.mockResolvedValue({ data: k2kEservice });
+    getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getByConsumerIdAndEserviceIdMock.mockResolvedValue([
+      {
+        agreementId,
+        consumerId: TEST_ORGANIZATION_ID,
+        eserviceId,
+        eserviceVersionId: k2kAgreement.eserviceVersionId,
+        knodeId,
+        producerId: k2kEservice.producerId,
+      },
+    ]);
+    getAgreementMock.mockResolvedValue({ data: k2kAgreement });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get(`/eservices/${eserviceId}`)
+      .query({ knodeId });
+
+    expect(response.statusCode).toBe(200);
+
+    expect(getAgreementMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: { agreementId },
+      }),
+    );
+
+    const body = response.json();
+    expect(body.agreement).toEqual({
+      id: agreementId,
+      state: "Active",
+    });
+  });
+
+  it("should use first agreement when multiple exist in DB", async () => {
+    const agreementId1 = crypto.randomUUID();
+    const agreementId2 = crypto.randomUUID();
+
+    const k2kAgreement = buildK2KAgreement({
+      id: agreementId1,
+      state: "SUSPENDED",
+    });
+
+    getEserviceMock.mockResolvedValue({ data: k2kEservice });
+    getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getByConsumerIdAndEserviceIdMock.mockResolvedValue([
+      {
+        agreementId: agreementId1,
+        consumerId: TEST_ORGANIZATION_ID,
+        eserviceId,
+        knodeId,
+        producerId: k2kEservice.producerId,
+      },
+      {
+        agreementId: agreementId2,
+        consumerId: TEST_ORGANIZATION_ID,
+        eserviceId,
+        knodeId,
+        producerId: k2kEservice.producerId,
+      },
+    ]);
+    getAgreementMock.mockResolvedValue({ data: k2kAgreement });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get(`/eservices/${eserviceId}`)
+      .query({ knodeId });
+
+    expect(response.statusCode).toBe(200);
+
+    expect(getAgreementMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: { agreementId: agreementId1 },
+      }),
+    );
+
+    const body = response.json();
+    expect(body.agreement).toEqual({
+      id: agreementId1,
+      state: "Suspended",
     });
   });
 
