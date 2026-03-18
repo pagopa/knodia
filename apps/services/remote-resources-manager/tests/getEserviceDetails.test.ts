@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
@@ -52,7 +53,7 @@ vi.mock("@knodia/db-remote-resource/services", () => ({
 // eslint-disable-next-line max-lines-per-function
 describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const eserviceId = crypto.randomUUID();
-  const knodeId = "Orion" as const;
+  const knodeId: API_KnodeId = "Orion";
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { agreement, ...expectedApiDetail } =
