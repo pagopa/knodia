@@ -26,8 +26,10 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { organizationRouter } from "./routers/organizationRouter.ts";
 import { agreementServiceBuilder } from "./services/agreementService.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
+import { organizationServiceBuilder } from "./services/organizationService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
 export function buildApp({
@@ -66,6 +68,10 @@ export function buildApp({
             description: "Routes related to E-services",
             name: apiTags.eservice,
           },
+          {
+            description: "Routes related to Organizations",
+            name: apiTags.organization,
+          },
         ],
       },
     },
@@ -92,6 +98,9 @@ export function buildApp({
         remoteResourceDbServiceBuilder(remoteResourceDb),
         readmodelServiceBuilder(readmodelDb),
       ),
+    });
+    protectedApp.register(organizationRouter, {
+      organizationService: organizationServiceBuilder(k2kGatewayClient),
     });
   });
 

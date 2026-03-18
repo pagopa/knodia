@@ -6,6 +6,7 @@ import type {
   API_EserviceVersionState,
 } from "@knodia/eservice-models/api";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import type { Organization } from "@knodia/organization-models";
 
 import { match } from "ts-pattern";
 
@@ -104,4 +105,12 @@ export const toK2KEserviceVersion = (
   state: toK2KVersionState(apiEserviceDetails.latestVersion.state),
   updatedAt: new Date().toISOString(),
   versionNumber: 1,
+});
+
+export const toK2KOrganization = (
+  organization: Organization,
+): k2kGatewayApi.Organization => ({
+  attributes: organization.attributes,
+  id: organization.id,
+  name: organization.name,
 });

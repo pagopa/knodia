@@ -105,20 +105,6 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
-/**
- * Agreement for an E-service
- */
-export type AgreementDetails = {
-    attributes: Array<Attribute>;
-    consumer: AgreementConsumer;
-    eserviceId: string;
-    eserviceVersionId: string;
-    id: string;
-    producerId: OrganizationId;
-    state: AgreementState;
-    updatedAt: string;
-};
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -219,6 +205,12 @@ export type EserviceDetails = {
     mode: EserviceMode;
     name: LocalizedName;
     producer: EserviceDetailsProducer;
+};
+
+export type Organization = {
+    attributes: Array<Attribute>;
+    id: string;
+    name: string;
 };
 
 export type GetStatusData = {
@@ -488,7 +480,48 @@ export type GetAgreementResponses = {
     /**
      * Agreement retrieved successfully
      */
-    200: AgreementDetails;
+    200: Agreement;
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
