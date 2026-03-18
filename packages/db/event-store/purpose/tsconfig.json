@@ -1,0 +1,4 @@
+{
+  "extends": "@knodia/typescript-config/tsconfig.node.json",
+  "exclude": ["**/generated"]
+}
