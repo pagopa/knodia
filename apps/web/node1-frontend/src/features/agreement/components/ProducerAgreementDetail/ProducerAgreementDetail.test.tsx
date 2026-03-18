@@ -51,11 +51,20 @@ describe("ProducerAgreementDetail", () => {
     expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
-  it("renders the Suspend button as disabled", () => {
+  it("renders the Suspend button as disabled when agreement is active", () => {
     renderDetail();
 
     const suspendButton = screen.getByRole("button", { name: "Suspend" });
     expect(suspendButton).toBeDisabled();
+  });
+
+  it("renders the Reactivate button as disabled when agreement is suspended", () => {
+    renderDetail(createAgreementDetails({ state: "Suspended" }));
+
+    const reactivateButton = screen.getByRole("button", {
+      name: "Reactivate",
+    });
+    expect(reactivateButton).toBeDisabled();
   });
 
   it("renders a link to the eservice detail page", () => {

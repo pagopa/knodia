@@ -21,10 +21,17 @@ export function ProducerAgreementDetail({
     <>
       <PageHeader
         actions={
-          // TODO: Suspend button is always disabled — implement suspend/reactivate logic
-          <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-            Suspend
-          </Button>
+          agreement.state === "Suspended" ? (
+            // TODO: Reactivate button is always disabled — implement reactivate logic
+            <Button hierarchy="brand" isDisabled kind="filled" size="md">
+              Reactivate
+            </Button>
+          ) : (
+            // TODO: Suspend button is always disabled — implement suspend logic
+            <Button hierarchy="danger" isDisabled kind="tonal" size="md">
+              Suspend
+            </Button>
+          )
         }
         resourceStatusChip={
           <AgreementStateChip state={agreement.state} type="light" />
