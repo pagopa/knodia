@@ -50,7 +50,7 @@ export const toK2KAgreement = (
   updatedAt: "",
 });
 
-const toK2KAgreementState = (
+export const toK2KAgreementState = (
   state: AgreementState,
 ): k2kGatewayApi.AgreementState =>
   match(state)
