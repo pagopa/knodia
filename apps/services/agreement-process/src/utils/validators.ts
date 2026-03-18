@@ -16,7 +16,7 @@ import {
 } from "../models/errors.ts";
 import { retrieveEserviceVersion } from "./readmodelUtils.ts";
 
-export const assertEserviceVersionIsActive = async (
+export const assertEserviceVersionAllowsAgreementCreation = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
