@@ -5,8 +5,8 @@ import {
   readmodelConsumerKeychainKey,
   readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
-} from "@knodia/db-readmodel-consumer-keychain";
-import { aggregateConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
+} from "@knodia/db-readmodel-keychain";
+import { aggregateConsumerKeychains } from "@knodia/db-readmodel-keychain/converters";
 import { eq } from "drizzle-orm";
 
 export async function getAllConsumerKeychains(readmodelDb: NodePgDatabase) {
