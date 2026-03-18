@@ -12,6 +12,8 @@ import type {
   API_EserviceDetails,
 } from "./api.ts";
 
+import { toAPI_AgreementState } from "../agreement/apiConverter.ts";
+
 export const toAPI_CatalogEserviceSearchResult = (
   catalogEservice: k2kGatewayApi.CatalogEserviceSearchResult,
   producerName: string,
@@ -37,7 +39,11 @@ export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
   producer: k2kGatewayApi.Organization,
+  agreement?: k2kGatewayApi.Agreement,
 ): API_EserviceDetails => ({
+  agreement: agreement
+    ? { id: agreement.id, state: toAPI_AgreementState(agreement.state) }
+    : undefined,
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,

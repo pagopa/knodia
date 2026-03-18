@@ -37,6 +37,16 @@ export const toAPI_AgreementDetails = (
   updatedAt: agreement.updatedAt,
 });
 
+export function toAPI_AgreementState(
+  state: k2kGatewayApi.AgreementState,
+): API_AgreementState {
+  return match(state)
+    .with("ACTIVE", () => "Active" as const)
+    .with("SUSPENDED", () => "Suspended" as const)
+    .with("ARCHIVED", () => "Archived" as const)
+    .exhaustive();
+}
+
 export function toK2KAPI_AgreementState(
   state: API_AgreementState,
 ): k2kGatewayApi.AgreementState {
@@ -54,16 +64,6 @@ function toAPI_AgreementConsumer(
     id: consumer.id,
     knodeId: toAPI_KnodeId(consumer.knodeId),
   };
-}
-
-function toAPI_AgreementState(
-  state: k2kGatewayApi.AgreementState,
-): API_AgreementState {
-  return match(state)
-    .with("ACTIVE", () => "Active" as const)
-    .with("SUSPENDED", () => "Suspended" as const)
-    .with("ARCHIVED", () => "Archived" as const)
-    .exhaustive();
 }
 
 function toAPI_KnodeId(knodeId: k2kGatewayApi.KnodeId): API_KnodeId {

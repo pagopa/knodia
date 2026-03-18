@@ -1,3 +1,4 @@
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
   API_Pagination,
@@ -127,8 +128,16 @@ const API_EserviceDetailsProducer = z
   })
   .meta({ id: "EserviceDetailsProducer" });
 
+const API_EserviceDetailsAgreement = z
+  .strictObject({
+    id: z.uuid(),
+    state: API_AgreementState,
+  })
+  .meta({ id: "EserviceDetailsAgreement" });
+
 export const API_EserviceDetails = z
   .strictObject({
+    agreement: API_EserviceDetailsAgreement.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
