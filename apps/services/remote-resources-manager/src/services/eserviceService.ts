@@ -1,5 +1,6 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { EserviceId } from "@knodia/common-models/ids";
+import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
@@ -24,7 +25,10 @@ import {
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
-export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
+export function eserviceServiceBuilder(
+  k2kGatewayClient: K2K2GatewayApiClient,
+  remoteResourceDbService: RemoteResourceDbService,
+) {
   return {
     async downloadEserviceLatestVersionInterface(
       eserviceId: ExternalResource<EserviceId>,
@@ -102,7 +106,7 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
 
     async getEserviceDetails(
       eserviceId: ExternalResource<EserviceId>,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_EserviceDetails> {
       logger.info(
         { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
@@ -111,23 +115,53 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
 
       const path = { eserviceId: eserviceId.id };
 
-      const [{ data: eservice }, { data: version }] = await Promise.all([
-        k2kGatewayApi.getEservice({
+      const [{ data: eservice }, { data: version }, localAgreements] =
+        await Promise.all([
+          k2kGatewayApi.getEservice({
+            client: k2kGatewayClient,
+            path,
+          }),
+          k2kGatewayApi.getEserviceLatestVersion({
+            client: k2kGatewayClient,
+            path,
+          }),
+          remoteResourceDbService.getByConsumerIdAndEserviceId(
+            authData.organizationId,
+            eserviceId.id,
+            eserviceId.knodeId,
+          ),
+        ]);
+
+      const localAgreement = localAgreements[0];
+
+      if (localAgreements.length > 1) {
+        logger.warn(
+          {
+            consumerId: authData.organizationId,
+            count: localAgreements.length,
+            eserviceId: eserviceId.id,
+            knodeId: eserviceId.knodeId,
+          },
+          "Multiple agreements found for consumer and eservice, using first match",
+        );
+      }
+
+      const [{ data: producer }, agreement] = await Promise.all([
+        k2kGatewayApi.getOrganization({
           client: k2kGatewayClient,
-          path,
+          path: { organizationId: eservice.producerId },
         }),
-        k2kGatewayApi.getEserviceLatestVersion({
-          client: k2kGatewayClient,
-          path,
-        }),
+        localAgreement
+          ? k2kGatewayApi
+              .getAgreement({
+                client: k2kGatewayClient,
+                path: { agreementId: localAgreement.agreementId },
+              })
+              .then(({ data }) => data)
+          : Promise.resolve(undefined),
       ]);
 
-      const { data: producer } = await k2kGatewayApi.getOrganization({
-        client: k2kGatewayClient,
-        path: { organizationId: eservice.producerId },
-      });
-
-      return toAPI_EserviceDetails(eservice, version, producer);
+      return toAPI_EserviceDetails(eservice, version, producer, agreement);
     },
   };
 }
