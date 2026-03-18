@@ -9,9 +9,9 @@ import { match, P } from "ts-pattern";
 export async function handleKeychainEvent(
   message: KeychainEventEnvelopeV1,
   {
-    consumerKeychainWriterService,
+    keychainWriterService,
   }: {
-    consumerKeychainWriterService: KeychainWriterService;
+    keychainWriterService: KeychainWriterService;
   },
 ): Promise<void> {
   return match(message)
@@ -21,7 +21,7 @@ export async function handleKeychainEvent(
       },
       async (msg) => {
         assertDataExistsInEvent(msg, "consumerKeychain");
-        await consumerKeychainWriterService.upsertConsumerKeychain(
+        await keychainWriterService.upsertConsumerKeychain(
           fromConsumerKeychainV1(msg.data.consumerKeychain),
           message.version,
         );
@@ -29,7 +29,7 @@ export async function handleKeychainEvent(
     )
     .with({ type: "ConsumerKeychainDeletedV1" }, async (msg) => {
       assertDataExistsInEvent(msg, "consumerKeychain");
-      await consumerKeychainWriterService.deleteConsumerKeychain(
+      await keychainWriterService.deleteConsumerKeychain(
         fromConsumerKeychainV1(msg.data.consumerKeychain).id,
         message.version,
       );

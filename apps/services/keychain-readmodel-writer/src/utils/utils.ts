@@ -15,7 +15,7 @@ export const createProcessMessage = (
   readmodelDb: NodePgDatabase,
   logger: Logger,
 ) => {
-  const consumerKeychainWriterService = keychainWriterBuilder(readmodelDb);
+  const keychainWriterService = keychainWriterBuilder(readmodelDb);
 
   return async function processMessage({
     message,
@@ -32,7 +32,7 @@ export const createProcessMessage = (
     };
     const messageLogger = logger.child(loggerMetadata);
 
-    await handleKeychainEvent(event, { consumerKeychainWriterService });
+    await handleKeychainEvent(event, { keychainWriterService });
 
     messageLogger.info(
       `Read model was updated. Partition number: ${partition}. Offset: ${message.offset}`,

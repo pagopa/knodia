@@ -14,7 +14,7 @@ import { buildApp } from "../src/app.ts";
 let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
 let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
 let app: ReturnType<typeof buildApp>;
-let consumerKeychainWriterService: KeychainWriterService;
+let keychainWriterService: KeychainWriterService;
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -41,7 +41,7 @@ beforeAll(async () => {
     readmodelDb,
   });
 
-  consumerKeychainWriterService = keychainWriterBuilder(readmodelDb);
+  keychainWriterService = keychainWriterBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -52,4 +52,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, consumerKeychainWriterService, eventStoreDb };
+export { app, eventStoreDb, keychainWriterService };

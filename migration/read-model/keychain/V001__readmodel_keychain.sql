@@ -61,7 +61,7 @@ ALTER TABLE ${NAMESPACE}_keychain."consumer_keychain_key" ADD CONSTRAINT "consum
 ALTER TABLE ${NAMESPACE}_keychain."consumer_keychain_key" DROP CONSTRAINT IF EXISTS "consumer_keychain_key_consumer_keychain_id_metadata_v_fkey";
 ALTER TABLE ${NAMESPACE}_keychain."consumer_keychain_key" ADD CONSTRAINT "consumer_keychain_key_consumer_keychain_id_metadata_v_fkey" FOREIGN KEY ("consumer_keychain_id","metadata_version") REFERENCES ${NAMESPACE}_keychain."consumer_keychain"("id","metadata_version") ON DELETE no action ON UPDATE no action DEFERRABLE INITIALLY DEFERRED;
 
--- Grant privileges to _consumer_keychain_rmw_user
+-- Grant privileges to _keychain_rmw_user
 GRANT USAGE ON SCHEMA ${NAMESPACE}_keychain TO ${NAMESPACE}_keychain_rmw_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA ${NAMESPACE}_keychain TO ${NAMESPACE}_keychain_rmw_user;
 
