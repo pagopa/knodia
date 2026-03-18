@@ -36,7 +36,7 @@ export const toAPI_CatalogEserviceSearchResult = (
   updatedAt: catalogEservice.updatedAt,
 });
 
-export const toAPI_AgreementDetail = (
+const toAPI_AgreementDetail = (
   agreement?: k2kGatewayApi.Agreement,
 ): API_AgreementDetail | undefined =>
   agreement
