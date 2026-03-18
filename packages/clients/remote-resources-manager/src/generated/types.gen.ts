@@ -230,7 +230,7 @@ export type EserviceDetails = {
     producer: EserviceDetailsProducer;
 };
 
-export type ConsumerEserviceVersionDetails = {
+export type ConsumerEserviceVersion = {
     id: string;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
@@ -250,7 +250,7 @@ export type ConsumerEservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producer: CompactOrganization;
-    version: ConsumerEserviceVersionDetails;
+    version: ConsumerEserviceVersion;
 };
 
 export type ConsumerEservices = {

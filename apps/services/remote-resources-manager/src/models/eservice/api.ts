@@ -150,7 +150,7 @@ const API_ConsumerEserviceVersion = API_EserviceVersionDetails.pick({
   requiredAttributes: true,
   state: true,
 }).meta({
-  id: "ConsumerEserviceVersionDetails",
+  id: "ConsumerEserviceVersion",
 });
 
 export const API_ConsumerEservice = z
