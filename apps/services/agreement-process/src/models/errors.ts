@@ -96,12 +96,13 @@ export function eserviceVersionNotInExpectedState(
 }
 
 export function eserviceVersionNotLatest(
+  eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,
   latestVersionId: EserviceVersionId,
 ) {
   return createApiError<ErrorCodes>({
     code: "ESERVICE_VERSION_NOT_LATEST",
-    detail: `E-service version ${eserviceVersionId} is not the latest version. Latest version is ${latestVersionId}`,
+    detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not the latest version. Latest version is ${latestVersionId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Not Latest E-service Version",
   });

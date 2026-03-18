@@ -7,7 +7,6 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 import type {
-  Eservice,
   EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
@@ -22,7 +21,7 @@ import {
 import { retrieveEserviceLatestVersion } from "./readmodelUtils.ts";
 
 export const assertAgreementCanBeCreated = async (
-  eservice: Eservice,
+  eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
@@ -36,17 +35,21 @@ export const assertAgreementCanBeCreated = async (
   ];
 
   const eserviceLatestVersion = await retrieveEserviceLatestVersion(
-    eservice.id,
+    eserviceId,
     readmodelService,
     allowedEserviceVersionStates,
   );
 
   if (eserviceLatestVersion.id !== eserviceVersionId) {
-    throw eserviceVersionNotLatest(eserviceVersionId, eserviceLatestVersion.id);
+    throw eserviceVersionNotLatest(
+      eserviceId,
+      eserviceVersionId,
+      eserviceLatestVersion.id,
+    );
   }
 
   assertEserviceVersionIsInExpectedStates(
-    eservice.id,
+    eserviceId,
     eserviceLatestVersion,
     allowedEserviceVersionStatesForCreation,
   );

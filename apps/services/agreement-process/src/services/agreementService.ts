@@ -67,7 +67,7 @@ export function agreementServiceBuilder(
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
       await assertAgreementCanBeCreated(
-        eservice,
+        eservice.id,
         eserviceVersionId,
         readmodelService,
       );
