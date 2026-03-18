@@ -2,6 +2,7 @@ import { categories } from "@knodia/category-models";
 import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 
+import { ModalFooter } from "@/components/ModalFooter";
 import { useStepsContext } from "@/contexts/steps";
 import { useGeneralStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
 import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
@@ -11,7 +12,6 @@ import {
   toSchemeRefKey,
 } from "@/features/e-service/utils/schemeRef";
 
-import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
 
 interface Props {
@@ -96,7 +96,7 @@ export function GeneralStep({ onCancel }: Props) {
 
       <form.Subscribe selector={(state) => state.canSubmit}>
         {(canSubmit) => (
-          <Footer
+          <ModalFooter
             cancelLabel="Back"
             isDisabled={!canSubmit}
             onCancel={onCancel}
