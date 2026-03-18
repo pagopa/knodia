@@ -270,19 +270,6 @@ components:
         - state
         - updatedAt
       additionalProperties: false
-    Agreements:
-      type: object
-      properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
-          type: array
-          items:
-            $ref: "#/components/schemas/Agreement"
-      required:
-        - pagination
-        - results
-      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
