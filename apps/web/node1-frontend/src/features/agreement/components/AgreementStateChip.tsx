@@ -20,7 +20,7 @@ export function AgreementStateChip({
       .with("Suspended", () => (
         <Chip icon={<XIcon />} kind="error" label="Suspended" type={type} />
       ))
-      // TODO: Currently only Active and Suspended are handled
+      // TODO: Only Active and Suspended states are supported. Archived is not handled yet.
       .with("Archived", () => {
         throw new Error("Unexpected agreement state: Archived");
       })

@@ -80,12 +80,13 @@ function AgreementActionButton({
         </Button>
       ))
       .with("Suspended", () => (
-        // TODO: Reactivate button is always disabled — implement reactivate logic
+        // TODO: Reactivate button is always disabled — implement reactivate logic.
+        // If the agreement was suspended by the consumer, no button should be shown.
         <Button hierarchy="brand" isDisabled kind="filled" size="md">
           Reactivate
         </Button>
       ))
-      // TODO: Handle Archived agreement state when supported
+      // TODO: Only Active and Suspended states are supported. Archived is not handled yet.
       .with("Archived", () => {
         throw new Error("Unexpected agreement state: Archived");
       })
