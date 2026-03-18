@@ -70,7 +70,6 @@ export type OrganizationId = string;
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
-    consumerId: OrganizationId;
     eserviceId: string;
     eserviceVersionId: string;
     knodeId: KnodeId;
