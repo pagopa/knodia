@@ -34,7 +34,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       consumerKnodeId: KnodeId;
       eserviceId: EserviceId;
     }): Promise<Agreement[]> {
-      // TODO return FlatAgreement[] after KN-258
       const queryRes = await readmodelDb
         .select({
           agreement: readmodelAgreement,

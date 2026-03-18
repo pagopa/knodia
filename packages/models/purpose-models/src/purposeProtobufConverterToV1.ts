@@ -1,10 +1,10 @@
 import { match } from "ts-pattern";
 
-import type { Purpose } from "./purpose.ts";
+import type { Purpose, PurposeState } from "./purpose.ts";
 
 import { PurposeStateV1, type PurposeV1 } from "./generated/v1/purpose.ts";
 
-const toPurposeStateV1 = (state: Purpose["state"]): PurposeStateV1 =>
+const toPurposeStateV1 = (state: PurposeState): PurposeStateV1 =>
   match(state)
     .with("Active", () => PurposeStateV1.ACTIVE)
     .with("Suspended", () => PurposeStateV1.SUSPENDED)

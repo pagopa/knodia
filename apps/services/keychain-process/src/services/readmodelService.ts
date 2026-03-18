@@ -7,9 +7,9 @@ import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
-import { readmodelConsumerKeychain } from "@knodia/db-readmodel-consumer-keychain";
-import { aggregateFlatConsumerKeychains } from "@knodia/db-readmodel-consumer-keychain/converters";
-import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-consumer-keychain/services";
+import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
+import { aggregateFlatConsumerKeychains } from "@knodia/db-readmodel-keychain/converters";
+import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
 import { eq } from "drizzle-orm";
 
 import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";

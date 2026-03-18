@@ -1,11 +1,11 @@
 import { bffApi } from "@knodia/bff-client";
 import { Banner, Divider } from "@knodia/ui-kit/ui";
 
+import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
-import { AttributeGroupContainer } from "../AttributeGroupContainer";
 import {
   AccessTokenSettingsSection,
   DocumentsSection,

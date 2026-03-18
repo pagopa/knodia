@@ -1,5 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
-import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -13,7 +13,6 @@ import {
   EserviceId,
   EserviceVersionId,
   generateId,
-  KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
 
@@ -43,10 +42,7 @@ export function agreementServiceBuilder(
         eserviceId,
         eserviceVersionId,
       }: {
-        consumer: {
-          id: ExternalId<OrganizationId>;
-          knodeId: KnodeId;
-        };
+        consumer: ExternalResource<OrganizationId>;
         eserviceId: EserviceId;
         eserviceVersionId: EserviceVersionId;
       },
