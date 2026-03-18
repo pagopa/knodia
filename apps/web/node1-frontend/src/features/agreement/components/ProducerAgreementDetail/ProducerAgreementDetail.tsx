@@ -38,7 +38,7 @@ export function ProducerAgreementDetail({
             >
               {agreement.eservice.name.en}
             </RouterLink>
-            <EserviceStateChip state={agreement.eserviceState} />
+            <EserviceStateChip state={agreement.latestEserviceVersionState} />
           </span>
         </SettingsCard>
 

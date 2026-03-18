@@ -409,7 +409,7 @@ export type ProducerAgreementDetails = {
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
-    eserviceState: EserviceVersionState;
+    latestEserviceVersionState: EserviceVersionState;
     producer: CompactOrganization;
 };
 

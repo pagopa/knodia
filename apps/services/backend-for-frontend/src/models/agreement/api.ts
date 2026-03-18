@@ -38,7 +38,7 @@ export const API_ProducerAgreement = z
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
 
 export const API_ProducerAgreementDetails = API_ProducerAgreement.extend({
-  eserviceState: API_EserviceVersionState,
+  latestEserviceVersionState: API_EserviceVersionState,
   producer: API_CompactOrganization,
 }).meta({ id: "ProducerAgreementDetails" });
 export type API_ProducerAgreementDetails = z.infer<
