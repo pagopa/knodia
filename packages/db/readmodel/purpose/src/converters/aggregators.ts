@@ -13,9 +13,9 @@ import {
   minDescriptionLength,
   minNameLength,
   type Purpose,
+  PurposeFormAnswers,
   PurposeState,
 } from "@knodia/purpose-models";
-import z from "zod";
 
 import { type PurposeSQL, readmodelPurpose } from "../purpose.ts";
 
@@ -39,9 +39,7 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     dailyCalls: purposeSQL.dailyCalls,
     description: LocalizedDescription.parse(purposeSQL.description),
     eserviceId: unsafeBrandId(purposeSQL.eserviceId),
-    formAnswers: z
-      .record(z.string(), z.unknown())
-      .parse(purposeSQL.formAnswers),
+    formAnswersJson: PurposeFormAnswers.parse(purposeSQL.formAnswersJson),
     id: unsafeBrandId(purposeSQL.id),
     name: LocalizedName.parse(purposeSQL.name),
     state: PurposeState.parse(purposeSQL.state),
