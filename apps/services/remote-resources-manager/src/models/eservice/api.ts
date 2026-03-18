@@ -128,7 +128,7 @@ const API_EserviceDetailsProducer = z
   })
   .meta({ id: "EserviceDetailsProducer" });
 
-const API_AgreementDetail = z
+export const API_AgreementDetail = z
   .strictObject({
     id: z.uuid(),
     state: API_AgreementState,
@@ -150,4 +150,5 @@ export const API_EserviceDetails = z
     producer: API_EserviceDetailsProducer,
   })
   .meta({ id: "EserviceDetails" });
+export type API_AgreementDetail = z.infer<typeof API_AgreementDetail>;
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
