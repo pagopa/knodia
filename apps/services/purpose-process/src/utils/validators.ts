@@ -1,65 +1,71 @@
-import type { AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type { EserviceVersionState } from "@knodia/eservice-models";
 
-import type { ReadmodelService } from "../services/readmodelService.ts";
+import { type Agreement, AgreementState } from "@knodia/agreement-models";
+import {
+  type Eservice,
+  type EserviceMode,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 
 import {
   agreementNotInExpectedState,
+  eserviceModeNotAllowed,
   eserviceVersionNotInExpectedState,
 } from "../models/errors.ts";
 
 const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
-  "Active",
-  "Suspended",
+  EserviceVersionState.enum.Active,
+  EserviceVersionState.enum.Suspended,
 ];
 
 const purposeCreationAllowedAgreementStates: AgreementState[] = [
-  "Active",
-  "Suspended",
+  AgreementState.enum.Active,
+  AgreementState.enum.Suspended,
 ];
 
-export const assertEserviceIsActiveOrSuspended = async (
-  eserviceId: EserviceId,
-  readmodelService: ReadmodelService,
+export const assertEserviceModeIs = (
+  eservice: Eservice,
+  expectedMode: EserviceMode,
 ) => {
-  const exists = await readmodelService.eserviceVersionExistsByStates({
-    eserviceId,
-    states: purposeCreationAllowedEserviceVersionStates,
-  });
+  if (eservice.mode !== expectedMode) {
+    throw eserviceModeNotAllowed(eservice.id, eservice.mode, expectedMode);
+  }
+};
 
-  if (!exists) {
+export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
+  const hasAllowedVersion = eservice.versions.some((v) =>
+    purposeCreationAllowedEserviceVersionStates.includes(v.state),
+  );
+
+  if (!hasAllowedVersion) {
     throw eserviceVersionNotInExpectedState(
-      eserviceId,
+      eservice.id,
       purposeCreationAllowedEserviceVersionStates,
     );
   }
 };
 
-export const assertActiveOrSuspendedAgreementExists = async ({
+export const assertAgreementAllowsPurposeCreation = ({
+  agreements,
   consumerId,
   consumerKnodeId,
   eserviceId,
-  readmodelService,
 }: {
+  agreements: Agreement[];
   consumerId: ExternalId<OrganizationId>;
   consumerKnodeId: KnodeId;
   eserviceId: EserviceId;
-  readmodelService: ReadmodelService;
 }) => {
-  const exists = await readmodelService.agreementExistsByStates({
-    consumerId,
-    consumerKnodeId,
-    eserviceId,
-    states: purposeCreationAllowedAgreementStates,
-  });
+  const hasAllowedAgreement = agreements.some((a) =>
+    purposeCreationAllowedAgreementStates.includes(a.state),
+  );
 
-  if (!exists) {
+  if (!hasAllowedAgreement) {
     throw agreementNotInExpectedState({
       allowedStates: purposeCreationAllowedAgreementStates,
       consumerId,

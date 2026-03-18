@@ -21,7 +21,7 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   "Suspended",
 ];
 
-export const assertEserviceVersionIsActiveOrSuspended = async (
+export const assertEserviceVersionAllowsAgreementCreation = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,

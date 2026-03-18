@@ -10,17 +10,23 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { Purpose } from "@knodia/purpose-models";
 
 import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { EserviceMode } from "@knodia/eservice-models";
+import { type Purpose, PurposeState } from "@knodia/purpose-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
-import { retrievePurpose } from "../utils/readmodelUtils.ts";
 import {
-  assertActiveOrSuspendedAgreementExists,
-  assertEserviceIsActiveOrSuspended,
+  retrieveAgreements,
+  retrieveEservice,
+  retrievePurpose,
+} from "../utils/readmodelUtils.ts";
+import {
+  assertAgreementAllowsPurposeCreation,
+  assertEserviceAllowsPurposeCreation,
+  assertEserviceModeIs,
 } from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
@@ -57,16 +63,24 @@ export function purposeServiceBuilder(
         `Creating Purpose ${purposeId}`,
       );
 
-      await assertEserviceIsActiveOrSuspended(eserviceId, readmodelService);
+      const eservice = await retrieveEservice(eserviceId, readmodelService);
+      assertEserviceModeIs(eservice, EserviceMode.enum.ProvideData);
+      assertEserviceAllowsPurposeCreation(eservice);
 
-      await assertActiveOrSuspendedAgreementExists({
+      const agreements = await retrieveAgreements({
         consumerId: consumer.id,
         consumerKnodeId: consumer.knodeId,
         eserviceId,
         readmodelService,
       });
+      assertAgreementAllowsPurposeCreation({
+        agreements,
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+      });
 
-      // TODO form ansewers validation against the Knode purpose form JSON schema
+      // TODO form answers validation against the Knode purpose form JSON schema
 
       const now = new Date();
       const purpose: Purpose = {
@@ -78,7 +92,7 @@ export function purposeServiceBuilder(
         formAnswersJson,
         id: purposeId,
         name,
-        state: "Active",
+        state: PurposeState.enum.Active,
         updatedAt: now,
       };
 

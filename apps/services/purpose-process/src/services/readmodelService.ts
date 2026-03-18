@@ -1,4 +1,4 @@
-import type { AgreementState } from "@knodia/agreement-models";
+import type { Agreement } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
@@ -6,64 +6,59 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
-import type { EserviceVersionState } from "@knodia/eservice-models";
+import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type { Eservice } from "@knodia/eservice-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
-import { readmodelEserviceVersion } from "@knodia/db-readmodel-eservice";
+import {
+  readmodelAgreement,
+  readmodelAgreementAttribute,
+} from "@knodia/db-readmodel-agreement";
+import { aggregateAgreements } from "@knodia/db-readmodel-agreement/converters";
+import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { purposeReadmodelServiceBuilder } from "@knodia/db-readmodel-purpose/services";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
+  const eserviceReadmodelService = eserviceReadmodelServiceBuilder(readmodelDb);
   const purposeReadmodelService = purposeReadmodelServiceBuilder(readmodelDb);
   return {
-    async agreementExistsByStates({
+    async getAgreementsByConsumerAndEservice({
       consumerId,
       consumerKnodeId,
       eserviceId,
-      states,
     }: {
       consumerId: ExternalId<OrganizationId>;
       consumerKnodeId: KnodeId;
       eserviceId: EserviceId;
-      states: AgreementState[];
-    }): Promise<boolean> {
-      const result = await readmodelDb
-        .select({ id: readmodelAgreement.id })
+    }): Promise<Agreement[]> {
+      // TODO return FlatAgreement[] after KN-258
+      const queryRes = await readmodelDb
+        .select({
+          agreement: readmodelAgreement,
+          attribute: readmodelAgreementAttribute,
+        })
         .from(readmodelAgreement)
+        .leftJoin(
+          readmodelAgreementAttribute,
+          eq(readmodelAgreementAttribute.agreementId, readmodelAgreement.id),
+        )
         .where(
           and(
             eq(readmodelAgreement.eserviceId, eserviceId),
             eq(readmodelAgreement.consumerId, consumerId),
             eq(readmodelAgreement.consumerKnodeId, consumerKnodeId),
-            inArray(readmodelAgreement.state, states),
           ),
-        )
-        .limit(1);
+        );
 
-      return result.length > 0;
+      return aggregateAgreements(queryRes).map((a) => a.data);
     },
-    async eserviceVersionExistsByStates({
-      eserviceId,
-      states,
-    }: {
-      eserviceId: EserviceId;
-      states: EserviceVersionState[];
-    }): Promise<boolean> {
-      const result = await readmodelDb
-        .select({ id: readmodelEserviceVersion.id })
-        .from(readmodelEserviceVersion)
-        .where(
-          and(
-            eq(readmodelEserviceVersion.eserviceId, eserviceId),
-            inArray(readmodelEserviceVersion.state, states),
-          ),
-        )
-        .limit(1);
-
-      return result.length > 0;
+    async getEservice(
+      eserviceId: EserviceId,
+    ): Promise<undefined | WithMetadata<Eservice>> {
+      return await eserviceReadmodelService.getEServiceById(eserviceId);
     },
     async getPurpose(purposeId: PurposeId) {
       return await purposeReadmodelService.getPurposeById(purposeId);
