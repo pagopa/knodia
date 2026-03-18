@@ -52,10 +52,6 @@ export interface LabelElement {
   type: "Label";
 }
 
-export type LeafCondition =
-  | { schema: { const: string }; scope: string }
-  | { schema: { contains: { const: string } }; scope: string };
-
 export type RuleCondition = AndCondition | LeafCondition;
 
 export type UISchema = GroupElement | LayoutElement;
@@ -102,6 +98,10 @@ interface LayoutElement {
   elements: UISchemaElement[];
   type: "HorizontalLayout" | "VerticalLayout";
 }
+
+type LeafCondition =
+  | { schema: { const: string }; scope: string }
+  | { schema: { contains: { const: string } }; scope: string };
 
 interface Rule {
   condition: RuleCondition;
