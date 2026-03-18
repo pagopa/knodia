@@ -1,5 +1,5 @@
 {
-  "name": "@knodia/db-readmodel-consumer-keychain",
+  "name": "@knodia/db-readmodel-keychain",
   "type": "module",
   "scripts": {
     "dev": "tsc --watch",
