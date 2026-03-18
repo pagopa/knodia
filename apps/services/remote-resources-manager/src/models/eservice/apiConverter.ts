@@ -37,11 +37,14 @@ export const toAPI_CatalogEserviceSearchResult = (
 });
 
 export const toAPI_AgreementDetail = (
-  agreement: k2kGatewayApi.Agreement,
-): API_AgreementDetail => ({
-  id: agreement.id,
-  state: toAPI_AgreementState(agreement.state),
-});
+  agreement?: k2kGatewayApi.Agreement,
+): API_AgreementDetail | undefined => {
+  if (!agreement) return undefined;
+  return {
+    id: agreement.id,
+    state: toAPI_AgreementState(agreement.state),
+  };
+};
 
 export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
@@ -49,7 +52,7 @@ export const toAPI_EserviceDetails = (
   producer: k2kGatewayApi.Organization,
   agreement?: k2kGatewayApi.Agreement,
 ): API_EserviceDetails => ({
-  agreement: agreement ? toAPI_AgreementDetail(agreement) : undefined,
+  agreement: toAPI_AgreementDetail(agreement),
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,
