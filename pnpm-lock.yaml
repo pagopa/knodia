@@ -1122,6 +1122,9 @@ importers:
       '@knodia/db-readmodel-agreement':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/agreement
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
