@@ -64,6 +64,15 @@ export const KeychainTopicConfig = z
   }));
 export type KeychainTopicConfig = z.infer<typeof KeychainTopicConfig>;
 
+export const PurposeTopicConfig = z
+  .object({
+    PURPOSE_TOPIC: z.string(),
+  })
+  .transform((c) => ({
+    purposeTopic: c.PURPOSE_TOPIC,
+  }));
+export type PurposeTopicConfig = z.infer<typeof PurposeTopicConfig>;
+
 export const OrganizationTopicConfig = z
   .object({
     ORGANIZATION_TOPIC: z.string(),
