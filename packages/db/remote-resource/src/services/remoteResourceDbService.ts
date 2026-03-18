@@ -1,13 +1,11 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  AgreementId,
-  KnodeId,
-  OrganizationId,
-} from "@knodia/common-models/ids";
+import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
+import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { getTableTotalCount } from "@knodia/db-readmodel-commons/utils";
-import { and, eq } from "drizzle-orm";
+import { assertSQLFilterIsDefined } from "@knodia/db-readmodel-commons/utils";
+import { and, eq, SQL } from "drizzle-orm";
 
 import type {
   NewRemoteResourceAgreement,
@@ -38,18 +36,15 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result ?? undefined;
     },
-    async getAgreementsByConsumerId({
-      consumerId,
-      limit,
-      offset,
+    async getAgreementsByFilters({
+      filters,
+      pagination: { limit, offset },
     }: {
-      consumerId: OrganizationId;
-      limit: number;
-      offset: number;
-    }): Promise<{
-      results: RemoteResourceAgreementSQL[];
-      totalCount: number;
-    }> {
+      filters: SQL | undefined;
+      pagination: { limit: number; offset: number };
+    }): Promise<ListResult<RemoteResourceAgreementSQL>> {
+      assertSQLFilterIsDefined(filters);
+
       return await db.transaction(async (tx) => {
         const orderByFilter = remoteResourceAgreement.agreementId;
 
@@ -59,7 +54,7 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
               agreementId: remoteResourceAgreement.agreementId,
             })
             .from(remoteResourceAgreement)
-            .where(eq(remoteResourceAgreement.consumerId, consumerId))
+            .where(filters)
             .$dynamic();
 
         const paginatedIds = createFilterQuery()

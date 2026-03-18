@@ -5,12 +5,14 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 
 import { type EserviceId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { remoteResourceAgreement } from "@knodia/db-remote-resource";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import { genericError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
+import { eq } from "drizzle-orm";
 
 import type {
   API_CatalogEserviceSearchResults,
@@ -122,10 +124,12 @@ export function eserviceServiceBuilder(
       const { agreementState, limit, offset } = reqQuery;
 
       const remoteAgreements =
-        await remoteResourceDbService.getAgreementsByConsumerId({
-          consumerId: authData.organizationId,
-          limit: limit,
-          offset: offset,
+        await remoteResourceDbService.getAgreementsByFilters({
+          filters: eq(
+            remoteResourceAgreement.consumerId,
+            authData.organizationId,
+          ),
+          pagination: { limit: limit, offset: offset },
         });
 
       const results: API_ConsumerEservice[] = (
