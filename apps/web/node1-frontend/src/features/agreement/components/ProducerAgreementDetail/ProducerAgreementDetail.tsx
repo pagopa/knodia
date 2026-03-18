@@ -2,6 +2,7 @@ import type { bffApi } from "@knodia/bff-client";
 
 import { Button, Link } from "@knodia/ui-kit/ui";
 import { createLink } from "@tanstack/react-router";
+import { match } from "ts-pattern";
 
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
@@ -20,19 +21,7 @@ export function ProducerAgreementDetail({
   return (
     <>
       <PageHeader
-        actions={
-          agreement.state === "Suspended" ? (
-            // TODO: Reactivate button is always disabled — implement reactivate logic
-            <Button hierarchy="brand" isDisabled kind="filled" size="md">
-              Reactivate
-            </Button>
-          ) : (
-            // TODO: Suspend button is always disabled — implement suspend logic
-            <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-              Suspend
-            </Button>
-          )
-        }
+        actions={<AgreementActionButton state={agreement.state} />}
         resourceStatusChip={
           <AgreementStateChip state={agreement.state} type="light" />
         }
@@ -74,5 +63,32 @@ export function ProducerAgreementDetail({
 
       {/* TODO: Implement Purposes section */}
     </>
+  );
+}
+
+function AgreementActionButton({
+  state,
+}: {
+  state: bffApi.ProducerAgreementDetails["state"];
+}) {
+  return (
+    match(state)
+      .with("Active", () => (
+        // TODO: Suspend button is always disabled — implement suspend logic
+        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
+          Suspend
+        </Button>
+      ))
+      .with("Suspended", () => (
+        // TODO: Reactivate button is always disabled — implement reactivate logic
+        <Button hierarchy="brand" isDisabled kind="filled" size="md">
+          Reactivate
+        </Button>
+      ))
+      // TODO: Handle Archived agreement state when supported
+      .with("Archived", () => {
+        throw new Error("Unexpected agreement state: Archived");
+      })
+      .exhaustive()
   );
 }
