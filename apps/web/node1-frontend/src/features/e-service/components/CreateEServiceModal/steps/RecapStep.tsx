@@ -1,10 +1,12 @@
 import { getCategory } from "@knodia/category-models";
 import { Banner, Chip, Divider } from "@knodia/ui-kit/ui";
 
-import type { SchemeRef } from "@/features/e-service/types/schemeRef";
+import type { SchemeRef } from "@/types/schemeRef";
 
+import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
+import { ModalFooter } from "@/components/ModalFooter";
 import { config } from "@/config/config";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
@@ -13,9 +15,7 @@ import { usePublishEService } from "@/features/e-service/hooks/usePublishEServic
 import { eserviceFormSchema } from "@/features/e-service/types/eserviceCreateForm";
 import { downloadFile } from "@/utils/downloadFile";
 
-import { AttributeGroupContainer } from "../../AttributeGroupContainer";
 import { DocumentRecap } from "../../DocumentRecap";
-import { Footer } from "../components/Footer";
 import { StepHeader } from "../components/StepHeader";
 
 export function RecapStep() {
@@ -73,7 +73,7 @@ export function RecapStep() {
         </Banner>
       )}
 
-      <Footer
+      <ModalFooter
         confirmLabel="Publish"
         isDisabled={isPending}
         onCancel={prevStep}

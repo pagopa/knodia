@@ -1,6 +1,6 @@
 import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
 
-import { readmodelConsumerKeychain } from "@knodia/db-readmodel-consumer-keychain";
+import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
 import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
