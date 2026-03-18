@@ -79,7 +79,7 @@ export function agreementServiceBuilder(
         `Getting Agreement ${agreementId} from Knode ${knodeId}`,
       );
 
-      const remoteAgreement = await remoteResourceDbService.getByAgreementId(
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
         knodeId,
       );
