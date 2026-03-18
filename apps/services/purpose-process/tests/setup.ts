@@ -1,4 +1,5 @@
 import { eventStorePurposeEvents } from "@knodia/db-event-store-purpose";
+import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
 import {
   type AgreementWriterService,
   agreementWriterServiceBuilder,
@@ -25,7 +26,12 @@ let agreementWriterService: AgreementWriterService;
 async function resetTestDatabases() {
   await Promise.all([
     resetTestDatabase(eventStoreDb, eventStorePurposeEvents),
-    resetTestDatabase(readmodelDb, readmodelPurpose, readmodelEservice),
+    resetTestDatabase(
+      readmodelDb,
+      readmodelPurpose,
+      readmodelEservice,
+      readmodelAgreement,
+    ),
   ]);
 }
 

@@ -10,10 +10,10 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { Purpose } from "@knodia/purpose-models";
 
 import { EserviceId, generateId } from "@knodia/common-models/ids";
 import { EserviceMode } from "@knodia/eservice-models";
+import { type Purpose, PurposeState } from "@knodia/purpose-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -80,7 +80,7 @@ export function purposeServiceBuilder(
         eserviceId,
       });
 
-      // TODO form ansewers validation against the Knode purpose form JSON schema
+      // TODO form answers validation against the Knode purpose form JSON schema
 
       const now = new Date();
       const purpose: Purpose = {
@@ -92,7 +92,7 @@ export function purposeServiceBuilder(
         formAnswersJson,
         id: purposeId,
         name,
-        state: "Active",
+        state: PurposeState.enum.Active,
         updatedAt: now,
       };
 

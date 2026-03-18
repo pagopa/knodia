@@ -1,13 +1,14 @@
-import type { Agreement, AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type {
-  Eservice,
-  EserviceMode,
+
+import { type Agreement, AgreementState } from "@knodia/agreement-models";
+import {
+  type Eservice,
+  type EserviceMode,
   EserviceVersionState,
 } from "@knodia/eservice-models";
 
@@ -18,13 +19,13 @@ import {
 } from "../models/errors.ts";
 
 const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
-  "Active",
-  "Suspended",
+  EserviceVersionState.enum.Active,
+  EserviceVersionState.enum.Suspended,
 ];
 
 const purposeCreationAllowedAgreementStates: AgreementState[] = [
-  "Active",
-  "Suspended",
+  AgreementState.enum.Active,
+  AgreementState.enum.Suspended,
 ];
 
 export const assertEserviceModeIs = (
