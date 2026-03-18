@@ -13,6 +13,7 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { Purpose } from "@knodia/purpose-models";
 
 import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { EserviceMode } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -63,7 +64,7 @@ export function purposeServiceBuilder(
       );
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
-      assertEserviceModeIs(eservice, "ProvideData");
+      assertEserviceModeIs(eservice, EserviceMode.enum.ProvideData);
       assertEserviceAllowsPurposeCreation(eservice);
 
       const agreements = await retrieveAgreements({
