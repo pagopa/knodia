@@ -302,7 +302,7 @@ paths:
               required: true
               schema:
                 type: string
-              description: Metadata version of the relevant resource
+              description: Metadata version of the resource
         "400":
           description: Bad Request
           content:
@@ -362,7 +362,7 @@ paths:
               required: true
               schema:
                 type: string
-              description: Metadata version of the relevant resource
+              description: Metadata version of the resource
         "400":
           description: Bad Request
           content:
@@ -435,7 +435,7 @@ paths:
               required: true
               schema:
                 type: string
-              description: Metadata version of the relevant resource
+              description: Metadata version of the resource
         "400":
           description: Bad Request
           content:
