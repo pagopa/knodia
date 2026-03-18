@@ -156,7 +156,6 @@ export function eserviceServiceBuilder(
                 client: k2kGatewayClient,
                 path: { eserviceId: remoteAgreement.eserviceId },
               }),
-              // TODO: this should use getEserviceVersion instead
               k2kGatewayApi.getEserviceLatestVersion({
                 client: k2kGatewayClient,
                 path: { eserviceId: remoteAgreement.eserviceId },
