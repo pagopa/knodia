@@ -134,7 +134,7 @@ components:
           minimum: 0
           maximum: 1000000000
         description:
-          $ref: "#/components/schemas/PurposeLocalizedDescription"
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
         eserviceId:
           type: string
           format: uuid
@@ -142,7 +142,7 @@ components:
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         name:
-          $ref: "#/components/schemas/PurposeLocalizedName"
+          $ref: "#/components/schemas/LocalizedPurposeName"
       required:
         - consumer
         - dailyCalls
@@ -262,6 +262,14 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "409":
