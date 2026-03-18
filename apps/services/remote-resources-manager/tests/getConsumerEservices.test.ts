@@ -47,7 +47,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
       ...original.k2kGatewayApi,
       getAgreement: getAgreementMock,
       getEservice: getEserviceMock,
-      getEserviceLatestVersion: getEserviceVersionMock, // TODO: update with getEserviceVersion
+      getEserviceLatestVersion: getEserviceVersionMock,
       getOrganization: getOrganizationMock,
     },
   };
