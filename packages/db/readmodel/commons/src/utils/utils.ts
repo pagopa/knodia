@@ -111,9 +111,10 @@ const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
   return pkColumns;
 };
 
-export const throwIfMultipleOrEmpty = <T extends { id: string }>(
+export const throwIfMultipleOrEmpty = <T>(
   items: T[],
   entityName: string,
+  getId: (item: T) => string,
 ): T => {
   if (items.length === 0) {
     throw genericInternalError(
@@ -122,7 +123,7 @@ export const throwIfMultipleOrEmpty = <T extends { id: string }>(
   }
 
   if (items.length > 1) {
-    const ids = items.map((item) => item.id).join(", ");
+    const ids = items.map(getId).join(", ");
     throw genericInternalError(
       `Found more than one ${entityName} for a unique filter: ${ids}`,
     );
