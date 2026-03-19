@@ -1,4 +1,4 @@
-import type { API_KnodeId } from "@knodia/common-models/internalApi";
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -12,6 +12,7 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import { KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
@@ -103,30 +104,51 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         eservices.data.items.map((eservice) => [eservice.id, eservice]),
       );
 
-      const consumerIds = new Map<ExternalId<OrganizationId>, API_KnodeId>();
+      const consumerIds = new Map<
+        API_KnodeId,
+        Set<ExternalId<OrganizationId>>
+      >();
       data.items.forEach((agreement) => {
         const consumerId = unsafeBrandExternalId<OrganizationId>(
           agreement.consumer.id,
         );
-        if (!consumerIds.has(consumerId)) {
-          consumerIds.set(consumerId, agreement.consumer.knodeId);
+        const knodeId = API_KnodeId.parse(agreement.consumer.knodeId);
+        const consumerIdsByKnode =
+          consumerIds.get(knodeId) ?? new Set<ExternalId<OrganizationId>>();
+        if (!consumerIds.has(knodeId)) {
+          consumerIds.set(knodeId, consumerIdsByKnode);
         }
+        consumerIdsByKnode.add(consumerId);
       });
-      const consumers = await Promise.all(
-        Array.from(consumerIds.entries()).map(([consumerId, knodeId]) =>
-          remoteResourcesManagerApi.getOrganization({
-            client: remoteResourcesManagerClient,
-            headers: getKnodiaServiceHeaders(req, correlationId),
-            path: { organizationId: consumerId },
-            query: { knodeId },
-          }),
+      const consumersMap = new Map<
+        API_KnodeId,
+        Map<ExternalId<OrganizationId>, remoteResourcesManagerApi.Organization>
+      >();
+      // TODO: fetch the consumers with getOrganizations instead
+      await Promise.all(
+        Array.from(consumerIds.entries()).flatMap(
+          ([knodeId, consumerIdsByKnode]) =>
+            Array.from(consumerIdsByKnode).map(async (consumerId) => {
+              const { data: consumer } =
+                await remoteResourcesManagerApi.getOrganization({
+                  client: remoteResourcesManagerClient,
+                  headers: getKnodiaServiceHeaders(req, correlationId),
+                  path: { organizationId: consumerId },
+                  query: { knodeId },
+                });
+
+              const consumersByKnode =
+                consumersMap.get(knodeId) ??
+                new Map<
+                  ExternalId<OrganizationId>,
+                  remoteResourcesManagerApi.Organization
+                >();
+              if (!consumersMap.has(knodeId)) {
+                consumersMap.set(knodeId, consumersByKnode);
+              }
+              consumersByKnode.set(consumerId, consumer);
+            }),
         ),
-      );
-      const consumersMap = new Map(
-        consumers.map(({ data: consumer }) => [
-          unsafeBrandExternalId<OrganizationId>(consumer.id),
-          consumer,
-        ]),
       );
 
       const items = data.items.map((agreement) => {
@@ -137,9 +159,9 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           );
         }
 
-        const consumer = consumersMap.get(
-          unsafeBrandExternalId<OrganizationId>(agreement.consumer.id),
-        );
+        const consumer = consumersMap
+          .get(agreement.consumer.knodeId)
+          ?.get(unsafeBrandExternalId(agreement.consumer.id));
         if (!consumer) {
           throw genericError(
             `Consumer organization ${agreement.consumer.id} not found for Agreement ${agreement.id}`,
