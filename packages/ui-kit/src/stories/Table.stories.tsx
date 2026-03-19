@@ -9,53 +9,78 @@ import {
   TableHeader,
 } from "../components/ui/Table";
 
-const rows = Array.from({ length: 6 }, (_, i) => ({
-  id: `row-${i + 1}`,
-  column1: "Text",
-  column2: "Text",
-  column3: "Text",
-  column4: "Text",
-}));
-
 const meta: Meta<typeof Table> = {
   title: "Components/ui/Table",
   component: Table,
   parameters: {
-    layout: "centered",
+    layout: "padded",
   },
 };
 
 export default meta;
 type Story = StoryObj<typeof Table>;
 
+const items = [
+  { id: "1", name: "API Registry", consumer: "Acme Corp", status: "Active" },
+  {
+    id: "2",
+    name: "Birth Certificate",
+    consumer: "Beta Inc",
+    status: "Pending",
+  },
+  {
+    id: "3",
+    name: "Tax Service",
+    consumer: "Gamma Ltd",
+    status: "Suspended",
+  },
+];
+
 export const Default: Story = {
-  render: (args) => (
-    <div className="w-190">
-      <Table
-        {...args}
-        aria-label="Table"
-        onSortChange={() => void 0}
-        sortDescriptor={{ column: "1", direction: "descending" }}
+  render: () => (
+    <Table aria-label="Example table">
+      <TableHeader>
+        <Column isRowHeader>Name</Column>
+        <Column>Consumer</Column>
+        <Column>Status</Column>
+      </TableHeader>
+      <TableBody items={items}>
+        {(item) => (
+          <Row id={item.id}>
+            <Cell className="body-md">{item.name}</Cell>
+            <Cell>{item.consumer}</Cell>
+            <Cell>{item.status}</Cell>
+          </Row>
+        )}
+      </TableBody>
+    </Table>
+  ),
+};
+
+export const Empty: Story = {
+  render: () => (
+    <Table aria-label="Empty table">
+      <TableHeader>
+        <Column isRowHeader>Name</Column>
+        <Column>Consumer</Column>
+        <Column>Status</Column>
+      </TableHeader>
+      <TableBody
+        items={[]}
+        renderEmptyState={() => (
+          <p className="py-6 text-center text-primary-light-low-contrast">
+            No items found
+          </p>
+        )}
       >
-        <TableHeader>
-          <Column allowsSorting id="1">
-            Header
-          </Column>
-          <Column id="2">Header</Column>
-          <Column id="3">Header</Column>
-          <Column id="4">Header</Column>
-        </TableHeader>
-        <TableBody items={rows}>
-          {(item) => (
-            <Row id={item.id}>
-              <Cell>{item.column1}</Cell>
-              <Cell>{item.column2}</Cell>
-              <Cell>{item.column3}</Cell>
-              <Cell>{item.column4}</Cell>
-            </Row>
-          )}
-        </TableBody>
-      </Table>
-    </div>
+        {() => (
+          <Row>
+            <Cell />
+            <Cell />
+            <Cell />
+          </Row>
+        )}
+      </TableBody>
+    </Table>
   ),
 };

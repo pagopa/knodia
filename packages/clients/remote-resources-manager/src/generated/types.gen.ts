@@ -70,7 +70,6 @@ export type OrganizationId = string;
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
-    consumerId: OrganizationId;
     eserviceId: string;
     eserviceVersionId: string;
     knodeId: KnodeId;
@@ -188,6 +187,7 @@ export type EserviceDetailsLatestVersion = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
+    id: string;
     maxDailyCallsPerConsumer: number;
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;

@@ -23,13 +23,10 @@ const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
 const toConsumerKeychainKeyV1 = (
   key: ConsumerKeychainKey,
 ): ConsumerKeychainKeyV1 => ({
+  ...key,
   algorithm: toKeyAlgorithm(key.algorithm),
   createdAt: key.createdAt.getTime(),
-  encodedPem: key.encodedPem,
   format: toKeyFormatV1(key.format),
-  kid: key.kid,
-  name: key.name,
-  userId: key.userId,
 });
 
 export const toKeyAlgorithm = (algorithm: KeyAlgorithm): KeyAlgorithmV1 =>
@@ -40,13 +37,8 @@ export const toKeyAlgorithm = (algorithm: KeyAlgorithm): KeyAlgorithmV1 =>
 export const toConsumerKeychainV1 = (
   consumerKeychain: ConsumerKeychain,
 ): ConsumerKeychainV1 => ({
+  ...consumerKeychain,
   createdAt: consumerKeychain.createdAt.getTime(),
-  description: consumerKeychain.description,
-  id: consumerKeychain.id,
   keys: consumerKeychain.keys.map(toConsumerKeychainKeyV1),
-  name: consumerKeychain.name,
-  ownerId: consumerKeychain.ownerId,
-  purposes: consumerKeychain.purposes,
   updatedAt: consumerKeychain.updatedAt.getTime(),
-  users: consumerKeychain.users,
 });

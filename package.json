@@ -3,6 +3,8 @@
   "private": true,
   "scripts": {
     "typecheck": "turbo run typecheck",
+    "dev:process": "turbo dev --filter @knodia/*-process",
+    "dev:rmw": "turbo dev --filter @knodia/*-readmodel-writer",
     "generate-api-client": "turbo run generate-api-client",
     "generate-openapi": "turbo run generate-openapi",
     "generate-protobuf": "turbo run generate-protobuf",

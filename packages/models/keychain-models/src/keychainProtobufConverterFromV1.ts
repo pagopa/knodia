@@ -21,8 +21,8 @@ export const fromConsumerKeychainV1 = (
   assertRequired(input.name, "ConsumerKeychain name is undefined");
 
   return {
+    ...input,
     createdAt: new Date(input.createdAt),
-    description: input.description,
     id: unsafeBrandId(input.id),
     keys: input.keys.map(fromConsumerKeychainKeyV1),
     name: input.name,
@@ -39,11 +39,10 @@ const fromConsumerKeychainKeyV1 = (
   assertRequired(input.name, "Key name is undefined");
 
   return {
+    ...input,
     algorithm: fromKeyAlgorithmV1(input.algorithm),
     createdAt: new Date(input.createdAt),
-    encodedPem: input.encodedPem,
     format: fromKeyFormatV1(input.format),
-    kid: input.kid,
     name: input.name,
     userId: unsafeBrandId(input.userId),
   };

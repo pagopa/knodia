@@ -1,6 +1,6 @@
 import { Button } from "@knodia/ui-kit/ui";
 
-interface FooterProps {
+interface ModalFooterProps {
   cancelLabel?: string;
   confirmLabel?: string;
   isDisabled?: boolean;
@@ -8,13 +8,13 @@ interface FooterProps {
   onConfirm: () => void;
 }
 
-export function Footer({
+export function ModalFooter({
   cancelLabel = "Previous",
   confirmLabel = "Next",
   isDisabled = false,
   onCancel,
   onConfirm,
-}: FooterProps) {
+}: ModalFooterProps) {
   return (
     <div className="flex justify-end gap-4">
       <Button hierarchy="neutral" kind="tonal" onPress={onCancel} size="lg">

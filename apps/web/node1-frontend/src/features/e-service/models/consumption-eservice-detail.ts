@@ -1,5 +1,5 @@
 import type { bffApi } from "@knodia/bff-client";
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { EserviceId, EserviceVersionId } from "@knodia/common-models/ids";
 
 export interface ConsumptionEserviceDetail {
   accessToken: {
@@ -9,10 +9,12 @@ export interface ConsumptionEserviceDetail {
   };
   categories: bffApi.EserviceCategory[];
   description: string;
+  hasRequiredAttributes: boolean;
   id: EserviceId;
   identificationRequired: boolean;
   interfaceDocument: bffApi.ConsumerEserviceDetailsInterfaceDocument;
   isSignalHubEnabled: boolean;
+  latestVersionId: EserviceVersionId;
   maxDailyCalls: bffApi.ConsumerEserviceDetailsMaxDailyCalls;
   mode: bffApi.EserviceMode;
   name: string;
