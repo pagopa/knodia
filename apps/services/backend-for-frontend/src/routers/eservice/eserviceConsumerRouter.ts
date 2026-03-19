@@ -15,12 +15,15 @@ import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerCatalogEserviceSearchResults,
   API_ConsumerEserviceDetails,
+  API_ConsumerEservices,
   API_GetConsumerCatalogEserviceSearchParams,
   API_GetConsumerCatalogEservicesQueryParams,
   API_GetConsumerEserviceDetailsQueryParams,
+  API_GetConsumerEservicesQueryParams,
 } from "../../models/eservice/api.ts";
 import {
   toAPI_ConsumerCatalogEserviceSearchResult,
+  toAPI_ConsumerEservice,
   toAPI_ConsumerEserviceDetails,
 } from "../../models/eservice/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
@@ -49,14 +52,14 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
-        pagination: data.pagination,
-        results: data.results.map((r) =>
+        items: data.results.map((r) =>
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
             Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
             req.body.knodeId,
           ),
         ),
+        pagination: data.pagination,
       });
     },
     method: "POST",
@@ -171,5 +174,45 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices/:eserviceId/interface",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestQuery: req.query },
+        `Getting Consumer E-services with query parameters`,
+      );
+
+      const { data } = await remoteResourcesManagerApi.getConsumerEservices({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        query: req.query,
+      });
+
+      res.send({
+        items: data.results.map(toAPI_ConsumerEservice),
+        pagination: data.pagination,
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve Consumer E-services",
+      operationId: "getConsumerEservices",
+      querystring: API_GetConsumerEservicesQueryParams,
+      response: {
+        200: API_ConsumerEservices.meta({
+          description: "Consumer E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Get Consumer E-services",
+      tags: [apiTags.eservice],
+    },
+    url: "/consumer/eservices",
   });
 };

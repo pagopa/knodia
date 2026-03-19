@@ -181,17 +181,6 @@ components:
       enum:
         - Bearer
         - DPoP
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     CompactOrganization:
       description: Organization with only id, knodeId, and name
       type: object
@@ -209,6 +198,17 @@ components:
         - id
         - knodeId
         - name
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object
@@ -629,15 +629,15 @@ components:
     ConsumerCatalogEserviceSearchResults:
       type: object
       properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
+        items:
           type: array
           items:
             $ref: "#/components/schemas/ConsumerCatalogEserviceSearchResult"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
       required:
+        - items
         - pagination
-        - results
       additionalProperties: false
     ConsumerEserviceDetailsProducer:
       type: object
@@ -648,8 +648,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeName:
-          type: string
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -657,7 +657,7 @@ components:
       required:
         - email
         - id
-        - knodeName
+        - knodeId
         - name
         - notes
       additionalProperties: false
@@ -666,14 +666,14 @@ components:
       properties:
         code:
           type: string
-        possessed:
-          type: boolean
         scheme:
           type: string
+        possessed:
+          type: boolean
       required:
         - code
-        - possessed
         - scheme
+        - possessed
       additionalProperties: false
     ConsumerEserviceDetailsAccessToken:
       type: object
@@ -794,6 +794,71 @@ components:
       required:
         - id
         - name
+      additionalProperties: false
+    ConsumerEservice:
+      type: object
+      properties:
+        agreement:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            state:
+              $ref: "#/components/schemas/AgreementState"
+          required:
+            - id
+            - state
+          additionalProperties: false
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the E-service has been updated in the last 3 days
+          type: boolean
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/Attribute"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - agreement
+        - categories
+        - hasRecentlyBeenUpdated
+        - id
+        - mode
+        - name
+        - producer
+        - requiredAttributes
+        - state
+      additionalProperties: false
+    ConsumerEservices:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerEservice"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - items
+        - pagination
       additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
@@ -1807,6 +1872,78 @@ paths:
                   - $ref: "#/components/schemas/FileDownload"
             application/yaml: *a2
             application/x-yaml: *a2
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/eservices:
+    get:
+      operationId: getConsumerEservices
+      summary: Get Consumer E-services
+      tags:
+        - eservice
+      description: Retrieve Consumer E-services
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: agreementState
+          required: false
+      responses:
+        "200":
+          description: Consumer E-services retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer E-services retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerEservices"
         "400":
           description: Bad Request
           content:

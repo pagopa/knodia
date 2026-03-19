@@ -1,3 +1,4 @@
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import { API_Attribute } from "@knodia/attribute-models/api";
 import {
   API_Pagination,
@@ -12,6 +13,7 @@ import {
   API_LocalizedDescription,
   API_LocalizedName,
 } from "@knodia/eservice-models/api";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
 import { z } from "zod";
 
 const API_EserviceSearchByKeywordsAndCategory = z.strictObject({
@@ -96,7 +98,7 @@ export type API_GetEserviceDetailsQueryParams = z.infer<
   typeof API_GetEserviceDetailsQueryParams
 >;
 
-const API_EserviceDetailsLatestVersion = z
+const API_EserviceVersionDetails = z
   .strictObject({
     accessTokenAudience: z.array(z.string()),
     accessTokenDuration: z.number().int().meta({ format: "int32" }),
@@ -107,7 +109,7 @@ const API_EserviceDetailsLatestVersion = z
     requiredAttributes: z.array(z.array(API_Attribute)),
     state: API_EserviceVersionState,
   })
-  .meta({ id: "EserviceDetailsLatestVersion" });
+  .meta({ id: "EserviceVersionDetails" });
 
 const API_EserviceDetailsInterfaceDocument = z
   .strictObject({
@@ -121,7 +123,7 @@ const API_EserviceDetailsProducer = z
   .strictObject({
     email: z.string(),
     id: z.uuid(),
-    knodeName: z.string(),
+    knodeId: API_KnodeId,
     name: z.string(),
     notes: z.string(),
   })
@@ -135,10 +137,55 @@ export const API_EserviceDetails = z
     interfaceDocument: API_EserviceDetailsInterfaceDocument,
     isConsumerOperatorIdentificationRequired: z.boolean(),
     isSignalHubEnabled: z.boolean(),
-    latestVersion: API_EserviceDetailsLatestVersion,
+    latestVersion: API_EserviceVersionDetails,
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producer: API_EserviceDetailsProducer,
   })
   .meta({ id: "EserviceDetails" });
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
+
+const API_ConsumerEserviceVersion = API_EserviceVersionDetails.pick({
+  id: true,
+  requiredAttributes: true,
+  state: true,
+}).meta({
+  id: "ConsumerEserviceVersion",
+});
+
+export const API_ConsumerEservice = z
+  .strictObject({
+    agreement: z.strictObject({
+      id: z.uuid(),
+      state: API_AgreementState,
+    }),
+    // TODO: add purposes and consumerKeychains
+    categories: z.array(API_EserviceCategory),
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the E-service has been updated in the last 3 days",
+    }),
+    id: z.uuid(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producer: API_CompactOrganization,
+    version: API_ConsumerEserviceVersion,
+  })
+  .meta({ id: "ConsumerEservice" });
+export type API_ConsumerEservice = z.infer<typeof API_ConsumerEservice>;
+
+export const API_ConsumerEservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerEservice),
+  })
+  .meta({ id: "ConsumerEservices" });
+export type API_ConsumerEservices = z.infer<typeof API_ConsumerEservices>;
+
+export const API_GetConsumerEservicesQueryParams =
+  API_PaginationQueryParams.extend({
+    agreementState: API_AgreementState.optional(),
+  });
+export type API_GetConsumerEservicesQueryParams = z.infer<
+  typeof API_GetConsumerEservicesQueryParams
+>;

@@ -1,30 +1,42 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
-import type { EserviceId } from "@knodia/common-models/ids";
+import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import { type EserviceId } from "@knodia/common-models/ids";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { remoteResourceAgreement } from "@knodia/db-remote-resource";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import { genericError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
+import { eq } from "drizzle-orm";
 
 import type {
   API_CatalogEserviceSearchResults,
+  API_ConsumerEservice,
+  API_ConsumerEservices,
   API_EserviceDetails,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
+  API_GetConsumerEservicesQueryParams,
 } from "../models/eservice/api.ts";
 
+import { toAPI_AgreementState } from "../models/agreement/apiConverter.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
+  toAPI_ConsumerEservice,
   toAPI_EserviceDetails,
 } from "../models/eservice/apiConverter.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
-export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
+export function eserviceServiceBuilder(
+  k2kGatewayClient: K2K2GatewayApiClient,
+  remoteResourceDbService: RemoteResourceDbService,
+) {
   return {
     async downloadEserviceLatestVersionInterface(
       eserviceId: ExternalResource<EserviceId>,
@@ -97,6 +109,83 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
           }
           return toAPI_CatalogEserviceSearchResult(r, producerName);
         }),
+      };
+    },
+
+    async getConsumerEservices(
+      reqQuery: API_GetConsumerEservicesQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_ConsumerEservices> {
+      logger.info(
+        { requestQuery: reqQuery },
+        `Getting Consumer E-services with query parameters`,
+      );
+
+      const { agreementState, limit, offset } = reqQuery;
+
+      const remoteAgreements =
+        await remoteResourceDbService.getAgreementsByFilters({
+          filters: eq(
+            remoteResourceAgreement.consumerId,
+            authData.organizationId,
+          ),
+          pagination: { limit: limit, offset: offset },
+        });
+
+      const results: API_ConsumerEservice[] = (
+        await Promise.all(
+          remoteAgreements.results.map(async (remoteAgreement) => {
+            const { data: agreement } = await k2kGatewayApi.getAgreement({
+              client: k2kGatewayClient,
+              path: { agreementId: remoteAgreement.agreementId },
+            });
+
+            if (
+              agreementState &&
+              toAPI_AgreementState(agreement.state) !== agreementState
+            ) {
+              return null;
+            }
+
+            const [
+              { data: eservice },
+              { data: eserviceVersion },
+              { data: producer },
+            ] = await Promise.all([
+              k2kGatewayApi.getEservice({
+                client: k2kGatewayClient,
+                path: { eserviceId: remoteAgreement.eserviceId },
+              }),
+              k2kGatewayApi.getEserviceLatestVersion({
+                client: k2kGatewayClient,
+                path: { eserviceId: remoteAgreement.eserviceId },
+              }),
+              k2kGatewayApi.getOrganization({
+                client: k2kGatewayClient,
+                path: { organizationId: remoteAgreement.producerId },
+              }),
+            ]);
+
+            return toAPI_ConsumerEservice({
+              agreement,
+              eservice,
+              eserviceVersion,
+              producer: {
+                ...producer,
+                knodeId: API_KnodeId.parse(remoteAgreement.knodeId),
+              },
+            });
+          }),
+        )
+      ).filter((x): x is API_ConsumerEservice => x !== null);
+
+      return {
+        pagination: {
+          limit: limit,
+          offset: offset,
+          total: results.length,
+        },
+        results,
       };
     },
 

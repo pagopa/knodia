@@ -1,3 +1,4 @@
+import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import {
@@ -9,8 +10,11 @@ import { match } from "ts-pattern";
 
 import type {
   API_CatalogEserviceSearchResult,
+  API_ConsumerEservice,
   API_EserviceDetails,
 } from "./api.ts";
+
+import { toAPI_AgreementState } from "../agreement/apiConverter.ts";
 
 export const toAPI_CatalogEserviceSearchResult = (
   catalogEservice: k2kGatewayApi.CatalogEserviceSearchResult,
@@ -64,7 +68,7 @@ export const toAPI_EserviceDetails = (
   producer: {
     email: "info@example.com", // TODO: retrieve real data from producer knode
     id: producer.id,
-    knodeName: "Knode", // TODO: retrieve real data from producer knode
+    knodeId: "Orion", // TODO: retrieve real data from producer knode
     name: producer.name,
     notes: "Notes", // TODO: retrieve real data from producer knode
   },
@@ -94,3 +98,45 @@ const toAPI_EserviceMode = (
     .with("PROVIDE_DATA", () => API_EserviceMode.enum.ProvideData)
     .with("RECEIVE_DATA", () => API_EserviceMode.enum.ReceiveData)
     .exhaustive();
+
+export const toAPI_ConsumerEservice = ({
+  agreement,
+  eservice,
+  eserviceVersion,
+  producer,
+}: {
+  agreement: k2kGatewayApi.Agreement;
+  eservice: k2kGatewayApi.Eservice;
+  eserviceVersion: k2kGatewayApi.EserviceVersion;
+  producer: k2kGatewayApi.Organization & { knodeId: API_KnodeId };
+}): API_ConsumerEservice => {
+  const hasRecentlyBeenUpdated = (dateString: string): boolean => {
+    const updatedAt = new Date(dateString);
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+    return updatedAt >= threeDaysAgo;
+  };
+
+  return {
+    agreement: {
+      id: agreement.id,
+      state: toAPI_AgreementState(agreement.state),
+    },
+    categories: eservice.categories,
+    hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice.updatedAt),
+    id: eservice.id,
+    mode: toAPI_EserviceMode(eservice.mode),
+    name: eservice.name,
+    producer: {
+      id: producer.id,
+      knodeId: producer.knodeId,
+      name: producer.name,
+    },
+    version: {
+      id: eserviceVersion.id,
+      requiredAttributes: eserviceVersion.requiredAttributes,
+      state: toAPI_EserviceVersionState(eserviceVersion.state),
+    },
+  };
+};

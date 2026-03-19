@@ -44,6 +44,8 @@ export function buildApp({
   const k2kGatewayClient = getK2K2GatewayApiClient({
     knodeUrl,
   });
+  const remoteResourceDbService =
+    remoteResourceDbServiceBuilder(remoteResourceDb);
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -84,12 +86,15 @@ export function buildApp({
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
     protectedApp.register(eserviceRouter, {
-      eserviceService: eserviceServiceBuilder(k2kGatewayClient),
+      eserviceService: eserviceServiceBuilder(
+        k2kGatewayClient,
+        remoteResourceDbService,
+      ),
     });
     protectedApp.register(agreementRouter, {
       agreementService: agreementServiceBuilder(
         k2kGatewayClient,
-        remoteResourceDbServiceBuilder(remoteResourceDb),
+        remoteResourceDbService,
         readmodelServiceBuilder(readmodelDb),
       ),
     });

@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
-
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  getMockEservice,
+  getMockOrganization,
+} from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { zocker } from "zocker";
 
-import { API_EserviceDetails } from "../src/models/eservice/api.ts";
-import { toK2KEservice, toK2KEserviceVersion } from "./k2kConverters.ts";
+import { toAPI_EserviceDetails } from "../src/models/eservice/apiConverter.ts";
+import {
+  toK2KEservice,
+  toK2KEserviceVersion,
+  toK2KOrganization,
+} from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -37,14 +42,19 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const eserviceId = crypto.randomUUID();
   const knodeId = "Orion";
 
-  const expectedApiDetail = zocker(API_EserviceDetails).generate();
-  const k2kEservice = toK2KEservice(expectedApiDetail);
-  const k2kVersion = toK2KEserviceVersion(expectedApiDetail);
-  const k2kOrganization: k2kGatewayApi.Organization = {
-    attributes: [],
-    id: k2kEservice.producerId,
-    name: expectedApiDetail.producer.name,
-  };
+  const eservice = getMockEservice({ latestVersionState: "Active" });
+  const eserviceVersion = eservice.versions[0]!;
+  const k2kEservice = toK2KEservice(eservice);
+  const k2kVersion = toK2KEserviceVersion(eserviceVersion);
+
+  const organization = getMockOrganization();
+  const k2kOrganization = toK2KOrganization(organization);
+
+  const expectedApiDetail = toAPI_EserviceDetails(
+    k2kEservice,
+    k2kVersion,
+    k2kOrganization,
+  );
 
   beforeEach(() => {
     getEserviceMock.mockReset();
@@ -86,7 +96,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
       producer: {
         email: "info@example.com",
         id: k2kOrganization.id,
-        knodeName: "Knode",
+        knodeId: "Orion",
         name: k2kOrganization.name,
         notes: "Notes",
       },

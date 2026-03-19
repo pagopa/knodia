@@ -24,6 +24,16 @@ export function toAPI_Agreement(
   };
 }
 
+export function toAPI_AgreementState(
+  agreementState: k2kGatewayApi.AgreementState,
+): API_AgreementState {
+  return match(agreementState)
+    .with("ACTIVE", () => "Active" as const)
+    .with("SUSPENDED", () => "Suspended" as const)
+    .with("ARCHIVED", () => "Archived" as const)
+    .exhaustive();
+}
+
 export const toAPI_AgreementDetails = (
   agreement: k2kGatewayApi.Agreement,
 ): API_AgreementDetails => ({
@@ -54,16 +64,6 @@ function toAPI_AgreementConsumer(
     id: consumer.id,
     knodeId: toAPI_KnodeId(consumer.knodeId),
   };
-}
-
-function toAPI_AgreementState(
-  state: k2kGatewayApi.AgreementState,
-): API_AgreementState {
-  return match(state)
-    .with("ACTIVE", () => "Active" as const)
-    .with("SUSPENDED", () => "Suspended" as const)
-    .with("ARCHIVED", () => "Archived" as const)
-    .exhaustive();
 }
 
 function toAPI_KnodeId(knodeId: k2kGatewayApi.KnodeId): API_KnodeId {
