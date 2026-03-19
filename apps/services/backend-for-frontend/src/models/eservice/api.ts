@@ -347,7 +347,7 @@ const API_ConsumerEserviceDetailsProducer = z
   .strictObject({
     email: z.string(),
     id: z.uuid(),
-    knodeId: API_KnodeId,
+    knodeName: z.string(),
     name: z.string(),
     notes: z.string(),
   })

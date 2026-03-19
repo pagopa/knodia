@@ -21,7 +21,7 @@ export interface ConsumptionEserviceDetail {
   producer: {
     email: string;
     initials: string;
-    knodeId: bffApi.KnodeId;
+    knodeName: string;
     name: string;
     notes: string;
   };

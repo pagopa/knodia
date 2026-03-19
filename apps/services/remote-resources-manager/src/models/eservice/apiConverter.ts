@@ -68,7 +68,7 @@ export const toAPI_EserviceDetails = (
   producer: {
     email: "info@example.com", // TODO: retrieve real data from producer knode
     id: producer.id,
-    knodeId: "Orion", // TODO: retrieve real data from producer knode
+    knodeName: "Knode", // TODO: retrieve real data from producer knode
     name: producer.name,
     notes: "Notes", // TODO: retrieve real data from producer knode
   },
