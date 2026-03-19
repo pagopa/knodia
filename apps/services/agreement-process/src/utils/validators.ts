@@ -12,11 +12,11 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
-  eserviceVersionNotInExpectedState,
+  eserviceVersionNotInExpectedStates,
 } from "../models/errors.ts";
 import { retrieveEserviceVersion } from "./readmodelUtils.ts";
 
-export const assertEserviceVersionIsActive = async (
+export const assertEserviceVersionAllowsAgreementCreation = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
@@ -30,7 +30,7 @@ export const assertEserviceVersionIsActive = async (
   );
 
   if (!allowedStates.includes(eserviceVersion.state)) {
-    throw eserviceVersionNotInExpectedState(
+    throw eserviceVersionNotInExpectedStates(
       eservice.id,
       eserviceVersionId,
       allowedStates,
