@@ -1,11 +1,17 @@
+import { within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { renderWithProviders, screen } from "@/test/utils";
 
 import { ConsumerAgreementsSummary } from "./ConsumerAgreementsSummary";
 
+function getCardByLabel(label: string) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return within(screen.getByText(label).closest("div[class*='bg-']")!);
+}
+
 describe("ConsumerAgreementsSummary", () => {
-  it("renders agreement counters", () => {
+  it("renders the correct counter for each agreement state", () => {
     renderWithProviders(
       <ConsumerAgreementsSummary
         counters={{
@@ -23,9 +29,9 @@ describe("ConsumerAgreementsSummary", () => {
       },
     );
 
-    expect(screen.getByText("10")).toBeInTheDocument();
-    expect(screen.getByText("2")).toBeInTheDocument();
-    expect(screen.getByText("3")).toBeInTheDocument();
+    expect(getCardByLabel("Active").getByText("10")).toBeInTheDocument();
+    expect(getCardByLabel("Suspended").getByText("2")).toBeInTheDocument();
+    expect(getCardByLabel("Archived").getByText("3")).toBeInTheDocument();
   });
 
   it("renders the empty state when all counters are zero", () => {
