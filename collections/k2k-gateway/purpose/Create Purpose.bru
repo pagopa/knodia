@@ -6,6 +6,7 @@ meta {
 post {
   url: {{host-k2k-gateway}}/purposes
   body: json
+  auth: none
 }
 
 headers {
@@ -23,7 +24,13 @@ body:json {
     "description": {
       "en": "A test purpose for accessing the e-service"
     },
-    "formAnswersJson": {}
+    "formAnswersJson": {
+      "checked": true,
+      "count": 42,
+      "nested": { "deep": "value" },
+      "options": ["a", "b", "c"],
+      "question1": "answer1"
+    }
   }
 }
 
