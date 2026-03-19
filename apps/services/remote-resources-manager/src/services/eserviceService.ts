@@ -113,17 +113,17 @@ export function eserviceServiceBuilder(
         `Getting E-service detail ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
 
-      const path = { eserviceId: eserviceId.id };
+      const eserviceIdPath = { eserviceId: eserviceId.id };
 
       const [{ data: eservice }, { data: version }, remoteAgreements] =
         await Promise.all([
           k2kGatewayApi.getEservice({
             client: k2kGatewayClient,
-            path,
+            path: eserviceIdPath,
           }),
           k2kGatewayApi.getEserviceLatestVersion({
             client: k2kGatewayClient,
-            path,
+            path: eserviceIdPath,
           }),
           remoteResourceDbService.getAgreementsByConsumerIdAndEserviceId(
             authData.organizationId,
