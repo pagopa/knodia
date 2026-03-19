@@ -32,21 +32,26 @@ const API_LocalizedPurposeDescription = z
     id: "LocalizedPurposeDescription",
   });
 
-const API_PurposeFormAnswers = z
-  .record(z.string(), z.unknown())
-  .meta({ id: "PurposeFormAnswers" });
+const API_PurposeFormAnswers = z.record(z.string(), z.unknown()).meta({
+  description:
+    "Key-value pairs representing the Consumer's answers to the Knode's purpose form",
+  id: "PurposeFormAnswers",
+});
 
 export const API_PurposeSeed = z
   .strictObject({
-    consumerId: API_OrganizationId,
-    dailyCalls: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({ format: "int32" }),
+    consumerId: API_OrganizationId.meta({
+      description:
+        "Identifier of the Consumer Organization creating the Purpose",
+    }),
+    dailyCalls: z.number().int().min(minDailyCalls).max(maxDailyCalls).meta({
+      description: "Expected number of daily API calls for this Purpose",
+      format: "int32",
+    }),
     description: API_LocalizedPurposeDescription,
-    eserviceId: API_EserviceId,
+    eserviceId: API_EserviceId.meta({
+      description: "Identifier of the E-service this Purpose refers to",
+    }),
     formAnswersJson: API_PurposeFormAnswers,
     name: API_LocalizedPurposeName,
   })

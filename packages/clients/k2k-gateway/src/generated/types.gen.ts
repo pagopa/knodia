@@ -356,6 +356,9 @@ export type LocalizedPurposeDescription = {
     en: string;
 };
 
+/**
+ * Key-value pairs representing the Consumer's answers to the Knode's purpose form
+ */
 export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
@@ -364,9 +367,18 @@ export type PurposeFormAnswers = {
  * Seed data to create a new Purpose
  */
 export type PurposeSeed = {
+    /**
+     * Identifier of the Consumer Organization creating the Purpose
+     */
     consumerId: OrganizationId;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
     dailyCalls: number;
     description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
     eserviceId: EserviceId;
     formAnswersJson: PurposeFormAnswers;
     name: LocalizedPurposeName;

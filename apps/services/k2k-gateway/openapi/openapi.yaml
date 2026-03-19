@@ -592,6 +592,8 @@ components:
         - en
       additionalProperties: false
     PurposeFormAnswers:
+      description: Key-value pairs representing the Consumer's answers to the Knode's
+        purpose form
       type: object
       additionalProperties: {}
     PurposeSeed:
@@ -599,8 +601,11 @@ components:
       type: object
       properties:
         consumerId:
-          $ref: "#/components/schemas/OrganizationId"
+          description: Identifier of the Consumer Organization creating the Purpose
+          allOf:
+            - $ref: "#/components/schemas/OrganizationId"
         dailyCalls:
+          description: Expected number of daily API calls for this Purpose
           format: int32
           type: integer
           minimum: 0
@@ -608,7 +613,9 @@ components:
         description:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
         eserviceId:
-          $ref: "#/components/schemas/EserviceId"
+          description: Identifier of the E-service this Purpose refers to
+          allOf:
+            - $ref: "#/components/schemas/EserviceId"
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         name:
