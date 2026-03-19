@@ -58,11 +58,6 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -94,6 +89,11 @@ export type EserviceCategory = {
 };
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
+
+export type Attribute = {
+    code: string;
+    scheme: string;
+};
 
 /**
  * Organization with only id, knodeId, and name
@@ -409,6 +409,7 @@ export type ProducerAgreementDetails = {
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
+    latestEserviceVersionState: EserviceVersionState;
     producer: CompactOrganization;
 };
 

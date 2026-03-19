@@ -23,6 +23,7 @@ export * from "./Popover";
 export * from "./RadioGroup";
 export * from "./Select";
 export * from "./Steps";
+export * from "./Table";
 export * from "./Tabs";
 export * from "./TextArea";
 export * from "./TextField";

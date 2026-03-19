@@ -16,6 +16,8 @@ beforeAll(async () => {
       domain: undefined,
       secure: false,
     },
+    defaultPollingMaxRetries: 5,
+    defaultPollingRetryDelay: 400,
     eserviceInterfacesS3Bucket: "test-bucket",
     eserviceProcessUrl: "http://localhost:0",
     host: "0.0.0.0",

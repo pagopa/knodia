@@ -10,7 +10,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
-import { Button } from "./Button";
+import { Button, type ButtonProps } from "./Button";
 import { Checkbox } from "./Checkbox";
 
 const overlay = tv({
@@ -41,6 +41,7 @@ interface ModalProps extends AriaModalOverlayProps {
   actionLabel: string;
   cancelLabel?: string;
   children?: React.ReactNode;
+  confirmButtonProps?: Pick<ButtonProps, "isDisabled" | "isPending">;
   description?: string;
   kind: "default" | "destructive";
   onClose?: (e: PressEvent) => void;
@@ -64,6 +65,7 @@ export function Modal({
   onDontShowAgainChange,
   showDontShowAgain = false,
   title,
+  confirmButtonProps,
   ...props
 }: ModalProps) {
   const titleId = useId();
@@ -134,6 +136,7 @@ export function Modal({
                 hierarchy={kind === "destructive" ? "danger" : "brand"}
                 size="md"
                 {...(onConfirm && { onPress: onConfirm })}
+                {...confirmButtonProps}
               >
                 {actionLabel}
               </Button>

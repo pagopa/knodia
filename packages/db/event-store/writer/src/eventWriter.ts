@@ -38,7 +38,12 @@ const EventStoreEvents = z.union([
   OrganizationEventV1,
   PurposeEventV1,
 ]);
+interface CreatedEvent {
+  newVersion: number;
+  streamId: EventStoreStreamIds;
+}
 type EventStoreEvents = z.infer<typeof EventStoreEvents>;
+
 type EventStoreStreamIds =
   | AgreementId
   | ConsumerKeychainId
@@ -82,7 +87,7 @@ export function eventStoreWriterBuilder<
   return {
     async insertEvent(
       event: NewEventStoreEvent<TEvent, TStreamId>,
-    ): Promise<void> {
+    ): Promise<CreatedEvent> {
       return db.transaction(async (tx) => {
         const [latestEvent] = await tx
           .select({ version: eventsTable.version })
@@ -105,6 +110,11 @@ export function eventStoreWriterBuilder<
           type,
           version: newVersion,
         });
+
+        return {
+          newVersion,
+          streamId: event.streamId,
+        };
       });
     },
   };

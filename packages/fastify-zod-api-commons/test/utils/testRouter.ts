@@ -52,6 +52,11 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      responseHeaders: z.object({
+        "X-Test-Route-Level": z
+          .string()
+          .meta({ description: "Route-level response header" }),
+      }),
       tags: [testTags.test],
     },
     url: "/test",
@@ -70,7 +75,16 @@ export const testRouter: FastifyPluginAsyncZod = async (fastify) => {
       headers: KnodiaServiceHeaders,
       operationId: "createTest",
       response: {
-        201: API_Test.meta({ description: "Resource created successfully" }),
+        201: {
+          headers: z.object({
+            "X-Test-Response-Level": z
+              .string()
+              .meta({ description: "Per-response response header" }),
+          }),
+          properties: API_Test.meta({
+            description: "Resource created successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

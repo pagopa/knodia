@@ -195,9 +195,11 @@ services:
       knodia.check.on.startup: "true"
     image: quay.io/debezium/connect:3.4.1.Final
     container_name: knodia-multinode-debezium-connect
+    mem_limit: 768m
     ports:
       - 8083:8083
     environment:
+      HEAP_OPTS: "-Xms256m -Xmx512m"
       BOOTSTRAP_SERVERS: kafka:9092
       GROUP_ID: knodia-multinode-debezium
       CONFIG_STORAGE_TOPIC: knodia-multinode-debezium-configs
@@ -337,12 +339,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-process/Dockerfile
     ports:
       - 3001:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -375,12 +379,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-k2k-gateway-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/k2k-gateway/Dockerfile
     ports:
       - 3101:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -415,12 +421,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-process/Dockerfile
     ports:
       - 3201:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -453,12 +461,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-remote-resources-manager-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/remote-resources-manager/Dockerfile
     ports:
       - 4901:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -486,12 +496,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-bff-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/backend-for-frontend/Dockerfile
     ports:
       - 3601:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -535,10 +547,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_eservice_rmw_user
       READMODEL_DB_PASSWORD: local_orion_eservice_rmw_user
       READMODEL_DB_HOST: postgres
@@ -566,10 +580,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_agreement_rmw_user
       READMODEL_DB_PASSWORD: local_orion_agreement_rmw_user
       READMODEL_DB_HOST: postgres
@@ -597,12 +613,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-process/Dockerfile
     ports:
       - 3301:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -634,10 +652,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_keychain_rmw_user
       READMODEL_DB_PASSWORD: local_orion_keychain_rmw_user
       READMODEL_DB_HOST: postgres
@@ -665,12 +685,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-process/Dockerfile
     ports:
       - 3401:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -702,10 +724,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_organization_rmw_user
       READMODEL_DB_PASSWORD: local_orion_organization_rmw_user
       READMODEL_DB_HOST: postgres
@@ -737,12 +761,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-process/Dockerfile
     ports:
       - 3002:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -775,12 +801,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-k2k-gateway-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/k2k-gateway/Dockerfile
     ports:
       - 3102:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -815,12 +843,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-process/Dockerfile
     ports:
       - 3202:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -853,12 +883,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-remote-resources-manager-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/remote-resources-manager/Dockerfile
     ports:
       - 4902:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -886,12 +918,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-bff-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/backend-for-frontend/Dockerfile
     ports:
       - 3602:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -935,10 +969,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_eservice_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_eservice_rmw_user
       READMODEL_DB_HOST: postgres
@@ -966,10 +1002,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_agreement_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_agreement_rmw_user
       READMODEL_DB_HOST: postgres
@@ -997,12 +1035,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-process/Dockerfile
     ports:
       - 3302:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -1034,10 +1074,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_keychain_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_keychain_rmw_user
       READMODEL_DB_HOST: postgres
@@ -1065,12 +1107,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-process/Dockerfile
     ports:
       - 3402:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -1102,10 +1146,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_organization_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_organization_rmw_user
       READMODEL_DB_HOST: postgres
