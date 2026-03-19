@@ -14,8 +14,15 @@ import { toPurposeV1 } from "../src/purposeProtobufConverterToV1.ts";
 describe("PurposeEventV1 codec", () => {
   const purpose = {
     ...zocker(Purpose).generate(),
-    // formAnswersJson must be JSON-serializable for the string roundtrip
-    formAnswersJson: { flag: true, nested: { n: 42 }, question1: "answer1" },
+    // zocker generates non-JSON-serializable values for Record<string, unknown>;
+    // override with a realistic JSON-safe object
+    formAnswersJson: {
+      checked: true,
+      count: 42,
+      nested: { deep: "value" },
+      options: ["a", "b", "c"],
+      question1: "answer1",
+    },
   };
 
   it("encodes and decodes a PurposeActivatedV1 payload (PurposeEventV1 full codec)", () => {

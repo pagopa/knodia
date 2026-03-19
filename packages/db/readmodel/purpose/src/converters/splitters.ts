@@ -1,8 +1,15 @@
 import type { Purpose } from "@knodia/purpose-models";
 
-import type { PurposeSQL } from "../purpose.ts";
+import type { PurposeItemsSQL, PurposeSQL } from "../purpose.ts";
 
-export const toPurposeSQL = (
+export const splitPurposeIntoObjectsSQL = (
+  purpose: Purpose,
+  metadataVersion: number,
+): PurposeItemsSQL => ({
+  purposeSQL: toPurposeSQL(purpose, metadataVersion),
+});
+
+const toPurposeSQL = (
   purpose: Purpose,
   metadataVersion: number,
 ): PurposeSQL => ({

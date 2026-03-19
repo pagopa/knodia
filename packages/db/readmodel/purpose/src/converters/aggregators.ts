@@ -51,6 +51,14 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
   };
 };
 
+export const aggregatePurposes = (
+  queryRes: PurposeAggregatorInput,
+): WithMetadata<Purpose>[] => {
+  const purposesSQL = toPurposesAggregator(queryRes);
+
+  return purposesSQL.map(buildPurpose);
+};
+
 export const aggregatePurpose = (
   queryRes: PurposeAggregatorInput,
 ): undefined | WithMetadata<Purpose> => {
