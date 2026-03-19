@@ -5,23 +5,23 @@ const { logLevel } = KafkaJS;
 
 export const KafkaConfig = z
   .object({
-    AWS_REGION: z.string().optional(),
     KAFKA_BROKERS: z.string(),
     KAFKA_CLIENT_ID: z.string(),
     KAFKA_DISABLE_AWS_IAM_AUTH: z.stringbool().default(false),
     KAFKA_LOG_LEVEL: z
       .enum(["NOTHING", "ERROR", "WARN", "INFO", "DEBUG"])
       .default("INFO"),
+    MSK_REGION: z.string().optional(),
     MSK_ROLE_ARN: z.string().optional(),
     POD_NAME: z.string().optional(),
   })
   .refine(
     (c) =>
       c.KAFKA_DISABLE_AWS_IAM_AUTH ||
-      (c.AWS_REGION !== undefined && c.MSK_ROLE_ARN !== undefined),
+      (c.MSK_REGION !== undefined && c.MSK_ROLE_ARN !== undefined),
     {
       message:
-        "AWS_REGION and MSK_ROLE_ARN are required when IAM auth is enabled",
+        "MSK_REGION and MSK_ROLE_ARN are required when IAM auth is enabled",
     },
   )
   .transform((c) => ({
@@ -31,7 +31,7 @@ export const KafkaConfig = z
     mskAuth: c.KAFKA_DISABLE_AWS_IAM_AUTH
       ? undefined
       : {
-          awsRegion: c.AWS_REGION as string,
+          awsRegion: c.MSK_REGION as string,
           awsRoleArn: c.MSK_ROLE_ARN as string,
           awsRoleSessionName: c.POD_NAME ?? "kafka-commons-client",
         },
