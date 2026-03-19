@@ -35,7 +35,7 @@ function createEservice(
     producer: {
       email: "info@ursa.com",
       initials: "UM",
-      knodeId: "Lynx",
+      knodeName: "Lynx Knode",
       name: "Ursa Major",
       notes: "Open Mon-Fri",
     },
@@ -81,7 +81,7 @@ describe("RequestAgreementModal", () => {
 
     expect(screen.getByText("Request Agreement")).toBeInTheDocument();
     expect(screen.getByText("Test E-Service")).toBeInTheDocument();
-    expect(screen.getByText(/Ursa Major - Lynx/)).toBeInTheDocument();
+    expect(screen.getByText(/Ursa Major - Lynx Knode/)).toBeInTheDocument();
     expect(
       screen.getByText("Your organization has the required attributes."),
     ).toBeInTheDocument();
