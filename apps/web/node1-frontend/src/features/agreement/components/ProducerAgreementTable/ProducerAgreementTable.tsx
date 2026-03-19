@@ -17,7 +17,7 @@ import { createLink } from "@tanstack/react-router";
 
 import { getOrganizationInitials } from "@/utils/getOrganizationInitials";
 
-import { AgreementStateChip } from "./AgreementStateChip";
+import { AgreementStateChip } from "../AgreementStateChip";
 
 const ButtonLinkWithPreload = createLink(ButtonLink);
 
