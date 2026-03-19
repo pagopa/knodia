@@ -15,7 +15,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
         DEFAULT_POLLING_MAX_RETRIES: z.coerce.number().default(5),
-        DEFAULT_POLLING_RETRY_DELAY: z.coerce.number().default(1000),
+        DEFAULT_POLLING_RETRY_DELAY: z.coerce.number().default(400),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
         KEYCHAIN_PROCESS_URL: z.url(),
