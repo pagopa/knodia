@@ -11,8 +11,6 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
-import type { BffProcessConfig } from "../../config/config.ts";
-
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerCatalogEserviceSearchResults,
@@ -28,7 +26,6 @@ import {
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceConsumerRouterOptions {
-  config: BffProcessConfig;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
