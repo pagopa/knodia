@@ -42,20 +42,20 @@ export const Route = createFileRoute("/_authenticated/consumption/e-services")({
 });
 
 function RouteComponent() {
-  const { agreementState, offset } = Route.useSearch();
+  const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
   const { data, isLoading } = useQuery({
-    ...eservicesQuery(offset, agreementState),
+    ...eservicesQuery(search.offset, search.agreementState),
     placeholderData: keepPreviousData,
   });
 
-  function handleSearchChange(values: Partial<ConsumptionEserviceListParams>) {
+  function handleSearchChange(values: Partial<typeof search>) {
     navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
   }
 
   const eservices = data?.items ?? [];
-  const hasFilters = agreementState !== undefined;
+  const hasFilters = search.agreementState !== undefined;
 
   if (!isLoading && !hasFilters && eservices.length === 0) {
     return (
@@ -98,7 +98,7 @@ function RouteComponent() {
       />
 
       <ConsumptionEserviceFilters
-        agreementState={agreementState}
+        agreementState={search.agreementState}
         onAgreementStateChange={(state) =>
           handleSearchChange({ agreementState: state, offset: 0 })
         }
@@ -113,7 +113,7 @@ function RouteComponent() {
       <Pagination
         className="mx-auto mt-6"
         limit={data?.pagination.limit ?? 0}
-        offset={offset}
+        offset={search.offset}
         onOffsetChange={(offset) => handleSearchChange({ offset })}
         totalItems={data?.pagination.total ?? 0}
       />
