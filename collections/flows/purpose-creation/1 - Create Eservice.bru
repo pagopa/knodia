@@ -65,3 +65,7 @@ script:pre-request {
   const random = Math.round(Math.random() * 1000)
   bru.setVar("randomName", `Test Eservice ${random}`)
 }
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}

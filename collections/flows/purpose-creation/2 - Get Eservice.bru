@@ -17,7 +17,3 @@ headers {
   X-Correlation-Id: {{correlation-id}}
   Authorization: {{ui-session-jwt}}
 }
-
-script:pre-request {
-  await new Promise(r => setTimeout(r, 1000))
-}

@@ -29,3 +29,7 @@ vars:post-response {
   agreementId: res.body.id
 }
 
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}
+
