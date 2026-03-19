@@ -2454,6 +2454,9 @@ importers:
       aws-msk-iam-sasl-signer-js:
         specifier: 'catalog:'
         version: 1.0.1
+      pg:
+        specifier: 'catalog:'
+        version: 8.16.3
       pino:
         specifier: 'catalog:'
         version: 10.2.1

@@ -11,6 +11,7 @@
     "@knodia/common-models": "workspace:*",
     "@confluentinc/kafka-javascript": "catalog:",
     "aws-msk-iam-sasl-signer-js": "catalog:",
+    "pg": "catalog:",
     "pino": "catalog:",
     "zod": "catalog:"
   },
