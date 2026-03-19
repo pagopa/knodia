@@ -1,9 +1,12 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { updateConsumerKeychainMutation } from "@knodia/bff-client/tanstack-query";
+import {
+  getConsumerKeychainDetailsOptions,
+  updateConsumerKeychainMutation,
+} from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
@@ -62,16 +65,26 @@ function EditKeychainModal({
   onClose,
   type,
 }: EditKeychainModalProps) {
+  const queryClient = useQueryClient();
+
   const { isPending, mutate: editConsumerKeychain } = useMutation({
     ...updateConsumerKeychainMutation({
       client,
     }),
-    onSuccess: () => onClose(),
+    onSuccess: async () => {
+      queryClient.invalidateQueries(
+        getConsumerKeychainDetailsOptions({
+          client,
+          path: { consumerKeychainId: keychain.id },
+        }),
+      );
+      onClose();
+    },
   });
 
   function handleEditKeychain(seed: EditKeychainFormValues) {
     const body: bffApi.ConsumerKeychainPatch = {
-      description: seed.description ? { en: seed.description } : undefined,
+      description: seed.description ? { en: seed.description } : null,
       name: { en: seed.name },
     };
 

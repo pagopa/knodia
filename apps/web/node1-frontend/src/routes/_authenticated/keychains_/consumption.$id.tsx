@@ -12,6 +12,7 @@ import {
   Tabs,
 } from "@knodia/ui-kit/ui";
 import { SelectionIcon, SelectionPlusIcon } from "@phosphor-icons/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
@@ -32,11 +33,14 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
-    await queryClient.ensureQueryData(consumerKeychainQuery(id)),
+    queryClient.ensureQueryData(consumerKeychainQuery(id)),
 });
 
 function RouteComponent() {
-  const consumerKeychain = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const { data: consumerKeychain } = useSuspenseQuery(
+    consumerKeychainQuery(id),
+  );
 
   return (
     <>

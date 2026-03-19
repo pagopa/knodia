@@ -9,11 +9,14 @@ export const keychainTypeOptions = [
 ] as const satisfies readonly { id: KeychainType; label: string }[];
 
 const baseKeychainFormSchema = z.object({
-  description: z
-    .string()
-    .min(10, "Description must be at least 10 characters.")
-    .max(250, "Description must be at most 250 characters.")
-    .optional(),
+  description: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .string()
+      .min(10, "Description must be at least 10 characters.")
+      .max(250, "Description must be at most 250 characters.")
+      .optional(),
+  ),
   name: z
     .string()
     .min(5, "Name must be at least 5 characters.")
