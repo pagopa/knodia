@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -32,6 +33,7 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
 
       const response = await getEservice(VALID_ESERVICE_ID, token);
 
+      expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
       expect(response.statusCode).toBe(200);
 
       const body = response.json<API_Eservice>();
