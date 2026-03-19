@@ -128,16 +128,16 @@ const API_EserviceDetailsProducer = z
   })
   .meta({ id: "EserviceDetailsProducer" });
 
-export const API_AgreementDetail = z
+export const API_EserviceAgreementDetail = z
   .strictObject({
     id: z.uuid(),
     state: API_AgreementState,
   })
-  .meta({ id: "AgreementDetail" });
+  .meta({ id: "EserviceAgreementDetail" });
 
 export const API_EserviceDetails = z
   .strictObject({
-    agreement: API_AgreementDetail.optional(),
+    agreement: API_EserviceAgreementDetail.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
@@ -150,5 +150,5 @@ export const API_EserviceDetails = z
     producer: API_EserviceDetailsProducer,
   })
   .meta({ id: "EserviceDetails" });
-export type API_AgreementDetail = z.infer<typeof API_AgreementDetail>;
+export type API_EserviceAgreementDetail = z.infer<typeof API_EserviceAgreementDetail>;
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
