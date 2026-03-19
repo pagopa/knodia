@@ -12,7 +12,6 @@ const agreementQuery = (agreementId: AgreementId) =>
     path: { agreementId },
   });
 
-
 export const Route = createFileRoute(
   "/_authenticated/production/agreements_/$id",
 )({
