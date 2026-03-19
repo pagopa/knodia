@@ -150,5 +150,7 @@ export const API_EserviceDetails = z
     producer: API_EserviceDetailsProducer,
   })
   .meta({ id: "EserviceDetails" });
-export type API_EserviceAgreementDetail = z.infer<typeof API_EserviceAgreementDetail>;
+export type API_EserviceAgreementDetail = z.infer<
+  typeof API_EserviceAgreementDetail
+>;
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;

@@ -8,8 +8,8 @@ import {
 import { match } from "ts-pattern";
 
 import type {
-  API_EserviceAgreementDetail,
   API_CatalogEserviceSearchResult,
+  API_EserviceAgreementDetail,
   API_EserviceDetails,
 } from "./api.ts";
 
