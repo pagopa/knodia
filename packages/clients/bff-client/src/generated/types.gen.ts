@@ -341,7 +341,7 @@ export type ConsumerRequiredAttribute = {
     scheme: string;
 };
 
-export type AgreementDetail = {
+export type EserviceAgreementDetail = {
     id: string;
     state: AgreementState;
 };
@@ -367,7 +367,7 @@ export type ConsumerEserviceDetailsMaxDailyCalls = {
 
 export type ConsumerEserviceDetails = {
     accessToken: ConsumerEserviceDetailsAccessToken;
-    agreement?: AgreementDetail;
+    agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
