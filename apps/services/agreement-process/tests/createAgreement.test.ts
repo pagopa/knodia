@@ -7,6 +7,7 @@ import {
 } from "@knodia/agreement-models";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -63,6 +64,8 @@ describe("POST /agreements (createAgreement)", async () => {
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/agreements")
         .body(body);
+
+      expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
       expect(response.statusCode).toBe(201);
 
       const responseBody = response.json<API_Agreement>();
