@@ -6,4 +6,4 @@
 docker compose -f docker/compose.yaml up -d --wait || true
 
 # Generate local dev tokens (ui-session + internal) for Bruno collections
-pnpm generate-tokens
+pnpm generate-all-tokens

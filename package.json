@@ -20,7 +20,7 @@
     "db:schema-normalize": "turbo run db:schema-normalize",
     "knip": "turbo run generate-artifacts && knip",
     "generate-token": "node scripts/local-kms/generate-token.mjs",
-    "generate-tokens": "node scripts/local-kms/generate-all-tokens.mjs",
+    "generate-all-tokens": "node scripts/local-kms/generate-all-tokens.mjs",
     "infra:start": "./scripts/infra-start.sh",
     "infra:stop": "./scripts/infra-stop.sh",
     "infra:destroy": "./scripts/infra-destroy.sh",
