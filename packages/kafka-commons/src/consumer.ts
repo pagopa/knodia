@@ -5,7 +5,7 @@ import type {
 import type { Logger } from "pino";
 
 import { kafkaMessageProcessError } from "@knodia/common-models/errors";
-import { Pool } from "pg";
+import type { Pool } from "pg";
 
 import type { KafkaConsumerConfig } from "./config/config.ts";
 

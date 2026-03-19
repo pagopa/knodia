@@ -10,7 +10,7 @@ import {
   type EventSchema,
   KafkaMessageEnvelope,
 } from "@knodia/common-models/event";
-import { Pool } from "pg";
+import type { Pool } from "pg";
 
 export function assertDataExistsInEvent<
   TEventZodType extends EventSchema,
