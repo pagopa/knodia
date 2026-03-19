@@ -1,4 +1,5 @@
 import type { KafkaMessage } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
+import type { Pool } from "pg";
 import type { Logger } from "pino";
 import type z from "zod";
 
@@ -10,7 +11,6 @@ import {
   type EventSchema,
   KafkaMessageEnvelope,
 } from "@knodia/common-models/event";
-import type { Pool } from "pg";
 
 export function assertDataExistsInEvent<
   TEventZodType extends EventSchema,
