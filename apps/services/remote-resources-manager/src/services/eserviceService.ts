@@ -125,7 +125,7 @@ export function eserviceServiceBuilder(
             client: k2kGatewayClient,
             path,
           }),
-          remoteResourceDbService.getByConsumerIdAndEserviceId(
+          remoteResourceDbService.getAgreementsByConsumerIdAndEserviceId(
             authData.organizationId,
             eserviceId.id,
             eserviceId.knodeId,

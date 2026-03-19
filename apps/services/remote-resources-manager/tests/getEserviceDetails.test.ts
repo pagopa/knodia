@@ -24,7 +24,7 @@ const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
 const getOrganizationMock = vi.hoisted(() => vi.fn());
 const getAgreementMock = vi.hoisted(() => vi.fn());
-const getByConsumerIdAndEserviceIdMock = vi.hoisted(() => vi.fn());
+const getAgreementsByConsumerIdAndEserviceIdMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -44,8 +44,8 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
 
 vi.mock("@knodia/db-remote-resource/services", () => ({
   remoteResourceDbServiceBuilder: () => ({
-    getByAgreementId: vi.fn(),
-    getByConsumerIdAndEserviceId: getByConsumerIdAndEserviceIdMock,
+    getAgreementById: vi.fn(),
+    getAgreementsByConsumerIdAndEserviceId: getAgreementsByConsumerIdAndEserviceIdMock,
     insertAgreement: vi.fn(),
   }),
 }));
@@ -84,14 +84,14 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     getEserviceLatestVersionMock.mockReset();
     getOrganizationMock.mockReset();
     getAgreementMock.mockReset();
-    getByConsumerIdAndEserviceIdMock.mockReset();
+    getAgreementsByConsumerIdAndEserviceIdMock.mockReset();
   });
 
   it("should return 200 with converted detail and no agreement when none exists", async () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
     getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
-    getByConsumerIdAndEserviceIdMock.mockResolvedValue([]);
+    getAgreementsByConsumerIdAndEserviceIdMock.mockResolvedValue([]);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get(`/eservices/${eserviceId}`)
@@ -116,7 +116,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
         path: { organizationId: k2kEservice.producerId },
       }),
     );
-    expect(getByConsumerIdAndEserviceIdMock).toHaveBeenCalledWith(
+    expect(getAgreementsByConsumerIdAndEserviceIdMock).toHaveBeenCalledWith(
       TEST_ORGANIZATION_ID,
       eserviceId,
       knodeId,
@@ -147,7 +147,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
     getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
-    getByConsumerIdAndEserviceIdMock.mockResolvedValue([
+    getAgreementsByConsumerIdAndEserviceIdMock.mockResolvedValue([
       {
         agreementId,
         consumerId: TEST_ORGANIZATION_ID,
@@ -190,7 +190,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
     getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
-    getByConsumerIdAndEserviceIdMock.mockResolvedValue([
+    getAgreementsByConsumerIdAndEserviceIdMock.mockResolvedValue([
       {
         agreementId: agreementId1,
         consumerId: TEST_ORGANIZATION_ID,
