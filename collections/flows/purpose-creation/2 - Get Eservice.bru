@@ -1,0 +1,23 @@
+meta {
+  name: 2 - Get Eservice
+  type: http
+}
+
+get {
+  url: {{host-eservice-process}}/eservices/:eserviceId
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+script:pre-request {
+  await new Promise(r => setTimeout(r, 1000))
+}

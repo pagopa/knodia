@@ -1,0 +1,22 @@
+meta {
+  name: 5 - Get Agreement
+  type: http
+}
+
+get {
+  url: {{host-agreement-process}}/agreements/:agreementId
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+script:pre-request {
+  await new Promise(r => setTimeout(r, 1000))
+}
