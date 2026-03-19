@@ -417,6 +417,9 @@ importers:
       pino:
         specifier: 'catalog:'
         version: 10.2.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -502,6 +505,9 @@ importers:
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
       fastify:
         specifier: 'catalog:'
         version: 5.8.1
@@ -897,6 +903,9 @@ importers:
       pino:
         specifier: 'catalog:'
         version: 10.2.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -1040,6 +1049,9 @@ importers:
       pino:
         specifier: 'catalog:'
         version: 10.2.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0
@@ -1077,12 +1089,36 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/db-event-store-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/commons
+      '@knodia/db-event-store-purpose':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/purpose
+      '@knodia/db-event-store-writer':
+        specifier: workspace:*
+        version: link:../../../packages/db/event-store/writer
+      '@knodia/db-readmodel-agreement':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/agreement
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/eservice
       '@knodia/db-readmodel-purpose':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/purpose
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -1147,6 +1183,73 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+
+  apps/services/purpose-readmodel-writer:
+    dependencies:
+      '@confluentinc/kafka-javascript':
+        specifier: 'catalog:'
+        version: 1.7.0
+      '@knodia/common-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/common-models
+      '@knodia/db-readmodel-commons':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/commons
+      '@knodia/db-readmodel-purpose':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/purpose
+      '@knodia/kafka-commons':
+        specifier: workspace:*
+        version: link:../../../packages/kafka-commons
+      '@knodia/logger':
+        specifier: workspace:*
+        version: link:../../../packages/logger
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-models
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      pino:
+        specifier: 'catalog:'
+        version: 10.2.1
+      pino-pretty:
+        specifier: 'catalog:'
+        version: 13.1.3
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../packages/eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../packages/typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.16.0
+      concurrently:
+        specifier: 'catalog:'
+        version: 9.2.1
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
 
   apps/services/remote-resources-manager:
     dependencies:
@@ -1727,6 +1830,40 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
+  packages/db/event-store/purpose:
+    dependencies:
+      '@knodia/db-event-store-config':
+        specifier: workspace:*
+        version: link:../config
+      drizzle-orm:
+        specifier: 'catalog:'
+        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../../../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../../../typescript-config
+      '@types/pg':
+        specifier: 'catalog:'
+        version: 8.16.0
+      drizzle-kit:
+        specifier: 'catalog:'
+        version: 0.31.8
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/db/event-store/writer:
     dependencies:
       '@knodia/agreement-models':
@@ -1747,6 +1884,9 @@ importers:
       '@knodia/db-event-store-organization':
         specifier: workspace:*
         version: link:../organization
+      '@knodia/db-event-store-purpose':
+        specifier: workspace:*
+        version: link:../purpose
       '@knodia/eservice-models':
         specifier: workspace:*
         version: link:../../../models/eservice-models
@@ -1756,6 +1896,9 @@ importers:
       '@knodia/organization-models':
         specifier: workspace:*
         version: link:../../../models/organization-models
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../models/purpose-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
@@ -2290,9 +2433,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      pg:
-        specifier: 'catalog:'
-        version: 8.16.3
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2552,13 +2692,22 @@ importers:
 
   packages/models/purpose-models:
     dependencies:
+      '@bufbuild/protobuf':
+        specifier: 'catalog:'
+        version: 2.10.2
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../common-models
+      ts-pattern:
+        specifier: 'catalog:'
+        version: 5.9.0
       zod:
         specifier: 'catalog:'
         version: 4.2.0
     devDependencies:
+      '@bufbuild/buf':
+        specifier: 'catalog:'
+        version: 1.61.0
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
@@ -2574,6 +2723,12 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
+      zocker:
+        specifier: 'catalog:'
+        version: 3.0.0(zod@4.2.0)
 
   packages/openapi-client-generator:
     devDependencies:

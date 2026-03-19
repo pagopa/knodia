@@ -2,6 +2,7 @@
 import type { ConsumerKeychain } from "@knodia/keychain-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { KeychainEventV1, toConsumerKeychainV1 } from "@knodia/keychain-models";
 import {
   forbiddenTestTokens,
@@ -28,7 +29,9 @@ describe("POST /consumerKeychains (createConsumerKeychain)", () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/consumerKeychains")
       .body(body);
+
     expect(response.statusCode).toBe(201);
+    expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
 
     const responseBody = response.json<API_Keychain>();
 
