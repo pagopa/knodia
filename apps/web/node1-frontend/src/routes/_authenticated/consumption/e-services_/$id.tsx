@@ -7,22 +7,16 @@ import {
   Banner,
   Breadcrumb,
   Breadcrumbs,
-  Button,
   ButtonLink,
   Divider,
-  Popover,
 } from "@knodia/ui-kit/ui";
-import {
-  AddressBookIcon,
-  SealCheckIcon,
-  WarningIcon,
-} from "@phosphor-icons/react";
+import { SealCheckIcon, WarningIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
-import { DialogTrigger } from "react-aria-components";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
+import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
@@ -131,45 +125,6 @@ function ConsumptionRequirementsSection({
   );
 }
 
-function ProducerContactPopover({
-  producer,
-}: {
-  producer: ConsumptionEserviceDetail["producer"];
-}) {
-  return (
-    <DialogTrigger>
-      <Button
-        aria-label="View producer contact info"
-        className="p-0"
-        hierarchy="neutral"
-        kind="ghost"
-        size="icon-sm"
-      >
-        <AddressBookIcon
-          className="text-primary-light-low-contrast"
-          size={16}
-        />
-      </Button>
-      <Popover
-        className="max-w-md"
-        placement="bottom start"
-        title={`${producer.name} – ${producer.knodeId}`}
-      >
-        <dl className="body-sm flex flex-col gap-1">
-          <div className="flex gap-2">
-            <dt>E-mail address:</dt>
-            <dd className="body-sm-em">{producer.email}</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt>Notes:</dt>
-            <dd className="body-sm-em">{producer.notes}</dd>
-          </div>
-        </dl>
-      </Popover>
-    </DialogTrigger>
-  );
-}
-
 function RouteComponent() {
   const bffDetail = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
@@ -210,7 +165,12 @@ function RouteComponent() {
             name={eservice.producer.name}
             size="sm"
           />
-          <ProducerContactPopover producer={eservice.producer} />
+          <OrganizationContactPopover
+            email={eservice.producer.email}
+            knodeName={knodeId}
+            name={eservice.producer.name}
+            notes={eservice.producer.notes}
+          />
         </div>
         <p className="mt-6 body-md text-primary-light-low-contrast max-w-200">
           {eservice.description}
