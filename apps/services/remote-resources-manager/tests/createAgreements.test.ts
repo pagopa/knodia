@@ -15,7 +15,11 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
-import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
+import {
+  getMockAgreement,
+  getMockEservice,
+  getMockOrganization,
+} from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -28,6 +32,7 @@ import { injectAppRequest } from "./utils.ts";
 
 const createAgreementMock = vi.hoisted(() => vi.fn());
 const getAgreementMock = vi.hoisted(() => vi.fn());
+const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -39,6 +44,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
       ...original.k2kGatewayApi,
       createAgreement: createAgreementMock,
       getAgreement: getAgreementMock,
+      getEserviceLatestVersion: getEserviceLatestVersionMock,
     },
   };
 });
@@ -74,9 +80,12 @@ describe("POST /agreements (createAgreement)", () => {
     producerId: agreement.producerId,
   };
 
+  const testOrganization = getMockOrganization();
+
   beforeEach(() => {
     createAgreementMock.mockReset();
     getAgreementMock.mockReset();
+    getEserviceLatestVersionMock.mockReset();
   });
 
   it("should return 201 with converted results on success", async () => {
@@ -85,6 +94,9 @@ describe("POST /agreements (createAgreement)", () => {
     });
     getAgreementMock.mockResolvedValue({
       data: toK2KAgreement(agreement),
+    });
+    getEserviceLatestVersionMock.mockResolvedValue({
+      data: { requiredAttributes: [] },
     });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
@@ -169,5 +181,70 @@ describe("POST /agreements (createAgreement)", () => {
       .post("/agreements")
       .body(body);
     expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 201 when eservice has no required attributes", async () => {
+    createAgreementMock.mockResolvedValue({ data: mockK2KResponse });
+    getEserviceLatestVersionMock.mockResolvedValue({
+      data: { requiredAttributes: [] },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/agreements")
+      .body(body);
+
+    expect(response.statusCode).toBe(201);
+  });
+
+  it("should return 201 when consumer possesses all required attributes", async () => {
+    createAgreementMock.mockResolvedValue({ data: mockK2KResponse });
+    getEserviceLatestVersionMock.mockResolvedValue({
+      data: {
+        requiredAttributes: [testOrganization.attributes],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/agreements")
+      .body(body);
+
+    expect(response.statusCode).toBe(201);
+  });
+
+  it("should return 403 when consumer does not possess any required attribute", async () => {
+    getEserviceLatestVersionMock.mockResolvedValue({
+      data: {
+        requiredAttributes: [
+          [{ code: "unknown_code", scheme: "unknown_scheme" }],
+        ],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/agreements")
+      .body(body);
+
+    expect(response.statusCode).toBe(403);
+    expect(createAgreementMock).not.toHaveBeenCalled();
+  });
+
+  it("should return 403 when consumer possesses only some required attributes", async () => {
+    getEserviceLatestVersionMock.mockResolvedValue({
+      data: {
+        requiredAttributes: [
+          [
+            ...testOrganization.attributes,
+            { code: "missing_code", scheme: "missing_scheme" },
+          ],
+        ],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/agreements")
+      .body(body);
+
+    expect(response.statusCode).toBe(403);
+    expect(createAgreementMock).not.toHaveBeenCalled();
   });
 });
