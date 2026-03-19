@@ -343,21 +343,33 @@ export type Organization = {
 };
 
 /**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
  * Seed data to create a new Purpose
  */
 export type PurposeSeed = {
     consumerId: OrganizationId;
     dailyCalls: number;
-    description: {
-        en: string;
-    };
+    description: LocalizedPurposeDescription;
     eserviceId: EserviceId;
-    formAnswersJson: {
-        [key: string]: unknown;
-    };
-    name: {
-        en: string;
-    };
+    formAnswersJson: PurposeFormAnswers;
+    name: LocalizedPurposeName;
 };
 
 /**

@@ -2,22 +2,53 @@ import {
   API_CreatedResource,
   API_OrganizationId,
 } from "@knodia/common-models/api";
+import {
+  maxDailyCalls,
+  maxDescriptionLength,
+  maxNameLength,
+  minDailyCalls,
+  minDescriptionLength,
+  minNameLength,
+} from "@knodia/purpose-models";
 import { z } from "zod";
 
 import { API_EserviceId } from "../eservice/api.ts";
 
-const API_LocalizedText = z.strictObject({
-  en: z.string(),
-});
+const API_LocalizedPurposeName = z
+  .strictObject({
+    en: z.string().min(minNameLength).max(maxNameLength),
+  })
+  .meta({
+    description: "Name of the Purpose",
+    id: "LocalizedPurposeName",
+  });
+
+const API_LocalizedPurposeDescription = z
+  .strictObject({
+    en: z.string().min(minDescriptionLength).max(maxDescriptionLength),
+  })
+  .meta({
+    description: "Description of the Purpose",
+    id: "LocalizedPurposeDescription",
+  });
+
+const API_PurposeFormAnswers = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "PurposeFormAnswers" });
 
 export const API_PurposeSeed = z
   .strictObject({
     consumerId: API_OrganizationId,
-    dailyCalls: z.number().int().min(0).meta({ format: "int32" }),
-    description: API_LocalizedText,
+    dailyCalls: z
+      .number()
+      .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
+      .meta({ format: "int32" }),
+    description: API_LocalizedPurposeDescription,
     eserviceId: API_EserviceId,
-    formAnswersJson: z.record(z.string(), z.unknown()),
-    name: API_LocalizedText,
+    formAnswersJson: API_PurposeFormAnswers,
+    name: API_LocalizedPurposeName,
   })
   .meta({
     description: "Seed data to create a new Purpose",

@@ -569,6 +569,31 @@ components:
         - id
         - name
       additionalProperties: false
+    LocalizedPurposeName:
+      description: Name of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedPurposeDescription:
+      description: Description of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormAnswers:
+      type: object
+      additionalProperties: {}
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -579,28 +604,15 @@ components:
           format: int32
           type: integer
           minimum: 0
-          maximum: 9007199254740991
+          maximum: 1000000000
         description:
-          type: object
-          properties:
-            en:
-              type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
         eserviceId:
           $ref: "#/components/schemas/EserviceId"
         formAnswersJson:
-          type: object
-          additionalProperties: {}
+          $ref: "#/components/schemas/PurposeFormAnswers"
         name:
-          type: object
-          properties:
-            en:
-              type: string
-          required:
-            - en
-          additionalProperties: false
+          $ref: "#/components/schemas/LocalizedPurposeName"
       required:
         - consumerId
         - dailyCalls
