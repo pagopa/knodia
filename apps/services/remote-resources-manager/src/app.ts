@@ -92,10 +92,7 @@ export function buildApp({
     const remoteResourceDbService =
       remoteResourceDbServiceBuilder(remoteResourceDb);
     protectedApp.register(eserviceRouter, {
-      eserviceService: eserviceServiceBuilder(
-        k2kGatewayClient,
-        remoteResourceDbService,
-      ),
+      eserviceService: eserviceServiceBuilder(k2kGatewayClient),
     });
     protectedApp.register(agreementRouter, {
       agreementService: agreementServiceBuilder(

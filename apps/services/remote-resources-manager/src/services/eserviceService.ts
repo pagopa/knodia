@@ -1,6 +1,5 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { EserviceId } from "@knodia/common-models/ids";
-import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
@@ -25,10 +24,7 @@ import {
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
-export function eserviceServiceBuilder(
-  k2kGatewayClient: K2K2GatewayApiClient,
-  remoteResourceDbService: RemoteResourceDbService,
-) {
+export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
   return {
     async downloadEserviceLatestVersionInterface(
       eserviceId: ExternalResource<EserviceId>,
@@ -115,7 +111,7 @@ export function eserviceServiceBuilder(
 
       const eserviceIdPath = { eserviceId: eserviceId.id };
 
-      const [{ data: eservice }, { data: version }, remoteAgreements] =
+      const [{ data: eservice }, { data: version }, { data: agreements }] =
         await Promise.all([
           k2kGatewayApi.getEservice({
             client: k2kGatewayClient,
@@ -125,41 +121,24 @@ export function eserviceServiceBuilder(
             client: k2kGatewayClient,
             path: eserviceIdPath,
           }),
-          remoteResourceDbService.getAgreementsByConsumerIdAndEserviceId(
-            authData.organizationId,
-            eserviceId.id,
-            eserviceId.knodeId,
-          ),
+          k2kGatewayApi.getAgreements({
+            client: k2kGatewayClient,
+            query: {
+              consumerId: authData.organizationId,
+              eserviceId: eserviceId.id,
+              limit: 1,
+              offset: 0,
+              state: "ACTIVE",
+            },
+          }),
         ]);
 
-      const remoteAgreement = remoteAgreements[0];
+      const agreement = agreements.results[0];
 
-      if (remoteAgreements.length > 1) {
-        logger.warn(
-          {
-            consumerId: authData.organizationId,
-            count: remoteAgreements.length,
-            eserviceId: eserviceId.id,
-            knodeId: eserviceId.knodeId,
-          },
-          `Multiple agreements found for consumer and eservice for Knode: ${eserviceId.knodeId}`,
-        );
-      }
-
-      const [{ data: producer }, agreement] = await Promise.all([
-        k2kGatewayApi.getOrganization({
-          client: k2kGatewayClient,
-          path: { organizationId: eservice.producerId },
-        }),
-        remoteAgreement
-          ? k2kGatewayApi
-              .getAgreement({
-                client: k2kGatewayClient,
-                path: { agreementId: remoteAgreement.agreementId },
-              })
-              .then(({ data }) => data)
-          : Promise.resolve(undefined),
-      ]);
+      const { data: producer } = await k2kGatewayApi.getOrganization({
+        client: k2kGatewayClient,
+        path: { organizationId: eservice.producerId },
+      });
 
       return toAPI_EserviceDetails(eservice, version, producer, agreement);
     },
