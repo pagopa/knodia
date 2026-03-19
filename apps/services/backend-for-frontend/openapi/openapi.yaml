@@ -181,17 +181,6 @@ components:
       enum:
         - Bearer
         - DPoP
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     CompactOrganization:
       description: Organization with only id, knodeId, and name
       type: object
@@ -209,6 +198,17 @@ components:
         - id
         - knodeId
         - name
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object
@@ -648,8 +648,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeName:
-          type: string
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -657,7 +657,7 @@ components:
       required:
         - email
         - id
-        - knodeName
+        - knodeId
         - name
         - notes
       additionalProperties: false
