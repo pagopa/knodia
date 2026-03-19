@@ -1,9 +1,17 @@
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import {
+  agreementProcessApi,
+  type AgreementProcessClient,
+} from "@knodia/agreement-process-client";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -16,14 +24,42 @@ import {
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  pollResourceWithMetadata,
+} from "../../utils/polling.ts";
 
 interface AgreementConsumerRouterOptions {
+  agreementProcessClient: AgreementProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const agreementConsumerRouter: FastifyPluginAsyncZod<
   AgreementConsumerRouterOptions
-> = async (fastify, { remoteResourcesManagerClient }) => {
+> = async (
+  fastify,
+  { agreementProcessClient, remoteResourcesManagerClient },
+) => {
+  const retrieveAgreement = async (
+    agreementId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    await agreementProcessApi.getAgreement({
+      client: agreementProcessClient,
+      headers,
+      path: { agreementId },
+    });
+
+  const pollAgreement = (
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollResourceWithMetadata(() =>
+      retrieveAgreement(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -36,17 +72,21 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         `Creating agreement for consumer ${consumerId} on knode ${req.body.knodeId}`,
       );
 
-      const { data } = await remoteResourcesManagerApi.createAgreement({
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await remoteResourcesManagerApi.createAgreement({
         body: {
           eserviceId: req.body.eserviceId,
           eserviceVersionId: req.body.eserviceVersionId,
           knodeId: req.body.knodeId,
         },
         client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
       });
 
-      res.status(201).send({ id: data.id });
+      await pollAgreement(response, headers);
+
+      res.status(201).send({ id: response.data.id });
     },
     method: "POST",
     schema: {
