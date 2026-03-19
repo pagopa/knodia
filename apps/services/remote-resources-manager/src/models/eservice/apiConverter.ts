@@ -41,7 +41,7 @@ const toAPI_AgreementDetail = (
 ): API_AgreementDetail | undefined =>
   agreement
     ? { id: agreement.id, state: toAPI_AgreementState(agreement.state) }
-    : agreement;
+    : undefined;
 
 export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
