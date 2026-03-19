@@ -102,7 +102,7 @@ describe("POST /agreements (createAgreement)", () => {
     expect(response.json()).toEqual(mockK2KResponse);
 
     const remoteResourceAgreement =
-      await remoteResourceDbService.getByAgreementId(
+      await remoteResourceDbService.getAgreementById(
         unsafeBrandExternalId(agreement.id),
         KnodeId.parse(body.knodeId),
       );

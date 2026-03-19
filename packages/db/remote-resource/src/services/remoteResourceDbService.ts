@@ -19,7 +19,7 @@ export type RemoteResourceDbService = ReturnType<
 
 export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async getByAgreementId(
+    async getAgreementById(
       agreementId: ExternalId<AgreementId>,
       knodeId: KnodeId,
     ) {
@@ -35,7 +35,7 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result ?? undefined;
     },
-    async getByConsumerIdAndEserviceId(
+    async getAgreementsByConsumerIdAndEserviceId(
       consumerId: OrganizationId,
       eserviceId: ExternalId<EserviceId>,
       knodeId: KnodeId,
