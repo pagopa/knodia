@@ -15,13 +15,11 @@ export async function initKafka(
   config: KafkaConfig,
   logger: Logger,
 ): Promise<KafkaJS.Kafka> {
-  const saslConfigs: CommonConstructorConfig = config.mskAuth
+  const { mskAuth } = config;
+  const saslConfigs: CommonConstructorConfig = mskAuth
     ? {
         oauthbearer_token_refresh_cb: async () => {
-          const tokenResponse = await oauthBearerTokenProvider(
-            config.mskAuth as MskAuth,
-            logger,
-          );
+          const tokenResponse = await oauthBearerTokenProvider(mskAuth, logger);
           return {
             lifetime: tokenResponse.expiryTime,
             tokenValue: tokenResponse.token,
