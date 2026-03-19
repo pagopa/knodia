@@ -1,3 +1,4 @@
+import { getConsumerAgreementsOptions } from "@knodia/bff-client/tanstack-query";
 import { Button, Empty } from "@knodia/ui-kit/ui";
 import {
   ArchiveIcon,
@@ -5,18 +6,26 @@ import {
   SelectionPlusIcon,
   XIcon,
 } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
+import { client } from "@/libs/axios";
 import { formatNumber } from "@/utils/formatters";
 
 export function ConsumerAgreementsSummary() {
   const navigate = useNavigate();
 
-  // TODO: Replace mocked counters with real API data
-  const counters = { active: 128, archived: 67, suspended: 35 };
+  const { data } = useQuery(getConsumerAgreementsOptions({ client }));
+
+  if (!data) {
+    return null;
+  }
+
+  const { activeAgreements, archivedAgreements, suspendedAgreements } =
+    data.counters;
   const hasAgreements =
-    counters.active > 0 || counters.suspended > 0 || counters.archived > 0;
+    activeAgreements + suspendedAgreements + archivedAgreements > 0;
 
   if (!hasAgreements) {
     return (
@@ -40,21 +49,21 @@ export function ConsumerAgreementsSummary() {
       <div className="grid grid-cols-3 gap-4">
         {/* TODO: Add agreement status filter search param when navigating to e-services list */}
         <AgreementCounterCard
-          count={counters.active}
+          count={activeAgreements}
           icon={<CheckIcon />}
           kind="success"
           label="Active"
           onViewAll={() => navigate({ to: "/consumption/e-services" })}
         />
         <AgreementCounterCard
-          count={counters.suspended}
+          count={suspendedAgreements}
           icon={<XIcon />}
           kind="error"
           label="Suspended"
           onViewAll={() => navigate({ to: "/consumption/e-services" })}
         />
         <AgreementCounterCard
-          count={counters.archived}
+          count={archivedAgreements}
           icon={<ArchiveIcon />}
           kind="neutral"
           label="Archived"
