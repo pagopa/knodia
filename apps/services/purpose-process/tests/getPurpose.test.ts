@@ -2,7 +2,7 @@
 
 import { generateId, type PurposeId } from "@knodia/common-models/ids";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
-import { toPurposeSQL } from "@knodia/db-readmodel-purpose/converters";
+import { splitPurposeIntoObjectsSQL } from "@knodia/db-readmodel-purpose/converters";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it } from "vitest";
 
@@ -30,7 +30,9 @@ describe("GET /purposes/:purposeId (getPurpose)", () => {
   beforeEach(async () => {
     await Promise.all(
       mockPurposes.map((p) =>
-        readmodelDb.insert(readmodelPurpose).values(toPurposeSQL(p, 0)),
+        readmodelDb
+          .insert(readmodelPurpose)
+          .values(splitPurposeIntoObjectsSQL(p, 0).purposeSQL),
       ),
     );
   });
