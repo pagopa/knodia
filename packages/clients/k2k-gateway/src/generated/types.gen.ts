@@ -50,6 +50,13 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
+/**
  * Unique Knode identifier
  */
 export type KnodeId = 'ORION' | 'LYNX';
@@ -335,6 +342,29 @@ export type Organization = {
     name: string;
 };
 
+/**
+ * Seed data to create a new Purpose
+ */
+export type PurposeSeed = {
+    consumerId: OrganizationId;
+    dailyCalls: number;
+    description: {
+        en: string;
+    };
+    eserviceId: EserviceId;
+    formAnswersJson: {
+        [key: string]: unknown;
+    };
+    name: {
+        en: string;
+    };
+};
+
+/**
+ * Unique identifier of the created Purpose resource
+ */
+export type CreatedPurposeResource = CreatedResource;
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -614,3 +644,36 @@ export type GetOrganizationResponses = {
 };
 
 export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
+
+export type CreatePurposeData = {
+    body: PurposeSeed;
+    path?: never;
+    query?: never;
+    url: '/purposes';
+};
+
+export type CreatePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreatePurposeError = CreatePurposeErrors[keyof CreatePurposeErrors];
+
+export type CreatePurposeResponses = {
+    /**
+     * Purpose created successfully
+     */
+    201: CreatedPurposeResource;
+};
+
+export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];

@@ -17,6 +17,7 @@ import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
+import { purposeRouter } from "./routers/purposeRouter.ts";
 
 export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
@@ -26,6 +27,7 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     internalJwt: config.internalJwt,
     loggerConfig: config,
     organizationProcessUrl: config.organizationProcessUrl,
+    purposeProcessUrl: config.purposeProcessUrl,
   });
 
   return app;
@@ -38,6 +40,7 @@ function buildApp({
   internalJwt,
   loggerConfig,
   organizationProcessUrl,
+  purposeProcessUrl,
 }: {
   agreementProcessUrl: string;
   callerKnodeId: KnodeId;
@@ -45,11 +48,13 @@ function buildApp({
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
   organizationProcessUrl: string;
+  purposeProcessUrl: string;
 }) {
   const clients = getKnodiaClients({
     agreementProcessUrl,
     eserviceProcessUrl,
     organizationProcessUrl,
+    purposeProcessUrl,
   });
   const fileManager = initFileManager();
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
@@ -85,6 +90,10 @@ function buildApp({
             description: "Routes related to Organizations",
             name: apiTags.organization,
           },
+          {
+            description: "Routes related to Purposes",
+            name: apiTags.purpose,
+          },
         ],
       },
     },
@@ -106,6 +115,11 @@ function buildApp({
   });
   app.register(organizationRouter, {
     organizationProcessClient: clients.organizationProcessClient,
+    tokenProvider,
+  });
+  app.register(purposeRouter, {
+    callerKnodeId,
+    purposeProcessClient: clients.purposeProcessClient,
     tokenProvider,
   });
 

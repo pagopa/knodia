@@ -20,6 +20,7 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
         .default(3600),
       INTERNAL_JWT_SUBJECT: z.string(),
       ORGANIZATION_PROCESS_URL: z.url(),
+      PURPOSE_PROCESS_URL: z.url(),
     })
     .transform((c) => ({
       agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
@@ -34,6 +35,7 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig).and(
         subject: c.INTERNAL_JWT_SUBJECT,
       },
       organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
+      purposeProcessUrl: c.PURPOSE_PROCESS_URL,
     })),
 );
 

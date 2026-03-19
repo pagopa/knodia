@@ -96,6 +96,17 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -558,6 +569,50 @@ components:
         - id
         - name
       additionalProperties: false
+    PurposeSeed:
+      description: Seed data to create a new Purpose
+      type: object
+      properties:
+        consumerId:
+          $ref: "#/components/schemas/OrganizationId"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        description:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+        eserviceId:
+          $ref: "#/components/schemas/EserviceId"
+        formAnswersJson:
+          type: object
+          additionalProperties: {}
+        name:
+          type: object
+          properties:
+            en:
+              type: string
+          required:
+            - en
+          additionalProperties: false
+      required:
+        - consumerId
+        - dailyCalls
+        - description
+        - eserviceId
+        - formAnswersJson
+        - name
+      additionalProperties: false
+    CreatedPurposeResource:
+      description: Unique identifier of the created Purpose resource
+      allOf:
+        - $ref: "#/components/schemas/CreatedResource"
 paths:
   /status:
     get:
@@ -927,6 +982,54 @@ paths:
                 description: Organization not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /purposes:
+    post:
+      operationId: createPurpose
+      summary: Create a new Purpose
+      tags:
+        - resource
+        - purpose
+      description: Create a new Purpose for a Consumer to declare the intended use of
+        a Producer's E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurposeSeed"
+      responses:
+        "201":
+          description: Purpose created successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedPurposeResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Knode to Knode API
     url: /
@@ -943,3 +1046,5 @@ tags:
     name: eservice
   - description: Routes related to Organizations
     name: organization
+  - description: Routes related to Purposes
+    name: purpose
