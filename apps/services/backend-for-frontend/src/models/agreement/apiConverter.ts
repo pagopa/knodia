@@ -35,14 +35,17 @@ export const toAPI_ProducerAgreementDetails = ({
   agreement,
   consumer,
   eservice,
+  latestEserviceVersionState,
   producer,
 }: {
   agreement: agreementProcessApi.Agreement;
   consumer: remoteResourcesManagerApi.Organization;
   eservice: eserviceProcessApi.Eservice;
+  latestEserviceVersionState: eserviceProcessApi.EserviceVersionState;
   producer: organizationProcessApi.Organization & { knodeId: API_KnodeId };
 }): API_ProducerAgreementDetails => ({
   ...toAPI_ProducerAgreement({ agreement, consumer, eservice }),
+  latestEserviceVersionState,
   producer: {
     id: producer.id,
     knodeId: producer.knodeId,

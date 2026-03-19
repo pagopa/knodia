@@ -120,6 +120,37 @@ components:
       required:
         - en
       additionalProperties: false
+    PurposeFormAnswers:
+      type: object
+      additionalProperties: {}
+    PurposeSeed:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/PurposeConsumer"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - consumer
+        - dailyCalls
+        - description
+        - eserviceId
+        - formAnswersJson
+        - name
+      additionalProperties: false
     Purpose:
       type: object
       properties:
@@ -178,6 +209,75 @@ paths:
             application/problem+json:
               schema:
                 description: Service status OK
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes:
+    post:
+      operationId: createPurpose
+      tags:
+        - purpose
+      description: Create a new Purpose
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurposeSeed"
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "201":
+          description: Purpose created successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose created successfully
+                allOf:
+                  - $ref: "#/components/schemas/Purpose"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /purposes/{purposeId}:

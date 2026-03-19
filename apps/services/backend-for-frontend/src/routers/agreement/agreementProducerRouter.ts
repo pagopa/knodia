@@ -214,31 +214,41 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         path: { agreementId: req.params.agreementId },
       });
 
-      const [{ data: eservice }, { data: producer }, { data: consumer }] =
-        await Promise.all([
-          eserviceProcessApi.getEservice({
-            client: eserviceProcessClient,
-            headers: getKnodiaServiceHeaders(req, correlationId),
-            path: { eserviceId: agreement.eserviceId },
-          }),
-          organizationProcessApi.getOrganization({
-            client: organizationProcessClient,
-            headers: getKnodiaServiceHeaders(req, correlationId),
-            path: { organizationId: agreement.producerId },
-          }),
-          remoteResourcesManagerApi.getOrganization({
-            client: remoteResourcesManagerClient,
-            headers: getKnodiaServiceHeaders(req, correlationId),
-            path: { organizationId: agreement.consumer.id },
-            query: { knodeId: agreement.consumer.knodeId },
-          }),
-        ]);
+      const [
+        { data: eservice },
+        { data: latestVersion },
+        { data: producer },
+        { data: consumer },
+      ] = await Promise.all([
+        eserviceProcessApi.getEservice({
+          client: eserviceProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { eserviceId: agreement.eserviceId },
+        }),
+        eserviceProcessApi.getEserviceLatestVersion({
+          client: eserviceProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { eserviceId: agreement.eserviceId },
+        }),
+        organizationProcessApi.getOrganization({
+          client: organizationProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId: agreement.producerId },
+        }),
+        remoteResourcesManagerApi.getOrganization({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId: agreement.consumer.id },
+          query: { knodeId: agreement.consumer.knodeId },
+        }),
+      ]);
 
       res.status(200).send(
         toAPI_ProducerAgreementDetails({
           agreement,
           consumer,
           eservice,
+          latestEserviceVersionState: latestVersion.state,
           producer: {
             ...producer,
             knodeId,

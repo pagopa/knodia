@@ -1,16 +1,106 @@
-import type { PurposeId } from "@knodia/common-models/ids";
-import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type { OrganizationId, PurposeId } from "@knodia/common-models/ids";
+import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
+import type {
+  InternalAuthData,
+  UISessionAuthData,
+} from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { Purpose } from "@knodia/purpose-models";
+
+import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { EserviceMode } from "@knodia/eservice-models";
+import {
+  LocalizedPurposeDescription,
+  LocalizedPurposeName,
+  type Purpose,
+  PurposeFormAnswers,
+  PurposeState,
+} from "@knodia/purpose-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { retrievePurpose } from "../utils/readmodelUtils.ts";
+import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
+import {
+  retrieveAgreements,
+  retrieveEservice,
+  retrievePurpose,
+} from "../utils/readmodelUtils.ts";
+import {
+  assertAgreementAllowsPurposeCreation,
+  assertEserviceAllowsPurposeCreation,
+  assertEserviceModeIs,
+} from "../utils/validators.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
-export function purposeServiceBuilder(readmodelService: ReadmodelService) {
+export function purposeServiceBuilder(
+  eventStoreWriter: PurposeEventStoreWriter,
+  readmodelService: ReadmodelService,
+) {
   return {
+    async createPurpose(
+      {
+        consumer,
+        dailyCalls,
+        description,
+        eserviceId,
+        formAnswersJson,
+        name,
+      }: {
+        consumer: ExternalResource<OrganizationId>;
+        dailyCalls: number;
+        description: LocalizedPurposeDescription;
+        eserviceId: EserviceId;
+        formAnswersJson: PurposeFormAnswers;
+        name: LocalizedPurposeName;
+      },
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<Purpose> {
+      const purposeId = generateId<PurposeId>();
+      logger.info(
+        { requestBody: { consumer, eserviceId, name } },
+        `Creating Purpose ${purposeId}`,
+      );
+
+      const eservice = await retrieveEservice(eserviceId, readmodelService);
+      assertEserviceModeIs(eservice, EserviceMode.enum.ProvideData);
+      assertEserviceAllowsPurposeCreation(eservice);
+
+      const agreements = await retrieveAgreements({
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+        readmodelService,
+      });
+      assertAgreementAllowsPurposeCreation({
+        agreements,
+        consumerId: consumer.id,
+        consumerKnodeId: consumer.knodeId,
+        eserviceId,
+      });
+
+      // TODO form answers validation against the Knode purpose form JSON schema
+
+      const now = new Date();
+      const purpose: Purpose = {
+        consumer,
+        createdAt: now,
+        dailyCalls,
+        description,
+        eserviceId,
+        formAnswersJson,
+        id: purposeId,
+        name,
+        state: PurposeState.enum.Active,
+        updatedAt: now,
+      };
+
+      await eventStoreWriter.insertEvent(
+        createPurposeActivatedV1Event(purpose, correlationId),
+      );
+
+      return purpose;
+    },
     async getPurpose(
       purposeId: PurposeId,
       { logger }: AuthorizedContext<UISessionAuthData>,

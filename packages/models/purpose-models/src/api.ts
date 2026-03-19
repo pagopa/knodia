@@ -40,6 +40,11 @@ export type API_LocalizedPurposeDescription = z.infer<
   typeof API_LocalizedPurposeDescription
 >;
 
+export const API_PurposeFormAnswers = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "PurposeFormAnswers" });
+export type API_PurposeFormAnswers = z.infer<typeof API_PurposeFormAnswers>;
+
 export const API_PurposeIdPathParam = z.strictObject({
   purposeId: PurposeId,
 });
