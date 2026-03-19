@@ -7,13 +7,25 @@ import { ConsumptionEserviceCard } from "./ConsumptionEserviceCard";
 
 export function ConsumptionEserviceList({
   eservices,
+  hasFilters,
   isLoading,
 }: {
   eservices: bffApi.ConsumerEservice[];
+  hasFilters: boolean;
   isLoading: boolean;
 }) {
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
+  }
+
+  if (eservices.length === 0 && hasFilters) {
+    return (
+      // TODO: Replace with final copy
+      <Empty
+        icon={<SelectionPlusIcon />}
+        title="No E-Services match the selected filters."
+      />
+    );
   }
 
   if (eservices.length === 0) {

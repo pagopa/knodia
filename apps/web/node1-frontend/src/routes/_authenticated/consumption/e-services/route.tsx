@@ -1,5 +1,6 @@
 import { getConsumerEservicesOptions } from "@knodia/bff-client/tanstack-query";
-import { ButtonLink, Pagination } from "@knodia/ui-kit/ui";
+import { ButtonLink, Empty, Pagination } from "@knodia/ui-kit/ui";
+import { SelectionPlusIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
@@ -54,6 +55,32 @@ function RouteComponent() {
   }
 
   const eservices = data?.items ?? [];
+  const hasFilters = agreementState !== undefined;
+
+  if (!isLoading && !hasFilters && eservices.length === 0) {
+    return (
+      <>
+        <PageHeader
+          actions={
+            <ButtonLink
+              hierarchy="brand"
+              href={{ to: "/consumption/e-services/search" }}
+            >
+              Search new E-Services
+            </ButtonLink>
+          }
+          overline="Consumption"
+          title="E-Services"
+        />
+
+        <Empty
+          description="Search for an E-Service to request an Agreement."
+          icon={<SelectionPlusIcon />}
+          title="You don't consume any E-Service yet."
+        />
+      </>
+    );
+  }
 
   return (
     <>
@@ -77,7 +104,11 @@ function RouteComponent() {
         }
       />
 
-      <ConsumptionEserviceList eservices={eservices} isLoading={isLoading} />
+      <ConsumptionEserviceList
+        eservices={eservices}
+        hasFilters={hasFilters}
+        isLoading={isLoading}
+      />
 
       <Pagination
         className="mx-auto mt-6"
