@@ -25,6 +25,7 @@ import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRoute
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
+import { pollingServiceBuilder } from "./utils/polling.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
   const clients = getKnodiaClients({
@@ -75,6 +76,7 @@ export function buildAppFromConfig(config: BffProcessConfig) {
     serviceName: "backend-for-frontend",
   });
 
+  const pollingService = pollingServiceBuilder(config);
   const refreshTokenStore = createRefreshTokenStore(config.redisUrl, app.log);
   const authService = authServiceBuilder(
     config,
@@ -97,9 +99,11 @@ export function buildAppFromConfig(config: BffProcessConfig) {
       config,
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
+      pollingService,
     });
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
+      pollingService,
     });
     protectedApp.register(eserviceConsumerRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,

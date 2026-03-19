@@ -6,8 +6,11 @@ import {
 import { LoggerConfig } from "@knodia/logger/config";
 import z from "zod";
 
+import { PollingConfig } from "../utils/polling.ts";
+
 const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
+  .and(PollingConfig)
   .and(
     z
       .object({
@@ -16,8 +19,6 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         COGNITO_JWKS_URL: z.url(),
         COOKIE_DOMAIN: z.string().optional(),
         COOKIE_SECURE: z.coerce.boolean().default(true),
-        DEFAULT_POLLING_MAX_RETRIES: z.coerce.number().default(5),
-        DEFAULT_POLLING_RETRY_DELAY: z.coerce.number().default(400),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
         KEYCHAIN_PROCESS_URL: z.url(),
@@ -47,8 +48,6 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           domain: c.COOKIE_DOMAIN,
           secure: c.COOKIE_SECURE,
         },
-        defaultPollingMaxRetries: c.DEFAULT_POLLING_MAX_RETRIES,
-        defaultPollingRetryDelay: c.DEFAULT_POLLING_RETRY_DELAY,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,

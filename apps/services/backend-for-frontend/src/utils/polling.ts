@@ -5,15 +5,24 @@ import {
 import { type AxiosResponse, isAxiosError } from "axios";
 import z from "zod";
 
-import { config } from "../config/config.ts";
 import { pollingMaxRetriesExceeded } from "../models/errors.ts";
+
+export type PollingService = ReturnType<typeof pollingServiceBuilder>;
+
+export const PollingConfig = z
+  .object({
+    DEFAULT_POLLING_MAX_RETRIES: z.coerce.number().default(5),
+    DEFAULT_POLLING_RETRY_DELAY: z.coerce.number().default(400),
+  })
+  .transform((c) => ({
+    defaultPollingMaxRetries: c.DEFAULT_POLLING_MAX_RETRIES,
+    defaultPollingRetryDelay: c.DEFAULT_POLLING_RETRY_DELAY,
+  }));
+export type PollingConfig = z.infer<typeof PollingConfig>;
 
 export function createPollingByCondition<T>(
   fetch: () => Promise<T>,
-  config: {
-    defaultPollingMaxRetries: number;
-    defaultPollingRetryDelay: number;
-  },
+  config: PollingConfig,
 ) {
   return async function poll({
     condition,
@@ -42,10 +51,7 @@ export function createPollingByCondition<T>(
 
 export function createPollingUntilDeletion(
   fetch: () => Promise<unknown>,
-  config: {
-    defaultPollingMaxRetries: number;
-    defaultPollingRetryDelay: number;
-  },
+  config: PollingConfig,
 ) {
   return async function poll({
     maxRetries = config.defaultPollingMaxRetries,
@@ -53,7 +59,7 @@ export function createPollingUntilDeletion(
   }: {
     maxRetries?: number;
     retryDelay?: number;
-  }): Promise<void> {
+  } = {}): Promise<void> {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       await delay(retryDelay);
       try {
@@ -116,29 +122,34 @@ export function isPolledVersionAtLeastTargetVersion(
     getMetadataVersionFromHeaders(polledResponse.headers) >= targetVersion;
 }
 
-export function pollResourceUntilDeletion(
-  fetch: () => Promise<unknown>,
-): ReturnType<typeof createPollingUntilDeletion> {
-  return createPollingUntilDeletion(fetch, {
-    defaultPollingMaxRetries: config.defaultPollingMaxRetries,
-    defaultPollingRetryDelay: config.defaultPollingRetryDelay,
-  });
-}
+export function pollingServiceBuilder(config: PollingConfig) {
+  return {
+    pollResourceUntilDeletion(
+      fetch: () => Promise<unknown>,
+    ): (options?: {
+      maxRetries?: number;
+      retryDelay?: number;
+    }) => Promise<void> {
+      return createPollingUntilDeletion(fetch, config);
+    },
 
-/**
- * Generic polling function that polls a fetch call of a resource with metadata
- * until a condition is met or max retries are exceeded.
- *
- * @param fetch - Function that returns a Promise that fetches the resource with metadata
- * @returns A function that takes a condition function and returns a Promise of the polled resource
- */
-export function pollResourceWithMetadata<T>(
-  fetch: () => Promise<T>,
-): ReturnType<typeof createPollingByCondition<T>> {
-  return createPollingByCondition(fetch, {
-    defaultPollingMaxRetries: config.defaultPollingMaxRetries,
-    defaultPollingRetryDelay: config.defaultPollingRetryDelay,
-  });
+    /**
+     * Generic polling function that polls a fetch call of a resource with metadata
+     * until a condition is met or max retries are exceeded.
+     *
+     * @param fetch - Function that returns a Promise that fetches the resource with metadata
+     * @returns A function that takes a condition function and returns a Promise of the polled resource
+     */
+    pollResourceWithMetadata<T>(
+      fetch: () => Promise<T>,
+    ): (options: {
+      condition: (pollingResult: T) => boolean;
+      maxRetries?: number;
+      retryDelay?: number;
+    }) => Promise<T> {
+      return createPollingByCondition(fetch, config);
+    },
+  };
 }
 
 function delay(ms: number): Promise<void> {
