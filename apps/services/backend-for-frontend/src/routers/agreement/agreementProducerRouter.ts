@@ -191,7 +191,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           agreement,
           consumer,
           eservice,
-          eserviceState: latestVersion.state,
+          latestEserviceVersionState: latestVersion.state,
           producer: {
             ...producer,
             knodeId,

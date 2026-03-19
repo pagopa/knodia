@@ -19,8 +19,8 @@ function createAgreementDetails(
       id: "eservice-1",
       name: { en: "Birth Certificate API" },
     },
-    eserviceState: "Active",
     id: "agreement-1",
+    latestEserviceVersionState: "Active",
     producer: {
       id: "producer-1",
       knodeId: "Orion",

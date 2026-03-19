@@ -16,29 +16,34 @@ export const maxDescriptionLength = 250;
 export const minDailyCalls = 0;
 export const maxDailyCalls = 1_000_000_000;
 
-const LocalizedName = LocalizedText(minNameLength, maxNameLength);
-type LocalizedName = z.infer<typeof LocalizedName>;
+export const LocalizedPurposeName = LocalizedText(minNameLength, maxNameLength);
+export type LocalizedPurposeName = z.infer<typeof LocalizedPurposeName>;
 
-const LocalizedDescription = LocalizedText(
+export const LocalizedPurposeDescription = LocalizedText(
   minDescriptionLength,
   maxDescriptionLength,
 );
-type LocalizedDescription = z.infer<typeof LocalizedDescription>;
+export type LocalizedPurposeDescription = z.infer<
+  typeof LocalizedPurposeDescription
+>;
 
 export const PurposeState = z.enum(["Active", "Suspended", "Archived"]);
 export type PurposeState = z.infer<typeof PurposeState>;
+
+// Generic key-value pairs for form answers (serialized as JSON string in protobuf),
+// validated at runtime based on the JSON schema form of the Knode
+export const PurposeFormAnswers = z.record(z.string(), z.unknown());
+export type PurposeFormAnswers = z.infer<typeof PurposeFormAnswers>;
 
 export const Purpose = z.strictObject({
   consumer: ExternalResource<OrganizationId>(),
   createdAt: z.coerce.date(),
   dailyCalls: z.int().min(minDailyCalls).max(maxDailyCalls),
-  description: LocalizedDescription,
+  description: LocalizedPurposeDescription,
   eserviceId: EserviceId,
-  formAnswers: z.record(z.string(), z.unknown()),
-  // ^ generic key-value pairs for form answers,
-  // validated at runtime based on the JSON schema form of the Knode
+  formAnswersJson: PurposeFormAnswers,
   id: PurposeId,
-  name: LocalizedName,
+  name: LocalizedPurposeName,
   state: PurposeState,
   updatedAt: z.coerce.date(),
 });
