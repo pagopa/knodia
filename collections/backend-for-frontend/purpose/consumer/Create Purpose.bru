@@ -1,0 +1,33 @@
+meta {
+  name: Create Purpose
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/consumer/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "dailyCalls": 1000,
+    "description": {
+      "en": "Purpose description"
+    },
+    "eserviceId": "{{eserviceId}}",
+    "formAnswersJson": {},
+    "knodeId": "{{other-knode-id}}",
+    "name": {
+      "en": "Test Purpose"
+    }
+  }
+}
+
+vars:post-response {
+  purposeId: res.body.id
+}
