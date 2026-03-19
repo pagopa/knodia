@@ -24,7 +24,7 @@ import type {
   API_GetConsumerEservicesQueryParams,
 } from "../models/eservice/api.ts";
 
-import { toAPI_AgreementState } from "../models/agreement/apiConverter.ts";
+import { toK2KAPI_AgreementState } from "../models/agreement/apiConverter.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
   toAPI_ConsumerEservice,
@@ -123,68 +123,57 @@ export function eserviceServiceBuilder(
 
       const { agreementState, limit, offset } = reqQuery;
 
-      const remoteAgreements =
-        await remoteResourceDbService.getAgreementsByFilters({
-          filters: eq(
-            remoteResourceAgreement.consumerId,
-            authData.organizationId,
-          ),
-          pagination: { limit: limit, offset: offset },
-        });
+      const { data: consumerAgreements } = await k2kGatewayApi.getAgreements({
+        client: k2kGatewayClient,
+        query: {
+          consumerId: authData.organizationId,
+          limit,
+          offset,
+          state: agreementState
+            ? toK2KAPI_AgreementState(agreementState)
+            : undefined,
+        },
+      });
 
-      const results: API_ConsumerEservice[] = (
-        await Promise.all(
-          remoteAgreements.results.map(async (remoteAgreement) => {
-            const { data: agreement } = await k2kGatewayApi.getAgreement({
+      const results: API_ConsumerEservice[] = await Promise.all(
+        consumerAgreements.results.map(async (agreement) => {
+          const [
+            { data: eservice },
+            { data: eserviceVersion },
+            { data: producer },
+            remoteAgreement,
+          ] = await Promise.all([
+            k2kGatewayApi.getEservice({
               client: k2kGatewayClient,
-              path: { agreementId: remoteAgreement.agreementId },
-            });
+              path: { eserviceId: agreement.eserviceId },
+            }),
+            k2kGatewayApi.getEserviceLatestVersion({
+              client: k2kGatewayClient,
+              path: { eserviceId: agreement.eserviceId },
+            }),
+            k2kGatewayApi.getOrganization({
+              client: k2kGatewayClient,
+              path: { organizationId: agreement.producerId },
+            }),
+            remoteResourceDbService.getAgreementByFilters(
+              eq(remoteResourceAgreement.agreementId, agreement.id),
+            ),
+          ]);
 
-            if (
-              agreementState &&
-              toAPI_AgreementState(agreement.state) !== agreementState
-            ) {
-              return null;
-            }
-
-            const [
-              { data: eservice },
-              { data: eserviceVersion },
-              { data: producer },
-            ] = await Promise.all([
-              k2kGatewayApi.getEservice({
-                client: k2kGatewayClient,
-                path: { eserviceId: remoteAgreement.eserviceId },
-              }),
-              k2kGatewayApi.getEserviceLatestVersion({
-                client: k2kGatewayClient,
-                path: { eserviceId: remoteAgreement.eserviceId },
-              }),
-              k2kGatewayApi.getOrganization({
-                client: k2kGatewayClient,
-                path: { organizationId: remoteAgreement.producerId },
-              }),
-            ]);
-
-            return toAPI_ConsumerEservice({
-              agreement,
-              eservice,
-              eserviceVersion,
-              producer: {
-                ...producer,
-                knodeId: API_KnodeId.parse(remoteAgreement.knodeId),
-              },
-            });
-          }),
-        )
-      ).filter((x): x is API_ConsumerEservice => x !== null);
+          return toAPI_ConsumerEservice({
+            agreement,
+            eservice,
+            eserviceVersion,
+            producer: {
+              ...producer,
+              knodeId: API_KnodeId.parse(remoteAgreement.knodeId),
+            },
+          });
+        }),
+      );
 
       return {
-        pagination: {
-          limit: limit,
-          offset: offset,
-          total: results.length,
-        },
+        pagination: consumerAgreements.pagination,
         results,
       };
     },
