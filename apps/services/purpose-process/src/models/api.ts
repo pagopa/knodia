@@ -4,13 +4,31 @@ import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
   API_PurposeConsumer,
+  API_PurposeFormAnswers,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
 
+export const API_PurposeSeed = z
+  .strictObject({
+    consumer: API_PurposeConsumer,
+    dailyCalls: z
+      .number()
+      .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
+      .meta({ format: "int32" }),
+    description: API_LocalizedPurposeDescription,
+    eserviceId: z.uuid(),
+    formAnswersJson: API_PurposeFormAnswers,
+    name: API_LocalizedPurposeName,
+  })
+  .meta({ id: "PurposeSeed" });
+export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
+
 export const API_Purpose = z
   .strictObject({
-    // formAnswers is intentionally excluded — it can be retrieved via a separate route
+    // formAnswersJson is intentionally excluded — it can be retrieved via a separate route
     consumer: API_PurposeConsumer,
     createdAt: z.iso.datetime(),
     dailyCalls: z

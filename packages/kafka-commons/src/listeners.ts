@@ -2,9 +2,10 @@ import type {
   Consumer,
   Producer,
 } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
+import type { Pool } from "pg";
 import type { Logger } from "pino";
 
-import { processExit } from "./utils/utils.ts";
+import { processExitAndDisconnect } from "./utils/utils.ts";
 
 const errorTypes = ["unhandledRejection", "uncaughtException"];
 const signalTraps = ["SIGTERM", "SIGINT", "SIGUSR2"];
@@ -12,34 +13,39 @@ const signalTraps = ["SIGTERM", "SIGINT", "SIGUSR2"];
 export function errorEventsListener(
   consumerOrProducer: Consumer | Producer,
   logger: Logger,
+  readmodelPool: Pool,
 ): void {
   errorTypes.forEach((type) => {
-    process.on(type, async (e) => {
-      try {
-        logger.error(`Error ${type} intercepted; Error detail: ${e}`);
-        await consumerOrProducer.disconnect().then(() => {
-          logger.debug("Disconnected successfully");
-        });
-      } catch (e) {
-        logger.error(
-          `Unexpected error on disconnection with event type ${type}; Error detail: ${e}`,
-        );
-      } finally {
-        processExit({ logger });
-      }
-    });
+    process.on(
+      type,
+      async (e) =>
+        await handleExit(e, type, consumerOrProducer, logger, readmodelPool),
+    );
   });
 
   signalTraps.forEach((type) => {
-    process.once(type, async () => {
-      try {
-        await consumerOrProducer.disconnect();
-        logger.debug("Disconnected successfully");
-      } catch (err) {
-        logger.error(`Error during disconnect on ${type}: ${err}`);
-      } finally {
-        processExit({ logger });
-      }
-    });
+    process.once(
+      type,
+      async () =>
+        await handleExit(null, type, consumerOrProducer, logger, readmodelPool),
+    );
   });
+}
+
+async function handleExit(
+  e: unknown,
+  type: string,
+  consumerOrProducer: Consumer | Producer,
+  logger: Logger,
+  readmodelPool: Pool,
+) {
+  try {
+    if (e) logger.error(`Error ${type} intercepted; Error detail: ${e}`);
+    await consumerOrProducer.disconnect();
+    logger.debug("Consumer/Producer disconnected successfully");
+  } catch (err) {
+    logger.error(`Error during disconnect on ${type}: ${err}`);
+  } finally {
+    await processExitAndDisconnect({ logger, readmodelPool });
+  }
 }

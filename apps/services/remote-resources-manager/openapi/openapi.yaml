@@ -143,8 +143,6 @@ components:
       description: Seed data to create a new Agreement
       type: object
       properties:
-        consumerId:
-          $ref: "#/components/schemas/OrganizationId"
         eserviceId:
           type: string
           format: uuid
@@ -156,7 +154,6 @@ components:
         knodeId:
           $ref: "#/components/schemas/KnodeId"
       required:
-        - consumerId
         - eserviceId
         - eserviceVersionId
         - knodeId
@@ -446,6 +443,10 @@ components:
           maximum: 9007199254740991
         accessTokenType:
           $ref: "#/components/schemas/AccessTokenType"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         maxDailyCallsPerConsumer:
           format: int32
           type: integer
@@ -468,6 +469,7 @@ components:
         - accessTokenAudience
         - accessTokenDuration
         - accessTokenType
+        - id
         - maxDailyCallsPerConsumer
         - maxDailyCallsPerKnode
         - requiredAttributes

@@ -15,7 +15,6 @@
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
@@ -31,7 +30,6 @@
     "drizzle-orm": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
-    "pg": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   }

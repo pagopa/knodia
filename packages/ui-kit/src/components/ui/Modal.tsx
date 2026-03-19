@@ -41,7 +41,7 @@ interface ModalProps extends AriaModalOverlayProps {
   actionLabel: string;
   cancelLabel?: string;
   children?: React.ReactNode;
-  confirmButtonProps?: ButtonProps;
+  confirmButtonProps?: Pick<ButtonProps, "isDisabled" | "isPending">;
   description?: string;
   kind: "default" | "destructive";
   onClose?: (e: PressEvent) => void;
