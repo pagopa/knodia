@@ -12,11 +12,13 @@ export const Route = createFileRoute("/_authenticated/consumption/agreements")({
 });
 
 function RouteComponent() {
+  const { counters } = Route.useLoaderData();
+
   return (
     <div className="flex min-h-full flex-col">
       <PageHeader overline="Consumption" title="Agreements" />
 
-      <ConsumerAgreementsSummary />
+      <ConsumerAgreementsSummary counters={counters} />
     </div>
   );
 }

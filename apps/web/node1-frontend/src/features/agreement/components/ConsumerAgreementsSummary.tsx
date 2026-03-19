@@ -1,4 +1,5 @@
-import { getConsumerAgreementsOptions } from "@knodia/bff-client/tanstack-query";
+import type { bffApi } from "@knodia/bff-client";
+
 import { Button, Empty } from "@knodia/ui-kit/ui";
 import {
   ArchiveIcon,
@@ -6,24 +7,20 @@ import {
   SelectionPlusIcon,
   XIcon,
 } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
-import { client } from "@/libs/axios";
 import { formatNumber } from "@/utils/formatters";
 
-export function ConsumerAgreementsSummary() {
+export function ConsumerAgreementsSummary({
+  counters,
+}: {
+  counters: bffApi.ConsumerAgreements["counters"];
+}) {
   const navigate = useNavigate();
 
-  const { data } = useQuery(getConsumerAgreementsOptions({ client }));
-
-  if (!data) {
-    return null;
-  }
-
   const { activeAgreements, archivedAgreements, suspendedAgreements } =
-    data.counters;
+    counters;
   const hasAgreements =
     activeAgreements + suspendedAgreements + archivedAgreements > 0;
 
