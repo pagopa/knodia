@@ -16,6 +16,7 @@ export function useCreatePurpose(eserviceId: string, knodeId: bffApi.KnodeId) {
     onSuccess: () => {
       navigate({
         params: { id: eserviceId },
+        replace: true,
         search: { knodeId },
         to: "/consumption/e-services/$id",
       });
@@ -28,6 +29,7 @@ export function useCreatePurpose(eserviceId: string, knodeId: bffApi.KnodeId) {
         dailyCalls: data.dailyCalls,
         description: { en: data.description },
         eserviceId,
+        // TODO: wire up dynamic form answers when purpose dynamic form is implemented
         formAnswersJson: {},
         knodeId,
         name: { en: data.name },

@@ -27,6 +27,7 @@ import {
 } from "@/features/e-service/components/EserviceDetailSections";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
+import { OrgConsumptionStatusSection } from "@/features/e-service/components/OrgConsumptionStatusSection";
 import { Section } from "@/features/e-service/components/Section";
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
@@ -191,8 +192,16 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
-      {/* TODO: if an agreement already exists for this eservice, hide ConsumptionRequirementsSection
-          and show "Your Org's consumption status" section instead */}
+      {/* TODO(KN-287): also show when agreement is in "requested" state */}
+      {eservice.hasActiveAgreement && (
+        <>
+          <OrgConsumptionStatusSection
+            eserviceId={eservice.id}
+            knodeId={knodeId}
+          />
+          <Divider className="my-10" />
+        </>
+      )}
       <ConsumptionRequirementsSection
         eserviceId={eservice.id}
         hasRequiredAttributes={eservice.hasRequiredAttributes}
