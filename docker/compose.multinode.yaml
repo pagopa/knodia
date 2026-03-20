@@ -807,7 +807,6 @@ services:
       KAFKA_GROUP_ID: kafka-purpose-readmodel-writer-orion
       TOPIC_STARTING_OFFSET: earliest
       PURPOSE_TOPIC: event-store-orion.local_orion_purpose.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-orion:
@@ -1293,7 +1292,6 @@ services:
       KAFKA_GROUP_ID: kafka-purpose-readmodel-writer-lynx
       TOPIC_STARTING_OFFSET: earliest
       PURPOSE_TOPIC: event-store-lynx.local_lynx_purpose.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-lynx:
