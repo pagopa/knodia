@@ -164,12 +164,13 @@ export function eserviceServiceBuilder(
       let dynamicOffset = offset;
       let results: API_Eservice[] = [];
       const knodesWithAgreements =
-        await remoteResourceDbService.getDistinctKnodes();
+        await remoteResourceDbService.getDistinctKnodes(
+          authData.organizationId,
+        );
       for (const knodeId of knodesWithAgreements) {
         logger.info(
           `Getting E-services from Knode ${knodeId} for Consumer Organization ${authData.organizationId}`,
         );
-        const parsedKnodeId = API_KnodeId.parse(knodeId);
 
         const { data: consumerAgreements } = await k2kGatewayApi.getAgreements({
           client: k2kGatewayClient,
@@ -198,7 +199,7 @@ export function eserviceServiceBuilder(
                   ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.producerId,
                 items: consumerAgreements.results,
-                knodeId: parsedKnodeId,
+                knodeId,
               }),
               fetchEntities({
                 fetchFn: ({ entityIds }) =>
@@ -212,7 +213,7 @@ export function eserviceServiceBuilder(
                   ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.eserviceId,
                 items: consumerAgreements.results,
-                knodeId: parsedKnodeId,
+                knodeId,
               }),
               fetchEntities({
                 fetchFn: ({ entityIds }) =>
@@ -226,7 +227,7 @@ export function eserviceServiceBuilder(
                   ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.eserviceId,
                 items: consumerAgreements.results,
-                knodeId: parsedKnodeId,
+                knodeId,
               }),
             ]);
 

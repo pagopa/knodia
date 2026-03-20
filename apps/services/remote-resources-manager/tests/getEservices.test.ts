@@ -187,7 +187,6 @@ describe("GET /eservices (getEservices)", () => {
           ...defaultQuery,
           ...(agreementState ? { agreementState } : {}),
         });
-      console.log("🚀 ~ response:", response);
 
       expect(response.statusCode).toBe(200);
 
