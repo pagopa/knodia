@@ -10,7 +10,7 @@ import { match } from "ts-pattern";
 
 import type {
   API_CatalogEserviceSearchResult,
-  API_ConsumerEservice,
+  API_Eservice,
   API_EserviceDetails,
 } from "./api.ts";
 
@@ -99,7 +99,7 @@ const toAPI_EserviceMode = (
     .with("RECEIVE_DATA", () => API_EserviceMode.enum.ReceiveData)
     .exhaustive();
 
-export const toAPI_ConsumerEservice = ({
+export const toAPI_Eservice = ({
   agreement,
   eservice,
   eserviceVersion,
@@ -109,34 +109,23 @@ export const toAPI_ConsumerEservice = ({
   eservice: k2kGatewayApi.Eservice;
   eserviceVersion: k2kGatewayApi.EserviceVersion;
   producer: k2kGatewayApi.Organization & { knodeId: API_KnodeId };
-}): API_ConsumerEservice => {
-  const hasRecentlyBeenUpdated = (dateString: string): boolean => {
-    const updatedAt = new Date(dateString);
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-
-    return updatedAt >= threeDaysAgo;
-  };
-
-  return {
-    agreement: {
-      id: agreement.id,
-      state: toAPI_AgreementState(agreement.state),
-    },
-    categories: eservice.categories,
-    hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice.updatedAt),
-    id: eservice.id,
-    mode: toAPI_EserviceMode(eservice.mode),
-    name: eservice.name,
-    producer: {
-      id: producer.id,
-      knodeId: producer.knodeId,
-      name: producer.name,
-    },
-    version: {
-      id: eserviceVersion.id,
-      requiredAttributes: eserviceVersion.requiredAttributes,
-      state: toAPI_EserviceVersionState(eserviceVersion.state),
-    },
-  };
-};
+}): API_Eservice => ({
+  agreement: {
+    id: agreement.id,
+    state: toAPI_AgreementState(agreement.state),
+  },
+  categories: eservice.categories,
+  id: eservice.id,
+  mode: toAPI_EserviceMode(eservice.mode),
+  name: eservice.name,
+  producer: {
+    id: producer.id,
+    knodeId: producer.knodeId,
+    name: producer.name,
+  },
+  version: {
+    id: eserviceVersion.id,
+    requiredAttributes: eserviceVersion.requiredAttributes,
+    state: toAPI_EserviceVersionState(eserviceVersion.state),
+  },
+});

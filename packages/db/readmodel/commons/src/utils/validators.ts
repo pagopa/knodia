@@ -2,10 +2,10 @@ import type { SQL } from "drizzle-orm";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 
-export function assertSQLFilterIsDefined(
-  filter: SQL | undefined,
-): asserts filter is SQL {
-  if (filter === undefined) {
-    throw genericInternalError("Filter cannot be undefined");
+export function assertSQLFiltersAreDefined(
+  filters: SQL | undefined,
+): asserts filters is SQL {
+  if (filters === undefined) {
+    throw genericInternalError("Filters cannot be undefined");
   }
 }

@@ -105,20 +105,6 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
-/**
- * Agreement for an E-service
- */
-export type AgreementDetails = {
-    attributes: Array<Attribute>;
-    consumer: AgreementConsumer;
-    eserviceId: string;
-    eserviceVersionId: string;
-    id: string;
-    producerId: OrganizationId;
-    state: AgreementState;
-    updatedAt: string;
-};
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -230,32 +216,34 @@ export type EserviceDetails = {
     producer: EserviceDetailsProducer;
 };
 
-export type ConsumerEserviceVersion = {
+export type EserviceVersion = {
     id: string;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
 };
 
-export type ConsumerEservice = {
+export type Eservice = {
     agreement: {
         id: string;
         state: AgreementState;
     };
     categories: Array<EserviceCategory>;
-    /**
-     * Indicates whether the E-service has been updated in the last 3 days
-     */
-    hasRecentlyBeenUpdated: boolean;
     id: string;
     mode: EserviceMode;
     name: LocalizedName;
     producer: CompactOrganization;
-    version: ConsumerEserviceVersion;
+    version: EserviceVersion;
 };
 
-export type ConsumerEservices = {
+export type Eservices = {
     pagination: Pagination;
-    results: Array<ConsumerEservice>;
+    results: Array<Eservice>;
+};
+
+export type Organization = {
+    attributes: Array<Attribute>;
+    id: string;
+    name: string;
 };
 
 export type GetStatusData = {
@@ -357,7 +345,7 @@ export type GetEserviceDetailsResponses = {
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
 
-export type GetConsumerEservicesData = {
+export type GetEservicesData = {
     body?: never;
     path?: never;
     query: {
@@ -371,10 +359,10 @@ export type GetConsumerEservicesData = {
         offset: number;
         agreementState?: AgreementState;
     };
-    url: '/consumer/eservices';
+    url: '/eservices';
 };
 
-export type GetConsumerEservicesErrors = {
+export type GetEservicesErrors = {
     /**
      * Bad Request
      */
@@ -393,16 +381,16 @@ export type GetConsumerEservicesErrors = {
     404: Problem;
 };
 
-export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
+export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
 
-export type GetConsumerEservicesResponses = {
+export type GetEservicesResponses = {
     /**
-     * Consumer E-services retrieved successfully
+     * E-services retrieved successfully
      */
-    200: ConsumerEservices;
+    200: Eservices;
 };
 
-export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof GetConsumerEservicesResponses];
+export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
 
 export type DownloadEserviceLatestVersionInterfaceData = {
     body?: never;
@@ -572,7 +560,48 @@ export type GetAgreementResponses = {
     /**
      * Agreement retrieved successfully
      */
-    200: AgreementDetails;
+    200: Agreement;
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
