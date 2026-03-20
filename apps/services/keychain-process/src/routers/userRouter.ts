@@ -24,15 +24,10 @@ export const userRouter: FastifyPluginAsyncZod<UserService> = async (
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      try {
-        const technicalUsers = await userService.getOrganizationTechnicalUsers(
-          ctx.authData.organizationId,
-        );
-        res.status(200).send(technicalUsers.map(toAPI_User));
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
+      const technicalUsers = await userService.getOrganizationTechnicalUsers(
+        ctx.authData.organizationId,
+      );
+      res.status(200).send(technicalUsers.map(toAPI_User));
     },
     method: "GET",
     schema: {
