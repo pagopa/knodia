@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable vitest/no-conditional-expect */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -22,6 +23,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_ConsumerEservice } from "../src/models/eservice/api.ts";
 
+import { toK2KAPI_AgreementState } from "../src/models/agreement/apiConverter.ts";
 import { toAPI_ConsumerEservice } from "../src/models/eservice/apiConverter.ts";
 import {
   toK2KAgreement,
@@ -32,7 +34,7 @@ import {
 import { remoteResourceDbService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
-const getAgreementMock = vi.hoisted(() => vi.fn());
+const getAgreementsMock = vi.hoisted(() => vi.fn());
 const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceVersionMock = vi.hoisted(() => vi.fn());
 const getOrganizationMock = vi.hoisted(() => vi.fn());
@@ -45,7 +47,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     ...original,
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
-      getAgreement: getAgreementMock,
+      getAgreements: getAgreementsMock,
       getEservice: getEserviceMock,
       getEserviceLatestVersion: getEserviceVersionMock,
       getOrganization: getOrganizationMock,
@@ -136,7 +138,7 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
   });
 
   beforeEach(() => {
-    getAgreementMock.mockReset();
+    getAgreementsMock.mockReset();
     getEserviceMock.mockReset();
     getEserviceVersionMock.mockReset();
     getOrganizationMock.mockReset();
@@ -161,8 +163,11 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
 
       await remoteResourceDbService.insertAgreement(remoteAgreement);
 
-      getAgreementMock.mockResolvedValue({
-        data: k2kAgreement,
+      getAgreementsMock.mockResolvedValue({
+        data: {
+          pagination: { ...parsedDefaultQuery, total: 1 },
+          results: [k2kAgreement],
+        },
       });
       getEserviceMock.mockResolvedValue({
         data: k2kEservice,
@@ -183,9 +188,15 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
 
       expect(response.statusCode).toBe(200);
 
-      expect(getAgreementMock).toHaveBeenCalledWith(
+      expect(getAgreementsMock).toHaveBeenCalledWith(
         expect.objectContaining({
-          path: { agreementId: agreement.id },
+          query: {
+            ...parsedDefaultQuery,
+            ...(agreementState
+              ? { state: toK2KAPI_AgreementState(agreementState) }
+              : {}),
+            consumerId: TEST_ORGANIZATION_ID,
+          },
         }),
       );
 
