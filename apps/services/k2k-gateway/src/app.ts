@@ -1,3 +1,6 @@
+import type { LoggerConfig } from "@knodia/logger/config";
+
+import { KnodeId } from "@knodia/common-models/ids";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -18,19 +21,47 @@ import { organizationRouter } from "./routers/organizationRouter.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 
 export function buildAppFromConfig(config: K2KGatewayConfig) {
-  return buildApp({ config });
-}
-
-function buildApp({ config }: { config: K2KGatewayConfig }) {
-  const clients = getKnodiaClients({
+  const app = buildApp({
     agreementProcessUrl: config.agreementProcessUrl,
+    callerKnodeId: config.callerKnodeId,
     eserviceProcessUrl: config.eserviceProcessUrl,
+    internalJwt: config.internalJwt,
+    loggerConfig: config,
     organizationProcessUrl: config.organizationProcessUrl,
+    pollingService: pollingServiceBuilder(config),
     purposeProcessUrl: config.purposeProcessUrl,
   });
+
+  return app;
+}
+
+function buildApp({
+  agreementProcessUrl,
+  callerKnodeId,
+  eserviceProcessUrl,
+  internalJwt,
+  loggerConfig,
+  organizationProcessUrl,
+  pollingService,
+  purposeProcessUrl,
+}: {
+  agreementProcessUrl: string;
+  callerKnodeId: KnodeId;
+  eserviceProcessUrl: string;
+  internalJwt: K2KGatewayConfig["internalJwt"];
+  loggerConfig: LoggerConfig;
+  organizationProcessUrl: string;
+  pollingService: ReturnType<typeof pollingServiceBuilder>;
+  purposeProcessUrl: string;
+}) {
+  const clients = getKnodiaClients({
+    agreementProcessUrl,
+    eserviceProcessUrl,
+    organizationProcessUrl,
+    purposeProcessUrl,
+  });
   const fileManager = initFileManager();
-  const tokenProvider = refreshableInternalTokenGenerator(config.internalJwt);
-  const pollingService = pollingServiceBuilder(config);
+  const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -70,7 +101,7 @@ function buildApp({ config }: { config: K2KGatewayConfig }) {
         ],
       },
     },
-    loggerConfig: config,
+    loggerConfig,
     makeApiProblem,
     serviceName: "k2k-gateway",
   });
@@ -83,7 +114,7 @@ function buildApp({ config }: { config: K2KGatewayConfig }) {
   });
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
-    callerKnodeId: config.callerKnodeId,
+    callerKnodeId,
     tokenProvider,
   });
   app.register(organizationRouter, {
@@ -91,7 +122,7 @@ function buildApp({ config }: { config: K2KGatewayConfig }) {
     tokenProvider,
   });
   app.register(purposeRouter, {
-    callerKnodeId: config.callerKnodeId,
+    callerKnodeId,
     pollingService,
     purposeProcessClient: clients.purposeProcessClient,
     tokenProvider,
