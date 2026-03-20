@@ -17,7 +17,6 @@ import {
 } from "./generated/v1/purpose.ts";
 import { Purpose, PurposeFormAnswers, PurposeState } from "./purpose.ts";
 
-/** @knipignore - will be used when implementing rmw */
 export const fromPurposeV1 = (input: PurposeV1): Purpose => {
   assertRequired(input.consumer, "Purpose consumer is undefined");
   assertRequired(input.name, "Purpose name is undefined");
