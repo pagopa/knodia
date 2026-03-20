@@ -108,11 +108,3 @@ export const toK2KOrganization = (
   id: organization.id,
   name: organization.name,
 });
-
-export const toK2KOrganization = (
-  organization: Organization,
-): k2kGatewayApi.Organization => ({
-  attributes: organization.attributes,
-  id: organization.id,
-  name: organization.name,
-});
