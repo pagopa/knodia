@@ -55,6 +55,13 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result ?? undefined;
     },
+    async getDistinctKnodes() {
+      const queryResult = await db
+        .selectDistinctOn([remoteResourceAgreement.knodeId])
+        .from(remoteResourceAgreement)
+        .orderBy(remoteResourceAgreement.knodeId);
+      return queryResult.map((r) => r.knodeId);
+    },
     async insertAgreement(
       remoteAgreement: NewRemoteResourceAgreement,
     ): Promise<void> {

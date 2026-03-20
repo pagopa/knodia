@@ -4,7 +4,6 @@
 
 import type { Agreement, AgreementState } from "@knodia/agreement-models";
 import type { KnodeId } from "@knodia/common-models/ids";
-import type { Eservice } from "@knodia/eservice-models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { API_AgreementState } from "@knodia/agreement-models/api";
@@ -84,18 +83,21 @@ describe("GET /eservices (getEservices)", () => {
     k2kOrganization: k2kGatewayApi.Organization;
     remoteAgreement: RemoteResourceAgreementSQL;
   } {
-    const agreement = getMockAgreement({ seed, state });
-    const k2kAgreement = toK2KAgreement(agreement);
-    const eservice: Eservice = {
-      ...getMockEservice({ latestVersionState: "Active", seed }),
-      id: agreement.eserviceId,
-    };
+    const eservice = getMockEservice({ latestVersionState: "Active", seed });
     const eserviceVersion = eservice.versions[0]!;
     const k2kEservice = toK2KEservice(eservice);
     const k2kEserviceVersion = toK2KEserviceVersion(eserviceVersion);
 
     const organization = getMockOrganization();
     const k2kOrganization = toK2KOrganization(organization);
+
+    const agreement = {
+      ...getMockAgreement({ seed, state }),
+      eserviceId: eservice.id,
+      eserviceVersionId: eserviceVersion.id,
+      producerId: organization.id,
+    };
+    const k2kAgreement = toK2KAgreement(agreement);
 
     const expectedApiResult = toAPI_Eservice({
       agreement: k2kAgreement,
@@ -111,7 +113,7 @@ describe("GET /eservices (getEservices)", () => {
       agreementId: agreement.id,
       consumerId: TEST_ORGANIZATION_ID,
       eserviceId: agreement.eserviceId,
-      eserviceVersionId: eserviceVersion.id,
+      eserviceVersionId: agreement.eserviceVersionId,
       knodeId,
       producerId: agreement.producerId,
     };
@@ -146,7 +148,7 @@ describe("GET /eservices (getEservices)", () => {
 
   const agreementStateQueryParams = [...agreementStates, undefined] as const;
   it.each(agreementStateQueryParams)(
-    "should return 200 with converted results on success",
+    "should return 200 with converted results on success (agreementState=%s)",
     async (agreementState) => {
       const {
         agreement,
@@ -185,6 +187,7 @@ describe("GET /eservices (getEservices)", () => {
           ...defaultQuery,
           ...(agreementState ? { agreementState } : {}),
         });
+      console.log("🚀 ~ response:", response);
 
       expect(response.statusCode).toBe(200);
 
