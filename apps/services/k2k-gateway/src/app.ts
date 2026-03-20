@@ -1,12 +1,10 @@
-import type { LoggerConfig } from "@knodia/logger/config";
-
-import { KnodeId } from "@knodia/common-models/ids";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
+import { pollingServiceBuilder } from "@knodia/polling";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import type { K2KGatewayConfig } from "./config/config.ts";
@@ -20,44 +18,19 @@ import { organizationRouter } from "./routers/organizationRouter.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 
 export function buildAppFromConfig(config: K2KGatewayConfig) {
-  const app = buildApp({
+  return buildApp({ config });
+}
+
+function buildApp({ config }: { config: K2KGatewayConfig }) {
+  const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
-    callerKnodeId: config.callerKnodeId,
     eserviceProcessUrl: config.eserviceProcessUrl,
-    internalJwt: config.internalJwt,
-    loggerConfig: config,
     organizationProcessUrl: config.organizationProcessUrl,
     purposeProcessUrl: config.purposeProcessUrl,
   });
-
-  return app;
-}
-
-function buildApp({
-  agreementProcessUrl,
-  callerKnodeId,
-  eserviceProcessUrl,
-  internalJwt,
-  loggerConfig,
-  organizationProcessUrl,
-  purposeProcessUrl,
-}: {
-  agreementProcessUrl: string;
-  callerKnodeId: KnodeId;
-  eserviceProcessUrl: string;
-  internalJwt: K2KGatewayConfig["internalJwt"];
-  loggerConfig: LoggerConfig;
-  organizationProcessUrl: string;
-  purposeProcessUrl: string;
-}) {
-  const clients = getKnodiaClients({
-    agreementProcessUrl,
-    eserviceProcessUrl,
-    organizationProcessUrl,
-    purposeProcessUrl,
-  });
   const fileManager = initFileManager();
-  const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
+  const tokenProvider = refreshableInternalTokenGenerator(config.internalJwt);
+  const pollingService = pollingServiceBuilder(config);
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -97,7 +70,7 @@ function buildApp({
         ],
       },
     },
-    loggerConfig,
+    loggerConfig: config,
     makeApiProblem,
     serviceName: "k2k-gateway",
   });
@@ -110,7 +83,7 @@ function buildApp({
   });
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
-    callerKnodeId,
+    callerKnodeId: config.callerKnodeId,
     tokenProvider,
   });
   app.register(organizationRouter, {
@@ -118,7 +91,8 @@ function buildApp({
     tokenProvider,
   });
   app.register(purposeRouter, {
-    callerKnodeId,
+    callerKnodeId: config.callerKnodeId,
+    pollingService,
     purposeProcessClient: clients.purposeProcessClient,
     tokenProvider,
   });

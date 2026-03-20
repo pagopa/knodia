@@ -29,6 +29,8 @@
     "@knodia/purpose-models": "workspace:*",
     "@knodia/purpose-process-client": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
+    "@knodia/polling": "workspace:*",
+    "axios": "catalog:",
     "@knodia/file-manager": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/token-generator": "workspace:*",

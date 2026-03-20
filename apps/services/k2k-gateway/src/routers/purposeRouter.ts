@@ -1,10 +1,19 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  type KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 import {
   purposeProcessApi,
   type PurposeProcessClient,
@@ -20,13 +29,37 @@ import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface PurposeRouterOptions {
   callerKnodeId: KnodeId;
+  pollingService: PollingService;
   purposeProcessClient: PurposeProcessClient;
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
 export const purposeRouter: FastifyPluginAsyncZod<
   PurposeRouterOptions
-> = async (fastify, { callerKnodeId, purposeProcessClient, tokenProvider }) => {
+> = async (
+  fastify,
+  { callerKnodeId, pollingService, purposeProcessClient, tokenProvider },
+) => {
+  const retrievePurpose = async (
+    purposeId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    await purposeProcessApi.getPurpose({
+      client: purposeProcessClient,
+      headers,
+      path: { purposeId },
+    });
+
+  const pollPurpose = (
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrievePurpose(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -36,14 +69,16 @@ export const purposeRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const { data } = await purposeProcessApi.createPurpose({
+      const response = await purposeProcessApi.createPurpose({
         body: toProcessAPI_PurposeSeed(req.body, callerKnodeId),
         client: purposeProcessClient,
         headers,
       });
 
+      await pollPurpose(response, headers);
+
       res.status(201).send({
-        id: data.id,
+        id: response.data.id,
       });
     },
     method: "POST",
