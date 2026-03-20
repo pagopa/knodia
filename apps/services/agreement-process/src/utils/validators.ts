@@ -6,7 +6,8 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type { Eservice, EserviceVersionState } from "@knodia/eservice-models";
+
+import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
@@ -16,12 +17,17 @@ import {
 } from "../models/errors.ts";
 import { retrieveEserviceVersion } from "./readmodelUtils.ts";
 
+const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
+  EserviceVersionState.enum.Active,
+  EserviceVersionState.enum.Suspended,
+];
+
 export const assertEserviceVersionAllowsAgreementCreation = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
-  const allowedStates: EserviceVersionState[] = ["Active"];
+  const allowedStates = agreementCreationAllowedEserviceVersionStates;
 
   const eserviceVersion = await retrieveEserviceVersion(
     eservice.id,
