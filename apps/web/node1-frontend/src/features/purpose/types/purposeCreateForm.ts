@@ -48,6 +48,7 @@ export const DETAILS_STEP_DEFAULTS: z.input<typeof detailsStepSchema> = {
   name: "",
 };
 
+/** @alias -- Will diverge from DETAILS_STEP_DEFAULTS when more steps are added */
 export const PURPOSE_FORM_DEFAULTS: PurposeFormDraftData =
   DETAILS_STEP_DEFAULTS;
 
