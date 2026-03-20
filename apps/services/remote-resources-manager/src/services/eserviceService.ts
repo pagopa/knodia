@@ -128,6 +128,7 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
               eserviceId: eserviceId.id,
               limit: 1,
               offset: 0,
+              // TODO: include also other non-Archived states
               state: "ACTIVE",
             },
           }),
