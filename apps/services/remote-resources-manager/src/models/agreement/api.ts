@@ -14,7 +14,6 @@ import { z } from "zod";
 
 export const API_AgreementSeed = z
   .strictObject({
-    consumerId: API_OrganizationId,
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
     knodeId: API_KnodeId,
@@ -83,20 +82,3 @@ export const API_Agreements = z
   })
   .meta({ id: "Agreements" });
 export type API_Agreements = z.infer<typeof API_Agreements>;
-
-export const API_AgreementDetails = z
-  .strictObject({
-    attributes: z.array(API_Attribute),
-    consumer: API_AgreementConsumer,
-    eserviceId: z.uuid(),
-    eserviceVersionId: z.uuid(),
-    id: z.uuid(),
-    producerId: API_OrganizationId,
-    state: API_AgreementState,
-    updatedAt: z.iso.datetime(),
-  })
-  .meta({
-    description: "Agreement for an E-service",
-    id: "AgreementDetails",
-  });
-export type API_AgreementDetails = z.infer<typeof API_AgreementDetails>;

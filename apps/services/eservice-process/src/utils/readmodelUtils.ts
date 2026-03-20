@@ -18,7 +18,7 @@ export const retrieveEservice = async (
     throw eserviceNotFound(eserviceId);
   }
 
-  return eservice.data;
+  return eservice;
 };
 
 export const retrieveEserviceLatestVersion = async (

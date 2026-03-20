@@ -6,64 +6,39 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type {
-  EserviceVersion,
-  EserviceVersionState,
-} from "@knodia/eservice-models";
+
+import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
-  eserviceVersionNotInExpectedState,
-  eserviceVersionNotLatest,
+  eserviceVersionNotInExpectedStates,
 } from "../models/errors.ts";
-import { retrieveEserviceLatestVersion } from "./readmodelUtils.ts";
+import { retrieveEserviceVersion } from "./readmodelUtils.ts";
 
-export const assertAgreementCanBeCreated = async (
-  eserviceId: EserviceId,
+const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
+  EserviceVersionState.enum.Active,
+  EserviceVersionState.enum.Suspended,
+];
+
+export const assertEserviceVersionAllowsAgreementCreation = async (
+  eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
   readmodelService: ReadmodelService,
 ) => {
-  const allowedEserviceVersionStatesForCreation: EserviceVersionState[] = [
-    "Active",
-  ];
-  const allowedEserviceVersionStates: EserviceVersionState[] = [
-    "Active",
-    "Suspended",
-    "Archived",
-  ];
+  const allowedStates = agreementCreationAllowedEserviceVersionStates;
 
-  const eserviceLatestVersion = await retrieveEserviceLatestVersion(
-    eserviceId,
+  const eserviceVersion = await retrieveEserviceVersion(
+    eservice.id,
+    eserviceVersionId,
     readmodelService,
-    allowedEserviceVersionStates,
   );
 
-  if (eserviceLatestVersion.id !== eserviceVersionId) {
-    throw eserviceVersionNotLatest(
-      eserviceId,
-      eserviceVersionId,
-      eserviceLatestVersion.id,
-    );
-  }
-
-  assertEserviceVersionIsInExpectedStates(
-    eserviceId,
-    eserviceLatestVersion,
-    allowedEserviceVersionStatesForCreation,
-  );
-};
-
-const assertEserviceVersionIsInExpectedStates = (
-  eserviceId: EserviceId,
-  eserviceVersion: Omit<EserviceVersion, "interfaceDocument">,
-  allowedStates: EserviceVersionState[],
-) => {
   if (!allowedStates.includes(eserviceVersion.state)) {
-    throw eserviceVersionNotInExpectedState(
-      eserviceId,
-      eserviceVersion.id,
+    throw eserviceVersionNotInExpectedStates(
+      eservice.id,
+      eserviceVersionId,
       allowedStates,
     );
   }

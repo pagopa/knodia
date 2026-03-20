@@ -19,7 +19,6 @@
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
@@ -29,8 +28,11 @@
   "dependencies": {
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
+    "@knodia/db-event-store-commons": "workspace:*",
+    "@knodia/db-event-store-config": "workspace:*",
     "@knodia/db-event-store-keychain": "workspace:*",
     "@knodia/db-event-store-writer": "workspace:*",
+    "@knodia/db-readmodel-config": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
@@ -39,7 +41,6 @@
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
-    "pg": "catalog:",
     "pino-pretty": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"

@@ -1,4 +1,5 @@
 import type { FileManager } from "@knodia/file-manager";
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -13,7 +14,10 @@ import {
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 
 import { config } from "../../config/config.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -29,6 +33,10 @@ import {
 } from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  pollResourceWithMetadata,
+} from "../../utils/polling.ts";
 
 interface EserviceProducerRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
@@ -40,6 +48,26 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
   EserviceProducerRouterOptions
   // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { eserviceProcessClient, fileManager }) => {
+  const retrieveEservice = async (
+    eserviceId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    await eserviceProcessApi.getEservice({
+      client: eserviceProcessClient,
+      headers,
+      path: { eserviceId },
+    });
+
+  const pollEservice = (
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollResourceWithMetadata(() => retrieveEservice(response.data.id, headers))(
+      {
+        condition: isPolledVersionAtLeastResponseVersion(response),
+      },
+    );
+
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -53,6 +81,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         interfaceDocument: { content, name, ...interfaceDocumentRest },
         ...rest
       } = req.body;
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const interfaceDocumentId = generateId<EserviceInterfaceId>();
 
@@ -74,12 +104,15 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         },
       };
 
-      const { data } = await eserviceProcessApi.createEservice({
+      const response = await eserviceProcessApi.createEservice({
         body: seed,
         client: eserviceProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
       });
-      res.status(201).send({ id: data.id });
+
+      await pollEservice(response, headers);
+
+      res.status(201).send({ id: response.data.id });
     },
     method: "POST",
     schema: {

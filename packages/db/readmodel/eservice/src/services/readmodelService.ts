@@ -31,11 +31,38 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         .select({
           category: readmodelEserviceCategory,
           eservice: readmodelEservice,
+          interface: readmodelEserviceInterface,
+          requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+          version: readmodelEserviceVersion,
         })
         .from(readmodelEservice)
         .leftJoin(
           readmodelEserviceCategory,
           eq(readmodelEserviceCategory.eserviceId, readmodelEservice.id),
+        )
+        .leftJoin(
+          readmodelEserviceVersion,
+          eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id),
+        )
+        .leftJoin(
+          readmodelEserviceInterface,
+          eq(
+            readmodelEserviceInterface.eserviceVersionId,
+            readmodelEserviceVersion.id,
+          ),
+        )
+        .leftJoin(
+          readmodelEserviceVersionRequiredAttribute,
+          and(
+            eq(
+              readmodelEserviceVersionRequiredAttribute.eserviceId,
+              readmodelEserviceVersion.eserviceId,
+            ),
+            eq(
+              readmodelEserviceVersionRequiredAttribute.eserviceVersionId,
+              readmodelEserviceVersion.id,
+            ),
+          ),
         )
         .where(eq(readmodelEservice.id, eserviceId));
 
