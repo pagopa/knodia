@@ -16,7 +16,6 @@ const { logLevel } = KafkaJS;
 
 const TEST_KAFKA_PORT = 9093;
 const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:8.1.1";
-const AWS_REGION = "eu-south-1";
 
 const { logger } = createTestLogger();
 
@@ -50,10 +49,9 @@ export async function setupKafkaTestProducer(broker: string) {
   const topicName = `test_kafka_topic_worker_${randomId}`;
 
   const kafkaCommonConfig: Omit<KafkaConfig, "kafkaClientId"> = {
-    awsRegion: AWS_REGION,
     kafkaBrokers: broker,
-    kafkaDisableAwsIamAuth: true,
     kafkaLogLevel: logLevel.INFO,
+    mskAuth: undefined,
   };
   const kafka = await initKafka(
     {
