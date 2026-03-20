@@ -47,10 +47,10 @@ export const splitConsumerKeychainIntoObjectsSQL = (
   );
 
   return {
-    consumerKeychainKeysSQL: consumerKeychainKeysSQL,
-    consumerKeychainPurposesSQL: consumerKeychainPurposesSQL,
-    consumerKeychainSQL: consumerKeychainSQL,
-    consumerKeychainUsersSQL: consumerKeychainUsersSQL,
+    consumerKeychainKeysSQL,
+    consumerKeychainPurposesSQL,
+    consumerKeychainSQL,
+    consumerKeychainUsersSQL,
   };
 };
 
