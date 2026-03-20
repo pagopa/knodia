@@ -83,7 +83,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           table: readmodelEservice,
         });
 
-        const latestVersion = latestVersionSubquery(tx, readmodelEservice.id);
+        const latestEserviceVersion = latestVersionSubquery(
+          tx,
+          readmodelEservice.id,
+        );
 
         const createFilterQuery = () =>
           tx
@@ -94,8 +97,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
             )
             .innerJoinLateral(
-              latestVersion,
-              inArray(latestVersion.state, [
+              latestEserviceVersion,
+              inArray(latestEserviceVersion.state, [
                 EserviceVersionState.enum.Active,
                 EserviceVersionState.enum.Suspended,
               ]),
@@ -194,17 +197,14 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       eserviceId: EserviceId,
     ): Promise<EserviceInterface | undefined> {
       return await readmodelDb.transaction(async (tx) => {
-        const latestEserviceVersion = latestVersionSubquery(tx, eserviceId);
+        const latestVersion = latestVersionSubquery(tx, eserviceId);
 
         const queryRes = await tx
           .select()
           .from(readmodelEserviceInterface)
           .innerJoin(
-            latestEserviceVersion,
-            eq(
-              readmodelEserviceInterface.eserviceVersionId,
-              latestEserviceVersion.id,
-            ),
+            latestVersion,
+            eq(readmodelEserviceInterface.eserviceVersionId, latestVersion.id),
           )
           .where(eq(readmodelEserviceInterface.eserviceId, eserviceId))
           .limit(1);
