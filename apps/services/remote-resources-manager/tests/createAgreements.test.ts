@@ -142,25 +142,13 @@ describe("POST /agreements (createAgreement)", () => {
 
   it.each([
     { body: {} },
-    {
-      body: { ...body, wrongProperty: "wrong" },
-    },
-    {
-      body: { ...body, eserviceId: 99 },
-    },
-    {
-      body: { ...body, eserviceId: "" },
-    },
-    {
-      body: { ...body, eserviceVersionId: 99 },
-    },
+    { body: { ...body, wrongProperty: "wrong" } },
+    { body: { ...body, eserviceId: 99 } },
+    { body: { ...body, eserviceId: "" } },
+    { body: { ...body, eserviceVersionId: 99 } },
     { body: { ...body, eserviceVersionId: "" } },
-    {
-      body: { ...body, consumerId: 99 },
-    },
-    {
-      body: { ...body, consumerId: "" },
-    },
+    { body: { ...body, consumerId: 99 } },
+    { body: { ...body, consumerId: "" } },
   ])(
     "should return 400 if query/body parameters are formatted incorrectly (%o)",
     async ({ body }) => {
@@ -211,6 +199,24 @@ describe("POST /agreements (createAgreement)", () => {
     expect(response.statusCode).toBe(201);
   });
 
+  it("should return 201 when consumer satisfies all attribute groups via OR semantics", async () => {
+    createAgreementMock.mockResolvedValue({ data: mockK2KResponse });
+    getEserviceLatestVersionMock.mockResolvedValue({
+      data: {
+        requiredAttributes: [
+          [testOrganization.attributes[0]!, { code: "alt_1", scheme: "alt_1" }],
+          [{ code: "alt_2", scheme: "alt_2" }, testOrganization.attributes[0]!],
+        ],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/agreements")
+      .body(body);
+
+    expect(response.statusCode).toBe(201);
+  });
+
   it("should return 403 when consumer does not possess any required attribute", async () => {
     getEserviceLatestVersionMock.mockResolvedValue({
       data: {
@@ -228,14 +234,12 @@ describe("POST /agreements (createAgreement)", () => {
     expect(createAgreementMock).not.toHaveBeenCalled();
   });
 
-  it("should return 403 when consumer possesses only some required attributes", async () => {
+  it("should return 403 when consumer fails to satisfy one attribute group", async () => {
     getEserviceLatestVersionMock.mockResolvedValue({
       data: {
         requiredAttributes: [
-          [
-            ...testOrganization.attributes,
-            { code: "missing_code", scheme: "missing_scheme" },
-          ],
+          [testOrganization.attributes[0]!],
+          [{ code: "missing_code", scheme: "missing_scheme" }],
         ],
       },
     });
