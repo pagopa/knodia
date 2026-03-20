@@ -1,30 +1,34 @@
-import type { IDS } from "@knodia/common-models/ids";
-import type { API_KnodeId } from "@knodia/common-models/internalApi";
+import type { IDS, KnodeId } from "@knodia/common-models/ids";
 
 import {
   type ExternalId,
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 
-type KnodeEntityMap<TEntity> = Map<API_KnodeId, Map<string, TEntity>>;
+type KnodeEntityMap<TEntity> = Map<KnodeId, Map<string, TEntity>>;
 
-export async function fetchEntities<TItem, TEntity extends { id: string }>({
+export async function getExternalEntitiesMap<
+  TItem,
+  TEntity extends { id: string },
+>({
   fetchFn,
   getEntityId,
+  getKnodeId,
   items,
-  knodeId,
 }: {
   fetchFn: (args: {
     entityIds: ExternalId<IDS>[];
-    knodeId: API_KnodeId;
+    knodeId: KnodeId;
   }) => Promise<TEntity[]>;
   getEntityId: (item: TItem) => string;
+  getKnodeId: ((item: TItem) => KnodeId) | KnodeId;
   items: TItem[];
-  knodeId: API_KnodeId;
-}): Promise<Map<API_KnodeId, Map<string, TEntity>>> {
-  const idsByKnode = new Map<API_KnodeId, Set<ExternalId<IDS>>>();
+}): Promise<Map<KnodeId, Map<string, TEntity>>> {
+  const idsByKnode = new Map<KnodeId, Set<ExternalId<IDS>>>();
   for (const item of items) {
     const entityId = unsafeBrandExternalId<IDS>(getEntityId(item));
+    const knodeId =
+      typeof getKnodeId === "function" ? getKnodeId(item) : getKnodeId;
 
     const set = idsByKnode.get(knodeId) ?? new Set<ExternalId<IDS>>();
     set.add(entityId);

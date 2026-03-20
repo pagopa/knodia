@@ -10,6 +10,7 @@ import {
 import { EserviceId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { remoteResourceAgreement } from "@knodia/db-remote-resource";
+import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import { genericError } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -34,7 +35,6 @@ import {
   toAPI_Eservice,
   toAPI_EserviceDetails,
 } from "../models/eservice/apiConverter.ts";
-import { fetchEntities } from "../utils/utils.ts";
 import { assertEntityExists } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
@@ -187,7 +187,7 @@ export function eserviceServiceBuilder(
         if (results.length < limit) {
           const [producersMap, eservicesMap, eserviceVersionsMap] =
             await Promise.all([
-              fetchEntities({
+              getExternalEntitiesMap({
                 fetchFn: ({ entityIds }) =>
                   Promise.all(
                     entityIds.map((organizationId) =>
@@ -198,10 +198,10 @@ export function eserviceServiceBuilder(
                     ),
                   ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.producerId,
+                getKnodeId: knodeId,
                 items: consumerAgreements.results,
-                knodeId,
               }),
-              fetchEntities({
+              getExternalEntitiesMap({
                 fetchFn: ({ entityIds }) =>
                   Promise.all(
                     entityIds.map((eserviceId) =>
@@ -212,10 +212,10 @@ export function eserviceServiceBuilder(
                     ),
                   ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.eserviceId,
+                getKnodeId: knodeId,
                 items: consumerAgreements.results,
-                knodeId,
               }),
-              fetchEntities({
+              getExternalEntitiesMap({
                 fetchFn: ({ entityIds }) =>
                   Promise.all(
                     entityIds.map((eserviceId) =>
@@ -226,8 +226,8 @@ export function eserviceServiceBuilder(
                     ),
                   ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.eserviceId,
+                getKnodeId: knodeId,
                 items: consumerAgreements.results,
-                knodeId,
               }),
             ]);
 
