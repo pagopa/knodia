@@ -47,6 +47,13 @@ export const toAPI_AgreementDetails = (
   updatedAt: agreement.updatedAt,
 });
 
+export function toAPI_KnodeId(knodeId: k2kGatewayApi.KnodeId): API_KnodeId {
+  return match(knodeId)
+    .with("ORION", () => "Orion" as const)
+    .with("LYNX", () => "Lynx" as const)
+    .exhaustive();
+}
+
 export function toK2KAPI_AgreementState(
   state: API_AgreementState,
 ): k2kGatewayApi.AgreementState {
@@ -64,11 +71,4 @@ function toAPI_AgreementConsumer(
     id: consumer.id,
     knodeId: toAPI_KnodeId(consumer.knodeId),
   };
-}
-
-function toAPI_KnodeId(knodeId: k2kGatewayApi.KnodeId): API_KnodeId {
-  return match(knodeId)
-    .with("ORION", () => "Orion" as const)
-    .with("LYNX", () => "Lynx" as const)
-    .exhaustive();
 }
