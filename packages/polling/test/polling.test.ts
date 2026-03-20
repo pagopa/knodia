@@ -5,21 +5,19 @@ import {
 import { AxiosError, type AxiosResponse } from "axios";
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("../src/config/config.ts", () => ({
-  config: {
-    defaultPollingMaxRetries: 5,
-    defaultPollingRetryDelay: 1000,
-  },
-}));
-
-import { pollingMaxRetriesExceeded } from "../src/models/errors.ts";
+import { pollingMaxRetriesExceeded } from "../src/errors.ts";
 import {
   createPollingByCondition,
   createPollingUntilDeletion,
   getMetadataVersionFromHeaders,
   isPolledVersionAtLeastResponseVersion,
   isPolledVersionAtLeastTargetVersion,
-} from "../src/utils/polling.ts";
+} from "../src/polling.ts";
+
+const defaultConfig = {
+  defaultPollingMaxRetries: 3,
+  defaultPollingRetryDelay: 10,
+};
 
 describe("createPollingByCondition", () => {
   it("Should perform polling until the condition is met", async () => {
@@ -29,10 +27,10 @@ describe("createPollingByCondition", () => {
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true);
 
-    const result = await createPollingByCondition(mockFetch, {
-      defaultPollingMaxRetries: 3,
-      defaultPollingRetryDelay: 10,
-    })({
+    const result = await createPollingByCondition(
+      mockFetch,
+      defaultConfig,
+    )({
       condition: (result) => result === true,
     });
 
@@ -52,10 +50,10 @@ describe("createPollingByCondition", () => {
       .mockResolvedValueOnce(false)
       .mockResolvedValueOnce(true);
 
-    const result = await createPollingByCondition(mockFetch, {
-      defaultPollingMaxRetries: 3,
-      defaultPollingRetryDelay: 10,
-    })({
+    const result = await createPollingByCondition(
+      mockFetch,
+      defaultConfig,
+    )({
       condition: (result) => result === true,
     });
 
@@ -67,10 +65,10 @@ describe("createPollingByCondition", () => {
     const mockFetch = vi.fn().mockResolvedValue(false);
 
     await expect(
-      createPollingByCondition(mockFetch, {
-        defaultPollingMaxRetries: 3,
-        defaultPollingRetryDelay: 10,
-      })({
+      createPollingByCondition(
+        mockFetch,
+        defaultConfig,
+      )({
         condition: (result) => result === true,
       }),
     ).rejects.toThrowError(pollingMaxRetriesExceeded(3, 10));
@@ -90,10 +88,10 @@ describe("createPollingByCondition", () => {
       .mockResolvedValueOnce(true);
 
     await expect(
-      createPollingByCondition(mockFetch, {
-        defaultPollingMaxRetries: 3,
-        defaultPollingRetryDelay: 10,
-      })({
+      createPollingByCondition(
+        mockFetch,
+        defaultConfig,
+      )({
         condition: (result) => result === true,
       }),
     ).rejects.toThrowError("Generic error");
@@ -108,10 +106,10 @@ describe("createPollingByCondition", () => {
       .mockResolvedValueOnce(true);
 
     await expect(
-      createPollingByCondition(mockFetch, {
-        defaultPollingMaxRetries: 3,
-        defaultPollingRetryDelay: 10,
-      })({
+      createPollingByCondition(
+        mockFetch,
+        defaultConfig,
+      )({
         condition: (result) => result === true,
       }),
     ).rejects.toThrowError("Generic error");
@@ -133,10 +131,7 @@ describe("createPollingUntilDeletion", () => {
         } as AxiosResponse),
       );
 
-    await createPollingUntilDeletion(mockFetch, {
-      defaultPollingMaxRetries: 3,
-      defaultPollingRetryDelay: 10,
-    })({});
+    await createPollingUntilDeletion(mockFetch, defaultConfig)({});
 
     expect(mockFetch).toHaveBeenCalledTimes(3);
   });
@@ -145,10 +140,7 @@ describe("createPollingUntilDeletion", () => {
     const mockFetch = vi.fn().mockResolvedValue(true);
 
     await expect(
-      createPollingUntilDeletion(mockFetch, {
-        defaultPollingMaxRetries: 3,
-        defaultPollingRetryDelay: 10,
-      })({}),
+      createPollingUntilDeletion(mockFetch, defaultConfig)({}),
     ).rejects.toThrowError(pollingMaxRetriesExceeded(3, 10));
 
     expect(mockFetch).toHaveBeenCalledTimes(3);
@@ -171,10 +163,7 @@ describe("createPollingUntilDeletion", () => {
       );
 
     await expect(
-      createPollingUntilDeletion(mockFetch, {
-        defaultPollingMaxRetries: 3,
-        defaultPollingRetryDelay: 10,
-      })({}),
+      createPollingUntilDeletion(mockFetch, defaultConfig)({}),
     ).rejects.toThrowError("Generic error");
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -192,10 +181,7 @@ describe("createPollingUntilDeletion", () => {
       );
 
     await expect(
-      createPollingUntilDeletion(mockFetch, {
-        defaultPollingMaxRetries: 3,
-        defaultPollingRetryDelay: 10,
-      })({}),
+      createPollingUntilDeletion(mockFetch, defaultConfig)({}),
     ).rejects.toThrowError("Generic error");
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
