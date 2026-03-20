@@ -36,6 +36,7 @@ function RouteComponent() {
   const onClose = () =>
     navigate({
       params: { id },
+      replace: true,
       search: { knodeId },
       to: "/consumption/e-services/$id",
     });

@@ -10,7 +10,6 @@ import type { DetailsStepData } from "@/features/purpose/types/purposeCreateForm
 import {
   DETAILS_STEP_DEFAULTS,
   detailsStepSchema,
-  PURPOSE_FORM_DEFAULTS,
   type PurposeFormDraftData,
 } from "@/features/purpose/types/purposeCreateForm";
 
@@ -53,7 +52,7 @@ export function useDetailsStepForm(
   });
 }
 
-export function usePurposeWizardContext() {
+function usePurposeWizardContext() {
   const context = useContext(PurposeWizardContext);
   if (!context) {
     throw new Error(
@@ -62,5 +61,3 @@ export function usePurposeWizardContext() {
   }
   return context;
 }
-
-export { PURPOSE_FORM_DEFAULTS };
