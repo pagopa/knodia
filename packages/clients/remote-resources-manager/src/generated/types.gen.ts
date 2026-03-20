@@ -105,20 +105,6 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
-/**
- * Agreement for an E-service
- */
-export type AgreementDetails = {
-    attributes: Array<Attribute>;
-    consumer: AgreementConsumer;
-    eserviceId: string;
-    eserviceVersionId: string;
-    id: string;
-    producerId: OrganizationId;
-    state: AgreementState;
-    updatedAt: string;
-};
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -143,15 +129,6 @@ export type EserviceCategory = {
 };
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
-
-/**
- * Organization with only id, knodeId, and name
- */
-export type CompactOrganization = {
-    id: string;
-    knodeId: KnodeId;
-    name: string;
-};
 
 export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
@@ -192,7 +169,7 @@ export type CatalogEserviceSearchResults = {
  */
 export type EserviceId = string;
 
-export type EserviceVersionDetails = {
+export type EserviceDetailsLatestVersion = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
@@ -224,34 +201,16 @@ export type EserviceDetails = {
     interfaceDocument: EserviceDetailsInterfaceDocument;
     isConsumerOperatorIdentificationRequired: boolean;
     isSignalHubEnabled: boolean;
-    latestVersion: EserviceVersionDetails;
+    latestVersion: EserviceDetailsLatestVersion;
     mode: EserviceMode;
     name: LocalizedName;
     producer: EserviceDetailsProducer;
 };
 
-export type EserviceVersion = {
+export type Organization = {
+    attributes: Array<Attribute>;
     id: string;
-    requiredAttributes: Array<Array<Attribute>>;
-    state: EserviceVersionState;
-};
-
-export type Eservice = {
-    agreement: {
-        id: string;
-        state: AgreementState;
-    };
-    categories: Array<EserviceCategory>;
-    id: string;
-    mode: EserviceMode;
-    name: LocalizedName;
-    producer: CompactOrganization;
-    version: EserviceVersion;
-};
-
-export type Eservices = {
-    pagination: Pagination;
-    results: Array<Eservice>;
+    name: string;
 };
 
 export type GetStatusData = {
@@ -352,53 +311,6 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
-
-export type GetEservicesData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-        agreementState?: AgreementState;
-    };
-    url: '/eservices';
-};
-
-export type GetEservicesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
-};
-
-export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
-
-export type GetEservicesResponses = {
-    /**
-     * E-services retrieved successfully
-     */
-    200: Eservices;
-};
-
-export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
 
 export type DownloadEserviceLatestVersionInterfaceData = {
     body?: never;
@@ -568,7 +480,48 @@ export type GetAgreementResponses = {
     /**
      * Agreement retrieved successfully
      */
-    200: AgreementDetails;
+    200: Agreement;
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];

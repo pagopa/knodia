@@ -50,7 +50,7 @@ export const toK2KAgreement = (
   updatedAt: agreement.updatedAt.toISOString(),
 });
 
-export const toK2KAgreementState = (
+const toK2KAgreementState = (
   state: AgreementState,
 ): k2kGatewayApi.AgreementState =>
   match(state)
@@ -99,6 +99,14 @@ export const toK2KEserviceVersion = (
   state: toK2KVersionState(eserviceVersion.state),
   updatedAt: eserviceVersion.updatedAt.toISOString(),
   versionNumber: eserviceVersion.versionNumber,
+});
+
+export const toK2KOrganization = (
+  organization: Organization,
+): k2kGatewayApi.Organization => ({
+  attributes: organization.attributes,
+  id: organization.id,
+  name: organization.name,
 });
 
 export const toK2KOrganization = (
