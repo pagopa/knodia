@@ -3,6 +3,7 @@
 import { generateId, type PurposeId } from "@knodia/common-models/ids";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { splitPurposeIntoObjectsSQL } from "@knodia/db-readmodel-purpose/converters";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it } from "vitest";
 
@@ -42,6 +43,7 @@ describe("GET /purposes/:purposeId (getPurpose)", () => {
     async (token) => {
       const response = await getPurpose(VALID_PURPOSE_ID, token);
 
+      expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
       expect(response.statusCode).toBe(200);
 
       const body = response.json<API_Purpose>();

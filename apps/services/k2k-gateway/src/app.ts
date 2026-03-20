@@ -7,7 +7,7 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
-import { pollingServiceBuilder } from "@knodia/polling";
+import { type PollingService, pollingServiceBuilder } from "@knodia/polling";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import type { K2KGatewayConfig } from "./config/config.ts";
@@ -51,7 +51,7 @@ function buildApp({
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
   organizationProcessUrl: string;
-  pollingService: ReturnType<typeof pollingServiceBuilder>;
+  pollingService: PollingService;
   purposeProcessUrl: string;
 }) {
   const clients = getKnodiaClients({
