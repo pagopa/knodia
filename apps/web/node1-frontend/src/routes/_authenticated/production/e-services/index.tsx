@@ -2,11 +2,7 @@ import { getProducerEservicesOptions } from "@knodia/bff-client/tanstack-query";
 import { Button, ButtonLink, Pagination } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import {
-  createFileRoute,
-  Outlet,
-  stripSearchParams,
-} from "@tanstack/react-router";
+import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
 import { ProductionEserviceFilters } from "@/features/e-service/components/ProductionEserviceFilters";
@@ -23,7 +19,7 @@ const eservicesQuery = (offset: number) =>
     query: { limit: 10, offset },
   });
 
-export const Route = createFileRoute("/_authenticated/production/e-services")({
+export const Route = createFileRoute("/_authenticated/production/e-services/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
@@ -95,8 +91,6 @@ function RouteComponent() {
         onOffsetChange={(offset) => handleSearchChange({ offset })}
         totalItems={data?.pagination.total ?? 0}
       />
-
-      <Outlet />
     </>
   );
 }
