@@ -13,9 +13,9 @@ import {
 } from "@knodia/eservice-models";
 
 import {
-  agreementNotInExpectedState,
+  agreementNotInExpectedStates,
   eserviceModeNotAllowed,
-  eserviceVersionNotInExpectedState,
+  eserviceVersionNotInExpectedStates,
 } from "../models/errors.ts";
 
 const purposeCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
@@ -43,7 +43,7 @@ export const assertEserviceAllowsPurposeCreation = (eservice: Eservice) => {
   );
 
   if (!hasAllowedVersion) {
-    throw eserviceVersionNotInExpectedState(
+    throw eserviceVersionNotInExpectedStates(
       eservice.id,
       purposeCreationAllowedEserviceVersionStates,
     );
@@ -66,7 +66,7 @@ export const assertAgreementAllowsPurposeCreation = ({
   );
 
   if (!hasAllowedAgreement) {
-    throw agreementNotInExpectedState({
+    throw agreementNotInExpectedStates({
       allowedStates: purposeCreationAllowedAgreementStates,
       consumerId,
       consumerKnodeId,

@@ -15,7 +15,7 @@ import {
   PurposeStateV1,
   type PurposeV1,
 } from "./generated/v1/purpose.ts";
-import { Purpose, PurposeFormAnswers } from "./purpose.ts";
+import { Purpose, PurposeFormAnswers, PurposeState } from "./purpose.ts";
 
 /** @knipignore - will be used when implementing rmw */
 export const fromPurposeV1 = (input: PurposeV1): Purpose => {
@@ -39,7 +39,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
   };
 };
 
-const fromPurposeStateV1 = (input: PurposeStateV1): Purpose["state"] =>
+const fromPurposeStateV1 = (input: PurposeStateV1): PurposeState =>
   match(input)
     .with(PurposeStateV1.ACTIVE, () => "Active" as const)
     .with(PurposeStateV1.SUSPENDED, () => "Suspended" as const)

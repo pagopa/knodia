@@ -1,0 +1,160 @@
+import type { bffApi } from "@knodia/bff-client";
+
+import { createConsumerKeychainMutation } from "@knodia/bff-client/tanstack-query";
+import {
+  Modal,
+  Select,
+  SelectItem,
+  TextArea,
+  TextField,
+} from "@knodia/ui-kit/ui";
+import { revalidateLogic, useForm } from "@tanstack/react-form";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+import { match } from "ts-pattern";
+
+import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
+import { client } from "@/libs/axios";
+
+import {
+  createKeychainFormDefaultValues,
+  createKeychainFormSchema,
+  type CreateKeychainFormValues,
+  keychainTypeOptions,
+} from "../models/create-keychain-form";
+
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function CreateKeychainModal({ isOpen, onClose }: Props) {
+  const navigate = useNavigate();
+
+  const { isPending, mutate: createConsumerKeychain } = useMutation({
+    ...createConsumerKeychainMutation({
+      client,
+    }),
+    onSuccess: ({ id }) => {
+      navigate({ params: { id }, to: "/keychains/consumption/$id" });
+    },
+  });
+
+  function handleCreateKeychain(seed: CreateKeychainFormValues) {
+    const body: bffApi.ConsumerKeychainSeed = {
+      description: seed.description ? { en: seed.description } : undefined,
+      name: { en: seed.name },
+    };
+
+    match(seed.type)
+      .with("consumption", () => createConsumerKeychain({ body }))
+      .with("production", () => {
+        throw new Error("Producer keychains are not supported yet.");
+      })
+      .with("api", () => {
+        throw new Error("API keychains are not supported yet.");
+      })
+      .exhaustive();
+  }
+
+  const form = useForm({
+    defaultValues: createKeychainFormDefaultValues,
+    onSubmit: async ({ value }) => {
+      handleCreateKeychain(value);
+    },
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: createKeychainFormSchema,
+    },
+  });
+
+  return (
+    <Modal
+      actionLabel="Create"
+      cancelLabel="Cancel"
+      confirmButtonProps={{ isPending }}
+      isOpen={isOpen}
+      kind="default"
+      onConfirm={() => void form.handleSubmit()}
+      onOpenChange={(open) => {
+        if (!open) {
+          form.reset();
+          onClose();
+        }
+      }}
+      title="Create Keychain"
+    >
+      <form
+        className="flex flex-col gap-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void form.handleSubmit();
+        }}
+      >
+        <form.Field name="name">
+          {(field) => (
+            <TextField
+              description="Min 5 characters, max 60 characters"
+              errorMessage={getFieldErrorMessage(field.state.meta.errors)}
+              isInvalid={
+                field.state.meta.isTouched && !field.state.meta.isValid
+              }
+              isRequired
+              label="Name"
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={field.handleChange}
+              value={field.state.value}
+            />
+          )}
+        </form.Field>
+
+        <form.Field name="description">
+          {(field) => (
+            <TextArea
+              description="Max 250 characters"
+              errorMessage={getFieldErrorMessage(field.state.meta.errors)}
+              isInvalid={
+                field.state.meta.isTouched && !field.state.meta.isValid
+              }
+              label="Description (optional)"
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={field.handleChange}
+              value={field.state.value}
+            />
+          )}
+        </form.Field>
+
+        <form.Field name="type">
+          {(field) => (
+            <Select
+              isRequired
+              label="Type"
+              name={field.name}
+              onBlur={field.handleBlur}
+              onChange={(key) =>
+                field.handleChange(
+                  keychainTypeOptions.find((option) => option.id === key)?.id ??
+                    createKeychainFormDefaultValues.type,
+                )
+              }
+              value={field.state.value}
+            >
+              {keychainTypeOptions.map((option) => (
+                <SelectItem
+                  id={option.id}
+                  isDisabled={option.id !== "consumption"}
+                  key={option.id}
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </Select>
+          )}
+        </form.Field>
+      </form>
+    </Modal>
+  );
+}

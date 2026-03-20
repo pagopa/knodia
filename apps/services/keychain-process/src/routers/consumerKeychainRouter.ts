@@ -6,6 +6,8 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   KnodiaServiceHeaders,
+  MetadataVersionHeader,
+  setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
 import { z } from "zod";
@@ -68,12 +70,15 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const consumerKeychain =
-        await consumerKeychainService.getConsumerKeychain(
-          req.params.consumerKeychainId,
-          ctx,
-        );
+      const {
+        data: consumerKeychain,
+        metadata: { version },
+      } = await consumerKeychainService.getConsumerKeychain(
+        req.params.consumerKeychainId,
+        ctx,
+      );
 
+      setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_Keychain(consumerKeychain));
     },
     method: "GET",
@@ -83,9 +88,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "getConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: API_Keychain.meta({
-          description: "Consumer Keychain retrieved successfully",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Consumer Keychain retrieved successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
@@ -102,8 +110,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const consumerKeychain =
-        await consumerKeychainService.createConsumerKeychain(req.body, ctx);
+      const {
+        data: consumerKeychain,
+        metadata: { version },
+      } = await consumerKeychainService.createConsumerKeychain(req.body, ctx);
+
+      setMetadataVersionHeader(res, version);
       res.status(201).send(toAPI_Keychain(consumerKeychain));
     },
     method: "POST",
@@ -113,9 +125,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       headers: KnodiaServiceHeaders,
       operationId: "createConsumerKeychain",
       response: {
-        201: API_Keychain.meta({
-          description: "Consumer Keychain created successfully",
-        }),
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Consumer Keychain created successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
@@ -131,13 +146,16 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const consumerKeychain =
-        await consumerKeychainService.updateConsumerKeychain(
-          req.params.consumerKeychainId,
-          req.body,
-          ctx,
-        );
+      const {
+        data: consumerKeychain,
+        metadata: { version },
+      } = await consumerKeychainService.updateConsumerKeychain(
+        req.params.consumerKeychainId,
+        req.body,
+        ctx,
+      );
 
+      setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_Keychain(consumerKeychain));
     },
     method: "PATCH",
@@ -149,9 +167,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "updateConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: API_Keychain.meta({
-          description: "Consumer Keychain updated successfully",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Consumer Keychain updated successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

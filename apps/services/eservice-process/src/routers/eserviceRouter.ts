@@ -8,6 +8,8 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   KnodiaServiceHeaders,
+  MetadataVersionHeader,
+  setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import type { EserviceService } from "../services/eserviceService.ts";
@@ -79,7 +81,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
         { tokenType: "ui-session", userRoles: ["technical"] },
       ]);
 
-      const eservice = await eserviceService.createEservice(req.body, ctx);
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await eserviceService.createEservice(req.body, ctx);
+
+      setMetadataVersionHeader(res, version);
       res.status(201).send(toAPI_Eservice(eservice));
     },
     method: "POST",
@@ -89,9 +96,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       headers: KnodiaServiceHeaders,
       operationId: "createEservice",
       response: {
-        201: API_Eservice.meta({
-          description: "E-service created successfully",
-        }),
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_Eservice.meta({
+            description: "E-service created successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
@@ -109,11 +119,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const eservice = await eserviceService.getEservice(
-        req.params.eserviceId,
-        ctx,
-      );
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await eserviceService.getEservice(req.params.eserviceId, ctx);
 
+      setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "GET",
@@ -123,9 +134,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       operationId: "getEservice",
       params: API_EserviceIdPathParam,
       response: {
-        200: API_Eservice.meta({
-          description: "E-service retrieved successfully",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Eservice.meta({
+            description: "E-service retrieved successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

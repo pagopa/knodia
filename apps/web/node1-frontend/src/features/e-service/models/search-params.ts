@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import { z } from "zod";
 
 export const productionEserviceSearchDefaultValues = {
@@ -68,5 +69,5 @@ export type ConsumptionEserviceSearchParams = z.infer<
 >;
 
 export const eserviceDetailSearchSchema = z.object({
-  knodeId: z.string(),
+  knodeId: KnodeId,
 });

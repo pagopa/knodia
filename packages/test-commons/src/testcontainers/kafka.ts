@@ -8,6 +8,7 @@ import { KafkaJS } from "@confluentinc/kafka-javascript";
 import { generateId } from "@knodia/common-models/ids";
 import { initKafka, runConsumer } from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
+import { Pool } from "pg";
 
 import { createTestLogger } from "../utils/logger.ts";
 
@@ -15,7 +16,6 @@ const { logLevel } = KafkaJS;
 
 const TEST_KAFKA_PORT = 9093;
 const TEST_KAFKA_IMAGE = "confluentinc/cp-kafka:8.1.1";
-const AWS_REGION = "eu-south-1";
 
 const { logger } = createTestLogger();
 
@@ -49,10 +49,9 @@ export async function setupKafkaTestProducer(broker: string) {
   const topicName = `test_kafka_topic_worker_${randomId}`;
 
   const kafkaCommonConfig: Omit<KafkaConfig, "kafkaClientId"> = {
-    awsRegion: AWS_REGION,
     kafkaBrokers: broker,
-    kafkaDisableAwsIamAuth: true,
     kafkaLogLevel: logLevel.INFO,
+    mskAuth: undefined,
   };
   const kafka = await initKafka(
     {
@@ -102,6 +101,8 @@ export async function runTestConsumer(
       },
       kafkaConfig,
       logger,
+      // Dummy pool, not used in tests. The real Pool instance is closed in the test files' afterAll hooks.
+      new Pool({ connectionString: "" }),
     );
   });
 }

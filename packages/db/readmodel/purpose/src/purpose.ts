@@ -26,7 +26,7 @@ export const readmodelPurpose = purposeSchema.table(
     dailyCalls: integer("daily_calls").notNull(),
     description: jsonb().notNull(),
     eserviceId: uuid("eservice_id").notNull(),
-    formAnswersJson: jsonb("form_answers").notNull(),
+    formAnswersJson: jsonb("form_answers_json").notNull(),
     id: uuid().primaryKey().notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: jsonb().notNull(),
@@ -42,4 +42,8 @@ export const readmodelPurpose = purposeSchema.table(
 );
 
 export type NewReadmodelPurpose = typeof readmodelPurpose.$inferInsert;
+
+export interface PurposeItemsSQL {
+  purposeSQL: PurposeSQL;
+}
 export type PurposeSQL = typeof readmodelPurpose.$inferSelect;
