@@ -13,6 +13,9 @@ export default defineConfig({
   },
   dialect: "postgresql",
   out: "./generated",
-  schemaFilter: [remoteResourceDbConfig.remoteResourceDbAgreementSchema],
+  schemaFilter: [
+    remoteResourceDbConfig.remoteResourceDbAgreementSchema,
+    remoteResourceDbConfig.remoteResourceDbPurposeSchema,
+  ],
   tablesFilter: ["!flyway_schema_history"],
 });

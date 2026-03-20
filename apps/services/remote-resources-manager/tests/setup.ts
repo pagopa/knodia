@@ -1,5 +1,8 @@
 import { organizationWriterServiceBuilder } from "@knodia/db-readmodel-organization/writer";
-import { remoteResourceAgreement } from "@knodia/db-remote-resource";
+import {
+  remoteResourceAgreement,
+  remoteResourcePurpose,
+} from "@knodia/db-remote-resource";
 import {
   type RemoteResourceDbService,
   remoteResourceDbServiceBuilder,
@@ -55,7 +58,11 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await resetTestDatabase(remoteResourceDb, remoteResourceAgreement);
+  await resetTestDatabase(
+    remoteResourceDb,
+    remoteResourceAgreement,
+    remoteResourcePurpose,
+  );
 });
 
 afterAll(async () => {

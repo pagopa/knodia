@@ -481,6 +481,7 @@ services:
       REMOTE_RESOURCE_DB_NAME: orion_remote_resource
       REMOTE_RESOURCE_DB_USE_SSL: "false"
       REMOTE_RESOURCE_DB_AGREEMENT_SCHEMA: local_orion_agreement
+      REMOTE_RESOURCE_DB_PURPOSE_SCHEMA: local_orion_purpose
     depends_on:
       k2k-gateway-lynx:
         condition: service_started
@@ -967,6 +968,7 @@ services:
       REMOTE_RESOURCE_DB_NAME: lynx_remote_resource
       REMOTE_RESOURCE_DB_USE_SSL: "false"
       REMOTE_RESOURCE_DB_AGREEMENT_SCHEMA: local_lynx_agreement
+      REMOTE_RESOURCE_DB_PURPOSE_SCHEMA: local_lynx_purpose
     depends_on:
       k2k-gateway-orion:
         condition: service_started
