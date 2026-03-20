@@ -53,7 +53,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const latestVersionSubquery = (
     tx: NodePgDatabase,
     eserviceIdFilter: EserviceId | typeof readmodelEservice.id,
-    statesFilter?: EserviceVersionState[],
   ) =>
     tx
       .select({
@@ -62,17 +61,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         versionNumber: readmodelEserviceVersion.versionNumber,
       })
       .from(readmodelEserviceVersion)
-      .where(
-        and(
-          eq(readmodelEserviceVersion.eserviceId, eserviceIdFilter),
-          statesFilter && statesFilter.length > 0
-            ? inArray(readmodelEserviceVersion.state, statesFilter)
-            : undefined,
-        ),
-      )
+      .where(eq(readmodelEserviceVersion.eserviceId, eserviceIdFilter))
       .orderBy(desc(readmodelEserviceVersion.versionNumber))
       .limit(1)
-      .as("latestEserviceVersion");
+      .as("latestVersion");
 
   return {
     async getCatalogEservices(
@@ -91,10 +83,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           table: readmodelEservice,
         });
 
-        const latestEserviceVersion = latestVersionSubquery(
-          tx,
-          readmodelEservice.id,
-        );
+        const latestVersion = latestVersionSubquery(tx, readmodelEservice.id);
 
         const createFilterQuery = () =>
           tx
@@ -105,8 +94,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
               eq(readmodelEservice.id, readmodelEserviceCategory.eserviceId),
             )
             .innerJoinLateral(
-              latestEserviceVersion,
-              inArray(latestEserviceVersion.state, [
+              latestVersion,
+              inArray(latestVersion.state, [
                 EserviceVersionState.enum.Active,
                 EserviceVersionState.enum.Suspended,
               ]),
