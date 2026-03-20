@@ -1289,6 +1289,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/organization-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
