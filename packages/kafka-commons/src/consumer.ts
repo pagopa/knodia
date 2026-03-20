@@ -2,10 +2,10 @@ import type {
   Consumer,
   EachMessagePayload,
 } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
+import type { Pool } from "pg";
 import type { Logger } from "pino";
 
 import { kafkaMessageProcessError } from "@knodia/common-models/errors";
-import { Pool } from "pg";
 
 import type { KafkaConsumerConfig } from "./config/config.ts";
 
