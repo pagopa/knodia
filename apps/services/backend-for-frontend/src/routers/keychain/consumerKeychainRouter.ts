@@ -15,6 +15,10 @@ import {
   keychainProcessApi,
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
@@ -30,19 +34,15 @@ import {
   toAPI_KeychainDetails,
 } from "../../models/keychain/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
-import {
-  isPolledVersionAtLeastResponseVersion,
-  pollResourceUntilDeletion,
-  pollResourceWithMetadata,
-} from "../../utils/polling.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
+  pollingService: PollingService;
 }
 
 export const consumerKeychainRouter: FastifyPluginAsyncZod<
   ConsumerKeychainRouterOptions
-> = async (fastify, { keychainProcessClient }) => {
+> = async (fastify, { keychainProcessClient, pollingService }) => {
   const retrieveConsumerKeychainById = async (
     consumerKeychainId: string,
     headers: KnodiaServiceHeaders,
@@ -57,7 +57,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     response: AxiosResponse<API_CreatedResource>,
     headers: KnodiaServiceHeaders,
   ) =>
-    pollResourceWithMetadata(() =>
+    pollingService.pollResourceWithMetadata(() =>
       retrieveConsumerKeychainById(response.data.id, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
@@ -67,9 +67,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     consumerKeychainId: ConsumerKeychainId,
     headers: KnodiaServiceHeaders,
   ) =>
-    pollResourceUntilDeletion(() =>
+    pollingService.pollResourceUntilDeletion(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
-    )({});
+    )();
 
   fastify.route({
     handler: async (req, res) => {
