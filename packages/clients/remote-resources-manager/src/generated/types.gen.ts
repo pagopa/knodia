@@ -230,13 +230,13 @@ export type EserviceDetails = {
     producer: EserviceDetailsProducer;
 };
 
-export type ConsumerEserviceVersion = {
+export type EserviceVersion = {
     id: string;
     requiredAttributes: Array<Array<Attribute>>;
     state: EserviceVersionState;
 };
 
-export type ConsumerEservice = {
+export type Eservice = {
     agreement: {
         id: string;
         state: AgreementState;
@@ -250,12 +250,12 @@ export type ConsumerEservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producer: CompactOrganization;
-    version: ConsumerEserviceVersion;
+    version: EserviceVersion;
 };
 
-export type ConsumerEservices = {
+export type Eservices = {
     pagination: Pagination;
-    results: Array<ConsumerEservice>;
+    results: Array<Eservice>;
 };
 
 export type GetStatusData = {
@@ -357,7 +357,7 @@ export type GetEserviceDetailsResponses = {
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
 
-export type GetConsumerEservicesData = {
+export type GetEservicesData = {
     body?: never;
     path?: never;
     query: {
@@ -371,10 +371,10 @@ export type GetConsumerEservicesData = {
         offset: number;
         agreementState?: AgreementState;
     };
-    url: '/consumer/eservices';
+    url: '/eservices';
 };
 
-export type GetConsumerEservicesErrors = {
+export type GetEservicesErrors = {
     /**
      * Bad Request
      */
@@ -393,16 +393,16 @@ export type GetConsumerEservicesErrors = {
     404: Problem;
 };
 
-export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
+export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
 
-export type GetConsumerEservicesResponses = {
+export type GetEservicesResponses = {
     /**
-     * Consumer E-services retrieved successfully
+     * E-services retrieved successfully
      */
-    200: ConsumerEservices;
+    200: Eservices;
 };
 
-export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof GetConsumerEservicesResponses];
+export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
 
 export type DownloadEserviceLatestVersionInterfaceData = {
     body?: never;

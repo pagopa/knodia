@@ -568,7 +568,7 @@ components:
         - name
         - producer
       additionalProperties: false
-    ConsumerEserviceVersion:
+    EserviceVersion:
       type: object
       properties:
         id:
@@ -588,7 +588,7 @@ components:
         - requiredAttributes
         - state
       additionalProperties: false
-    ConsumerEservice:
+    Eservice:
       type: object
       properties:
         agreement:
@@ -622,7 +622,7 @@ components:
         producer:
           $ref: "#/components/schemas/CompactOrganization"
         version:
-          $ref: "#/components/schemas/ConsumerEserviceVersion"
+          $ref: "#/components/schemas/EserviceVersion"
       required:
         - agreement
         - categories
@@ -633,7 +633,7 @@ components:
         - producer
         - version
       additionalProperties: false
-    ConsumerEservices:
+    Eservices:
       type: object
       properties:
         pagination:
@@ -641,7 +641,7 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/ConsumerEservice"
+            $ref: "#/components/schemas/Eservice"
       required:
         - pagination
         - results
@@ -789,13 +789,13 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer/eservices:
+  /eservices:
     get:
-      operationId: getConsumerEservices
-      summary: Get Consumer E-services
+      operationId: getEservices
+      summary: Get E-services
       tags:
         - eservice
-      description: Retrieve Consumer E-services
+      description: Retrieve E-services
       parameters:
         - schema:
             format: int32
@@ -822,13 +822,13 @@ paths:
           required: false
       responses:
         "200":
-          description: Consumer E-services retrieved successfully
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer E-services retrieved successfully
+                description: E-services retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerEservices"
+                  - $ref: "#/components/schemas/Eservices"
         "400":
           description: Bad Request
           content:

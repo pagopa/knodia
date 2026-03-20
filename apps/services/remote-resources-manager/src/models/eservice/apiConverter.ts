@@ -10,7 +10,7 @@ import { match } from "ts-pattern";
 
 import type {
   API_CatalogEserviceSearchResult,
-  API_ConsumerEservice,
+  API_Eservice,
   API_EserviceDetails,
 } from "./api.ts";
 
@@ -99,7 +99,7 @@ const toAPI_EserviceMode = (
     .with("RECEIVE_DATA", () => API_EserviceMode.enum.ReceiveData)
     .exhaustive();
 
-export const toAPI_ConsumerEservice = ({
+export const toAPI_Eservice = ({
   agreement,
   eservice,
   eserviceVersion,
@@ -109,7 +109,7 @@ export const toAPI_ConsumerEservice = ({
   eservice: k2kGatewayApi.Eservice;
   eserviceVersion: k2kGatewayApi.EserviceVersion;
   producer: k2kGatewayApi.Organization & { knodeId: API_KnodeId };
-}): API_ConsumerEservice => {
+}): API_Eservice => {
   const hasRecentlyBeenUpdated = (dateString: string): boolean => {
     const updatedAt = new Date(dateString);
     const threeDaysAgo = new Date();

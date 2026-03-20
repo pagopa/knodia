@@ -21,10 +21,10 @@ import {
 } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { API_ConsumerEservice } from "../src/models/eservice/api.ts";
+import type { API_Eservice } from "../src/models/eservice/api.ts";
 
 import { toK2KAPI_AgreementState } from "../src/models/agreement/apiConverter.ts";
-import { toAPI_ConsumerEservice } from "../src/models/eservice/apiConverter.ts";
+import { toAPI_Eservice } from "../src/models/eservice/apiConverter.ts";
 import {
   toK2KAgreement,
   toK2KEservice,
@@ -60,7 +60,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-describe("GET /consumer/eservices (getConsumerEservices)", () => {
+describe("GET /eservices (getEservices)", () => {
   const defaultQuery = {
     limit: "10",
     offset: "0",
@@ -77,7 +77,7 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
     seed: number,
   ): {
     agreement: Agreement;
-    expectedApiResult: API_ConsumerEservice;
+    expectedApiResult: API_Eservice;
     k2kAgreement: k2kGatewayApi.Agreement;
     k2kEservice: k2kGatewayApi.Eservice;
     k2kEserviceVersion: k2kGatewayApi.EserviceVersion;
@@ -97,7 +97,7 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
     const organization = getMockOrganization();
     const k2kOrganization = toK2KOrganization(organization);
 
-    const expectedApiResult = toAPI_ConsumerEservice({
+    const expectedApiResult = toAPI_Eservice({
       agreement: k2kAgreement,
       eservice: k2kEservice,
       eserviceVersion: k2kEserviceVersion,
@@ -180,7 +180,7 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
       });
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
-        .get("/consumer/eservices")
+        .get("/eservices")
         .query({
           ...defaultQuery,
           ...(agreementState ? { agreementState } : {}),
@@ -234,7 +234,7 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {
       const response = await injectAppRequest(spec)
-        .get("/consumer/eservices")
+        .get("/eservices")
         .query(defaultQuery);
       expect(response.statusCode).toBe(403);
     },
@@ -256,7 +256,7 @@ describe("GET /consumer/eservices (getConsumerEservices)", () => {
     "should return 400 if query parameters are formatted incorrectly (%o)",
     async (query) => {
       const response = await injectAppRequest(allowedTestTokens[0]!)
-        .get("/consumer/eservices")
+        .get("/eservices")
         .query(query as never);
 
       expect(response.statusCode).toBe(400);
