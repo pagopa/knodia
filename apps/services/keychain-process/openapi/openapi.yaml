@@ -188,6 +188,26 @@ components:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
       additionalProperties: false
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        username:
+          type: string
+      required:
+        - email
+        - id
+        - username
+      additionalProperties: false
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
 paths:
   /status:
     get:
@@ -523,6 +543,53 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /users/technical:
+    get:
+      operationId: getTechnicalUsers
+      tags:
+        - user
+      description: Retrieve technical users of the requesting user's organization
+      parameters:
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Technical users retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Technical users retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Users"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Keychain Process API
     url: /
@@ -533,3 +600,5 @@ tags:
     name: health
   - description: Consumer keychain routes
     name: consumerKeychain
+  - description: User routes
+    name: user

@@ -87,6 +87,14 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type User = {
+    email: string;
+    id: string;
+    username: string;
+};
+
+export type Users = Array<User>;
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -324,3 +332,42 @@ export type UpdateConsumerKeychainResponses = {
 };
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
+
+export type GetTechnicalUsersData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query?: never;
+    url: '/users/technical';
+};
+
+export type GetTechnicalUsersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
+
+export type GetTechnicalUsersResponses = {
+    /**
+     * Technical users retrieved successfully
+     */
+    200: Users;
+};
+
+export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];

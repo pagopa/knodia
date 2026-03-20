@@ -26,6 +26,7 @@
     "zocker": "catalog:"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/common-models": "workspace:*",
     "@knodia/db-event-store-commons": "workspace:*",

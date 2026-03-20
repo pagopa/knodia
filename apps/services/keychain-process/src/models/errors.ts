@@ -8,6 +8,7 @@ const { HTTP_STATUS_NOT_FOUND } = constants;
 
 const errorCodes = {
   CONSUMER_KEYCHAIN_NOT_FOUND: "0001",
+  MISSING_USER_ATTRIBUTE: "0002",
 } as const;
 
 type ErrorCodes = keyof typeof errorCodes;
