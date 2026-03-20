@@ -49,7 +49,7 @@ export const DETAILS_STEP_DEFAULTS: z.input<typeof detailsStepSchema> = {
 };
 
 export const PURPOSE_FORM_DEFAULTS: PurposeFormDraftData =
-  DETAILS_STEP_DEFAULTS as PurposeFormDraftData;
+  DETAILS_STEP_DEFAULTS;
 
 export const CREATE_PURPOSE_STEPS: StepConfig[] = [
   { label: "Details" },

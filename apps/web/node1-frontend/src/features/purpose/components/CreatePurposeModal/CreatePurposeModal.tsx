@@ -1,20 +1,20 @@
-import type { bffApi } from "@knodia/bff-client";
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { Steps } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { StepsProvider, useStepsContext } from "@/contexts/steps";
-import { useLeaveConfirmModal } from "@/features/e-service/hooks/useLeaveConfirmModal";
 import { PurposeFormProvider } from "@/features/purpose/contexts/PurposeFormProvider";
 import { CREATE_PURPOSE_STEPS } from "@/features/purpose/types/purposeCreateForm";
+import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
 import { DetailsStep } from "./steps/DetailsStep";
 
 interface Props {
-  eserviceId: string;
+  eserviceId: EserviceId;
   eserviceName: string;
-  knodeId: bffApi.KnodeId;
+  knodeId: KnodeId;
   onClose: () => void;
 }
 
@@ -53,9 +53,9 @@ function ModalContent({
   knodeId,
   onCloseRequest,
 }: {
-  eserviceId: string;
+  eserviceId: EserviceId;
   eserviceName: string;
-  knodeId: bffApi.KnodeId;
+  knodeId: KnodeId;
   onCloseRequest: () => void;
 }) {
   const { currentStepIndex, steps } = useStepsContext();

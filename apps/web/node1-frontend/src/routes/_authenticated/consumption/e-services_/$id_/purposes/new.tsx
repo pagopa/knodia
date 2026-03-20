@@ -1,16 +1,18 @@
-import { bffApi } from "@knodia/bff-client";
+import type { KnodeId } from "@knodia/common-models/ids";
+
 import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
+import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
 import { client } from "@/libs/axios";
 
-const eserviceQuery = (eserviceId: string, knodeId: string) =>
+const eserviceQuery = (eserviceId: string, knodeId: KnodeId) =>
   getConsumerEserviceDetailsOptions({
     client,
     path: { eserviceId },
-    query: { knodeId: knodeId as bffApi.KnodeId },
+    query: { knodeId },
   });
 
 export const Route = createFileRoute(
@@ -28,10 +30,11 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-  const eservice = Route.useLoaderData();
+  const bffDetail = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
   const { id } = Route.useParams();
   const navigate = useNavigate();
+  const eservice = toConsumptionEserviceDetail(bffDetail);
 
   const onClose = () =>
     navigate({
@@ -43,8 +46,8 @@ function RouteComponent() {
 
   return (
     <CreatePurposeModal
-      eserviceId={id}
-      eserviceName={eservice.name.en}
+      eserviceId={eservice.id}
+      eserviceName={eservice.name}
       knodeId={knodeId}
       onClose={onClose}
     />
