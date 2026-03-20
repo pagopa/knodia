@@ -8,7 +8,7 @@ export const config = [
   {
     rules: {
       "no-useless-rename": ["error"],
-      "object-shorthand": ["error", "always"],
+      "object-shorthand": ["error"],
     },
   },
 ];
