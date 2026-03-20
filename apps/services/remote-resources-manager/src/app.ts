@@ -26,9 +26,11 @@ import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
+import { organizationRouter } from "./routers/organizationRouter.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 import { agreementServiceBuilder } from "./services/agreementService.ts";
 import { eserviceServiceBuilder } from "./services/eserviceService.ts";
+import { organizationServiceBuilder } from "./services/organizationService.ts";
 import { purposeServiceBuilder } from "./services/purposeService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 
@@ -72,6 +74,10 @@ export function buildApp({
             description: "Routes related to Purposes",
             name: apiTags.purpose,
           },
+          {
+            description: "Routes related to Organizations",
+            name: apiTags.organization,
+          },
         ],
       },
     },
@@ -108,6 +114,9 @@ export function buildApp({
         remoteResourceDbService,
         readmodelService,
       ),
+    });
+    protectedApp.register(organizationRouter, {
+      organizationService: organizationServiceBuilder(k2kGatewayClient),
     });
   });
 
