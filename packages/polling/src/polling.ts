@@ -76,7 +76,7 @@ export function getMetadataVersionFromHeaders(
     .safeParse(headers[METADATA_VERSION_HEADER]);
 
   if (!version.success || isNaN(version.data)) {
-    throw missingHeader(METADATA_VERSION_HEADER);
+    throw missingHeader("response", METADATA_VERSION_HEADER);
   }
 
   return version.data;
