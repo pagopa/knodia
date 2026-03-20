@@ -44,7 +44,6 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
 vi.mock("@knodia/db-remote-resource/services", () => ({
   remoteResourceDbServiceBuilder: () => ({
     getAgreementById: vi.fn(),
-    getAgreementsByConsumerIdAndEserviceId: vi.fn(),
     insertAgreement: vi.fn(),
   }),
 }));

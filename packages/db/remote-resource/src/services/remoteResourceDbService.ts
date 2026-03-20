@@ -1,10 +1,5 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  AgreementId,
-  EserviceId,
-  KnodeId,
-  OrganizationId,
-} from "@knodia/common-models/ids";
+import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { and, eq } from "drizzle-orm";
@@ -34,22 +29,6 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         )
         .limit(1);
       return result ?? undefined;
-    },
-    async getAgreementsByConsumerIdAndEserviceId(
-      consumerId: OrganizationId,
-      eserviceId: ExternalId<EserviceId>,
-      knodeId: KnodeId,
-    ) {
-      return db
-        .select()
-        .from(remoteResourceAgreement)
-        .where(
-          and(
-            eq(remoteResourceAgreement.consumerId, consumerId),
-            eq(remoteResourceAgreement.eserviceId, eserviceId),
-            eq(remoteResourceAgreement.knodeId, knodeId),
-          ),
-        );
     },
     async insertAgreement(
       remoteAgreement: NewRemoteResourceAgreement,
