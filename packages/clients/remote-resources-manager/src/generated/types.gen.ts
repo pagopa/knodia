@@ -242,10 +242,6 @@ export type Eservice = {
         state: AgreementState;
     };
     categories: Array<EserviceCategory>;
-    /**
-     * Indicates whether the E-service has been updated in the last 3 days
-     */
-    hasRecentlyBeenUpdated: boolean;
     id: string;
     mode: EserviceMode;
     name: LocalizedName;

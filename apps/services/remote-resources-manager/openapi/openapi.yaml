@@ -608,9 +608,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/EserviceCategory"
-        hasRecentlyBeenUpdated:
-          description: Indicates whether the E-service has been updated in the last 3 days
-          type: boolean
         id:
           type: string
           format: uuid
@@ -626,7 +623,6 @@ components:
       required:
         - agreement
         - categories
-        - hasRecentlyBeenUpdated
         - id
         - mode
         - name
