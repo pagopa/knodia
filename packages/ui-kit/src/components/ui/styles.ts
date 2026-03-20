@@ -134,6 +134,9 @@ export const buttonStyles = tv({
     isDisabled: {
       true: "cursor-not-allowed opacity-30",
     },
+    isPending: {
+      true: "opacity-30",
+    },
   },
   defaultVariants: {
     hierarchy: "brand",

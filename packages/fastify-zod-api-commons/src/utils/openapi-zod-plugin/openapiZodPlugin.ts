@@ -9,10 +9,8 @@ import {
 } from "fastify-type-provider-zod";
 
 import { OPENAPI_VERSION } from "./constants.ts";
-import {
-  zodToJsonSchemaTransform,
-  zodToJsonSchemaTransformAndCleanObject,
-} from "./zodToJsonSchema.ts";
+import { zodToJsonSchemaTransform } from "./zodToJsonSchemaTransform.ts";
+import { zodToJsonSchemaTransformObject } from "./zodToJsonSchemaTransformObject.ts";
 
 export const docsRoutePrefix = "/docs";
 
@@ -43,7 +41,7 @@ export default fastifyPlugin<OpenapiZodPluginOptions>(
         openapi: OPENAPI_VERSION,
       },
       transform: zodToJsonSchemaTransform,
-      transformObject: zodToJsonSchemaTransformAndCleanObject,
+      transformObject: zodToJsonSchemaTransformObject,
     } satisfies fastifySwagger.FastifyDynamicSwaggerOptions);
 
     // Optionally register fastify-swagger-ui to serve the OpenAPI docs

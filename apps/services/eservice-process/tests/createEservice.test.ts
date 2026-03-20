@@ -9,6 +9,7 @@ import {
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   forbiddenTestTokens,
   TEST_ORGANIZATION_ID,
@@ -46,6 +47,8 @@ describe("POST /eservices (createEservice)", () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/eservices")
       .body(body);
+
+    expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
     expect(response.statusCode).toBe(201);
 
     const responseBody = response.json<API_Eservice>();
