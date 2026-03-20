@@ -18,6 +18,7 @@ const VALID_PURPOSE_ID = purpose.id;
 const NON_EXISTENT_PURPOSE_ID = generateId<PurposeId>();
 
 const allowedTestTokens: TestToken[] = [
+  { type: "internal" },
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
 ];

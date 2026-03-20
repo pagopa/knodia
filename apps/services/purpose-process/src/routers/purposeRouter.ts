@@ -80,6 +80,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
         {
           tokenType: "ui-session",
           userRoles: ["administrative", "technical"],
