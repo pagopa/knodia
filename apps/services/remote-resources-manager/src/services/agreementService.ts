@@ -28,10 +28,8 @@ import {
   toK2KAPI_AgreementState,
 } from "../models/agreement/apiConverter.ts";
 import { agreementNotFound } from "../models/errors.ts";
-import {
-  assertConsumerHasRequiredAttributes,
-  assertOrganizationExists,
-} from "../utils/validators.ts";
+import { retrieveOrganization } from "../utils/readmodelUtils.ts";
+import { assertConsumerHasRequiredAttributes } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -54,7 +52,7 @@ export function agreementServiceBuilder(
       );
 
       const [organization, { data: eserviceVersion }] = await Promise.all([
-        assertOrganizationExists(consumerId, readmodelService),
+        retrieveOrganization(consumerId, readmodelService),
         k2kGatewayApi.getEserviceLatestVersion({
           client: k2kGatewayClient,
           path: { eserviceId },
