@@ -1,0 +1,22 @@
+meta {
+  name: Get Organization
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/organizations/:organizationId
+  body: none
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
+}
+
+params:path {
+  organizationId: {{organizationId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
