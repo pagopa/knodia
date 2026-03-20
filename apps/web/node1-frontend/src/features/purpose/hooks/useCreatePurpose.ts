@@ -1,4 +1,4 @@
-import type { bffApi } from "@knodia/bff-client";
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { createConsumerPurposeMutation } from "@knodia/bff-client/tanstack-query";
 import { useMutation } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import type { PurposeFormDraftData } from "@/features/purpose/types/purposeCreat
 
 import { client } from "@/libs/axios";
 
-export function useCreatePurpose(eserviceId: string, knodeId: bffApi.KnodeId) {
+export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
   const navigate = useNavigate();
 
   const { isError, isPending, mutate } = useMutation({

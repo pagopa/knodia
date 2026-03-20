@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { LeaveConfirmModal } from "../components/CreateEServiceModal/LeaveConfirmModal";
+import { LeaveConfirmModal } from "@/components/LeaveConfirmModal";
 
 export const useLeaveConfirmModal = (onClose: () => void) => {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);

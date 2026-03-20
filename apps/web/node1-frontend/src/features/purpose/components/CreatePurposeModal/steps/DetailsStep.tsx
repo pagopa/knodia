@@ -1,17 +1,17 @@
-import type { bffApi } from "@knodia/bff-client";
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { Banner, NumberField, TextArea, TextField } from "@knodia/ui-kit/ui";
 
 import { ModalFooter } from "@/components/ModalFooter";
-import { StepHeader } from "@/features/e-service/components/CreateEServiceModal/components/StepHeader";
-import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
+import { StepHeader } from "@/components/StepHeader";
 import { useDetailsStepForm } from "@/features/purpose/contexts/usePurposeFormContext";
 import { useCreatePurpose } from "@/features/purpose/hooks/useCreatePurpose";
+import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 interface Props {
-  eserviceId: string;
+  eserviceId: EserviceId;
   eserviceName: string;
-  knodeId: bffApi.KnodeId;
+  knodeId: KnodeId;
   onCancel: () => void;
 }
 

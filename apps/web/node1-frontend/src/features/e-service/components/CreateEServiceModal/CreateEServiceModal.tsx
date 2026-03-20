@@ -3,9 +3,9 @@ import { match } from "ts-pattern";
 
 import { StepsProvider, useStepsContext } from "@/contexts/steps";
 import { EServiceFormProvider } from "@/features/e-service/contexts/EServiceFormProvider";
+import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
-import { useLeaveConfirmModal } from "../../hooks/useLeaveConfirmModal";
 import { CREATE_FORM_STEPS } from "../../types/eserviceCreateForm";
 import { AttributesStep } from "./steps/AttributesStep";
 import { DocsStep } from "./steps/DocsStep";
