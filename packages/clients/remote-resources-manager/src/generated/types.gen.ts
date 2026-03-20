@@ -232,6 +232,7 @@ export type Eservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producer: CompactOrganization;
+    updatedAt: string;
     version: EserviceVersion;
 };
 

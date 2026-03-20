@@ -112,18 +112,29 @@ export const toAPI_ConsumerEserviceDetails = (
 });
 
 export const toAPI_ConsumerEservice = (
-  consumerEservice: remoteResourcesManagerApi.ConsumerEservice,
-): API_ConsumerEservice => ({
-  agreement: consumerEservice.agreement,
-  categories: consumerEservice.categories,
-  hasRecentlyBeenUpdated: consumerEservice.hasRecentlyBeenUpdated,
-  id: consumerEservice.id,
-  mode: consumerEservice.mode,
-  name: consumerEservice.name,
-  producer: consumerEservice.producer,
-  requiredAttributes: consumerEservice.version.requiredAttributes,
-  state: consumerEservice.version.state,
-});
+  eservice: remoteResourcesManagerApi.Eservice,
+): API_ConsumerEservice => {
+  // TODO https://pagopa.atlassian.net/browse/KN-246
+  const hasRecentlyBeenUpdated = (dateString: string): boolean => {
+    const updatedAt = new Date(dateString);
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+    return updatedAt >= threeDaysAgo;
+  };
+
+  return {
+    agreement: eservice.agreement,
+    categories: eservice.categories,
+    hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice.updatedAt),
+    id: eservice.id,
+    mode: eservice.mode,
+    name: eservice.name,
+    producer: eservice.producer,
+    requiredAttributes: eservice.version.requiredAttributes,
+    state: eservice.version.state,
+  };
+};
 
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,

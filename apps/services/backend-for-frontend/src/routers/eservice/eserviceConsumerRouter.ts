@@ -185,7 +185,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         `Getting Consumer E-services with query parameters`,
       );
 
-      const { data } = await remoteResourcesManagerApi.getConsumerEservices({
+      const { data } = await remoteResourcesManagerApi.getEservices({
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: req.query,
