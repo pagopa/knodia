@@ -17,12 +17,13 @@ export function assertConsumerHasRequiredAttributes(
   consumerId: OrganizationId,
   eserviceId: ExternalId<EserviceId>,
 ): void {
-  const allRequired = requiredAttributes.flat();
-  const hasAll = allRequired.every((requiredAtt) =>
-    consumerAttributes.some(
-      (consumerAtt) =>
-        consumerAtt.code === requiredAtt.code &&
-        consumerAtt.scheme === requiredAtt.scheme,
+  const hasAll = requiredAttributes.every((group) =>
+    group.some((requiredAtt) =>
+      consumerAttributes.some(
+        (consumerAtt) =>
+          consumerAtt.code === requiredAtt.code &&
+          consumerAtt.scheme === requiredAtt.scheme,
+      ),
     ),
   );
   if (!hasAll) {
