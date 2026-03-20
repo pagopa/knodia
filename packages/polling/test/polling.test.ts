@@ -209,7 +209,7 @@ describe("getMetadataVersionFromHeaders", () => {
     (version) => {
       expect(() =>
         getMetadataVersionFromHeaders(makeResponse(version).headers),
-      ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+      ).toThrowError(missingHeader("response", METADATA_VERSION_HEADER));
     },
   );
 });
@@ -236,7 +236,7 @@ describe("isPolledVersionAtLeastResponseVersion", () => {
   it("Should throw when the initial response is missing the metadata version header", () => {
     expect(() =>
       isPolledVersionAtLeastResponseVersion(makeResponse()),
-    ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+    ).toThrowError(missingHeader("response", METADATA_VERSION_HEADER));
   });
 });
 
@@ -262,6 +262,6 @@ describe("isPolledVersionAtLeastTargetVersion", () => {
   it("Should throw when the polled response is missing the metadata version header", () => {
     expect(() =>
       isPolledVersionAtLeastTargetVersion(4)(makeResponse()),
-    ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+    ).toThrowError(missingHeader("response", METADATA_VERSION_HEADER));
   });
 });

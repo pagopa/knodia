@@ -90,7 +90,9 @@ export const requireCorrelationIdHeaderPlugin =
       fastify.addHook("onRequest", async (req, res) => {
         const headerValue = req.headers[CORRELATION_ID_HEADER];
         if (!headerValue) {
-          const problem = makeApiProblem(missingHeader(CORRELATION_ID_HEADER));
+          const problem = makeApiProblem(
+            missingHeader("request", CORRELATION_ID_HEADER),
+          );
           return res.status(problem.status).send(problem);
         }
 
