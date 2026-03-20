@@ -12,7 +12,7 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { AgreementService } from "../services/agreementService.ts";
 
 import {
-  API_AgreementDetails,
+  API_Agreement,
   API_Agreements,
   API_AgreementSeed,
   API_CreatedAgreementResource,
@@ -107,7 +107,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       params: API_AgreementIdPathParam,
       querystring: API_GetAgreementQueryParams,
       response: {
-        200: API_AgreementDetails.meta({
+        200: API_Agreement.meta({
           description: "Agreement retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

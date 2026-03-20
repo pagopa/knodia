@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
   Agreement,
@@ -7,6 +8,7 @@ import {
 } from "@knodia/agreement-models";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import { EserviceVersionState } from "@knodia/eservice-models";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
@@ -161,18 +163,53 @@ describe("POST /agreements (createAgreement)", async () => {
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 409 if the e-service version latest version is not active", async () => {
-    const eservice = getMockEservice({
-      latestVersionState: "Suspended",
-    });
+  const allowedEserviceVersionStates: EserviceVersionState[] = [
+    "Active",
+    "Suspended",
+  ];
+  const notAllowedEserviceVersionStates = EserviceVersionState.options.filter(
+    (s) => !allowedEserviceVersionStates.includes(s),
+  );
 
-    await eserviceWriterService.upsertEservice(eservice, 1);
+  it.each(allowedEserviceVersionStates)(
+    "should succeed if the e-service version is %s",
+    async (state) => {
+      const testEservice = getMockEservice({
+        latestVersionState: state,
+        seed: allowedEserviceVersionStates.indexOf(state) + 10,
+      });
+      await eserviceWriterService.upsertEservice(testEservice, 1);
 
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/agreements")
-      .body(body);
-    expect(response.statusCode).toBe(409);
-  });
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/agreements")
+        .body({
+          ...body,
+          eserviceId: testEservice.id,
+          eserviceVersionId: testEservice.versions[0]!.id,
+        } satisfies API_AgreementSeed);
+      expect(response.statusCode).toBe(201);
+    },
+  );
+
+  it.each(notAllowedEserviceVersionStates)(
+    "should return 409 if the e-service version is %s",
+    async (state) => {
+      const testEservice = getMockEservice({
+        latestVersionState: state,
+        seed: notAllowedEserviceVersionStates.indexOf(state) + 30,
+      });
+      await eserviceWriterService.upsertEservice(testEservice, 1);
+
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .post("/agreements")
+        .body({
+          ...body,
+          eserviceId: testEservice.id,
+          eserviceVersionId: testEservice.versions[0]!.id,
+        } satisfies API_AgreementSeed);
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it.each(agreementCreationConflictingStates)(
     "should return 409 if an agreement in state %s already exists",
