@@ -428,7 +428,7 @@ export const API_ConsumerEservice = z
     categories: z.array(API_EserviceCategory),
     hasRecentlyBeenUpdated: z.boolean().meta({
       description:
-        "Indicates whether the E-service has been updated in the last 3 days",
+        "Indicates whether the E-service has been updated in the last days",
     }),
     id: z.uuid(),
     mode: API_EserviceMode,

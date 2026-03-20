@@ -113,14 +113,15 @@ export const toAPI_ConsumerEserviceDetails = (
 
 export const toAPI_ConsumerEservice = (
   eservice: remoteResourcesManagerApi.Eservice,
+  recentEserviceUpdateDays: number,
 ): API_ConsumerEservice => {
   // TODO https://pagopa.atlassian.net/browse/KN-246
   const hasRecentlyBeenUpdated = (dateString: string): boolean => {
     const updatedAt = new Date(dateString);
-    const threeDaysAgo = new Date();
-    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const xDaysAgo = new Date();
+    xDaysAgo.setDate(xDaysAgo.getDate() - recentEserviceUpdateDays);
 
-    return updatedAt >= threeDaysAgo;
+    return updatedAt >= xDaysAgo;
   };
 
   return {

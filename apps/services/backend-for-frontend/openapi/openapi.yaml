@@ -816,7 +816,7 @@ components:
           items:
             $ref: "#/components/schemas/EserviceCategory"
         hasRecentlyBeenUpdated:
-          description: Indicates whether the E-service has been updated in the last 3 days
+          description: Indicates whether the E-service has been updated in the last days
           type: boolean
         id:
           type: string

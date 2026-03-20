@@ -11,6 +11,8 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerCatalogEserviceSearchResults,
@@ -29,12 +31,13 @@ import {
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceConsumerRouterOptions {
+  config: BffProcessConfig;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   EserviceConsumerRouterOptions
-> = async (fastify, { remoteResourcesManagerClient }) => {
+> = async (fastify, { config, remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -192,7 +195,9 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
-        items: data.results.map(toAPI_ConsumerEservice),
+        items: data.results.map((eservice) =>
+          toAPI_ConsumerEservice(eservice, config.recentEserviceUpdateDays),
+        ),
         pagination: data.pagination,
       });
     },
