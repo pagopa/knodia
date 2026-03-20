@@ -22,7 +22,6 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Suspended,
 ];
 
-
 export const assertEserviceVersionAllowsAgreementCreation = async (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
