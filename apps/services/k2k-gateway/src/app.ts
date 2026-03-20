@@ -7,11 +7,11 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
+import { pollingServiceBuilder } from "@knodia/polling";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
-import type { K2KGatewayConfig } from "./config/config.ts";
-
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
+import { config, type K2KGatewayConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
@@ -53,6 +53,8 @@ function buildApp({
   });
   const fileManager = initFileManager();
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
+  const pollingService = pollingServiceBuilder(config);
+
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -102,6 +104,7 @@ function buildApp({
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
     callerKnodeId,
+    pollingService,
     tokenProvider,
   });
   app.register(organizationRouter, {
