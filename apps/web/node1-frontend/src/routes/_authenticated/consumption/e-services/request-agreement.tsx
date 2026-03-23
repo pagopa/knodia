@@ -15,7 +15,7 @@ const eserviceQuery = (eserviceId: string, knodeId: bffApi.KnodeId) =>
   });
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services/request-agreement/",
+  "/_authenticated/consumption/e-services/request-agreement",
 )({
   component: RouteComponent,
   loaderDeps: ({ search: { eserviceId, knodeId } }) => ({
