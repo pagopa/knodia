@@ -25,9 +25,9 @@ export function toAPI_Agreement(
 }
 
 export function toAPI_AgreementState(
-  agreementState: k2kGatewayApi.AgreementState,
+  state: k2kGatewayApi.AgreementState,
 ): API_AgreementState {
-  return match(agreementState)
+  return match(state)
     .with("ACTIVE", () => "Active" as const)
     .with("SUSPENDED", () => "Suspended" as const)
     .with("ARCHIVED", () => "Archived" as const)
