@@ -8,6 +8,8 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   KnodiaServiceHeaders,
+  MetadataVersionHeader,
+  setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 
@@ -30,7 +32,10 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      const purpose = await purposeService.createPurpose(
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.createPurpose(
         {
           consumer: {
             id: unsafeBrandExternalId(req.body.consumer.id),
@@ -45,6 +50,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         ctx,
       );
 
+      setMetadataVersionHeader(res, version);
       res.status(201).send(toAPI_Purpose(purpose));
     },
     method: "POST",
@@ -54,9 +60,12 @@ export const purposeRouter: FastifyPluginAsyncZod<
       headers: KnodiaServiceHeaders,
       operationId: "createPurpose",
       response: {
-        201: API_Purpose.meta({
-          description: "Purpose created successfully",
-        }),
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Purpose created successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
@@ -71,17 +80,19 @@ export const purposeRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
         {
           tokenType: "ui-session",
           userRoles: ["administrative", "technical"],
         },
       ]);
 
-      const purpose = await purposeService.getPurpose(
-        req.params.purposeId,
-        ctx,
-      );
+      const {
+        data: purpose,
+        metadata: { version },
+      } = await purposeService.getPurpose(req.params.purposeId, ctx);
 
+      setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_Purpose(purpose));
     },
     method: "GET",
@@ -91,9 +102,12 @@ export const purposeRouter: FastifyPluginAsyncZod<
       operationId: "getPurpose",
       params: API_PurposeIdPathParam,
       response: {
-        200: API_Purpose.meta({
-          description: "Purpose retrieved successfully",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Purpose.meta({
+            description: "Purpose retrieved successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

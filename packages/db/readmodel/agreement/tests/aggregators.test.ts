@@ -48,7 +48,7 @@ describe("Agreement Aggregators", () => {
       },
     };
     const agreement2: WithMetadata<Agreement> = {
-      data: getMockAgreement(1),
+      data: getMockAgreement({ seed: 1 }),
       metadata: {
         version: 1,
       },

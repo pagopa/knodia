@@ -50,6 +50,9 @@ export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
   consumerId: API_OrganizationId.optional().meta({
     description: "Filter by Consumer ID",
   }),
+  eserviceId: API_EserviceId.optional().meta({
+    description: "Filter by E-service ID",
+  }),
   state: API_AgreementState.optional().meta({
     description: "Filter by Agreement State",
   }),

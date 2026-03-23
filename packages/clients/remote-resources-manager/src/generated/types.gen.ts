@@ -130,6 +130,15 @@ export type EserviceCategory = {
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
 
+/**
+ * Organization with only id, knodeId, and name
+ */
+export type CompactOrganization = {
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
+
 export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
     knodeId: KnodeId;
@@ -169,7 +178,7 @@ export type CatalogEserviceSearchResults = {
  */
 export type EserviceId = string;
 
-export type EserviceDetailsLatestVersion = {
+export type EserviceVersionDetails = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
@@ -194,17 +203,48 @@ export type EserviceDetailsProducer = {
     notes: string;
 };
 
+export type EserviceAgreementDetail = {
+    id: string;
+    state: AgreementState;
+};
+
 export type EserviceDetails = {
+    agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
     interfaceDocument: EserviceDetailsInterfaceDocument;
     isConsumerOperatorIdentificationRequired: boolean;
     isSignalHubEnabled: boolean;
-    latestVersion: EserviceDetailsLatestVersion;
+    latestVersion: EserviceVersionDetails;
     mode: EserviceMode;
     name: LocalizedName;
     producer: EserviceDetailsProducer;
+};
+
+export type EserviceVersion = {
+    id: string;
+    requiredAttributes: Array<Array<Attribute>>;
+    state: EserviceVersionState;
+};
+
+export type Eservice = {
+    agreement: {
+        id: string;
+        state: AgreementState;
+    };
+    categories: Array<EserviceCategory>;
+    id: string;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producer: CompactOrganization;
+    updatedAt: string;
+    version: EserviceVersion;
+};
+
+export type Eservices = {
+    pagination: Pagination;
+    results: Array<Eservice>;
 };
 
 export type Organization = {
@@ -311,6 +351,53 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type GetEservicesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        agreementState?: AgreementState;
+    };
+    url: '/eservices';
+};
+
+export type GetEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
+
+export type GetEservicesResponses = {
+    /**
+     * E-services retrieved successfully
+     */
+    200: Eservices;
+};
+
+export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
 
 export type DownloadEserviceLatestVersionInterfaceData = {
     body?: never;
