@@ -44,10 +44,9 @@ export function toConsumptionEserviceDetail(
       durationInMinutes: Math.floor(detail.accessToken.duration / 60),
       type: detail.accessToken.type,
     },
+    agreement: detail.agreement,
     categories: detail.categories,
     description: detail.description.en,
-    // TODO(KN-287): fetch agreement state from BFF (needs BFF to call RRM for active agreements)
-    hasActiveAgreement: hasRequiredAttributes,
     hasRequiredAttributes,
     id: unsafeBrandId(detail.id),
     identificationRequired: detail.identificationRequired,
