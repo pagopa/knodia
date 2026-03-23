@@ -15,9 +15,11 @@ import {
   API_CatalogEserviceSearchResults,
   API_Eservice,
   API_EserviceIdPathParam,
+  API_Eservices,
   API_EserviceVersion,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
+  API_GetEservicesQueryParams,
 } from "../models/eservice/api.ts";
 import {
   toAPI_CatalogEserviceSearchResult,
@@ -234,5 +236,41 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.eservice],
     },
     url: "/eservices/:eserviceId/versions/latest/interface",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info({ requestQuery: req.query }, "Getting E-services with query");
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await eserviceProcessApi.getEservices({
+        client: eserviceProcessClient,
+        headers,
+        query: req.query,
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.items.map(toAPI_Eservice),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of E-services",
+      operationId: "getEservices",
+      querystring: API_GetEservicesQueryParams,
+      response: {
+        200: API_Eservices.meta({
+          description: "E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices",
   });
 };
