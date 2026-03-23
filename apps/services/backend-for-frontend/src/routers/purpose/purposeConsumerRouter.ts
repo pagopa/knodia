@@ -34,14 +34,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       );
 
       const { data } = await remoteResourcesManagerApi.createPurpose({
-        body: {
-          dailyCalls: req.body.dailyCalls,
-          description: req.body.description,
-          eserviceId: req.body.eserviceId,
-          formAnswersJson: req.body.formAnswersJson,
-          knodeId: req.body.knodeId,
-          name: req.body.name,
-        },
+        body: req.body,
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
       });
@@ -60,7 +53,10 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
+      summary: "Create a consumer purpose",
       tags: [apiTags.purpose],
     },
     url: "/consumer/purposes",
