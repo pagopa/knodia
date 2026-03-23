@@ -1,19 +1,9 @@
-import type { KnodeId } from "@knodia/common-models/ids";
-
-import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
+import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
-import { client } from "@/libs/axios";
-
-const eserviceQuery = (eserviceId: string, knodeId: KnodeId) =>
-  getConsumerEserviceDetailsOptions({
-    client,
-    path: { eserviceId },
-    query: { knodeId },
-  });
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/$id_/purposes/new",
@@ -25,7 +15,10 @@ export const Route = createFileRoute(
     context: { queryClient },
     deps: { knodeId },
     params: { id },
-  }) => await queryClient.ensureQueryData(eserviceQuery(id, knodeId)),
+  }) =>
+    await queryClient.ensureQueryData(
+      consumerEserviceDetailsQuery(id, knodeId),
+    ),
   validateSearch: eserviceDetailSearchSchema,
 });
 
