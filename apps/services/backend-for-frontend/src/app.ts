@@ -9,6 +9,7 @@ import {
   bearerAuthSecurityScheme,
 } from "@knodia/fastify-zod-api-commons/security";
 import { initFileManager } from "@knodia/file-manager";
+import { pollingServiceBuilder } from "@knodia/polling";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
@@ -39,6 +40,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
+  const pollingService = pollingServiceBuilder(config);
   const authService = authServiceBuilder(tokenGenerator);
 
   const app = createFastifyApp({
@@ -93,9 +95,11 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     protectedApp.register(eserviceProducerRouter, {
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
+      pollingService,
     });
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
+      pollingService,
     });
     protectedApp.register(eserviceConsumerRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,

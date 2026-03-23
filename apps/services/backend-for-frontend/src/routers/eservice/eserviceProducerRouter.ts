@@ -18,6 +18,10 @@ import {
   API_Problem,
   KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 
 import { config } from "../../config/config.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -33,21 +37,18 @@ import {
 } from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
-import {
-  isPolledVersionAtLeastResponseVersion,
-  pollResourceWithMetadata,
-} from "../../utils/polling.ts";
 
 interface EserviceProducerRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
+  pollingService: PollingService;
 }
 
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceProducerRouter: FastifyPluginAsyncZod<
   EserviceProducerRouterOptions
   // eslint-disable-next-line max-lines-per-function
-> = async (fastify, { eserviceProcessClient, fileManager }) => {
+> = async (fastify, { eserviceProcessClient, fileManager, pollingService }) => {
   const retrieveEservice = async (
     eserviceId: string,
     headers: KnodiaServiceHeaders,
@@ -62,11 +63,11 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     response: AxiosResponse<API_CreatedResource>,
     headers: KnodiaServiceHeaders,
   ) =>
-    pollResourceWithMetadata(() => retrieveEservice(response.data.id, headers))(
-      {
-        condition: isPolledVersionAtLeastResponseVersion(response),
-      },
-    );
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveEservice(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
 
   fastify.route({
     handler: async (req, res) => {
