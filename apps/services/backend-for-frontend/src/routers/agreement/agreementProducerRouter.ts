@@ -18,6 +18,7 @@ import {
   API_Problem,
   genericError,
 } from "@knodia/fastify-zod-api-commons/models";
+import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,

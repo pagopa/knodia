@@ -1,0 +1,39 @@
+meta {
+  name: Create Purpose
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  ~Authorization:
+}
+
+body:json {
+  {
+    "consumerId": "{{organizationId}}",
+    "eserviceId": "{{eserviceId}}",
+    "dailyCalls": 1000,
+    "name": {
+      "en": "Test Purpose"
+    },
+    "description": {
+      "en": "A test purpose for accessing the e-service"
+    },
+    "formAnswersJson": {
+      "checked": true,
+      "count": 42,
+      "nested": { "deep": "value" },
+      "options": ["a", "b", "c"],
+      "question1": "answer1"
+    }
+  }
+}
+
+vars:post-response {
+  purposeId: res.body.id
+}

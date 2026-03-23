@@ -5,7 +5,7 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 
-type KnodeEntityMap<TEntity> = Map<KnodeId, Map<string, TEntity>>;
+type KnodeEntityMap<TEntity> = Map<KnodeId, Map<ExternalId<IDS>, TEntity>>;
 
 export async function getExternalEntitiesMap<
   TItem,
@@ -23,7 +23,7 @@ export async function getExternalEntitiesMap<
   getEntityId: (item: TItem) => string;
   getKnodeId: ((item: TItem) => KnodeId) | KnodeId;
   items: TItem[];
-}): Promise<Map<KnodeId, Map<string, TEntity>>> {
+}): Promise<Map<KnodeId, Map<ExternalId<IDS>, TEntity>>> {
   const idsByKnode = new Map<KnodeId, Set<ExternalId<IDS>>>();
   for (const item of items) {
     const entityId = unsafeBrandExternalId<IDS>(getEntityId(item));

@@ -26,6 +26,7 @@ import {
 } from "../utils/readmodelUtils.ts";
 import {
   assertEserviceVersionAllowsAgreementCreation,
+  assertEserviceVersionIsLatest,
   assertNoConflictingAgreementsExist,
 } from "../utils/validators.ts";
 
@@ -62,11 +63,9 @@ export function agreementServiceBuilder(
       });
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
-      await assertEserviceVersionAllowsAgreementCreation(
-        eservice,
-        eserviceVersionId,
-        readmodelService,
-      );
+
+      assertEserviceVersionAllowsAgreementCreation(eservice, eserviceVersionId);
+      assertEserviceVersionIsLatest(eservice, eserviceVersionId);
 
       // TODO: validate attributes
 

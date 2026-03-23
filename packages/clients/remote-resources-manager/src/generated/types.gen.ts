@@ -203,7 +203,13 @@ export type EserviceDetailsProducer = {
     notes: string;
 };
 
+export type EserviceAgreementDetail = {
+    id: string;
+    state: AgreementState;
+};
+
 export type EserviceDetails = {
+    agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
@@ -232,7 +238,6 @@ export type Eservice = {
     mode: EserviceMode;
     name: LocalizedName;
     producer: CompactOrganization;
-    updatedAt: string;
     version: EserviceVersion;
 };
 
