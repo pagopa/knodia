@@ -8,7 +8,11 @@ import type {
 } from "@knodia/common-models/ids";
 
 import { AgreementState } from "@knodia/agreement-models";
-import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
+import {
+  type Eservice,
+  type EserviceVersion,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
@@ -31,7 +35,7 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
 export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
-) => {
+): EserviceVersion => {
   const eserviceVersion = retrieveEserviceVersionFromEservice(
     eservice,
     eserviceVersionId,
