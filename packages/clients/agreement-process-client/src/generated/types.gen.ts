@@ -63,6 +63,10 @@ export type OrganizationId = string;
 
 export type AgreementSeed = {
     consumer: AgreementConsumer;
+    /**
+     * Consumer Organization Attributes
+     */
+    consumerAttributes: Array<Attribute>;
     eserviceId: string;
     eserviceVersionId: string;
 };

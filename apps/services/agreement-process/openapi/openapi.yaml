@@ -140,6 +140,11 @@ components:
       properties:
         consumer:
           $ref: "#/components/schemas/AgreementConsumer"
+        consumerAttributes:
+          description: Consumer Organization Attributes
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
         eserviceId:
           type: string
           format: uuid
@@ -150,6 +155,7 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - consumer
+        - consumerAttributes
         - eserviceId
         - eserviceVersionId
       additionalProperties: false

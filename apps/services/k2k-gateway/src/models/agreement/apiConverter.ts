@@ -35,6 +35,7 @@ export function toProcessAPI_AgreementSeed(
       agreementSeed.consumerId,
       callerKnodeId,
     ),
+    consumerAttributes: agreementSeed.consumerAttributes,
     eserviceId: agreementSeed.eserviceId,
     eserviceVersionId: agreementSeed.eserviceVersionId,
   };

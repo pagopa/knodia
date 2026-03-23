@@ -480,6 +480,11 @@ components:
       description: Seed data to create a new Agreement
       type: object
       properties:
+        consumerAttributes:
+          description: Consumer Organization Attributes
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
         consumerId:
           $ref: "#/components/schemas/OrganizationId"
         eserviceId:
@@ -487,6 +492,7 @@ components:
         eserviceVersionId:
           $ref: "#/components/schemas/EserviceVersionId"
       required:
+        - consumerAttributes
         - consumerId
         - eserviceId
         - eserviceVersionId
