@@ -1,9 +1,5 @@
 import type { EserviceVersionId } from "@knodia/common-models/ids";
-import type {
-  Eservice,
-  EserviceVersion,
-  EserviceVersionState,
-} from "@knodia/eservice-models";
+import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
 
 import { eserviceVersionNotFound } from "../models/errors.ts";
 
@@ -22,18 +18,12 @@ export const retrieveEserviceVersionFromEservice = (
   return eserviceVersion;
 };
 
-export const retrieveEserviceLatestVersionInAllowedStates = (
+export const retrieveEserviceLatestVersion = (
   eservice: Eservice,
-  states: EserviceVersionState[],
-) => {
+): EserviceVersion => {
   const eserviceLatestVersion = eservice.versions
-    .filter((v) => states.includes(v.state))
-    .reduce<EserviceVersion | undefined>((latest, current) => {
-      if (!latest || current.versionNumber > latest.versionNumber) {
-        return current;
-      }
-      return latest;
-    }, undefined);
+    .toSorted((a, b) => b.versionNumber - a.versionNumber)
+    .at(0);
 
   if (!eserviceLatestVersion) {
     throw eserviceVersionNotFound(eservice.id);

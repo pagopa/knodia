@@ -255,7 +255,7 @@ describe("POST /agreements (createAgreement)", async () => {
     },
   );
 
-  it("should return 409 if the e-service version is not the latest in a valid state", async () => {
+  it("should return 409 if the e-service version is not the latest", async () => {
     const eserviceVersion1: EserviceVersion = {
       ...getMockEserviceVersion(),
       versionNumber: 1,
@@ -264,14 +264,9 @@ describe("POST /agreements (createAgreement)", async () => {
       ...getMockEserviceVersion(1),
       versionNumber: 2,
     };
-    const eserviceVersion3: EserviceVersion = {
-      ...getMockEserviceVersion(2),
-      state: "Draft" as EserviceVersionState,
-      versionNumber: 3,
-    };
     const eserviceWithMultipleVersions: Eservice = {
       ...eservice,
-      versions: [eserviceVersion1, eserviceVersion2, eserviceVersion3],
+      versions: [eserviceVersion1, eserviceVersion2],
     };
 
     getEserviceByIdMock.mockResolvedValueOnce({
