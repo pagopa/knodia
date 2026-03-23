@@ -25,23 +25,26 @@ const eservicesQuery = (
     query: { agreementState, limit: ESERVICES_PAGE_LIMIT, offset },
   });
 
-export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services/",
-)({
-  component: RouteComponent,
-  loaderDeps: ({ search: { agreementState, offset } }) => ({
-    agreementState,
-    offset,
-  }),
-  // eslint-disable-next-line perfectionist/sort-objects
-  loader: ({ context: { queryClient }, deps: { agreementState, offset } }) => {
-    queryClient.prefetchQuery(eservicesQuery(offset, agreementState));
+export const Route = createFileRoute("/_authenticated/consumption/e-services/")(
+  {
+    component: RouteComponent,
+    loaderDeps: ({ search: { agreementState, offset } }) => ({
+      agreementState,
+      offset,
+    }),
+    // eslint-disable-next-line perfectionist/sort-objects
+    loader: ({
+      context: { queryClient },
+      deps: { agreementState, offset },
+    }) => {
+      queryClient.prefetchQuery(eservicesQuery(offset, agreementState));
+    },
+    search: {
+      middlewares: [stripSearchParams(consumptionEserviceListDefaultValues)],
+    },
+    validateSearch: consumptionEserviceListSchema,
   },
-  search: {
-    middlewares: [stripSearchParams(consumptionEserviceListDefaultValues)],
-  },
-  validateSearch: consumptionEserviceListSchema,
-});
+);
 
 function RouteComponent() {
   const search = Route.useSearch();
