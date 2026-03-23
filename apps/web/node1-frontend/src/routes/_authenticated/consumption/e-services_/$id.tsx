@@ -1,7 +1,6 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { bffApi } from "@knodia/bff-client";
-import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Avatar,
   Banner,
@@ -31,15 +30,9 @@ import { OrgConsumptionStatusSection } from "@/features/e-service/components/Org
 import { Section } from "@/features/e-service/components/Section";
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
+import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
-
-const eserviceQuery = (eserviceId: string, knodeId: bffApi.KnodeId) =>
-  getConsumerEserviceDetailsOptions({
-    client,
-    path: { eserviceId },
-    query: { knodeId },
-  });
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/$id",
@@ -51,7 +44,10 @@ export const Route = createFileRoute(
     context: { queryClient },
     deps: { knodeId },
     params: { id },
-  }) => await queryClient.ensureQueryData(eserviceQuery(id, knodeId)),
+  }) =>
+    await queryClient.ensureQueryData(
+      consumerEserviceDetailsQuery(id, knodeId),
+    ),
   validateSearch: eserviceDetailSearchSchema,
 });
 
