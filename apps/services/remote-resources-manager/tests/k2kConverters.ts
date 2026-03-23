@@ -51,7 +51,7 @@ export const toK2KAgreement = (
   updatedAt: agreement.updatedAt.toISOString(),
 });
 
-export const toK2KAgreementState = (
+const toK2KAgreementState = (
   state: AgreementState,
 ): k2kGatewayApi.AgreementState =>
   match(state)
