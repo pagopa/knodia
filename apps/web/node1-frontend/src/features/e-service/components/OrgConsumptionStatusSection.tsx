@@ -1,3 +1,4 @@
+import type { bffApi } from "@knodia/bff-client";
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { Banner } from "@knodia/ui-kit/ui";
@@ -16,11 +17,14 @@ import {
   DisclosureStateContext,
   Heading,
 } from "react-aria-components";
+import { match } from "ts-pattern";
 
 export function OrgConsumptionStatusSection({
+  agreement,
   eserviceId,
   knodeId,
 }: {
+  agreement: bffApi.EserviceAgreementDetail;
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }) {
@@ -34,9 +38,7 @@ export function OrgConsumptionStatusSection({
       <CollapseTrigger />
 
       <DisclosurePanel className="flex flex-col gap-6">
-        {/* TODO(KN-287): add Agreement status section here.
-            Show active state (success banner with Suspend action)
-            or requested state (informative banner with "Go to IT Knode" action) */}
+        <AgreementStatusBanner state={agreement.state} />
 
         <div className="flex flex-col gap-4">
           <h3 className="title-md-em text-primary-light-low-contrast">
@@ -71,6 +73,51 @@ export function OrgConsumptionStatusSection({
         </div>
       </DisclosurePanel>
     </Disclosure>
+  );
+}
+
+// TODO: implement the "Action needed" agreement state
+function AgreementStatusBanner({ state }: { state: bffApi.AgreementState }) {
+  const banner = match(state)
+    .with("Active", () => (
+      <Banner
+        action={{
+          label: "Suspend",
+          // TODO: implement suspend agreement action
+        }}
+        kind="success"
+      >
+        Active
+      </Banner>
+    ))
+    // TODO: this handles consumer-initiated suspension only.
+    // Producer-initiated suspension is not handled yet.
+    .with("Suspended", () => (
+      <Banner
+        action={{
+          label: "Archive",
+          // TODO: implement archive agreement action
+        }}
+        kind="error"
+        prominentAction={{
+          label: "Reactivate",
+          // TODO: implement reactivate agreement action
+        }}
+      >
+        Suspended
+      </Banner>
+    ))
+    // TODO: handle Archived state
+    .with("Archived", () => null)
+    .exhaustive();
+
+  if (!banner) return null;
+
+  return (
+    <div className="flex flex-col gap-4">
+      <h3 className="title-md-em text-primary-light-low-contrast">Agreement</h3>
+      {banner}
+    </div>
   );
 }
 

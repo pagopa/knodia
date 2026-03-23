@@ -190,9 +190,10 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
-      {hasAgreement && (
+      {eservice.agreement && (
         <>
           <OrgConsumptionStatusSection
+            agreement={eservice.agreement}
             eserviceId={eservice.id}
             knodeId={knodeId}
           />
