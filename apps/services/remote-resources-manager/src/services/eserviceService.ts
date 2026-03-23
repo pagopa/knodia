@@ -34,7 +34,6 @@ import {
   toAPI_Eservice,
   toAPI_EserviceDetails,
 } from "../models/eservice/apiConverter.ts";
-import { assertEntityExists } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
