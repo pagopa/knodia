@@ -46,7 +46,7 @@ Example: if `personalDataTypes` contains `"OTHER"`, then `otherPersonalDataTypes
 
 ### UI Schema (`uischema.json`)
 
-Uses the [JSON Forms](https://jsonforms.io/) format. Defines:
+Uses the [JSON Forms UI Schema](https://jsonforms.io/docs/uischema/) format. Defines:
 
 - **Widget types**: `radio`, `text`, `textarea`, `checkbox`, `select`, `switch`
 - **Layout**: groups/sections with titles and descriptions, horizontal/vertical arrangement
