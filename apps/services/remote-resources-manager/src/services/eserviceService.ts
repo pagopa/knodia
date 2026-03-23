@@ -134,7 +134,7 @@ export function eserviceServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
           }),
         ]);
 
-      const agreement = agreements.results[0];
+      const agreement = agreements.results.at(0);
 
       const { data: producer } = await k2kGatewayApi.getOrganization({
         client: k2kGatewayClient,
