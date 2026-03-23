@@ -110,7 +110,7 @@ export function TwoFormUIKitPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <div className="bg-brand-100 flex items-center justify-between px-6 py-4">
-        <h1 className="text-2xl text-brand-800">Create Purpose</h1>
+        <h1 className="text-2xl text-brand-800">Create Purpose (UI Kit)</h1>
       </div>
 
       <div className="flex justify-center flex-1">

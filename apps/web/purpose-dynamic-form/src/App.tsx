@@ -2,10 +2,11 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
-  Link,
   Navigate,
   Outlet,
   RouterProvider,
+  useLocation,
+  useNavigate,
 } from "@tanstack/react-router";
 
 import { Pa31Page } from "./demo/Pa31Page";
@@ -15,49 +16,38 @@ import { TwoFormTanstackAjvPage } from "./demo/TwoFormTanstackAjvPage";
 import { TwoFormUIKitPage } from "./demo/TwoFormUIKitPage";
 import { TwoFormZodPage } from "./demo/TwoFormZodPage";
 
+function NavSelect() {
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  return (
+    <nav className="bg-white border-b border-gray-200 px-4 py-3">
+      <div className="max-w-2xl mx-auto">
+        <select
+          className="text-sm font-medium px-3 py-1.5 rounded border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          onChange={(e) => navigate({ to: e.target.value })}
+          value={pathname}
+        >
+          <optgroup label="PDND schema">
+            <option value="/pa31">PA 3.1</option>
+          </optgroup>
+          <optgroup label="Two-form approaches">
+            <option value="/two-form-zod">Zod</option>
+            <option value="/two-form-ajv">AJV</option>
+            <option value="/two-form-jsonforms">JSON Forms</option>
+            <option value="/two-form-tanstack">TanStack + AJV</option>
+            <option value="/two-form-uikit">UI Kit</option>
+          </optgroup>
+        </select>
+      </div>
+    </nav>
+  );
+}
+
 const rootRoute = createRootRoute({
   component: () => (
     <>
-      <nav className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-2xl mx-auto flex gap-4">
-          <Link
-            className="text-sm font-medium px-3 py-1 rounded text-gray-600 hover:text-gray-900 [&.active]:bg-blue-100 [&.active]:text-blue-700"
-            to="/pa31"
-          >
-            PA 3.1
-          </Link>
-          <Link
-            className="text-sm font-medium px-3 py-1 rounded text-gray-600 hover:text-gray-900 [&.active]:bg-blue-100 [&.active]:text-blue-700"
-            to="/two-form-zod"
-          >
-            Two-form (Zod)
-          </Link>
-          <Link
-            className="text-sm font-medium px-3 py-1 rounded text-gray-600 hover:text-gray-900 [&.active]:bg-blue-100 [&.active]:text-blue-700"
-            to="/two-form-ajv"
-          >
-            Two-form (AJV)
-          </Link>
-          <Link
-            className="text-sm font-medium px-3 py-1 rounded text-gray-600 hover:text-gray-900 [&.active]:bg-blue-100 [&.active]:text-blue-700"
-            to="/two-form-jsonforms"
-          >
-            Two-form (JSON Forms)
-          </Link>
-          <Link
-            className="text-sm font-medium px-3 py-1 rounded text-gray-600 hover:text-gray-900 [&.active]:bg-blue-100 [&.active]:text-blue-700"
-            to="/two-form-tanstack"
-          >
-            Two-form (TanStack + AJV)
-          </Link>
-          <Link
-            className="text-sm font-medium px-3 py-1 rounded text-gray-600 hover:text-gray-900 [&.active]:bg-blue-100 [&.active]:text-blue-700"
-            to="/two-form-uikit"
-          >
-            Two-form (UI Kit)
-          </Link>
-        </div>
-      </nav>
+      <NavSelect />
       <Outlet />
     </>
   ),

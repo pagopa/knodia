@@ -19,7 +19,7 @@ export function TwoFormZodPage() {
   return (
     <TwoFormPage
       jsonSchema={schema}
-      title="Create Purpose"
+      title="Create Purpose (Zod)"
       uischema={ui}
       validate={validate}
     />
