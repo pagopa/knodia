@@ -247,8 +247,8 @@ export type Organization = {
 };
 
 export type Organizations = {
-    items: Array<Organization>;
     pagination: Pagination;
+    results: Array<Organization>;
 };
 
 export type GetStatusData = {
