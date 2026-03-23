@@ -1,4 +1,3 @@
-import { getConsumerKeychainsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Button,
   Pagination,
@@ -19,13 +18,7 @@ import {
   keychainSearchDefaultValues,
   keychainSearchSchema,
 } from "@/features/keychain/models/search-params";
-import { client } from "@/libs/axios";
-
-const consumerKeychainsQuery = (offset: number) =>
-  getConsumerKeychainsOptions({
-    client,
-    query: { limit: 10, offset },
-  });
+import { consumerKeychainsQuery } from "@/features/keychain/services/queries";
 
 export const Route = createFileRoute("/_authenticated/keychains")({
   component: RouteComponent,

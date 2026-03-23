@@ -1,18 +1,9 @@
-import { bffApi } from "@knodia/bff-client";
-import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 import { RequestAgreementModal } from "@/features/agreement/components/RequestAgreementModal/RequestAgreementModal";
 import { requestAgreementSearchSchema } from "@/features/agreement/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
-import { client } from "@/libs/axios";
-
-const eserviceQuery = (eserviceId: string, knodeId: bffApi.KnodeId) =>
-  getConsumerEserviceDetailsOptions({
-    client,
-    path: { eserviceId },
-    query: { knodeId },
-  });
+import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services/request-agreement",
@@ -24,7 +15,9 @@ export const Route = createFileRoute(
   }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: async ({ context: { queryClient }, deps: { eserviceId, knodeId } }) =>
-    await queryClient.ensureQueryData(eserviceQuery(eserviceId, knodeId)),
+    await queryClient.ensureQueryData(
+      consumerEserviceDetailsQuery(eserviceId, knodeId),
+    ),
   validateSearch: requestAgreementSearchSchema,
 });
 

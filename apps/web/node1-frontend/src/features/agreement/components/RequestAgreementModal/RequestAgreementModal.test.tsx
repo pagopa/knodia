@@ -22,6 +22,7 @@ function createEservice(
     },
     categories: [{ code: "birth-place", scheme: "eu-categories" }],
     description: "Test description",
+    hasActiveAgreement: true,
     hasRequiredAttributes: true,
     id: "f47ac10b-58cc-4372-a567-0e02b2c3d479" as ConsumptionEserviceDetail["id"],
     identificationRequired: false,
