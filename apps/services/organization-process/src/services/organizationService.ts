@@ -1,4 +1,3 @@
-import type { OrganizationId } from "@knodia/common-models/ids";
 import type { OrganizationEventStoreWriter } from "@knodia/db-event-store-writer/organization";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
@@ -9,7 +8,7 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { Organization } from "@knodia/organization-models";
 
 import { getAttribute } from "@knodia/attribute-models";
-import { generateId } from "@knodia/common-models/ids";
+import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 
 import type {
   API_GetOrganizationsQueryParams,

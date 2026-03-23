@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { ConsumerKeychain } from "@knodia/keychain-models";
-
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
-import { KeychainEventV1, toConsumerKeychainV1 } from "@knodia/keychain-models";
+import {
+  type ConsumerKeychain,
+  KeychainEventV1,
+  toConsumerKeychainV1,
+} from "@knodia/keychain-models";
 import {
   forbiddenTestTokens,
   TEST_ORGANIZATION_ID,

@@ -7,6 +7,7 @@ export const config = [
   ...pagopa,
   {
     rules: {
+      "no-duplicate-imports": ["error"],
       "no-useless-rename": ["error"],
       "object-shorthand": ["error"],
     },

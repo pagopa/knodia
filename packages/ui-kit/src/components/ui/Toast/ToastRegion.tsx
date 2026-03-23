@@ -1,9 +1,15 @@
-import type { AriaToastProps, AriaToastRegionProps } from "@react-aria/toast";
-import type { QueuedToast, ToastState } from "@react-stately/toast";
-
 import { XIcon } from "@phosphor-icons/react";
-import { useToast, useToastRegion } from "@react-aria/toast";
-import { useToastQueue } from "@react-stately/toast";
+import {
+  type AriaToastProps,
+  type AriaToastRegionProps,
+  useToast,
+  useToastRegion,
+} from "@react-aria/toast";
+import {
+  type QueuedToast,
+  type ToastState,
+  useToastQueue,
+} from "@react-stately/toast";
 import { useRef } from "react";
 import { Button } from "react-aria-components";
 import { tv } from "tailwind-variants";

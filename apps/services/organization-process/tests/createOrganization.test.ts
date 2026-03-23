@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Organization } from "@knodia/organization-models";
-import type { TestToken } from "@knodia/test-commons/auth";
-
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import {
+  Organization,
   OrganizationEventV1,
   toOrganizationV1,
 } from "@knodia/organization-models";
-import { forbiddenTestTokens } from "@knodia/test-commons/auth";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
