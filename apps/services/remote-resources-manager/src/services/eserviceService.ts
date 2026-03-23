@@ -161,7 +161,7 @@ export function eserviceServiceBuilder(
       let dynamicOffset = offset;
       let results: API_Eservice[] = [];
       const knodesWithAgreements =
-        await remoteResourceDbService.getDistinctKnodes(
+        await remoteResourceDbService.getAgreementsDistinctKnodes(
           authData.organizationId,
         );
       for (const knodeId of knodesWithAgreements) {
