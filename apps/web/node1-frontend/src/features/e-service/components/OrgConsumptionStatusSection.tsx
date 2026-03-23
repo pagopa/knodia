@@ -32,12 +32,12 @@ export function OrgConsumptionStatusSection({
 
   return (
     <Disclosure
-      className="flex flex-col gap-6 rounded-lg border border-primary-light-decorative p-6 elevation-2"
+      className="flex flex-col rounded-lg border border-primary-light-decorative px-6 pt-6 data-[expanded]:pb-6 elevation-2"
       defaultExpanded
     >
       <CollapseTrigger />
 
-      <DisclosurePanel className="flex flex-col gap-6">
+      <DisclosurePanel className="mt-6 flex flex-col gap-6">
         <AgreementStatusBanner state={agreement.state} />
 
         <div className="flex flex-col gap-4">
