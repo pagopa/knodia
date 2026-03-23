@@ -8,8 +8,6 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import { EserviceId } from "@knodia/common-models/ids";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
-import { remoteResourceAgreement } from "@knodia/db-remote-resource";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import {
   assertEntityExists,
@@ -19,7 +17,6 @@ import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
-import { eq } from "drizzle-orm";
 
 import type {
   API_CatalogEserviceSearchResults,
@@ -202,30 +199,30 @@ export function eserviceServiceBuilder(
             await Promise.all([
               getExternalEntitiesMap({
                 fetchFn: ({ entityIds }) =>
-                  k2kGatewayApi
-                    .getOrganizations({
-                      client: k2kGatewayClient,
-                      query: {
-                        limit: entityIds.length,
-                        offset: 0,
-                        organizationId: entityIds,
-                      },
-                    })
-                    .then((res) => res.data.results),
+                  Promise.all(
+                    entityIds.map((organizationId) =>
+                      k2kGatewayApi.getOrganization({
+                        client: k2kGatewayClient,
+                        path: { organizationId },
+                      }),
+                    ),
+                  ).then((responses) => responses.map((res) => res.data)),
                 getEntityId: (agreement) => agreement.producerId,
                 getKnodeId: knodeId,
                 items: consumerAgreements.results,
               }),
               getExternalEntitiesMap({
                 fetchFn: ({ entityIds }) =>
-                  Promise.all(
-                    entityIds.map((eserviceId) =>
-                      k2kGatewayApi.getEservice({
-                        client: k2kGatewayClient,
-                        path: { eserviceId },
-                      }),
-                    ),
-                  ).then((responses) => responses.map((res) => res.data)),
+                  k2kGatewayApi
+                    .getEservices({
+                      client: k2kGatewayClient,
+                      query: {
+                        eserviceId: entityIds,
+                        limit: entityIds.length,
+                        offset: 0,
+                      },
+                    })
+                    .then((res) => res.data.results),
                 getEntityId: (agreement) => agreement.eserviceId,
                 getKnodeId: knodeId,
                 items: consumerAgreements.results,
@@ -274,146 +271,6 @@ export function eserviceServiceBuilder(
                   },
                 }),
               ),
-            ),
-          );
-
-          dynamicLimit = limit - results.length;
-          dynamicOffset = 0;
-        }
-
-        totalCount += consumerAgreements.pagination.total;
-      }
-
-      return {
-        pagination: {
-          limit,
-          offset,
-          total: totalCount,
-        },
-        results,
-      };
-    },
-
-    async getEservices(
-      reqQuery: API_GetEservicesQueryParams,
-      { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<API_Eservices> {
-      logger.info(
-        { requestQuery: reqQuery },
-        `Getting Consumer E-services with query parameters`,
-      );
-
-      const { agreementState, limit, offset } = reqQuery;
-
-      let totalCount = 0;
-      let dynamicLimit = limit;
-      let dynamicOffset = offset;
-      let results: API_Eservice[] = [];
-      const knodesWithAgreements =
-        await remoteResourceDbService.getDistinctKnodes(
-          authData.organizationId,
-        );
-      for (const knodeId of knodesWithAgreements) {
-        logger.info(
-          `Getting E-services from Knode ${knodeId} for Consumer Organization ${authData.organizationId}`,
-        );
-
-        const { data: consumerAgreements } = await k2kGatewayApi.getAgreements({
-          client: k2kGatewayClient,
-          query: {
-            consumerId: authData.organizationId,
-            limit: dynamicLimit,
-            offset: dynamicOffset,
-            state: agreementState
-              ? toK2KAPI_AgreementState(agreementState)
-              : undefined,
-          },
-        });
-
-        if (results.length < limit) {
-          const [producersMap, eservicesMap, eserviceVersionsMap] =
-            await Promise.all([
-              getExternalEntitiesMap({
-                fetchFn: ({ entityIds }) =>
-                  Promise.all(
-                    entityIds.map((organizationId) =>
-                      k2kGatewayApi.getOrganization({
-                        client: k2kGatewayClient,
-                        path: { organizationId },
-                      }),
-                    ),
-                  ).then((responses) => responses.map((res) => res.data)),
-                getEntityId: (agreement) => agreement.producerId,
-                getKnodeId: knodeId,
-                items: consumerAgreements.results,
-              }),
-              getExternalEntitiesMap({
-                fetchFn: ({ entityIds }) =>
-                  k2kGatewayApi
-                    .getEservices({
-                      client: k2kGatewayClient,
-                      query: {
-                        eserviceId: entityIds,
-                        limit: entityIds.length,
-                        offset: 0,
-                      },
-                    })
-                    .then((res) => res.data.results),
-                getEntityId: (agreement) => agreement.eserviceId,
-                getKnodeId: knodeId,
-                items: consumerAgreements.results,
-              }),
-              getExternalEntitiesMap({
-                fetchFn: ({ entityIds }) =>
-                  Promise.all(
-                    entityIds.map((eserviceId) =>
-                      k2kGatewayApi.getEserviceLatestVersion({
-                        client: k2kGatewayClient,
-                        path: { eserviceId },
-                      }),
-                    ),
-                  ).then((responses) => responses.map((res) => res.data)),
-                getEntityId: (agreement) => agreement.eserviceId,
-                getKnodeId: knodeId,
-                items: consumerAgreements.results,
-              }),
-            ]);
-
-          results = results.concat(
-            await Promise.all(
-              consumerAgreements.results.map(async (agreement) => {
-                const remoteAgreement =
-                  await remoteResourceDbService.getAgreementByFilters(
-                    eq(remoteResourceAgreement.agreementId, agreement.id),
-                  );
-
-                const knodeId = API_KnodeId.parse(remoteAgreement.knodeId);
-
-                return toAPI_Eservice({
-                  agreement,
-                  eservice: assertEntityExists(
-                    eservicesMap
-                      .get(knodeId)
-                      ?.get(unsafeBrandExternalId(agreement.eserviceId)),
-                    `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
-                  ),
-                  eserviceVersion: assertEntityExists(
-                    eserviceVersionsMap
-                      .get(knodeId)
-                      ?.get(unsafeBrandExternalId(agreement.eserviceVersionId)),
-                    `E-service version for E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
-                  ),
-                  producer: {
-                    ...assertEntityExists(
-                      producersMap
-                        .get(knodeId)
-                        ?.get(unsafeBrandExternalId(agreement.producerId)),
-                      `Producer Organization ${agreement.producerId} not found for Agreement ${agreement.id}`,
-                    ),
-                    knodeId,
-                  },
-                });
-              }),
             ),
           );
 
