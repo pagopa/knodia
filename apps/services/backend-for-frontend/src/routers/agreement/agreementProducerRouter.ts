@@ -112,6 +112,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
                 headers: getKnodiaServiceHeaders(req, correlationId),
                 query: {
                   knodeId,
+                  // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
                   limit: entityIds.length,
                   offset: 0,
                   organizationId: entityIds,
