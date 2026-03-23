@@ -8,9 +8,9 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import { EserviceId } from "@knodia/common-models/ids";
-import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import { genericError } from "@knodia/fastify-zod-api-commons/models";
+import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons/utils";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
