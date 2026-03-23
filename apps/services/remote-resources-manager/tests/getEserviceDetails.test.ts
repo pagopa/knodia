@@ -41,13 +41,6 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   };
 });
 
-vi.mock("@knodia/db-remote-resource/services", () => ({
-  remoteResourceDbServiceBuilder: () => ({
-    getAgreementById: vi.fn(),
-    insertAgreement: vi.fn(),
-  }),
-}));
-
 describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const eserviceId = crypto.randomUUID();
   const knodeId: API_KnodeId = "Orion";
