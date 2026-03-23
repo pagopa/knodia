@@ -24,7 +24,11 @@ import {
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { formSchemaNotFound } from "../models/errors.ts";
-import { formSchemas, formUiSchemas } from "../models/formSchemas.ts";
+import {
+  FormSchemaVersion,
+  getFormSchema,
+  getFormUiSchema,
+} from "../models/formSchemas.ts";
 
 interface PurposeRouterOptions {
   purposeService: PurposeService;
@@ -136,12 +140,12 @@ export const purposeRouter: FastifyPluginAsyncZod<
         },
       ]);
 
-      const schema = formSchemas[req.params.version];
-      if (!schema) {
+      const parsed = FormSchemaVersion.safeParse(req.params.version);
+      if (!parsed.success) {
         throw formSchemaNotFound(req.params.version);
       }
 
-      res.status(200).send(schema);
+      res.status(200).send(getFormSchema(parsed.data));
     },
     method: "GET",
     schema: {
@@ -174,12 +178,12 @@ export const purposeRouter: FastifyPluginAsyncZod<
         },
       ]);
 
-      const uiSchema = formUiSchemas[req.params.version];
-      if (!uiSchema) {
+      const parsed = FormSchemaVersion.safeParse(req.params.version);
+      if (!parsed.success) {
         throw formSchemaNotFound(req.params.version);
       }
 
-      res.status(200).send(uiSchema);
+      res.status(200).send(getFormUiSchema(parsed.data));
     },
     method: "GET",
     schema: {
