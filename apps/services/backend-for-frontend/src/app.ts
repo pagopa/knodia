@@ -21,6 +21,7 @@ import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
+import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
@@ -69,6 +70,10 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             description: "Consumer Keychains routes",
             name: apiTags.consumerKeychain,
           },
+          {
+            description: "Purpose routes",
+            name: apiTags.purpose,
+          },
         ],
       },
     },
@@ -98,6 +103,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     protectedApp.register(agreementConsumerRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
+    protectedApp.register(purposeConsumerRouter);
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,
