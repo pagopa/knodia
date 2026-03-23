@@ -203,14 +203,16 @@ export function eserviceServiceBuilder(
               }),
               getExternalEntitiesMap({
                 fetchFn: ({ entityIds }) =>
-                  Promise.all(
-                    entityIds.map((eserviceId) =>
-                      k2kGatewayApi.getEservice({
-                        client: k2kGatewayClient,
-                        path: { eserviceId },
-                      }),
-                    ),
-                  ).then((responses) => responses.map((res) => res.data)),
+                  k2kGatewayApi
+                    .getEservices({
+                      client: k2kGatewayClient,
+                      query: {
+                        eserviceId: entityIds,
+                        limit: entityIds.length,
+                        offset: 0,
+                      },
+                    })
+                    .then((res) => res.data.results),
                 getEntityId: (agreement) => agreement.eserviceId,
                 getKnodeId: knodeId,
                 items: consumerAgreements.results,
