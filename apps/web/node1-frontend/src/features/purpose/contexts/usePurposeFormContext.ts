@@ -1,3 +1,5 @@
+import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
+
 import {
   createFormHook,
   createFormHookContexts,
@@ -15,6 +17,10 @@ import {
 
 export interface PurposeWizardContextValue {
   data: PurposeFormDraftData;
+  eserviceId: EserviceId;
+  eserviceName: string;
+  knodeId: KnodeId;
+  maxDailyCallsPerConsumer: number;
   updateDetailsStep: (data: DetailsStepData) => void;
 }
 
@@ -33,7 +39,8 @@ export const { useAppForm } = createFormHook({
 export function useDetailsStepForm(
   onSubmitSuccess: (value: DetailsStepData) => void,
 ) {
-  const { data, updateDetailsStep } = usePurposeWizardContext();
+  const { data, maxDailyCallsPerConsumer, updateDetailsStep } =
+    usePurposeWizardContext();
 
   return useAppForm({
     defaultValues: {
@@ -47,12 +54,12 @@ export function useDetailsStepForm(
     },
     validationLogic: revalidateLogic(),
     validators: {
-      onDynamic: detailsStepSchema,
+      onDynamic: detailsStepSchema(maxDailyCallsPerConsumer),
     },
   });
 }
 
-function usePurposeWizardContext() {
+export function usePurposeWizardContext() {
   const context = useContext(PurposeWizardContext);
   if (!context) {
     throw new Error(

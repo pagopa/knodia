@@ -1,26 +1,21 @@
-import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
-
 import { Banner, NumberField, TextArea, TextField } from "@knodia/ui-kit/ui";
 
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
-import { useDetailsStepForm } from "@/features/purpose/contexts/usePurposeFormContext";
+import {
+  useDetailsStepForm,
+  usePurposeWizardContext,
+} from "@/features/purpose/contexts/usePurposeFormContext";
 import { useCreatePurpose } from "@/features/purpose/hooks/useCreatePurpose";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 interface Props {
-  eserviceId: EserviceId;
-  eserviceName: string;
-  knodeId: KnodeId;
   onCancel: () => void;
 }
 
-export function DetailsStep({
-  eserviceId,
-  eserviceName,
-  knodeId,
-  onCancel,
-}: Props) {
+export function DetailsStep({ onCancel }: Props) {
+  const { eserviceId, eserviceName, knodeId, maxDailyCallsPerConsumer } =
+    usePurposeWizardContext();
   const { createPurpose, isError, isPending } = useCreatePurpose(
     eserviceId,
     knodeId,
@@ -84,7 +79,7 @@ export function DetailsStep({
           <form.Field name="dailyCalls">
             {(field) => (
               <NumberField
-                description="This E-Service allows up to 1,000 API calls/day. If you need more calls, contact the Producer."
+                description={`This E-Service allows up to ${maxDailyCallsPerConsumer} API calls/day. If you need more calls, contact the Producer.`}
                 errorMessage={getFieldErrorMessage(field.state.meta.errors, {
                   numberFallback: "Please enter a valid number.",
                 })}

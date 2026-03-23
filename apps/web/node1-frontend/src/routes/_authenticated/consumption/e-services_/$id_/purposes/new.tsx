@@ -46,8 +46,7 @@ function RouteComponent() {
 
   return (
     <CreatePurposeModal
-      eserviceId={eservice.id}
-      eserviceName={eservice.name}
+      eservice={eservice}
       knodeId={knodeId}
       onClose={onClose}
     />
