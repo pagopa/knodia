@@ -502,6 +502,9 @@ importers:
       '@knodia/polling':
         specifier: workspace:*
         version: link:../../../packages/polling
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-models
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
@@ -736,15 +739,9 @@ importers:
       '@knodia/organization-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/organization-process-client
-      '@knodia/polling':
-        specifier: workspace:*
-        version: link:../../../packages/polling
       '@knodia/token-generator':
         specifier: workspace:*
         version: link:../../../packages/token-generator
-      axios:
-        specifier: 'catalog:'
-        version: 1.13.5
       fastify:
         specifier: 'catalog:'
         version: 5.8.1

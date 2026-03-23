@@ -131,7 +131,7 @@ describe("createPollingUntilDeletion", () => {
         } as AxiosResponse),
       );
 
-    await createPollingUntilDeletion(mockFetch, defaultConfig)({});
+    await createPollingUntilDeletion(mockFetch, defaultConfig)();
 
     expect(mockFetch).toHaveBeenCalledTimes(3);
   });
@@ -140,7 +140,7 @@ describe("createPollingUntilDeletion", () => {
     const mockFetch = vi.fn().mockResolvedValue(true);
 
     await expect(
-      createPollingUntilDeletion(mockFetch, defaultConfig)({}),
+      createPollingUntilDeletion(mockFetch, defaultConfig)(),
     ).rejects.toThrowError(pollingMaxRetriesExceeded(3, 10));
 
     expect(mockFetch).toHaveBeenCalledTimes(3);
@@ -163,7 +163,7 @@ describe("createPollingUntilDeletion", () => {
       );
 
     await expect(
-      createPollingUntilDeletion(mockFetch, defaultConfig)({}),
+      createPollingUntilDeletion(mockFetch, defaultConfig)(),
     ).rejects.toThrowError("Generic error");
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
@@ -181,7 +181,7 @@ describe("createPollingUntilDeletion", () => {
       );
 
     await expect(
-      createPollingUntilDeletion(mockFetch, defaultConfig)({}),
+      createPollingUntilDeletion(mockFetch, defaultConfig)(),
     ).rejects.toThrowError("Generic error");
 
     expect(mockFetch).toHaveBeenCalledTimes(1);

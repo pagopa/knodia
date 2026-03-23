@@ -13,7 +13,7 @@ const agreementQuery = (agreementId: AgreementId) =>
   });
 
 export const Route = createFileRoute(
-  "/_authenticated/production/agreements_/$id",
+  "/_authenticated/production/agreements/$id",
 )({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
