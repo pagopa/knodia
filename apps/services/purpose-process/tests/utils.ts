@@ -24,6 +24,7 @@ export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
     dailyCalls: purpose.dailyCalls,
     description: purpose.description,
     eserviceId: purpose.eserviceId,
+    formSchemaVersion: purpose.formSchemaVersion,
     id: purpose.id,
     name: purpose.name,
     state: purpose.state,

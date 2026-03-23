@@ -25,6 +25,7 @@ const errorCodes = {
   ESERVICE_MODE_NOT_ALLOWED: "0004",
   ESERVICE_NOT_FOUND: "0005",
   AGREEMENT_NOT_FOUND: "0006",
+  FORM_SCHEMA_NOT_FOUND: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -101,6 +102,15 @@ export function eserviceVersionNotInExpectedStates(
     detail: `E-service ${eserviceId} has no version in state [${allowedStates.join(", ")}]`,
     status: HTTP_STATUS_CONFLICT,
     title: "E-service Version Not in Expected States",
+  });
+}
+
+export function formSchemaNotFound(version: string) {
+  return createApiError<ErrorCodes>({
+    code: "FORM_SCHEMA_NOT_FOUND",
+    detail: `Form schema version ${version} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Form Schema Not Found",
   });
 }
 

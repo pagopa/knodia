@@ -15,6 +15,7 @@ import {
   LocalizedPurposeName,
   type Purpose,
   PurposeFormAnswers,
+  type PurposeFormSchemaVersion,
   PurposeState,
 } from "@knodia/purpose-models";
 
@@ -46,6 +47,7 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         formAnswersJson,
+        formSchemaVersion,
         name,
       }: {
         consumer: ExternalResource<OrganizationId>;
@@ -53,6 +55,7 @@ export function purposeServiceBuilder(
         description: LocalizedPurposeDescription;
         eserviceId: EserviceId;
         formAnswersJson: PurposeFormAnswers;
+        formSchemaVersion: PurposeFormSchemaVersion;
         name: LocalizedPurposeName;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
@@ -90,6 +93,7 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         formAnswersJson,
+        formSchemaVersion,
         id: purposeId,
         name,
         state: PurposeState.enum.Active,

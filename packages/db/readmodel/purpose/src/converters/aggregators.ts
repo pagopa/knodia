@@ -40,6 +40,7 @@ const buildPurpose = (purposeSQL: PurposeSQL): WithMetadata<Purpose> => {
     description: LocalizedDescription.parse(purposeSQL.description),
     eserviceId: unsafeBrandId(purposeSQL.eserviceId),
     formAnswersJson: PurposeFormAnswers.parse(purposeSQL.formAnswersJson),
+    formSchemaVersion: purposeSQL.formSchemaVersion,
     id: unsafeBrandId(purposeSQL.id),
     name: LocalizedName.parse(purposeSQL.name),
     state: PurposeState.parse(purposeSQL.state),

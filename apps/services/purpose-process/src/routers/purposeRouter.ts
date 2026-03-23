@@ -15,9 +15,16 @@ import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
 
-import { API_Purpose, API_PurposeSeed } from "../models/api.ts";
+import {
+  API_FormSchema,
+  API_FormSchemaVersionPathParam,
+  API_Purpose,
+  API_PurposeSeed,
+} from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
+import { formSchemaNotFound } from "../models/errors.ts";
+import { formSchemas, formUiSchemas } from "../models/formSchemas.ts";
 
 interface PurposeRouterOptions {
   purposeService: PurposeService;
@@ -45,6 +52,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
           description: req.body.description,
           eserviceId: unsafeBrandId(req.body.eserviceId),
           formAnswersJson: req.body.formAnswersJson,
+          formSchemaVersion: req.body.formSchemaVersion,
           name: req.body.name,
         },
         ctx,
@@ -116,5 +124,81 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes/:purposeId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+        {
+          tokenType: "ui-session",
+          userRoles: ["administrative", "technical"],
+        },
+      ]);
+
+      const schema = formSchemas[req.params.version];
+      if (!schema) {
+        throw formSchemaNotFound(req.params.version);
+      }
+
+      res.status(200).send(schema);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the JSON Schema for validating purpose form answers",
+      headers: KnodiaServiceHeaders,
+      operationId: "getFormSchema",
+      params: API_FormSchemaVersionPathParam,
+      response: {
+        200: API_FormSchema.meta({
+          description: "Form schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Form schema not found" }),
+      },
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/form/schema/:version",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+        {
+          tokenType: "ui-session",
+          userRoles: ["administrative", "technical"],
+        },
+      ]);
+
+      const uiSchema = formUiSchemas[req.params.version];
+      if (!uiSchema) {
+        throw formSchemaNotFound(req.params.version);
+      }
+
+      res.status(200).send(uiSchema);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the UI Schema for rendering the purpose form (JSON Forms format)",
+      headers: KnodiaServiceHeaders,
+      operationId: "getFormUiSchema",
+      params: API_FormSchemaVersionPathParam,
+      response: {
+        200: API_FormSchema.meta({
+          description: "Form UI schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Form UI schema not found" }),
+      },
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/form/ui-schema/:version",
   });
 };

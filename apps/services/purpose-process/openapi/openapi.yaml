@@ -141,6 +141,9 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
+        formSchemaVersion:
+          type: string
+          minLength: 1
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
       required:
@@ -149,6 +152,7 @@ components:
         - description
         - eserviceId
         - formAnswersJson
+        - formSchemaVersion
         - name
       additionalProperties: false
     Purpose:
@@ -171,6 +175,9 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        formSchemaVersion:
+          type: string
+          minLength: 1
         id:
           type: string
           format: uuid
@@ -189,11 +196,15 @@ components:
         - dailyCalls
         - description
         - eserviceId
+        - formSchemaVersion
         - id
         - name
         - state
         - updatedAt
       additionalProperties: false
+    FormSchema:
+      type: object
+      additionalProperties: {}
 paths:
   /status:
     get:
@@ -352,6 +363,128 @@ paths:
             application/problem+json:
               schema:
                 description: Purpose not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/form/schema/{version}:
+    get:
+      operationId: getFormSchema
+      tags:
+        - purpose
+      description: Retrieve the JSON Schema for validating purpose form answers
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: version
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Form schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Form schema retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/FormSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Form schema not found
+          content:
+            application/problem+json:
+              schema:
+                description: Form schema not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/form/ui-schema/{version}:
+    get:
+      operationId: getFormUiSchema
+      tags:
+        - purpose
+      description: Retrieve the UI Schema for rendering the purpose form (JSON Forms format)
+      parameters:
+        - schema:
+            type: string
+            minLength: 1
+          in: path
+          name: version
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Form UI schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Form UI schema retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/FormSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Form UI schema not found
+          content:
+            application/problem+json:
+              schema:
+                description: Form UI schema not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

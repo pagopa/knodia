@@ -63,6 +63,7 @@ export interface PurposeV1 {
   formAnswersJson: string;
   createdAt: number;
   updatedAt: number;
+  formSchemaVersion: string;
 }
 
 export interface PurposeConsumerV1 {
@@ -86,6 +87,7 @@ function createBasePurposeV1(): PurposeV1 {
     formAnswersJson: "",
     createdAt: 0,
     updatedAt: 0,
+    formSchemaVersion: "",
   };
 }
 
@@ -120,6 +122,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     }
     if (message.updatedAt !== 0) {
       writer.uint32(80).int64(message.updatedAt);
+    }
+    if (message.formSchemaVersion !== "") {
+      writer.uint32(90).string(message.formSchemaVersion);
     }
     return writer;
   },
@@ -211,6 +216,14 @@ export const PurposeV1: MessageFns<PurposeV1> = {
           message.updatedAt = longToNumber(reader.int64());
           continue;
         }
+        case 11: {
+          if (tag !== 90) {
+            break;
+          }
+
+          message.formSchemaVersion = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -232,6 +245,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
       formAnswersJson: isSet(object.formAnswersJson) ? globalThis.String(object.formAnswersJson) : "",
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
+      formSchemaVersion: isSet(object.formSchemaVersion) ? globalThis.String(object.formSchemaVersion) : "",
     };
   },
 
@@ -267,6 +281,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.updatedAt !== 0) {
       obj.updatedAt = Math.round(message.updatedAt);
     }
+    if (message.formSchemaVersion !== "") {
+      obj.formSchemaVersion = message.formSchemaVersion;
+    }
     return obj;
   },
 
@@ -291,6 +308,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     message.formAnswersJson = object.formAnswersJson ?? "";
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
+    message.formSchemaVersion = object.formSchemaVersion ?? "";
     return message;
   },
 };

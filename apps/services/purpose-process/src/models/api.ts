@@ -21,6 +21,7 @@ export const API_PurposeSeed = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     formAnswersJson: API_PurposeFormAnswers,
+    formSchemaVersion: z.string().min(1),
     name: API_LocalizedPurposeName,
   })
   .meta({ id: "PurposeSeed" });
@@ -39,6 +40,7 @@ export const API_Purpose = z
       .meta({ format: "int32" }),
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
+    formSchemaVersion: z.string().min(1),
     id: PurposeId,
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
@@ -46,3 +48,15 @@ export const API_Purpose = z
   })
   .meta({ id: "Purpose" });
 export type API_Purpose = z.infer<typeof API_Purpose>;
+
+export const API_FormSchemaVersionPathParam = z.strictObject({
+  version: z.string().min(1),
+});
+export type API_FormSchemaVersionPathParam = z.infer<
+  typeof API_FormSchemaVersionPathParam
+>;
+
+export const API_FormSchema = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "FormSchema" });
+export type API_FormSchema = z.infer<typeof API_FormSchema>;
