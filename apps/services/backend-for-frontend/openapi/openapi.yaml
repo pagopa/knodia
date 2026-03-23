@@ -181,17 +181,6 @@ components:
       enum:
         - Bearer
         - DPoP
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     CompactOrganization:
       description: Organization with only id, knodeId, and name
       type: object
@@ -209,6 +198,17 @@ components:
         - id
         - knodeId
         - name
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object

@@ -79,7 +79,11 @@ const toOrganizationAggregator = (
 
   return {
     attributesSQL,
-    organizationSQL: throwIfMultipleOrEmpty(organizationsSQL, "organization"),
+    organizationSQL: throwIfMultipleOrEmpty(
+      organizationsSQL,
+      "organization",
+      (o) => o.id,
+    ),
   };
 };
 
