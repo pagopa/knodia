@@ -44,11 +44,16 @@ describe("POST /agreements (createAgreement)", async () => {
   const eserviceVersion = eservice.versions[0]!;
   const consumerId = generateExternalId<OrganizationId>();
 
+  const consumerAttributes = eserviceVersion.requiredAttributes.map(
+    (group) => group[0]!,
+  );
+
   const body: API_AgreementSeed = {
     consumer: {
       id: consumerId,
       knodeId: "Orion",
     },
+    consumerAttributes,
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
   };
@@ -88,7 +93,7 @@ describe("POST /agreements (createAgreement)", async () => {
       const responseBody = response.json<API_Agreement>();
 
       const expectedAgreement: Agreement = {
-        attributes: [],
+        attributes: consumerAttributes,
         consumer: {
           id: consumerId,
           knodeId: KnodeId.parse(body.consumer.knodeId),
@@ -298,4 +303,65 @@ describe("POST /agreements (createAgreement)", async () => {
       expect(response.statusCode).toBe(403);
     },
   );
+});
+
+describe("POST /agreements - attribute validation", async () => {
+  const eservice = getMockEservice({ latestVersionState: "Active" });
+  const eserviceVersion = eservice.versions[0]!;
+  const consumerId = generateExternalId<OrganizationId>();
+  const validAttributes = eserviceVersion.requiredAttributes.map(
+    (group) => group[0]!,
+  );
+  const body: API_AgreementSeed = {
+    consumer: { id: consumerId, knodeId: "Orion" },
+    consumerAttributes: validAttributes,
+    eserviceId: eservice.id,
+    eserviceVersionId: eserviceVersion.id,
+  };
+
+  it("should return 201 when consumer has extra unrelated attributes alongside valid ones", async () => {
+    await eserviceWriterService.upsertEservice(eservice, 1);
+
+    const response = await injectAppRequest({ type: "internal" })
+      .post("/agreements")
+      .body({
+        ...body,
+        consumerAttributes: [
+          ...validAttributes,
+          { code: "extra", scheme: "extra" },
+        ],
+      });
+    expect(response.statusCode).toBe(201);
+  });
+
+  it("should return 403 when consumer does not possess any required attribute", async () => {
+    await eserviceWriterService.upsertEservice(eservice, 1);
+
+    const response = await injectAppRequest({ type: "internal" })
+      .post("/agreements")
+      .body({
+        ...body,
+        consumerAttributes: [{ code: "unknown", scheme: "unknown" }],
+      } satisfies API_AgreementSeed);
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 403 when consumer fails to satisfy one attribute group", async () => {
+    const eserviceWith2Groups = getMockEservice({
+      latestVersionState: "Active",
+      minArrayLength: 2,
+    });
+    const version = eserviceWith2Groups.versions[0]!;
+    await eserviceWriterService.upsertEservice(eserviceWith2Groups, 1);
+
+    const response = await injectAppRequest({ type: "internal" })
+      .post("/agreements")
+      .body({
+        consumer: body.consumer,
+        consumerAttributes: [version.requiredAttributes[0]![0]!],
+        eserviceId: eserviceWith2Groups.id,
+        eserviceVersionId: version.id,
+      } satisfies API_AgreementSeed);
+    expect(response.statusCode).toBe(403);
+  });
 });

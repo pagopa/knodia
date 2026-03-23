@@ -1,4 +1,5 @@
 import type { Agreement } from "@knodia/agreement-models";
+import type { AttributeId } from "@knodia/attribute-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
 import type {
@@ -28,6 +29,7 @@ import {
   retrieveEservice,
 } from "../utils/readmodelUtils.ts";
 import {
+  assertConsumerHasRequiredAttributes,
   assertEserviceVersionAllowsAgreementCreation,
   assertEserviceVersionIsLatest,
   assertNoConflictingAgreementsExist,
@@ -43,10 +45,12 @@ export function agreementServiceBuilder(
     async createAgreement(
       {
         consumer,
+        consumerAttributes,
         eserviceId,
         eserviceVersionId,
       }: {
         consumer: ExternalResource<OrganizationId>;
+        consumerAttributes: AttributeId[];
         eserviceId: EserviceId;
         eserviceVersionId: EserviceVersionId;
       },
@@ -67,14 +71,22 @@ export function agreementServiceBuilder(
 
       const eservice = await retrieveEservice(eserviceId, readmodelService);
 
-      assertEserviceVersionAllowsAgreementCreation(eservice, eserviceVersionId);
+      const eserviceVersion = assertEserviceVersionAllowsAgreementCreation(
+        eservice,
+        eserviceVersionId,
+      );
       assertEserviceVersionIsLatest(eservice, eserviceVersionId);
 
-      // TODO: validate attributes
+      assertConsumerHasRequiredAttributes(
+        consumerAttributes,
+        eserviceVersion.requiredAttributes,
+        consumer.id,
+        eserviceId,
+      );
 
       const now = new Date();
       const agreement: Agreement = {
-        attributes: [],
+        attributes: consumerAttributes,
         consumer: {
           id: consumer.id,
           knodeId: consumer.knodeId,

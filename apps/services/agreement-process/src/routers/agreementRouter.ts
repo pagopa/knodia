@@ -46,6 +46,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
             id: unsafeBrandExternalId(req.body.consumer.id),
             knodeId: KnodeId.parse(req.body.consumer.knodeId),
           },
+          consumerAttributes: req.body.consumerAttributes,
           eserviceId: unsafeBrandId(req.body.eserviceId),
           eserviceVersionId: unsafeBrandId(req.body.eserviceVersionId),
         },
