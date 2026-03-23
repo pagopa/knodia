@@ -29,7 +29,7 @@ const consumerKeychainQuery = (consumerKeychainId: string) =>
   });
 
 export const Route = createFileRoute(
-  "/_authenticated/keychains_/consumption/$id",
+  "/_authenticated/keychains/consumption/$id",
 )({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
