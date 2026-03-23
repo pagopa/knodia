@@ -3,24 +3,23 @@ import type { Logger } from "pino";
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 import {
-  generateAuthToken,
+  generateAuthTokenFromRole,
   type GenerateAuthTokenResponse,
 } from "aws-msk-iam-sasl-signer-js";
 
-import { KafkaConfig } from "./config/config.ts";
+import type { KafkaConfig } from "./config/config.ts";
+
+type MskAuth = NonNullable<KafkaConfig["mskAuth"]>;
 
 export async function initKafka(
   config: KafkaConfig,
   logger: Logger,
 ): Promise<KafkaJS.Kafka> {
-  const saslConfigs: CommonConstructorConfig = config.kafkaDisableAwsIamAuth
-    ? {}
-    : {
+  const { mskAuth } = config;
+  const saslConfigs: CommonConstructorConfig = mskAuth
+    ? {
         oauthbearer_token_refresh_cb: async () => {
-          const tokenResponse = await oauthBearerTokenProvider(
-            config.awsRegion,
-            logger,
-          );
+          const tokenResponse = await oauthBearerTokenProvider(mskAuth, logger);
           return {
             lifetime: tokenResponse.expiryTime,
             tokenValue: tokenResponse.token,
@@ -28,7 +27,8 @@ export async function initKafka(
         },
         "sasl.mechanism": "OAUTHBEARER",
         "security.protocol": "sasl_ssl",
-      };
+      }
+    : {};
 
   return new KafkaJS.Kafka({
     "bootstrap.servers": config.kafkaBrokers,
@@ -39,13 +39,15 @@ export async function initKafka(
 }
 
 async function oauthBearerTokenProvider(
-  region: string,
+  mskAuth: MskAuth,
   logger: Logger,
 ): Promise<GenerateAuthTokenResponse> {
   logger.debug("Fetching token from AWS");
 
-  const authTokenResponse = await generateAuthToken({
-    region,
+  const authTokenResponse = await generateAuthTokenFromRole({
+    awsRoleArn: mskAuth.awsRoleArn,
+    awsRoleSessionName: mskAuth.awsRoleSessionName,
+    region: mskAuth.awsRegion,
   });
 
   logger.debug(

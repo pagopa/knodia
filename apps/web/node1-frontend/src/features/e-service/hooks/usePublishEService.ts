@@ -15,6 +15,7 @@ export function usePublishEService() {
     onSuccess: (response) => {
       navigate({
         params: { id: response.id },
+        replace: true,
         to: "/production/e-services/$id",
       });
     },

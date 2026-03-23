@@ -5,11 +5,15 @@ import { PageHeader } from "@/components/PageHeader";
 import { ConsumerAgreementsSummary } from "@/features/agreement/components/ConsumerAgreementsSummary";
 import { client } from "@/libs/axios";
 
-export const Route = createFileRoute("/_authenticated/consumption/agreements")({
-  component: RouteComponent,
-  loader: async ({ context: { queryClient } }) =>
-    await queryClient.ensureQueryData(getConsumerAgreementsOptions({ client })),
-});
+export const Route = createFileRoute("/_authenticated/consumption/agreements/")(
+  {
+    component: RouteComponent,
+    loader: async ({ context: { queryClient } }) =>
+      await queryClient.ensureQueryData(
+        getConsumerAgreementsOptions({ client }),
+      ),
+  },
+);
 
 function RouteComponent() {
   const { counters } = Route.useLoaderData();
