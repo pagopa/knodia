@@ -28,7 +28,7 @@ const toAgreementAttributeSQL = (
   agreementId: AgreementId,
   metadataVersion: number,
 ): AgreementAttributeSQL => ({
-  agreementId: agreementId,
+  agreementId,
   code: attributeId.code,
   metadataVersion,
   scheme: attributeId.scheme,
