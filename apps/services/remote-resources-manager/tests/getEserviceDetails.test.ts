@@ -22,6 +22,7 @@ const allowedTestTokens: TestToken[] = [
 const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
 const getOrganizationMock = vi.hoisted(() => vi.fn());
+const getAgreementsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -31,6 +32,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     ...original,
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
+      getAgreements: getAgreementsMock,
       getEservice: getEserviceMock,
       getEserviceLatestVersion: getEserviceLatestVersionMock,
       getOrganization: getOrganizationMock,
@@ -56,16 +58,23 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     k2kOrganization,
   );
 
+  const emptyAgreementsResponse = {
+    pagination: { limit: 1, offset: 0, total: 0 },
+    results: [],
+  };
+
   beforeEach(() => {
     getEserviceMock.mockReset();
     getEserviceLatestVersionMock.mockReset();
     getOrganizationMock.mockReset();
+    getAgreementsMock.mockReset();
   });
 
   it("should return 200 with converted detail on success", async () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
     getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getAgreementsMock.mockResolvedValue({ data: emptyAgreementsResponse });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get(`/eservices/${eserviceId}`)
