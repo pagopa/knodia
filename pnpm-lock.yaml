@@ -499,6 +499,12 @@ importers:
       '@knodia/organization-process-client':
         specifier: workspace:*
         version: link:../../../packages/clients/organization-process-client
+      '@knodia/polling':
+        specifier: workspace:*
+        version: link:../../../packages/polling
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-models
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
@@ -1289,6 +1295,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/organization-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
@@ -2433,9 +2442,6 @@ importers:
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
-      pg:
-        specifier: 'catalog:'
-        version: 8.16.3
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -2750,6 +2756,37 @@ importers:
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
+
+  packages/polling:
+    dependencies:
+      '@knodia/fastify-zod-api-commons':
+        specifier: workspace:*
+        version: link:../fastify-zod-api-commons
+      axios:
+        specifier: 'catalog:'
+        version: 1.13.5
+      zod:
+        specifier: 'catalog:'
+        version: 4.2.0
+    devDependencies:
+      '@knodia/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@knodia/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.0.0
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.2(jiti@2.6.1)
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
 
   packages/spectral-config: {}
 

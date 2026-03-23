@@ -6,38 +6,70 @@ import type {
   KnodeId,
   OrganizationId,
 } from "@knodia/common-models/ids";
-import type { Eservice, EserviceVersionState } from "@knodia/eservice-models";
+
+import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
   eserviceVersionNotInExpectedStates,
+  eserviceVersionNotLatest,
 } from "../models/errors.ts";
-import { retrieveEserviceVersion } from "./readmodelUtils.ts";
+import {
+  retrieveEserviceLatestVersionInAllowedStates,
+  retrieveEserviceVersionFromEservice,
+} from "./utils.ts";
 
-export const assertEserviceVersionAllowsAgreementCreation = async (
+const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
+  EserviceVersionState.enum.Active,
+  EserviceVersionState.enum.Suspended,
+];
+
+export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
-  readmodelService: ReadmodelService,
 ) => {
-  const allowedStates: EserviceVersionState[] = ["Active"];
-
-  const eserviceVersion = await retrieveEserviceVersion(
-    eservice.id,
+  const eserviceVersion = retrieveEserviceVersionFromEservice(
+    eservice,
     eserviceVersionId,
-    readmodelService,
   );
 
-  if (!allowedStates.includes(eserviceVersion.state)) {
+  if (
+    !agreementCreationAllowedEserviceVersionStates.includes(
+      eserviceVersion.state,
+    )
+  ) {
     throw eserviceVersionNotInExpectedStates(
       eservice.id,
       eserviceVersionId,
-      allowedStates,
+      agreementCreationAllowedEserviceVersionStates,
     );
   }
 };
 
+export const assertEserviceVersionIsLatest = (
+  eservice: Eservice,
+  eserviceVersionId: EserviceVersionId,
+) => {
+  const validEserviceVersionStates: EserviceVersionState[] = [
+    "Active",
+    "Suspended",
+    "Archived",
+  ];
+  const eserviceLatestVersion = retrieveEserviceLatestVersionInAllowedStates(
+    eservice,
+    validEserviceVersionStates,
+  );
+
+  if (eserviceLatestVersion.id !== eserviceVersionId) {
+    throw eserviceVersionNotLatest(
+      eservice.id,
+      eserviceVersionId,
+      eserviceLatestVersion.id,
+    );
+  }
+};
 export const agreementCreationConflictingStates: AgreementState[] = [
   "Active",
   "Suspended",
