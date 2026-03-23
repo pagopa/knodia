@@ -6,16 +6,9 @@ import {
   KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
-import {
-  assertSQLFiltersAreDefined,
-  throwIfMultipleOrEmpty,
-} from "@knodia/db-readmodel-commons/utils";
-import { and, eq, SQL } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
-import type {
-  NewRemoteResourceAgreement,
-  RemoteResourceAgreementSQL,
-} from "../agreement.ts";
+import type { NewRemoteResourceAgreement } from "../agreement.ts";
 
 import { remoteResourceAgreement } from "../agreement.ts";
 
@@ -25,24 +18,6 @@ export type RemoteResourceDbService = ReturnType<
 
 export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async getAgreementByFilters(
-      filters: SQL | undefined,
-    ): Promise<RemoteResourceAgreementSQL> {
-      assertSQLFiltersAreDefined(filters);
-
-      const queryResult = await db
-        .select()
-        .from(remoteResourceAgreement)
-        .where(filters);
-
-      const remoteAgreement = throwIfMultipleOrEmpty(
-        queryResult,
-        "remote resource agreement",
-        (r) => r.agreementId,
-      );
-
-      return remoteAgreement;
-    },
     async getAgreementById(
       agreementId: ExternalId<AgreementId>,
       knodeId: KnodeId,
@@ -59,7 +34,7 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result ?? undefined;
     },
-    async getDistinctKnodes(consumerId: OrganizationId) {
+    async getAgreementsDistinctKnodes(consumerId: OrganizationId) {
       const queryResult = await db
         .selectDistinctOn([remoteResourceAgreement.knodeId])
         .from(remoteResourceAgreement)

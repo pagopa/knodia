@@ -12,12 +12,12 @@ import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
   assertEntityExists,
   getExternalEntitiesMap,
-} from "@knodia/fastify-zod-api-commons";
-import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+} from "@knodia/fastify-zod-api-commons/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,

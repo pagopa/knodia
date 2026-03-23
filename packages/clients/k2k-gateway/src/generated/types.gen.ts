@@ -50,6 +50,13 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
+/**
  * Unique Knode identifier
  */
 export type KnodeId = 'ORION' | 'LYNX';
@@ -335,10 +342,52 @@ export type Organization = {
     name: string;
 };
 
-export type Organizations = {
-    pagination: Pagination;
-    results: Array<Organization>;
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
 };
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+/**
+ * Key-value pairs representing the Consumer's answers to the Knode's purpose form
+ */
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Seed data to create a new Purpose
+ */
+export type PurposeSeed = {
+    /**
+     * Identifier of the Consumer Organization creating the Purpose
+     */
+    consumerId: OrganizationId;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
+    eserviceId: EserviceId;
+    formAnswersJson: PurposeFormAnswers;
+    name: LocalizedPurposeName;
+};
+
+/**
+ * Unique identifier of the created Purpose resource
+ */
+export type CreatedPurposeResource = CreatedResource;
 
 export type GetStatusData = {
     body?: never;
@@ -500,6 +549,10 @@ export type GetAgreementsData = {
          */
         consumerId?: OrganizationId;
         /**
+         * Filter by E-service ID
+         */
+        eserviceId?: EserviceId;
+        /**
          * Filter by Agreement State
          */
         state?: AgreementState;
@@ -620,40 +673,35 @@ export type GetOrganizationResponses = {
 
 export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
 
-export type GetOrganizationsData = {
-    body?: never;
+export type CreatePurposeData = {
+    body: PurposeSeed;
     path?: never;
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-        /**
-         * Filter by Organization ID
-         */
-        organizationId?: Array<OrganizationId>;
-    };
-    url: '/organizations';
+    query?: never;
+    url: '/purposes';
 };
 
-export type GetOrganizationsErrors = {
+export type CreatePurposeErrors = {
     /**
      * Bad Request
      */
     400: Problem;
-};
-
-export type GetOrganizationsError = GetOrganizationsErrors[keyof GetOrganizationsErrors];
-
-export type GetOrganizationsResponses = {
     /**
-     * Organizations retrieved successfully
+     * Not Found
      */
-    200: Organizations;
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
-export type GetOrganizationsResponse = GetOrganizationsResponses[keyof GetOrganizationsResponses];
+export type CreatePurposeError = CreatePurposeErrors[keyof CreatePurposeErrors];
+
+export type CreatePurposeResponses = {
+    /**
+     * Purpose created successfully
+     */
+    201: CreatedPurposeResource;
+};
+
+export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];

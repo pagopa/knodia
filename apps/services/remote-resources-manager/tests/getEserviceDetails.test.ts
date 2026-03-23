@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import type { API_KnodeId } from "@knodia/common-models/internalApi";
+import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+
+import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockEservice,
@@ -11,6 +15,7 @@ import { toAPI_EserviceDetails } from "../src/models/eservice/apiConverter.ts";
 import {
   toK2KEservice,
   toK2KEserviceVersion,
+  toK2KKnodeId,
   toK2KOrganization,
 } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
@@ -22,6 +27,7 @@ const allowedTestTokens: TestToken[] = [
 const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
 const getOrganizationMock = vi.hoisted(() => vi.fn());
+const getAgreementsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -31,6 +37,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     ...original,
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
+      getAgreements: getAgreementsMock,
       getEservice: getEserviceMock,
       getEserviceLatestVersion: getEserviceLatestVersionMock,
       getOrganization: getOrganizationMock,
@@ -40,7 +47,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
 
 describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const eserviceId = crypto.randomUUID();
-  const knodeId = "Orion";
+  const knodeId: API_KnodeId = "Orion";
 
   const eservice = getMockEservice({ latestVersionState: "Active" });
   const eserviceVersion = eservice.versions[0]!;
@@ -56,16 +63,46 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     k2kOrganization,
   );
 
+  const emptyAgreementsResponse = {
+    pagination: { limit: 1, offset: 0, total: 0 },
+    results: [],
+  };
+
+  const expectedAgreementsQuery = {
+    consumerId: TEST_ORGANIZATION_ID,
+    eserviceId,
+    limit: 1,
+    offset: 0,
+    state: "ACTIVE",
+  };
+
+  const buildK2KAgreement = (
+    overrides: Partial<k2kGatewayApi.Agreement> &
+      Pick<k2kGatewayApi.Agreement, "id" | "state">,
+  ): k2kGatewayApi.Agreement => ({
+    attributes: [],
+    consumer: { id: TEST_ORGANIZATION_ID, knodeId: toK2KKnodeId(knodeId) },
+    eserviceId,
+    eserviceVersionId: crypto.randomUUID(),
+    producerId: k2kEservice.producerId,
+    updatedAt: new Date().toISOString(),
+    ...overrides,
+  });
+
   beforeEach(() => {
     getEserviceMock.mockReset();
     getEserviceLatestVersionMock.mockReset();
     getOrganizationMock.mockReset();
+    getAgreementsMock.mockReset();
   });
 
-  it("should return 200 with converted detail on success", async () => {
+  const expectedPath = { eserviceId };
+
+  it("should return 200 with no agreement when none exists", async () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
     getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getAgreementsMock.mockResolvedValue({ data: emptyAgreementsResponse });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get(`/eservices/${eserviceId}`)
@@ -73,25 +110,24 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
 
     expect(response.statusCode).toBe(200);
 
-    const expectedPath = { eserviceId };
-
     expect(getEserviceMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        path: expectedPath,
-      }),
+      expect.objectContaining({ path: expectedPath }),
     );
     expect(getEserviceLatestVersionMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        path: expectedPath,
-      }),
+      expect.objectContaining({ path: expectedPath }),
     );
     expect(getOrganizationMock).toHaveBeenCalledWith(
       expect.objectContaining({
         path: { organizationId: k2kEservice.producerId },
       }),
     );
+    expect(getAgreementsMock).toHaveBeenCalledWith(
+      expect.objectContaining({ query: expectedAgreementsQuery }),
+    );
 
-    expect(response.json()).toEqual({
+    const body = response.json();
+    expect(body.agreement).toBeUndefined();
+    expect(body).toEqual({
       ...expectedApiDetail,
       producer: {
         email: "info@example.com",
@@ -100,6 +136,35 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
         name: k2kOrganization.name,
         notes: "Notes",
       },
+    });
+  });
+
+  it("should return 200 with agreement when an active one exists", async () => {
+    const k2kAgreement = buildK2KAgreement({
+      id: crypto.randomUUID(),
+      state: "ACTIVE",
+    });
+
+    getEserviceMock.mockResolvedValue({ data: k2kEservice });
+    getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
+    getOrganizationMock.mockResolvedValue({ data: k2kOrganization });
+    getAgreementsMock.mockResolvedValue({
+      data: {
+        pagination: { limit: 1, offset: 0, total: 1 },
+        results: [k2kAgreement],
+      },
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get(`/eservices/${eserviceId}`)
+      .query({ knodeId });
+
+    expect(response.statusCode).toBe(200);
+
+    const body = response.json();
+    expect(body.agreement).toEqual({
+      id: k2kAgreement.id,
+      state: "Active",
     });
   });
 
