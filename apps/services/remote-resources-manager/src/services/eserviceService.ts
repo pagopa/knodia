@@ -199,14 +199,16 @@ export function eserviceServiceBuilder(
             await Promise.all([
               getExternalEntitiesMap({
                 fetchFn: ({ entityIds }) =>
-                  Promise.all(
-                    entityIds.map((organizationId) =>
-                      k2kGatewayApi.getOrganization({
-                        client: k2kGatewayClient,
-                        path: { organizationId },
-                      }),
-                    ),
-                  ).then((responses) => responses.map((res) => res.data)),
+                  k2kGatewayApi
+                    .getOrganizations({
+                      client: k2kGatewayClient,
+                      query: {
+                        limit: entityIds.length,
+                        offset: 0,
+                        organizationId: entityIds,
+                      },
+                    })
+                    .then((res) => res.data.results),
                 getEntityId: (agreement) => agreement.producerId,
                 getKnodeId: knodeId,
                 items: consumerAgreements.results,
