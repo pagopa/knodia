@@ -130,14 +130,9 @@ describe("GET /eservices (getEservices)", () => {
   }
 
   const agreementStates = [...API_AgreementState.options] as const;
-  const testCases = agreementStates.map((agreementState, seed) => {
-    const mocks = createMocks(agreementState, seed);
-
-    return {
-      agreementState,
-      ...mocks,
-    };
-  });
+  const testCases = agreementStates.map((agreementState, seed) =>
+    createMocks(agreementState, seed),
+  );
 
   beforeEach(() => {
     getAgreementsMock.mockReset();

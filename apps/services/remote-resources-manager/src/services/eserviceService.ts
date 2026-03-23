@@ -8,8 +8,6 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import { EserviceId } from "@knodia/common-models/ids";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
-import { remoteResourceAgreement } from "@knodia/db-remote-resource";
 import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import { genericError } from "@knodia/fastify-zod-api-commons/models";
@@ -17,7 +15,6 @@ import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
-import { eq } from "drizzle-orm";
 
 import type {
   API_CatalogEserviceSearchResults,
@@ -233,15 +230,8 @@ export function eserviceServiceBuilder(
 
           results = results.concat(
             await Promise.all(
-              consumerAgreements.results.map(async (agreement) => {
-                const remoteAgreement =
-                  await remoteResourceDbService.getAgreementByFilters(
-                    eq(remoteResourceAgreement.agreementId, agreement.id),
-                  );
-
-                const knodeId = API_KnodeId.parse(remoteAgreement.knodeId);
-
-                return toAPI_Eservice({
+              consumerAgreements.results.map(async (agreement) =>
+                toAPI_Eservice({
                   agreement,
                   eservice: assertEntityExists(
                     eservicesMap
@@ -264,8 +254,8 @@ export function eserviceServiceBuilder(
                     ),
                     knodeId,
                   },
-                });
-              }),
+                }),
+              ),
             ),
           );
 
