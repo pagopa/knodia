@@ -39,7 +39,7 @@ export interface JsonSchemaProperty {
 }
 
 export interface LabelElement {
-  options?: { variant?: "info" };
+  options?: { variant?: "error" | "info" | "warning" };
   rule?: Rule;
   text: string;
   type: "Label";

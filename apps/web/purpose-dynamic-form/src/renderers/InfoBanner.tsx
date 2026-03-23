@@ -1,12 +1,21 @@
 interface Props {
   text: string;
+  variant?: "error" | "info" | "warning";
 }
 
-export function InfoBanner({ text }: Props) {
+export function InfoBanner({ text, variant = "info" }: Props) {
+  const colorClasses = {
+    error: "bg-red-50 text-red-700",
+    info: "bg-blue-50 text-blue-700",
+    warning: "bg-yellow-50 text-yellow-700",
+  };
+
   return (
-    <div className="flex items-center gap-4 rounded-lg bg-blue-50 px-4 py-3">
+    <div
+      className={`flex items-center gap-4 rounded-lg px-4 py-3 ${colorClasses[variant]}`}
+    >
       <svg
-        className="size-6 shrink-0 text-blue-500"
+        className={"size-6 shrink-0"}
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"

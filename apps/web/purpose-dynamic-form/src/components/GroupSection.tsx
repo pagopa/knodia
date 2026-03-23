@@ -41,7 +41,13 @@ export function GroupSection({
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
           if (!isLabelVisible(element, values, visibleFieldNames)) return null;
-          return <InfoBanner key={`label-${i}`} text={element.text} />;
+          return (
+            <InfoBanner
+              key={`label-${i}`}
+              text={element.text}
+              variant={element.options?.variant}
+            />
+          );
         }
         const fieldName = scopeToFieldName(element.scope);
         if (!visibleFieldNames.has(fieldName)) return null;
