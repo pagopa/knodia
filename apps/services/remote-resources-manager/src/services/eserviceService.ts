@@ -87,33 +87,35 @@ export function eserviceServiceBuilder(
         query: reqQuery,
       });
 
-      const uniqueProducerIds = [
-        ...new Set(data.results.map((r) => r.producerId)),
-      ];
-
-      const organizations = await Promise.all(
-        uniqueProducerIds.map((organizationId) =>
-          k2kGatewayApi.getOrganization({
-            client: k2kGatewayClient,
-            path: { organizationId },
-          }),
-        ),
-      );
-
-      const producerNamesMap = new Map(
-        organizations.map(({ data: org }) => [org.id, org.name]),
-      );
+      const producersMap = await getExternalEntitiesMap({
+        fetchFn: async ({ entityIds }) =>
+          await k2kGatewayApi
+            .getOrganizations({
+              client: k2kGatewayClient,
+              query: {
+                limit: entityIds.length,
+                offset: 0,
+                organizationId: entityIds,
+              },
+            })
+            .then((res) => res.data.results),
+        getEntityId: (agreement) => agreement.producerId,
+        getKnodeId: knodeId,
+        items: data.results,
+      });
 
       return {
         pagination: data.pagination,
         results: data.results.map((r) => {
-          const producerName = producerNamesMap.get(r.producerId);
-          if (!producerName) {
+          const producer = producersMap
+            .get(knodeId)
+            ?.get(unsafeBrandExternalId(r.producerId));
+          if (!producer) {
             throw genericError(
               `Producer Organization ${r.producerId} not found for E-service ${r.id}`,
             );
           }
-          return toAPI_CatalogEserviceSearchResult(r, producerName);
+          return toAPI_CatalogEserviceSearchResult(r, producer.name);
         }),
       };
     },
@@ -188,15 +190,17 @@ export function eserviceServiceBuilder(
           const [producersMap, eservicesMap, eserviceVersionsMap] =
             await Promise.all([
               getExternalEntitiesMap({
-                fetchFn: ({ entityIds }) =>
-                  Promise.all(
-                    entityIds.map((organizationId) =>
-                      k2kGatewayApi.getOrganization({
-                        client: k2kGatewayClient,
-                        path: { organizationId },
-                      }),
-                    ),
-                  ).then((responses) => responses.map((res) => res.data)),
+                fetchFn: async ({ entityIds }) =>
+                  await k2kGatewayApi
+                    .getOrganizations({
+                      client: k2kGatewayClient,
+                      query: {
+                        limit: entityIds.length,
+                        offset: 0,
+                        organizationId: entityIds,
+                      },
+                    })
+                    .then((res) => res.data.results),
                 getEntityId: (agreement) => agreement.producerId,
                 getKnodeId: knodeId,
                 items: consumerAgreements.results,

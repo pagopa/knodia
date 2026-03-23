@@ -335,6 +335,11 @@ export type Organization = {
     name: string;
 };
 
+export type Organizations = {
+    pagination: Pagination;
+    results: Array<Organization>;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -614,3 +619,41 @@ export type GetOrganizationResponses = {
 };
 
 export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
+
+export type GetOrganizationsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Organization ID
+         */
+        organizationId?: Array<OrganizationId>;
+    };
+    url: '/organizations';
+};
+
+export type GetOrganizationsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetOrganizationsError = GetOrganizationsErrors[keyof GetOrganizationsErrors];
+
+export type GetOrganizationsResponses = {
+    /**
+     * Organizations retrieved successfully
+     */
+    200: Organizations;
+};
+
+export type GetOrganizationsResponse = GetOrganizationsResponses[keyof GetOrganizationsResponses];
