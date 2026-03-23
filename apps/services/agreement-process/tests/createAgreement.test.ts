@@ -215,10 +215,14 @@ describe("POST /agreements (createAgreement)", async () => {
       });
       await eserviceWriterService.upsertEservice(testEservice, 1);
 
+      const testConsumerAttributes =
+        testEservice.versions[0]!.requiredAttributes.map((group) => group[0]!);
+
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/agreements")
         .body({
           ...body,
+          consumerAttributes: testConsumerAttributes,
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
         } satisfies API_AgreementSeed);

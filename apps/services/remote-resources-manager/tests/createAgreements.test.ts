@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Agreement } from "@knodia/agreement-models";
 import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
-import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
@@ -32,7 +31,6 @@ import { injectAppRequest } from "./utils.ts";
 
 const createAgreementMock = vi.hoisted(() => vi.fn());
 const getAgreementMock = vi.hoisted(() => vi.fn());
-const getEserviceLatestVersionMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -44,7 +42,6 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
       ...original.k2kGatewayApi,
       createAgreement: createAgreementMock,
       getAgreement: getAgreementMock,
-      getEserviceLatestVersion: getEserviceLatestVersionMock,
     },
   };
 });
@@ -55,11 +52,7 @@ const allowedTestTokens: TestToken[] = [
 
 describe("POST /agreements (createAgreement)", () => {
   const eservice = getMockEservice({ latestVersionState: "Active" });
-  const k2kBody: k2kGatewayApi.AgreementSeed = {
-    consumerId: TEST_ORGANIZATION_ID,
-    eserviceId: eservice.id,
-    eserviceVersionId: eservice.versions[0]!.id,
-  };
+  const testOrganization = getMockOrganization();
   const body: API_AgreementSeed = {
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
@@ -80,12 +73,9 @@ describe("POST /agreements (createAgreement)", () => {
     producerId: agreement.producerId,
   };
 
-  const testOrganization = getMockOrganization();
-
   beforeEach(() => {
     createAgreementMock.mockReset();
     getAgreementMock.mockReset();
-    getEserviceLatestVersionMock.mockReset();
   });
 
   it("should return 201 with converted results on success", async () => {
@@ -94,9 +84,6 @@ describe("POST /agreements (createAgreement)", () => {
     });
     getAgreementMock.mockResolvedValue({
       data: toK2KAgreement(agreement),
-    });
-    getEserviceLatestVersionMock.mockResolvedValue({
-      data: { requiredAttributes: [] },
     });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
@@ -107,7 +94,12 @@ describe("POST /agreements (createAgreement)", () => {
 
     expect(createAgreementMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: k2kBody,
+        body: expect.objectContaining({
+          consumerAttributes: testOrganization.attributes,
+          consumerId: TEST_ORGANIZATION_ID,
+          eserviceId: body.eserviceId,
+          eserviceVersionId: body.eserviceVersionId,
+        }),
       }),
     );
 
@@ -169,86 +161,5 @@ describe("POST /agreements (createAgreement)", () => {
       .post("/agreements")
       .body(body);
     expect(response.statusCode).toBe(403);
-  });
-
-  it("should return 201 when eservice has no required attributes", async () => {
-    createAgreementMock.mockResolvedValue({ data: mockK2KResponse });
-    getEserviceLatestVersionMock.mockResolvedValue({
-      data: { requiredAttributes: [] },
-    });
-
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/agreements")
-      .body(body);
-
-    expect(response.statusCode).toBe(201);
-  });
-
-  it("should return 201 when consumer possesses all required attributes", async () => {
-    createAgreementMock.mockResolvedValue({ data: mockK2KResponse });
-    getEserviceLatestVersionMock.mockResolvedValue({
-      data: {
-        requiredAttributes: [testOrganization.attributes],
-      },
-    });
-
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/agreements")
-      .body(body);
-
-    expect(response.statusCode).toBe(201);
-  });
-
-  it("should return 201 when consumer satisfies all attribute groups via OR semantics", async () => {
-    createAgreementMock.mockResolvedValue({ data: mockK2KResponse });
-    getEserviceLatestVersionMock.mockResolvedValue({
-      data: {
-        requiredAttributes: [
-          [testOrganization.attributes[0]!, { code: "alt_1", scheme: "alt_1" }],
-          [{ code: "alt_2", scheme: "alt_2" }, testOrganization.attributes[0]!],
-        ],
-      },
-    });
-
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/agreements")
-      .body(body);
-
-    expect(response.statusCode).toBe(201);
-  });
-
-  it("should return 403 when consumer does not possess any required attribute", async () => {
-    getEserviceLatestVersionMock.mockResolvedValue({
-      data: {
-        requiredAttributes: [
-          [{ code: "unknown_code", scheme: "unknown_scheme" }],
-        ],
-      },
-    });
-
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/agreements")
-      .body(body);
-
-    expect(response.statusCode).toBe(403);
-    expect(createAgreementMock).not.toHaveBeenCalled();
-  });
-
-  it("should return 403 when consumer fails to satisfy one attribute group", async () => {
-    getEserviceLatestVersionMock.mockResolvedValue({
-      data: {
-        requiredAttributes: [
-          [testOrganization.attributes[0]!],
-          [{ code: "missing_code", scheme: "missing_scheme" }],
-        ],
-      },
-    });
-
-    const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post("/agreements")
-      .body(body);
-
-    expect(response.statusCode).toBe(403);
-    expect(createAgreementMock).not.toHaveBeenCalled();
   });
 });

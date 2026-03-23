@@ -1,14 +1,9 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  AgreementId,
-  EserviceId,
-  KnodeId,
-} from "@knodia/common-models/ids";
+import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -29,7 +24,6 @@ import {
 } from "../models/agreement/apiConverter.ts";
 import { agreementNotFound } from "../models/errors.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
-import { assertConsumerHasRequiredAttributes } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -51,23 +45,14 @@ export function agreementServiceBuilder(
         `Creating agreement for e-service owned by Knode ${knodeId} with body data`,
       );
 
-      const [organization, { data: eserviceVersion }] = await Promise.all([
-        retrieveOrganization(consumerId, readmodelService),
-        k2kGatewayApi.getEserviceLatestVersion({
-          client: k2kGatewayClient,
-          path: { eserviceId },
-        }),
-      ]);
-
-      assertConsumerHasRequiredAttributes(
-        organization.attributes,
-        eserviceVersion.requiredAttributes,
+      const organization = await retrieveOrganization(
         consumerId,
-        unsafeBrandExternalId<EserviceId>(eserviceId),
+        readmodelService,
       );
 
       const { data } = await k2kGatewayApi.createAgreement({
         body: {
+          consumerAttributes: organization.attributes,
           consumerId,
           eserviceId,
           eserviceVersionId,
