@@ -73,7 +73,7 @@ export function organizationServiceBuilder(
       params: API_GetOrganizationsQueryParams,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<ListResult<Organization>> {
-      logger.info({ params }, "Getting organizations with params");
+      logger.info({ params }, "Getting Organizations with params");
 
       return await readmodelService.getOrganizations(params);
     },

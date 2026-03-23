@@ -69,7 +69,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestQuery: req.query },
-        "Getting organizations with params",
+        "Getting Organizations with params",
       );
 
       const token = await tokenProvider.get();
