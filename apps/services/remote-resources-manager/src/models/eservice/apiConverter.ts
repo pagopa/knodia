@@ -133,6 +133,7 @@ export const toAPI_Eservice = ({
     knodeId: producer.knodeId,
     name: producer.name,
   },
+  updatedAt: eservice.updatedAt,
   version: {
     id: eserviceVersion.id,
     requiredAttributes: eserviceVersion.requiredAttributes,
