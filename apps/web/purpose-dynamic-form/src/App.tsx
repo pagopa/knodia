@@ -9,7 +9,10 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 
+import { CompactFormPage } from "./demo/CompactFormPage";
+import { FlatFormPage } from "./demo/FlatFormPage";
 import { Pa31Page } from "./demo/Pa31Page";
+import { ThreeStepFormPage } from "./demo/ThreeStepFormPage";
 import { TwoFormAjvPage } from "./demo/TwoFormAjvPage";
 import { TwoFormJsonFormsPage } from "./demo/TwoFormJsonFormsPage";
 import { TwoFormTanstackAjvPage } from "./demo/TwoFormTanstackAjvPage";
@@ -30,6 +33,11 @@ function NavSelect() {
         >
           <optgroup label="PDND schema">
             <option value="/pa31">PA 3.1</option>
+          </optgroup>
+          <optgroup label="UI schema variants">
+            <option value="/compact-form">Compact Form</option>
+            <option value="/flat-form">Flat Form</option>
+            <option value="/three-step-form">Three-Step Form</option>
           </optgroup>
           <optgroup label="Two-form approaches">
             <option value="/two-form-zod">Zod</option>
@@ -95,9 +103,30 @@ const twoFormUIKitRoute = createRoute({
   path: "/two-form-uikit",
 });
 
+const compactFormRoute = createRoute({
+  component: CompactFormPage,
+  getParentRoute: () => rootRoute,
+  path: "/compact-form",
+});
+
+const flatFormRoute = createRoute({
+  component: FlatFormPage,
+  getParentRoute: () => rootRoute,
+  path: "/flat-form",
+});
+
+const threeStepFormRoute = createRoute({
+  component: ThreeStepFormPage,
+  getParentRoute: () => rootRoute,
+  path: "/three-step-form",
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   pa31Route,
+  compactFormRoute,
+  flatFormRoute,
+  threeStepFormRoute,
   twoFormZodRoute,
   twoFormAjvRoute,
   twoFormJsonFormsRoute,
