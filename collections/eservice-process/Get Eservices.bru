@@ -12,10 +12,11 @@ get {
 params:query {
   offset: 0
   limit: 50
+  ~eserviceId: {{eserviceId}}
   ~q:
   ~state: Active
   ~mode: ProvideData
-  ~producerId:
+  ~producerId: {{organizationId}}
   ~sortBy: name
   ~sortOrder: asc
 }

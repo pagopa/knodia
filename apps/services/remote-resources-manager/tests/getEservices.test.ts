@@ -36,7 +36,7 @@ import { injectAppRequest } from "./utils.ts";
 const getAgreementsMock = vi.hoisted(() => vi.fn());
 const getEserviceMock = vi.hoisted(() => vi.fn());
 const getEserviceVersionMock = vi.hoisted(() => vi.fn());
-const getOrganizationMock = vi.hoisted(() => vi.fn());
+const getOrganizationsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -49,7 +49,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
       getAgreements: getAgreementsMock,
       getEservice: getEserviceMock,
       getEserviceLatestVersion: getEserviceVersionMock,
-      getOrganization: getOrganizationMock,
+      getOrganizations: getOrganizationsMock,
     },
   };
 });
@@ -80,7 +80,7 @@ describe("GET /eservices (getEservices)", () => {
     k2kAgreement: k2kGatewayApi.Agreement;
     k2kEservice: k2kGatewayApi.Eservice;
     k2kEserviceVersion: k2kGatewayApi.EserviceVersion;
-    k2kOrganization: k2kGatewayApi.Organization;
+    k2kOrganizations: k2kGatewayApi.Organizations;
     remoteAgreement: RemoteResourceAgreementSQL;
   } {
     const eservice = getMockEservice({ latestVersionState: "Active", seed });
@@ -90,6 +90,10 @@ describe("GET /eservices (getEservices)", () => {
 
     const organization = getMockOrganization();
     const k2kOrganization = toK2KOrganization(organization);
+    const k2kOrganizations: k2kGatewayApi.Organizations = {
+      pagination: { limit: 1, offset: 0, total: 1 },
+      results: [k2kOrganization],
+    };
 
     const agreement = {
       ...getMockAgreement({ seed, state }),
@@ -124,7 +128,7 @@ describe("GET /eservices (getEservices)", () => {
       k2kAgreement,
       k2kEservice,
       k2kEserviceVersion,
-      k2kOrganization,
+      k2kOrganizations,
       remoteAgreement,
     };
   }
@@ -138,7 +142,7 @@ describe("GET /eservices (getEservices)", () => {
     getAgreementsMock.mockReset();
     getEserviceMock.mockReset();
     getEserviceVersionMock.mockReset();
-    getOrganizationMock.mockReset();
+    getOrganizationsMock.mockReset();
   });
 
   const agreementStateQueryParams = [...agreementStates, undefined] as const;
@@ -151,7 +155,7 @@ describe("GET /eservices (getEservices)", () => {
         k2kAgreement,
         k2kEservice,
         k2kEserviceVersion,
-        k2kOrganization,
+        k2kOrganizations,
         remoteAgreement,
       } =
         agreementState === undefined
@@ -172,8 +176,8 @@ describe("GET /eservices (getEservices)", () => {
       getEserviceVersionMock.mockResolvedValue({
         data: k2kEserviceVersion,
       });
-      getOrganizationMock.mockResolvedValue({
-        data: k2kOrganization,
+      getOrganizationsMock.mockResolvedValue({
+        data: k2kOrganizations,
       });
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
@@ -210,9 +214,13 @@ describe("GET /eservices (getEservices)", () => {
             },
           }),
         );
-        expect(getOrganizationMock).toHaveBeenCalledWith(
+        expect(getOrganizationsMock).toHaveBeenCalledWith(
           expect.objectContaining({
-            path: { organizationId: agreement.producerId },
+            query: {
+              limit: k2kOrganizations.pagination.limit,
+              offset: k2kOrganizations.pagination.offset,
+              organizationId: k2kOrganizations.results.map((org) => org.id),
+            },
           }),
         );
       }
