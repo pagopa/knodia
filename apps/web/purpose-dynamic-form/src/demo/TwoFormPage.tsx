@@ -2,11 +2,11 @@ import { useCallback, useMemo, useState } from "react";
 
 import type {
   FormValues,
-  GroupElement,
   JsonSchema,
   UISchema,
   ValidateFn,
 } from "../engine/types";
+import type { StepLayout } from "../engine/uischemaParser";
 
 import { GroupSection } from "../components/GroupSection";
 import { StepIndicator } from "../components/StepIndicator";
@@ -16,7 +16,7 @@ import {
   scopeToFieldName,
 } from "../engine/dependencyResolver";
 import { getDefaultValues } from "../engine/schemaParser";
-import { collectGroups } from "../engine/uischemaParser";
+import { collectGroups, collectSteps } from "../engine/uischemaParser";
 import { useVisibleFields } from "../hooks/useVisibleFields";
 
 interface Props {
@@ -26,15 +26,9 @@ interface Props {
   validate: ValidateFn;
 }
 
-interface StepConfig {
-  stepUischema: UISchema;
-  submitLabel: string;
-  subtitle: string;
-  title: string;
-}
-
 export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
-  const steps = useMemo(() => getSteps(uischema), [uischema]);
+  const steps = useMemo(() => collectSteps(uischema), [uischema]);
+  const isMultiStep = steps.length > 1;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [values, setValues] = useState<FormValues>(() =>
@@ -46,13 +40,17 @@ export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
     null,
   );
 
-  const step = steps[currentStep] as StepConfig;
+  const step = steps[currentStep] as StepLayout;
+  const stepUischema: UISchema = useMemo(
+    () => ({ elements: step.elements, type: "VerticalLayout" as const }),
+    [step.elements],
+  );
   const { visibleFieldNames } = useVisibleFields(uischema, values);
 
   const stepVisibleFields = useMemo(() => {
-    const stepVisible = getVisibleFields(step.stepUischema, values);
+    const stepVisible = getVisibleFields(stepUischema, values);
     return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
-  }, [step.stepUischema, values, visibleFieldNames]);
+  }, [stepUischema, values, visibleFieldNames]);
 
   const handleChange = useCallback(
     (fieldName: string, newValue: string | string[]) => {
@@ -111,24 +109,33 @@ export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
 
       <div className="flex justify-center flex-1">
         <div className="flex flex-col gap-16 max-w-160 w-full px-10 pt-10 pb-16">
-          <StepIndicator currentStep={currentStep} totalSteps={steps.length} />
+          {isMultiStep && (
+            <StepIndicator
+              currentStep={currentStep}
+              totalSteps={steps.length}
+            />
+          )}
 
           <div className="flex flex-col gap-10">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-[32px] font-semibold leading-[1.2] text-slate-700">
-                {step.title}
-              </h2>
-              <p className="text-sm leading-relaxed text-slate-700">
-                {step.subtitle}
-              </p>
-            </div>
+            {step.label && (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-[32px] font-semibold leading-[1.2] text-slate-700">
+                  {step.label}
+                </h2>
+                {step.description && (
+                  <p className="text-sm leading-relaxed text-slate-700">
+                    {step.description}
+                  </p>
+                )}
+              </div>
+            )}
 
             <form id={formId} onSubmit={handleSubmit}>
               <FormStep
                 errors={errors}
                 jsonSchema={jsonSchema}
                 onChange={handleChange}
-                stepUischema={step.stepUischema}
+                stepUischema={stepUischema}
                 values={values}
                 visibleFieldNames={visibleFieldNames}
               />
@@ -154,7 +161,7 @@ export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
               form={formId}
               type="submit"
             >
-              {step.submitLabel}
+              {currentStep < steps.length - 1 ? "Next" : "Create Purpose"}
             </button>
           </div>
         </div>
@@ -223,17 +230,4 @@ function FormStep({
       ))}
     </>
   );
-}
-
-function getSteps(uischema: UISchema): StepConfig[] {
-  const topGroups = uischema.elements.filter(
-    (el): el is GroupElement => el.type === "Group",
-  );
-
-  return topGroups.map((group, i) => ({
-    stepUischema: { elements: group.elements, type: "VerticalLayout" as const },
-    submitLabel: i < topGroups.length - 1 ? "Next" : "Create Purpose",
-    subtitle: group.options?.description ?? "",
-    title: group.label ?? "",
-  }));
 }

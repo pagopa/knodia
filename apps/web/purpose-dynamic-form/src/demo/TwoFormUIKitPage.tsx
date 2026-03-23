@@ -1,13 +1,8 @@
 import { Button, Steps } from "@knodia/ui-kit/ui";
 import { useCallback, useMemo, useState } from "react";
 
-import type {
-  FormValues,
-  GroupElement,
-  JsonSchema,
-  UISchema,
-} from "../engine/types";
-import type { GroupLayout } from "../engine/uischemaParser";
+import type { FormValues, JsonSchema, UISchema } from "../engine/types";
+import type { GroupLayout, StepLayout } from "../engine/uischemaParser";
 
 import {
   getVisibleFields,
@@ -16,7 +11,11 @@ import {
 } from "../engine/dependencyResolver";
 import { getDefaultValues } from "../engine/schemaParser";
 import { loadSchema, loadUiSchema } from "../engine/types";
-import { collectErrorMessages, collectGroups } from "../engine/uischemaParser";
+import {
+  collectErrorMessages,
+  collectGroups,
+  collectSteps,
+} from "../engine/uischemaParser";
 import { createZodValidator } from "../engine/zod/schemaBuilder";
 import { useVisibleFields } from "../hooks/useVisibleFields";
 import { FieldRenderer } from "../renderers/uikit/FieldRenderer";
@@ -27,21 +26,15 @@ import uischemaData from "../schemas/two-form/uischema.json";
 const schema = loadSchema(jsonSchemaData);
 const ui = loadUiSchema(uischemaData);
 
-interface StepConfig {
-  stepUischema: UISchema;
-  submitLabel: string;
-  subtitle: string;
-  title: string;
-}
-
 export function TwoFormUIKitPage() {
   const validate = useMemo(
     () => createZodValidator(schema, collectErrorMessages(ui)),
     [],
   );
 
-  const steps = useMemo(() => getSteps(ui), []);
-  const stepLabels = useMemo(() => steps.map((s) => s.title), [steps]);
+  const steps = useMemo(() => collectSteps(ui), []);
+  const stepLabels = useMemo(() => steps.map((s) => s.label ?? ""), [steps]);
+  const isMultiStep = steps.length > 1;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [values, setValues] = useState<FormValues>(() =>
@@ -53,13 +46,17 @@ export function TwoFormUIKitPage() {
     null,
   );
 
-  const step = steps[currentStep] as StepConfig;
+  const step = steps[currentStep] as StepLayout;
+  const stepUischema: UISchema = useMemo(
+    () => ({ elements: step.elements, type: "VerticalLayout" as const }),
+    [step.elements],
+  );
   const { visibleFieldNames } = useVisibleFields(ui, values);
 
   const stepVisibleFields = useMemo(() => {
-    const stepVisible = getVisibleFields(step.stepUischema, values);
+    const stepVisible = getVisibleFields(stepUischema, values);
     return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
-  }, [step.stepUischema, values, visibleFieldNames]);
+  }, [stepUischema, values, visibleFieldNames]);
 
   const handleChange = useCallback(
     (fieldName: string, newValue: string | string[]) => {
@@ -118,28 +115,34 @@ export function TwoFormUIKitPage() {
 
       <div className="flex justify-center flex-1">
         <div className="flex flex-col gap-16 max-w-160 w-full px-10 pt-10 pb-16">
-          <Steps
-            ariaLabel="Form progress"
-            current={currentStep}
-            steps={stepLabels}
-          />
+          {isMultiStep && (
+            <Steps
+              ariaLabel="Form progress"
+              current={currentStep}
+              steps={stepLabels}
+            />
+          )}
 
           <div className="flex flex-col gap-10">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-[32px] font-semibold leading-[1.2] text-primary-light-high-contrast">
-                {step.title}
-              </h2>
-              <p className="body-md text-primary-light-mid-contrast">
-                {step.subtitle}
-              </p>
-            </div>
+            {step.label && (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-[32px] font-semibold leading-[1.2] text-primary-light-high-contrast">
+                  {step.label}
+                </h2>
+                {step.description && (
+                  <p className="body-md text-primary-light-mid-contrast">
+                    {step.description}
+                  </p>
+                )}
+              </div>
+            )}
 
             <form id={formId} onSubmit={handleSubmit}>
               <FormStep
                 errors={errors}
                 jsonSchema={schema}
                 onChange={handleChange}
-                stepUischema={step.stepUischema}
+                stepUischema={stepUischema}
                 values={values}
                 visibleFieldNames={visibleFieldNames}
               />
@@ -167,7 +170,7 @@ export function TwoFormUIKitPage() {
                 form?.requestSubmit();
               }}
             >
-              {step.submitLabel}
+              {currentStep < steps.length - 1 ? "Next" : "Create Purpose"}
             </Button>
           </div>
         </div>
@@ -236,19 +239,6 @@ function FormStep({
       ))}
     </>
   );
-}
-
-function getSteps(uischema: UISchema): StepConfig[] {
-  const topGroups = uischema.elements.filter(
-    (el): el is GroupElement => el.type === "Group",
-  );
-
-  return topGroups.map((group, i) => ({
-    stepUischema: { elements: group.elements, type: "VerticalLayout" as const },
-    submitLabel: i < topGroups.length - 1 ? "Next" : "Create Purpose",
-    subtitle: group.options?.description ?? "",
-    title: group.label ?? "",
-  }));
 }
 
 function GroupSection({

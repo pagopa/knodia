@@ -11,6 +11,12 @@ export interface GroupLayout {
   label?: string | undefined;
 }
 
+export interface StepLayout {
+  description?: string | undefined;
+  elements: UISchemaElement[];
+  label?: string | undefined;
+}
+
 // Recursively flattens the UI Schema tree into a list of Control elements.
 export function collectControls(element: UISchemaElement): ControlElement[] {
   if (element.type === "Control") {
@@ -68,6 +74,27 @@ export function collectGroups(uischema: UISchema): GroupLayout[] {
   }
 
   return groups;
+}
+
+// Extracts step layouts from the UI Schema for multi-step form rendering.
+// If no top-level Groups exist, wraps all elements in a single implicit step.
+export function collectSteps(uischema: UISchema): StepLayout[] {
+  const steps: StepLayout[] = [];
+  for (const child of uischema.elements) {
+    if (child.type === "Group") {
+      steps.push({
+        description: child.options?.description,
+        elements: child.elements,
+        label: child.label,
+      });
+    }
+  }
+
+  if (steps.length === 0) {
+    return [{ elements: uischema.elements }];
+  }
+
+  return steps;
 }
 
 function collectGroupElements(

@@ -18,13 +18,6 @@ export type FormValues = Record<string, string | string[]>;
 
 // UI Schema types (JSON Forms format + extensions)
 
-export interface GroupElement {
-  elements: UISchemaElement[];
-  label?: string;
-  options?: { description?: string };
-  type: "Group";
-}
-
 export interface JsonSchema {
   $schema?: string;
   allOf?: JsonSchemaConditional[];
@@ -76,6 +69,13 @@ interface ControlOptions {
   layout?: "horizontal" | "vertical";
   optionLabels?: Record<string, string>;
   widget: "checkbox" | "radio" | "select" | "switch" | "text" | "textarea";
+}
+
+interface GroupElement {
+  elements: UISchemaElement[];
+  label?: string;
+  options?: { description?: string };
+  type: "Group";
 }
 
 interface HideOptionCondition {

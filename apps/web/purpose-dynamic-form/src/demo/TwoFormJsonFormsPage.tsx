@@ -7,9 +7,12 @@ import { useMemo, useState } from "react";
 import "@jsonforms/vanilla-renderers/example/example.css";
 
 import "../renderers/jsonforms/jsonforms.css";
+import type { StepLayout } from "../engine/uischemaParser";
+
 import { StepIndicator } from "../components/StepIndicator";
 import { injectNonEmptyConstraints } from "../engine/ajv/validation";
-import { loadSchema } from "../engine/types";
+import { loadSchema, loadUiSchema } from "../engine/types";
+import { collectSteps } from "../engine/uischemaParser";
 import { customRenderers } from "../renderers/jsonforms";
 import rawJsonSchema from "../schemas/two-form/schema.json";
 import uischema from "../schemas/two-form/uischema.json";
@@ -33,13 +36,7 @@ for (const [name, prop] of Object.entries(rawJsonSchema.properties)) {
 }
 
 const renderers = [...vanillaRenderers, ...customRenderers];
-
-interface StepConfig {
-  stepUischema: { elements: UISchemaElement[]; type: "VerticalLayout" };
-  submitLabel: string;
-  subtitle: string;
-  title: string;
-}
+const ui = loadUiSchema(uischema);
 
 interface UISchemaElement {
   elements?: UISchemaElement[];
@@ -50,7 +47,8 @@ interface UISchemaElement {
 }
 
 export function TwoFormJsonFormsPage() {
-  const steps = useMemo(() => getSteps(uischema), []);
+  const steps = useMemo(() => collectSteps(ui), []);
+  const isMultiStep = steps.length > 1;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<Record<string, unknown>>(initialData);
@@ -62,11 +60,15 @@ export function TwoFormJsonFormsPage() {
     unknown
   >>(null);
 
-  const step = steps[currentStep] as StepConfig;
+  const step = steps[currentStep] as StepLayout;
+  const stepUischema = useMemo(
+    () => ({ elements: step.elements, type: "VerticalLayout" as const }),
+    [step.elements],
+  );
 
   const stepFields = useMemo(
-    () => collectScopes(step.stepUischema),
-    [step.stepUischema],
+    () => collectScopes(stepUischema as unknown as UISchemaElement),
+    [stepUischema],
   );
 
   const handleChange = ({
@@ -101,17 +103,26 @@ export function TwoFormJsonFormsPage() {
 
       <div className="flex justify-center flex-1">
         <div className="flex flex-col gap-16 max-w-160 w-full px-10 pt-10 pb-16">
-          <StepIndicator currentStep={currentStep} totalSteps={steps.length} />
+          {isMultiStep && (
+            <StepIndicator
+              currentStep={currentStep}
+              totalSteps={steps.length}
+            />
+          )}
 
           <div className="flex flex-col gap-10">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-[32px] font-semibold leading-[1.2] text-slate-700">
-                {step.title}
-              </h2>
-              <p className="text-sm leading-relaxed text-slate-700">
-                {step.subtitle}
-              </p>
-            </div>
+            {step.label && (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-[32px] font-semibold leading-[1.2] text-slate-700">
+                  {step.label}
+                </h2>
+                {step.description && (
+                  <p className="text-sm leading-relaxed text-slate-700">
+                    {step.description}
+                  </p>
+                )}
+              </div>
+            )}
 
             <JsonForms
               cells={vanillaCells}
@@ -119,7 +130,7 @@ export function TwoFormJsonFormsPage() {
               onChange={handleChange}
               renderers={renderers}
               schema={jsonSchema}
-              uischema={step.stepUischema}
+              uischema={stepUischema}
               validationMode={validationMode}
             />
           </div>
@@ -142,7 +153,7 @@ export function TwoFormJsonFormsPage() {
               onClick={handleNext}
               type="button"
             >
-              {step.submitLabel}
+              {currentStep < steps.length - 1 ? "Next" : "Create Purpose"}
             </button>
           </div>
         </div>
@@ -199,18 +210,4 @@ function getStepErrors(
       return true;
     return false;
   });
-}
-
-function getSteps(uischema: { elements: UISchemaElement[] }): StepConfig[] {
-  const topGroups = uischema.elements.filter((el) => el.type === "Group");
-
-  return topGroups.map((group, i) => ({
-    stepUischema: {
-      elements: group.elements ?? [],
-      type: "VerticalLayout" as const,
-    },
-    submitLabel: i < topGroups.length - 1 ? "Next" : "Create Purpose",
-    subtitle: (group.options?.["description"] as string) ?? "",
-    title: group.label ?? "",
-  }));
 }

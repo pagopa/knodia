@@ -1,12 +1,8 @@
 import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useMemo, useState } from "react";
 
-import type {
-  FormValues,
-  GroupElement,
-  JsonSchema,
-  UISchema,
-} from "../engine/types";
+import type { FormValues, JsonSchema, UISchema } from "../engine/types";
+import type { StepLayout } from "../engine/uischemaParser";
 
 import { GroupSection } from "../components/GroupSection";
 import { StepIndicator } from "../components/StepIndicator";
@@ -18,7 +14,11 @@ import {
 } from "../engine/dependencyResolver";
 import { getDefaultValues } from "../engine/schemaParser";
 import { loadSchema, loadUiSchema } from "../engine/types";
-import { collectErrorMessages, collectGroups } from "../engine/uischemaParser";
+import {
+  collectErrorMessages,
+  collectGroups,
+  collectSteps,
+} from "../engine/uischemaParser";
 import { useVisibleFields } from "../hooks/useVisibleFields";
 import jsonSchema from "../schemas/two-form/schema.json";
 import uischema from "../schemas/two-form/uischema.json";
@@ -26,19 +26,13 @@ import uischema from "../schemas/two-form/uischema.json";
 const schema = loadSchema(jsonSchema);
 const ui = loadUiSchema(uischema);
 
-interface StepConfig {
-  stepUischema: UISchema;
-  submitLabel: string;
-  subtitle: string;
-  title: string;
-}
-
 export function TwoFormTanstackAjvPage() {
   const validate = useMemo(
     () => createAjvValidator(schema, collectErrorMessages(ui)),
     [],
   );
-  const steps = useMemo(() => getSteps(ui), []);
+  const steps = useMemo(() => collectSteps(ui), []);
+  const isMultiStep = steps.length > 1;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -83,13 +77,17 @@ export function TwoFormTanstackAjvPage() {
 
   const values = useStore(form.store, (state) => state.values);
 
-  const step = steps[currentStep] as StepConfig;
+  const step = steps[currentStep] as StepLayout;
+  const stepUischema: UISchema = useMemo(
+    () => ({ elements: step.elements, type: "VerticalLayout" as const }),
+    [step.elements],
+  );
   const { visibleFieldNames } = useVisibleFields(ui, values);
 
   const stepVisibleFields = useMemo(() => {
-    const stepVisible = getVisibleFields(step.stepUischema, values);
+    const stepVisible = getVisibleFields(stepUischema, values);
     return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
-  }, [step.stepUischema, values, visibleFieldNames]);
+  }, [stepUischema, values, visibleFieldNames]);
 
   const handleChange = useCallback(
     (fieldName: string, newValue: string | string[]) => {
@@ -117,17 +115,26 @@ export function TwoFormTanstackAjvPage() {
 
       <div className="flex justify-center flex-1">
         <div className="flex flex-col gap-16 max-w-160 w-full px-10 pt-10 pb-16">
-          <StepIndicator currentStep={currentStep} totalSteps={steps.length} />
+          {isMultiStep && (
+            <StepIndicator
+              currentStep={currentStep}
+              totalSteps={steps.length}
+            />
+          )}
 
           <div className="flex flex-col gap-10">
-            <div className="flex flex-col gap-3">
-              <h2 className="text-[32px] font-semibold leading-[1.2] text-slate-700">
-                {step.title}
-              </h2>
-              <p className="text-sm leading-relaxed text-slate-700">
-                {step.subtitle}
-              </p>
-            </div>
+            {step.label && (
+              <div className="flex flex-col gap-3">
+                <h2 className="text-[32px] font-semibold leading-[1.2] text-slate-700">
+                  {step.label}
+                </h2>
+                {step.description && (
+                  <p className="text-sm leading-relaxed text-slate-700">
+                    {step.description}
+                  </p>
+                )}
+              </div>
+            )}
 
             <form
               id={formId}
@@ -140,7 +147,7 @@ export function TwoFormTanstackAjvPage() {
                 errors={errors}
                 jsonSchema={schema}
                 onChange={handleChange}
-                stepUischema={step.stepUischema}
+                stepUischema={stepUischema}
                 values={values}
                 visibleFieldNames={visibleFieldNames}
               />
@@ -166,7 +173,7 @@ export function TwoFormTanstackAjvPage() {
               form={formId}
               type="submit"
             >
-              {step.submitLabel}
+              {currentStep < steps.length - 1 ? "Next" : "Create Purpose"}
             </button>
           </div>
         </div>
@@ -186,19 +193,6 @@ export function TwoFormTanstackAjvPage() {
       )}
     </div>
   );
-}
-
-function getSteps(uischema: UISchema): StepConfig[] {
-  const topGroups = uischema.elements.filter(
-    (el): el is GroupElement => el.type === "Group",
-  );
-
-  return topGroups.map((group, i) => ({
-    stepUischema: { elements: group.elements, type: "VerticalLayout" as const },
-    submitLabel: i < topGroups.length - 1 ? "Next" : "Create Purpose",
-    subtitle: group.options?.description ?? "",
-    title: group.label ?? "",
-  }));
 }
 
 function TanstackFormStep({
