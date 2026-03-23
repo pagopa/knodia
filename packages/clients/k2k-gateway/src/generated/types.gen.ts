@@ -549,6 +549,10 @@ export type GetAgreementsData = {
          */
         consumerId?: OrganizationId;
         /**
+         * Filter by E-service ID
+         */
+        eserviceId?: EserviceId;
+        /**
          * Filter by Agreement State
          */
         state?: AgreementState;

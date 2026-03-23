@@ -75,7 +75,7 @@ export function agreementServiceBuilder(
     ): Promise<API_Agreement> {
       logger.info(`Getting Agreement ${agreementId} from Knode ${knodeId}`);
 
-      const remoteAgreement = await remoteResourceDbService.getByAgreementId(
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
         knodeId,
       );
