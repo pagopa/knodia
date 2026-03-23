@@ -19,7 +19,7 @@ const agreementsQuery = (offset: number) =>
     query: { limit: AGREEMENTS_PAGE_LIMIT, offset },
   });
 
-export const Route = createFileRoute("/_authenticated/production/agreements")({
+export const Route = createFileRoute("/_authenticated/production/agreements/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
