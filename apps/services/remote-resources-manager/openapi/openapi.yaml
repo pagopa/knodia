@@ -476,8 +476,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
+        knodeName:
+          type: string
         name:
           type: string
         notes:
@@ -485,7 +485,7 @@ components:
       required:
         - email
         - id
-        - knodeId
+        - knodeName
         - name
         - notes
       additionalProperties: false
@@ -528,7 +528,7 @@ components:
         - name
         - producer
       additionalProperties: false
-    ConsumerEserviceVersion:
+    EserviceVersion:
       type: object
       properties:
         id:
@@ -548,7 +548,7 @@ components:
         - requiredAttributes
         - state
       additionalProperties: false
-    ConsumerEservice:
+    Eservice:
       type: object
       properties:
         agreement:
@@ -568,9 +568,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/EserviceCategory"
-        hasRecentlyBeenUpdated:
-          description: Indicates whether the E-service has been updated in the last 3 days
-          type: boolean
         id:
           type: string
           format: uuid
@@ -581,19 +578,23 @@ components:
           $ref: "#/components/schemas/LocalizedName"
         producer:
           $ref: "#/components/schemas/CompactOrganization"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
         version:
-          $ref: "#/components/schemas/ConsumerEserviceVersion"
+          $ref: "#/components/schemas/EserviceVersion"
       required:
         - agreement
         - categories
-        - hasRecentlyBeenUpdated
         - id
         - mode
         - name
         - producer
+        - updatedAt
         - version
       additionalProperties: false
-    ConsumerEservices:
+    Eservices:
       type: object
       properties:
         pagination:
@@ -601,7 +602,7 @@ components:
         results:
           type: array
           items:
-            $ref: "#/components/schemas/ConsumerEservice"
+            $ref: "#/components/schemas/Eservice"
       required:
         - pagination
         - results
@@ -767,13 +768,13 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer/eservices:
+  /eservices:
     get:
-      operationId: getConsumerEservices
-      summary: Get Consumer E-services
+      operationId: getEservices
+      summary: Get E-services
       tags:
         - eservice
-      description: Retrieve Consumer E-services
+      description: Retrieve E-services
       parameters:
         - schema:
             format: int32
@@ -800,13 +801,13 @@ paths:
           required: false
       responses:
         "200":
-          description: Consumer E-services retrieved successfully
+          description: E-services retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer E-services retrieved successfully
+                description: E-services retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerEservices"
+                  - $ref: "#/components/schemas/Eservices"
         "400":
           description: Bad Request
           content:

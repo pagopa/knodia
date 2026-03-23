@@ -330,7 +330,7 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
+    knodeName: string;
     name: string;
     notes: string;
 };
@@ -395,7 +395,7 @@ export type ConsumerEservice = {
     };
     categories: Array<EserviceCategory>;
     /**
-     * Indicates whether the E-service has been updated in the last 3 days
+     * Indicates whether the E-service has been updated in the last days
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;

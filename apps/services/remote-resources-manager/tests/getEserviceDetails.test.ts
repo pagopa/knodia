@@ -96,7 +96,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
       producer: {
         email: "info@example.com",
         id: k2kOrganization.id,
-        knodeId: "Orion",
+        knodeName: "Knode",
         name: k2kOrganization.name,
         notes: "Notes",
       },

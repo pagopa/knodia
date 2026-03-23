@@ -56,7 +56,7 @@ export function toConsumptionEserviceDetail(
     producer: {
       email: detail.producer.email,
       initials: getOrganizationInitials(detail.producer.name),
-      knodeId: detail.producer.knodeId,
+      knodeName: detail.producer.knodeName,
       name: detail.producer.name,
       notes: detail.producer.notes,
     },

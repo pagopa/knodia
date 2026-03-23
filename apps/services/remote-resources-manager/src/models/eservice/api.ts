@@ -123,7 +123,7 @@ const API_EserviceDetailsProducer = z
   .strictObject({
     email: z.string(),
     id: z.uuid(),
-    knodeId: API_KnodeId,
+    knodeName: z.string(),
     name: z.string(),
     notes: z.string(),
   })
@@ -145,15 +145,15 @@ export const API_EserviceDetails = z
   .meta({ id: "EserviceDetails" });
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
 
-const API_ConsumerEserviceVersion = API_EserviceVersionDetails.pick({
+const API_EserviceVersion = API_EserviceVersionDetails.pick({
   id: true,
   requiredAttributes: true,
   state: true,
 }).meta({
-  id: "ConsumerEserviceVersion",
+  id: "EserviceVersion",
 });
 
-export const API_ConsumerEservice = z
+export const API_Eservice = z
   .strictObject({
     agreement: z.strictObject({
       id: z.uuid(),
@@ -161,31 +161,27 @@ export const API_ConsumerEservice = z
     }),
     // TODO: add purposes and consumerKeychains
     categories: z.array(API_EserviceCategory),
-    hasRecentlyBeenUpdated: z.boolean().meta({
-      description:
-        "Indicates whether the E-service has been updated in the last 3 days",
-    }),
     id: z.uuid(),
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producer: API_CompactOrganization,
-    version: API_ConsumerEserviceVersion,
+    updatedAt: z.iso.datetime(),
+    version: API_EserviceVersion,
   })
-  .meta({ id: "ConsumerEservice" });
-export type API_ConsumerEservice = z.infer<typeof API_ConsumerEservice>;
+  .meta({ id: "Eservice" });
+export type API_Eservice = z.infer<typeof API_Eservice>;
 
-export const API_ConsumerEservices = z
+export const API_Eservices = z
   .strictObject({
     pagination: API_Pagination,
-    results: z.array(API_ConsumerEservice),
+    results: z.array(API_Eservice),
   })
-  .meta({ id: "ConsumerEservices" });
-export type API_ConsumerEservices = z.infer<typeof API_ConsumerEservices>;
+  .meta({ id: "Eservices" });
+export type API_Eservices = z.infer<typeof API_Eservices>;
 
-export const API_GetConsumerEservicesQueryParams =
-  API_PaginationQueryParams.extend({
-    agreementState: API_AgreementState.optional(),
-  });
-export type API_GetConsumerEservicesQueryParams = z.infer<
-  typeof API_GetConsumerEservicesQueryParams
+export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
+  agreementState: API_AgreementState.optional(),
+});
+export type API_GetEservicesQueryParams = z.infer<
+  typeof API_GetEservicesQueryParams
 >;

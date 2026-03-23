@@ -104,7 +104,11 @@ const toAgreementAggregator = (
   const { agreementsSQL, attributesSQL } = toAgreementsAggregator(queryRes);
 
   return {
-    agreementSQL: throwIfMultipleOrEmpty(agreementsSQL, "agreement"),
+    agreementSQL: throwIfMultipleOrEmpty(
+      agreementsSQL,
+      "agreement",
+      (a) => a.id,
+    ),
     attributesSQL,
   };
 };

@@ -113,7 +113,11 @@ const toEserviceVersionAggregator = (
 
   return {
     requiredAttributesSQL: requiredAttributesSQL,
-    versionSQL: throwIfMultipleOrEmpty(versionsSQL, "e-service version"),
+    versionSQL: throwIfMultipleOrEmpty(
+      versionsSQL,
+      "e-service version",
+      (v) => v.id,
+    ),
   };
 };
 
@@ -284,7 +288,7 @@ const toEserviceAggregator = (
   return {
     eserviceCategoriesSQL: categoriesSQL,
     eserviceInterfacesSQL: interfacesSQL,
-    eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service"),
+    eserviceSQL: throwIfMultipleOrEmpty(eservicesSQL, "e-service", (e) => e.id),
     eserviceVersionRequiredAttributesSQL: requiredAttributesSQL,
     eserviceVersionsSQL: versionsSQL,
   };
