@@ -21,8 +21,8 @@ export const toAPI_ProducerEservice = ({
   eservice: eserviceProcessApi.Eservice;
   state: eserviceProcessApi.EserviceVersionState;
 }): API_ProducerEservice => ({
-  activeAgreements: activeAgreements,
-  activePurposes: activePurposes,
+  activeAgreements,
+  activePurposes,
   categories: eservice.categories,
   id: eservice.id,
   mode: eservice.mode,

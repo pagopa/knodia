@@ -25,7 +25,9 @@ const eservicesQuery = (
     query: { agreementState, limit: ESERVICES_PAGE_LIMIT, offset },
   });
 
-export const Route = createFileRoute("/_authenticated/consumption/e-services")({
+export const Route = createFileRoute(
+  "/_authenticated/consumption/e-services/",
+)({
   component: RouteComponent,
   loaderDeps: ({ search: { agreementState, offset } }) => ({
     agreementState,

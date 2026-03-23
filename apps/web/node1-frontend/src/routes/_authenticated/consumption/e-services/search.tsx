@@ -34,7 +34,7 @@ const catalogQuery = (
   });
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services_/search",
+  "/_authenticated/consumption/e-services/search",
 )({
   component: RouteComponent,
   loaderDeps: ({ search: { category, keywords, knodeId, offset } }) => ({
