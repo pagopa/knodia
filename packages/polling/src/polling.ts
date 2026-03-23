@@ -1,19 +1,19 @@
 import {
   METADATA_VERSION_HEADER,
-  missingHeader,
+  missingResponseHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { type AxiosResponse, isAxiosError } from "axios";
 import z from "zod";
 
-import { config } from "../config/config.ts";
-import { pollingMaxRetriesExceeded } from "../models/errors.ts";
+import type { PollingConfig } from "./config.ts";
+
+import { pollingMaxRetriesExceeded } from "./errors.ts";
+
+export type PollingService = ReturnType<typeof pollingServiceBuilder>;
 
 export function createPollingByCondition<T>(
   fetch: () => Promise<T>,
-  config: {
-    defaultPollingMaxRetries: number;
-    defaultPollingRetryDelay: number;
-  },
+  config: PollingConfig,
 ) {
   return async function poll({
     condition,
@@ -42,10 +42,7 @@ export function createPollingByCondition<T>(
 
 export function createPollingUntilDeletion(
   fetch: () => Promise<unknown>,
-  config: {
-    defaultPollingMaxRetries: number;
-    defaultPollingRetryDelay: number;
-  },
+  config: PollingConfig,
 ) {
   return async function poll({
     maxRetries = config.defaultPollingMaxRetries,
@@ -53,7 +50,7 @@ export function createPollingUntilDeletion(
   }: {
     maxRetries?: number;
     retryDelay?: number;
-  }): Promise<void> {
+  } = {}): Promise<void> {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       await delay(retryDelay);
       try {
@@ -79,7 +76,7 @@ export function getMetadataVersionFromHeaders(
     .safeParse(headers[METADATA_VERSION_HEADER]);
 
   if (!version.success || isNaN(version.data)) {
-    throw missingHeader(METADATA_VERSION_HEADER);
+    throw missingResponseHeader(METADATA_VERSION_HEADER);
   }
 
   return version.data;
@@ -116,29 +113,34 @@ export function isPolledVersionAtLeastTargetVersion(
     getMetadataVersionFromHeaders(polledResponse.headers) >= targetVersion;
 }
 
-export function pollResourceUntilDeletion(
-  fetch: () => Promise<unknown>,
-): ReturnType<typeof createPollingUntilDeletion> {
-  return createPollingUntilDeletion(fetch, {
-    defaultPollingMaxRetries: config.defaultPollingMaxRetries,
-    defaultPollingRetryDelay: config.defaultPollingRetryDelay,
-  });
-}
+export function pollingServiceBuilder(config: PollingConfig) {
+  return {
+    pollResourceUntilDeletion(
+      fetch: () => Promise<unknown>,
+    ): (options?: {
+      maxRetries?: number;
+      retryDelay?: number;
+    }) => Promise<void> {
+      return createPollingUntilDeletion(fetch, config);
+    },
 
-/**
- * Generic polling function that polls a fetch call of a resource with metadata
- * until a condition is met or max retries are exceeded.
- *
- * @param fetch - Function that returns a Promise that fetches the resource with metadata
- * @returns A function that takes a condition function and returns a Promise of the polled resource
- */
-export function pollResourceWithMetadata<T>(
-  fetch: () => Promise<T>,
-): ReturnType<typeof createPollingByCondition<T>> {
-  return createPollingByCondition(fetch, {
-    defaultPollingMaxRetries: config.defaultPollingMaxRetries,
-    defaultPollingRetryDelay: config.defaultPollingRetryDelay,
-  });
+    /**
+     * Generic polling function that polls a fetch call of a resource with metadata
+     * until a condition is met or max retries are exceeded.
+     *
+     * @param fetch - Function that returns a Promise that fetches the resource with metadata
+     * @returns A function that takes a condition function and returns a Promise of the polled resource
+     */
+    pollResourceWithMetadata<T>(
+      fetch: () => Promise<T>,
+    ): (options: {
+      condition: (pollingResult: T) => boolean;
+      maxRetries?: number;
+      retryDelay?: number;
+    }) => Promise<T> {
+      return createPollingByCondition(fetch, config);
+    },
+  };
 }
 
 function delay(ms: number): Promise<void> {

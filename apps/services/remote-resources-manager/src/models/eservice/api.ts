@@ -129,8 +129,19 @@ const API_EserviceDetailsProducer = z
   })
   .meta({ id: "EserviceDetailsProducer" });
 
+export const API_EserviceAgreementDetail = z
+  .strictObject({
+    id: z.uuid(),
+    state: API_AgreementState,
+  })
+  .meta({ id: "EserviceAgreementDetail" });
+export type API_EserviceAgreementDetail = z.infer<
+  typeof API_EserviceAgreementDetail
+>;
+
 export const API_EserviceDetails = z
   .strictObject({
+    agreement: API_EserviceAgreementDetail.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),
@@ -165,6 +176,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producer: API_CompactOrganization,
+    updatedAt: z.iso.datetime(),
     version: API_EserviceVersion,
   })
   .meta({ id: "Eservice" });
