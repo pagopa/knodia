@@ -492,6 +492,36 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Seed data to create a new Purpose
+ */
+export type PurposeSeed = {
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    formAnswersJson: PurposeFormAnswers;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -1120,6 +1150,39 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type CreateConsumerPurposeData = {
+    body: PurposeSeed;
+    path?: never;
+    query?: never;
+    url: '/consumer/purposes';
+};
+
+export type CreateConsumerPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerPurposeError = CreateConsumerPurposeErrors[keyof CreateConsumerPurposeErrors];
+
+export type CreateConsumerPurposeResponses = {
+    /**
+     * Purpose created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerPurposeResponse = CreateConsumerPurposeResponses[keyof CreateConsumerPurposeResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;
