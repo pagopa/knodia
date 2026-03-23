@@ -7,6 +7,7 @@ import {
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
+import { type PollingService, pollingServiceBuilder } from "@knodia/polling";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import type { K2KGatewayConfig } from "./config/config.ts";
@@ -17,6 +18,7 @@ import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
+import { purposeRouter } from "./routers/purposeRouter.ts";
 
 export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
@@ -26,6 +28,8 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     internalJwt: config.internalJwt,
     loggerConfig: config,
     organizationProcessUrl: config.organizationProcessUrl,
+    pollingService: pollingServiceBuilder(config),
+    purposeProcessUrl: config.purposeProcessUrl,
   });
 
   return app;
@@ -38,6 +42,8 @@ function buildApp({
   internalJwt,
   loggerConfig,
   organizationProcessUrl,
+  pollingService,
+  purposeProcessUrl,
 }: {
   agreementProcessUrl: string;
   callerKnodeId: KnodeId;
@@ -45,11 +51,14 @@ function buildApp({
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
   organizationProcessUrl: string;
+  pollingService: PollingService;
+  purposeProcessUrl: string;
 }) {
   const clients = getKnodiaClients({
     agreementProcessUrl,
     eserviceProcessUrl,
     organizationProcessUrl,
+    purposeProcessUrl,
   });
   const fileManager = initFileManager();
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
@@ -85,6 +94,10 @@ function buildApp({
             description: "Routes related to Organizations",
             name: apiTags.organization,
           },
+          {
+            description: "Routes related to Purposes",
+            name: apiTags.purpose,
+          },
         ],
       },
     },
@@ -106,6 +119,12 @@ function buildApp({
   });
   app.register(organizationRouter, {
     organizationProcessClient: clients.organizationProcessClient,
+    tokenProvider,
+  });
+  app.register(purposeRouter, {
+    callerKnodeId,
+    pollingService,
+    purposeProcessClient: clients.purposeProcessClient,
     tokenProvider,
   });
 
