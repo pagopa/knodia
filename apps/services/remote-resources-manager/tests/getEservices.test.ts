@@ -80,7 +80,6 @@ describe("GET /eservices (getEservices)", () => {
     k2kAgreement: k2kGatewayApi.Agreement;
     k2kEservice: k2kGatewayApi.Eservice;
     k2kEserviceVersion: k2kGatewayApi.EserviceVersion;
-    k2kOrganization: k2kGatewayApi.Organization;
     k2kOrganizations: k2kGatewayApi.Organizations;
     remoteAgreement: RemoteResourceAgreementSQL;
   } {
@@ -129,7 +128,6 @@ describe("GET /eservices (getEservices)", () => {
       k2kAgreement,
       k2kEservice,
       k2kEserviceVersion,
-      k2kOrganization,
       k2kOrganizations,
       remoteAgreement,
     };
