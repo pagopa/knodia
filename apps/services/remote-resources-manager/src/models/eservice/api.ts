@@ -176,6 +176,7 @@ export const API_Eservice = z
     mode: API_EserviceMode,
     name: API_LocalizedName,
     producer: API_CompactOrganization,
+    updatedAt: z.iso.datetime(),
     version: API_EserviceVersion,
   })
   .meta({ id: "Eservice" });

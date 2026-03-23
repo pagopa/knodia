@@ -322,8 +322,8 @@ export type API_ConsumerCatalogEserviceSearchResult = z.infer<
 
 export const API_ConsumerCatalogEserviceSearchResults = z
   .strictObject({
+    items: z.array(API_ConsumerCatalogEserviceSearchResult),
     pagination: API_Pagination,
-    results: z.array(API_ConsumerCatalogEserviceSearchResult),
   })
   .meta({ id: "ConsumerCatalogEserviceSearchResults" });
 export type API_ConsumerCatalogEserviceSearchResults = z.infer<
@@ -353,13 +353,9 @@ const API_ConsumerEserviceDetailsProducer = z
   })
   .meta({ id: "ConsumerEserviceDetailsProducer" });
 
-const API_ConsumerRequiredAttribute = z
-  .strictObject({
-    code: z.string(),
-    possessed: z.boolean(),
-    scheme: z.string(),
-  })
-  .meta({ id: "ConsumerRequiredAttribute" });
+const API_ConsumerRequiredAttribute = API_Attribute.extend({
+  possessed: z.boolean(),
+}).meta({ id: "ConsumerRequiredAttribute" });
 
 const API_EserviceAgreementDetail = z
   .strictObject({
@@ -421,3 +417,41 @@ export const API_CompactEservice = z
     description: "E-service with only id and name",
     id: "CompactEservice",
   });
+
+export const API_GetConsumerEservicesQueryParams =
+  API_PaginationQueryParams.extend({
+    agreementState: API_AgreementState.optional(),
+  });
+export type API_GetConsumerEservicesQueryParams = z.infer<
+  typeof API_GetConsumerEservicesQueryParams
+>;
+
+export const API_ConsumerEservice = z
+  .strictObject({
+    agreement: z.strictObject({
+      id: z.uuid(),
+      state: API_AgreementState,
+    }),
+    // TODO: add purposes and consumerKeychains
+    categories: z.array(API_EserviceCategory),
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the E-service has been updated in the last days",
+    }),
+    id: z.uuid(),
+    mode: API_EserviceMode,
+    name: API_LocalizedName,
+    producer: API_CompactOrganization,
+    requiredAttributes: z.array(z.array(API_Attribute)),
+    state: API_EserviceVersionState,
+  })
+  .meta({ id: "ConsumerEservice" });
+export type API_ConsumerEservice = z.infer<typeof API_ConsumerEservice>;
+
+export const API_ConsumerEservices = z
+  .strictObject({
+    items: z.array(API_ConsumerEservice),
+    pagination: API_Pagination,
+  })
+  .meta({ id: "ConsumerEservices" });
+export type API_ConsumerEservices = z.infer<typeof API_ConsumerEservices>;
