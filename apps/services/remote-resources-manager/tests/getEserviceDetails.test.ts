@@ -96,6 +96,8 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     getAgreementsMock.mockReset();
   });
 
+  const expectedPath = { eserviceId };
+
   it("should return 200 with no agreement when none exists", async () => {
     getEserviceMock.mockResolvedValue({ data: k2kEservice });
     getEserviceLatestVersionMock.mockResolvedValue({ data: k2kVersion });
@@ -109,10 +111,10 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(response.statusCode).toBe(200);
 
     expect(getEserviceMock).toHaveBeenCalledWith(
-      expect.objectContaining({ path: { eserviceId } }),
+      expect.objectContaining({ path: expectedPath }),
     );
     expect(getEserviceLatestVersionMock).toHaveBeenCalledWith(
-      expect.objectContaining({ path: { eserviceId } }),
+      expect.objectContaining({ path: expectedPath }),
     );
     expect(getOrganizationMock).toHaveBeenCalledWith(
       expect.objectContaining({
