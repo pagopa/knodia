@@ -240,6 +240,12 @@ paths:
                 description: Purpose created successfully
                 allOf:
                   - $ref: "#/components/schemas/Purpose"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
         "400":
           description: Bad Request
           content:
@@ -310,6 +316,12 @@ paths:
                 description: Purpose retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Purpose"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
         "400":
           description: Bad Request
           content:
