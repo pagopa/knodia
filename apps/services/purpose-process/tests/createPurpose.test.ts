@@ -8,6 +8,7 @@ import {
   type OrganizationId,
 } from "@knodia/common-models/ids";
 import { EserviceMode, EserviceVersionState } from "@knodia/eservice-models";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   fromPurposeV1,
   type Purpose,
@@ -76,6 +77,7 @@ describe("POST /purposes (createPurpose)", () => {
         .post("/purposes")
         .body(body);
       expect(response.statusCode).toBe(201);
+      expect(response.headers[METADATA_VERSION_HEADER]).toEqual("0");
 
       const responseBody = response.json<API_Purpose>();
 

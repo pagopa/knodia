@@ -11,7 +11,7 @@ import { toK2KAgreement } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getAgreementMock = vi.hoisted(() => vi.fn());
-const getByAgreementIdMock = vi.hoisted(() => vi.fn());
+const getAgreementByIdMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -28,7 +28,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
 
 vi.mock("@knodia/db-remote-resource/services", () => ({
   remoteResourceDbServiceBuilder: () => ({
-    getByAgreementId: getByAgreementIdMock,
+    getAgreementById: getAgreementByIdMock,
     insertAgreement: vi.fn(),
   }),
 }));
@@ -62,11 +62,11 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
 
   beforeEach(() => {
     getAgreementMock.mockReset();
-    getByAgreementIdMock.mockReset();
+    getAgreementByIdMock.mockReset();
   });
 
   it("should return 200 with converted detail on success", async () => {
-    getByAgreementIdMock.mockResolvedValue(remoteResourceAgreement);
+    getAgreementByIdMock.mockResolvedValue(remoteResourceAgreement);
     getAgreementMock.mockResolvedValue({ data: k2kAgreement });
 
     const response = await getAgreement(expectedApiDetail.id, { knodeId });
@@ -83,7 +83,7 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
   });
 
   it("should return 404 when Agreement is not found in remote resource DB", async () => {
-    getByAgreementIdMock.mockResolvedValue(undefined);
+    getAgreementByIdMock.mockResolvedValue(undefined);
 
     const response = await getAgreement(crypto.randomUUID(), { knodeId });
 

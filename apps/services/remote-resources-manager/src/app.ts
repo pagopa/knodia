@@ -89,13 +89,15 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
+    const remoteResourceDbService =
+      remoteResourceDbServiceBuilder(remoteResourceDb);
     protectedApp.register(eserviceRouter, {
       eserviceService: eserviceServiceBuilder(k2kGatewayClient),
     });
     protectedApp.register(agreementRouter, {
       agreementService: agreementServiceBuilder(
         k2kGatewayClient,
-        remoteResourceDbServiceBuilder(remoteResourceDb),
+        remoteResourceDbService,
         readmodelServiceBuilder(readmodelDb),
       ),
     });
