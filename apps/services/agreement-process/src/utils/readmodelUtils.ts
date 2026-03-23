@@ -27,5 +27,5 @@ export const retrieveAgreement = async (
     throw agreementNotFound(agreementId);
   }
 
-  return agreement.data;
+  return agreement;
 };

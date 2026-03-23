@@ -1,3 +1,4 @@
+import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import {
@@ -9,6 +10,7 @@ import { match } from "ts-pattern";
 
 import type {
   API_CatalogEserviceSearchResult,
+  API_Eservice,
   API_EserviceAgreementDetail,
   API_EserviceDetails,
 } from "./api.ts";
@@ -106,3 +108,35 @@ const toAPI_EserviceMode = (
     .with("PROVIDE_DATA", () => API_EserviceMode.enum.ProvideData)
     .with("RECEIVE_DATA", () => API_EserviceMode.enum.ReceiveData)
     .exhaustive();
+
+export const toAPI_Eservice = ({
+  agreement,
+  eservice,
+  eserviceVersion,
+  producer,
+}: {
+  agreement: k2kGatewayApi.Agreement;
+  eservice: k2kGatewayApi.Eservice;
+  eserviceVersion: k2kGatewayApi.EserviceVersion;
+  producer: k2kGatewayApi.Organization & { knodeId: API_KnodeId };
+}): API_Eservice => ({
+  agreement: {
+    id: agreement.id,
+    state: toAPI_AgreementState(agreement.state),
+  },
+  categories: eservice.categories,
+  id: eservice.id,
+  mode: toAPI_EserviceMode(eservice.mode),
+  name: eservice.name,
+  producer: {
+    id: producer.id,
+    knodeId: producer.knodeId,
+    name: producer.name,
+  },
+  updatedAt: eservice.updatedAt,
+  version: {
+    id: eserviceVersion.id,
+    requiredAttributes: eserviceVersion.requiredAttributes,
+    state: toAPI_EserviceVersionState(eserviceVersion.state),
+  },
+});

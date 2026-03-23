@@ -96,6 +96,10 @@ export type GetOrganizationsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Organization ID
+         */
+        organizationId?: Array<string>;
     };
     url: '/organizations';
 };

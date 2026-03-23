@@ -2,16 +2,16 @@
 
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement } from "@knodia/test-commons/utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_Agreement } from "../src/models/agreement/api.ts";
 
 import { toAPI_Agreement } from "../src/models/agreement/apiConverter.ts";
 import { toK2KAgreement } from "./k2kConverters.ts";
+import { remoteResourceDbService } from "./setup.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getAgreementMock = vi.hoisted(() => vi.fn());
-const getAgreementByIdMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -25,13 +25,6 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     },
   };
 });
-
-vi.mock("@knodia/db-remote-resource/services", () => ({
-  remoteResourceDbServiceBuilder: () => ({
-    getAgreementById: getAgreementByIdMock,
-    insertAgreement: vi.fn(),
-  }),
-}));
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
@@ -60,13 +53,15 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
   const remoteResourceAgreement = toRemoteResourceAgreement(expectedApiDetail);
   const knodeId = expectedApiDetail.consumer.knodeId;
 
+  beforeAll(async () => {
+    await remoteResourceDbService.insertAgreement(remoteResourceAgreement);
+  });
+
   beforeEach(() => {
     getAgreementMock.mockReset();
-    getAgreementByIdMock.mockReset();
   });
 
   it("should return 200 with converted detail on success", async () => {
-    getAgreementByIdMock.mockResolvedValue(remoteResourceAgreement);
     getAgreementMock.mockResolvedValue({ data: k2kAgreement });
 
     const response = await getAgreement(expectedApiDetail.id, { knodeId });
@@ -83,8 +78,6 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
   });
 
   it("should return 404 when Agreement is not found in remote resource DB", async () => {
-    getAgreementByIdMock.mockResolvedValue(undefined);
-
     const response = await getAgreement(crypto.randomUUID(), { knodeId });
 
     expect(response.statusCode).toBe(404);

@@ -8,14 +8,18 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
+import {
+  getMockEservice,
+  getMockOrganization,
+} from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { zocker } from "zocker";
 
-import { API_EserviceDetails } from "../src/models/eservice/api.ts";
+import { toAPI_EserviceDetails } from "../src/models/eservice/apiConverter.ts";
 import {
   toK2KEservice,
   toK2KEserviceVersion,
   toK2KKnodeId,
+  toK2KOrganization,
 } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
@@ -48,16 +52,19 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const eserviceId = crypto.randomUUID();
   const knodeId: API_KnodeId = "Orion";
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { agreement, ...expectedApiDetail } =
-    zocker(API_EserviceDetails).generate();
-  const k2kEservice = toK2KEservice(expectedApiDetail);
-  const k2kVersion = toK2KEserviceVersion(expectedApiDetail);
-  const k2kOrganization: k2kGatewayApi.Organization = {
-    attributes: [],
-    id: k2kEservice.producerId,
-    name: expectedApiDetail.producer.name,
-  };
+  const eservice = getMockEservice({ latestVersionState: "Active" });
+  const eserviceVersion = eservice.versions[0]!;
+  const k2kEservice = toK2KEservice(eservice);
+  const k2kVersion = toK2KEserviceVersion(eserviceVersion);
+
+  const organization = getMockOrganization();
+  const k2kOrganization = toK2KOrganization(organization);
+
+  const expectedApiDetail = toAPI_EserviceDetails(
+    k2kEservice,
+    k2kVersion,
+    k2kOrganization,
+  );
 
   const emptyAgreementsResponse = {
     pagination: { limit: 1, offset: 0, total: 0 },
