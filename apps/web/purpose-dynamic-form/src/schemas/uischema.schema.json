@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Purpose Dynamic Form UI Schema",
+  "oneOf": [
+    { "$ref": "#/$defs/GroupElement" },
+    { "$ref": "#/$defs/LayoutElement" }
+  ],
+  "$defs": {
+    "GroupElement": {
+      "type": "object",
+      "required": ["type", "elements"],
+      "properties": {
+        "type": { "const": "Group" },
+        "label": { "type": "string" },
+        "options": {
+          "type": "object",
+          "properties": {
+            "description": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "elements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UISchemaElement" }
+        },
+        "rule": { "$ref": "#/$defs/Rule" }
+      },
+      "additionalProperties": false
+    },
+    "LayoutElement": {
+      "type": "object",
+      "required": ["type", "elements"],
+      "properties": {
+        "type": { "enum": ["HorizontalLayout", "VerticalLayout"] },
+        "elements": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UISchemaElement" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "UISchemaElement": {
+      "oneOf": [
+        { "$ref": "#/$defs/ControlElement" },
+        { "$ref": "#/$defs/GroupElement" },
+        { "$ref": "#/$defs/LabelElement" },
+        { "$ref": "#/$defs/LayoutElement" }
+      ]
+    },
+    "ControlElement": {
+      "type": "object",
+      "required": ["type", "scope"],
+      "properties": {
+        "type": { "const": "Control" },
+        "scope": { "type": "string", "pattern": "^#/properties/.+" },
+        "label": { "type": "string" },
+        "options": { "$ref": "#/$defs/ControlOptions" },
+        "rule": { "$ref": "#/$defs/Rule" }
+      },
+      "additionalProperties": false
+    },
+    "LabelElement": {
+      "type": "object",
+      "required": ["type", "text"],
+      "properties": {
+        "type": { "const": "Label" },
+        "text": { "type": "string" },
+        "options": {
+          "type": "object",
+          "properties": {
+            "variant": { "enum": ["error", "info", "warning"] }
+          },
+          "additionalProperties": false
+        },
+        "rule": { "$ref": "#/$defs/Rule" }
+      },
+      "additionalProperties": false
+    },
+    "ControlOptions": {
+      "type": "object",
+      "required": ["widget"],
+      "properties": {
+        "widget": {
+          "enum": ["checkbox", "radio", "select", "switch", "text", "textarea"]
+        },
+        "description": { "type": "string" },
+        "errorMessages": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "hideOptions": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/HideOptionCondition" }
+        },
+        "infoLabel": { "type": "string" },
+        "layout": { "enum": ["horizontal", "vertical"] },
+        "optionLabels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "HideOptionCondition": {
+      "type": "object",
+      "required": ["scope", "schema"],
+      "properties": {
+        "scope": { "type": "string", "pattern": "^#/properties/.+" },
+        "schema": {
+          "type": "object",
+          "properties": {
+            "const": { "type": "string" },
+            "contains": {
+              "type": "object",
+              "required": ["const"],
+              "properties": {
+                "const": { "type": "string" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Rule": {
+      "type": "object",
+      "required": ["effect", "condition"],
+      "properties": {
+        "effect": { "enum": ["DISABLE", "ENABLE", "HIDE", "SHOW"] },
+        "condition": { "$ref": "#/$defs/RuleCondition" }
+      },
+      "additionalProperties": false
+    },
+    "RuleCondition": {
+      "oneOf": [
+        { "$ref": "#/$defs/AndCondition" },
+        { "$ref": "#/$defs/LeafCondition" }
+      ]
+    },
+    "AndCondition": {
+      "type": "object",
+      "required": ["type", "conditions"],
+      "properties": {
+        "type": { "const": "AND" },
+        "conditions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/RuleCondition" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "LeafCondition": {
+      "type": "object",
+      "required": ["scope", "schema"],
+      "properties": {
+        "scope": { "type": "string", "pattern": "^#/properties/.+" },
+        "schema": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["const"],
+              "properties": {
+                "const": { "type": "string" }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "required": ["contains"],
+              "properties": {
+                "contains": {
+                  "type": "object",
+                  "required": ["const"],
+                  "properties": {
+                    "const": { "type": "string" }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
