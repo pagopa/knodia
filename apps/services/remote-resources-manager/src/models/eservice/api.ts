@@ -134,6 +134,9 @@ export const API_EserviceAgreementDetail = z
     state: API_AgreementState,
   })
   .meta({ id: "EserviceAgreementDetail" });
+export type API_EserviceAgreementDetail = z.infer<
+  typeof API_EserviceAgreementDetail
+>;
 
 export const API_EserviceDetails = z
   .strictObject({
@@ -150,7 +153,4 @@ export const API_EserviceDetails = z
     producer: API_EserviceDetailsProducer,
   })
   .meta({ id: "EserviceDetails" });
-export type API_EserviceAgreementDetail = z.infer<
-  typeof API_EserviceAgreementDetail
->;
 export type API_EserviceDetails = z.infer<typeof API_EserviceDetails>;
