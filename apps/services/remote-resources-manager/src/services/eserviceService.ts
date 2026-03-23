@@ -120,32 +120,46 @@ export function eserviceServiceBuilder(
 
     async getEserviceDetails(
       eserviceId: ExternalResource<EserviceId>,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_EserviceDetails> {
       logger.info(
         { eserviceId: eserviceId.id, knodeId: eserviceId.knodeId },
         `Getting E-service detail ${eserviceId.id} from Knode ${eserviceId.knodeId}`,
       );
 
-      const path = { eserviceId: eserviceId.id };
+      const eserviceIdPath = { eserviceId: eserviceId.id };
 
-      const [{ data: eservice }, { data: version }] = await Promise.all([
-        k2kGatewayApi.getEservice({
-          client: k2kGatewayClient,
-          path,
-        }),
-        k2kGatewayApi.getEserviceLatestVersion({
-          client: k2kGatewayClient,
-          path,
-        }),
-      ]);
+      const [{ data: eservice }, { data: version }, { data: agreements }] =
+        await Promise.all([
+          k2kGatewayApi.getEservice({
+            client: k2kGatewayClient,
+            path: eserviceIdPath,
+          }),
+          k2kGatewayApi.getEserviceLatestVersion({
+            client: k2kGatewayClient,
+            path: eserviceIdPath,
+          }),
+          k2kGatewayApi.getAgreements({
+            client: k2kGatewayClient,
+            query: {
+              consumerId: authData.organizationId,
+              eserviceId: eserviceId.id,
+              limit: 1,
+              offset: 0,
+              // TODO: include also other non-Archived states
+              state: "ACTIVE",
+            },
+          }),
+        ]);
+
+      const agreement = agreements.results[0];
 
       const { data: producer } = await k2kGatewayApi.getOrganization({
         client: k2kGatewayClient,
         path: { organizationId: eservice.producerId },
       });
 
-      return toAPI_EserviceDetails(eservice, version, producer);
+      return toAPI_EserviceDetails(eservice, version, producer, agreement);
     },
 
     async getEservices(

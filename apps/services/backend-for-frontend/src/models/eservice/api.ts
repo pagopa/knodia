@@ -357,6 +357,13 @@ const API_ConsumerRequiredAttribute = API_Attribute.extend({
   possessed: z.boolean(),
 }).meta({ id: "ConsumerRequiredAttribute" });
 
+const API_EserviceAgreementDetail = z
+  .strictObject({
+    id: z.uuid(),
+    state: API_AgreementState,
+  })
+  .meta({ id: "EserviceAgreementDetail" });
+
 export const API_ConsumerEserviceDetails = z
   .strictObject({
     accessToken: z
@@ -369,6 +376,7 @@ export const API_ConsumerEserviceDetails = z
         type: API_AccessTokenType,
       })
       .meta({ id: "ConsumerEserviceDetailsAccessToken" }),
+    agreement: API_EserviceAgreementDetail.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
     id: z.uuid(),

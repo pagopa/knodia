@@ -11,6 +11,7 @@ import { match } from "ts-pattern";
 import type {
   API_CatalogEserviceSearchResult,
   API_Eservice,
+  API_EserviceAgreementDetail,
   API_EserviceDetails,
 } from "./api.ts";
 
@@ -37,11 +38,20 @@ export const toAPI_CatalogEserviceSearchResult = (
   updatedAt: catalogEservice.updatedAt,
 });
 
+const toAPI_EserviceAgreementDetail = (
+  agreement?: k2kGatewayApi.Agreement,
+): API_EserviceAgreementDetail | undefined =>
+  agreement
+    ? { id: agreement.id, state: toAPI_AgreementState(agreement.state) }
+    : undefined;
+
 export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
   producer: k2kGatewayApi.Organization,
+  agreement?: k2kGatewayApi.Agreement,
 ): API_EserviceDetails => ({
+  agreement: toAPI_EserviceAgreementDetail(agreement),
   categories: eservice.categories,
   description: eservice.description,
   id: eservice.id,
