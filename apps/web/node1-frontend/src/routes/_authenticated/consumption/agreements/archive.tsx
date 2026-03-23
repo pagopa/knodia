@@ -5,7 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/agreements_/archive",
+  "/_authenticated/consumption/agreements/archive",
 )({
   component: RouteComponent,
 });
