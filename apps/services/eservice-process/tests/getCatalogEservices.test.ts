@@ -151,60 +151,56 @@ describe("POST /catalog (getCatalogEservices)", () => {
     },
   );
 
-  // TODO: Need to solve the issue in which the db is not isolated between tests for the transactions.
-  it.todo(
-    "should not include e-services without Active or Suspended versions",
-    async () => {
-      const activeEservice = withLatestVersionState(
-        mockEservices.at(1)!,
-        EserviceVersionState.enum.Active,
-      );
-      const suspendedEservice = withLatestVersionState(
-        mockEservices.at(2)!,
-        EserviceVersionState.enum.Suspended,
-      );
-      const archivedOnlyEservice = withLatestVersionState(
-        mockEservices.at(3)!,
-        EserviceVersionState.enum.Archived,
-      );
+  it("should not include e-services without Active or Suspended versions", async () => {
+    const activeEservice = withLatestVersionState(
+      mockEservices.at(1)!,
+      EserviceVersionState.enum.Active,
+    );
+    const suspendedEservice = withLatestVersionState(
+      mockEservices.at(2)!,
+      EserviceVersionState.enum.Suspended,
+    );
+    const archivedOnlyEservice = withLatestVersionState(
+      mockEservices.at(3)!,
+      EserviceVersionState.enum.Archived,
+    );
 
-      await seedEservices([
-        activeEservice,
-        suspendedEservice,
-        archivedOnlyEservice,
-      ]);
+    await seedEservices([
+      activeEservice,
+      suspendedEservice,
+      archivedOnlyEservice,
+    ]);
 
-      const expectedResult = [activeEservice, suspendedEservice].sort(
-        (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
-      );
+    const expectedResult = [activeEservice, suspendedEservice].sort(
+      (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime(),
+    );
 
-      const response = await injectAppRequest(allowedTestTokens[0]!)
-        .post("/catalog")
-        .query(defaultQuery)
-        .body({ keywords: "other name" });
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/catalog")
+      .query(defaultQuery)
+      .body({ keywords: "other name" });
 
-      expect(response.statusCode).toBe(200);
-      const body = response.json();
-      const returnedIds = body.items.map(
-        (item: { id: string }): string => item.id,
-      );
+    expect(response.statusCode).toBe(200);
+    const body = response.json();
+    const returnedIds = body.items.map(
+      (item: { id: string }): string => item.id,
+    );
 
-      expect(body.pagination).toEqual({
-        limit: Number(defaultQuery.limit),
-        offset: Number(defaultQuery.offset),
-        total: 2,
-      });
-      expect(returnedIds).toContain(activeEservice.id);
-      expect(returnedIds).toContain(suspendedEservice.id);
-      expect(returnedIds).not.toContain(archivedOnlyEservice.id);
-      expect(body.items).toHaveLength(2);
-      expect(body.items).toEqual(
-        expect.arrayContaining(
-          expectedResult.map((e) => toExpectAPI_Eservice(e)),
-        ),
-      );
-    },
-  );
+    expect(body.pagination).toEqual({
+      limit: Number(defaultQuery.limit),
+      offset: Number(defaultQuery.offset),
+      total: 2,
+    });
+    expect(returnedIds).toContain(activeEservice.id);
+    expect(returnedIds).toContain(suspendedEservice.id);
+    expect(returnedIds).not.toContain(archivedOnlyEservice.id);
+    expect(body.items).toHaveLength(2);
+    expect(body.items).toEqual(
+      expect.arrayContaining(
+        expectedResult.map((e) => toExpectAPI_Eservice(e)),
+      ),
+    );
+  });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",

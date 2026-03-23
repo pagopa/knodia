@@ -1,16 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
-
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import { getMockAgreement } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { zocker } from "zocker";
 
-import {
-  API_AgreementDetails,
-  type API_AgreementDetails as API_AgreementDetailsType,
-} from "../src/models/agreement/api.ts";
-import { toK2KAgreementState, toK2KKnodeId } from "./k2kConverters.ts";
+import type { API_Agreement } from "../src/models/agreement/api.ts";
+
+import { toAPI_Agreement } from "../src/models/agreement/apiConverter.ts";
+import { toK2KAgreement } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getAgreementMock = vi.hoisted(() => vi.fn());
@@ -41,23 +38,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-const toK2KAgreement = (
-  apiDetail: API_AgreementDetailsType,
-): k2kGatewayApi.Agreement => ({
-  attributes: apiDetail.attributes,
-  consumer: {
-    id: apiDetail.consumer.id,
-    knodeId: toK2KKnodeId(apiDetail.consumer.knodeId),
-  },
-  eserviceId: apiDetail.eserviceId,
-  eserviceVersionId: apiDetail.eserviceVersionId,
-  id: apiDetail.id,
-  producerId: apiDetail.producerId,
-  state: toK2KAgreementState(apiDetail.state),
-  updatedAt: apiDetail.updatedAt,
-});
-
-const toRemoteResourceAgreement = (apiDetail: API_AgreementDetailsType) => ({
+const toRemoteResourceAgreement = (apiDetail: API_Agreement) => ({
   agreementId: apiDetail.id,
   consumerId: apiDetail.consumer.id,
   eserviceId: apiDetail.eserviceId,
@@ -73,8 +54,9 @@ const getAgreement = (
 ) => injectAppRequest(token).get(`/agreements/${agreementId}`).query(query);
 
 describe("GET /agreements/:agreementId (getAgreement)", () => {
-  const expectedApiDetail = zocker(API_AgreementDetails).generate();
-  const k2kAgreement = toK2KAgreement(expectedApiDetail);
+  const agreement = getMockAgreement();
+  const k2kAgreement = toK2KAgreement(agreement);
+  const expectedApiDetail = toAPI_Agreement(k2kAgreement);
   const remoteResourceAgreement = toRemoteResourceAgreement(expectedApiDetail);
   const knodeId = expectedApiDetail.consumer.knodeId;
 

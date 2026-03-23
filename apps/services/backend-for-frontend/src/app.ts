@@ -109,6 +109,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       eserviceProcessClient: clients.eserviceProcessClient,
       knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });
 
