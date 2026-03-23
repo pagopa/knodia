@@ -12,12 +12,12 @@ import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
-import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons";
-import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
-  API_Problem,
-  genericError,
-} from "@knodia/fastify-zod-api-commons/models";
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -124,29 +124,21 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         }),
       ]);
 
-      const items = data.items.map((agreement) => {
-        const eservice = eservicesMap.get(agreement.eserviceId);
-        if (!eservice) {
-          throw genericError(
-            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
-          );
-        }
-
-        const consumer = consumersMap
-          .get(agreement.consumer.knodeId)
-          ?.get(unsafeBrandExternalId(agreement.consumer.id));
-        if (!consumer) {
-          throw genericError(
-            `Consumer organization ${agreement.consumer.id} not found for Agreement ${agreement.id}`,
-          );
-        }
-
-        return toAPI_ProducerAgreement({
+      const items = data.items.map((agreement) =>
+        toAPI_ProducerAgreement({
           agreement,
-          consumer,
-          eservice,
-        });
-      });
+          consumer: assertEntityExists(
+            consumersMap
+              .get(agreement.consumer.knodeId)
+              ?.get(unsafeBrandExternalId(agreement.consumer.id)),
+            `Consumer organization ${agreement.consumer.id} not found for Agreement ${agreement.id}`,
+          ),
+          eservice: assertEntityExists(
+            eservicesMap.get(agreement.eserviceId),
+            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+          ),
+        }),
+      );
 
       res.send({
         items,

@@ -10,9 +10,11 @@ import {
 import { EserviceId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { remoteResourceAgreement } from "@knodia/db-remote-resource";
-import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons";
+import {
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
-import { genericError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -35,7 +37,6 @@ import {
   toAPI_Eservice,
   toAPI_EserviceDetails,
 } from "../models/eservice/apiConverter.ts";
-import { assertEntityExists } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
@@ -107,14 +108,10 @@ export function eserviceServiceBuilder(
       return {
         pagination: data.pagination,
         results: data.results.map((r) => {
-          const producer = producersMap
-            .get(knodeId)
-            ?.get(unsafeBrandExternalId(r.producerId));
-          if (!producer) {
-            throw genericError(
-              `Producer Organization ${r.producerId} not found for E-service ${r.id}`,
-            );
-          }
+          const producer = assertEntityExists(
+            producersMap.get(knodeId)?.get(unsafeBrandExternalId(r.producerId)),
+            `Producer Organization ${r.producerId} not found for E-service ${r.id}`,
+          );
           return toAPI_CatalogEserviceSearchResult(r, producer.name);
         }),
       };

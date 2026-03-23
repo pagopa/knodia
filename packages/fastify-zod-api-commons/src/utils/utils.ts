@@ -5,7 +5,19 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 
+import { genericError } from "../models/errors/errors.ts";
+
 type KnodeEntityMap<TEntity> = Map<KnodeId, Map<ExternalId<IDS>, TEntity>>;
+
+export function assertEntityExists<TEntity>(
+  entity: TEntity | undefined,
+  message: string,
+): TEntity {
+  if (entity === undefined) {
+    throw genericError(message);
+  }
+  return entity;
+}
 
 export async function getExternalEntitiesMap<
   TItem,
