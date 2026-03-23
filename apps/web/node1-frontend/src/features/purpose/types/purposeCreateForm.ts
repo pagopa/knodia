@@ -7,8 +7,6 @@ import {
 } from "@knodia/purpose-models";
 import { z } from "zod";
 
-import type { StepConfig } from "@/contexts/steps";
-
 const purposeFieldSchemas = {
   dailyCalls: (max: number) =>
     z
@@ -52,9 +50,3 @@ export const DETAILS_STEP_DEFAULTS: DetailsStepData = {
 /** @alias -- Will diverge from DETAILS_STEP_DEFAULTS when more steps are added */
 export const PURPOSE_FORM_DEFAULTS: PurposeFormDraftData =
   DETAILS_STEP_DEFAULTS;
-
-export const CREATE_PURPOSE_STEPS: StepConfig[] = [
-  { label: "Details" },
-  { label: "Step 2" },
-  { label: "Step 3" },
-];

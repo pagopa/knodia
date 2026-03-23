@@ -1,13 +1,16 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
 import { Steps } from "@knodia/ui-kit/ui";
-import { match } from "ts-pattern";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
-import { StepsProvider, useStepsContext } from "@/contexts/steps";
+import {
+  type StepConfig,
+  StepsProvider,
+  useCurrentStep,
+  useStepsContext,
+} from "@/contexts/steps";
 import { PurposeFormProvider } from "@/features/purpose/contexts/PurposeFormProvider";
-import { CREATE_PURPOSE_STEPS } from "@/features/purpose/types/purposeCreateForm";
 import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
@@ -23,12 +26,23 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
+  // TODO: Steps 2 and 3 will be replaced with the proper dynamic form
+  // generated from the Knode's JSON schema once that feature is implemented
+  const steps: StepConfig[] = [
+    {
+      content: <DetailsStep onCancel={handleShowLeaveConfirm} />,
+      label: "Details",
+    },
+    { content: <PlaceholderStep label="Step 2" />, label: "Step 2" },
+    { content: <PlaceholderStep label="Step 3" />, label: "Step 3" },
+  ];
+
   return (
     <>
       <FullPageModal onClose={handleShowLeaveConfirm} title="Create Purpose">
-        <StepsProvider stepConfig={CREATE_PURPOSE_STEPS}>
+        <StepsProvider stepConfig={steps}>
           <PurposeFormProvider eservice={eservice} knodeId={knodeId}>
-            <ModalContent onCloseRequest={handleShowLeaveConfirm} />
+            <ModalContent />
           </PurposeFormProvider>
         </StepsProvider>
       </FullPageModal>
@@ -38,17 +52,9 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   );
 }
 
-function ModalContent({ onCloseRequest }: { onCloseRequest: () => void }) {
-  const { currentStepIndex, steps } = useStepsContext();
-  const stepLabels = steps.map((s) => s.label);
-
-  // TODO: Steps 2 and 3 will be replaced with the proper dynamic form
-  // generated from the Knode's JSON schema once that feature is implemented
-  const currentStep = match(currentStepIndex)
-    .with(0, () => <DetailsStep onCancel={onCloseRequest} />)
-    .with(1, () => <PlaceholderStep label="Step 2" />)
-    .with(2, () => <PlaceholderStep label="Step 3" />)
-    .otherwise(() => null);
+function ModalContent() {
+  const { currentStepIndex, stepLabels } = useStepsContext();
+  const { content } = useCurrentStep();
 
   return (
     <div className="mx-auto flex max-w-160 flex-col gap-16 p-10 pb-16">
@@ -57,7 +63,7 @@ function ModalContent({ onCloseRequest }: { onCloseRequest: () => void }) {
         current={currentStepIndex}
         steps={stepLabels}
       />
-      {currentStep}
+      {content}
     </div>
   );
 }
