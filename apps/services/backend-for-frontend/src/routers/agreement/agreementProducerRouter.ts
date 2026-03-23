@@ -12,7 +12,6 @@ import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
-import { getExternalEntitiesMap } from "@knodia/fastify-zod-api-commons";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
