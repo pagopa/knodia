@@ -34,7 +34,6 @@ export function toAPI_AgreementState(
     .exhaustive();
 }
 
-
 export function toK2KAPI_AgreementState(
   state: API_AgreementState,
 ): k2kGatewayApi.AgreementState {
