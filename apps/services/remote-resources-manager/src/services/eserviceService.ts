@@ -190,8 +190,8 @@ export function eserviceServiceBuilder(
           const [producersMap, eservicesMap, eserviceVersionsMap] =
             await Promise.all([
               getExternalEntitiesMap({
-                fetchFn: async ({ entityIds }) =>
-                  await k2kGatewayApi
+                fetchFn: ({ entityIds }) =>
+                  k2kGatewayApi
                     .getOrganizations({
                       client: k2kGatewayClient,
                       query: {

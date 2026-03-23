@@ -105,8 +105,8 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
               ),
           ),
         getExternalEntitiesMap({
-          fetchFn: async ({ entityIds }) =>
-            await remoteResourcesManagerApi
+          fetchFn: ({ entityIds }) =>
+            remoteResourcesManagerApi
               .getOrganizations({
                 client: remoteResourcesManagerClient,
                 headers: getKnodiaServiceHeaders(req, correlationId),
