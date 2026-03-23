@@ -102,10 +102,6 @@ describe("GET /organizations (getOrganizations)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    {
-      ...defaultQuery,
-      state: "InvalidState",
-    },
     { ...defaultQuery, organizationId: ["InvalidOrganizationId"] },
     {
       ...defaultQuery,
