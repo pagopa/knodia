@@ -3,9 +3,7 @@ import type {
   PurposeFormSchemaVersion,
 } from "@knodia/purpose-models";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports -- ajv lacks ESM exports for node16 moduleResolution (https://github.com/ajv-validator/ajv/issues/2132)
-const Ajv = require("ajv/dist/2020") as typeof import("ajv").default;
-import type { ValidateFunction } from "ajv";
+import Ajv, { type ValidateFunction } from "ajv/dist/2020";
 
 import { formAnswersValidationFailed } from "../models/errors.ts";
 import { getFormSchema } from "../models/formSchemas.ts";
