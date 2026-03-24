@@ -27,9 +27,7 @@ export function ConsumptionEserviceCard({
         to="/consumption/e-services/$id"
       />
       <div className="grid grid-cols-3 gap-1.5">
-        <AgreementInfoCard
-          state={eservice.agreement.state as "Active" | "Suspended"}
-        />
+        <AgreementInfoCard state={eservice.agreement.state} />
         <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
         <GenericInfoCard label="Keychains">-</GenericInfoCard>
       </div>
@@ -57,15 +55,21 @@ export function ConsumptionEserviceCard({
   );
 }
 
-function AgreementInfoCard({ state }: { state: "Active" | "Suspended" }) {
-  const { bg, label } = match(state)
+function AgreementInfoCard({ state }: { state: bffApi.AgreementState }) {
+  const style = match(state)
     .with("Active", () => ({ bg: "bg-success-light", label: "Active" }))
     .with("Suspended", () => ({ bg: "bg-error-light", label: "Suspended" }))
+    .with("Archived", () => {
+      console.warn("Unexpected Archived agreement in consumer e-services list");
+      return null;
+    })
     .exhaustive();
 
+  if (!style) return null;
+
   return (
-    <GenericInfoCard className={bg} label="Agreement">
-      {label}
+    <GenericInfoCard className={style.bg} label="Agreement">
+      {style.label}
     </GenericInfoCard>
   );
 }
