@@ -13,10 +13,10 @@ import { Description, FieldError, Label } from "./Field";
 import { focusRing } from "./styles";
 
 const radioGroupItems = tv({
-  base: "flex group-orientation-vertical:flex-col",
+  base: "flex",
   variants: {
     orientation: {
-      horizontal: "flex-row gap-10 py-1",
+      horizontal: "flex-row flex-wrap gap-x-10 gap-y-2 py-1",
       vertical: "flex-col gap-4 py-2",
     },
   },
