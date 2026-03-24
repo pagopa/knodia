@@ -1,11 +1,12 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type {
-  AgreementId,
-  KnodeId,
-  PurposeId,
-} from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import {
+  type AgreementId,
+  KnodeId,
+  type OrganizationId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import { and, eq } from "drizzle-orm";
 
 import type {
@@ -26,7 +27,7 @@ export type RemoteResourceDbService = ReturnType<
 
 export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async getByAgreementId(
+    async getAgreementById(
       agreementId: ExternalId<AgreementId>,
       knodeId: KnodeId,
     ): Promise<RemoteResourceAgreementSQL | undefined> {
@@ -42,7 +43,16 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result;
     },
-    async getByPurposeId(
+    async getAgreementsDistinctKnodes(consumerId: OrganizationId) {
+      const queryResult = await db
+        .selectDistinctOn([remoteResourceAgreement.knodeId])
+        .from(remoteResourceAgreement)
+        .where(eq(remoteResourceAgreement.consumerId, consumerId))
+        .orderBy(remoteResourceAgreement.knodeId);
+
+      return queryResult.map((r) => KnodeId.parse(r.knodeId));
+    },
+    async getPurposeById(
       purposeId: ExternalId<PurposeId>,
       knodeId: KnodeId,
     ): Promise<RemoteResourcePurposeSQL | undefined> {

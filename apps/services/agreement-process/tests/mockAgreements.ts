@@ -32,7 +32,7 @@ const eserviceVersion2 = eservice2.versions[0]!;
 export const consumerId = generateExternalId<OrganizationId>();
 export const mockAgreements: Agreement[] = [
   {
-    ...getMockAgreement(0),
+    ...getMockAgreement({ seed: 0 }),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Orion"),
@@ -44,7 +44,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt,
   },
   {
-    ...getMockAgreement(1),
+    ...getMockAgreement({ seed: 1 }),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Orion"),
@@ -56,7 +56,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 3000),
   },
   {
-    ...getMockAgreement(2),
+    ...getMockAgreement({ seed: 2 }),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Orion"),
@@ -68,7 +68,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 5000),
   },
   {
-    ...getMockAgreement(3),
+    ...getMockAgreement({ seed: 3 }),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Lynx"),
@@ -80,7 +80,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 7000),
   },
   {
-    ...getMockAgreement(4),
+    ...getMockAgreement({ seed: 4 }),
     consumer: {
       id: consumerId,
       knodeId: KnodeId.parse("Lynx"),
@@ -92,7 +92,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 9000),
   },
   {
-    ...getMockAgreement(5),
+    ...getMockAgreement({ seed: 5 }),
     consumer: {
       id: generateExternalId(),
       knodeId: KnodeId.parse("Lynx"),
@@ -104,7 +104,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 11000),
   },
   {
-    ...getMockAgreement(6),
+    ...getMockAgreement({ seed: 6 }),
     consumer: {
       id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),
@@ -116,7 +116,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 13000),
   },
   {
-    ...getMockAgreement(7),
+    ...getMockAgreement({ seed: 7 }),
     consumer: {
       id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),
@@ -128,7 +128,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 15000),
   },
   {
-    ...getMockAgreement(8),
+    ...getMockAgreement({ seed: 8 }),
     consumer: {
       id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),
@@ -140,7 +140,7 @@ export const mockAgreements: Agreement[] = [
     updatedAt: new Date(updatedAt.getTime() + 17000),
   },
   {
-    ...getMockAgreement(9),
+    ...getMockAgreement({ seed: 9 }),
     consumer: {
       id: generateExternalId(),
       knodeId: KnodeId.parse("Orion"),

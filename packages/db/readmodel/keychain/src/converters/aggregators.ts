@@ -129,6 +129,7 @@ const toConsumerKeychainAggregator = (
     consumerKeychainSQL: throwIfMultipleOrEmpty(
       consumerKeychainsSQL,
       "consumerKeychain",
+      (ck) => ck.id,
     ),
     consumerKeychainUsersSQL: usersSQL,
   };

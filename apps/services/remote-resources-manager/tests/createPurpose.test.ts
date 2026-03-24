@@ -85,7 +85,7 @@ describe("POST /purposes (createPurpose)", () => {
 
     expect(response.json()).toEqual(mockK2KResponse);
 
-    const remoteResourcePurpose = await remoteResourceDbService.getByPurposeId(
+    const remoteResourcePurpose = await remoteResourceDbService.getPurposeById(
       unsafeBrandExternalId(purpose.id),
       KnodeId.parse(knodeId),
     );

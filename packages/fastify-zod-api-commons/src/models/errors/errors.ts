@@ -65,13 +65,25 @@ export function genericError(details: string): ApiError<CommonErrorCodes> {
   });
 }
 
-export function missingHeader(headerName?: string): ApiError<CommonErrorCodes> {
-  const title = "Header has not been passed";
+export function missingRequestHeader(
+  headerName: string,
+): ApiError<CommonErrorCodes> {
   return createApiError({
     code: "MISSING_HEADER",
-    detail: headerName ? `Missing ${headerName} request header` : title,
+    detail: `Missing ${headerName} request header`,
     status: HTTP_STATUS_BAD_REQUEST,
-    title,
+    title: "Request header has not been passed",
+  });
+}
+
+export function missingResponseHeader(
+  headerName: string,
+): ApiError<CommonErrorCodes> {
+  return createApiError({
+    code: "MISSING_HEADER",
+    detail: `Missing ${headerName} response header`,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
+    title: "Response header has not been passed",
   });
 }
 

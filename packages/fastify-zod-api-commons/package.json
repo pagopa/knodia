@@ -22,7 +22,8 @@
     "./openApiZodPlugin": "./src/utils/openapi-zod-plugin/openapiZodPlugin.ts",
     "./security": "./src/utils/openapi-zod-plugin/security.ts",
     "./problemBuilder": "./src/utils/problemBuilder.ts",
-    "./startServer": "./src/utils/startServer.ts"
+    "./startServer": "./src/utils/startServer.ts",
+    "./utils": "./src/utils/utils.ts"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",

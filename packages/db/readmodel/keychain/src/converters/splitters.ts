@@ -87,6 +87,7 @@ const toConsumerKeychainKeySQL = ({
   userId: key.userId,
 });
 
+/** @knipignore -  Will be used when implementing the keychain users lifecycle */
 export const toConsumerKeychainUserSQL = ({
   consumerKeychainId,
   metadataVersion,
@@ -101,6 +102,7 @@ export const toConsumerKeychainUserSQL = ({
   userId,
 });
 
+/** @knipignore -  Will be used when implementing the consumer keychain purposes lifecycle */
 export const toConsumerKeychainPurposeSQL = ({
   consumerKeychainId,
   metadataVersion,
