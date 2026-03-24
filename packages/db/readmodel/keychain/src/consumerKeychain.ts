@@ -145,7 +145,6 @@ export const readmodelConsumerKeychainKey = keychainSchema.table(
 
 export interface ConsumerKeychainItemsSQL {
   consumerKeychainKeysSQL: ConsumerKeychainKeySQL[];
-  consumerKeychainPurposesSQL: ConsumerKeychainPurposeSQL[];
   consumerKeychainSQL: ConsumerKeychainSQL;
   consumerKeychainUsersSQL: ConsumerKeychainUserSQL[];
 }
@@ -153,7 +152,6 @@ export interface ConsumerKeychainItemsSQL {
 export type ConsumerKeychainKeySQL = InferSelectModel<
   typeof readmodelConsumerKeychainKey
 >;
-
 export type ConsumerKeychainPurposeSQL = InferSelectModel<
   typeof readmodelConsumerKeychainPurpose
 >;
@@ -163,6 +161,7 @@ export type ConsumerKeychainSQL = InferSelectModel<
 export type ConsumerKeychainUserSQL = InferSelectModel<
   typeof readmodelConsumerKeychainUser
 >;
+
 export interface FlatConsumerKeychainItemsSQL {
   consumerKeychainSQL: ConsumerKeychainSQL;
 }

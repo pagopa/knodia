@@ -31,7 +31,6 @@ describe("KeychainEventV1 codec", () => {
     ],
     name: { en: "Test Consumer keychain" },
     ownerId: generateId(),
-    purposes: [generateId()],
     updatedAt: new Date(1),
     users: [generateId()],
   };
