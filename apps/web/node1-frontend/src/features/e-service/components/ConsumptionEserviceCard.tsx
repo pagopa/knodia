@@ -64,11 +64,8 @@ function AgreementInfoCard({ state }: { state: "Active" | "Suspended" }) {
     .exhaustive();
 
   return (
-    <dl
-      className={`${bg} flex items-center justify-between rounded-lg px-4 py-3`}
-    >
-      <dt className="text-primary-light-low-contrast body-md">Agreement</dt>
-      <dd className="body-md-em text-primary-dark">{label}</dd>
-    </dl>
+    <GenericInfoCard className={bg} label="Agreement">
+      {label}
+    </GenericInfoCard>
   );
 }
