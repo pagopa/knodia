@@ -61,31 +61,7 @@ function RouteComponent() {
 
   const eservices = data?.items ?? [];
   const hasFilters = search.agreementState !== undefined;
-
-  if (!isLoading && !hasFilters && eservices.length === 0) {
-    return (
-      <>
-        <PageHeader
-          actions={
-            <ButtonLink
-              hierarchy="brand"
-              href={{ to: "/consumption/e-services/search" }}
-            >
-              Search new E-Services
-            </ButtonLink>
-          }
-          overline="Consumption"
-          title="E-Services"
-        />
-
-        <Empty
-          description="Search for an E-Service to request an Agreement."
-          icon={<SelectionPlusIcon />}
-          title="You don't consume any E-Service yet."
-        />
-      </>
-    );
-  }
+  const showContent = isLoading || hasFilters || eservices.length > 0;
 
   return (
     <>
@@ -102,26 +78,36 @@ function RouteComponent() {
         title="E-Services"
       />
 
-      <ConsumptionEserviceFilters
-        agreementState={search.agreementState}
-        onAgreementStateChange={(state) =>
-          handleSearchChange({ agreementState: state, offset: 0 })
-        }
-      />
+      {showContent ? (
+        <>
+          <ConsumptionEserviceFilters
+            agreementState={search.agreementState}
+            onAgreementStateChange={(state) =>
+              handleSearchChange({ agreementState: state, offset: 0 })
+            }
+          />
 
-      <ConsumptionEserviceList
-        eservices={eservices}
-        hasFilters={hasFilters}
-        isLoading={isLoading}
-      />
+          <ConsumptionEserviceList
+            eservices={eservices}
+            hasFilters={hasFilters}
+            isLoading={isLoading}
+          />
 
-      <Pagination
-        className="mx-auto mt-6"
-        limit={data?.pagination.limit ?? 0}
-        offset={search.offset}
-        onOffsetChange={(offset) => handleSearchChange({ offset })}
-        totalItems={data?.pagination.total ?? 0}
-      />
+          <Pagination
+            className="mx-auto mt-6"
+            limit={data?.pagination.limit ?? 0}
+            offset={search.offset}
+            onOffsetChange={(offset) => handleSearchChange({ offset })}
+            totalItems={data?.pagination.total ?? 0}
+          />
+        </>
+      ) : (
+        <Empty
+          description="Search for an E-Service to request an Agreement."
+          icon={<SelectionPlusIcon />}
+          title="You don't consume any E-Service yet."
+        />
+      )}
     </>
   );
 }
