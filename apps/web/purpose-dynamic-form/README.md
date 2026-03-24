@@ -62,7 +62,6 @@ The following custom properties live under `options`, which JSON Forms declares 
 | ----------------------- | ---------------------------------------------------------- |
 | `options.infoLabel`     | Help text displayed below the field label                  |
 | `options.description`   | Description text below switch/checkbox controls            |
-| `options.layout`        | `"horizontal"` or `"vertical"` for radio/checkbox layout   |
 | `options.optionLabels`  | Value-to-label map for enum/radio/checkbox                 |
 | `options.hideOptions`   | Conditionally hide individual options based on form values |
 | `options.errorMessages` | Custom error messages keyed by validation keyword          |

@@ -21,7 +21,6 @@ function RadioRendererComponent({
     (uischema.options?.["optionLabels"] as Record<string, string>) ?? {};
   const errorMessages =
     (uischema.options?.["errorMessages"] as Record<string, string>) ?? {};
-  const layout = uischema.options?.["layout"] as string | undefined;
   const displayError = errors
     ? (errorMessages["required"] ?? errors)
     : undefined;
@@ -45,8 +44,8 @@ function RadioRendererComponent({
       <div
         style={{
           display: "flex",
-          flexDirection: layout === "horizontal" ? "row" : "column",
-          gap: layout === "horizontal" ? "1.5em" : "0.25em",
+          flexDirection: "column",
+          gap: "0.25em",
         }}
       >
         {(options ?? []).map((opt) => (

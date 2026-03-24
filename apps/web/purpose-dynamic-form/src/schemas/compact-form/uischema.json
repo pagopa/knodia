@@ -72,7 +72,6 @@
           "label": "Accessing data on behalf of third parties?",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": { "YES": "Yes", "NO": "No" },
             "errorMessages": { "required": "Please select an option" }
           }
@@ -291,7 +290,6 @@
           "label": "Data quantity known?",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": { "YES": "Yes", "NO": "No" },
             "errorMessages": { "required": "Please select an option" }
           }
@@ -325,7 +323,6 @@
           "label": "Data download allowed?",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": { "YES": "Yes", "NO": "No" },
             "errorMessages": { "required": "Please select an option" }
           }
@@ -362,7 +359,6 @@
           "label": "Privacy notice provided?",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": { "YES": "Yes", "NO": "No" },
             "errorMessages": { "required": "Please select an option" }
           }
@@ -475,7 +471,6 @@
           "label": "DPIA carried out?",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": { "YES": "Yes", "NO": "No" },
             "errorMessages": { "required": "Please select an option" }
           }
@@ -498,7 +493,6 @@
           "label": "Prior consultation carried out?",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": { "YES": "Yes", "NO": "No" },
             "errorMessages": { "required": "Please select an option" }
           },

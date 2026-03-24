@@ -66,7 +66,6 @@ interface ControlOptions {
   errorMessages?: Record<string, string>;
   hideOptions?: Record<string, HideOptionCondition>;
   infoLabel?: string;
-  layout?: "horizontal" | "vertical";
   optionLabels?: Record<string, string>;
   widget: "checkbox" | "radio" | "select" | "switch" | "text" | "textarea";
 }

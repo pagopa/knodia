@@ -270,7 +270,6 @@
               "label": "Do you know the amount of personal data you will obtain through the use of this E-Service?",
               "options": {
                 "widget": "radio",
-                "layout": "horizontal",
                 "optionLabels": { "YES": "Yes", "NO": "No" },
                 "errorMessages": { "required": "Please select an option" }
               }
@@ -340,7 +339,6 @@
               "label": "Has a privacy notice been provided to the data subject regarding the data you intend to access or receive through this E-Service and the related processing activities you will carry out?",
               "options": {
                 "widget": "radio",
-                "layout": "horizontal",
                 "optionLabels": { "YES": "Yes", "NO": "No" },
                 "errorMessages": { "required": "Please select an option" }
               }
@@ -370,7 +368,6 @@
               "label": "How was the privacy notice provided?",
               "options": {
                 "widget": "radio",
-                "layout": "horizontal",
                 "optionLabels": { "PRINT": "Print", "ONLINE": "Online" },
                 "errorMessages": { "required": "Please select a medium" }
               },
@@ -466,7 +463,6 @@
               "label": "Has a Data Protection Impact Assessment (DPIA) been carried out for the personal data processing activities that will be performed through this E-service?",
               "options": {
                 "widget": "radio",
-                "layout": "horizontal",
                 "optionLabels": { "YES": "Yes", "NO": "No" },
                 "errorMessages": { "required": "Please select an option" }
               }
@@ -489,7 +485,6 @@
               "label": "Has a prior consultation with the Data Protection Authority been carried out?",
               "options": {
                 "widget": "radio",
-                "layout": "horizontal",
                 "optionLabels": { "YES": "Yes", "NO": "No" },
                 "errorMessages": { "required": "Please select an option" }
               },
@@ -524,7 +519,6 @@
               "scope": "#/properties/dataDownload",
               "options": {
                 "widget": "radio",
-                "layout": "horizontal",
                 "optionLabels": { "YES": "Yes", "NO": "No" },
                 "errorMessages": { "required": "Please select an option" }
               }
@@ -616,7 +610,6 @@
               "label": "Are you accessing data on behalf of or at the request of third parties?",
               "options": {
                 "widget": "radio",
-                "layout": "horizontal",
                 "optionLabels": { "YES": "Yes", "NO": "No" },
                 "errorMessages": { "required": "Please select an option" }
               }

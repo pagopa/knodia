@@ -93,7 +93,6 @@
           "additionalProperties": { "$ref": "#/$defs/HideOptionCondition" }
         },
         "infoLabel": { "type": "string" },
-        "layout": { "enum": ["horizontal", "vertical"] },
         "optionLabels": {
           "type": "object",
           "additionalProperties": { "type": "string" }

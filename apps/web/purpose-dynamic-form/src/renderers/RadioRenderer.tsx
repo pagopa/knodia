@@ -32,13 +32,7 @@ export function RadioRenderer({
           {control.options.infoLabel}
         </Text>
       )}
-      <div
-        className={
-          control.options?.layout === "horizontal"
-            ? "flex gap-10 py-1"
-            : "flex flex-col gap-1"
-        }
-      >
+      <div className="flex flex-col gap-1">
         {options.map((opt) => (
           <Radio
             className="group flex items-center gap-2 text-sm text-gray-700 cursor-pointer"

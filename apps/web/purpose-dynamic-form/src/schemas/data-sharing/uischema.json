@@ -14,7 +14,6 @@
           "label": "Agreement type",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": {
               "STANDARD": "Standard agreement",
               "CUSTOM": "Custom agreement"
@@ -49,7 +48,6 @@
           "label": "Data categories",
           "options": {
             "widget": "checkbox",
-            "layout": "vertical",
             "optionLabels": {
               "FINANCIAL": "Financial data",
               "HEALTH": "Health data",
@@ -92,7 +90,6 @@
           "label": "Sharing scope",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": {
               "INTERNAL": "Internal only",
               "EXTERNAL": "External parties",
@@ -197,7 +194,6 @@
           "label": "Encryption method",
           "options": {
             "widget": "radio",
-            "layout": "horizontal",
             "optionLabels": {
               "AES_256": "AES-256",
               "RSA": "RSA",
@@ -249,7 +245,6 @@
           "label": "Consent status",
           "options": {
             "widget": "radio",
-            "layout": "vertical",
             "optionLabels": {
               "OBTAINED": "Consent obtained",
               "NOT_OBTAINED": "Consent not yet obtained",

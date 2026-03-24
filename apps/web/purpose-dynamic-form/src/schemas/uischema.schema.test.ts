@@ -120,7 +120,6 @@ describe("UI Schema meta-schema", () => {
               },
             },
             infoLabel: "Extra info",
-            layout: "horizontal",
             optionLabels: { A: "Option A", B: "Option B" },
             widget: "radio",
           },
@@ -319,16 +318,6 @@ describe("UI Schema meta-schema — rejects invalid schemas", () => {
       validate(
         verticalLayout([
           control("#/properties/foo", { description: "no widget" }),
-        ]),
-      ),
-    ).toBe(false);
-  });
-
-  it("invalid layout option value", () => {
-    expect(
-      validate(
-        verticalLayout([
-          control("#/properties/foo", { layout: "grid", widget: "radio" }),
         ]),
       ),
     ).toBe(false);
