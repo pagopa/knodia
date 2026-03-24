@@ -4,9 +4,13 @@ meta {
 }
 
 get {
-  url: {{host-purpose-process}}/purposes/formSchemas/1.0
+  url: {{host-purpose-process}}/purposes/formSchemas/:purposeSchemaVersion
   body: none
   auth: none
+}
+
+params:path {
+  purposeSchemaVersion: 1.0
 }
 
 headers {
