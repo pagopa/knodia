@@ -159,9 +159,7 @@ describe("toConsumptionEserviceDetail", () => {
 
   it("passes through agreement when present", () => {
     const agreement = { id: crypto.randomUUID(), state: "Active" as const };
-    const result = toConsumptionEserviceDetail(
-      createBffDetail({ agreement }),
-    );
+    const result = toConsumptionEserviceDetail(createBffDetail({ agreement }));
 
     expect(result.agreement).toEqual(agreement);
   });
