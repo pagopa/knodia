@@ -13,5 +13,4 @@ export const PurposeEventV1 = z.discriminatedUnion("type", [
 export type PurposeEventV1 = z.infer<typeof PurposeEventV1>;
 
 const PurposeEventEnvelopeV1 = EventEnvelope(PurposeEventV1);
-/** @knipignore - will be used when implementing rmw */
 export type PurposeEventEnvelopeV1 = z.infer<typeof PurposeEventEnvelopeV1>;

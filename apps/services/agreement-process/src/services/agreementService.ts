@@ -1,7 +1,10 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
-import type { ListResult } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type {
   InternalAuthData,
   UISessionAuthData,
@@ -48,7 +51,7 @@ export function agreementServiceBuilder(
         eserviceVersionId: EserviceVersionId;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
-    ): Promise<Agreement> {
+    ): Promise<WithMetadata<Agreement>> {
       const agreementId = generateId<AgreementId>();
       logger.info(
         { requestBody: { consumer, eserviceId, eserviceVersionId } },
@@ -85,16 +88,16 @@ export function agreementServiceBuilder(
         updatedAt: now,
       };
 
-      await eventStoreWriter.insertEvent(
+      const { newVersion } = await eventStoreWriter.insertEvent(
         createAgreementActivatedV1Event(agreement, correlationId),
       );
 
-      return agreement;
+      return { data: agreement, metadata: { version: newVersion } };
     },
     async getAgreement(
       agreementId: AgreementId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<Agreement> {
+    ): Promise<WithMetadata<Agreement>> {
       logger.info(`Getting Agreement with ID ${agreementId}`);
 
       const agreement = await retrieveAgreement(agreementId, readmodelService);

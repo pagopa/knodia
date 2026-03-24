@@ -5,10 +5,10 @@ import {
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
 import z from "zod";
 
 import { API_CompactEservice } from "../eservice/api.ts";
-import { API_CompactOrganization } from "../organization/api.ts";
 
 export const API_AgreementSeed = z
   .strictObject({

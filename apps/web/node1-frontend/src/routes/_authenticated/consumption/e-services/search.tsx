@@ -77,7 +77,7 @@ function RouteComponent() {
     enabled: searchReady,
     placeholderData: searchReady ? keepPreviousData : undefined,
     select: (data) => ({
-      items: data.results.map(toCatalogSearchResultUI),
+      items: data.items.map(toCatalogSearchResultUI),
       pagination: data.pagination,
     }),
   });

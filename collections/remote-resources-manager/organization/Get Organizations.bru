@@ -1,0 +1,26 @@
+meta {
+  name: Get Organizations
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/organizations
+  body: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  knodeId: {{other-knode-id}}
+  ~organizationId: {{organizationId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  organizations: res.body.results
+}
