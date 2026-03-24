@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "agreementType": {
+      "type": "string",
+      "enum": ["STANDARD", "CUSTOM"]
+    },
+    "customDescription": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "dataCategories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["FINANCIAL", "HEALTH", "BEHAVIORAL", "CONTACT", "OTHER"]
+      },
+      "uniqueItems": true
+    },
+    "otherDataCategories": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "sharingScope": {
+      "type": "string",
+      "enum": ["INTERNAL", "EXTERNAL", "BOTH"]
+    },
+    "externalParties": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "retentionPeriod": {
+      "type": "string",
+      "enum": ["6_MONTHS", "1_YEAR", "3_YEARS", "5_YEARS", "INDEFINITE"]
+    },
+    "retentionJustification": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "encryptionRequired": {
+      "type": "string",
+      "enum": ["true", "false"],
+      "default": "false"
+    },
+    "encryptionMethod": {
+      "type": "string",
+      "enum": ["AES_256", "RSA", "TLS", "OTHER"]
+    },
+    "otherEncryptionMethod": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "consentStatus": {
+      "type": "string",
+      "enum": ["OBTAINED", "NOT_OBTAINED", "NOT_APPLICABLE"]
+    },
+    "consentReference": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "noConsentReason": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "dpoNotified": {
+      "type": "string",
+      "enum": ["true", "false"],
+      "default": "false"
+    },
+    "additionalNotes": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "agreementType",
+    "dataCategories",
+    "sharingScope",
+    "retentionPeriod",
+    "consentStatus"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "agreementType": { "const": "CUSTOM" } }
+      },
+      "then": { "required": ["customDescription"] }
+    },
+    {
+      "if": {
+        "properties": {
+          "dataCategories": {
+            "type": "array",
+            "contains": { "const": "OTHER" }
+          }
+        }
+      },
+      "then": { "required": ["otherDataCategories"] }
+    },
+    {
+      "if": {
+        "properties": { "sharingScope": { "const": "EXTERNAL" } }
+      },
+      "then": { "required": ["externalParties"] }
+    },
+    {
+      "if": {
+        "properties": { "sharingScope": { "const": "BOTH" } }
+      },
+      "then": { "required": ["externalParties"] }
+    },
+    {
+      "if": {
+        "properties": { "retentionPeriod": { "const": "INDEFINITE" } }
+      },
+      "then": { "required": ["retentionJustification"] }
+    },
+    {
+      "if": {
+        "required": ["encryptionRequired"],
+        "properties": { "encryptionRequired": { "const": "true" } }
+      },
+      "then": { "required": ["encryptionMethod"] }
+    },
+    {
+      "if": {
+        "required": ["encryptionMethod"],
+        "properties": { "encryptionMethod": { "const": "OTHER" } }
+      },
+      "then": { "required": ["otherEncryptionMethod"] }
+    },
+    {
+      "if": {
+        "properties": { "consentStatus": { "const": "OBTAINED" } }
+      },
+      "then": { "required": ["consentReference"] }
+    },
+    {
+      "if": {
+        "properties": { "consentStatus": { "const": "NOT_OBTAINED" } }
+      },
+      "then": { "required": ["noConsentReason"] }
+    }
+  ]
+}

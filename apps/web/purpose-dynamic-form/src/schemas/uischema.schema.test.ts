@@ -2,6 +2,7 @@ import Ajv from "ajv/dist/2020";
 import { describe, expect, it } from "vitest";
 
 import compactFormUiSchema from "./compact-form/uischema.json";
+import dataSharingUiSchema from "./data-sharing/uischema.json";
 import flatFormUiSchema from "./flat-form/uischema.json";
 import pa31UiSchema from "./pa31/uischema.json";
 import threeStepFormUiSchema from "./three-step-form/uischema.json";
@@ -46,6 +47,7 @@ describe("UI Schema meta-schema", () => {
       ["two-form", twoFormUiSchema],
       ["flat-form", flatFormUiSchema],
       ["compact-form", compactFormUiSchema],
+      ["data-sharing", dataSharingUiSchema],
       ["three-step-form", threeStepFormUiSchema],
     ])("%s", (_name, schema) => {
       expect(validate(schema)).toBe(true);

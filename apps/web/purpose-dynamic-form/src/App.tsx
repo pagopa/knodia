@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 
 import { CompactFormPage } from "./demo/CompactFormPage";
+import { DataSharingPage } from "./demo/DataSharingPage";
 import { FlatFormPage } from "./demo/FlatFormPage";
 import { Pa31Page } from "./demo/Pa31Page";
 import { ThreeStepFormPage } from "./demo/ThreeStepFormPage";
@@ -33,6 +34,9 @@ function NavSelect() {
         >
           <optgroup label="PDND schema">
             <option value="/pa31">PA 3.1</option>
+          </optgroup>
+          <optgroup label="Standalone forms">
+            <option value="/data-sharing">Data Sharing</option>
           </optgroup>
           <optgroup label="UI schema variants">
             <option value="/compact-form">Compact Form</option>
@@ -103,6 +107,12 @@ const twoFormUIKitRoute = createRoute({
   path: "/two-form-uikit",
 });
 
+const dataSharingRoute = createRoute({
+  component: DataSharingPage,
+  getParentRoute: () => rootRoute,
+  path: "/data-sharing",
+});
+
 const compactFormRoute = createRoute({
   component: CompactFormPage,
   getParentRoute: () => rootRoute,
@@ -124,6 +134,7 @@ const threeStepFormRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   pa31Route,
+  dataSharingRoute,
   compactFormRoute,
   flatFormRoute,
   threeStepFormRoute,

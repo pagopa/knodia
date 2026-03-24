@@ -1,6 +1,7 @@
 import Ajv from "ajv/dist/2020";
 import { describe, expect, it } from "vitest";
 
+import dataSharingSchema from "./data-sharing/schema.json";
 import pa31Schema from "./pa31/schema.json";
 import twoFormSchema from "./two-form/schema.json";
 
@@ -10,6 +11,7 @@ describe("data schemas compile as valid JSON Schema 2020-12", () => {
   it.each([
     ["two-form", twoFormSchema],
     ["pa31", pa31Schema],
+    ["data-sharing", dataSharingSchema],
   ])("%s", (_name, schema) => {
     expect(() => ajv.compile(schema)).not.toThrow();
   });
@@ -364,5 +366,161 @@ describe("pa31 data schema", () => {
       expect(validate(data)).toBe(false);
       expect(validate({ ...data, dataRetentionPeriod: "30 days" })).toBe(true);
     });
+  });
+});
+
+describe("data-sharing data schema", () => {
+  const validate = ajv.compile(dataSharingSchema);
+
+  const validBase = {
+    agreementType: "STANDARD",
+    consentStatus: "NOT_APPLICABLE",
+    dataCategories: ["FINANCIAL"],
+    retentionPeriod: "1_YEAR",
+    sharingScope: "INTERNAL",
+  };
+
+  it("accepts minimal valid data", () => {
+    expect(validate(validBase)).toBe(true);
+  });
+
+  describe("rejects missing required fields", () => {
+    it.each([
+      "agreementType",
+      "dataCategories",
+      "sharingScope",
+      "retentionPeriod",
+      "consentStatus",
+    ] as const)("missing %s", (field) => {
+      const data = Object.fromEntries(
+        Object.entries(validBase).filter(([k]) => k !== field),
+      );
+      expect(validate(data)).toBe(false);
+    });
+  });
+
+  it("rejects invalid enum value", () => {
+    expect(validate({ ...validBase, agreementType: "INVALID" })).toBe(false);
+  });
+
+  it("rejects wrong type for array field", () => {
+    expect(validate({ ...validBase, dataCategories: "not-array" })).toBe(false);
+  });
+
+  it("rejects duplicate items in uniqueItems array", () => {
+    expect(
+      validate({ ...validBase, dataCategories: ["FINANCIAL", "FINANCIAL"] }),
+    ).toBe(false);
+  });
+
+  it("rejects string exceeding maxLength", () => {
+    expect(
+      validate({
+        ...validBase,
+        additionalNotes: "x".repeat(2001),
+      }),
+    ).toBe(false);
+  });
+
+  it("accepts string at maxLength boundary", () => {
+    expect(validate({ ...validBase, additionalNotes: "x".repeat(2000) })).toBe(
+      true,
+    );
+  });
+});
+
+describe("data-sharing — conditional requirements", () => {
+  const validate = ajv.compile(dataSharingSchema);
+
+  const validBase = {
+    agreementType: "STANDARD",
+    consentStatus: "NOT_APPLICABLE",
+    dataCategories: ["FINANCIAL"],
+    retentionPeriod: "1_YEAR",
+    sharingScope: "INTERNAL",
+  };
+
+  it("agreementType CUSTOM → requires customDescription", () => {
+    const data = { ...validBase, agreementType: "CUSTOM" };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, customDescription: "desc" })).toBe(true);
+  });
+
+  it("agreementType STANDARD → does not require customDescription", () => {
+    expect(validate(validBase)).toBe(true);
+  });
+
+  it("dataCategories contains OTHER → requires otherDataCategories", () => {
+    const data = { ...validBase, dataCategories: ["OTHER"] };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, otherDataCategories: "custom data" })).toBe(
+      true,
+    );
+  });
+
+  it("sharingScope EXTERNAL → requires externalParties", () => {
+    const data = { ...validBase, sharingScope: "EXTERNAL" };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, externalParties: "Acme Corp" })).toBe(true);
+  });
+
+  it("sharingScope BOTH → requires externalParties", () => {
+    const data = { ...validBase, sharingScope: "BOTH" };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, externalParties: "Acme Corp" })).toBe(true);
+  });
+
+  it("sharingScope INTERNAL → does not require externalParties", () => {
+    expect(validate(validBase)).toBe(true);
+  });
+
+  it("retentionPeriod INDEFINITE → requires retentionJustification", () => {
+    const data = { ...validBase, retentionPeriod: "INDEFINITE" };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, retentionJustification: "legal hold" })).toBe(
+      true,
+    );
+  });
+
+  it("retentionPeriod 1_YEAR → does not require retentionJustification", () => {
+    expect(validate(validBase)).toBe(true);
+  });
+
+  it("encryptionRequired true → requires encryptionMethod", () => {
+    const data = { ...validBase, encryptionRequired: "true" };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, encryptionMethod: "AES_256" })).toBe(true);
+  });
+
+  it("encryptionRequired false → does not require encryptionMethod", () => {
+    expect(validate({ ...validBase, encryptionRequired: "false" })).toBe(true);
+  });
+
+  it("encryptionMethod OTHER → requires otherEncryptionMethod", () => {
+    const data = {
+      ...validBase,
+      encryptionMethod: "OTHER",
+      encryptionRequired: "true",
+    };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, otherEncryptionMethod: "ChaCha20" })).toBe(true);
+  });
+
+  it("consentStatus OBTAINED → requires consentReference", () => {
+    const data = { ...validBase, consentStatus: "OBTAINED" };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, consentReference: "REF-001" })).toBe(true);
+  });
+
+  it("consentStatus NOT_OBTAINED → requires noConsentReason", () => {
+    const data = { ...validBase, consentStatus: "NOT_OBTAINED" };
+    expect(validate(data)).toBe(false);
+    expect(validate({ ...data, noConsentReason: "pending approval" })).toBe(
+      true,
+    );
+  });
+
+  it("consentStatus NOT_APPLICABLE → requires neither", () => {
+    expect(validate(validBase)).toBe(true);
   });
 });
