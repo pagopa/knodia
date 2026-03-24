@@ -140,7 +140,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       description:
         "Retrieve the JSON Schema for validating Purpose form answers",
       headers: KnodiaServiceHeaders,
-      operationId: "getFormSchema",
+      operationId: "getPurposeFormSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
         200: API_PurposeFormSchema.meta({
@@ -169,7 +169,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       description:
         "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
       headers: KnodiaServiceHeaders,
-      operationId: "getFormUiSchema",
+      operationId: "getPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
         200: API_PurposeFormSchema.meta({
