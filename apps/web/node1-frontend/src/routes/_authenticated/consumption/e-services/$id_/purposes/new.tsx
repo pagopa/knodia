@@ -1,41 +1,44 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { RequestAgreementModal } from "@/features/agreement/components/RequestAgreementModal/RequestAgreementModal";
-import { requestAgreementSearchSchema } from "@/features/agreement/models/search-params";
+import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
+import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services_/request-agreement/",
+  "/_authenticated/consumption/e-services/$id_/purposes/new",
 )({
   component: RouteComponent,
-  loaderDeps: ({ search: { eserviceId, knodeId } }) => ({
-    eserviceId,
-    knodeId,
-  }),
+  loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({ context: { queryClient }, deps: { eserviceId, knodeId } }) =>
+  loader: async ({
+    context: { queryClient },
+    deps: { knodeId },
+    params: { id },
+  }) =>
     await queryClient.ensureQueryData(
-      consumerEserviceDetailsQuery(eserviceId, knodeId),
+      consumerEserviceDetailsQuery(id, knodeId),
     ),
-  validateSearch: requestAgreementSearchSchema,
+  validateSearch: eserviceDetailSearchSchema,
 });
 
 function RouteComponent() {
   const bffDetail = Route.useLoaderData();
-  const { eserviceId, knodeId } = Route.useSearch();
-  const eservice = toConsumptionEserviceDetail(bffDetail);
+  const { knodeId } = Route.useSearch();
+  const { id } = Route.useParams();
   const navigate = useNavigate();
+  const eservice = toConsumptionEserviceDetail(bffDetail);
 
   const onClose = () =>
     navigate({
-      params: { id: eserviceId },
+      params: { id },
+      replace: true,
       search: { knodeId },
       to: "/consumption/e-services/$id",
     });
 
   return (
-    <RequestAgreementModal
+    <CreatePurposeModal
       eservice={eservice}
       knodeId={knodeId}
       onClose={onClose}
