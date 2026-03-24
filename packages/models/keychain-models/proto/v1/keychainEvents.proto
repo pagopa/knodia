@@ -3,6 +3,7 @@ syntax = "proto3";
 package keychain.v1;
 
 import "v1/keychain.proto";
+import "v1/purpose.proto";
 
 message ConsumerKeychainCreatedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
@@ -14,4 +15,9 @@ message ConsumerKeychainDeletedV1 {
 
 message ConsumerKeychainUpdatedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
+}
+
+message ConsumerKeychainPurposeLinkedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+  purpose.v1.PurposeV1 purpose = 2;
 }

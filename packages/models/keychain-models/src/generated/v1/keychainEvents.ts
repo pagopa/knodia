@@ -7,6 +7,7 @@
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 import { ConsumerKeychainV1 } from "./keychain.ts";
+import { PurposeV1 } from "./purpose.ts";
 
 export const protobufPackage = "keychain.v1";
 
@@ -20,6 +21,11 @@ export interface ConsumerKeychainDeletedV1 {
 
 export interface ConsumerKeychainUpdatedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
+}
+
+export interface ConsumerKeychainPurposeLinkedV1 {
+  consumerKeychain: ConsumerKeychainV1 | undefined;
+  purpose: PurposeV1 | undefined;
 }
 
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
@@ -209,6 +215,90 @@ export const ConsumerKeychainUpdatedV1: MessageFns<ConsumerKeychainUpdatedV1> = 
     const message = createBaseConsumerKeychainUpdatedV1();
     message.consumerKeychain = (object.consumerKeychain !== undefined && object.consumerKeychain !== null)
       ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseConsumerKeychainPurposeLinkedV1(): ConsumerKeychainPurposeLinkedV1 {
+  return { consumerKeychain: undefined, purpose: undefined };
+}
+
+export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurposeLinkedV1> = {
+  encode(message: ConsumerKeychainPurposeLinkedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.consumerKeychain !== undefined) {
+      ConsumerKeychainV1.encode(message.consumerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.purpose !== undefined) {
+      PurposeV1.encode(message.purpose, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ConsumerKeychainPurposeLinkedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConsumerKeychainPurposeLinkedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.consumerKeychain = ConsumerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.purpose = PurposeV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConsumerKeychainPurposeLinkedV1 {
+    return {
+      consumerKeychain: isSet(object.consumerKeychain)
+        ? ConsumerKeychainV1.fromJSON(object.consumerKeychain)
+        : undefined,
+      purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined,
+    };
+  },
+
+  toJSON(message: ConsumerKeychainPurposeLinkedV1): unknown {
+    const obj: any = {};
+    if (message.consumerKeychain !== undefined) {
+      obj.consumerKeychain = ConsumerKeychainV1.toJSON(message.consumerKeychain);
+    }
+    if (message.purpose !== undefined) {
+      obj.purpose = PurposeV1.toJSON(message.purpose);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ConsumerKeychainPurposeLinkedV1>, I>>(base?: I): ConsumerKeychainPurposeLinkedV1 {
+    return ConsumerKeychainPurposeLinkedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ConsumerKeychainPurposeLinkedV1>, I>>(
+    object: I,
+  ): ConsumerKeychainPurposeLinkedV1 {
+    const message = createBaseConsumerKeychainPurposeLinkedV1();
+    message.consumerKeychain = (object.consumerKeychain !== undefined && object.consumerKeychain !== null)
+      ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
+      : undefined;
+    message.purpose = (object.purpose !== undefined && object.purpose !== null)
+      ? PurposeV1.fromPartial(object.purpose)
       : undefined;
     return message;
   },
