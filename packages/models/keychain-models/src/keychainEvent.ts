@@ -5,6 +5,7 @@ import { z } from "zod";
 import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
+  ConsumerKeychainMemberAddedV1,
   ConsumerKeychainUpdatedV1,
 } from "./generated/v1/keychainEvents.ts";
 
@@ -20,6 +21,10 @@ export const KeychainEventV1 = z.discriminatedUnion("type", [
   z.object({
     data: protobufBinaryCodec(ConsumerKeychainUpdatedV1),
     type: z.literal("ConsumerKeychainUpdatedV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(ConsumerKeychainMemberAddedV1),
+    type: z.literal("ConsumerKeychainMemberAddedV1"),
   }),
 ]);
 export type KeychainEventV1 = z.infer<typeof KeychainEventV1>;

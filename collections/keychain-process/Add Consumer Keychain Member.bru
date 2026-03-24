@@ -1,0 +1,30 @@
+meta {
+  name: Add Consumer Keychain Member
+  type: http
+}
+
+post {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/members
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "userId": "{{userId}}",
+  }
+}
+
+vars:post-response {
+  consumerKeychainId: res.body.id
+}
+
+script:pre-request {
+  const random = Math.round(Math.random() * 1000)
+  bru.setVar("randomName", `Test Consumer Keychain ${random}`)
+}

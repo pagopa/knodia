@@ -1,5 +1,7 @@
 import {
+  AdminListGroupsForUserCommand,
   CognitoIdentityProviderClient,
+  ListUsersCommand,
   ListUsersInGroupCommand,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -13,6 +15,8 @@ import {
 export type UserService = ReturnType<typeof userServiceBuilder>;
 
 const TECHNICAL_ROLE_GROUP_NAME = "role:technical";
+const getOrganizationGroupName = (organizationId: OrganizationId) =>
+  `org:${organizationId}`;
 
 export interface IdmUser {
   email: string;
@@ -41,14 +45,73 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
       nextToken = response.NextToken;
     } while (nextToken);
 
-    return users.map(toUser);
+    return users.map(toIdmUser);
+  }
+
+  async function getUserById(userId: UserId): Promise<IdmUser | undefined> {
+    const reponse = await client.send(
+      new ListUsersCommand({
+        Filter: `sub = "${userId}"`,
+        Limit: 1,
+        UserPoolId: userPoolId,
+      }),
+    );
+
+    const user = reponse.Users?.[0];
+    return user ? toIdmUser(user) : undefined;
+  }
+
+  async function listGroupsForUser(userId: UserId): Promise<string[]> {
+    const groups: string[] = [];
+    let nextToken: string | undefined;
+
+    do {
+      const response = await client.send(
+        new AdminListGroupsForUserCommand({
+          Limit: 60, // Max limit per AWS docs
+          NextToken: nextToken,
+          Username: userId,
+          UserPoolId: userPoolId,
+        }),
+      );
+
+      groups.push(
+        ...(response.Groups ?? []).flatMap((group) =>
+          group.GroupName ? [group.GroupName] : [],
+        ),
+      );
+      nextToken = response.NextToken;
+    } while (nextToken);
+
+    return groups;
   }
 
   return {
+    async getOrganizationTechnicalUser(
+      organizationId: OrganizationId,
+      userId: UserId,
+    ): Promise<IdmUser | undefined> {
+      const user = await getUserById(userId);
+      if (!user) {
+        return undefined;
+      }
+
+      const groups = await listGroupsForUser(userId);
+
+      const isTechnicalUser = groups.includes(TECHNICAL_ROLE_GROUP_NAME);
+      const isOrgMember = groups.includes(
+        getOrganizationGroupName(organizationId),
+      );
+
+      return isTechnicalUser && isOrgMember ? user : undefined;
+    },
+
     async getOrganizationTechnicalUsers(
       organizationId: OrganizationId,
     ): Promise<IdmUser[]> {
-      const organizationUsers = await listUsersInGroup(`org:${organizationId}`);
+      const organizationUsers = await listUsersInGroup(
+        getOrganizationGroupName(organizationId),
+      );
       const technicalUsers = await listUsersInGroup(TECHNICAL_ROLE_GROUP_NAME);
 
       const technicalUserIds = new Set(technicalUsers.map((user) => user.id));
@@ -58,7 +121,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
   };
 }
 
-function toUser(user: UserType): IdmUser {
+function toIdmUser(user: UserType): IdmUser {
   const attributes = new Map(
     (user.Attributes ?? []).map((attr) => [attr.Name, attr.Value]),
   );
