@@ -1,6 +1,7 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { createConsumerPurposeMutation } from "@knodia/bff-client/tanstack-query";
+import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -31,7 +32,7 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
         eserviceId,
         // TODO: wire up dynamic form answers when purpose dynamic form is implemented
         formAnswersJson: {},
-        formSchemaVersion: "1.0",
+        formSchemaVersion: PurposeFormSchemaVersion.enum["1.0"],
         knodeId,
         name: { en: data.name },
       },
