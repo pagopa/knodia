@@ -257,7 +257,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
 
       res.status(200).send({
         pagination: data.pagination,
-        results: data.items.map(toAPI_Eservice),
+        results: data.results.map(toAPI_Eservice),
       });
     },
     method: "GET",
