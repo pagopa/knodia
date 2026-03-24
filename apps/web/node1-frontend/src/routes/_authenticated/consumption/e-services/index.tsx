@@ -89,7 +89,6 @@ function RouteComponent() {
 
           <ConsumptionEserviceList
             eservices={eservices}
-            hasFilters={hasFilters}
             isLoading={isLoading}
           />
 
