@@ -22,11 +22,11 @@ describe("GET /purposes/formSchemas/:version (getFormSchema)", () => {
     },
   );
 
-  it("should return 404 for a non-existent version", async () => {
+  it("should return 400 for a non-existent version", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!).get(
       "/purposes/formSchemas/99.99",
     );
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(400);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
@@ -54,11 +54,11 @@ describe("GET /purposes/formSchemas/:version/ui (getFormUiSchema)", () => {
     },
   );
 
-  it("should return 404 for a non-existent version", async () => {
+  it("should return 400 for a non-existent version", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!).get(
       "/purposes/formSchemas/99.99/ui",
     );
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(400);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(

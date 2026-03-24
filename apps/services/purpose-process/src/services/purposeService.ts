@@ -18,13 +18,14 @@ import {
   type LocalizedPurposeDescription,
   type LocalizedPurposeName,
   type Purpose,
-  PurposeFormAnswers,
+  type PurposeFormAnswers,
   type PurposeFormSchemaVersion,
   PurposeState,
 } from "@knodia/purpose-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
 import {
   retrieveAgreements,
@@ -112,6 +113,12 @@ export function purposeServiceBuilder(
         data: purpose,
         metadata: { version: newVersion },
       };
+    },
+    getFormSchema(version: PurposeFormSchemaVersion): unknown {
+      return getFormSchema(version);
+    },
+    getFormUiSchema(version: PurposeFormSchemaVersion): unknown {
+      return getFormUiSchema(version);
     },
     async getPurpose(
       purposeId: PurposeId,

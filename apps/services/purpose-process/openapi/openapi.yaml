@@ -375,8 +375,7 @@ paths:
       description: Retrieve the JSON Schema for validating Purpose form answers
       parameters:
         - schema:
-            type: string
-            minLength: 1
+            $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path
           name: version
           required: true
@@ -420,14 +419,6 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Purpose form schema not found
-          content:
-            application/problem+json:
-              schema:
-                description: Purpose form schema not found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/{version}/ui:
     get:
       operationId: getFormUiSchema
@@ -437,8 +428,7 @@ paths:
       description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
       parameters:
         - schema:
-            type: string
-            minLength: 1
+            $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path
           name: version
           required: true
@@ -480,14 +470,6 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Purpose form UI schema not found
-          content:
-            application/problem+json:
-              schema:
-                description: Purpose form UI schema not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

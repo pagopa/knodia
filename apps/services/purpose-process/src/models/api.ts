@@ -57,7 +57,7 @@ export const API_Purpose = z
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
 export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
-  version: z.string().min(1),
+  version: API_PurposeFormSchemaVersion,
 });
 export type API_PurposeFormSchemaVersionPathParam = z.infer<
   typeof API_PurposeFormSchemaVersionPathParam

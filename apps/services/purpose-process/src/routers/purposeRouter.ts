@@ -11,7 +11,6 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
-import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
@@ -24,8 +23,6 @@ import {
 } from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { purposeFormSchemaNotFound } from "../models/errors.ts";
-import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
 
 interface PurposeRouterOptions {
   purposeService: PurposeService;
@@ -136,12 +133,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);
-      if (!parsed.success) {
-        throw purposeFormSchemaNotFound(req.params.version);
-      }
-
-      res.status(200).send(getFormSchema(parsed.data));
+      res.status(200).send(purposeService.getFormSchema(req.params.version));
     },
     method: "GET",
     schema: {
@@ -157,7 +149,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Purpose form schema not found" }),
       },
       summary: "Get Purpose form schema by version",
       tags: [apiTags.purpose],
@@ -171,12 +162,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);
-      if (!parsed.success) {
-        throw purposeFormSchemaNotFound(req.params.version);
-      }
-
-      res.status(200).send(getFormUiSchema(parsed.data));
+      res.status(200).send(purposeService.getFormUiSchema(req.params.version));
     },
     method: "GET",
     schema: {
@@ -192,9 +178,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({
-          description: "Purpose form UI schema not found",
-        }),
       },
       summary: "Get Purpose form UI schema by version",
       tags: [apiTags.purpose],
