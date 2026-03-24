@@ -3,28 +3,22 @@ import type {
   PurposeFormSchemaVersion,
 } from "@knodia/purpose-models";
 
-import Ajv from "ajv/dist/2020";
-import { match } from "ts-pattern";
+import Ajv, { type ValidateFunction } from "ajv/dist/2020";
 
 import { formAnswersValidationFailed } from "../models/errors.ts";
-import schema_1_0 from "../schemas/1.0/schema.json" with { type: "json" };
+import { getFormSchema } from "../models/formSchemas.ts";
 
 const ajv = new Ajv({ allErrors: true });
 
-const compiledSchemas = {
-  "1.0": ajv.compile(schema_1_0),
-} as const;
-
-const getCompiledSchema = (version: PurposeFormSchemaVersion) =>
-  match(version)
-    .with("1.0", () => compiledSchemas["1.0"])
-    .exhaustive();
+const compiledSchemas: Record<PurposeFormSchemaVersion, ValidateFunction> = {
+  "1.0": ajv.compile(getFormSchema("1.0")),
+};
 
 export function assertFormAnswersAreValid(
   formAnswersJson: PurposeFormAnswers,
   formSchemaVersion: PurposeFormSchemaVersion,
 ): void {
-  const validate = getCompiledSchema(formSchemaVersion);
+  const validate = compiledSchemas[formSchemaVersion];
 
   if (!validate(formAnswersJson)) {
     throw formAnswersValidationFailed(validate.errors ?? []);

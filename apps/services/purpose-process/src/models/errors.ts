@@ -114,7 +114,10 @@ export function formAnswersValidationFailed(errors: ErrorObject[]) {
   return createApiErrorFromErrorsList<ErrorCodes>({
     code: "FORM_ANSWERS_VALIDATION_FAILED",
     errors: errors.map(
-      (e) => new Error(`${e.instancePath || "/"} ${e.message}`),
+      (e) =>
+        new Error(
+          `${e.instancePath || "/"} ${e.message ?? "validation failed"}`,
+        ),
     ),
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Form Answers Validation Failed",
