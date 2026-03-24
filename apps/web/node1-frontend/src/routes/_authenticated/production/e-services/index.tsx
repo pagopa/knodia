@@ -80,7 +80,7 @@ function RouteComponent() {
       )}
 
       <ProductionEserviceList
-        eservices={data?.items ?? []}
+        eservices={data?.results ?? []}
         isLoading={isLoading}
       />
 

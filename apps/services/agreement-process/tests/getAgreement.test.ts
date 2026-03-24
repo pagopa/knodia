@@ -51,8 +51,8 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
       .get("/agreements")
       .query({ limit: "50", offset: "0" });
 
-    const listBody = listResponse.json<{ items: API_Agreement[] }>();
-    const expectedItem = listBody.items.find(
+    const listBody = listResponse.json<{ results: API_Agreement[] }>();
+    const expectedItem = listBody.results.find(
       (i) => i.id === VALID_AGREEMENT_ID,
     );
 

@@ -166,12 +166,12 @@ describe("GET /eservices (getEservices)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map((e) => toExpectAPI_Eservice(e)),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
           total: totalCount,
         },
+        results: expectedResult.map((e) => toExpectAPI_Eservice(e)),
       });
     },
   );

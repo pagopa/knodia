@@ -190,8 +190,8 @@ export type ProducerEservice = {
 };
 
 export type ProducerEservices = {
-    items: Array<ProducerEservice>;
     pagination: Pagination;
+    results: Array<ProducerEservice>;
 };
 
 export type ProducerEserviceVersionDetails = {
@@ -323,8 +323,8 @@ export type ConsumerCatalogEserviceSearchResult = {
 };
 
 export type ConsumerCatalogEserviceSearchResults = {
-    items: Array<ConsumerCatalogEserviceSearchResult>;
     pagination: Pagination;
+    results: Array<ConsumerCatalogEserviceSearchResult>;
 };
 
 export type ConsumerEserviceDetailsProducer = {
@@ -413,8 +413,8 @@ export type ConsumerEservice = {
 };
 
 export type ConsumerEservices = {
-    items: Array<ConsumerEservice>;
     pagination: Pagination;
+    results: Array<ConsumerEservice>;
 };
 
 /**
@@ -443,8 +443,8 @@ export type ProducerAgreementDetails = {
 };
 
 export type ProducerAgreements = {
-    items: Array<ProducerAgreement>;
     pagination: Pagination;
+    results: Array<ProducerAgreement>;
 };
 
 export type ConsumerAgreements = {
@@ -504,8 +504,8 @@ export type Keychain = {
 };
 
 export type Keychains = {
-    items: Array<Keychain>;
     pagination: Pagination;
+    results: Array<Keychain>;
 };
 
 export type KeychainDetails = {

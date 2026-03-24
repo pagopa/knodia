@@ -169,8 +169,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       });
 
       // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
-      const items = await Promise.all(
-        data.items.map(async (eservice, idx) => {
+      const results = await Promise.all(
+        data.results.map(async (eservice, idx) => {
           const { data: latestEserviceVersion } =
             await eserviceProcessApi.getEserviceLatestVersion({
               client: eserviceProcessClient,
@@ -188,8 +188,8 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       );
 
       res.send({
-        items,
         pagination: data.pagination,
+        results,
       });
     },
     method: "GET",

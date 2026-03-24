@@ -67,12 +67,12 @@ export const organizationRouter: FastifyPluginAsyncZod<
         await organizationService.getOrganizations(req.query, ctx);
 
       res.status(200).send({
-        items: results.map(toAPI_Organization),
         pagination: {
           limit: req.query.limit,
           offset: req.query.offset,
           total: totalCount,
         },
+        results: results.map(toAPI_Organization),
       });
     },
     method: "GET",

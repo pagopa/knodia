@@ -251,14 +251,14 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
-        items: data.items.map((keychain) =>
+        pagination: data.pagination,
+        results: data.results.map((keychain) =>
           toAPI_Keychain(keychain, {
             // TODO: retrieve real keysCount and membersCount from keychainProcessApi when available
             keysCount: 0,
             membersCount: 0,
           }),
         ),
-        pagination: data.pagination,
       });
     },
     method: "GET",

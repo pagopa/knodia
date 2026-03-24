@@ -46,7 +46,7 @@ function RouteComponent() {
       <PageHeader overline="Production" title="Agreements" />
 
       <ProducerAgreementTable
-        agreements={data?.items ?? []}
+        agreements={data?.results ?? []}
         isLoading={isLoading}
       />
 
