@@ -1208,6 +1208,7 @@ paths:
   /purposes:
     post:
       operationId: createPurpose
+      summary: Create a Purpose
       tags:
         - purpose
       description: Create a new Purpose
