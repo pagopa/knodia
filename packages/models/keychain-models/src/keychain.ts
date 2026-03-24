@@ -57,3 +57,10 @@ export const FlatConsumerKeychain = ConsumerKeychain.omit({
   users: true,
 });
 export type FlatConsumerKeychain = z.infer<typeof FlatConsumerKeychain>;
+
+export const ConsumerKeychainPurpose = z.strictObject({
+  consumerKeychainId: ConsumerKeychainId,
+  createdAt: z.coerce.date(),
+  purposeId: PurposeId,
+});
+export type ConsumerKeychainPurpose = z.infer<typeof ConsumerKeychainPurpose>;

@@ -26,6 +26,7 @@ export interface ConsumerKeychainUpdatedV1 {
 export interface ConsumerKeychainPurposeLinkedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
   purpose: PurposeV1 | undefined;
+  createdAt: number;
 }
 
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
@@ -221,7 +222,7 @@ export const ConsumerKeychainUpdatedV1: MessageFns<ConsumerKeychainUpdatedV1> = 
 };
 
 function createBaseConsumerKeychainPurposeLinkedV1(): ConsumerKeychainPurposeLinkedV1 {
-  return { consumerKeychain: undefined, purpose: undefined };
+  return { consumerKeychain: undefined, purpose: undefined, createdAt: 0 };
 }
 
 export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurposeLinkedV1> = {
@@ -231,6 +232,9 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     }
     if (message.purpose !== undefined) {
       PurposeV1.encode(message.purpose, writer.uint32(18).fork()).join();
+    }
+    if (message.createdAt !== 0) {
+      writer.uint32(24).int64(message.createdAt);
     }
     return writer;
   },
@@ -258,6 +262,14 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
           message.purpose = PurposeV1.decode(reader, reader.uint32());
           continue;
         }
+        case 3: {
+          if (tag !== 24) {
+            break;
+          }
+
+          message.createdAt = longToNumber(reader.int64());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -273,6 +285,7 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
         ? ConsumerKeychainV1.fromJSON(object.consumerKeychain)
         : undefined,
       purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined,
+      createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
     };
   },
 
@@ -283,6 +296,9 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     }
     if (message.purpose !== undefined) {
       obj.purpose = PurposeV1.toJSON(message.purpose);
+    }
+    if (message.createdAt !== 0) {
+      obj.createdAt = Math.round(message.createdAt);
     }
     return obj;
   },
@@ -300,6 +316,7 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     message.purpose = (object.purpose !== undefined && object.purpose !== null)
       ? PurposeV1.fromPartial(object.purpose)
       : undefined;
+    message.createdAt = object.createdAt ?? 0;
     return message;
   },
 };
@@ -315,6 +332,17 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(int64: { toString(): string }): number {
+  const num = globalThis.Number(int64.toString());
+  if (num > globalThis.Number.MAX_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  if (num < globalThis.Number.MIN_SAFE_INTEGER) {
+    throw new globalThis.Error("Value is smaller than Number.MIN_SAFE_INTEGER");
+  }
+  return num;
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
