@@ -1,5 +1,5 @@
 import { genericInternalError } from "@knodia/common-models/errors";
-import { ReadmodelConfig } from "@knodia/db-readmodel-config/config";
+import { type ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import {
   asc,
   count,
@@ -8,7 +8,7 @@ import {
   getTableColumns,
   type InferSelectModel,
   sql,
-  SQL,
+  type SQL,
 } from "drizzle-orm";
 import { toCamelCase } from "drizzle-orm/casing";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -16,10 +16,10 @@ import {
   type AnyPgColumn,
   type AnyPgTable,
   getTableConfig,
-  PgColumn,
+  type PgColumn,
   PgJsonb,
   type PgSelect,
-  PgTable,
+  type PgTable,
   PgText,
 } from "drizzle-orm/pg-core";
 import { Pool } from "pg";

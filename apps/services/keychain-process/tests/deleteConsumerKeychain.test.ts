@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { generateId, OrganizationId } from "@knodia/common-models/ids";
+import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import {
-  ConsumerKeychain,
+  type ConsumerKeychain,
   KeychainEventV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";

@@ -5,7 +5,7 @@ import fastifyRequestContext, {
   requestContext,
 } from "@fastify/request-context";
 import {
-  CorrelationId,
+  type CorrelationId,
   generateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";

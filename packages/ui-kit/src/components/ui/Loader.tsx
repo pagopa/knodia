@@ -1,6 +1,9 @@
-import type { ProgressBarProps } from "react-aria-components";
-
-import { composeRenderProps, Label, ProgressBar } from "react-aria-components";
+import {
+  composeRenderProps,
+  Label,
+  ProgressBar,
+  type ProgressBarProps,
+} from "react-aria-components";
 import { twMerge } from "tailwind-merge";
 
 interface LoaderProps extends ProgressBarProps {

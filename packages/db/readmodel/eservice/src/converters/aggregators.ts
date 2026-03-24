@@ -6,10 +6,10 @@ import {
   throwIfMultipleOrEmpty,
 } from "@knodia/db-readmodel-commons/utils";
 import {
-  Eservice,
+  type Eservice,
   EserviceAccessTokenType,
   EserviceMode,
-  EserviceVersion,
+  type EserviceVersion,
   EserviceVersionState,
   LocalizedDescription,
   LocalizedName,

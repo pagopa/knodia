@@ -1,15 +1,15 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
-  OrganizationId,
-  PurposeId,
+  type OrganizationId,
+  type PurposeId,
   unsafeBrandId,
-  UserId,
+  type UserId,
 } from "@knodia/common-models/ids";
 import {
-  ConsumerKeychain,
+  type ConsumerKeychain,
   type ConsumerKeychainKey,
-  FlatConsumerKeychain,
+  type FlatConsumerKeychain,
   KeyAlgorithm,
   KeyFormat,
   LocalizedDescription,
