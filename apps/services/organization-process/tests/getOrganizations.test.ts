@@ -93,12 +93,12 @@ describe("GET /organizations (getOrganizations)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map(toExpectAPI_Organization),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
           total: totalCount,
         },
+        results: expectedResult.map(toExpectAPI_Organization),
       });
     },
   );

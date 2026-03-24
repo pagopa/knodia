@@ -84,7 +84,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       });
 
       const eserviceIds = new Set(
-        data.items.map((agreement) => agreement.eserviceId),
+        data.results.map((agreement) => agreement.eserviceId),
       );
       const [eservicesMap, consumersMap] = await Promise.all([
         eserviceProcessApi
@@ -101,7 +101,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           .then(
             (res) =>
               new Map(
-                res.data.items.map((eservice) => [eservice.id, eservice]),
+                res.data.results.map((eservice) => [eservice.id, eservice]),
               ),
           ),
         getExternalEntitiesMap({
@@ -121,11 +121,11 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
               .then((res) => res.data.results),
           getEntityId: (agreement) => agreement.consumer.id,
           getKnodeId: (agreement) => KnodeId.parse(agreement.consumer.knodeId),
-          items: data.items,
+          items: data.results,
         }),
       ]);
 
-      const items = data.items.map((agreement) =>
+      const results = data.results.map((agreement) =>
         toAPI_ProducerAgreement({
           agreement,
           consumer: assertEntityExists(
@@ -142,8 +142,8 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       );
 
       res.send({
-        items,
         pagination: data.pagination,
+        results,
       });
     },
     method: "GET",

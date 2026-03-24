@@ -37,12 +37,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         await consumerKeychainService.getConsumerKeychains(req.query, ctx);
 
       res.status(200).send({
-        items: results.map(toAPI_Keychain),
         pagination: {
           limit: req.query.limit,
           offset: req.query.offset,
           total: totalCount,
         },
+        results: results.map(toAPI_Keychain),
       });
     },
     method: "GET",

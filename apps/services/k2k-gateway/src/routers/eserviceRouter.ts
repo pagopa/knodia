@@ -75,7 +75,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       res.send({
         pagination: data.pagination,
         results: await Promise.all(
-          data.items.map(enrichWithLatestVersionAndMapToAPIResult),
+          data.results.map(enrichWithLatestVersionAndMapToAPIResult),
         ),
       });
     },
