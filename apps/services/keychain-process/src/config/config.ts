@@ -5,7 +5,7 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { type z } from "zod";
+import { z } from "zod";
 
 const KeychainProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)

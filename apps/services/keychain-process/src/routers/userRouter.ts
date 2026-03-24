@@ -32,12 +32,12 @@ export const userRouter: FastifyPluginAsyncZod<UserService> = async (
     method: "GET",
     schema: {
       description:
-        "Retrieve technical users of the requesting user's organization",
+        "Retrieve technical users of the requesting User's Organization",
       headers: KnodiaServiceHeaders,
       operationId: "getTechnicalUsers",
       response: {
         200: API_Users.meta({
-          description: "Technical users retrieved successfully",
+          description: "Technical Users retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

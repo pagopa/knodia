@@ -142,15 +142,15 @@ function writeJson(res, statusCode, body, headers = {}) {
   res.end(JSON.stringify(body));
 }
 
-function paginateUsers(users, limit, paginationToken) {
+function paginateUsers(users, limit, nextToken) {
   const safeLimit =
     typeof limit === "number" && limit > 0 ? Math.floor(limit) : 60;
-  const startIndex = paginationToken ? Number.parseInt(paginationToken, 10) : 0;
+  const startIndex = nextToken ? Number.parseInt(nextToken, 10) : 0;
   const page = users.slice(startIndex, startIndex + safeLimit);
   const nextIndex = startIndex + safeLimit;
 
   return {
-    PaginationToken:
+    NextToken:
       nextIndex < users.length ? String(nextIndex) : undefined,
     Users: page,
   };
@@ -165,7 +165,7 @@ function handleListUsersInGroup(req, res, payload) {
   const response = paginateUsers(
     filteredUsers,
     payload.Limit,
-    payload.PaginationToken,
+    payload.NextToken,
   );
 
   console.log(
