@@ -1,0 +1,40 @@
+meta {
+  name: Create Purpose
+  type: http
+}
+
+post {
+  url: {{host-remote-resources-manager}}/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "name": {
+      "en": "Test Purpose"
+    },
+    "description": {
+      "en": "A test purpose for accessing data"
+    },
+    "eserviceId": "{{eserviceId}}",
+    "knodeId": "{{other-knode-id}}",
+    "dailyCalls": 100,
+    "formAnswersJson": {
+      "checked": true,
+      "count": 42,
+      "nested": { "deep": "value" },
+      "options": ["a", "b", "c"],
+      "question1": "answer1"
+    }
+  }
+}
+
+vars:post-response {
+  purposeId: res.body.id
+}

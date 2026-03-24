@@ -67,6 +67,13 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
+ * Unique identifier of the created resource
+ */
+export type CreatedResource = {
+    id: string;
+};
+
+/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -257,6 +264,47 @@ export type Organizations = {
     pagination: Pagination;
     results: Array<Organization>;
 };
+
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Seed data to create a new Purpose
+ */
+export type PurposeSeed = {
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    /**
+     * Identifier of the E-service this Purpose refers to
+     */
+    eserviceId: string;
+    formAnswersJson: PurposeFormAnswers;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
+};
+
+/**
+ * Unique identifier of the created Purpose resource
+ */
+export type CreatedPurposeResource = CreatedResource;
 
 export type GetStatusData = {
     body?: never;
@@ -576,6 +624,47 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type CreatePurposeData = {
+    body: PurposeSeed;
+    path?: never;
+    query?: never;
+    url: '/purposes';
+};
+
+export type CreatePurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type CreatePurposeError = CreatePurposeErrors[keyof CreatePurposeErrors];
+
+export type CreatePurposeResponses = {
+    /**
+     * Purpose created successfully
+     */
+    201: CreatedPurposeResource;
+};
+
+export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
 
 export type GetOrganizationData = {
     body?: never;

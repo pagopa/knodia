@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceDetailsData, GetEserviceDetailsErrors, GetEserviceDetailsResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -113,6 +113,20 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/agreements/{agreementId}',
     ...options
+});
+
+/**
+ * Create a new Purpose
+ */
+export const createPurpose = <ThrowOnError extends boolean = true>(options: Options<CreatePurposeData, ThrowOnError>) => (options.client ?? client).post<CreatePurposeResponses, CreatePurposeErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

@@ -38,6 +38,7 @@
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/k2k-gateway-client": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/purpose-models": "workspace:*",
     "@knodia/organization-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
