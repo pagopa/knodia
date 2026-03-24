@@ -350,6 +350,51 @@ describe("POST /purposes (createPurpose)", () => {
     },
   );
 
+  it("should return 400 if form answers are missing required fields", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {},
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if form answers have invalid field values", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {
+          purpose: "INVALID_VALUE",
+          usesPersonalData: "YES",
+        },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if form answers fail conditional validation", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {
+          isRequestOnBehalfOfThirdParties: "NO",
+          purpose: "INSTITUTIONAL",
+          // institutionalPurpose is required when purpose is INSTITUTIONAL, but missing
+          usesPersonalData: "YES",
+          // personalDataTypes and legalBasis are required when usesPersonalData is YES, but missing
+        },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
+
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {

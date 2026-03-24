@@ -10,12 +10,17 @@ import type {
   EserviceMode,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import type { ErrorObject } from "ajv";
 
-import { createApiError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  createApiError,
+  createApiErrorFromErrorsList,
+} from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
+const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -25,6 +30,7 @@ const errorCodes = {
   ESERVICE_MODE_NOT_ALLOWED: "0004",
   ESERVICE_NOT_FOUND: "0005",
   AGREEMENT_NOT_FOUND: "0006",
+  FORM_ANSWERS_VALIDATION_FAILED: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -101,6 +107,17 @@ export function eserviceVersionNotInExpectedStates(
     detail: `E-service ${eserviceId} has no version in state [${allowedStates.join(", ")}]`,
     status: HTTP_STATUS_CONFLICT,
     title: "E-service Version Not in Expected States",
+  });
+}
+
+export function formAnswersValidationFailed(errors: ErrorObject[]) {
+  return createApiErrorFromErrorsList<ErrorCodes>({
+    code: "FORM_ANSWERS_VALIDATION_FAILED",
+    errors: errors.map(
+      (e) => new Error(`${e.instancePath || "/"} ${e.message}`),
+    ),
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Form Answers Validation Failed",
   });
 }
 
