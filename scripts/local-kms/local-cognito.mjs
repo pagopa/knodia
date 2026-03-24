@@ -142,17 +142,16 @@ function writeJson(res, statusCode, body, headers = {}) {
   res.end(JSON.stringify(body));
 }
 
-function paginateUsers(users, limit, nextToken) {
+function paginateItems(items, limit, nextToken, responseKey) {
   const safeLimit =
     typeof limit === "number" && limit > 0 ? Math.floor(limit) : 60;
   const startIndex = nextToken ? Number.parseInt(nextToken, 10) : 0;
-  const page = users.slice(startIndex, startIndex + safeLimit);
+  const page = items.slice(startIndex, startIndex + safeLimit);
   const nextIndex = startIndex + safeLimit;
 
   return {
-    NextToken:
-      nextIndex < users.length ? String(nextIndex) : undefined,
-    Users: page,
+    NextToken: nextIndex < items.length ? String(nextIndex) : undefined,
+    [responseKey]: page,
   };
 }
 
@@ -160,16 +159,85 @@ function filterUsersByGroup(groupName) {
   return MOCK_USERS.filter((user) => user.Groups?.includes(groupName));
 }
 
+function findUserByUsernameOrSub(username) {
+  return MOCK_USERS.find(
+    (user) =>
+      user.Username === username ||
+      user.Attributes?.some(
+        (attribute) => attribute.Name === "sub" && attribute.Value === username,
+      ),
+  );
+}
+
+function filterUsers(payload) {
+  const filter = payload.Filter;
+  if (!filter) {
+    return MOCK_USERS;
+  }
+
+  const subFilterMatch = /^sub\s*=\s*"([^"]+)"$/.exec(filter);
+  if (subFilterMatch) {
+    const sub = subFilterMatch[1];
+    return MOCK_USERS.filter((user) =>
+      user.Attributes?.some(
+        (attribute) => attribute.Name === "sub" && attribute.Value === sub,
+      ),
+    );
+  }
+
+  return [];
+}
+
 function handleListUsersInGroup(req, res, payload) {
   const filteredUsers = filterUsersByGroup(payload.GroupName);
-  const response = paginateUsers(
+  const response = paginateItems(
     filteredUsers,
     payload.Limit,
     payload.NextToken,
+    "Users",
   );
 
   console.log(
     `[list-users-in-group] Returned ${response.Users.length} users for group ${payload.GroupName} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, response, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleListUsers(req, res, payload) {
+  const filteredUsers = filterUsers(payload);
+  const response = paginateItems(
+    filteredUsers,
+    payload.Limit,
+    payload.PaginationToken,
+    "Users",
+  );
+
+  console.log(
+    `[list-users] Returned ${response.Users.length} users for filter ${payload.Filter ?? "<none>"} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, response, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
+}
+
+function handleAdminListGroupsForUser(req, res, payload) {
+  const user = findUserByUsernameOrSub(payload.Username);
+  const groups = (user?.Groups ?? []).map((groupName) => ({
+    GroupName: groupName,
+  }));
+  const response = paginateItems(
+    groups,
+    payload.Limit,
+    payload.NextToken,
+    "Groups",
+  );
+
+  console.log(
+    `[admin-list-groups-for-user] Returned ${response.Groups.length} groups for user ${payload.Username} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
   );
 
   writeJson(res, 200, response, {
@@ -228,6 +296,18 @@ createServer(async (req, res) => {
 
       if (target === "AWSCognitoIdentityProviderService.ListUsersInGroup") {
         handleListUsersInGroup(req, res, payload);
+        return;
+      }
+
+      if (target === "AWSCognitoIdentityProviderService.ListUsers") {
+        handleListUsers(req, res, payload);
+        return;
+      }
+
+      if (
+        target === "AWSCognitoIdentityProviderService.AdminListGroupsForUser"
+      ) {
+        handleAdminListGroupsForUser(req, res, payload);
         return;
       }
     }
