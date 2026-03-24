@@ -31,11 +31,13 @@ export function toProcessAPI_AgreementSeed(
   callerKnodeId: KnodeId,
 ): agreementProcessApi.AgreementSeed {
   return {
-    consumer: toProcessAPI_AgreementConsumer(
-      agreementSeed.consumerId,
-      callerKnodeId,
-    ),
-    consumerAttributes: agreementSeed.consumerAttributes,
+    consumer: {
+      ...toProcessAPI_AgreementConsumer(
+        agreementSeed.consumerId,
+        callerKnodeId,
+      ),
+      attributes: agreementSeed.consumerAttributes,
+    },
     eserviceId: agreementSeed.eserviceId,
     eserviceVersionId: agreementSeed.eserviceVersionId,
   };

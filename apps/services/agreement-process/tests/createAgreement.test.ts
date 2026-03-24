@@ -50,10 +50,10 @@ describe("POST /agreements (createAgreement)", async () => {
 
   const body: API_AgreementSeed = {
     consumer: {
+      attributes: consumerAttributes,
       id: consumerId,
       knodeId: "Orion",
     },
-    consumerAttributes,
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
   };
@@ -222,7 +222,7 @@ describe("POST /agreements (createAgreement)", async () => {
         .post("/agreements")
         .body({
           ...body,
-          consumerAttributes: testConsumerAttributes,
+          consumer: { ...body.consumer, attributes: testConsumerAttributes },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
         } satisfies API_AgreementSeed);
@@ -317,8 +317,7 @@ describe("POST /agreements - attribute validation", async () => {
     (group) => group[0]!,
   );
   const body: API_AgreementSeed = {
-    consumer: { id: consumerId, knodeId: "Orion" },
-    consumerAttributes: validAttributes,
+    consumer: { attributes: validAttributes, id: consumerId, knodeId: "Orion" },
     eserviceId: eservice.id,
     eserviceVersionId: eserviceVersion.id,
   };
@@ -330,10 +329,13 @@ describe("POST /agreements - attribute validation", async () => {
       .post("/agreements")
       .body({
         ...body,
-        consumerAttributes: [
-          ...validAttributes,
-          { code: "extra", scheme: "extra" },
-        ],
+        consumer: {
+          ...body.consumer,
+          attributes: [
+            ...validAttributes,
+            { code: "extra", scheme: "extra" },
+          ],
+        },
       });
     expect(response.statusCode).toBe(201);
 
@@ -354,7 +356,10 @@ describe("POST /agreements - attribute validation", async () => {
       .post("/agreements")
       .body({
         ...body,
-        consumerAttributes: [{ code: "unknown", scheme: "unknown" }],
+        consumer: {
+          ...body.consumer,
+          attributes: [{ code: "unknown", scheme: "unknown" }],
+        },
       } satisfies API_AgreementSeed);
     expect(response.statusCode).toBe(403);
   });
@@ -370,8 +375,10 @@ describe("POST /agreements - attribute validation", async () => {
     const response = await injectAppRequest({ type: "internal" })
       .post("/agreements")
       .body({
-        consumer: body.consumer,
-        consumerAttributes: [version.requiredAttributes[0]![0]!],
+        consumer: {
+          ...body.consumer,
+          attributes: [version.requiredAttributes[0]![0]!],
+        },
         eserviceId: eserviceWith2Groups.id,
         eserviceVersionId: version.id,
       } satisfies API_AgreementSeed);
