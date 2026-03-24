@@ -173,7 +173,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Download consumer E-service latest version interface",
+      summary: "Download consumer E-service latest Version Interface",
       tags: [apiTags.eservice],
     },
     url: "/consumer/eservices/:eserviceId/interface",

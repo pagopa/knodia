@@ -1288,6 +1288,14 @@ export type CreateConsumerPurposeErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type CreateConsumerPurposeError = CreateConsumerPurposeErrors[keyof CreateConsumerPurposeErrors];
