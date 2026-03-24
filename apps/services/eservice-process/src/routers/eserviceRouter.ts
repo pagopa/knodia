@@ -48,12 +48,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       );
 
       res.status(200).send({
-        items: results.map(toAPI_Eservice),
         pagination: {
           limit: req.query.limit,
           offset: req.query.offset,
           total: totalCount,
         },
+        results: results.map(toAPI_Eservice),
       });
     },
     method: "GET",
@@ -235,12 +235,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       );
 
       res.status(200).send({
-        items: results.map(toAPI_Eservice),
         pagination: {
           limit: req.query.limit,
           offset: req.query.offset,
           total: totalCount,
         },
+        results: results.map(toAPI_Eservice),
       });
     },
     method: "POST",

@@ -1,4 +1,3 @@
-import { getProducerAgreementsOptions } from "@knodia/bff-client/tanstack-query";
 import { Pagination } from "@knodia/ui-kit/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
@@ -9,22 +8,14 @@ import {
   producerAgreementSearchDefaultValues,
   producerAgreementSearchSchema,
 } from "@/features/agreement/models/search-params";
-import { client } from "@/libs/axios";
-
-const AGREEMENTS_PAGE_LIMIT = 9;
-
-const agreementsQuery = (offset: number) =>
-  getProducerAgreementsOptions({
-    client,
-    query: { limit: AGREEMENTS_PAGE_LIMIT, offset },
-  });
+import { producerAgreementsQuery } from "@/features/agreement/services/queries";
 
 export const Route = createFileRoute("/_authenticated/production/agreements/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps: { offset } }) => {
-    queryClient.prefetchQuery(agreementsQuery(offset));
+    queryClient.prefetchQuery(producerAgreementsQuery(offset));
   },
   search: {
     middlewares: [stripSearchParams(producerAgreementSearchDefaultValues)],
@@ -37,7 +28,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const { data, isLoading } = useQuery({
-    ...agreementsQuery(offset),
+    ...producerAgreementsQuery(offset),
     placeholderData: keepPreviousData,
   });
 
@@ -46,7 +37,7 @@ function RouteComponent() {
       <PageHeader overline="Production" title="Agreements" />
 
       <ProducerAgreementTable
-        agreements={data?.items ?? []}
+        agreements={data?.results ?? []}
         isLoading={isLoading}
       />
 

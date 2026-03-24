@@ -93,12 +93,12 @@ export const agreementRouter: FastifyPluginAsyncZod<
       );
 
       res.status(200).send({
-        items: results.map(toAPI_Agreement),
         pagination: {
           limit: req.query.limit,
           offset: req.query.offset,
           total: totalCount,
         },
+        results: results.map(toAPI_Agreement),
       });
     },
     method: "GET",

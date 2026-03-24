@@ -80,8 +80,8 @@ export type Agreement = {
 };
 
 export type Agreements = {
-    items: Array<Agreement>;
     pagination: Pagination;
+    results: Array<Agreement>;
 };
 
 export type GetStatusData = {
