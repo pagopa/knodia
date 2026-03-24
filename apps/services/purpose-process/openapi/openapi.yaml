@@ -127,6 +127,9 @@ components:
       type: string
       enum:
         - "1.0"
+    PurposeFormSchema:
+      type: object
+      additionalProperties: {}
     PurposeSeed:
       type: object
       properties:
@@ -201,9 +204,6 @@ components:
         - state
         - updatedAt
       additionalProperties: false
-    PurposeFormSchema:
-      type: object
-      additionalProperties: {}
 paths:
   /status:
     get:

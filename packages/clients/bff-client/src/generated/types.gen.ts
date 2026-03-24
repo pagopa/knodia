@@ -547,6 +547,7 @@ export type PurposeSeed = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: '1.0';
     knodeId: KnodeId;
     name: LocalizedPurposeName;
 };

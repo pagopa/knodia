@@ -45,6 +45,25 @@ export const API_PurposeFormAnswers = z
   .meta({ id: "PurposeFormAnswers" });
 export type API_PurposeFormAnswers = z.infer<typeof API_PurposeFormAnswers>;
 
+export const API_PurposeFormSchemaVersion = z
+  .enum(["1.0"])
+  .meta({ id: "PurposeFormSchemaVersion" });
+export type API_PurposeFormSchemaVersion = z.infer<
+  typeof API_PurposeFormSchemaVersion
+>;
+
+export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
+  version: API_PurposeFormSchemaVersion,
+});
+export type API_PurposeFormSchemaVersionPathParam = z.infer<
+  typeof API_PurposeFormSchemaVersionPathParam
+>;
+
+export const API_PurposeFormSchema = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "PurposeFormSchema" });
+export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
+
 export const API_PurposeIdPathParam = z.strictObject({
   purposeId: PurposeId,
 });

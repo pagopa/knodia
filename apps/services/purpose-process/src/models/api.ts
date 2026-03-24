@@ -5,16 +5,15 @@ import {
   API_LocalizedPurposeName,
   API_PurposeConsumer,
   API_PurposeFormAnswers,
+  API_PurposeFormSchemaVersion,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
 
-export const API_PurposeFormSchemaVersion = z
-  .enum(["1.0"])
-  .meta({ id: "PurposeFormSchemaVersion" });
-export type API_PurposeFormSchemaVersion = z.infer<
-  typeof API_PurposeFormSchemaVersion
->;
+export {
+  API_PurposeFormSchema,
+  API_PurposeFormSchemaVersionPathParam,
+} from "@knodia/purpose-models/api";
 
 export const API_PurposeSeed = z
   .strictObject({
@@ -55,15 +54,3 @@ export const API_Purpose = z
   })
   .meta({ id: "Purpose" });
 export type API_Purpose = z.infer<typeof API_Purpose>;
-
-export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
-  version: API_PurposeFormSchemaVersion,
-});
-export type API_PurposeFormSchemaVersionPathParam = z.infer<
-  typeof API_PurposeFormSchemaVersionPathParam
->;
-
-export const API_PurposeFormSchema = z
-  .record(z.string(), z.unknown())
-  .meta({ id: "PurposeFormSchema" });
-export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;

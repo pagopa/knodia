@@ -386,6 +386,7 @@ export type PurposeSeed = {
      */
     eserviceId: EserviceId;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: '1.0';
     name: LocalizedPurposeName;
 };
 

@@ -63,12 +63,19 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormSchemaVersion = '1.0';
+
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
 export type PurposeSeed = {
     consumer: PurposeConsumer;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
     name: LocalizedPurposeName;
 };
 
@@ -191,3 +198,85 @@ export type GetPurposeResponses = {
 };
 
 export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
+
+export type GetFormSchemaData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}';
+};
+
+export type GetFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetFormSchemaError = GetFormSchemaErrors[keyof GetFormSchemaErrors];
+
+export type GetFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetFormSchemaResponse = GetFormSchemaResponses[keyof GetFormSchemaResponses];
+
+export type GetFormUiSchemaData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}/ui';
+};
+
+export type GetFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetFormUiSchemaError = GetFormUiSchemaErrors[keyof GetFormUiSchemaErrors];
+
+export type GetFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetFormUiSchemaResponse = GetFormUiSchemaResponses[keyof GetFormUiSchemaResponses];

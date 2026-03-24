@@ -31,6 +31,7 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
         eserviceId,
         // TODO: wire up dynamic form answers when purpose dynamic form is implemented
         formAnswersJson: {},
+        formSchemaVersion: "1.0",
         knodeId,
         name: { en: data.name },
       },

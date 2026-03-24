@@ -10,6 +10,7 @@ import {
   minDescriptionLength,
   minNameLength,
 } from "@knodia/purpose-models";
+import { API_PurposeFormSchemaVersion } from "@knodia/purpose-models/api";
 import { z } from "zod";
 
 import { API_EserviceId } from "../eservice/api.ts";
@@ -53,6 +54,7 @@ export const API_PurposeSeed = z
       description: "Identifier of the E-service this Purpose refers to",
     }),
     formAnswersJson: API_PurposeFormAnswers,
+    formSchemaVersion: API_PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
   })
   .meta({
