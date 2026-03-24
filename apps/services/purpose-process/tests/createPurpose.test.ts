@@ -1,7 +1,5 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Purpose } from "@knodia/purpose-models";
-
 import { AgreementState } from "@knodia/agreement-models";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
@@ -11,7 +9,11 @@ import {
 } from "@knodia/common-models/ids";
 import { EserviceMode, EserviceVersionState } from "@knodia/eservice-models";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
-import { fromPurposeV1, PurposeEventV1 } from "@knodia/purpose-models";
+import {
+  fromPurposeV1,
+  type Purpose,
+  PurposeEventV1,
+} from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockAgreement,
@@ -20,7 +22,7 @@ import {
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { API_Purpose } from "../src/models/api.ts";
+import type { API_Purpose, API_PurposeSeed } from "../src/models/api.ts";
 
 import { API_PurposeSeed } from "../src/models/api.ts";
 import { CURRENT_FORM_SCHEMA_VERSION } from "../src/models/formSchemas.ts";
@@ -132,7 +134,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(notAllowedEserviceModes.indexOf(mode) + 60),
+          ...getMockAgreement({
+            seed: notAllowedEserviceModes.indexOf(mode) + 60,
+          }),
           consumer: { id: consumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
@@ -183,7 +187,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(allowedEserviceVersionStates.indexOf(state) + 10),
+          ...getMockAgreement({
+            seed: allowedEserviceVersionStates.indexOf(state) + 10,
+          }),
           consumer: { id: consumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
@@ -259,7 +265,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(allowedAgreementStates.indexOf(state) + 40),
+          ...getMockAgreement({
+            seed: allowedAgreementStates.indexOf(state) + 40,
+          }),
           consumer: { id: testConsumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
@@ -294,7 +302,9 @@ describe("POST /purposes (createPurpose)", () => {
       await eserviceWriterService.upsertEservice(testEservice, 1);
       await agreementWriterService.upsertAgreement(
         {
-          ...getMockAgreement(notAllowedAgreementStates.indexOf(state) + 50),
+          ...getMockAgreement({
+            seed: notAllowedAgreementStates.indexOf(state) + 50,
+          }),
           consumer: { id: testConsumerId, knodeId: consumerKnodeId },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,

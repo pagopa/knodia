@@ -1,12 +1,24 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import {
+  type AgreementId,
+  KnodeId,
+  type OrganizationId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import { and, eq } from "drizzle-orm";
 
-import type { NewRemoteResourceAgreement } from "../agreement.ts";
-
-import { remoteResourceAgreement } from "../agreement.ts";
+import {
+  type NewRemoteResourceAgreement,
+  remoteResourceAgreement,
+  type RemoteResourceAgreementSQL,
+} from "../agreement.ts";
+import {
+  type NewRemoteResourcePurpose,
+  remoteResourcePurpose,
+  type RemoteResourcePurposeSQL,
+} from "../purpose.ts";
 
 export type RemoteResourceDbService = ReturnType<
   typeof remoteResourceDbServiceBuilder
@@ -14,10 +26,10 @@ export type RemoteResourceDbService = ReturnType<
 
 export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async getByAgreementId(
+    async getAgreementById(
       agreementId: ExternalId<AgreementId>,
       knodeId: KnodeId,
-    ) {
+    ): Promise<RemoteResourceAgreementSQL | undefined> {
       const [result] = await db
         .select()
         .from(remoteResourceAgreement)
@@ -28,12 +40,42 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
           ),
         )
         .limit(1);
-      return result ?? undefined;
+      return result;
+    },
+    async getAgreementsDistinctKnodes(consumerId: OrganizationId) {
+      const queryResult = await db
+        .selectDistinctOn([remoteResourceAgreement.knodeId])
+        .from(remoteResourceAgreement)
+        .where(eq(remoteResourceAgreement.consumerId, consumerId))
+        .orderBy(remoteResourceAgreement.knodeId);
+
+      return queryResult.map((r) => KnodeId.parse(r.knodeId));
+    },
+    async getPurposeById(
+      purposeId: ExternalId<PurposeId>,
+      knodeId: KnodeId,
+    ): Promise<RemoteResourcePurposeSQL | undefined> {
+      const [result] = await db
+        .select()
+        .from(remoteResourcePurpose)
+        .where(
+          and(
+            eq(remoteResourcePurpose.purposeId, purposeId),
+            eq(remoteResourcePurpose.knodeId, knodeId),
+          ),
+        )
+        .limit(1);
+      return result;
     },
     async insertAgreement(
       remoteAgreement: NewRemoteResourceAgreement,
     ): Promise<void> {
       await db.insert(remoteResourceAgreement).values(remoteAgreement);
+    },
+    async insertPurpose(
+      remotePurpose: NewRemoteResourcePurpose,
+    ): Promise<void> {
+      await db.insert(remoteResourcePurpose).values(remotePurpose);
     },
   };
 }

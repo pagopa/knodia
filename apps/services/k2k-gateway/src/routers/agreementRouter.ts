@@ -1,5 +1,7 @@
+import type { API_CreatedResource } from "@knodia/common-models/api";
 import type { KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -8,7 +10,14 @@ import {
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  type KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 
 import {
   API_Agreement,
@@ -29,6 +38,7 @@ import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
   callerKnodeId: KnodeId;
+  pollingService: PollingService;
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
@@ -36,8 +46,28 @@ export const agreementRouter: FastifyPluginAsyncZod<
   AgreementRouterOptions
 > = async (
   fastify,
-  { agreementProcessClient, callerKnodeId, tokenProvider },
+  { agreementProcessClient, callerKnodeId, pollingService, tokenProvider },
 ) => {
+  const retrieveAgreement = async (
+    agreementId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    await agreementProcessApi.getAgreement({
+      client: agreementProcessClient,
+      headers,
+      path: { agreementId },
+    });
+
+  const pollAgreement = (
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveAgreement(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -50,15 +80,17 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const { data } = await agreementProcessApi.createAgreement({
+      const response = await agreementProcessApi.createAgreement({
         body: toProcessAPI_AgreementSeed(req.body, callerKnodeId),
         client: agreementProcessClient,
         headers,
       });
 
+      await pollAgreement(response, headers);
+
       res.status(201).send({
-        id: data.id,
-        producerId: data.producerId,
+        id: response.data.id,
+        producerId: response.data.producerId,
       });
     },
     method: "POST",
@@ -127,7 +159,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const { consumerId, state } = req.query;
+      const { consumerId, eserviceId, state } = req.query;
 
       const { data } = await agreementProcessApi.getAgreements({
         client: agreementProcessClient,
@@ -135,6 +167,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         query: {
           consumerId,
           consumerKnodeId: callerKnodeId,
+          eserviceId,
           limit: req.query.limit,
           offset: req.query.offset,
           state: state ? [toProcessAPI_AgreementState(state)] : undefined,
@@ -143,7 +176,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
 
       res.status(200).send({
         pagination: data.pagination,
-        results: data.items.map(toAPI_Agreement),
+        results: data.results.map(toAPI_Agreement),
       });
     },
     method: "GET",

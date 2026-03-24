@@ -7,7 +7,7 @@ import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   generateId,
   KnodeId,
-  OrganizationId,
+  type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import {
@@ -20,7 +20,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   type API_AgreementSeed,
-  API_CreatedAgreementResource,
+  type API_CreatedAgreementResource,
 } from "../src/models/agreement/api.ts";
 import { toK2KAgreement } from "./k2kConverters.ts";
 import { remoteResourceDbService } from "./setup.ts";
@@ -102,7 +102,7 @@ describe("POST /agreements (createAgreement)", () => {
     expect(response.json()).toEqual(mockK2KResponse);
 
     const remoteResourceAgreement =
-      await remoteResourceDbService.getByAgreementId(
+      await remoteResourceDbService.getAgreementById(
         unsafeBrandExternalId(agreement.id),
         KnodeId.parse(body.knodeId),
       );

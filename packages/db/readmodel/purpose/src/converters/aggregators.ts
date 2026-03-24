@@ -73,7 +73,7 @@ export const aggregatePurpose = (
 const toPurposeAggregator = (queryRes: PurposeAggregatorInput): PurposeSQL => {
   const purposesSQL = toPurposesAggregator(queryRes);
 
-  return throwIfMultipleOrEmpty(purposesSQL, "purpose");
+  return throwIfMultipleOrEmpty(purposesSQL, "purpose", (p) => p.id);
 };
 
 const toPurposesAggregator = (

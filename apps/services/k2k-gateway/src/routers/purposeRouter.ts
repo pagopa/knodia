@@ -4,7 +4,7 @@ import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_CreatedResource } from "@knodia/common-models/api";
+import { type API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,

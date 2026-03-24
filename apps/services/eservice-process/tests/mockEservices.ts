@@ -1,6 +1,6 @@
-import { generateId, OrganizationId } from "@knodia/common-models/ids";
+import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import {
-  Eservice,
+  type Eservice,
   EserviceMode,
   EserviceVersionState,
 } from "@knodia/eservice-models";

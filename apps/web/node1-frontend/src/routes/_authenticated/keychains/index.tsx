@@ -1,4 +1,3 @@
-import { getConsumerKeychainsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Button,
   Pagination,
@@ -19,15 +18,9 @@ import {
   keychainSearchDefaultValues,
   keychainSearchSchema,
 } from "@/features/keychain/models/search-params";
-import { client } from "@/libs/axios";
+import { consumerKeychainsQuery } from "@/features/keychain/services/queries";
 
-const consumerKeychainsQuery = (offset: number) =>
-  getConsumerKeychainsOptions({
-    client,
-    query: { limit: 10, offset },
-  });
-
-export const Route = createFileRoute("/_authenticated/keychains")({
+export const Route = createFileRoute("/_authenticated/keychains/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({
     offset,
@@ -97,7 +90,7 @@ function RouteComponent() {
           <TabPanel id="consumption" key="consumption">
             <KeychainTable
               isLoading={isLoading}
-              keychains={data?.items ?? []}
+              keychains={data?.results ?? []}
               type="consumption"
             />
           </TabPanel>

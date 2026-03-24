@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
+import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
@@ -53,8 +53,8 @@ describe("GET /consumerKeychains/:consumerKeychainId (getConsumerKeychain)", () 
     const listResponse = await injectAppRequest(uiToken)
       .get("/consumerKeychains")
       .query({ limit: "50", offset: "0" });
-    const listBody = listResponse.json<{ items: API_Keychain[] }>();
-    const expectedItem = listBody.items.find(
+    const listBody = listResponse.json<{ results: API_Keychain[] }>();
+    const expectedItem = listBody.results.find(
       (i) => i.id === VALID_CONSUMER_KEYCHAIN_ID,
     );
 

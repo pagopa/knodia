@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { InternalTokenInput } from "../src/tokenGenerator.ts";
-
 import { refreshableInternalTokenGenerator } from "../src/refreshableInternalTokenGenerator.ts";
-import { tokenGeneratorBuilder } from "../src/tokenGenerator.ts";
+import {
+  type InternalTokenInput,
+  tokenGeneratorBuilder,
+} from "../src/tokenGenerator.ts";
 import { kmsSendMock, testKmsClient } from "./utils.ts";
 
 const REFRESH_BEFORE_EXP_SECONDS = 30;

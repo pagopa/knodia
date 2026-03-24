@@ -5,7 +5,7 @@ import {
   type OrganizationId,
 } from "@knodia/common-models/ids";
 import {
-  Eservice,
+  type Eservice,
   EserviceEventV1,
   toEserviceV1,
 } from "@knodia/eservice-models";
@@ -18,7 +18,7 @@ import {
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
-import { API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
+import { type API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
 import { eserviceWriterService } from "./setup.ts";

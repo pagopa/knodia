@@ -60,18 +60,19 @@ export const organizationRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "internal" },
       ]);
 
       const { results, totalCount } =
         await organizationService.getOrganizations(req.query, ctx);
 
       res.status(200).send({
-        items: results.map(toAPI_Organization),
         pagination: {
           limit: req.query.limit,
           offset: req.query.offset,
           total: totalCount,
         },
+        results: results.map(toAPI_Organization),
       });
     },
     method: "GET",

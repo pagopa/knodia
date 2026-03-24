@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
+import type { CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetStatusData, GetStatusResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -88,7 +88,7 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Download producer E-service latest version interface
+ * Download producer E-service latest Version Interface
  *
  * Download the interface document for the latest version of a Producer E-service
  */
@@ -184,7 +184,7 @@ export const getConsumerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Download consumer E-service latest version interface
+ * Download consumer E-service latest Version Interface
  *
  * Download the interface document for the latest version of an E-service
  */
@@ -192,6 +192,18 @@ export const getConsumerEserviceLatestVersionInterface = <ThrowOnError extends b
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumer/eservices/{eserviceId}/interface',
+    ...options
+});
+
+/**
+ * Get Consumer E-services
+ *
+ * Retrieve Consumer E-services
+ */
+export const getConsumerEservices = <ThrowOnError extends boolean = true>(options: Options<GetConsumerEservicesData, ThrowOnError>) => (options.client ?? client).get<GetConsumerEservicesResponses, GetConsumerEservicesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumer/eservices',
     ...options
 });
 
@@ -206,7 +218,7 @@ export const getConsumerAgreements = <ThrowOnError extends boolean = true>(optio
 });
 
 /**
- * Create a consumer agreement
+ * Create a consumer Agreement
  *
  * Create a new Agreement for the consumer to access a Producer's E-service
  */
@@ -222,6 +234,8 @@ export const createConsumerAgreement = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Create a consumer Purpose
+ *
  * Create a new Purpose for an E-service
  */
 export const createConsumerPurpose = <ThrowOnError extends boolean = true>(options: Options<CreateConsumerPurposeData, ThrowOnError>) => (options.client ?? client).post<CreateConsumerPurposeResponses, CreateConsumerPurposeErrors, ThrowOnError>({

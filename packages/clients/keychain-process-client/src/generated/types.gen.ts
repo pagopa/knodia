@@ -73,8 +73,8 @@ export type Keychain = {
 };
 
 export type Keychains = {
-    items: Array<Keychain>;
     pagination: Pagination;
+    results: Array<Keychain>;
 };
 
 export type ConsumerKeychainSeed = {

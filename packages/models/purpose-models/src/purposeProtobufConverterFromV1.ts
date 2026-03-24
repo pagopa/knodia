@@ -4,7 +4,7 @@ import {
 } from "@knodia/common-models/externalResource";
 import {
   KnodeId,
-  OrganizationId,
+  type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
@@ -15,9 +15,12 @@ import {
   PurposeStateV1,
   type PurposeV1,
 } from "./generated/v1/purpose.ts";
-import { Purpose, PurposeFormAnswers, PurposeState } from "./purpose.ts";
+import {
+  type Purpose,
+  PurposeFormAnswers,
+  type PurposeState,
+} from "./purpose.ts";
 
-/** @knipignore - will be used when implementing rmw */
 export const fromPurposeV1 = (input: PurposeV1): Purpose => {
   assertRequired(input.consumer, "Purpose consumer is undefined");
   assertRequired(input.name, "Purpose name is undefined");
