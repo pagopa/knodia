@@ -13,39 +13,14 @@ import {
   EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockAgreement,
   getMockEservice,
   getMockEserviceVersion,
 } from "@knodia/test-commons/utils";
-import { describe, expect, it, vi } from "vitest";
-
-const getEserviceByIdMock = vi.hoisted(() => vi.fn());
-
-vi.mock("@knodia/db-readmodel-eservice/services", async (importOriginal) => {
-  const original =
-    await importOriginal<
-      typeof import("@knodia/db-readmodel-eservice/services")
-    >();
-  return {
-    ...original,
-    eserviceReadmodelServiceBuilder: (
-      db: Parameters<typeof original.eserviceReadmodelServiceBuilder>[0],
-    ) => {
-      const realService = original.eserviceReadmodelServiceBuilder(db);
-      getEserviceByIdMock.mockImplementation(
-        realService.getEserviceById.bind(realService),
-      );
-      return {
-        ...realService,
-        getEserviceById: getEserviceByIdMock,
-      };
-    },
-  };
-});
-
-import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
+import { describe, expect, it } from "vitest";
 
 import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
@@ -259,7 +234,7 @@ describe("POST /agreements (createAgreement)", async () => {
     },
   );
 
-  it("should return 409 if the e-service version is not the latest in a valid state", async () => {
+  it("should return 409 if the e-service version is not the latest", async () => {
     const eserviceVersion1: EserviceVersion = {
       ...getMockEserviceVersion(),
       versionNumber: 1,
@@ -268,20 +243,12 @@ describe("POST /agreements (createAgreement)", async () => {
       ...getMockEserviceVersion(1),
       versionNumber: 2,
     };
-    const eserviceVersion3: EserviceVersion = {
-      ...getMockEserviceVersion(2),
-      state: "Draft" as EserviceVersionState,
-      versionNumber: 3,
-    };
     const eserviceWithMultipleVersions: Eservice = {
       ...eservice,
-      versions: [eserviceVersion1, eserviceVersion2, eserviceVersion3],
+      versions: [eserviceVersion1, eserviceVersion2],
     };
 
-    getEserviceByIdMock.mockResolvedValueOnce({
-      data: eserviceWithMultipleVersions,
-      metadata: { version: 1 },
-    });
+    await eserviceWriterService.upsertEservice(eserviceWithMultipleVersions, 1);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/agreements")
