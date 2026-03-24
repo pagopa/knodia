@@ -6,10 +6,10 @@
 docker compose -f docker/compose.yaml up -d --wait
 status=$?
 
-# Generate local dev tokens (ui-session + internal) for Bruno collections
-if [ $status -eq 0 ] || [ $status -eq 1 ]; then
-  pnpm generate-all-tokens
-else
+if [ $status -gt 1 ]; then
   echo "docker compose up failed with exit code $status, skipping token generation"
   exit $status
 fi
+
+# Generate local dev tokens (ui-session + internal) for Bruno collections
+pnpm generate-all-tokens
