@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { AgreementId, generateId } from "@knodia/common-models/ids";
+import { type AgreementId, generateId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
@@ -51,8 +51,8 @@ describe("GET /agreements/:agreementId (getAgreement)", () => {
       .get("/agreements")
       .query({ limit: "50", offset: "0" });
 
-    const listBody = listResponse.json<{ items: API_Agreement[] }>();
-    const expectedItem = listBody.items.find(
+    const listBody = listResponse.json<{ results: API_Agreement[] }>();
+    const expectedItem = listBody.results.find(
       (i) => i.id === VALID_AGREEMENT_ID,
     );
 

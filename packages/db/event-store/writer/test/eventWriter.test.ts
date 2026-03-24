@@ -1,4 +1,4 @@
-import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { type EserviceId, generateId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
 import { computeNextMetadataVersion } from "../src/eventWriter.ts";

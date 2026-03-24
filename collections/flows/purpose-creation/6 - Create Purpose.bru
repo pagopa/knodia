@@ -1,0 +1,48 @@
+meta {
+  name: 6 - Create Purpose
+  type: http
+}
+
+post {
+  url: {{host-purpose-process}}/purposes
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{internal-jwt}}
+}
+
+body:json {
+  {
+    "consumer": {
+      "id": "{{organizationId}}",
+      "knodeId": "{{other-knode-id}}"
+    },
+    "dailyCalls": 1000,
+    "description": {
+      "en": "Test purpose for local development"
+    },
+    "eserviceId": "{{eserviceId}}",
+    "formAnswersJson": {
+      "checked": true,
+      "count": 42,
+      "nested": { "deep": "value" },
+      "options": ["a", "b", "c"],
+      "question1": "answer1"
+    },
+    "name": {
+      "en": "My Test Purpose"
+    }
+  }
+}
+
+vars:post-response {
+  purposeId: res.body.id
+}
+
+script:post-response {
+  await new Promise(r => setTimeout(r, 1000))
+}
+

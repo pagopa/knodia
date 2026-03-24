@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type z from "zod";
 
-import { ConsumerKeychain } from "@knodia/keychain-models";
+import { type ConsumerKeychain } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
@@ -65,12 +65,12 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map(toAPI_Keychain),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
           total: totalCount,
         },
+        results: expectedResult.map(toAPI_Keychain),
       });
     },
   );

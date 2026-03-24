@@ -7,10 +7,9 @@ import {
 } from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
-import type { DetailsStepData } from "@/features/purpose/types/purposeCreateForm";
-
 import {
   DETAILS_STEP_DEFAULTS,
+  type DetailsStepData,
   detailsStepSchema,
   type PurposeFormDraftData,
 } from "@/features/purpose/types/purposeCreateForm";

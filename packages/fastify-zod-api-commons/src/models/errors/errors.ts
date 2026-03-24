@@ -8,7 +8,7 @@ import { STATUS_CODES } from "http";
 import { constants } from "http2";
 
 import {
-  ApiError,
+  type ApiError,
   createApiError,
   createApiErrorFromErrorsList,
 } from "./apiError.ts";

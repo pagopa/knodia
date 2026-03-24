@@ -1,4 +1,4 @@
-import { bffApi } from "@knodia/bff-client";
+import { type bffApi } from "@knodia/bff-client";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";

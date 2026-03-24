@@ -1,4 +1,3 @@
-import type { AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
@@ -7,6 +6,7 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
+import { AgreementState } from "@knodia/agreement-models";
 import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
@@ -17,7 +17,7 @@ import {
   eserviceVersionNotLatest,
 } from "../models/errors.ts";
 import {
-  retrieveEserviceLatestVersionInAllowedStates,
+  retrieveEserviceLatestVersion,
   retrieveEserviceVersionFromEservice,
 } from "./utils.ts";
 
@@ -52,15 +52,7 @@ export const assertEserviceVersionIsLatest = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
 ) => {
-  const validEserviceVersionStates: EserviceVersionState[] = [
-    "Active",
-    "Suspended",
-    "Archived",
-  ];
-  const eserviceLatestVersion = retrieveEserviceLatestVersionInAllowedStates(
-    eservice,
-    validEserviceVersionStates,
-  );
+  const eserviceLatestVersion = retrieveEserviceLatestVersion(eservice);
 
   if (eserviceLatestVersion.id !== eserviceVersionId) {
     throw eserviceVersionNotLatest(
@@ -71,8 +63,8 @@ export const assertEserviceVersionIsLatest = (
   }
 };
 export const agreementCreationConflictingStates: AgreementState[] = [
-  "Active",
-  "Suspended",
+  AgreementState.enum.Active,
+  AgreementState.enum.Suspended,
 ];
 export const assertNoConflictingAgreementsExist = async ({
   consumerId,

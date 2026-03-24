@@ -2,7 +2,10 @@ import { match } from "ts-pattern";
 
 import type { Agreement, AgreementState } from "./agreement.ts";
 
-import { AgreementStateV1, AgreementV1 } from "./generated/v1/agreement.ts";
+import {
+  AgreementStateV1,
+  type AgreementV1,
+} from "./generated/v1/agreement.ts";
 
 const toAgreementStateV1 = (state: AgreementState): AgreementStateV1 =>
   match(state)

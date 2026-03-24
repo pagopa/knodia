@@ -352,15 +352,15 @@ components:
     ProducerEservices:
       type: object
       properties:
-        items:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
           type: array
           items:
             $ref: "#/components/schemas/ProducerEservice"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
       required:
-        - items
         - pagination
+        - results
       additionalProperties: false
     ProducerEserviceVersionDetails:
       type: object
@@ -629,15 +629,15 @@ components:
     ConsumerCatalogEserviceSearchResults:
       type: object
       properties:
-        items:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
           type: array
           items:
             $ref: "#/components/schemas/ConsumerCatalogEserviceSearchResult"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
       required:
-        - items
         - pagination
+        - results
       additionalProperties: false
     ConsumerEserviceDetailsProducer:
       type: object
@@ -866,15 +866,15 @@ components:
     ConsumerEservices:
       type: object
       properties:
-        items:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
           type: array
           items:
             $ref: "#/components/schemas/ConsumerEservice"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
       required:
-        - items
         - pagination
+        - results
       additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
@@ -942,15 +942,15 @@ components:
     ProducerAgreements:
       type: object
       properties:
-        items:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
           type: array
           items:
             $ref: "#/components/schemas/ProducerAgreement"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
       required:
-        - items
         - pagination
+        - results
       additionalProperties: false
     ConsumerAgreements:
       type: object
@@ -1072,15 +1072,15 @@ components:
     Keychains:
       type: object
       properties:
-        items:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
           type: array
           items:
             $ref: "#/components/schemas/Keychain"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
       required:
-        - items
         - pagination
+        - results
       additionalProperties: false
     KeychainDetails:
       type: object

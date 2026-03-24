@@ -8,7 +8,7 @@ import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  KnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
 import {
@@ -251,14 +251,14 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
-        items: data.items.map((keychain) =>
+        pagination: data.pagination,
+        results: data.results.map((keychain) =>
           toAPI_Keychain(keychain, {
             // TODO: retrieve real keysCount and membersCount from keychainProcessApi when available
             keysCount: 0,
             membersCount: 0,
           }),
         ),
-        pagination: data.pagination,
       });
     },
     method: "GET",

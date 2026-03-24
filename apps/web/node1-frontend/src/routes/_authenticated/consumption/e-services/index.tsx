@@ -59,7 +59,7 @@ function RouteComponent() {
     navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
   }
 
-  const eservices = data?.items ?? [];
+  const eservices = data?.results ?? [];
   const hasFilters = search.agreementState !== undefined;
   const showContent = isLoading || hasFilters || eservices.length > 0;
 

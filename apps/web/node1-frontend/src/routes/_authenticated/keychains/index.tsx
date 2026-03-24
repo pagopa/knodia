@@ -20,7 +20,7 @@ import {
 } from "@/features/keychain/models/search-params";
 import { consumerKeychainsQuery } from "@/features/keychain/services/queries";
 
-export const Route = createFileRoute("/_authenticated/keychains")({
+export const Route = createFileRoute("/_authenticated/keychains/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({
     offset,
@@ -90,7 +90,7 @@ function RouteComponent() {
           <TabPanel id="consumption" key="consumption">
             <KeychainTable
               isLoading={isLoading}
-              keychains={data?.items ?? []}
+              keychains={data?.results ?? []}
               type="consumption"
             />
           </TabPanel>

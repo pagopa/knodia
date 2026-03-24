@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Organization } from "@knodia/organization-models";
-import type { TestToken } from "@knodia/test-commons/auth";
 import type z from "zod";
 
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
-import { forbiddenTestTokens } from "@knodia/test-commons/auth";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -94,12 +93,12 @@ describe("GET /organizations (getOrganizations)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map(toExpectAPI_Organization),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
           total: totalCount,
         },
+        results: expectedResult.map(toExpectAPI_Organization),
       });
     },
   );

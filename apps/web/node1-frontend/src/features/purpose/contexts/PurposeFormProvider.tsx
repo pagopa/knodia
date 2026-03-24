@@ -3,9 +3,9 @@ import type { KnodeId } from "@knodia/common-models/ids";
 import { useCallback, useMemo, useState } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
-import type { DetailsStepData } from "@/features/purpose/types/purposeCreateForm";
 
 import {
+  type DetailsStepData,
   PURPOSE_FORM_DEFAULTS,
   type PurposeFormDraftData,
 } from "@/features/purpose/types/purposeCreateForm";
