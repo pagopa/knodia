@@ -1,4 +1,4 @@
-import { bffApi } from "@knodia/bff-client";
+import { type bffApi } from "@knodia/bff-client";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@knodia/ui-kit/ui";
 
 import { ProductionEserviceDetailsProvider } from "../../contexts/ProductionEserviceDetailsProvider";

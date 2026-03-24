@@ -12,7 +12,7 @@ import {
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  KnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   isPolledVersionAtLeastResponseVersion,

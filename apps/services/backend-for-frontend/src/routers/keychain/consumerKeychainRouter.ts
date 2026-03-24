@@ -8,7 +8,7 @@ import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  KnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
 import {

@@ -1,4 +1,4 @@
-import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import { type eserviceProcessApi } from "@knodia/eservice-process-client";
 import { match } from "ts-pattern";
 
 import type {

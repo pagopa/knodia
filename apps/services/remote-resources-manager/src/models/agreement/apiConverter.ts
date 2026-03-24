@@ -4,7 +4,7 @@ import type {
 } from "@knodia/agreement-models/api";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { type API_KnodeId } from "@knodia/common-models/internalApi";
 import { match } from "ts-pattern";
 
 import type { API_Agreement } from "./api.ts";

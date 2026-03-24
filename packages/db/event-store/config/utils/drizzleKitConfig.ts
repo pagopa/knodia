@@ -1,6 +1,6 @@
 import { defineConfig } from "drizzle-kit";
 
-import { EventStoreConfig } from "../config/config.ts";
+import { type EventStoreConfig } from "../config/config.ts";
 
 export const drizzleKitConfig = (
   {

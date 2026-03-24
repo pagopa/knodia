@@ -1,7 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
-import type { ChipProps } from "@knodia/ui-kit/ui";
 
-import { Chip } from "@knodia/ui-kit/ui";
+import { Chip, type ChipProps } from "@knodia/ui-kit/ui";
 import { CheckIcon, XIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
