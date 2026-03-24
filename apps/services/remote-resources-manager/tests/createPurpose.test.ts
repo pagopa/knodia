@@ -3,7 +3,11 @@ import type { RemoteResourcePurposeSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import {
   forbiddenTestTokens,
   TEST_ORGANIZATION_ID,
