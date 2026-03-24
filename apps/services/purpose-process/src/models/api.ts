@@ -1,9 +1,5 @@
 import { PurposeId } from "@knodia/common-models/ids";
-import {
-  maxDailyCalls,
-  minDailyCalls,
-  PurposeFormSchemaVersion,
-} from "@knodia/purpose-models";
+import { maxDailyCalls, minDailyCalls } from "@knodia/purpose-models";
 import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
@@ -12,6 +8,13 @@ import {
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
+
+export const API_PurposeFormSchemaVersion = z
+  .enum(["1.0"])
+  .meta({ id: "PurposeFormSchemaVersion" });
+export type API_PurposeFormSchemaVersion = z.infer<
+  typeof API_PurposeFormSchemaVersion
+>;
 
 export const API_PurposeSeed = z
   .strictObject({
@@ -25,7 +28,7 @@ export const API_PurposeSeed = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     formAnswersJson: API_PurposeFormAnswers,
-    formSchemaVersion: PurposeFormSchemaVersion,
+    formSchemaVersion: API_PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
   })
   .meta({ id: "PurposeSeed" });
@@ -33,7 +36,8 @@ export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
 
 export const API_Purpose = z
   .strictObject({
-    // formAnswersJson is intentionally excluded — it can be retrieved via a separate route
+    // formAnswersJson and formSchemaVersion are intentionally excluded —
+    // they can be retrieved via separate routes
     consumer: API_PurposeConsumer,
     createdAt: z.iso.datetime(),
     dailyCalls: z
@@ -44,7 +48,6 @@ export const API_Purpose = z
       .meta({ format: "int32" }),
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
-    formSchemaVersion: PurposeFormSchemaVersion,
     id: PurposeId,
     name: API_LocalizedPurposeName,
     state: API_PurposeState,

@@ -24,7 +24,7 @@ import {
 } from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { formSchemaNotFound } from "../models/errors.ts";
+import { purposeFormSchemaNotFound } from "../models/errors.ts";
 import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
 
 interface PurposeRouterOptions {
@@ -142,7 +142,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
       const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);
       if (!parsed.success) {
-        throw formSchemaNotFound(req.params.version);
+        throw purposeFormSchemaNotFound(req.params.version);
       }
 
       res.status(200).send(getFormSchema(parsed.data));
@@ -181,7 +181,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
       const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);
       if (!parsed.success) {
-        throw formSchemaNotFound(req.params.version);
+        throw purposeFormSchemaNotFound(req.params.version);
       }
 
       res.status(200).send(getFormUiSchema(parsed.data));

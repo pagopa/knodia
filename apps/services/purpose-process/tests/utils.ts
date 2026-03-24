@@ -15,7 +15,8 @@ export const injectAppRequest = createInjectAppRequest(() => app);
 
 export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
   return {
-    // formAnswersJson is intentionally excluded — it can be retrieved via a separate route
+    // formAnswersJson and formSchemaVersion are intentionally excluded —
+    // they can be retrieved via separate routes
     consumer: purpose.consumer,
     createdAt:
       typeof purpose.createdAt === "string"
@@ -24,7 +25,6 @@ export function toExpectAPI_Purpose(purpose: API_Purpose | Purpose) {
     dailyCalls: purpose.dailyCalls,
     description: purpose.description,
     eserviceId: purpose.eserviceId,
-    formSchemaVersion: purpose.formSchemaVersion,
     id: purpose.id,
     name: purpose.name,
     state: purpose.state,
