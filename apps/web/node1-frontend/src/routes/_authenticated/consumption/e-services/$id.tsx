@@ -127,7 +127,8 @@ function RouteComponent() {
   const bffDetail = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
-  const hasAgreement = eservice.agreement !== undefined;
+  const { agreement } = eservice;
+  const hasAgreement = agreement !== undefined;
 
   async function downloadInterfaceDocument() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
@@ -190,10 +191,10 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
-      {eservice.agreement && (
+      {agreement && (
         <>
           <OrgConsumptionStatusSection
-            agreement={eservice.agreement}
+            agreement={agreement}
             eserviceId={eservice.id}
             knodeId={knodeId}
           />
