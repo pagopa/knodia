@@ -1268,7 +1268,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/{version}:
     get:
-      operationId: getFormSchema
+      operationId: getPurposeFormSchema
       summary: Get Purpose form schema by version
       tags:
         - purpose
@@ -1314,7 +1314,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/{version}/ui:
     get:
-      operationId: getFormUiSchema
+      operationId: getPurposeFormUiSchema
       summary: Get Purpose form UI schema by version
       tags:
         - purpose

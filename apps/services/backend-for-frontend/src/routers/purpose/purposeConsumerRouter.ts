@@ -70,7 +70,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
 
-      const { data } = await remoteResourcesManagerApi.getFormSchema({
+      const { data } = await remoteResourcesManagerApi.getPurposeFormSchema({
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         path: { version: req.params.version },
@@ -102,7 +102,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId } = getContextValues(requestContext);
 
-      const { data } = await remoteResourcesManagerApi.getFormUiSchema({
+      const { data } = await remoteResourcesManagerApi.getPurposeFormUiSchema({
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         path: { version: req.params.version },

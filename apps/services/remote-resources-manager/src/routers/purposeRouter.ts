@@ -60,14 +60,16 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const data = await purposeService.getFormSchema(req.params.version);
+      const data = await purposeService.getPurposeFormSchema(
+        req.params.version,
+      );
       res.send(data);
     },
     method: "GET",
     schema: {
       description:
         "Retrieve the JSON Schema for validating Purpose form answers",
-      operationId: "getFormSchema",
+      operationId: "getPurposeFormSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
         200: API_PurposeFormSchema.meta({
@@ -89,14 +91,16 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const data = await purposeService.getFormUiSchema(req.params.version);
+      const data = await purposeService.getPurposeFormUiSchema(
+        req.params.version,
+      );
       res.send(data);
     },
     method: "GET",
     schema: {
       description:
         "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
-      operationId: "getFormUiSchema",
+      operationId: "getPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
         200: API_PurposeFormSchema.meta({

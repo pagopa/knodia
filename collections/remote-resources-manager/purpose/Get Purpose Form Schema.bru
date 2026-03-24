@@ -1,16 +1,16 @@
 meta {
-  name: Get Form Schema
+  name: Get Purpose Form Schema
   type: http
 }
 
 get {
-  url: {{host-remote-resources-manager}}/purposes/formSchemas/:version
+  url: {{host-remote-resources-manager}}/purposes/formSchemas/:purposeSchemaVersion
   body: none
   auth: none
 }
 
 params:path {
-  version: 1.0
+  purposeSchemaVersion: 1.0
 }
 
 headers {

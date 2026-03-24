@@ -110,7 +110,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       logger.info(`Getting Purpose form schema version ${req.params.version}`);
 
       const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getFormSchema({
+      const { data } = await purposeProcessApi.getPurposeFormSchema({
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(correlationId, token),
         path: { version: req.params.version },
@@ -122,7 +122,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     schema: {
       description:
         "Retrieve the JSON Schema for validating Purpose form answers",
-      operationId: "getFormSchema",
+      operationId: "getPurposeFormSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
         200: API_PurposeFormSchema.meta({
@@ -145,7 +145,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       );
 
       const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getFormUiSchema({
+      const { data } = await purposeProcessApi.getPurposeFormUiSchema({
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(correlationId, token),
         path: { version: req.params.version },
@@ -157,7 +157,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
     schema: {
       description:
         "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
-      operationId: "getFormUiSchema",
+      operationId: "getPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
         200: API_PurposeFormSchema.meta({

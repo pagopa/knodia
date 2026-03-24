@@ -68,19 +68,19 @@ export function purposeServiceBuilder(
 
       return data;
     },
-    async getFormSchema(
+    async getPurposeFormSchema(
       version: PurposeFormSchemaVersion,
     ): Promise<Record<string, unknown>> {
-      const { data } = await k2kGatewayApi.getFormSchema({
+      const { data } = await k2kGatewayApi.getPurposeFormSchema({
         client: k2kGatewayClient,
         path: { version },
       });
       return data;
     },
-    async getFormUiSchema(
+    async getPurposeFormUiSchema(
       version: PurposeFormSchemaVersion,
     ): Promise<Record<string, unknown>> {
-      const { data } = await k2kGatewayApi.getFormUiSchema({
+      const { data } = await k2kGatewayApi.getPurposeFormUiSchema({
         client: k2kGatewayClient,
         path: { version },
       });

@@ -673,7 +673,7 @@ export type CreatePurposeResponses = {
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
 
-export type GetFormSchemaData = {
+export type GetPurposeFormSchemaData = {
     body?: never;
     path: {
         version: PurposeFormSchemaVersion;
@@ -682,7 +682,7 @@ export type GetFormSchemaData = {
     url: '/purposes/formSchemas/{version}';
 };
 
-export type GetFormSchemaErrors = {
+export type GetPurposeFormSchemaErrors = {
     /**
      * Bad Request
      */
@@ -697,18 +697,18 @@ export type GetFormSchemaErrors = {
     403: Problem;
 };
 
-export type GetFormSchemaError = GetFormSchemaErrors[keyof GetFormSchemaErrors];
+export type GetPurposeFormSchemaError = GetPurposeFormSchemaErrors[keyof GetPurposeFormSchemaErrors];
 
-export type GetFormSchemaResponses = {
+export type GetPurposeFormSchemaResponses = {
     /**
      * Purpose form schema retrieved successfully
      */
     200: PurposeFormSchema;
 };
 
-export type GetFormSchemaResponse = GetFormSchemaResponses[keyof GetFormSchemaResponses];
+export type GetPurposeFormSchemaResponse = GetPurposeFormSchemaResponses[keyof GetPurposeFormSchemaResponses];
 
-export type GetFormUiSchemaData = {
+export type GetPurposeFormUiSchemaData = {
     body?: never;
     path: {
         version: PurposeFormSchemaVersion;
@@ -717,7 +717,7 @@ export type GetFormUiSchemaData = {
     url: '/purposes/formSchemas/{version}/ui';
 };
 
-export type GetFormUiSchemaErrors = {
+export type GetPurposeFormUiSchemaErrors = {
     /**
      * Bad Request
      */
@@ -732,16 +732,16 @@ export type GetFormUiSchemaErrors = {
     403: Problem;
 };
 
-export type GetFormUiSchemaError = GetFormUiSchemaErrors[keyof GetFormUiSchemaErrors];
+export type GetPurposeFormUiSchemaError = GetPurposeFormUiSchemaErrors[keyof GetPurposeFormUiSchemaErrors];
 
-export type GetFormUiSchemaResponses = {
+export type GetPurposeFormUiSchemaResponses = {
     /**
      * Purpose form UI schema retrieved successfully
      */
     200: PurposeFormSchema;
 };
 
-export type GetFormUiSchemaResponse = GetFormUiSchemaResponses[keyof GetFormUiSchemaResponses];
+export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
 
 export type GetOrganizationData = {
     body?: never;
