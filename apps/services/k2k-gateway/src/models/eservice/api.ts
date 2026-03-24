@@ -3,6 +3,7 @@ import {
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
@@ -231,3 +232,20 @@ export const API_EserviceVersion = z
   .meta({ id: "EserviceVersion" });
 
 export type API_EserviceVersion = z.infer<typeof API_EserviceVersion>;
+
+export const API_GetEservicesQueryParams = API_PaginationQueryParams.extend({
+  eserviceId: arrayQueryParam(API_EserviceId).optional().meta({
+    description: "Filter by E-service ID",
+  }),
+});
+export type API_GetEservicesQueryParams = z.infer<
+  typeof API_GetEservicesQueryParams
+>;
+
+export const API_Eservices = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_Eservice),
+  })
+  .meta({ id: "Eservices" });
+export type API_Eservices = z.infer<typeof API_Eservices>;
