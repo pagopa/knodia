@@ -1,9 +1,17 @@
 version: v2
 
-# Define workspace modules
 modules:
+  - path: packages/models/agreement-models/proto
+    name: buf.build/knodia/agreement-models
+
+  - path: packages/models/eservice-models/proto
+    name: buf.build/knodia/eservice-models
+
   - path: packages/models/keychain-models/proto
     name: buf.build/knodia/keychain-models
+
+  - path: packages/models/organization-models/proto
+    name: buf.build/knodia/organization-models
 
   - path: packages/models/purpose-models/proto
     name: buf.build/knodia/purpose-models
