@@ -2,7 +2,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
-  Organization,
+  type Organization,
   organizationEvents,
   toOrganizationV1,
 } from "@knodia/organization-models";

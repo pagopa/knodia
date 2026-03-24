@@ -5,23 +5,20 @@ import {
 } from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
-import type {
-  AttributesStepData,
-  DocsStepData,
-  GeneralStepData,
-  TechnicalStepData,
-} from "@/features/e-service/types/eserviceCreateForm";
-
 import {
   ATTRIBUTES_STEP_DEFAULTS,
+  type AttributesStepData,
   attributesStepSchema,
   DOCS_STEP_DEFAULTS,
+  type DocsStepData,
   docsStepSchema,
   ESERVICE_FORM_DEFAULTS,
   type EServiceFormDraftData,
   GENERAL_STEP_DEFAULTS,
+  type GeneralStepData,
   generalStepSchema,
   TECHNICAL_STEP_DEFAULTS,
+  type TechnicalStepData,
   technicalStepSchema,
 } from "@/features/e-service/types/eserviceCreateForm";
 

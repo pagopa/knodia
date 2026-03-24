@@ -7,8 +7,7 @@ import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 import { expect } from "vitest";
 
 import { createOrganizationCreatedV1Event } from "../src/models/organizationEventFactory.ts";
-import { app, eventStoreDb } from "./setup.ts";
-import { organizationWriterService } from "./setup.ts";
+import { app, eventStoreDb, organizationWriterService } from "./setup.ts";
 
 export async function getAllOrganizationEvents() {
   return await eventStoreDb.select().from(eventStoreOrganizationEvents);

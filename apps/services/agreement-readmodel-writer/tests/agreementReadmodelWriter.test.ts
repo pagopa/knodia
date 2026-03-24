@@ -1,7 +1,7 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
-  Agreement,
+  type Agreement,
   agreementEvents,
   toAgreementV1,
 } from "@knodia/agreement-models";

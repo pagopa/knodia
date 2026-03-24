@@ -9,17 +9,16 @@ import {
 } from "@knodia/common-models/ids";
 import { and, eq } from "drizzle-orm";
 
-import type {
-  NewRemoteResourceAgreement,
-  RemoteResourceAgreementSQL,
+import {
+  type NewRemoteResourceAgreement,
+  remoteResourceAgreement,
+  type RemoteResourceAgreementSQL,
 } from "../agreement.ts";
-import type {
-  NewRemoteResourcePurpose,
-  RemoteResourcePurposeSQL,
-} from "../purpose.ts";
-
-import { remoteResourceAgreement } from "../agreement.ts";
-import { remoteResourcePurpose } from "../purpose.ts";
+import {
+  type NewRemoteResourcePurpose,
+  remoteResourcePurpose,
+  type RemoteResourcePurposeSQL,
+} from "../purpose.js";
 
 export type RemoteResourceDbService = ReturnType<
   typeof remoteResourceDbServiceBuilder

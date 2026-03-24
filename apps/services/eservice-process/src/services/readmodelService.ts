@@ -32,7 +32,7 @@ import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/s
 import { organizationReadmodelServiceBuilder } from "@knodia/db-readmodel-organization/services";
 import {
   type Eservice,
-  EserviceInterface,
+  type EserviceInterface,
   EserviceVersionState,
 } from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
