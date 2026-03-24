@@ -1,6 +1,6 @@
 import {
   METADATA_VERSION_HEADER,
-  missingHeader,
+  missingResponseHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { type AxiosResponse, isAxiosError } from "axios";
 import z from "zod";
@@ -76,7 +76,7 @@ export function getMetadataVersionFromHeaders(
     .safeParse(headers[METADATA_VERSION_HEADER]);
 
   if (!version.success || isNaN(version.data)) {
-    throw missingHeader(METADATA_VERSION_HEADER);
+    throw missingResponseHeader(METADATA_VERSION_HEADER);
   }
 
   return version.data;
