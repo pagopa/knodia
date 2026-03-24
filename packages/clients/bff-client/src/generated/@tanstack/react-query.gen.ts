@@ -204,7 +204,7 @@ export const getProducerEserviceDetailsOptions = (options: Options<GetProducerEs
 export const getProducerEserviceLatestVersionInterfaceQueryKey = (options: Options<GetProducerEserviceLatestVersionInterfaceData>) => createQueryKey('getProducerEserviceLatestVersionInterface', options);
 
 /**
- * Download producer E-service latest version interface
+ * Download producer E-service latest Version Interface
  *
  * Download the interface document for the latest version of a Producer E-service
  */
@@ -377,7 +377,7 @@ export const getConsumerEserviceDetailsOptions = (options: Options<GetConsumerEs
 export const getConsumerEserviceLatestVersionInterfaceQueryKey = (options: Options<GetConsumerEserviceLatestVersionInterfaceData>) => createQueryKey('getConsumerEserviceLatestVersionInterface', options);
 
 /**
- * Download consumer E-service latest version interface
+ * Download consumer E-service latest Version Interface
  *
  * Download the interface document for the latest version of an E-service
  */
@@ -462,7 +462,7 @@ export const getConsumerAgreementsOptions = (options?: Options<GetConsumerAgreem
 });
 
 /**
- * Create a consumer agreement
+ * Create a consumer Agreement
  *
  * Create a new Agreement for the consumer to access a Producer's E-service
  */
@@ -481,7 +481,7 @@ export const createConsumerAgreementMutation = (options?: Partial<Options<Create
 };
 
 /**
- * Create a consumer purpose
+ * Create a consumer Purpose
  *
  * Create a new Purpose for an E-service
  */

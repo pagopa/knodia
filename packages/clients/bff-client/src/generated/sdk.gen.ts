@@ -88,7 +88,7 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Download producer E-service latest version interface
+ * Download producer E-service latest Version Interface
  *
  * Download the interface document for the latest version of a Producer E-service
  */
@@ -184,7 +184,7 @@ export const getConsumerEserviceDetails = <ThrowOnError extends boolean = true>(
 });
 
 /**
- * Download consumer E-service latest version interface
+ * Download consumer E-service latest Version Interface
  *
  * Download the interface document for the latest version of an E-service
  */
@@ -218,7 +218,7 @@ export const getConsumerAgreements = <ThrowOnError extends boolean = true>(optio
 });
 
 /**
- * Create a consumer agreement
+ * Create a consumer Agreement
  *
  * Create a new Agreement for the consumer to access a Producer's E-service
  */
@@ -234,7 +234,7 @@ export const createConsumerAgreement = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
- * Create a consumer purpose
+ * Create a consumer Purpose
  *
  * Create a new Purpose for an E-service
  */
