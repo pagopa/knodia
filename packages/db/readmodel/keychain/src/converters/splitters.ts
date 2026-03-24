@@ -93,6 +93,7 @@ export const toConsumerKeychainUserSQL = ({
   userId,
 });
 
+/** @knipignore -  Will be used when implementing the consumer keychain purposes lifecycle */
 export const toConsumerKeychainPurposeSQL = (
   consumerKeychainPurpose: ConsumerKeychainPurpose,
   metadataVersion: number,
