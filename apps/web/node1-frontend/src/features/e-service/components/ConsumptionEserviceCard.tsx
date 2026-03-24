@@ -72,4 +72,3 @@ function AgreementInfoCard({ state }: { state: "Active" | "Suspended" }) {
     </dl>
   );
 }
-
