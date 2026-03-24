@@ -1,11 +1,13 @@
-import type { EserviceProcessClient } from "@knodia/eservice-process-client";
 import type { FileManager } from "@knodia/file-manager";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_FileDownload } from "@knodia/common-models/api";
-import { eserviceProcessApi } from "@knodia/eservice-process-client";
+import {
+  eserviceProcessApi,
+  type EserviceProcessClient,
+} from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
@@ -75,7 +77,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       res.send({
         pagination: data.pagination,
         results: await Promise.all(
-          data.items.map(enrichWithLatestVersionAndMapToAPIResult),
+          data.results.map(enrichWithLatestVersionAndMapToAPIResult),
         ),
       });
     },

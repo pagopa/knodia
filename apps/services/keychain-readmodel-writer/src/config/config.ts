@@ -4,7 +4,7 @@ import {
   KeychainTopicConfig,
 } from "@knodia/kafka-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { z } from "zod";
+import { type z } from "zod";
 
 const KeychainReadmodelWriterConfig = LoggerConfig.and(ReadmodelKeychainConfig)
   .and(KafkaConsumerConfig)

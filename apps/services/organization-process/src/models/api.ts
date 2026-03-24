@@ -19,8 +19,8 @@ export type API_Organization = z.infer<typeof API_Organization>;
 
 export const API_Organizations = z
   .strictObject({
-    items: z.array(API_Organization),
     pagination: API_Pagination,
+    results: z.array(API_Organization),
   })
   .meta({ id: "Organizations" });
 export type API_Organizations = z.infer<typeof API_Organizations>;

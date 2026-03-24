@@ -1,6 +1,6 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 
-import { KnodeId } from "@knodia/common-models/ids";
+import { type KnodeId } from "@knodia/common-models/ids";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,

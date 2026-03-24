@@ -1,11 +1,13 @@
-import type { OrganizationProcessClient } from "@knodia/organization-process-client";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { organizationProcessApi } from "@knodia/organization-process-client";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
 
 import { apiTags } from "../models/apiTags.ts";
 import {
@@ -83,7 +85,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
 
       res.status(200).send({
         pagination: data.pagination,
-        results: data.items.map(toAPI_Organization),
+        results: data.results.map(toAPI_Organization),
       });
     },
     method: "GET",

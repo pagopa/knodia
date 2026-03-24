@@ -1,9 +1,8 @@
-import type { OrganizationId } from "@knodia/common-models/ids";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
+import { KnodeId, type OrganizationId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";

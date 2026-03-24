@@ -17,8 +17,8 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import { getAttribute } from "@knodia/attribute-models";
 import { getCategory } from "@knodia/category-models";
 import {
-  EserviceId,
-  EserviceVersionId,
+  type EserviceId,
+  type EserviceVersionId,
   generateId,
 } from "@knodia/common-models/ids";
 

@@ -4,7 +4,7 @@ import type { EserviceId } from "@knodia/common-models/ids";
 import type z from "zod";
 
 import { SortDirection } from "@knodia/db-readmodel-commons/models";
-import { Eservice, EserviceMode } from "@knodia/eservice-models";
+import { type Eservice, EserviceMode } from "@knodia/eservice-models";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
@@ -167,12 +167,12 @@ describe("GET /eservices (getEservices)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map((e) => toExpectAPI_Eservice(e)),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
           total: totalCount,
         },
+        results: expectedResult.map((e) => toExpectAPI_Eservice(e)),
       });
     },
   );

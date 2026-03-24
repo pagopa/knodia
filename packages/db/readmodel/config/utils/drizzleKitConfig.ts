@@ -1,6 +1,6 @@
 import { defineConfig } from "drizzle-kit";
 
-import { ReadmodelConfig } from "../config/config.ts";
+import { type ReadmodelConfig } from "../config/config.ts";
 
 export const drizzleKitConfig = (
   {

@@ -1,4 +1,4 @@
-import { Agreement } from "@knodia/agreement-models";
+import { type Agreement } from "@knodia/agreement-models";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   type Eservice,

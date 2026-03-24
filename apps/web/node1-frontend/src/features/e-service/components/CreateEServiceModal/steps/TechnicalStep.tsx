@@ -9,11 +9,10 @@ import {
 } from "@knodia/ui-kit/ui";
 
 import { ModalFooter } from "@/components/ModalFooter";
+import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
 import { useTechnicalStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
-import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
-
-import { StepHeader } from "../components/StepHeader";
+import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 type TechnicalStepForm = ReturnType<typeof useTechnicalStepForm>;
 
