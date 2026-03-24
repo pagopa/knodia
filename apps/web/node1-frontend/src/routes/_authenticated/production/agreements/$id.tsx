@@ -1,16 +1,9 @@
-import { getProducerAgreementDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ProducerAgreementDetail } from "@/features/agreement/components/ProducerAgreementDetail/ProducerAgreementDetail";
-import { client } from "@/libs/axios";
-
-const agreementQuery = (agreementId: AgreementId) =>
-  getProducerAgreementDetailsOptions({
-    client,
-    path: { agreementId },
-  });
+import { producerAgreementDetailsQuery } from "@/features/agreement/services/queries";
 
 export const Route = createFileRoute(
   "/_authenticated/production/agreements/$id",
@@ -18,7 +11,7 @@ export const Route = createFileRoute(
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
     await queryClient.ensureQueryData(
-      agreementQuery(unsafeBrandId<AgreementId>(id)),
+      producerAgreementDetailsQuery(unsafeBrandId<AgreementId>(id)),
     ),
 });
 

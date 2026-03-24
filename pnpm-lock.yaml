@@ -1380,6 +1380,9 @@ importers:
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-models
       '@knodia/ui-kit':
         specifier: workspace:*
         version: link:../../../packages/ui-kit

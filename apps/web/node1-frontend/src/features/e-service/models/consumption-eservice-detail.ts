@@ -9,6 +9,8 @@ export interface ConsumptionEserviceDetail {
   };
   categories: bffApi.EserviceCategory[];
   description: string;
+  // TODO(KN-287): fetch agreement state from BFF (needs BFF to call RRM for active agreements)
+  hasActiveAgreement: boolean;
   hasRequiredAttributes: boolean;
   id: EserviceId;
   identificationRequired: boolean;
