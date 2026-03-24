@@ -2,18 +2,29 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
-import { generateId, type PurposeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 
 import { apiTags } from "../../models/apiTags.ts";
 import { API_PurposeSeed } from "../../models/purpose/api.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
-export const purposeConsumerRouter: FastifyPluginAsyncZod = async (fastify) => {
+interface PurposeConsumerRouterOptions {
+  remoteResourcesManagerClient: RemoteResourcesManagerClient;
+}
+
+export const purposeConsumerRouter: FastifyPluginAsyncZod<
+  PurposeConsumerRouterOptions
+> = async (fastify, { remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { authData, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
 
       const { organizationId: consumerId } = getUISessionAuthData(authData);
 
@@ -22,10 +33,13 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod = async (fastify) => {
         `Creating Purpose for consumer ${consumerId} on knode ${req.body.knodeId}`,
       );
 
-      // TODO: call remoteResourcesManagerApi.createPurpose(...) when RRM/k2k layers exist
-      const id = generateId<PurposeId>();
+      const { data } = await remoteResourcesManagerApi.createPurpose({
+        body: req.body,
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+      });
 
-      res.status(201).send({ id });
+      res.status(201).send({ id: data.id });
     },
     method: "POST",
     schema: {
@@ -39,7 +53,10 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod = async (fastify) => {
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
       },
+      summary: "Create a consumer Purpose",
       tags: [apiTags.purpose],
     },
     url: "/consumer/purposes",

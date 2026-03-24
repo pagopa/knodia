@@ -62,7 +62,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
-      summary: "Create a consumer agreement",
+      summary: "Create a consumer Agreement",
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements",
