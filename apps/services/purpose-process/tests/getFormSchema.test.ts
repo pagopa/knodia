@@ -1,12 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import {
-  CURRENT_FORM_SCHEMA_VERSION,
-  getFormSchema,
-  getFormUiSchema,
-} from "../src/models/formSchemas.ts";
+import { getFormSchema, getFormUiSchema } from "../src/models/formSchemas.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -20,11 +17,11 @@ describe("GET /purposes/formSchemas/:version (getFormSchema)", () => {
     "should return the form schema for the current version ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}`,
+        `/purposes/formSchemas/${PurposeFormSchemaVersion.enum["1.0"]}`,
       );
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual(
-        getFormSchema(CURRENT_FORM_SCHEMA_VERSION),
+        getFormSchema(PurposeFormSchemaVersion.enum["1.0"]),
       );
     },
   );
@@ -40,7 +37,7 @@ describe("GET /purposes/formSchemas/:version (getFormSchema)", () => {
     "should return 403 for unauthorized token ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}`,
+        `/purposes/formSchemas/${PurposeFormSchemaVersion.enum["1.0"]}`,
       );
       expect(response.statusCode).toBe(403);
     },
@@ -52,11 +49,11 @@ describe("GET /purposes/formSchemas/:version/ui (getFormUiSchema)", () => {
     "should return the form UI schema for the current version ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}/ui`,
+        `/purposes/formSchemas/${PurposeFormSchemaVersion.enum["1.0"]}/ui`,
       );
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual(
-        getFormUiSchema(CURRENT_FORM_SCHEMA_VERSION),
+        getFormUiSchema(PurposeFormSchemaVersion.enum["1.0"]),
       );
     },
   );
@@ -72,7 +69,7 @@ describe("GET /purposes/formSchemas/:version/ui (getFormUiSchema)", () => {
     "should return 403 for unauthorized token ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}/ui`,
+        `/purposes/formSchemas/${PurposeFormSchemaVersion.enum["1.0"]}/ui`,
       );
       expect(response.statusCode).toBe(403);
     },
