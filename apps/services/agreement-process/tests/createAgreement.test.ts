@@ -1,16 +1,20 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
-  Agreement,
+  type Agreement,
   AgreementEventV1,
   AgreementState,
   toAgreementV1,
 } from "@knodia/agreement-models";
 import { generateExternalId } from "@knodia/common-models/externalResource";
-import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
 import {
-  Eservice,
-  EserviceVersion,
+  generateId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
+import {
+  type Eservice,
+  type EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
@@ -47,7 +51,10 @@ vi.mock("@knodia/db-readmodel-eservice/services", async (importOriginal) => {
 
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 
-import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
+import {
+  type API_Agreement,
+  type API_AgreementSeed,
+} from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
 import { agreementCreationConflictingStates } from "../src/utils/validators.ts";
 import { agreementWriterService, eserviceWriterService } from "./setup.ts";

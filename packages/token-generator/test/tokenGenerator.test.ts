@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
-import { SignCommand } from "@aws-sdk/client-kms";
+import { type SignCommand } from "@aws-sdk/client-kms";
 import { unsafeBrandId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 

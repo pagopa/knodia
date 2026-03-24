@@ -3,7 +3,7 @@ import type { KeychainWriterService } from "@knodia/db-readmodel-keychain/writer
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
-  KeychainEventEnvelopeV1,
+  type KeychainEventEnvelopeV1,
 } from "@knodia/keychain-models";
 import { match, P } from "ts-pattern";
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import {
-  Organization,
+  type Organization,
   OrganizationEventV1,
   toOrganizationV1,
 } from "@knodia/organization-models";
@@ -9,7 +9,10 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import { API_Organization, API_OrganizationSeed } from "../src/models/api.ts";
+import {
+  type API_Organization,
+  type API_OrganizationSeed,
+} from "../src/models/api.ts";
 import { toAPI_Organization } from "../src/models/apiConverter.ts";
 import { organizationWriterService } from "./setup.ts";
 import { getAllOrganizationEvents, injectAppRequest } from "./utils.ts";

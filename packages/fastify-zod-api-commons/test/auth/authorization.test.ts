@@ -1,7 +1,7 @@
 import type { RequestContextData } from "@fastify/request-context";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
-import { CorrelationId, generateId } from "@knodia/common-models/ids";
+import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import {
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,

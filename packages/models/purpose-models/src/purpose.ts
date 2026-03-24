@@ -1,7 +1,7 @@
 import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   EserviceId,
-  OrganizationId,
+  type OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
 import { LocalizedText } from "@knodia/common-models/localization";

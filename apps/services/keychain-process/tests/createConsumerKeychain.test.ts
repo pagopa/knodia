@@ -13,7 +13,10 @@ import {
 } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
-import { API_ConsumerKeychainSeed, API_Keychain } from "../src/models/api.ts";
+import {
+  type API_ConsumerKeychainSeed,
+  type API_Keychain,
+} from "../src/models/api.ts";
 import { toAPI_Keychain } from "../src/models/apiConverter.ts";
 import { getAllKeychainEvents, injectAppRequest } from "./utils.ts";
 

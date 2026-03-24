@@ -2,7 +2,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
-  ConsumerKeychain,
+  type ConsumerKeychain,
   keychainEvents,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";

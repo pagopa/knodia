@@ -1,4 +1,4 @@
-import { EventStoreConfig } from "@knodia/db-event-store-config/config";
+import { type EventStoreConfig } from "@knodia/db-event-store-config/config";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 

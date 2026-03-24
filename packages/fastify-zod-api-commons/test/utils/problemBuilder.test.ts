@@ -2,7 +2,7 @@ import type { RequestContextData } from "@fastify/request-context";
 import type { HTTPServiceName } from "@knodia/common-models/services";
 
 import createError from "@fastify/error";
-import { CorrelationId, generateId } from "@knodia/common-models/ids";
+import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import * as zodFastify from "fastify-type-provider-zod";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
@@ -10,7 +10,7 @@ import { ZodError } from "zod";
 import * as contextModule from "../../src/context/context.ts";
 import { serviceErrorCode } from "../../src/models/errors/services.ts";
 import {
-  API_Problem,
+  type API_Problem,
   ApiError,
   commonErrorCodes,
 } from "../../src/models/index.ts";

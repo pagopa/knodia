@@ -15,10 +15,10 @@ import {
 } from "@knodia/common-models/ids";
 import { EserviceMode } from "@knodia/eservice-models";
 import {
-  LocalizedPurposeDescription,
-  LocalizedPurposeName,
+  type LocalizedPurposeDescription,
+  type LocalizedPurposeName,
   type Purpose,
-  PurposeFormAnswers,
+  type PurposeFormAnswers,
   PurposeState,
 } from "@knodia/purpose-models";
 
