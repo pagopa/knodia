@@ -5,7 +5,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
-import { API_Organization } from "../src/models/organization/api.js";
+import { API_Organization } from "../src/models/organization/api.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getOrganizationsMock = vi.hoisted(() => vi.fn());
