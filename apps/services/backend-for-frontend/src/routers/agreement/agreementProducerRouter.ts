@@ -83,6 +83,11 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         },
       });
 
+      if (data.results.length === 0) {
+        res.send({ pagination: data.pagination, results: [] });
+        return;
+      }
+
       const eserviceIds = new Set(
         data.results.map((agreement) => agreement.eserviceId),
       );
