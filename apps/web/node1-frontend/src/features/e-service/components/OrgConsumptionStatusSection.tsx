@@ -109,7 +109,9 @@ function AgreementStatusBanner({ state }: { state: bffApi.AgreementState }) {
     ))
     // TODO: handle Archived state
     .with("Archived", () => {
-      console.warn("Unexpected Archived agreement in consumption status section");
+      console.warn(
+        "Unexpected Archived agreement in consumption status section",
+      );
       return null;
     })
     .exhaustive();
