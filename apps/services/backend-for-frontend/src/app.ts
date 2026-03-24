@@ -22,6 +22,7 @@ import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
+import { userRouter } from "./routers/keychain/userRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
@@ -76,6 +77,10 @@ function buildApp({ config }: { config: BffProcessConfig }) {
             description: "Purpose routes",
             name: apiTags.purpose,
           },
+          {
+            description: "User routes",
+            name: apiTags.user,
+          },
         ],
       },
     },
@@ -100,6 +105,9 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
       pollingService,
+    });
+    protectedApp.register(userRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
     });
     protectedApp.register(eserviceConsumerRouter, {
       config,
