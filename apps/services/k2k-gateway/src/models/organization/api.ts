@@ -1,4 +1,9 @@
-import { API_OrganizationId } from "@knodia/common-models/api";
+import {
+  API_OrganizationId,
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import z from "zod";
 
 import { API_Attribute } from "../attribute/api.ts";
@@ -20,3 +25,22 @@ export type API_Organization = z.infer<typeof API_Organization>;
 export const API_OrganizationIdPathParam = z.strictObject({
   organizationId: API_OrganizationId,
 });
+
+export const API_GetOrganizationsQueryParams = API_PaginationQueryParams.extend(
+  {
+    organizationId: arrayQueryParam(API_OrganizationId).optional().meta({
+      description: "Filter by Organization ID",
+    }),
+  },
+);
+export type API_GetOrganizationsQueryParams = z.infer<
+  typeof API_GetOrganizationsQueryParams
+>;
+
+export const API_Organizations = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_Organization),
+  })
+  .meta({ id: "Organizations" });
+export type API_Organizations = z.infer<typeof API_Organizations>;

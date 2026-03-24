@@ -13,7 +13,9 @@ import {
 } from "@knodia/db-readmodel-organization";
 import { aggregateOrganizations } from "@knodia/db-readmodel-organization/converters";
 import { organizationReadmodelServiceBuilder } from "@knodia/db-readmodel-organization/services";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
+
+import type { API_GetOrganizationsQueryParams } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
@@ -30,11 +32,10 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getOrganizationByName(name: string) {
       return await organizationReadmodelService.getOrganizationByName(name);
     },
-    async getOrganizations(params: {
-      limit: number;
-      offset: number;
-    }): Promise<ListResult<Organization>> {
-      const { limit, offset } = params;
+    async getOrganizations(
+      params: API_GetOrganizationsQueryParams,
+    ): Promise<ListResult<Organization>> {
+      const { limit, offset, organizationId } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -47,6 +48,11 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           tx
             .select({ organizationId: readmodelOrganization.id })
             .from(readmodelOrganization)
+            .where(
+              organizationId && organizationId.length > 0
+                ? inArray(readmodelOrganization.id, organizationId)
+                : undefined,
+            )
             .$dynamic();
 
         const paginatedIds = createFilterQuery()

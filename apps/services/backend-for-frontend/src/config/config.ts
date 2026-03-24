@@ -4,23 +4,24 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
+import { PollingConfig } from "@knodia/polling/config";
 import z from "zod";
 
 const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
+  .and(PollingConfig)
   .and(
     z
       .object({
         AGREEMENT_PROCESS_URL: z.url(),
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
-        DEFAULT_POLLING_MAX_RETRIES: z.coerce.number().default(5),
-        DEFAULT_POLLING_RETRY_DELAY: z.coerce.number().default(400),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
         KEYCHAIN_PROCESS_URL: z.url(),
         KNODE_ID: KnodeId,
         ORGANIZATION_PROCESS_URL: z.url(),
+        RECENT_ESERVICE_UPDATE_DAYS: z.coerce.number().positive().default(3),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -40,13 +41,12 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
         cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
-        defaultPollingMaxRetries: c.DEFAULT_POLLING_MAX_RETRIES,
-        defaultPollingRetryDelay: c.DEFAULT_POLLING_RETRY_DELAY,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         knodeId: c.KNODE_ID,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
+        recentEserviceUpdateDays: c.RECENT_ESERVICE_UPDATE_DAYS,
         refreshJwt: {
           secondsDuration: c.REFRESH_JWT_SECONDS_DURATION,
         },

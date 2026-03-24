@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -7,21 +6,18 @@ import {
   agreementProcessApi,
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
-import {
-  type ExternalId,
-  unsafeBrandExternalId,
-} from "@knodia/common-models/externalResource";
-import { KnodeId, OrganizationId } from "@knodia/common-models/ids";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
-  API_Problem,
-  genericError,
-} from "@knodia/fastify-zod-api-commons/models";
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -90,90 +86,60 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       const eserviceIds = new Set(
         data.items.map((agreement) => agreement.eserviceId),
       );
-      const eservices = await eserviceProcessApi.getEservices({
-        client: eserviceProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        query: {
-          eserviceId: Array.from(eserviceIds),
-          // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
-          limit: eserviceIds.size,
-          offset: 0,
-        },
-      });
-      const eservicesMap = new Map(
-        eservices.data.items.map((eservice) => [eservice.id, eservice]),
-      );
+      const [eservicesMap, consumersMap] = await Promise.all([
+        eserviceProcessApi
+          .getEservices({
+            client: eserviceProcessClient,
+            headers: getKnodiaServiceHeaders(req, correlationId),
+            query: {
+              eserviceId: Array.from(eserviceIds),
+              // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
+              limit: eserviceIds.size,
+              offset: 0,
+            },
+          })
+          .then(
+            (res) =>
+              new Map(
+                res.data.items.map((eservice) => [eservice.id, eservice]),
+              ),
+          ),
+        getExternalEntitiesMap({
+          fetchFn: ({ entityIds }) =>
+            remoteResourcesManagerApi
+              .getOrganizations({
+                client: remoteResourcesManagerClient,
+                headers: getKnodiaServiceHeaders(req, correlationId),
+                query: {
+                  knodeId,
+                  // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
+                  limit: entityIds.length,
+                  offset: 0,
+                  organizationId: entityIds,
+                },
+              })
+              .then((res) => res.data.results),
+          getEntityId: (agreement) => agreement.consumer.id,
+          getKnodeId: (agreement) => KnodeId.parse(agreement.consumer.knodeId),
+          items: data.items,
+        }),
+      ]);
 
-      const consumerIds = new Map<
-        API_KnodeId,
-        Set<ExternalId<OrganizationId>>
-      >();
-      data.items.forEach((agreement) => {
-        const consumerId = unsafeBrandExternalId<OrganizationId>(
-          agreement.consumer.id,
-        );
-        const knodeId = API_KnodeId.parse(agreement.consumer.knodeId);
-        const consumerIdsByKnode =
-          consumerIds.get(knodeId) ?? new Set<ExternalId<OrganizationId>>();
-        if (!consumerIds.has(knodeId)) {
-          consumerIds.set(knodeId, consumerIdsByKnode);
-        }
-        consumerIdsByKnode.add(consumerId);
-      });
-      const consumersMap = new Map<
-        API_KnodeId,
-        Map<ExternalId<OrganizationId>, remoteResourcesManagerApi.Organization>
-      >();
-      // TODO: fetch the consumers with getOrganizations instead
-      await Promise.all(
-        Array.from(consumerIds.entries()).flatMap(
-          ([knodeId, consumerIdsByKnode]) =>
-            Array.from(consumerIdsByKnode).map(async (consumerId) => {
-              const { data: consumer } =
-                await remoteResourcesManagerApi.getOrganization({
-                  client: remoteResourcesManagerClient,
-                  headers: getKnodiaServiceHeaders(req, correlationId),
-                  path: { organizationId: consumerId },
-                  query: { knodeId },
-                });
-
-              const consumersByKnode =
-                consumersMap.get(knodeId) ??
-                new Map<
-                  ExternalId<OrganizationId>,
-                  remoteResourcesManagerApi.Organization
-                >();
-              if (!consumersMap.has(knodeId)) {
-                consumersMap.set(knodeId, consumersByKnode);
-              }
-              consumersByKnode.set(consumerId, consumer);
-            }),
-        ),
-      );
-
-      const items = data.items.map((agreement) => {
-        const eservice = eservicesMap.get(agreement.eserviceId);
-        if (!eservice) {
-          throw genericError(
-            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
-          );
-        }
-
-        const consumer = consumersMap
-          .get(agreement.consumer.knodeId)
-          ?.get(unsafeBrandExternalId(agreement.consumer.id));
-        if (!consumer) {
-          throw genericError(
-            `Consumer organization ${agreement.consumer.id} not found for Agreement ${agreement.id}`,
-          );
-        }
-
-        return toAPI_ProducerAgreement({
+      const items = data.items.map((agreement) =>
+        toAPI_ProducerAgreement({
           agreement,
-          consumer,
-          eservice,
-        });
-      });
+          consumer: assertEntityExists(
+            consumersMap
+              .get(agreement.consumer.knodeId)
+              ?.get(unsafeBrandExternalId(agreement.consumer.id)),
+            `Consumer organization ${agreement.consumer.id} not found for Agreement ${agreement.id}`,
+          ),
+          eservice: assertEntityExists(
+            eservicesMap.get(agreement.eserviceId),
+            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+          ),
+        }),
+      );
 
       res.send({
         items,
