@@ -56,14 +56,14 @@ export const API_Purpose = z
   .meta({ id: "Purpose" });
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
-export const API_FormSchemaVersionPathParam = z.strictObject({
+export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
   version: z.string().min(1),
 });
-export type API_FormSchemaVersionPathParam = z.infer<
-  typeof API_FormSchemaVersionPathParam
+export type API_PurposeFormSchemaVersionPathParam = z.infer<
+  typeof API_PurposeFormSchemaVersionPathParam
 >;
 
-export const API_FormSchema = z
+export const API_PurposeFormSchema = z
   .record(z.string(), z.unknown())
-  .meta({ id: "FormSchema" });
-export type API_FormSchema = z.infer<typeof API_FormSchema>;
+  .meta({ id: "PurposeFormSchema" });
+export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;

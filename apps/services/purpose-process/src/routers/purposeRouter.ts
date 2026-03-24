@@ -17,9 +17,9 @@ import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 import type { PurposeService } from "../services/purposeService.ts";
 
 import {
-  API_FormSchema,
-  API_FormSchemaVersionPathParam,
   API_Purpose,
+  API_PurposeFormSchema,
+  API_PurposeFormSchemaVersionPathParam,
   API_PurposeSeed,
 } from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
@@ -82,7 +82,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
-      summary: "Create a Purpose",
+      summary: "Create Purpose",
       tags: [apiTags.purpose],
     },
     url: "/purposes",
@@ -124,7 +124,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Purpose not found" }),
       },
-      summary: "Get a Purpose",
+      summary: "Get Purpose",
       tags: [apiTags.purpose],
     },
     url: "/purposes/:purposeId",
@@ -153,9 +153,9 @@ export const purposeRouter: FastifyPluginAsyncZod<
         "Retrieve the JSON Schema for validating Purpose form answers",
       headers: KnodiaServiceHeaders,
       operationId: "getFormSchema",
-      params: API_FormSchemaVersionPathParam,
+      params: API_PurposeFormSchemaVersionPathParam,
       response: {
-        200: API_FormSchema.meta({
+        200: API_PurposeFormSchema.meta({
           description: "Purpose form schema retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -163,7 +163,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Purpose form schema not found" }),
       },
-      summary: "Get a Purpose form schema by version",
+      summary: "Get Purpose form schema by version",
       tags: [apiTags.purpose],
     },
     url: "/purposes/formSchemas/:version",
@@ -192,9 +192,9 @@ export const purposeRouter: FastifyPluginAsyncZod<
         "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
       headers: KnodiaServiceHeaders,
       operationId: "getFormUiSchema",
-      params: API_FormSchemaVersionPathParam,
+      params: API_PurposeFormSchemaVersionPathParam,
       response: {
-        200: API_FormSchema.meta({
+        200: API_PurposeFormSchema.meta({
           description: "Purpose form UI schema retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -204,7 +204,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
           description: "Purpose form UI schema not found",
         }),
       },
-      summary: "Get a Purpose form UI schema by version",
+      summary: "Get Purpose form UI schema by version",
       tags: [apiTags.purpose],
     },
     url: "/purposes/formSchemas/:version/ui",

@@ -201,7 +201,7 @@ components:
         - state
         - updatedAt
       additionalProperties: false
-    FormSchema:
+    PurposeFormSchema:
       type: object
       additionalProperties: {}
 paths:
@@ -224,7 +224,7 @@ paths:
   /purposes:
     post:
       operationId: createPurpose
-      summary: Create a Purpose
+      summary: Create Purpose
       tags:
         - purpose
       description: Create a new Purpose for an E-service on behalf of a consumer
@@ -300,7 +300,7 @@ paths:
   /purposes/{purposeId}:
     get:
       operationId: getPurpose
-      summary: Get a Purpose
+      summary: Get Purpose
       tags:
         - purpose
       description: Retrieve a Purpose by its ID
@@ -369,7 +369,7 @@ paths:
   /purposes/formSchemas/{version}:
     get:
       operationId: getFormSchema
-      summary: Get a Purpose form schema by version
+      summary: Get Purpose form schema by version
       tags:
         - purpose
       description: Retrieve the JSON Schema for validating Purpose form answers
@@ -395,7 +395,7 @@ paths:
               schema:
                 description: Purpose form schema retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/FormSchema"
+                  - $ref: "#/components/schemas/PurposeFormSchema"
         "400":
           description: Bad Request
           content:
@@ -431,7 +431,7 @@ paths:
   /purposes/formSchemas/{version}/ui:
     get:
       operationId: getFormUiSchema
-      summary: Get a Purpose form UI schema by version
+      summary: Get Purpose form UI schema by version
       tags:
         - purpose
       description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
@@ -457,7 +457,7 @@ paths:
               schema:
                 description: Purpose form UI schema retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/FormSchema"
+                  - $ref: "#/components/schemas/PurposeFormSchema"
         "400":
           description: Bad Request
           content:
