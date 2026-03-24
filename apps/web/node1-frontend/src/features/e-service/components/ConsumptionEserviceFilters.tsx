@@ -22,10 +22,7 @@ export function ConsumptionEserviceFilters({
   return (
     <div className="mb-6 max-w-xs">
       <ComboBox
-        inputValue={
-          agreementStateOptions.find((o) => o.id === agreementState)?.label ??
-          ""
-        }
+        inputValue={getAgreementStateLabel(agreementState)}
         isClearable
         label="Agreement status"
         onSelectionChange={(key) =>
@@ -46,4 +43,8 @@ export function ConsumptionEserviceFilters({
       </ComboBox>
     </div>
   );
+}
+
+function getAgreementStateLabel(state: AgreementStateFilter): string {
+  return agreementStateOptions.find((o) => o.id === state)?.label ?? "";
 }
