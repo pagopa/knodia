@@ -27,7 +27,7 @@ const consumerKeychainsQuery = (offset: number) =>
     query: { limit: 10, offset },
   });
 
-export const Route = createFileRoute("/_authenticated/keychains")({
+export const Route = createFileRoute("/_authenticated/keychains/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({
     offset,
