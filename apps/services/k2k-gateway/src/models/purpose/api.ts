@@ -10,8 +10,11 @@ import {
   minDescriptionLength,
   minNameLength,
 } from "@knodia/purpose-models";
-import { API_PurposeFormSchemaVersion } from "@knodia/purpose-models/api";
 import { z } from "zod";
+
+const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
+  id: "PurposeFormSchemaVersion",
+});
 
 import { API_EserviceId } from "../eservice/api.ts";
 
