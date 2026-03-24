@@ -249,10 +249,11 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
+      const { eserviceId, limit, offset } = req.query;
       const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
         headers,
-        query: req.query,
+        query: { eserviceId, limit, offset },
       });
 
       res.status(200).send({

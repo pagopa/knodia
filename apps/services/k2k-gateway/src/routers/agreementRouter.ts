@@ -159,7 +159,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const { consumerId, limit, offset, state } = req.query;
+      const { consumerId, eserviceId, limit, offset, state } = req.query;
 
       const { data } = await agreementProcessApi.getAgreements({
         client: agreementProcessClient,
@@ -167,6 +167,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         query: {
           consumerId,
           consumerKnodeId: callerKnodeId,
+          eserviceId,
           limit,
           offset,
           state: state ? [toProcessAPI_AgreementState(state)] : undefined,
