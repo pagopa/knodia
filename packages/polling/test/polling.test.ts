@@ -1,6 +1,6 @@
 import {
   METADATA_VERSION_HEADER,
-  missingHeader,
+  missingResponseHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 import { AxiosError, type AxiosResponse } from "axios";
 import { describe, expect, it, vi } from "vitest";
@@ -209,7 +209,7 @@ describe("getMetadataVersionFromHeaders", () => {
     (version) => {
       expect(() =>
         getMetadataVersionFromHeaders(makeResponse(version).headers),
-      ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+      ).toThrowError(missingResponseHeader(METADATA_VERSION_HEADER));
     },
   );
 });
@@ -236,7 +236,7 @@ describe("isPolledVersionAtLeastResponseVersion", () => {
   it("Should throw when the initial response is missing the metadata version header", () => {
     expect(() =>
       isPolledVersionAtLeastResponseVersion(makeResponse()),
-    ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+    ).toThrowError(missingResponseHeader(METADATA_VERSION_HEADER));
   });
 });
 
@@ -262,6 +262,6 @@ describe("isPolledVersionAtLeastTargetVersion", () => {
   it("Should throw when the polled response is missing the metadata version header", () => {
     expect(() =>
       isPolledVersionAtLeastTargetVersion(4)(makeResponse()),
-    ).toThrowError(missingHeader(METADATA_VERSION_HEADER));
+    ).toThrowError(missingResponseHeader(METADATA_VERSION_HEADER));
   });
 });

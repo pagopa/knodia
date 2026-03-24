@@ -35,5 +35,6 @@ export type API_KeychainLocalizedDescription = z.infer<
   typeof API_KeychainLocalizedDescription
 >;
 
+/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
 export const API_KeyFormat = z.enum(["jwk", "x509"]).meta({ id: "KeyFormat" });
 export type API_KeyFormat = z.infer<typeof API_KeyFormat>;
