@@ -141,12 +141,12 @@ describe("POST /catalog (getCatalogEservices)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map((e) => toExpectAPI_Eservice(e)),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
           total: totalCount,
         },
+        results: expectedResult.map((e) => toExpectAPI_Eservice(e)),
       });
     },
   );
@@ -182,7 +182,7 @@ describe("POST /catalog (getCatalogEservices)", () => {
 
     expect(response.statusCode).toBe(200);
     const body = response.json();
-    const returnedIds = body.items.map(
+    const returnedIds = body.results.map(
       (item: { id: string }): string => item.id,
     );
 
@@ -194,8 +194,8 @@ describe("POST /catalog (getCatalogEservices)", () => {
     expect(returnedIds).toContain(activeEservice.id);
     expect(returnedIds).toContain(suspendedEservice.id);
     expect(returnedIds).not.toContain(archivedOnlyEservice.id);
-    expect(body.items).toHaveLength(2);
-    expect(body.items).toEqual(
+    expect(body.results).toHaveLength(2);
+    expect(body.results).toEqual(
       expect.arrayContaining(
         expectedResult.map((e) => toExpectAPI_Eservice(e)),
       ),

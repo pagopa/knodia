@@ -55,14 +55,14 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
-        items: data.results.map((r) =>
+        pagination: data.pagination,
+        results: data.results.map((r) =>
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
             Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
             req.body.knodeId,
           ),
         ),
-        pagination: data.pagination,
       });
     },
     method: "POST",
@@ -195,10 +195,10 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
-        items: data.results.map((eservice) =>
+        pagination: data.pagination,
+        results: data.results.map((eservice) =>
           toAPI_ConsumerEservice(eservice, config.recentEserviceUpdateDays),
         ),
-        pagination: data.pagination,
       });
     },
     method: "GET",

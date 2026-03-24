@@ -28,8 +28,8 @@ export type API_Keychain = z.infer<typeof API_Keychain>;
 
 export const API_Keychains = z
   .strictObject({
-    items: z.array(API_Keychain),
     pagination: API_Pagination,
+    results: z.array(API_Keychain),
   })
   .meta({ id: "Keychains" });
 export type API_Keychains = z.infer<typeof API_Keychains>;
