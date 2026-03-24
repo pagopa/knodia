@@ -1,5 +1,9 @@
 import { PurposeId } from "@knodia/common-models/ids";
-import { maxDailyCalls, minDailyCalls } from "@knodia/purpose-models";
+import {
+  maxDailyCalls,
+  minDailyCalls,
+  PurposeFormSchemaVersion,
+} from "@knodia/purpose-models";
 import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
@@ -21,7 +25,7 @@ export const API_PurposeSeed = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     formAnswersJson: API_PurposeFormAnswers,
-    formSchemaVersion: z.string().min(1),
+    formSchemaVersion: PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
   })
   .meta({ id: "PurposeSeed" });
@@ -40,7 +44,7 @@ export const API_Purpose = z
       .meta({ format: "int32" }),
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
-    formSchemaVersion: z.string().min(1),
+    formSchemaVersion: PurposeFormSchemaVersion,
     id: PurposeId,
     name: API_LocalizedPurposeName,
     state: API_PurposeState,

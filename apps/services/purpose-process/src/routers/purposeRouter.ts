@@ -11,6 +11,7 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
+import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
@@ -24,11 +25,7 @@ import {
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { formSchemaNotFound } from "../models/errors.ts";
-import {
-  FormSchemaVersion,
-  getFormSchema,
-  getFormUiSchema,
-} from "../models/formSchemas.ts";
+import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
 
 interface PurposeRouterOptions {
   purposeService: PurposeService;
@@ -140,7 +137,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         },
       ]);
 
-      const parsed = FormSchemaVersion.safeParse(req.params.version);
+      const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);
       if (!parsed.success) {
         throw formSchemaNotFound(req.params.version);
       }
@@ -178,7 +175,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         },
       ]);
 
-      const parsed = FormSchemaVersion.safeParse(req.params.version);
+      const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);
       if (!parsed.success) {
         throw formSchemaNotFound(req.params.version);
       }

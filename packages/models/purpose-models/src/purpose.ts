@@ -35,7 +35,7 @@ export type PurposeState = z.infer<typeof PurposeState>;
 export const PurposeFormAnswers = z.record(z.string(), z.unknown());
 export type PurposeFormAnswers = z.infer<typeof PurposeFormAnswers>;
 
-export const PurposeFormSchemaVersion = z.string().min(1);
+export const PurposeFormSchemaVersion = z.enum(["1.0"]);
 export type PurposeFormSchemaVersion = z.infer<typeof PurposeFormSchemaVersion>;
 
 export const Purpose = z.strictObject({

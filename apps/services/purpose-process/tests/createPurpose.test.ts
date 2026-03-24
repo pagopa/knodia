@@ -24,7 +24,6 @@ import { describe, expect, it } from "vitest";
 
 import type { API_Purpose, API_PurposeSeed } from "../src/models/api.ts";
 
-import { API_PurposeSeed } from "../src/models/api.ts";
 import { CURRENT_FORM_SCHEMA_VERSION } from "../src/models/formSchemas.ts";
 import { agreementWriterService, eserviceWriterService } from "./setup.ts";
 import {

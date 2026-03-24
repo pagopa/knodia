@@ -1,0 +1,665 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "purpose": {
+      "type": "string",
+      "enum": ["INSTITUTIONAL", "OTHER"],
+      "default": "INSTITUTIONAL"
+    },
+    "institutionalPurpose": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "otherPurpose": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "usesPersonalData": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "usesThirdPartyPersonalData": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "usesThirdPartyConfidentialData": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "personalDataTypes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "WITH_NON_IDENTIFYING_DATA",
+          "WITH_IDENTIFYING_DATA",
+          "GDPR_ART_8",
+          "GDPR_ART_9",
+          "GDPR_ART_10",
+          "OTHER"
+        ]
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "otherPersonalDataTypes": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "legalBasis": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "CONSENT",
+          "CONTRACT",
+          "LEGAL_OBLIGATION",
+          "SAFEGUARD",
+          "PUBLIC_INTEREST"
+        ]
+      },
+      "uniqueItems": true,
+      "default": []
+    },
+    "legalObligationReference": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "legalBasisPublicInterest": {
+      "type": "string",
+      "enum": ["RULE_OF_LAW", "ADMINISTRATIVE_ACT", "PUBLIC_INTEREST_TASK"],
+      "default": "RULE_OF_LAW"
+    },
+    "ruleOfLawText": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "administrativeActText": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "publicInterestTaskText": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "knowsDataQuantity": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "dataQuantity": {
+      "type": "string",
+      "enum": [
+        "QUANTITY_0_TO_100",
+        "QUANTITY_101_TO_500",
+        "QUANTITY_500_TO_1000",
+        "QUANTITY_1001_TO_5000",
+        "QUANTITY_5001_OVER"
+      ],
+      "default": "QUANTITY_0_TO_100"
+    },
+    "deliveryMethod": {
+      "type": "string",
+      "enum": ["CLEARTEXT", "PSEUDOANONYMOUS", "AGGREGATE", "ANONYMOUS"],
+      "default": "CLEARTEXT"
+    },
+    "policyProvided": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "YES"
+    },
+    "reasonPolicyNotProvided": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "policyProvidedMedium": {
+      "type": "string",
+      "enum": ["PRINT", "ONLINE"],
+      "default": "PRINT"
+    },
+    "policyProvidedOnlineLink": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "confirmPrincipleIntegrityAndDiscretion": {
+      "type": "string",
+      "enum": ["true", "false"],
+      "default": "false"
+    },
+    "dataProtectionMeasures": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "doneDpia": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "confirmedDoneDpia": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "dataDownload": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "dataRetentionPeriod": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "purposePursuit": {
+      "type": "string",
+      "enum": ["MERE_CORRECTNESS", "NEW_PERSONAL_DATA"],
+      "default": "MERE_CORRECTNESS"
+    },
+    "checkedExistenceMereCorrectnessInteropCatalogue": {
+      "type": "string",
+      "enum": ["true", "false"],
+      "default": "false"
+    },
+    "checkedAllDataNeeded": {
+      "type": "string",
+      "enum": ["true", "false"],
+      "default": "false"
+    },
+    "isRequestOnBehalfOfThirdParties": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "thirdPartiesRequestDataUsage": {
+      "type": "string",
+      "enum": ["PA_ONLY", "PA_ALSO"]
+    },
+    "declarationConfirmGDPR": {
+      "type": "string",
+      "enum": ["true", "false"],
+      "default": "false"
+    }
+  },
+  "required": [
+    "purpose",
+    "usesPersonalData",
+    "isRequestOnBehalfOfThirdParties"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "purpose": {
+            "const": "INSTITUTIONAL"
+          }
+        },
+        "required": ["purpose"]
+      },
+      "then": {
+        "required": ["institutionalPurpose"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "purpose": {
+            "const": "OTHER"
+          }
+        },
+        "required": ["purpose"]
+      },
+      "then": {
+        "required": ["otherPurpose"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "NO"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["usesThirdPartyPersonalData"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "NO"
+          },
+          "usesThirdPartyPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData", "usesThirdPartyPersonalData"]
+      },
+      "then": {
+        "required": ["usesThirdPartyConfidentialData"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["personalDataTypes"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "personalDataTypes": {
+            "type": "array",
+            "contains": {
+              "const": "OTHER"
+            }
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["otherPersonalDataTypes"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["legalBasis"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "legalBasis": {
+            "type": "array",
+            "contains": {
+              "const": "LEGAL_OBLIGATION"
+            }
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["legalObligationReference"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "legalBasis": {
+            "type": "array",
+            "contains": {
+              "const": "PUBLIC_INTEREST"
+            }
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["legalBasisPublicInterest"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "legalBasisPublicInterest": {
+            "const": "RULE_OF_LAW"
+          },
+          "legalBasis": {
+            "type": "array",
+            "contains": {
+              "const": "PUBLIC_INTEREST"
+            }
+          }
+        },
+        "required": ["usesPersonalData", "legalBasisPublicInterest"]
+      },
+      "then": {
+        "required": ["ruleOfLawText"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "legalBasisPublicInterest": {
+            "const": "ADMINISTRATIVE_ACT"
+          },
+          "legalBasis": {
+            "type": "array",
+            "contains": {
+              "const": "PUBLIC_INTEREST"
+            }
+          }
+        },
+        "required": ["usesPersonalData", "legalBasisPublicInterest"]
+      },
+      "then": {
+        "required": ["administrativeActText"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "legalBasisPublicInterest": {
+            "const": "PUBLIC_INTEREST_TASK"
+          }
+        },
+        "required": ["legalBasisPublicInterest"]
+      },
+      "then": {
+        "required": ["publicInterestTaskText"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["knowsDataQuantity"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "knowsDataQuantity": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData", "knowsDataQuantity"]
+      },
+      "then": {
+        "required": ["dataQuantity"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["deliveryMethod"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["policyProvided"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "policyProvided": {
+            "const": "NO"
+          }
+        },
+        "required": ["usesPersonalData", "policyProvided"]
+      },
+      "then": {
+        "required": ["reasonPolicyNotProvided"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "policyProvided": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData", "policyProvided"]
+      },
+      "then": {
+        "required": ["policyProvidedMedium"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "policyProvided": {
+            "const": "YES"
+          },
+          "policyProvidedMedium": {
+            "const": "ONLINE"
+          }
+        },
+        "required": [
+          "usesPersonalData",
+          "policyProvided",
+          "policyProvidedMedium"
+        ]
+      },
+      "then": {
+        "required": ["policyProvidedOnlineLink"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["confirmPrincipleIntegrityAndDiscretion"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "personalDataTypes": {
+            "type": "array",
+            "contains": {
+              "const": "GDPR_ART_10"
+            }
+          },
+          "confirmPrincipleIntegrityAndDiscretion": {
+            "const": "true"
+          }
+        },
+        "required": [
+          "usesPersonalData",
+          "confirmPrincipleIntegrityAndDiscretion"
+        ]
+      },
+      "then": {
+        "required": ["dataProtectionMeasures"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["doneDpia"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "doneDpia": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData", "doneDpia"]
+      },
+      "then": {
+        "required": ["confirmedDoneDpia"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["dataDownload"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "dataDownload": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData", "dataDownload"]
+      },
+      "then": {
+        "required": ["dataRetentionPeriod"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["purposePursuit"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "purposePursuit": {
+            "const": "MERE_CORRECTNESS"
+          }
+        },
+        "required": ["usesPersonalData", "purposePursuit"]
+      },
+      "then": {
+        "required": ["checkedExistenceMereCorrectnessInteropCatalogue"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          },
+          "purposePursuit": {
+            "const": "NEW_PERSONAL_DATA"
+          }
+        },
+        "required": ["usesPersonalData", "purposePursuit"]
+      },
+      "then": {
+        "required": ["checkedAllDataNeeded"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "isRequestOnBehalfOfThirdParties": {
+            "const": "YES"
+          }
+        },
+        "required": ["isRequestOnBehalfOfThirdParties"]
+      },
+      "then": {
+        "required": ["thirdPartiesRequestDataUsage"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": {
+            "const": "YES"
+          }
+        },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["declarationConfirmGDPR"]
+      }
+    }
+  ]
+}

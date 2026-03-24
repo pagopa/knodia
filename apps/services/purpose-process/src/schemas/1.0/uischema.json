@@ -1,0 +1,977 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "label": "Analisi del rischio",
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/purpose",
+          "label": "Indicare per quale finalità si intende accedere ai dati messi a disposizione con la fruizione del presente E-service",
+          "options": {
+            "widget": "radio",
+            "infoLabel": "NB: Si ricorda ai sensi dell'art. 5, paragrafo 1, lett. b), del GDPR (principio della limitazione delle finalità), le finalità devono essere determinate, esplicite e legittime, e che i dati ottenuti possono essere successivamente trattati solo in modo compatibile con le predette finalità. Si ricorda, altresì, che qualora sussista più di una finalità, il Fruitore DEVE effettuare un'analisi del rischio per ognuna delle finalità individuate",
+            "optionLabels": {
+              "INSTITUTIONAL": "Per fini istituzionali che non richiedano prestazioni di elaborazioni aggiuntive",
+              "OTHER": "Altro"
+            },
+            "errorMessages": {
+              "required": "Seleziona una finalità"
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/institutionalPurpose",
+          "label": "Specificare il fine perseguito per fini istituzionali che non richiedano prestazioni di elaborazioni aggiuntive",
+          "options": {
+            "widget": "textarea",
+            "errorMessages": {
+              "required": "Specifica il fine perseguito",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/purpose",
+              "schema": {
+                "const": "INSTITUTIONAL"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/otherPurpose",
+          "label": "Specificare il fine perseguito",
+          "options": {
+            "widget": "textarea",
+            "errorMessages": {
+              "required": "Specifica il fine perseguito",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/purpose",
+              "schema": {
+                "const": "OTHER"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/usesPersonalData",
+          "label": "Indicare se si accede a dati personali",
+          "options": {
+            "widget": "radio",
+            "infoLabel": "NB: si ricorda che ai sensi dell'art. 4, paragrafo 1, n. 1,  del GDPR  per dato personale si intende qualsiasi informazione riguardante una persona fisica identificata o che può essere identificata, direttamente o indirettamente, con particolare riferimento a un identificativo come il nome, un numero di identificazione, dati relativi all'ubicazione, un identificativo online o a uno o più elementi caratteristici della sua identità fisica, fisiologica, genetica, psichica, economica, culturale o sociale\". Pertanto devono essere considerati dati personali non solo dati che identificano direttamente un individuo (es. nome e cognome, codice fiscale, indirizzo e-mail) ma anche dati che possono essere ricondotti a un individuo solo indirettamente, tramite terzi rispetto al Fruitore (es. la targa di un veicolo, numero di matricola o altro codice alfanumerico attribuito a un individuo da un soggetto terzo).",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/usesThirdPartyPersonalData",
+          "label": "Indicare se si accede a dati non personali di terzi (quindi a dati non personali che non sono riferibili al Fruitore stesso)",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "NO"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/usesThirdPartyConfidentialData",
+          "label": "Indicare se si accede a dati non personali ma comunque confidenziali o strettamente riservati",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "NO"
+                  }
+                },
+                {
+                  "scope": "#/properties/usesThirdPartyPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/personalDataTypes",
+          "label": "Indicare la tipologia di dati personali cui si avrà accesso attraverso la fruizione del presente E-service, tenuto conto delle definizioni contenute nell'art. 4, nn. 1, 13, 14 e 15 del GDPR",
+          "options": {
+            "widget": "checkbox",
+            "optionLabels": {
+              "WITH_NON_IDENTIFYING_DATA": "Dati personali comuni non identificativi (es. numero di targa)",
+              "WITH_IDENTIFYING_DATA": "Dati personali comuni identificativi (es. codice fiscale)",
+              "GDPR_ART_8": "Dati di minori ex art. 8 del GDPR (es. nome e cognome di un minore)",
+              "GDPR_ART_9": "Dati particolari ex art. 9 del GDPR (es. origine razziale o etnica, opinioni politiche, convinzioni religiose o filosofiche, appartenenza sindacale, nonché dati genetici, biometrici intesi a identificare in modo univoco una persona fisica, dati relativi alla salute o alla vita sessuale o all'orientamento sessuale della persona)",
+              "GDPR_ART_10": "Dati giudiziari ex art. 10 del GDPR",
+              "OTHER": "Altro"
+            },
+            "errorMessages": {
+              "required": "Seleziona almeno una tipologia di dati personali"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/otherPersonalDataTypes",
+          "label": "Specificare la tipologia di dati personali",
+          "options": {
+            "widget": "textarea",
+            "errorMessages": {
+              "required": "Specifica la tipologia di dati personali",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/personalDataTypes",
+                  "schema": {
+                    "contains": {
+                      "const": "OTHER"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/legalBasis",
+          "label": "Indicare sulla base di quale, fra le seguenti basi giuridiche ex art. 6 del GDPR, ritiene di essere titolato ad accedere ai dati personali messi a disposizione con la fruizione dell'E-service",
+          "options": {
+            "widget": "checkbox",
+            "optionLabels": {
+              "CONSENT": "Consenso dell'interessato al trattamento dei dati personali per una o più specifiche finalità",
+              "CONTRACT": "Esecuzione di un contratto di cui l'interessato è parte o di misure precontrattuali adottate su richiesta dello stesso",
+              "LEGAL_OBLIGATION": "Adempimento di un obbligo legale",
+              "SAFEGUARD": "Salvaguardia degli interessi vitali di una persona fisica",
+              "PUBLIC_INTEREST": "Esecuzione di un compito di interesse pubblico o connesso all'esercizio di pubblici poteri di cui sei investito"
+            },
+            "errorMessages": {
+              "required": "Seleziona almeno una base giuridica"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/legalObligationReference",
+          "label": "Specificare l'obbligo legale e, laddove possibile, la normativa di riferimento",
+          "options": {
+            "widget": "textarea",
+            "errorMessages": {
+              "required": "Specifica l'obbligo legale",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/legalBasis",
+                  "schema": {
+                    "contains": {
+                      "const": "LEGAL_OBLIGATION"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/legalBasisPublicInterest",
+          "label": "Specificare le motivazioni di esecuzione di un compito di interesse pubblico o connesso all'esercizio di pubblici poteri di cui sei investito",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "RULE_OF_LAW": "Norma di legge o di regolamento ai sensi dell'art. 2-ter, comma 1, del Codice Privacy per quanto attiene ai dati personali comuni e ai sensi dell'art. 2- sexies, comma 1 del Codice Privacy per quanto attiene alle categorie particolari di dati",
+              "ADMINISTRATIVE_ACT": "Atto amministrativo generale ai sensi dell'art. 2-ter, comma 1, del Codice Privacy per quanto attiene ai dati personali comuni e ai sensi dell'art. 2-sexies, comma 1 del Codice Privacy per quanto attiene alle categorie particolari di dati",
+              "PUBLIC_INTEREST_TASK": "Adempimento di un compito svolto nel pubblico interesse o per l'esecuzione di pubblici poteri attribuiti al Fruitore ai sensi dell'art. 2-ter, comma 1 bis, del Codice Privacy"
+            },
+            "hideOptions": {
+              "PUBLIC_INTEREST_TASK": {
+                "scope": "#/properties/personalDataTypes",
+                "schema": {
+                  "contains": {
+                    "const": "GDPR_ART_9"
+                  }
+                }
+              }
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/legalBasis",
+                  "schema": {
+                    "contains": {
+                      "const": "PUBLIC_INTEREST"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/ruleOfLawText",
+          "label": "Inserire norma di legge o regolamento applicabile",
+          "options": {
+            "widget": "textarea",
+            "infoLabel": "È previsto sia inserita la norma di legge o di regolamento ai sensi dell'art. 2-ter, comma 1, del Codice Privacy per quanto attiene ai dati personali comuni e ai sensi dell'art. 2- sexies, comma 1 del Codice Privacy per quanto attiene alle categorie particolari di dati",
+            "errorMessages": {
+              "required": "Inserisci la norma di legge o regolamento",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/legalBasisPublicInterest",
+                  "schema": {
+                    "const": "RULE_OF_LAW"
+                  }
+                },
+                {
+                  "scope": "#/properties/legalBasis",
+                  "schema": {
+                    "contains": {
+                      "const": "PUBLIC_INTEREST"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/administrativeActText",
+          "label": "Inserire il riferimento dell'atto amministrativo generale applicabile",
+          "options": {
+            "widget": "textarea",
+            "infoLabel": "È previsto sia inserito l'atto amministrativo generale ai sensi dell'art. 2-ter, comma 1, del Codice Privacy per quanto attiene ai dati personali comuni e ai sensi dell'art. 2-sexies, comma 1 del Codice Privacy per quanto attiene alle categorie particolari di dati",
+            "errorMessages": {
+              "required": "Inserisci il riferimento dell'atto amministrativo",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/legalBasisPublicInterest",
+                  "schema": {
+                    "const": "ADMINISTRATIVE_ACT"
+                  }
+                },
+                {
+                  "scope": "#/properties/legalBasis",
+                  "schema": {
+                    "contains": {
+                      "const": "PUBLIC_INTEREST"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/publicInterestTaskText",
+          "label": "Inserire il compito svolto o il pubblico il riferimento dell'atto amministrativo generale applicabile",
+          "options": {
+            "widget": "textarea",
+            "infoLabel": "È previsto sia inserito il riferimento all'adempimento di un compito svolto nel pubblico interesse o per l'esecuzione di pubblici poteri attribuiti al Fruitore ai sensi dell'art. 2-ter, comma 1 bis, del Codice Privacy",
+            "errorMessages": {
+              "required": "Inserisci il compito svolto o il riferimento",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/legalBasisPublicInterest",
+              "schema": {
+                "const": "PUBLIC_INTEREST_TASK"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/knowsDataQuantity",
+          "label": "Indicare se si conosce la quantità di dati personali di cui si entrerà in possesso attraverso la fruizione del presente E-service",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/dataQuantity",
+          "label": "Fascia di riferimento",
+          "options": {
+            "widget": "select",
+            "infoLabel": "Si richiede di specificare la fascia di riferimento fra quelle di seguito indicate anche in funzione del periodo di validità del voucher emesso per la fruizione dell'E-service",
+            "optionLabels": {
+              "QUANTITY_0_TO_100": "0-100",
+              "QUANTITY_101_TO_500": "101-500",
+              "QUANTITY_500_TO_1000": "501-1000",
+              "QUANTITY_1001_TO_5000": "1001-5000",
+              "QUANTITY_5001_OVER": "da 5001 in su"
+            },
+            "errorMessages": {
+              "required": "Seleziona una fascia di riferimento"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/knowsDataQuantity",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/deliveryMethod",
+          "label": "Indicare con quali modalità il Fruitore intende ricevere le informazioni dall'Erogatore, d'accordo con quelle già previste dall'Erogatore stesso",
+          "options": {
+            "widget": "select",
+            "infoLabel": "NB: si ricorda che ai sensi dell'art. 5, paragrafo 1, lett. c), del GDPR (principio di minimizzazione) il trattamento di dati personali deve essere sempre proporzionale e limitato a quanto strettamente necessario alla finalità perseguita, e possono essere acceduti tramite l'e-service unicamente i dati adeguati, pertinenti e limitati a quanto necessario per il fine perseguito. Pertanto: (i) solo qualora non sia possibile perseguire le finalità dichiarate nel punto 1 sopra sulla base di dati aggregati o anonimi è possibile barrare le opzioni di dati in chiaro e pseudonimizzati e (ii) solo qualora non sia possibile perseguire le predette finalità con dati pseudonimizzati è possibile barrare l'opzione di dati in chiaro",
+            "optionLabels": {
+              "CLEARTEXT": "In chiaro",
+              "PSEUDOANONYMOUS": "In forma pseudoanonimizzata",
+              "AGGREGATE": "In forma aggregata",
+              "ANONYMOUS": "In forma anonimizzata"
+            },
+            "errorMessages": {
+              "required": "Seleziona una modalità di ricezione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/policyProvided",
+          "label": "Indicare se è stata fornita un'informativa all'interessato circa l'accesso ai dati cui si intende accedere/che si intende ricevere tramite la fruizione dell'E-Service e le relative attività di trattamento effettuate dal Fruitore",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/reasonPolicyNotProvided",
+          "label": "Inserire le ragioni per cui non è stata fornita informativa specifica ai sensi dell'art. 14, paragrafo 5, del GDPR",
+          "options": {
+            "widget": "textarea",
+            "infoLabel": "È previsto sia fornita un'informativa all'interessato circa l'accesso ai dati cui si intende accedere/che si intende ricevere tramite la fruizione dell'E-Service e le relative attività di trattamento effettuate dal Fruitore",
+            "errorMessages": {
+              "required": "Inserisci le ragioni",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/policyProvided",
+                  "schema": {
+                    "const": "NO"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/policyProvidedMedium",
+          "label": "Indicare la modalità attraverso la quale è stata fornita l'informativa",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "PRINT": "Cartacea",
+              "ONLINE": "Online"
+            },
+            "errorMessages": {
+              "required": "Seleziona una modalità"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/policyProvided",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/policyProvidedOnlineLink",
+          "label": "Inserire il link all'informativa",
+          "options": {
+            "widget": "textarea",
+            "errorMessages": {
+              "required": "Inserisci il link all'informativa",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/policyProvided",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/policyProvidedMedium",
+                  "schema": {
+                    "const": "ONLINE"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/confirmPrincipleIntegrityAndDiscretion",
+          "label": "Confermare se - in linea con il principio di integrità e riservatezza di cui all'art. 5, paragrafo 1, lett. f), del GDPR - sono state adottate tutte le misure tecniche e organizzative necessarie a garantire un'adeguata sicurezza dei dati personali cui si avrà accesso in sede di fruizione del presente E-service, compresa la protezione da trattamenti non autorizzati o illeciti e dalla perdita, dalla distruzione o dal danno accidentali",
+          "options": {
+            "widget": "switch",
+            "optionLabels": {
+              "true": "Confermo"
+            },
+            "errorMessages": {
+              "required": "Conferma obbligatoria"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/dataProtectionMeasures",
+          "label": "Indicare le misure tecniche e organizzative adottate necessarie a garantire un'adeguata sicurezza dei dati personali ai sensi degli articoli 25 e 32 del GDPR",
+          "options": {
+            "widget": "textarea",
+            "errorMessages": {
+              "required": "Indica le misure adottate",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/personalDataTypes",
+                  "schema": {
+                    "contains": {
+                      "const": "GDPR_ART_10"
+                    }
+                  }
+                },
+                {
+                  "scope": "#/properties/confirmPrincipleIntegrityAndDiscretion",
+                  "schema": {
+                    "const": "true"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/doneDpia",
+          "label": "Indicare se è stata fatta un'apposita Valutazione di Impatto (c.d. DPIA) relativamente alle attività di trattamento dei dati personali che saranno effettuate attraverso la fruizione del presente E-service",
+          "options": {
+            "widget": "radio",
+            "infoLabel": "In caso di risposta negativa, si ricorda che la valutazione di impatto è obbligatoria ​​qualora sussistano le condizioni di cui all'art. 35 del GDPR",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/confirmedDoneDpia",
+          "label": "Indicare se si è proceduto alla consultazione preventiva al Garante per la protezione dei dati personali",
+          "options": {
+            "widget": "radio",
+            "infoLabel": "In caso di risposta negativa, si ricorda che la consultazione preventiva è obbligatoria ​​qualora sussistano le condizioni di cui all'art. 36 del GDPR",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/doneDpia",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/dataDownload",
+          "label": "Il presente E-service consente il download di dati?",
+          "options": {
+            "widget": "radio",
+            "infoLabel": "NB: si ricorda che il download del dato non consente di disporre di un dato aggiornato, e quindi di agire nel rispetto del principio di esattezza dei dati di cui all'art. 5, paragrafo 1, lettera d), del GDPR. Pertanto, si invita a limitare i casi di download del dato alle ipotesi in cui tale download è strettamente necessario e giustificato dalla finalità del trattamento. Si ricorda, altresì, che, ai sensi dell'art. 5, paragrafo 1, lett. b) ed e) del GDPR (principio della limitazione della finalità e della conservazione) , i dati possono essere conservati unicamente per il tempo strettamente necessario al perseguimento delle finalità per cui sono stati raccolti, e che le stesse siano determinate, esplicite e legittime",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/dataRetentionPeriod",
+          "label": "Indicare il periodo di conservazione dei dati individuato",
+          "options": {
+            "widget": "textarea",
+            "infoLabel": "La cifra seguita da ora, giorno, mese, anno. Ad es. 1 ora oppure 10 giorni oppure 3 mesi oppure 2 anni",
+            "errorMessages": {
+              "required": "Indica il periodo di conservazione",
+              "maxLength": "Non può superare i 2.000 caratteri"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/dataDownload",
+                  "schema": {
+                    "const": "YES"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/purposePursuit",
+          "label": "Ai sensi del principio di minimizzazione di cui all'art. 5, paragrafo 1, let. c) del GDPR, per perseguire la finalità di cui al punto 1, indicare se",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "MERE_CORRECTNESS": "È sufficiente che l'Erogatore verifichi la mera correttezza di una/o determinata/o informazione/dato personale già in suo possesso",
+              "NEW_PERSONAL_DATA": "È necessario ricevere ex novo una/o determinata/o informazione/dato personale"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/checkedExistenceMereCorrectnessInteropCatalogue",
+          "label": "Confermare se è stato verificato se sul Catalogo API è presente un altro E-Service in grado di svolgere questa attività di mera verifica (che non preveda ex novo la comunicazione di altri informazioni/dati personali)",
+          "options": {
+            "widget": "switch",
+            "infoLabel": "NB: se non già fatto, prima di confermare si invita a verificare se sul Catalogo API è presente un altro E-service che consenta di svolgere la mera attività di verifica di informazioni/dati personali di cui si necessita",
+            "optionLabels": {
+              "true": "Confermo"
+            },
+            "errorMessages": {
+              "required": "Conferma obbligatoria"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/purposePursuit",
+                  "schema": {
+                    "const": "MERE_CORRECTNESS"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/checkedAllDataNeeded",
+          "label": "Confermare se è stato verificato se occorrono necessariamente tutte le informazioni e i dati personali messi a disposizione con il presente E-service",
+          "options": {
+            "widget": "switch",
+            "infoLabel": "NB: se non già fatto, prima di confermare si invita a verificare se sul Catalogo API è già presente un altro E-service che consenta di accedere alle sole informazioni/dati personali di cui si necessita, per evitare comunicazioni di informazioni/dati personali non necessarie. Nel caso in cui non sia presente l'E-service per accedere alle sole informazioni/dati personali di cui si necessita, si invita a sollecitare un Erogatore ad attivare un simile E-service e, una volta attivato, si invita a inviare una richiesta di accesso per quell'E-Service",
+            "optionLabels": {
+              "true": "Sì"
+            },
+            "errorMessages": {
+              "required": "Conferma obbligatoria"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "type": "AND",
+              "conditions": [
+                {
+                  "scope": "#/properties/usesPersonalData",
+                  "schema": {
+                    "const": "YES"
+                  }
+                },
+                {
+                  "scope": "#/properties/purposePursuit",
+                  "schema": {
+                    "const": "NEW_PERSONAL_DATA"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/isRequestOnBehalfOfThirdParties",
+          "label": "Indicare se si intende fruire dell'E-service, anche o esclusivamente, per accedere a dati su richiesta/per conto di terzi soggetti",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "YES": "Sì",
+              "NO": "No"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/thirdPartiesRequestDataUsage",
+          "label": "Indicare se si intende fruire dell'e-service per accedere a dati",
+          "options": {
+            "widget": "radio",
+            "optionLabels": {
+              "PA_ONLY": "Esclusivamente per conto di un soggetto di cui all'art. 2, comma 2, lett. a) del CAD",
+              "PA_ALSO": "Anche per conto di un soggetto di cui all'art. 2, comma 2, lett. a) del CAD"
+            },
+            "errorMessages": {
+              "required": "Seleziona un'opzione"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/isRequestOnBehalfOfThirdParties",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        },
+        {
+          "type": "Control",
+          "scope": "#/properties/declarationConfirmGDPR",
+          "label": "Dichiara di essere consapevole degli obblighi di cui al GDPR in tema di trattamento di dati personali e dichiara di essere in grado di comprovarne il rispetto (principio di responsabilizzazione di cui all'art. 5, paragrafo 2, del GDPR)",
+          "options": {
+            "widget": "switch",
+            "optionLabels": {
+              "true": "Confermo"
+            },
+            "errorMessages": {
+              "required": "Conferma obbligatoria"
+            }
+          },
+          "rule": {
+            "effect": "SHOW",
+            "condition": {
+              "scope": "#/properties/usesPersonalData",
+              "schema": {
+                "const": "YES"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

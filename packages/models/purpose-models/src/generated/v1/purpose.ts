@@ -52,6 +52,37 @@ export function purposeStateV1ToJSON(object: PurposeStateV1): string {
   }
 }
 
+export const PurposeFormSchemaVersionV1 = { V1_0: 0, UNRECOGNIZED: -1 } as const;
+
+export type PurposeFormSchemaVersionV1 = typeof PurposeFormSchemaVersionV1[keyof typeof PurposeFormSchemaVersionV1];
+
+export namespace PurposeFormSchemaVersionV1 {
+  export type V1_0 = typeof PurposeFormSchemaVersionV1.V1_0;
+  export type UNRECOGNIZED = typeof PurposeFormSchemaVersionV1.UNRECOGNIZED;
+}
+
+export function purposeFormSchemaVersionV1FromJSON(object: any): PurposeFormSchemaVersionV1 {
+  switch (object) {
+    case 0:
+    case "V1_0":
+      return PurposeFormSchemaVersionV1.V1_0;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return PurposeFormSchemaVersionV1.UNRECOGNIZED;
+  }
+}
+
+export function purposeFormSchemaVersionV1ToJSON(object: PurposeFormSchemaVersionV1): string {
+  switch (object) {
+    case PurposeFormSchemaVersionV1.V1_0:
+      return "V1_0";
+    case PurposeFormSchemaVersionV1.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface PurposeV1 {
   id: string;
   eserviceId: string;
@@ -63,7 +94,7 @@ export interface PurposeV1 {
   formAnswersJson: string;
   createdAt: number;
   updatedAt: number;
-  formSchemaVersion: string;
+  formSchemaVersion: PurposeFormSchemaVersionV1;
 }
 
 export interface PurposeConsumerV1 {
@@ -87,7 +118,7 @@ function createBasePurposeV1(): PurposeV1 {
     formAnswersJson: "",
     createdAt: 0,
     updatedAt: 0,
-    formSchemaVersion: "",
+    formSchemaVersion: 0,
   };
 }
 
@@ -123,8 +154,8 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.updatedAt !== 0) {
       writer.uint32(80).int64(message.updatedAt);
     }
-    if (message.formSchemaVersion !== "") {
-      writer.uint32(90).string(message.formSchemaVersion);
+    if (message.formSchemaVersion !== 0) {
+      writer.uint32(88).int32(message.formSchemaVersion);
     }
     return writer;
   },
@@ -217,11 +248,11 @@ export const PurposeV1: MessageFns<PurposeV1> = {
           continue;
         }
         case 11: {
-          if (tag !== 90) {
+          if (tag !== 88) {
             break;
           }
 
-          message.formSchemaVersion = reader.string();
+          message.formSchemaVersion = reader.int32() as any;
           continue;
         }
       }
@@ -245,7 +276,9 @@ export const PurposeV1: MessageFns<PurposeV1> = {
       formAnswersJson: isSet(object.formAnswersJson) ? globalThis.String(object.formAnswersJson) : "",
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
-      formSchemaVersion: isSet(object.formSchemaVersion) ? globalThis.String(object.formSchemaVersion) : "",
+      formSchemaVersion: isSet(object.formSchemaVersion)
+        ? purposeFormSchemaVersionV1FromJSON(object.formSchemaVersion)
+        : 0,
     };
   },
 
@@ -281,8 +314,8 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     if (message.updatedAt !== 0) {
       obj.updatedAt = Math.round(message.updatedAt);
     }
-    if (message.formSchemaVersion !== "") {
-      obj.formSchemaVersion = message.formSchemaVersion;
+    if (message.formSchemaVersion !== 0) {
+      obj.formSchemaVersion = purposeFormSchemaVersionV1ToJSON(message.formSchemaVersion);
     }
     return obj;
   },
@@ -308,7 +341,7 @@ export const PurposeV1: MessageFns<PurposeV1> = {
     message.formAnswersJson = object.formAnswersJson ?? "";
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
-    message.formSchemaVersion = object.formSchemaVersion ?? "";
+    message.formSchemaVersion = object.formSchemaVersion ?? 0;
     return message;
   },
 };
