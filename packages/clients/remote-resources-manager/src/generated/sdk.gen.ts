@@ -116,6 +116,8 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
 });
 
 /**
+ * Create a Purpose
+ *
  * Create a new Purpose
  */
 export const createPurpose = <ThrowOnError extends boolean = true>(options: Options<CreatePurposeData, ThrowOnError>) => (options.client ?? client).post<CreatePurposeResponses, CreatePurposeErrors, ThrowOnError>({
