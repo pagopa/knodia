@@ -227,9 +227,10 @@ paths:
   /purposes:
     post:
       operationId: createPurpose
+      summary: Create a Purpose
       tags:
         - purpose
-      description: Create a new Purpose
+      description: Create a new Purpose for an E-service on behalf of a consumer
       requestBody:
         required: true
         content:
@@ -302,6 +303,7 @@ paths:
   /purposes/{purposeId}:
     get:
       operationId: getPurpose
+      summary: Get a Purpose
       tags:
         - purpose
       description: Retrieve a Purpose by its ID
@@ -367,12 +369,13 @@ paths:
                 description: Purpose not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /purposes/form/schema/{version}:
+  /purposes/formSchemas/{version}:
     get:
       operationId: getFormSchema
+      summary: Get a Purpose form schema by version
       tags:
         - purpose
-      description: Retrieve the JSON Schema for validating purpose form answers
+      description: Retrieve the JSON Schema for validating Purpose form answers
       parameters:
         - schema:
             type: string
@@ -389,11 +392,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Form schema retrieved successfully
+          description: Purpose form schema retrieved successfully
           content:
             application/json:
               schema:
-                description: Form schema retrieved successfully
+                description: Purpose form schema retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/FormSchema"
         "400":
@@ -421,19 +424,20 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Form schema not found
+          description: Purpose form schema not found
           content:
             application/problem+json:
               schema:
-                description: Form schema not found
+                description: Purpose form schema not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /purposes/form/ui-schema/{version}:
+  /purposes/formSchemas/{version}/ui:
     get:
       operationId: getFormUiSchema
+      summary: Get a Purpose form UI schema by version
       tags:
         - purpose
-      description: Retrieve the UI Schema for rendering the purpose form (JSON Forms format)
+      description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
       parameters:
         - schema:
             type: string
@@ -450,11 +454,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Form UI schema retrieved successfully
+          description: Purpose form UI schema retrieved successfully
           content:
             application/json:
               schema:
-                description: Form UI schema retrieved successfully
+                description: Purpose form UI schema retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/FormSchema"
         "400":
@@ -482,11 +486,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Form UI schema not found
+          description: Purpose form UI schema not found
           content:
             application/problem+json:
               schema:
-                description: Form UI schema not found
+                description: Purpose form UI schema not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

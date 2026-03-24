@@ -15,12 +15,12 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-describe("GET /purposes/form/schema/:version (getFormSchema)", () => {
+describe("GET /purposes/formSchemas/:version (getFormSchema)", () => {
   it.each(allowedTestTokens)(
     "should return the form schema for the current version ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/form/schema/${CURRENT_FORM_SCHEMA_VERSION}`,
+        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}`,
       );
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual(
@@ -31,7 +31,7 @@ describe("GET /purposes/form/schema/:version (getFormSchema)", () => {
 
   it("should return 404 for a non-existent version", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      "/purposes/form/schema/99.99",
+      "/purposes/formSchemas/99.99",
     );
     expect(response.statusCode).toBe(404);
   });
@@ -40,19 +40,19 @@ describe("GET /purposes/form/schema/:version (getFormSchema)", () => {
     "should return 403 for unauthorized token ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/form/schema/${CURRENT_FORM_SCHEMA_VERSION}`,
+        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}`,
       );
       expect(response.statusCode).toBe(403);
     },
   );
 });
 
-describe("GET /purposes/form/ui-schema/:version (getFormUiSchema)", () => {
+describe("GET /purposes/formSchemas/:version/ui (getFormUiSchema)", () => {
   it.each(allowedTestTokens)(
     "should return the form UI schema for the current version ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/form/ui-schema/${CURRENT_FORM_SCHEMA_VERSION}`,
+        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}/ui`,
       );
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual(
@@ -63,7 +63,7 @@ describe("GET /purposes/form/ui-schema/:version (getFormUiSchema)", () => {
 
   it("should return 404 for a non-existent version", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!).get(
-      "/purposes/form/ui-schema/99.99",
+      "/purposes/formSchemas/99.99/ui",
     );
     expect(response.statusCode).toBe(404);
   });
@@ -72,7 +72,7 @@ describe("GET /purposes/form/ui-schema/:version (getFormUiSchema)", () => {
     "should return 403 for unauthorized token ($type, $roles)",
     async (token) => {
       const response = await injectAppRequest(token).get(
-        `/purposes/form/ui-schema/${CURRENT_FORM_SCHEMA_VERSION}`,
+        `/purposes/formSchemas/${CURRENT_FORM_SCHEMA_VERSION}/ui`,
       );
       expect(response.statusCode).toBe(403);
     },
