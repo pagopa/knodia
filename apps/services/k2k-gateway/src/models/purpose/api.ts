@@ -70,3 +70,15 @@ export const API_CreatedPurposeResource = API_CreatedResource.meta({
   description: "Unique identifier of the created Purpose resource",
   id: "CreatedPurposeResource",
 });
+
+export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
+  version: API_PurposeFormSchemaVersion,
+});
+export type API_PurposeFormSchemaVersionPathParam = z.infer<
+  typeof API_PurposeFormSchemaVersionPathParam
+>;
+
+export const API_PurposeFormSchema = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "PurposeFormSchema" });
+export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;

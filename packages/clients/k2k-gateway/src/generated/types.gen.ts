@@ -397,6 +397,10 @@ export type PurposeSeed = {
  */
 export type CreatedPurposeResource = CreatedResource;
 
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -751,3 +755,57 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type GetFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}';
+};
+
+export type GetFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetFormSchemaError = GetFormSchemaErrors[keyof GetFormSchemaErrors];
+
+export type GetFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetFormSchemaResponse = GetFormSchemaResponses[keyof GetFormSchemaResponses];
+
+export type GetFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}/ui';
+};
+
+export type GetFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetFormUiSchemaError = GetFormUiSchemaErrors[keyof GetFormUiSchemaErrors];
+
+export type GetFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetFormUiSchemaResponse = GetFormUiSchemaResponses[keyof GetFormUiSchemaResponses];

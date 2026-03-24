@@ -4,6 +4,10 @@ import { requestContext } from "@fastify/request-context";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_PurposeFormSchema,
+  API_PurposeFormSchemaVersionPathParam,
+} from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
 
@@ -48,5 +52,63 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const data = await purposeService.getFormSchema(req.params.version);
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the JSON Schema for validating Purpose form answers",
+      operationId: "getFormSchema",
+      params: API_PurposeFormSchemaVersionPathParam,
+      response: {
+        200: API_PurposeFormSchema.meta({
+          description: "Purpose form schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      summary: "Get Purpose form schema by version",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/formSchemas/:version",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const data = await purposeService.getFormUiSchema(req.params.version);
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
+      operationId: "getFormUiSchema",
+      params: API_PurposeFormSchemaVersionPathParam,
+      response: {
+        200: API_PurposeFormSchema.meta({
+          description: "Purpose form UI schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      summary: "Get Purpose form UI schema by version",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/formSchemas/:version/ui",
   });
 };

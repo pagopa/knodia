@@ -22,6 +22,8 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CreatedPurposeResource,
+  API_PurposeFormSchema,
+  API_PurposeFormSchemaVersionPathParam,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
 import { toProcessAPI_PurposeSeed } from "../models/purpose/apiConverter.ts";
@@ -99,5 +101,73 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.purpose],
     },
     url: "/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Getting Purpose form schema version ${req.params.version}`);
+
+      const token = await tokenProvider.get();
+      const { data } = await purposeProcessApi.getFormSchema({
+        client: purposeProcessClient,
+        headers: getKnodiaServiceHeaders(correlationId, token),
+        path: { version: req.params.version },
+      });
+
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the JSON Schema for validating Purpose form answers",
+      operationId: "getFormSchema",
+      params: API_PurposeFormSchemaVersionPathParam,
+      response: {
+        200: API_PurposeFormSchema.meta({
+          description: "Purpose form schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      summary: "Get Purpose form schema by version",
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes/formSchemas/:version",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        `Getting Purpose form UI schema version ${req.params.version}`,
+      );
+
+      const token = await tokenProvider.get();
+      const { data } = await purposeProcessApi.getFormUiSchema({
+        client: purposeProcessClient,
+        headers: getKnodiaServiceHeaders(correlationId, token),
+        path: { version: req.params.version },
+      });
+
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
+      operationId: "getFormUiSchema",
+      params: API_PurposeFormSchemaVersionPathParam,
+      response: {
+        200: API_PurposeFormSchema.meta({
+          description: "Purpose form UI schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      summary: "Get Purpose form UI schema by version",
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes/formSchemas/:version/ui",
   });
 };

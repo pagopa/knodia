@@ -1,6 +1,7 @@
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 
 import {
   type K2K2GatewayApiClient,
@@ -65,6 +66,24 @@ export function purposeServiceBuilder(
         purposeId: data.id,
       });
 
+      return data;
+    },
+    async getFormSchema(
+      version: PurposeFormSchemaVersion,
+    ): Promise<Record<string, unknown>> {
+      const { data } = await k2kGatewayApi.getFormSchema({
+        client: k2kGatewayClient,
+        path: { version },
+      });
+      return data;
+    },
+    async getFormUiSchema(
+      version: PurposeFormSchemaVersion,
+    ): Promise<Record<string, unknown>> {
+      const { data } = await k2kGatewayApi.getFormUiSchema({
+        client: k2kGatewayClient,
+        path: { version },
+      });
       return data;
     },
   };

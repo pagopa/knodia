@@ -285,6 +285,10 @@ export type PurposeFormAnswers = {
 
 export type PurposeFormSchemaVersion = '1.0';
 
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
 /**
  * Seed data to create a new Purpose
  */
@@ -668,6 +672,76 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type GetFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}';
+};
+
+export type GetFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetFormSchemaError = GetFormSchemaErrors[keyof GetFormSchemaErrors];
+
+export type GetFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetFormSchemaResponse = GetFormSchemaResponses[keyof GetFormSchemaResponses];
+
+export type GetFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}/ui';
+};
+
+export type GetFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetFormUiSchemaError = GetFormUiSchemaErrors[keyof GetFormUiSchemaErrors];
+
+export type GetFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetFormUiSchemaResponse = GetFormUiSchemaResponses[keyof GetFormUiSchemaResponses];
 
 export type GetOrganizationData = {
     body?: never;
