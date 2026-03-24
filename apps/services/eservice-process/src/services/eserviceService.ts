@@ -181,7 +181,7 @@ export function eserviceServiceBuilder(
     },
     async getEservices(
       params: API_GetEservicesQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<ListResult<Eservice>> {
       logger.info({ params }, "Getting E-services with params");
 
