@@ -1,14 +1,24 @@
+/* eslint-disable max-lines-per-function */
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  KnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
@@ -27,11 +37,40 @@ import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
+  pollingService: PollingService;
 }
 
 export const consumerKeychainRouter: FastifyPluginAsyncZod<
   ConsumerKeychainRouterOptions
-> = async (fastify, { keychainProcessClient }) => {
+> = async (fastify, { keychainProcessClient, pollingService }) => {
+  const retrieveConsumerKeychainById = async (
+    consumerKeychainId: string,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    await keychainProcessApi.getConsumerKeychain({
+      client: keychainProcessClient,
+      headers,
+      path: { consumerKeychainId },
+    });
+
+  const pollConsumerKeychain = (
+    response: AxiosResponse<API_CreatedResource>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveConsumerKeychainById(response.data.id, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
+  const pollConsumerKeychainUntilDeletion = (
+    consumerKeychainId: ConsumerKeychainId,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceUntilDeletion(() =>
+      retrieveConsumerKeychainById(consumerKeychainId, headers),
+    )();
+
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -41,13 +80,17 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         "Creating new Consumer Keychain with body data",
       );
 
-      const { data } = await keychainProcessApi.createConsumerKeychain({
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.createConsumerKeychain({
         body: req.body,
         client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
       });
 
-      res.status(201).send({ id: data.id });
+      await pollConsumerKeychain(response, headers);
+
+      res.status(201).send({ id: response.data.id });
     },
     method: "POST",
     schema: {
@@ -76,12 +119,16 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Updating Consumer Keychain with ID ${req.params.consumerKeychainId}`,
       );
 
-      await keychainProcessApi.updateConsumerKeychain({
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.updateConsumerKeychain({
         body: req.body,
         client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
+
+      await pollConsumerKeychain(response, headers);
 
       res.status(204).send();
     },
@@ -115,11 +162,18 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Deleting Consumer Keychain with ID ${req.params.consumerKeychainId}`,
       );
 
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
       await keychainProcessApi.deleteConsumerKeychain({
         client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
+
+      await pollConsumerKeychainUntilDeletion(
+        req.params.consumerKeychainId,
+        headers,
+      );
 
       res.status(204).send();
     },

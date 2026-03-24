@@ -15,7 +15,6 @@
     "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
-    "@types/pg": "catalog:",
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:"
@@ -25,12 +24,12 @@
     "@knodia/common-models": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
-    "@knodia/db-readmodel-consumer-keychain": "workspace:*",
+    "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "drizzle-orm": "catalog:",
-    "pg": "catalog:",
     "pino": "catalog:",
+    "pino-pretty": "catalog:",
     "ts-pattern": "catalog:",
     "zod": "catalog:"
   }

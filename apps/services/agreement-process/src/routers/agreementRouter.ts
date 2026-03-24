@@ -9,6 +9,8 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   KnodiaServiceHeaders,
+  MetadataVersionHeader,
+  setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
 
 import type { AgreementService } from "../services/agreementService.ts";
@@ -35,7 +37,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      const agreement = await agreementService.createAgreement(
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.createAgreement(
         {
           consumer: {
             id: unsafeBrandExternalId(req.body.consumer.id),
@@ -47,6 +52,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
         ctx,
       );
 
+      setMetadataVersionHeader(res, version);
+
       res.status(201).send(toAPI_Agreement(agreement));
     },
     method: "POST",
@@ -56,9 +63,12 @@ export const agreementRouter: FastifyPluginAsyncZod<
       headers: KnodiaServiceHeaders,
       operationId: "createAgreement",
       response: {
-        201: API_Agreement.meta({
-          description: "Agreement created successfully",
-        }),
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement created successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
@@ -117,10 +127,12 @@ export const agreementRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      const agreement = await agreementService.getAgreement(
-        req.params.agreementId,
-        ctx,
-      );
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.getAgreement(req.params.agreementId, ctx);
+
+      setMetadataVersionHeader(res, version);
 
       res.status(200).send(toAPI_Agreement(agreement));
     },
@@ -131,9 +143,12 @@ export const agreementRouter: FastifyPluginAsyncZod<
       operationId: "getAgreement",
       params: API_AgreementIdPathParam,
       response: {
-        200: API_Agreement.meta({
-          description: "Agreement retrieved successfully",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement retrieved successfully",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

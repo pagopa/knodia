@@ -70,7 +70,6 @@ export type OrganizationId = string;
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
-    consumerId: OrganizationId;
     eserviceId: string;
     eserviceVersionId: string;
     knodeId: KnodeId;
@@ -106,20 +105,6 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
-/**
- * Agreement for an E-service
- */
-export type AgreementDetails = {
-    attributes: Array<Attribute>;
-    consumer: AgreementConsumer;
-    eserviceId: string;
-    eserviceVersionId: string;
-    id: string;
-    producerId: OrganizationId;
-    state: AgreementState;
-    updatedAt: string;
-};
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -144,6 +129,15 @@ export type EserviceCategory = {
 };
 
 export type AccessTokenType = 'Bearer' | 'DPoP';
+
+/**
+ * Organization with only id, knodeId, and name
+ */
+export type CompactOrganization = {
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
 
 export type GetCatalogEserviceSearchParams = {
     category: EserviceCategory;
@@ -184,10 +178,11 @@ export type CatalogEserviceSearchResults = {
  */
 export type EserviceId = string;
 
-export type EserviceDetailsLatestVersion = {
+export type EserviceVersionDetails = {
     accessTokenAudience: Array<string>;
     accessTokenDuration: number;
     accessTokenType: AccessTokenType;
+    id: string;
     maxDailyCallsPerConsumer: number;
     maxDailyCallsPerKnode: number;
     requiredAttributes: Array<Array<Attribute>>;
@@ -208,17 +203,59 @@ export type EserviceDetailsProducer = {
     notes: string;
 };
 
+export type EserviceAgreementDetail = {
+    id: string;
+    state: AgreementState;
+};
+
 export type EserviceDetails = {
+    agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
     interfaceDocument: EserviceDetailsInterfaceDocument;
     isConsumerOperatorIdentificationRequired: boolean;
     isSignalHubEnabled: boolean;
-    latestVersion: EserviceDetailsLatestVersion;
+    latestVersion: EserviceVersionDetails;
     mode: EserviceMode;
     name: LocalizedName;
     producer: EserviceDetailsProducer;
+};
+
+export type EserviceVersion = {
+    id: string;
+    requiredAttributes: Array<Array<Attribute>>;
+    state: EserviceVersionState;
+};
+
+export type Eservice = {
+    agreement: {
+        id: string;
+        state: AgreementState;
+    };
+    categories: Array<EserviceCategory>;
+    id: string;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producer: CompactOrganization;
+    updatedAt: string;
+    version: EserviceVersion;
+};
+
+export type Eservices = {
+    pagination: Pagination;
+    results: Array<Eservice>;
+};
+
+export type Organization = {
+    attributes: Array<Attribute>;
+    id: string;
+    name: string;
+};
+
+export type Organizations = {
+    pagination: Pagination;
+    results: Array<Organization>;
 };
 
 export type GetStatusData = {
@@ -319,6 +356,53 @@ export type GetEserviceDetailsResponses = {
 };
 
 export type GetEserviceDetailsResponse = GetEserviceDetailsResponses[keyof GetEserviceDetailsResponses];
+
+export type GetEservicesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        agreementState?: AgreementState;
+    };
+    url: '/eservices';
+};
+
+export type GetEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
+
+export type GetEservicesResponses = {
+    /**
+     * E-services retrieved successfully
+     */
+    200: Eservices;
+};
+
+export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
 
 export type DownloadEserviceLatestVersionInterfaceData = {
     body?: never;
@@ -488,7 +572,95 @@ export type GetAgreementResponses = {
     /**
      * Agreement retrieved successfully
      */
-    200: AgreementDetails;
+    200: Agreement;
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetOrganizationData = {
+    body?: never;
+    path: {
+        organizationId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/organizations/{organizationId}';
+};
+
+export type GetOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Organization not found
+     */
+    404: Problem;
+};
+
+export type GetOrganizationError = GetOrganizationErrors[keyof GetOrganizationErrors];
+
+export type GetOrganizationResponses = {
+    /**
+     * Organization retrieved successfully
+     */
+    200: Organization;
+};
+
+export type GetOrganizationResponse = GetOrganizationResponses[keyof GetOrganizationResponses];
+
+export type GetOrganizationsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        knodeId: KnodeId;
+        /**
+         * Filter by Organization ID
+         */
+        organizationId?: Array<string>;
+    };
+    url: '/organizations';
+};
+
+export type GetOrganizationsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetOrganizationsError = GetOrganizationsErrors[keyof GetOrganizationsErrors];
+
+export type GetOrganizationsResponses = {
+    /**
+     * Organizations retrieved successfully
+     */
+    200: Organizations;
+};
+
+export type GetOrganizationsResponse = GetOrganizationsResponses[keyof GetOrganizationsResponses];

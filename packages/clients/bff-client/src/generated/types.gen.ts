@@ -58,11 +58,6 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived';
 
-export type Attribute = {
-    code: string;
-    scheme: string;
-};
-
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -102,6 +97,11 @@ export type CompactOrganization = {
     id: string;
     knodeId: KnodeId;
     name: string;
+};
+
+export type Attribute = {
+    code: string;
+    scheme: string;
 };
 
 export type InterfaceDocumentSeed = {
@@ -323,8 +323,8 @@ export type ConsumerCatalogEserviceSearchResult = {
 };
 
 export type ConsumerCatalogEserviceSearchResults = {
+    items: Array<ConsumerCatalogEserviceSearchResult>;
     pagination: Pagination;
-    results: Array<ConsumerCatalogEserviceSearchResult>;
 };
 
 export type ConsumerEserviceDetailsProducer = {
@@ -337,8 +337,13 @@ export type ConsumerEserviceDetailsProducer = {
 
 export type ConsumerRequiredAttribute = {
     code: string;
-    possessed: boolean;
     scheme: string;
+    possessed: boolean;
+};
+
+export type EserviceAgreementDetail = {
+    id: string;
+    state: AgreementState;
 };
 
 export type ConsumerEserviceDetailsAccessToken = {
@@ -362,12 +367,17 @@ export type ConsumerEserviceDetailsMaxDailyCalls = {
 
 export type ConsumerEserviceDetails = {
     accessToken: ConsumerEserviceDetailsAccessToken;
+    agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
     id: string;
     identificationRequired: boolean;
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
     isSignalHubEnabled: boolean;
+    /**
+     * Unique identifier of the latest E-service version
+     */
+    latestVersionId: string;
     maxDailyCalls: ConsumerEserviceDetailsMaxDailyCalls;
     mode: EserviceMode;
     name: LocalizedName;
@@ -382,6 +392,29 @@ export type ConsumerEserviceDetails = {
 export type CompactEservice = {
     id: string;
     name: LocalizedName;
+};
+
+export type ConsumerEservice = {
+    agreement: {
+        id: string;
+        state: AgreementState;
+    };
+    categories: Array<EserviceCategory>;
+    /**
+     * Indicates whether the E-service has been updated in the last days
+     */
+    hasRecentlyBeenUpdated: boolean;
+    id: string;
+    mode: EserviceMode;
+    name: LocalizedName;
+    producer: CompactOrganization;
+    requiredAttributes: Array<Array<Attribute>>;
+    state: EserviceVersionState;
+};
+
+export type ConsumerEservices = {
+    items: Array<ConsumerEservice>;
+    pagination: Pagination;
 };
 
 /**
@@ -405,6 +438,7 @@ export type ProducerAgreementDetails = {
     eservice: CompactEservice;
     id: string;
     state: AgreementState;
+    latestEserviceVersionState: EserviceVersionState;
     producer: CompactOrganization;
 };
 
@@ -485,6 +519,36 @@ export type KeychainDetails = {
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
+};
+
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Seed data to create a new Purpose
+ */
+export type PurposeSeed = {
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    formAnswersJson: PurposeFormAnswers;
+    knodeId: KnodeId;
+    name: LocalizedPurposeName;
 };
 
 export type GetStatusData = {
@@ -1050,6 +1114,53 @@ export type GetConsumerEserviceLatestVersionInterfaceResponses = {
 
 export type GetConsumerEserviceLatestVersionInterfaceResponse = GetConsumerEserviceLatestVersionInterfaceResponses[keyof GetConsumerEserviceLatestVersionInterfaceResponses];
 
+export type GetConsumerEservicesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        agreementState?: AgreementState;
+    };
+    url: '/consumer/eservices';
+};
+
+export type GetConsumerEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerEservicesError = GetConsumerEservicesErrors[keyof GetConsumerEservicesErrors];
+
+export type GetConsumerEservicesResponses = {
+    /**
+     * Consumer E-services retrieved successfully
+     */
+    200: ConsumerEservices;
+};
+
+export type GetConsumerEservicesResponse = GetConsumerEservicesResponses[keyof GetConsumerEservicesResponses];
+
 export type GetConsumerAgreementsData = {
     body?: never;
     path?: never;
@@ -1115,6 +1226,39 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type CreateConsumerPurposeData = {
+    body: PurposeSeed;
+    path?: never;
+    query?: never;
+    url: '/consumer/purposes';
+};
+
+export type CreateConsumerPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type CreateConsumerPurposeError = CreateConsumerPurposeErrors[keyof CreateConsumerPurposeErrors];
+
+export type CreateConsumerPurposeResponses = {
+    /**
+     * Purpose created successfully
+     */
+    201: CreatedResource;
+};
+
+export type CreateConsumerPurposeResponse = CreateConsumerPurposeResponses[keyof CreateConsumerPurposeResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;

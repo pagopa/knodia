@@ -15,9 +15,11 @@ import {
   API_CatalogEserviceSearchResults,
   API_EserviceDetails,
   API_EserviceIdPathParam,
+  API_Eservices,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEserviceDetailsQueryParams,
+  API_GetEservicesQueryParams,
 } from "../models/eservice/api.ts";
 
 interface EserviceRouterOptions {
@@ -98,6 +100,36 @@ export const eserviceRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const eservices = await eserviceService.getEservices(req.query, ctx);
+
+      res.send(eservices);
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve E-services",
+      operationId: "getEservices",
+      querystring: API_GetEservicesQueryParams,
+      response: {
+        200: API_Eservices.meta({
+          description: "E-services retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Get E-services",
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices",
   });
 
   fastify.route({

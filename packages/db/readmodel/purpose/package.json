@@ -1,0 +1,42 @@
+{
+  "name": "@knodia/db-readmodel-purpose",
+  "type": "module",
+  "scripts": {
+    "dev": "tsc --watch",
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "lint:autofix": "eslint . --fix",
+    "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
+    "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
+    "db:schema-normalize": "node ../../../../scripts/normalize-drizzle-output.ts",
+    "test": "pnpm -w test --project @knodia/db-readmodel-purpose",
+    "test:watch": "pnpm test --watch"
+  },
+  "dependencies": {
+    "@knodia/common-models": "workspace:*",
+    "@knodia/db-readmodel-commons": "workspace:*",
+    "@knodia/db-readmodel-config": "workspace:*",
+    "@knodia/purpose-models": "workspace:*",
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "catalog:",
+    "@knodia/eslint-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
+    "@knodia/typescript-config": "workspace:*",
+    "vitest": "catalog:",
+    "@types/pg": "catalog:",
+    "drizzle-kit": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": "./src/purpose.ts",
+    "./config": "./config/config.ts",
+    "./converters": "./src/converters/index.ts",
+    "./services": "./src/services/readmodelService.ts",
+    "./writer": "./src/services/writerService.ts"
+  }
+}

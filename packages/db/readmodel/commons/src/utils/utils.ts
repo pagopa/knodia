@@ -1,6 +1,5 @@
-import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-
 import { genericInternalError } from "@knodia/common-models/errors";
+import { ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import {
   asc,
   count,
@@ -12,6 +11,7 @@ import {
   SQL,
 } from "drizzle-orm";
 import { toCamelCase } from "drizzle-orm/casing";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   type AnyPgColumn,
   type AnyPgTable,
@@ -22,9 +22,25 @@ import {
   PgTable,
   PgText,
 } from "drizzle-orm/pg-core";
+import { Pool } from "pg";
 import { match } from "ts-pattern";
 
 import { SortDirection } from "../models/models.ts";
+
+export const makeReadmodelDrizzleConnection = (
+  config: ReadmodelConfig,
+): { db: NodePgDatabase; pool: Pool } => {
+  const pool = new Pool({
+    database: config.readmodelDbName,
+    host: config.readmodelDbHost,
+    password: config.readmodelDbPassword,
+    port: config.readmodelDbPort,
+    ssl: config.readmodelDbUseSsl ? { rejectUnauthorized: false } : undefined,
+    user: config.readmodelDbUser,
+  });
+
+  return { db: drizzle(pool), pool };
+};
 
 export const checkMetadataVersion = async (
   tx: NodePgDatabase,
@@ -95,9 +111,10 @@ const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
   return pkColumns;
 };
 
-export const throwIfMultipleOrEmpty = <T extends { id: string }>(
+export const throwIfMultipleOrEmpty = <T>(
   items: T[],
   entityName: string,
+  getId: (item: T) => string,
 ): T => {
   if (items.length === 0) {
     throw genericInternalError(
@@ -106,7 +123,7 @@ export const throwIfMultipleOrEmpty = <T extends { id: string }>(
   }
 
   if (items.length > 1) {
-    const ids = items.map((item) => item.id).join(", ");
+    const ids = items.map(getId).join(", ");
     throw genericInternalError(
       `Found more than one ${entityName} for a unique filter: ${ids}`,
     );

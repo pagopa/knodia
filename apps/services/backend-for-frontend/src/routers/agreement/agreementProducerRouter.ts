@@ -1,4 +1,3 @@
-import type { Organization } from "@knodia/organization-models";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -7,20 +6,26 @@ import {
   agreementProcessApi,
   type AgreementProcessClient,
 } from "@knodia/agreement-process-client";
-import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import {
   eserviceProcessApi,
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
-  API_Problem,
-  genericError,
-} from "@knodia/fastify-zod-api-commons/models";
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 
 import {
   API_GetProducerAgreementsQueryParams,
@@ -40,6 +45,7 @@ interface AgreementProducerRouterOptions {
   eserviceProcessClient: EserviceProcessClient;
   knodeId: KnodeId;
   organizationProcessClient: OrganizationProcessClient;
+  remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const agreementProducerRouter: FastifyPluginAsyncZod<
@@ -51,6 +57,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
     eserviceProcessClient,
     knodeId,
     organizationProcessClient,
+    remoteResourcesManagerClient,
   },
 ) => {
   fastify.route({
@@ -79,45 +86,60 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       const eserviceIds = new Set(
         data.items.map((agreement) => agreement.eserviceId),
       );
-      const eservices = await eserviceProcessApi.getEservices({
-        client: eserviceProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        query: {
-          eserviceId: Array.from(eserviceIds),
-          // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
-          limit: eserviceIds.size,
-          offset: 0,
-        },
-      });
-      const eserviceMap = new Map(
-        eservices.data.items.map((eservice) => [eservice.id, eservice]),
-      );
+      const [eservicesMap, consumersMap] = await Promise.all([
+        eserviceProcessApi
+          .getEservices({
+            client: eserviceProcessClient,
+            headers: getKnodiaServiceHeaders(req, correlationId),
+            query: {
+              eserviceId: Array.from(eserviceIds),
+              // Safe: agreements and eservices are paginated with the same limit, so unique eservice IDs ≤ limit
+              limit: eserviceIds.size,
+              offset: 0,
+            },
+          })
+          .then(
+            (res) =>
+              new Map(
+                res.data.items.map((eservice) => [eservice.id, eservice]),
+              ),
+          ),
+        getExternalEntitiesMap({
+          fetchFn: ({ entityIds }) =>
+            remoteResourcesManagerApi
+              .getOrganizations({
+                client: remoteResourcesManagerClient,
+                headers: getKnodiaServiceHeaders(req, correlationId),
+                query: {
+                  knodeId,
+                  // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
+                  limit: entityIds.length,
+                  offset: 0,
+                  organizationId: entityIds,
+                },
+              })
+              .then((res) => res.data.results),
+          getEntityId: (agreement) => agreement.consumer.id,
+          getKnodeId: (agreement) => KnodeId.parse(agreement.consumer.knodeId),
+          items: data.items,
+        }),
+      ]);
 
-      const items = data.items.map((agreement) => {
-        const eservice = eserviceMap.get(agreement.eserviceId);
-        if (!eservice) {
-          throw genericError(
-            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
-          );
-        }
-
-        // TODO: use the remote-resources-manager to fetch consumer organizations from agreement.consumer.knodeId,
-        // in batch before the loop (same pattern as eservices above:
-        // extract unique consumer IDs, add an organizationId filter to getOrganizations, batch-fetch, zip via Map)
-        const consumer: Organization = {
-          attributes: [],
-          createdAt: new Date(),
-          id: unsafeBrandId(agreement.consumer.id),
-          name: "Consumer Organization Name",
-          updatedAt: new Date(),
-        };
-
-        return toAPI_ProducerAgreement({
+      const items = data.items.map((agreement) =>
+        toAPI_ProducerAgreement({
           agreement,
-          consumer,
-          eservice,
-        });
-      });
+          consumer: assertEntityExists(
+            consumersMap
+              .get(agreement.consumer.knodeId)
+              ?.get(unsafeBrandExternalId(agreement.consumer.id)),
+            `Consumer organization ${agreement.consumer.id} not found for Agreement ${agreement.id}`,
+          ),
+          eservice: assertEntityExists(
+            eservicesMap.get(agreement.eserviceId),
+            `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
+          ),
+        }),
+      );
 
       res.send({
         items,
@@ -158,8 +180,18 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         path: { agreementId: req.params.agreementId },
       });
 
-      const [{ data: eservice }, { data: producer }] = await Promise.all([
+      const [
+        { data: eservice },
+        { data: latestVersion },
+        { data: producer },
+        { data: consumer },
+      ] = await Promise.all([
         eserviceProcessApi.getEservice({
+          client: eserviceProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { eserviceId: agreement.eserviceId },
+        }),
+        eserviceProcessApi.getEserviceLatestVersion({
           client: eserviceProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           path: { eserviceId: agreement.eserviceId },
@@ -169,22 +201,20 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           headers: getKnodiaServiceHeaders(req, correlationId),
           path: { organizationId: agreement.producerId },
         }),
+        remoteResourcesManagerApi.getOrganization({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId: agreement.consumer.id },
+          query: { knodeId: agreement.consumer.knodeId },
+        }),
       ]);
-
-      // TODO: fetch this with RRM
-      const consumer: Organization = {
-        attributes: [],
-        createdAt: new Date(),
-        id: unsafeBrandId(agreement.consumer.id),
-        name: "Consumer Organization Name",
-        updatedAt: new Date(),
-      };
 
       res.status(200).send(
         toAPI_ProducerAgreementDetails({
           agreement,
           consumer,
           eservice,
+          latestEserviceVersionState: latestVersion.state,
           producer: {
             ...producer,
             knodeId,

@@ -4,10 +4,11 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
+import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
 import z from "zod";
 
 import { API_CompactEservice } from "../eservice/api.ts";
-import { API_CompactOrganization } from "../organization/api.ts";
 
 export const API_AgreementSeed = z
   .strictObject({
@@ -37,6 +38,7 @@ export const API_ProducerAgreement = z
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
 
 export const API_ProducerAgreementDetails = API_ProducerAgreement.extend({
+  latestEserviceVersionState: API_EserviceVersionState,
   producer: API_CompactOrganization,
 }).meta({ id: "ProducerAgreementDetails" });
 export type API_ProducerAgreementDetails = z.infer<

@@ -195,9 +195,11 @@ services:
       knodia.check.on.startup: "true"
     image: quay.io/debezium/connect:3.4.1.Final
     container_name: knodia-multinode-debezium-connect
+    mem_limit: 768m
     ports:
       - 8083:8083
     environment:
+      HEAP_OPTS: "-Xms256m -Xmx512m"
       BOOTSTRAP_SERVERS: kafka:9092
       GROUP_ID: knodia-multinode-debezium
       CONFIG_STORAGE_TOPIC: knodia-multinode-debezium-configs
@@ -337,12 +339,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-process/Dockerfile
     ports:
       - 3001:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -375,12 +379,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-k2k-gateway-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/k2k-gateway/Dockerfile
     ports:
       - 3101:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -396,7 +402,6 @@ services:
       INTERNAL_JWT_SUBJECT: "k2k-gateway"
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
@@ -415,12 +420,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-process/Dockerfile
     ports:
       - 3201:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -453,12 +460,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-remote-resources-manager-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/remote-resources-manager/Dockerfile
     ports:
       - 4901:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -486,12 +495,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-bff-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/backend-for-frontend/Dockerfile
     ports:
       - 3601:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -512,7 +523,6 @@ services:
       ESERVICE_INTERFACES_S3_BUCKET: knodia-orion-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
@@ -531,10 +541,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_eservice_rmw_user
       READMODEL_DB_PASSWORD: local_orion_eservice_rmw_user
       READMODEL_DB_HOST: postgres
@@ -548,7 +560,6 @@ services:
       KAFKA_GROUP_ID: kafka-eservice-readmodel-writer-orion
       TOPIC_STARTING_OFFSET: earliest
       ESERVICE_TOPIC: event-store-orion.local_orion_eservice.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-orion:
@@ -562,10 +573,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_agreement_rmw_user
       READMODEL_DB_PASSWORD: local_orion_agreement_rmw_user
       READMODEL_DB_HOST: postgres
@@ -579,7 +592,6 @@ services:
       KAFKA_GROUP_ID: kafka-agreement-readmodel-writer-orion
       TOPIC_STARTING_OFFSET: earliest
       AGREEMENT_TOPIC: event-store-orion.local_orion_agreement.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-orion:
@@ -593,12 +605,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-process/Dockerfile
     ports:
       - 3301:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -615,7 +629,7 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_orion_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -630,24 +644,25 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_keychain_rmw_user
       READMODEL_DB_PASSWORD: local_orion_keychain_rmw_user
       READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: orion_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_orion_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_orion_keychain
       KAFKA_BROKERS: kafka:9092
       KAFKA_LOG_LEVEL: INFO
       KAFKA_CLIENT_ID: kafka-keychain-client-orion
       KAFKA_GROUP_ID: kafka-keychain-readmodel-writer-orion
       TOPIC_STARTING_OFFSET: earliest
       KEYCHAIN_TOPIC: event-store-orion.local_orion_keychain.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-orion:
@@ -661,12 +676,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-process-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-process/Dockerfile
     ports:
       - 3401:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -698,10 +715,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-readmodel-writer-orion
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_orion_organization_rmw_user
       READMODEL_DB_PASSWORD: local_orion_organization_rmw_user
       READMODEL_DB_HOST: postgres
@@ -715,7 +734,79 @@ services:
       KAFKA_GROUP_ID: kafka-organization-readmodel-writer-orion
       TOPIC_STARTING_OFFSET: earliest
       ORGANIZATION_TOPIC: event-store-orion.local_orion_organization.events
-      AWS_REGION: eu-south-1
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+    depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+
+  purpose-process-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-purpose-process-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/purpose-process/Dockerfile
+    ports:
+      - 3501:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      EVENTSTORE_DB_USER: local_orion_purpose_process_user
+      EVENTSTORE_DB_PASSWORD: local_orion_purpose_process_user
+      EVENTSTORE_DB_HOST: postgres
+      EVENTSTORE_DB_PORT: "5432"
+      EVENTSTORE_DB_NAME: orion_event_store
+      EVENTSTORE_DB_USE_SSL: "false"
+      EVENTSTORE_DB_PURPOSE_SCHEMA: local_orion_purpose
+      READMODEL_DB_USER: local_orion_purpose_process_user
+      READMODEL_DB_PASSWORD: local_orion_purpose_process_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_orion_agreement
+      READMODEL_DB_ESERVICE_SCHEMA: local_orion_eservice
+      READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      flyway-orion:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+
+  purpose-readmodel-writer-orion:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-purpose-readmodel-writer-orion
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/purpose-readmodel-writer/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      READMODEL_DB_USER: local_orion_purpose_rmw_user
+      READMODEL_DB_PASSWORD: local_orion_purpose_rmw_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_PURPOSE_SCHEMA: local_orion_purpose
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-purpose-client-orion
+      KAFKA_GROUP_ID: kafka-purpose-readmodel-writer-orion
+      TOPIC_STARTING_OFFSET: earliest
+      PURPOSE_TOPIC: event-store-orion.local_orion_purpose.events
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-orion:
@@ -733,12 +824,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-process/Dockerfile
     ports:
       - 3002:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -771,12 +864,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-k2k-gateway-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/k2k-gateway/Dockerfile
     ports:
       - 3102:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -792,7 +887,6 @@ services:
       INTERNAL_JWT_SUBJECT: "k2k-gateway"
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
@@ -811,12 +905,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-process/Dockerfile
     ports:
       - 3202:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -849,12 +945,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-remote-resources-manager-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/remote-resources-manager/Dockerfile
     ports:
       - 4902:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -882,12 +980,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-bff-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/backend-for-frontend/Dockerfile
     ports:
       - 3602:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -908,7 +1008,6 @@ services:
       ESERVICE_INTERFACES_S3_BUCKET: knodia-lynx-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
     depends_on:
@@ -927,10 +1026,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-eservice-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/eservice-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_eservice_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_eservice_rmw_user
       READMODEL_DB_HOST: postgres
@@ -944,7 +1045,6 @@ services:
       KAFKA_GROUP_ID: kafka-eservice-readmodel-writer-lynx
       TOPIC_STARTING_OFFSET: earliest
       ESERVICE_TOPIC: event-store-lynx.local_lynx_eservice.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-lynx:
@@ -958,10 +1058,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-agreement-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/agreement-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_agreement_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_agreement_rmw_user
       READMODEL_DB_HOST: postgres
@@ -975,7 +1077,6 @@ services:
       KAFKA_GROUP_ID: kafka-agreement-readmodel-writer-lynx
       TOPIC_STARTING_OFFSET: earliest
       AGREEMENT_TOPIC: event-store-lynx.local_lynx_agreement.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-lynx:
@@ -989,12 +1090,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-process/Dockerfile
     ports:
       - 3302:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -1011,7 +1114,7 @@ services:
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_lynx_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
       ACCEPTED_AUDIENCES: "local.knodia.test/ui-session"
       WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
     depends_on:
@@ -1026,24 +1129,25 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-keychain-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/keychain-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_keychain_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_keychain_rmw_user
       READMODEL_DB_HOST: postgres
       READMODEL_DB_PORT: "5432"
       READMODEL_DB_NAME: lynx_readmodel
       READMODEL_DB_USE_SSL: "false"
-      READMODEL_DB_CONSUMER_KEYCHAIN_SCHEMA: local_lynx_consumer_keychain
+      READMODEL_DB_KEYCHAIN_SCHEMA: local_lynx_keychain
       KAFKA_BROKERS: kafka:9092
       KAFKA_LOG_LEVEL: INFO
       KAFKA_CLIENT_ID: kafka-keychain-client-lynx
       KAFKA_GROUP_ID: kafka-keychain-readmodel-writer-lynx
       TOPIC_STARTING_OFFSET: earliest
       KEYCHAIN_TOPIC: event-store-lynx.local_lynx_keychain.events
-      AWS_REGION: eu-south-1
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-lynx:
@@ -1057,12 +1161,14 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-process-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-process/Dockerfile
     ports:
       - 3402:3000
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       LOG_LEVEL: info
       HOST: "0.0.0.0"
       PORT: "3000"
@@ -1094,10 +1200,12 @@ services:
     labels:
       knodia.check.on.startup: "true"
     container_name: knodia-multinode-organization-readmodel-writer-lynx
+    mem_limit: 200m
     build:
       context: ..
       dockerfile: apps/services/organization-readmodel-writer/Dockerfile
     environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
       READMODEL_DB_USER: local_lynx_organization_rmw_user
       READMODEL_DB_PASSWORD: local_lynx_organization_rmw_user
       READMODEL_DB_HOST: postgres
@@ -1111,7 +1219,79 @@ services:
       KAFKA_GROUP_ID: kafka-organization-readmodel-writer-lynx
       TOPIC_STARTING_OFFSET: earliest
       ORGANIZATION_TOPIC: event-store-lynx.local_lynx_organization.events
-      AWS_REGION: eu-south-1
+      KAFKA_DISABLE_AWS_IAM_AUTH: "true"
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+
+  purpose-process-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-purpose-process-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/purpose-process/Dockerfile
+    ports:
+      - 3502:3000
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      LOG_LEVEL: info
+      HOST: "0.0.0.0"
+      PORT: "3000"
+      EVENTSTORE_DB_USER: local_lynx_purpose_process_user
+      EVENTSTORE_DB_PASSWORD: local_lynx_purpose_process_user
+      EVENTSTORE_DB_HOST: postgres
+      EVENTSTORE_DB_PORT: "5432"
+      EVENTSTORE_DB_NAME: lynx_event_store
+      EVENTSTORE_DB_USE_SSL: "false"
+      EVENTSTORE_DB_PURPOSE_SCHEMA: local_lynx_purpose
+      READMODEL_DB_USER: local_lynx_purpose_process_user
+      READMODEL_DB_PASSWORD: local_lynx_purpose_process_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_AGREEMENT_SCHEMA: local_lynx_agreement
+      READMODEL_DB_ESERVICE_SCHEMA: local_lynx_eservice
+      READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
+      ACCEPTED_AUDIENCES: "local.knodia.test/ui-session,local.knodia.test/internal"
+      WELL_KNOWN_URLS: "http://local-jwks:80/knodia/.well-known/jwks.json"
+    depends_on:
+      flyway-lynx:
+        condition: service_completed_successfully
+      local-kms-setup:
+        condition: service_completed_successfully
+
+  purpose-readmodel-writer-lynx:
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      knodia.check.on.startup: "true"
+    container_name: knodia-multinode-purpose-readmodel-writer-lynx
+    mem_limit: 200m
+    build:
+      context: ..
+      dockerfile: apps/services/purpose-readmodel-writer/Dockerfile
+    environment:
+      NODE_OPTIONS: "--max-old-space-size=150"
+      READMODEL_DB_USER: local_lynx_purpose_rmw_user
+      READMODEL_DB_PASSWORD: local_lynx_purpose_rmw_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_PURPOSE_SCHEMA: local_lynx_purpose
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_LOG_LEVEL: INFO
+      KAFKA_CLIENT_ID: kafka-purpose-client-lynx
+      KAFKA_GROUP_ID: kafka-purpose-readmodel-writer-lynx
+      TOPIC_STARTING_OFFSET: earliest
+      PURPOSE_TOPIC: event-store-lynx.local_lynx_purpose.events
       KAFKA_DISABLE_AWS_IAM_AUTH: "true"
     depends_on:
       flyway-lynx:

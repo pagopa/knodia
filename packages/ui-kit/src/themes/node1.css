@@ -289,6 +289,14 @@
     line-height: var(--line-height-headline);
   }
 
+  .headline-md-em {
+    font-family: var(--font-family-headline);
+    font-size: var(--font-size-headline-md);
+    font-weight: var(--font-weight-headline-em);
+    letter-spacing: var(--letter-spacing-headline-md);
+    line-height: var(--line-height-headline);
+  }
+
   .headline-lg-em {
     font-family: var(--font-family-headline);
     font-size: var(--font-size-headline-lg);

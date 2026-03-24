@@ -178,6 +178,14 @@ const correlationIdHeaderParameter = {
   },
 };
 
+const expectedResponseHeaders = {
+  "X-Test-Route-Level": {
+    description: "Route-level response header",
+    required: true,
+    schema: { type: "string" },
+  },
+};
+
 const expectedTestGet = {
   description: "Test GET endpoint",
   operationId: "getTest",
@@ -220,10 +228,11 @@ const expectedTestGet = {
         },
       },
       description: "Results retrieved successfully",
+      headers: expectedResponseHeaders,
     },
-    "400": badRequestResponse,
-    "401": unauthorizedResponse,
-    "403": forbiddenResponse,
+    "400": { ...badRequestResponse, headers: expectedResponseHeaders },
+    "401": { ...unauthorizedResponse, headers: expectedResponseHeaders },
+    "403": { ...forbiddenResponse, headers: expectedResponseHeaders },
   },
   tags: [testTags.test],
 };
@@ -257,6 +266,13 @@ const expectedTestPost = {
         },
       },
       description: "Resource created successfully",
+      headers: {
+        "X-Test-Response-Level": {
+          description: "Per-response response header",
+          required: true,
+          schema: { type: "string" },
+        },
+      },
     },
     "400": badRequestResponse,
     "401": unauthorizedResponse,

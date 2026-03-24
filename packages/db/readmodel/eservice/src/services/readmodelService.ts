@@ -1,7 +1,6 @@
 import type {
   EserviceId,
   EserviceInterfaceId,
-  EserviceVersionId,
 } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type { Eservice, EserviceInterface } from "@knodia/eservice-models";
@@ -9,10 +8,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import { and, eq } from "drizzle-orm";
 
-import {
-  aggregateEservice,
-  aggregateEserviceVersion,
-} from "../converters/aggregators.ts";
+import { aggregateEservice } from "../converters/aggregators.ts";
 import { toEserviceVersionInterface } from "../converters/index.ts";
 import {
   readmodelEservice,
@@ -24,33 +20,33 @@ import {
 
 export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   return {
-    async getEServiceById(
+    async getEserviceById(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<Eservice>> {
       const queryRes = await readmodelDb
         .select({
           category: readmodelEserviceCategory,
           eservice: readmodelEservice,
+          interface: readmodelEserviceInterface,
+          requiredAttribute: readmodelEserviceVersionRequiredAttribute,
+          version: readmodelEserviceVersion,
         })
         .from(readmodelEservice)
         .leftJoin(
           readmodelEserviceCategory,
           eq(readmodelEserviceCategory.eserviceId, readmodelEservice.id),
         )
-        .where(eq(readmodelEservice.id, eserviceId));
-
-      return aggregateEservice(queryRes);
-    },
-    async getEServiceVersionById(
-      eserviceId: EserviceId,
-      eserviceVersionId: EserviceVersionId,
-    ) {
-      const queryRes = await readmodelDb
-        .select({
-          requiredAttribute: readmodelEserviceVersionRequiredAttribute,
-          version: readmodelEserviceVersion,
-        })
-        .from(readmodelEserviceVersion)
+        .leftJoin(
+          readmodelEserviceVersion,
+          eq(readmodelEserviceVersion.eserviceId, readmodelEservice.id),
+        )
+        .leftJoin(
+          readmodelEserviceInterface,
+          eq(
+            readmodelEserviceInterface.eserviceVersionId,
+            readmodelEserviceVersion.id,
+          ),
+        )
         .leftJoin(
           readmodelEserviceVersionRequiredAttribute,
           and(
@@ -64,14 +60,9 @@ export function eserviceReadmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             ),
           ),
         )
-        .where(
-          and(
-            eq(readmodelEserviceVersion.eserviceId, eserviceId),
-            eq(readmodelEserviceVersion.id, eserviceVersionId),
-          ),
-        );
+        .where(eq(readmodelEservice.id, eserviceId));
 
-      return aggregateEserviceVersion(queryRes);
+      return aggregateEservice(queryRes);
     },
     async getEserviceVersionInterfaceById(
       interfaceId: EserviceInterfaceId,

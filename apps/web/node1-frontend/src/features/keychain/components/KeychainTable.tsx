@@ -48,8 +48,8 @@ export function KeychainTable({
         <Column id="name" isRowHeader>
           Name
         </Column>
-        <Column id="type">Keys</Column>
-        <Column id="numKeys">Members</Column>
+        <Column id="keys">Keys</Column>
+        <Column id="members">Members</Column>
         <Column id="actions">
           <span className="sr-only">Actions</span>
         </Column>

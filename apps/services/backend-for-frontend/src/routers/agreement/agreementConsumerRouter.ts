@@ -38,7 +38,6 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
 
       const { data } = await remoteResourcesManagerApi.createAgreement({
         body: {
-          consumerId,
           eserviceId: req.body.eserviceId,
           eserviceVersionId: req.body.eserviceVersionId,
           knodeId: req.body.knodeId,

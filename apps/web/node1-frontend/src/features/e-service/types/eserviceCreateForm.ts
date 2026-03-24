@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import type { StepConfig } from "@/contexts/steps";
 
-import { schemeRefSchema } from "@/features/e-service/types/schemeRef";
+import { schemeRefSchema } from "@/types/schemeRef";
 
 const ACCEPTED_MIME_TYPES = [
   "application/json",

@@ -1,8 +1,8 @@
 import type { agreementProcessApi } from "@knodia/agreement-process-client";
 import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
-import type { Organization } from "@knodia/organization-models";
 import type { organizationProcessApi } from "@knodia/organization-process-client";
+import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
   API_ProducerAgreement,
@@ -15,7 +15,7 @@ export const toAPI_ProducerAgreement = ({
   eservice,
 }: {
   agreement: agreementProcessApi.Agreement;
-  consumer: Organization; // TODO: update with remoteResourcesManagerApi.Organization when available
+  consumer: remoteResourcesManagerApi.Organization;
   eservice: eserviceProcessApi.Eservice;
 }): API_ProducerAgreement => ({
   consumer: {
@@ -35,14 +35,17 @@ export const toAPI_ProducerAgreementDetails = ({
   agreement,
   consumer,
   eservice,
+  latestEserviceVersionState,
   producer,
 }: {
   agreement: agreementProcessApi.Agreement;
-  consumer: Organization; // TODO: update with remoteResourcesManagerApi.Organization when available
+  consumer: remoteResourcesManagerApi.Organization;
   eservice: eserviceProcessApi.Eservice;
+  latestEserviceVersionState: eserviceProcessApi.EserviceVersionState;
   producer: organizationProcessApi.Organization & { knodeId: API_KnodeId };
 }): API_ProducerAgreementDetails => ({
   ...toAPI_ProducerAgreement({ agreement, consumer, eservice }),
+  latestEserviceVersionState,
   producer: {
     id: producer.id,
     knodeId: producer.knodeId,

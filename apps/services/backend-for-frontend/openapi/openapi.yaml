@@ -121,17 +121,6 @@ components:
         - Active
         - Suspended
         - Archived
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
-      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
@@ -209,6 +198,17 @@ components:
         - id
         - knodeId
         - name
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object
@@ -629,15 +629,15 @@ components:
     ConsumerCatalogEserviceSearchResults:
       type: object
       properties:
-        pagination:
-          $ref: "#/components/schemas/Pagination"
-        results:
+        items:
           type: array
           items:
             $ref: "#/components/schemas/ConsumerCatalogEserviceSearchResult"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
       required:
+        - items
         - pagination
-        - results
       additionalProperties: false
     ConsumerEserviceDetailsProducer:
       type: object
@@ -666,14 +666,27 @@ components:
       properties:
         code:
           type: string
-        possessed:
-          type: boolean
         scheme:
           type: string
+        possessed:
+          type: boolean
       required:
         - code
-        - possessed
         - scheme
+        - possessed
+      additionalProperties: false
+    EserviceAgreementDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+      required:
+        - id
+        - state
       additionalProperties: false
     ConsumerEserviceDetailsAccessToken:
       type: object
@@ -728,6 +741,9 @@ components:
       properties:
         accessToken:
           $ref: "#/components/schemas/ConsumerEserviceDetailsAccessToken"
+        agreement:
+          allOf:
+            - $ref: "#/components/schemas/EserviceAgreementDetail"
         categories:
           type: array
           items:
@@ -744,6 +760,11 @@ components:
           $ref: "#/components/schemas/ConsumerEserviceDetailsInterfaceDocument"
         isSignalHubEnabled:
           type: boolean
+        latestVersionId:
+          description: Unique identifier of the latest E-service version
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         maxDailyCalls:
           $ref: "#/components/schemas/ConsumerEserviceDetailsMaxDailyCalls"
         mode:
@@ -768,6 +789,7 @@ components:
         - identificationRequired
         - interfaceDocument
         - isSignalHubEnabled
+        - latestVersionId
         - maxDailyCalls
         - mode
         - name
@@ -788,6 +810,71 @@ components:
       required:
         - id
         - name
+      additionalProperties: false
+    ConsumerEservice:
+      type: object
+      properties:
+        agreement:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            state:
+              $ref: "#/components/schemas/AgreementState"
+          required:
+            - id
+            - state
+          additionalProperties: false
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the E-service has been updated in the last days
+          type: boolean
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/Attribute"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - agreement
+        - categories
+        - hasRecentlyBeenUpdated
+        - id
+        - mode
+        - name
+        - producer
+        - requiredAttributes
+        - state
+      additionalProperties: false
+    ConsumerEservices:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerEservice"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+      required:
+        - items
+        - pagination
       additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
@@ -840,6 +927,8 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         state:
           $ref: "#/components/schemas/AgreementState"
+        latestEserviceVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
         producer:
           $ref: "#/components/schemas/CompactOrganization"
       required:
@@ -847,6 +936,7 @@ components:
         - eservice
         - id
         - state
+        - latestEserviceVersionState
         - producer
       additionalProperties: false
     ProducerAgreements:
@@ -1028,6 +1118,60 @@ components:
         name:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
+      additionalProperties: false
+    LocalizedPurposeName:
+      description: Name of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedPurposeDescription:
+      description: Description of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormAnswers:
+      type: object
+      additionalProperties: {}
+    PurposeSeed:
+      description: Seed data to create a new Purpose
+      type: object
+      properties:
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - dailyCalls
+        - description
+        - eserviceId
+        - formAnswersJson
+        - knodeId
+        - name
       additionalProperties: false
 paths:
   /status:
@@ -1830,6 +1974,78 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/eservices:
+    get:
+      operationId: getConsumerEservices
+      summary: Get Consumer E-services
+      tags:
+        - eservice
+      description: Retrieve Consumer E-services
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: agreementState
+          required: false
+      responses:
+        "200":
+          description: Consumer E-services retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer E-services retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerEservices"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/agreements:
     post:
       operationId: createConsumerAgreement
@@ -1890,6 +2106,51 @@ paths:
                 description: Consumer Agreements retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ConsumerAgreements"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/purposes:
+    post:
+      operationId: createConsumerPurpose
+      tags:
+        - purpose
+      description: Create a new Purpose for an E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurposeSeed"
+      responses:
+        "201":
+          description: Purpose created successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
         "400":
           description: Bad Request
           content:
@@ -2043,3 +2304,5 @@ tags:
     name: eservice
   - description: Consumer Keychains routes
     name: consumerKeychain
+  - description: Purpose routes
+    name: purpose

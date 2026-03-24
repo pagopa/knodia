@@ -4,6 +4,7 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 
 import type {
   API_ConsumerCatalogEserviceSearchResult,
+  API_ConsumerEservice,
   API_ConsumerEserviceDetails,
   API_ProducerEservice,
   API_ProducerEserviceDetails,
@@ -20,8 +21,8 @@ export const toAPI_ProducerEservice = ({
   eservice: eserviceProcessApi.Eservice;
   state: eserviceProcessApi.EserviceVersionState;
 }): API_ProducerEservice => ({
-  activeAgreements: activeAgreements,
-  activePurposes: activePurposes,
+  activeAgreements,
+  activePurposes,
   categories: eservice.categories,
   id: eservice.id,
   mode: eservice.mode,
@@ -83,6 +84,7 @@ export const toAPI_ConsumerEserviceDetails = (
     duration: detail.latestVersion.accessTokenDuration,
     type: detail.latestVersion.accessTokenType,
   },
+  agreement: detail.agreement,
   categories: detail.categories,
   description: detail.description,
   id: detail.id,
@@ -92,6 +94,7 @@ export const toAPI_ConsumerEserviceDetails = (
     name: detail.interfaceDocument.prettyName.en,
   },
   isSignalHubEnabled: detail.isSignalHubEnabled,
+  latestVersionId: detail.latestVersion.id,
   maxDailyCalls: {
     perConsumer: detail.latestVersion.maxDailyCallsPerConsumer,
     perKnode: detail.latestVersion.maxDailyCallsPerKnode,
@@ -108,6 +111,32 @@ export const toAPI_ConsumerEserviceDetails = (
   ),
   state: detail.latestVersion.state,
 });
+
+export const toAPI_ConsumerEservice = (
+  eservice: remoteResourcesManagerApi.Eservice,
+  recentEserviceUpdateDays: number,
+): API_ConsumerEservice => {
+  // TODO https://pagopa.atlassian.net/browse/KN-246
+  const hasRecentlyBeenUpdated = (dateString: string): boolean => {
+    const updatedAt = new Date(dateString);
+    const xDaysAgo = new Date();
+    xDaysAgo.setDate(xDaysAgo.getDate() - recentEserviceUpdateDays);
+
+    return updatedAt >= xDaysAgo;
+  };
+
+  return {
+    agreement: eservice.agreement,
+    categories: eservice.categories,
+    hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice.updatedAt),
+    id: eservice.id,
+    mode: eservice.mode,
+    name: eservice.name,
+    producer: eservice.producer,
+    requiredAttributes: eservice.version.requiredAttributes,
+    state: eservice.version.state,
+  };
+};
 
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,

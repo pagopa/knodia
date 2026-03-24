@@ -1,4 +1,4 @@
-import { ReadmodelConsumerKeychainConfig } from "@knodia/db-readmodel-consumer-keychain/config";
+import { ReadmodelKeychainConfig } from "@knodia/db-readmodel-keychain/config";
 import {
   KafkaConsumerConfig,
   KeychainTopicConfig,
@@ -6,9 +6,7 @@ import {
 import { LoggerConfig } from "@knodia/logger/config";
 import { z } from "zod";
 
-const KeychainReadmodelWriterConfig = LoggerConfig.and(
-  ReadmodelConsumerKeychainConfig,
-)
+const KeychainReadmodelWriterConfig = LoggerConfig.and(ReadmodelKeychainConfig)
   .and(KafkaConsumerConfig)
   .and(KeychainTopicConfig);
 

@@ -18,9 +18,10 @@ const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 const errorCodes = {
   ESERVICE_NOT_FOUND: "0001",
   ESERVICE_VERSION_NOT_FOUND: "0002",
-  ESERVICE_VERSION_NOT_IN_EXPECTED_STATE: "0003",
+  ESERVICE_VERSION_NOT_IN_EXPECTED_STATES: "0003",
   AGREEMENT_ALREADY_EXISTS: "0004",
   AGREEMENT_NOT_FOUND: "0005",
+  ESERVICE_VERSION_NOT_LATEST: "0006",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -67,7 +68,7 @@ export function eserviceNotFound(id: EserviceId) {
 
 export function eserviceVersionNotFound(
   eserviceId: EserviceId,
-  versionId: EserviceVersionId,
+  versionId?: EserviceVersionId,
 ) {
   const detail = versionId
     ? `E-service version '${versionId}' not found for e-service '${eserviceId}'`
@@ -81,15 +82,28 @@ export function eserviceVersionNotFound(
   });
 }
 
-export function eserviceVersionNotInExpectedState(
+export function eserviceVersionNotInExpectedStates(
   eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,
   allowedStates: EserviceVersionState[],
 ) {
   return createApiError<ErrorCodes>({
-    code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATE",
-    detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: ${allowedStates}`,
+    code: "ESERVICE_VERSION_NOT_IN_EXPECTED_STATES",
+    detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not in an allowed state: [${allowedStates.join(", ")}]`,
     status: HTTP_STATUS_CONFLICT,
-    title: "E-service Version Not in Expected State",
+    title: "E-service Version Not in Expected States",
+  });
+}
+
+export function eserviceVersionNotLatest(
+  eserviceId: EserviceId,
+  eserviceVersionId: EserviceVersionId,
+  latestVersionId: EserviceVersionId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_VERSION_NOT_LATEST",
+    detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not the latest version. Latest version is ${latestVersionId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Not Latest E-service Version",
   });
 }

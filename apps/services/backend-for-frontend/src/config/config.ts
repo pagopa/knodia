@@ -4,10 +4,12 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
+import { PollingConfig } from "@knodia/polling/config";
 import z from "zod";
 
 const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
+  .and(PollingConfig)
   .and(
     z
       .object({
@@ -19,6 +21,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         KEYCHAIN_PROCESS_URL: z.url(),
         KNODE_ID: KnodeId,
         ORGANIZATION_PROCESS_URL: z.url(),
+        RECENT_ESERVICE_UPDATE_DAYS: z.coerce.number().positive().default(3),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -43,6 +46,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         knodeId: c.KNODE_ID,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
+        recentEserviceUpdateDays: c.RECENT_ESERVICE_UPDATE_DAYS,
         refreshJwt: {
           secondsDuration: c.REFRESH_JWT_SECONDS_DURATION,
         },
