@@ -14,7 +14,7 @@ import { toK2KMode, toK2KVersionState } from "./k2kConverters.ts";
 import { injectAppRequest } from "./utils.ts";
 
 const getCatalogEservicesMock = vi.hoisted(() => vi.fn());
-const getOrganizationMock = vi.hoisted(() => vi.fn());
+const getOrganizationsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -25,7 +25,7 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
       getCatalogEservices: getCatalogEservicesMock,
-      getOrganization: getOrganizationMock,
+      getOrganizations: getOrganizationsMock,
     },
   };
 });
@@ -66,18 +66,23 @@ describe("POST /catalog (getCatalogEservices)", () => {
 
   beforeEach(() => {
     getCatalogEservicesMock.mockReset();
-    getOrganizationMock.mockReset();
+    getOrganizationsMock.mockReset();
   });
 
   it("should return 200 with converted results on success", async () => {
     getCatalogEservicesMock.mockResolvedValue({
       data: mockK2kResponse,
     });
-    getOrganizationMock.mockResolvedValue({
+    getOrganizationsMock.mockResolvedValue({
       data: {
-        attributes: [],
-        id: expectedApiResult.producer.id,
-        name: expectedApiResult.producer.name,
+        pagination: { limit: 1, offset: 0, total: 1 },
+        results: [
+          {
+            attributes: [],
+            id: expectedApiResult.producer.id,
+            name: expectedApiResult.producer.name,
+          },
+        ],
       },
     });
 
@@ -95,9 +100,13 @@ describe("POST /catalog (getCatalogEservices)", () => {
       }),
     );
 
-    expect(getOrganizationMock).toHaveBeenCalledWith(
+    expect(getOrganizationsMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        path: { organizationId: expectedApiResult.producer.id },
+        query: {
+          limit: 1,
+          offset: 0,
+          organizationId: [expectedApiResult.producer.id],
+        },
       }),
     );
 

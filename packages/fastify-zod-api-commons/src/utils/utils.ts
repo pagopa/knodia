@@ -5,7 +5,19 @@ import {
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 
-type KnodeEntityMap<TEntity> = Map<KnodeId, Map<string, TEntity>>;
+import { genericError } from "../models/errors/errors.ts";
+
+type KnodeEntityMap<TEntity> = Map<KnodeId, Map<ExternalId<IDS>, TEntity>>;
+
+export function assertEntityExists<TEntity>(
+  entity: TEntity | undefined,
+  message: string,
+): TEntity {
+  if (entity === undefined) {
+    throw genericError(message);
+  }
+  return entity;
+}
 
 export async function getExternalEntitiesMap<
   TItem,
@@ -23,7 +35,7 @@ export async function getExternalEntitiesMap<
   getEntityId: (item: TItem) => string;
   getKnodeId: ((item: TItem) => KnodeId) | KnodeId;
   items: TItem[];
-}): Promise<Map<KnodeId, Map<string, TEntity>>> {
+}): Promise<Map<KnodeId, Map<ExternalId<IDS>, TEntity>>> {
   const idsByKnode = new Map<KnodeId, Set<ExternalId<IDS>>>();
   for (const item of items) {
     const entityId = unsafeBrandExternalId<IDS>(getEntityId(item));

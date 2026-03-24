@@ -57,7 +57,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getEservice(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<Eservice>> {
-      return await eserviceReadmodelService.getEServiceById(eserviceId);
+      return await eserviceReadmodelService.getEserviceById(eserviceId);
     },
     async getPurpose(purposeId: PurposeId) {
       return await purposeReadmodelService.getPurposeById(purposeId);

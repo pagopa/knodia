@@ -60,6 +60,7 @@ export const organizationRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "internal" },
       ]);
 
       const { results, totalCount } =
