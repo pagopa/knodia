@@ -6,7 +6,7 @@ import { consumerEserviceDetailsQuery } from "@/features/e-service/services/quer
 import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services_/$id_/purposes/new",
+  "/_authenticated/consumption/e-services/$id_/purposes/new",
 )({
   component: RouteComponent,
   loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),

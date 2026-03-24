@@ -32,7 +32,7 @@ import { Route as AuthenticatedConsumptionEServicesSearchRouteImport } from './r
 import { Route as AuthenticatedConsumptionEServicesRequestAgreementRouteImport } from './routes/_authenticated/consumption/e-services/request-agreement'
 import { Route as AuthenticatedConsumptionEServicesIdRouteImport } from './routes/_authenticated/consumption/e-services/$id'
 import { Route as AuthenticatedConsumptionAgreementsArchiveRouteImport } from './routes/_authenticated/consumption/agreements/archive'
-import { Route as AuthenticatedConsumptionEServicesIdPurposesNewRouteImport } from './routes/_authenticated/consumption/e-services_/$id_/purposes/new'
+import { Route as AuthenticatedConsumptionEServicesIdPurposesNewRouteImport } from './routes/_authenticated/consumption/e-services/$id_/purposes/new'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -168,7 +168,7 @@ const AuthenticatedConsumptionAgreementsArchiveRoute =
   } as any)
 const AuthenticatedConsumptionEServicesIdPurposesNewRoute =
   AuthenticatedConsumptionEServicesIdPurposesNewRouteImport.update({
-    id: '/consumption/e-services_/$id_/purposes/new',
+    id: '/consumption/e-services/$id_/purposes/new',
     path: '/consumption/e-services/$id/purposes/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
@@ -248,7 +248,7 @@ export interface FileRoutesById {
   '/_authenticated/consumption/e-services/': typeof AuthenticatedConsumptionEServicesIndexRoute
   '/_authenticated/production/agreements/': typeof AuthenticatedProductionAgreementsIndexRoute
   '/_authenticated/production/e-services/': typeof AuthenticatedProductionEServicesIndexRoute
-  '/_authenticated/consumption/e-services_/$id_/purposes/new': typeof AuthenticatedConsumptionEServicesIdPurposesNewRoute
+  '/_authenticated/consumption/e-services/$id_/purposes/new': typeof AuthenticatedConsumptionEServicesIdPurposesNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -326,7 +326,7 @@ export interface FileRouteTypes {
     | '/_authenticated/consumption/e-services/'
     | '/_authenticated/production/agreements/'
     | '/_authenticated/production/e-services/'
-    | '/_authenticated/consumption/e-services_/$id_/purposes/new'
+    | '/_authenticated/consumption/e-services/$id_/purposes/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -498,8 +498,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsumptionAgreementsArchiveRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/consumption/e-services_/$id_/purposes/new': {
-      id: '/_authenticated/consumption/e-services_/$id_/purposes/new'
+    '/_authenticated/consumption/e-services/$id_/purposes/new': {
+      id: '/_authenticated/consumption/e-services/$id_/purposes/new'
       path: '/consumption/e-services/$id/purposes/new'
       fullPath: '/consumption/e-services/$id/purposes/new'
       preLoaderRoute: typeof AuthenticatedConsumptionEServicesIdPurposesNewRouteImport
