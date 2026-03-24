@@ -264,6 +264,7 @@
             "const": "YES"
           },
           "personalDataTypes": {
+            "type": "array",
             "contains": {
               "const": "OTHER"
             }
@@ -295,6 +296,7 @@
             "const": "YES"
           },
           "legalBasis": {
+            "type": "array",
             "contains": {
               "const": "LEGAL_OBLIGATION"
             }
@@ -313,6 +315,7 @@
             "const": "YES"
           },
           "legalBasis": {
+            "type": "array",
             "contains": {
               "const": "PUBLIC_INTEREST"
             }
@@ -334,6 +337,7 @@
             "const": "RULE_OF_LAW"
           },
           "legalBasis": {
+            "type": "array",
             "contains": {
               "const": "PUBLIC_INTEREST"
             }
@@ -355,6 +359,7 @@
             "const": "ADMINISTRATIVE_ACT"
           },
           "legalBasis": {
+            "type": "array",
             "contains": {
               "const": "PUBLIC_INTEREST"
             }
@@ -509,6 +514,7 @@
             "const": "YES"
           },
           "personalDataTypes": {
+            "type": "array",
             "contains": {
               "const": "GDPR_ART_10"
             }

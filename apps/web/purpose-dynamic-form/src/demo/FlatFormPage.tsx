@@ -4,8 +4,8 @@ import { DynamicForm } from "../components/DynamicForm";
 import { createAjvValidator } from "../engine/ajv/validation";
 import { type FormValues, loadSchema, loadUiSchema } from "../engine/types";
 import { collectErrorMessages } from "../engine/uischemaParser";
-import jsonSchema from "../schemas/flat-form/schema.json";
 import uischema from "../schemas/flat-form/uischema.json";
+import jsonSchema from "../schemas/two-form/schema.json";
 
 const schema = loadSchema(jsonSchema);
 const ui = loadUiSchema(uischema);
