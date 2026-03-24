@@ -3,7 +3,7 @@ import type {
   PurposeFormSchemaVersion,
 } from "@knodia/purpose-models";
 
-import Ajv, { type ValidateFunction } from "ajv/dist/2020";
+import Ajv, { type ValidateFunction } from "ajv/dist/2020.js";
 
 import { formAnswersValidationFailed } from "../models/errors.ts";
 import { getFormSchema } from "../models/formSchemas.ts";
