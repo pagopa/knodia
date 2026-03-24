@@ -26,13 +26,11 @@ export function ConsumptionEserviceCard({
         title={eservice.name.en}
         to="/consumption/e-services/$id"
       />
-      <ConsumptionEserviceInfoGrid>
-        <AgreementInfoCard
-          state={eservice.agreement.state as "Active" | "Suspended"}
-        />
+      <div className="grid grid-cols-3 gap-1.5">
+        <AgreementInfoCard state={eservice.agreement.state} />
         <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
         <GenericInfoCard label="Keychains">-</GenericInfoCard>
-      </ConsumptionEserviceInfoGrid>
+      </div>
       <EserviceCardFooter
         mode={eservice.mode}
         state={eservice.state}
@@ -57,26 +55,21 @@ export function ConsumptionEserviceCard({
   );
 }
 
-function AgreementInfoCard({ state }: { state: "Active" | "Suspended" }) {
-  const { bg, label } = match(state)
+function AgreementInfoCard({ state }: { state: bffApi.AgreementState }) {
+  const style = match(state)
     .with("Active", () => ({ bg: "bg-success-light", label: "Active" }))
     .with("Suspended", () => ({ bg: "bg-error-light", label: "Suspended" }))
+    .with("Archived", () => {
+      console.warn("Unexpected Archived agreement in consumer e-services list");
+      return null;
+    })
     .exhaustive();
 
-  return (
-    <dl
-      className={`${bg} flex items-center justify-between rounded-lg px-4 py-3`}
-    >
-      <dt className="text-primary-light-low-contrast body-md">Agreement</dt>
-      <dd className="body-md-em text-primary-dark">{label}</dd>
-    </dl>
-  );
-}
+  if (!style) return null;
 
-function ConsumptionEserviceInfoGrid({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <div className="grid grid-cols-3 gap-1.5">{children}</div>;
+  return (
+    <GenericInfoCard className={style.bg} label="Agreement">
+      {style.label}
+    </GenericInfoCard>
+  );
 }

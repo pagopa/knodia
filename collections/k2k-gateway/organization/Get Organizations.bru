@@ -1,0 +1,15 @@
+meta {
+  name: Get Organizations
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/organizations?limit=50&offset=0
+  body: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~organizationId: {{organizationId}}
+}
