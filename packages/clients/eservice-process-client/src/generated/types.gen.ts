@@ -116,8 +116,8 @@ export type Eservice = {
 };
 
 export type Eservices = {
-    items: Array<Eservice>;
     pagination: Pagination;
+    results: Array<Eservice>;
 };
 
 export type EserviceVersion = {
