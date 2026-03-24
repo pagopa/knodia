@@ -18,7 +18,7 @@ import {
   type NewRemoteResourcePurpose,
   remoteResourcePurpose,
   type RemoteResourcePurposeSQL,
-} from "../purpose.js";
+} from "../purpose.ts";
 
 export type RemoteResourceDbService = ReturnType<
   typeof remoteResourceDbServiceBuilder
