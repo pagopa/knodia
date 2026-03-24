@@ -159,8 +159,8 @@ export type API_ProducerEservicesQueryParams = z.infer<
 
 export const API_ProducerEservices = z
   .strictObject({
-    items: z.array(API_ProducerEservice),
     pagination: API_Pagination,
+    results: z.array(API_ProducerEservice),
   })
   .meta({ id: "ProducerEservices" });
 export type API_ProducerEservices = z.infer<typeof API_ProducerEservices>;
@@ -322,8 +322,8 @@ export type API_ConsumerCatalogEserviceSearchResult = z.infer<
 
 export const API_ConsumerCatalogEserviceSearchResults = z
   .strictObject({
-    items: z.array(API_ConsumerCatalogEserviceSearchResult),
     pagination: API_Pagination,
+    results: z.array(API_ConsumerCatalogEserviceSearchResult),
   })
   .meta({ id: "ConsumerCatalogEserviceSearchResults" });
 export type API_ConsumerCatalogEserviceSearchResults = z.infer<
@@ -450,8 +450,8 @@ export type API_ConsumerEservice = z.infer<typeof API_ConsumerEservice>;
 
 export const API_ConsumerEservices = z
   .strictObject({
-    items: z.array(API_ConsumerEservice),
     pagination: API_Pagination,
+    results: z.array(API_ConsumerEservice),
   })
   .meta({ id: "ConsumerEservices" });
 export type API_ConsumerEservices = z.infer<typeof API_ConsumerEservices>;

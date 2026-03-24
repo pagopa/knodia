@@ -90,7 +90,7 @@ function RouteComponent() {
           <TabPanel id="consumption" key="consumption">
             <KeychainTable
               isLoading={isLoading}
-              keychains={data?.items ?? []}
+              keychains={data?.results ?? []}
               type="consumption"
             />
           </TabPanel>

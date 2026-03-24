@@ -136,15 +136,15 @@ components:
     Organizations:
       type: object
       properties:
-        items:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
           type: array
           items:
             $ref: "#/components/schemas/Organization"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
       required:
-        - items
         - pagination
+        - results
       additionalProperties: false
     OrganizationSeed:
       type: object
