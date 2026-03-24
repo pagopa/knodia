@@ -1,6 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { Agreement } from "@knodia/agreement-models";
+import { type Agreement } from "@knodia/agreement-models";
 import {
   getMockAgreement,
   toExpectAgreement,
@@ -48,7 +48,7 @@ describe("Agreement Aggregators", () => {
       },
     };
     const agreement2: WithMetadata<Agreement> = {
-      data: getMockAgreement(1),
+      data: getMockAgreement({ seed: 1 }),
       metadata: {
         version: 1,
       },

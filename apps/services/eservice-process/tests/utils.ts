@@ -6,8 +6,7 @@ import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/e
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 
 import { createEserviceVersionActivatedV1Event } from "../src/models/eserviceEventFactory.ts";
-import { app, eventStoreDb } from "./setup.ts";
-import { eserviceWriterService } from "./setup.ts";
+import { app, eserviceWriterService, eventStoreDb } from "./setup.ts";
 
 export async function getAllEserviceEvents() {
   return await eventStoreDb.select().from(eventStoreEserviceEvents);

@@ -1,12 +1,17 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { AgreementId, KnodeId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import {
+  type AgreementId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import { and, eq } from "drizzle-orm";
 
-import type { NewRemoteResourceAgreement } from "../agreement.ts";
-
-import { remoteResourceAgreement } from "../agreement.ts";
+import {
+  type NewRemoteResourceAgreement,
+  remoteResourceAgreement,
+} from "../agreement.ts";
 
 export type RemoteResourceDbService = ReturnType<
   typeof remoteResourceDbServiceBuilder
@@ -14,7 +19,7 @@ export type RemoteResourceDbService = ReturnType<
 
 export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
   return {
-    async getByAgreementId(
+    async getAgreementById(
       agreementId: ExternalId<AgreementId>,
       knodeId: KnodeId,
     ) {
@@ -29,6 +34,15 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         )
         .limit(1);
       return result ?? undefined;
+    },
+    async getAgreementsDistinctKnodes(consumerId: OrganizationId) {
+      const queryResult = await db
+        .selectDistinctOn([remoteResourceAgreement.knodeId])
+        .from(remoteResourceAgreement)
+        .where(eq(remoteResourceAgreement.consumerId, consumerId))
+        .orderBy(remoteResourceAgreement.knodeId);
+
+      return queryResult.map((r) => KnodeId.parse(r.knodeId));
     },
     async insertAgreement(
       remoteAgreement: NewRemoteResourceAgreement,

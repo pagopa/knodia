@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Organization } from "@knodia/organization-models";
-import type { TestToken } from "@knodia/test-commons/auth";
 import type z from "zod";
 
 import { generateId, type OrganizationId } from "@knodia/common-models/ids";
-import { forbiddenTestTokens } from "@knodia/test-commons/auth";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -19,6 +18,7 @@ import {
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
+  { type: "internal" },
 ];
 
 const mockOrganizations: Organization[] = [
@@ -64,6 +64,18 @@ describe("GET /organizations (getOrganizations)", () => {
       query: { limit: "4", offset: "4" },
       testCase: "pagination only (2nd page)",
       totalCount: 5,
+    },
+    {
+      expectedResult: [
+        mockOrganizations[0],
+        mockOrganizations[1],
+      ] as Organization[],
+      query: {
+        ...defaultQuery,
+        organizationId: [mockOrganizations[0]!.id, mockOrganizations[1]!.id],
+      },
+      testCase: "filter by organization IDs",
+      totalCount: 2,
     },
   ] satisfies {
     expectedResult: Organization[];
@@ -118,6 +130,10 @@ describe("GET /organizations (getOrganizations)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
+    {
+      ...defaultQuery,
+      organizationId: ["invalid-uuid"],
+    },
     {
       ...defaultQuery,
       invalidParam: "invalid",

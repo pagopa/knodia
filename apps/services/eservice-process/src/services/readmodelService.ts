@@ -32,7 +32,7 @@ import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/s
 import { organizationReadmodelServiceBuilder } from "@knodia/db-readmodel-organization/services";
 import {
   type Eservice,
-  EserviceInterface,
+  type EserviceInterface,
   EserviceVersionState,
 } from "@knodia/eservice-models";
 import { and, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
@@ -164,7 +164,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getEservice(
       eserviceId: EserviceId,
     ): Promise<undefined | WithMetadata<Eservice>> {
-      return await eserviceReadmodelService.getEServiceById(eserviceId);
+      return await eserviceReadmodelService.getEserviceById(eserviceId);
     },
     async getEserviceLatestVersion(eserviceId: EserviceId) {
       return await readmodelDb.transaction(async (tx) => {

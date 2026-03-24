@@ -5,7 +5,7 @@ import fastifyRequestContext, {
   requestContext,
 } from "@fastify/request-context";
 import {
-  CorrelationId,
+  type CorrelationId,
   generateId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
@@ -13,7 +13,7 @@ import { createLoggerOptions } from "@knodia/logger";
 import Fastify, { type FastifyRegisterOptions } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 
-import { missingHeader } from "../models/errors/errors.ts";
+import { missingRequestHeader } from "../models/errors/errors.ts";
 import { CORRELATION_ID_HEADER } from "../models/headers.ts";
 import openapiZodPlugin, {
   type OpenapiZodPluginOptions,
@@ -90,7 +90,9 @@ export const requireCorrelationIdHeaderPlugin =
       fastify.addHook("onRequest", async (req, res) => {
         const headerValue = req.headers[CORRELATION_ID_HEADER];
         if (!headerValue) {
-          const problem = makeApiProblem(missingHeader(CORRELATION_ID_HEADER));
+          const problem = makeApiProblem(
+            missingRequestHeader(CORRELATION_ID_HEADER),
+          );
           return res.status(problem.status).send(problem);
         }
 

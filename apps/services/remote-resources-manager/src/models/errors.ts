@@ -1,6 +1,5 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { OrganizationId } from "@knodia/common-models/ids";
-import type { AgreementId } from "@knodia/common-models/ids";
+import type { AgreementId, OrganizationId } from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";

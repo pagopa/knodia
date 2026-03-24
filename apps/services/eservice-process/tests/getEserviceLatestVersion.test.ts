@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { type EserviceId, generateId } from "@knodia/common-models/ids";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_EserviceVersion } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";

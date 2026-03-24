@@ -1,13 +1,13 @@
 import {
   type Eservice,
-  EserviceInterface,
-  EserviceVersion,
+  type EserviceInterface,
+  type EserviceVersion,
 } from "@knodia/eservice-models";
 
 import {
-  API_Eservice,
-  API_EserviceVersion,
-  API_EserviceVersionInterfaceDocument,
+  type API_Eservice,
+  type API_EserviceVersion,
+  type API_EserviceVersionInterfaceDocument,
 } from "./api.ts";
 
 export const toAPI_EserviceVersion = (

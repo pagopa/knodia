@@ -63,5 +63,5 @@ export const retrievePurpose = async (
     throw purposeNotFound(purposeId);
   }
 
-  return purpose.data;
+  return purpose;
 };

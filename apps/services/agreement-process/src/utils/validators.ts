@@ -1,4 +1,3 @@
-import type { AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
@@ -7,6 +6,7 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
+import { AgreementState } from "@knodia/agreement-models";
 import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
@@ -14,39 +14,57 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 import {
   agreementAlreadyExists,
   eserviceVersionNotInExpectedStates,
+  eserviceVersionNotLatest,
 } from "../models/errors.ts";
-import { retrieveEserviceVersion } from "./readmodelUtils.ts";
+import {
+  retrieveEserviceLatestVersion,
+  retrieveEserviceVersionFromEservice,
+} from "./utils.ts";
 
 const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Active,
   EserviceVersionState.enum.Suspended,
 ];
 
-export const assertEserviceVersionAllowsAgreementCreation = async (
+export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
-  readmodelService: ReadmodelService,
 ) => {
-  const allowedStates = agreementCreationAllowedEserviceVersionStates;
-
-  const eserviceVersion = await retrieveEserviceVersion(
-    eservice.id,
+  const eserviceVersion = retrieveEserviceVersionFromEservice(
+    eservice,
     eserviceVersionId,
-    readmodelService,
   );
 
-  if (!allowedStates.includes(eserviceVersion.state)) {
+  if (
+    !agreementCreationAllowedEserviceVersionStates.includes(
+      eserviceVersion.state,
+    )
+  ) {
     throw eserviceVersionNotInExpectedStates(
       eservice.id,
       eserviceVersionId,
-      allowedStates,
+      agreementCreationAllowedEserviceVersionStates,
     );
   }
 };
 
+export const assertEserviceVersionIsLatest = (
+  eservice: Eservice,
+  eserviceVersionId: EserviceVersionId,
+) => {
+  const eserviceLatestVersion = retrieveEserviceLatestVersion(eservice);
+
+  if (eserviceLatestVersion.id !== eserviceVersionId) {
+    throw eserviceVersionNotLatest(
+      eservice.id,
+      eserviceVersionId,
+      eserviceLatestVersion.id,
+    );
+  }
+};
 export const agreementCreationConflictingStates: AgreementState[] = [
-  "Active",
-  "Suspended",
+  AgreementState.enum.Active,
+  AgreementState.enum.Suspended,
 ];
 export const assertNoConflictingAgreementsExist = async ({
   consumerId,
