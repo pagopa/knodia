@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { TestToken } from "@knodia/test-commons/auth";
-
 import {
   forbiddenTestTokens,
   TEST_ORGANIZATION_ID,
+  type TestToken,
 } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
