@@ -28,7 +28,6 @@ import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.t
 import { authServiceBuilder } from "./services/authService.ts";
 import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
-
 export function buildAppFromConfig(config: BffProcessConfig) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
