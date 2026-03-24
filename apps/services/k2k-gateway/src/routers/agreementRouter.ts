@@ -176,7 +176,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
 
       res.status(200).send({
         pagination: data.pagination,
-        results: data.items.map(toAPI_Agreement),
+        results: data.results.map(toAPI_Agreement),
       });
     },
     method: "GET",

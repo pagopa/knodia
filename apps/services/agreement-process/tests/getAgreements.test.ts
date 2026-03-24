@@ -132,12 +132,12 @@ describe("GET /agreements (getAgreements)", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toEqual({
-        items: expectedResult.map((a) => toExpectAPI_Agreement(a)),
         pagination: {
           limit: Number(query.limit),
           offset: Number(query.offset),
           total: totalCount,
         },
+        results: expectedResult.map((a) => toExpectAPI_Agreement(a)),
       });
     },
   );

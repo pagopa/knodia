@@ -7,6 +7,7 @@ import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { ModalFooter } from "@/components/ModalFooter";
+import { StepHeader } from "@/components/StepHeader";
 import { config } from "@/config/config";
 import { useStepsContext } from "@/contexts/steps";
 import { useEServiceWizardContext } from "@/features/e-service/contexts/useEServiceFormContext";
@@ -16,7 +17,6 @@ import { eserviceFormSchema } from "@/features/e-service/types/eserviceCreateFor
 import { downloadFile } from "@/utils/downloadFile";
 
 import { DocumentRecap } from "../../DocumentRecap";
-import { StepHeader } from "../components/StepHeader";
 
 export function RecapStep() {
   const { data } = useEServiceWizardContext();

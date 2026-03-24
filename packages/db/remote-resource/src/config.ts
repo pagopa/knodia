@@ -13,6 +13,7 @@ export const RemoteResourceDbConfig = z
       .min(1024)
       .max(65535)
       .default(5432),
+    REMOTE_RESOURCE_DB_PURPOSE_SCHEMA: z.string().default("purpose"),
     REMOTE_RESOURCE_DB_USE_SSL: z.stringbool().default(false),
     REMOTE_RESOURCE_DB_USER: z.string().default("root"),
   })
@@ -22,6 +23,7 @@ export const RemoteResourceDbConfig = z
     remoteResourceDbName: c.REMOTE_RESOURCE_DB_NAME,
     remoteResourceDbPassword: c.REMOTE_RESOURCE_DB_PASSWORD,
     remoteResourceDbPort: c.REMOTE_RESOURCE_DB_PORT,
+    remoteResourceDbPurposeSchema: c.REMOTE_RESOURCE_DB_PURPOSE_SCHEMA,
     remoteResourceDbUser: c.REMOTE_RESOURCE_DB_USER,
     remoteResourceDbUseSsl: c.REMOTE_RESOURCE_DB_USE_SSL,
   }));

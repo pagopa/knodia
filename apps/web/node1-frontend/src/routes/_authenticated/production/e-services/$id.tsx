@@ -1,4 +1,3 @@
-import { getProducerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Breadcrumb,
   Breadcrumbs,
@@ -14,20 +13,14 @@ import { PageHeader } from "@/components/PageHeader";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
-import { client } from "@/libs/axios";
-
-const eserviceQuery = (eserviceId: string) =>
-  getProducerEserviceDetailsOptions({
-    client,
-    path: { eserviceId },
-  });
+import { producerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 
 export const Route = createFileRoute(
   "/_authenticated/production/e-services/$id",
 )({
   component: RouteComponent,
   loader: async ({ context: { queryClient }, params: { id } }) =>
-    await queryClient.ensureQueryData(eserviceQuery(id)),
+    await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
 });
 
 function EServiceActions() {

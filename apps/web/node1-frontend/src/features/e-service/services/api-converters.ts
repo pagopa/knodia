@@ -32,6 +32,12 @@ export function toCatalogSearchResultUI(
 export function toConsumptionEserviceDetail(
   detail: bffApi.ConsumerEserviceDetails,
 ): ConsumptionEserviceDetail {
+  const hasRequiredAttributes =
+    detail.requiredAttributes.length === 0 ||
+    detail.requiredAttributes.every((group) =>
+      group.some((attr) => attr.possessed),
+    );
+
   return {
     accessToken: {
       audience: detail.accessToken.audience,
@@ -40,11 +46,9 @@ export function toConsumptionEserviceDetail(
     },
     categories: detail.categories,
     description: detail.description.en,
-    hasRequiredAttributes:
-      detail.requiredAttributes.length === 0 ||
-      detail.requiredAttributes.every((group) =>
-        group.some((attr) => attr.possessed),
-      ),
+    // TODO(KN-287): fetch agreement state from BFF (needs BFF to call RRM for active agreements)
+    hasActiveAgreement: hasRequiredAttributes,
+    hasRequiredAttributes,
     id: unsafeBrandId(detail.id),
     identificationRequired: detail.identificationRequired,
     interfaceDocument: detail.interfaceDocument,
