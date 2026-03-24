@@ -1,4 +1,4 @@
-import { bffApi } from "@knodia/bff-client";
+import { type bffApi } from "@knodia/bff-client";
 import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 

@@ -1,8 +1,10 @@
 import type { CorrelationId } from "@knodia/common-models/ids";
 import type { NewEventStoreOrganizationEvent } from "@knodia/db-event-store-writer/organization";
-import type { Organization } from "@knodia/organization-models";
 
-import { toOrganizationV1 } from "@knodia/organization-models";
+import {
+  type Organization,
+  toOrganizationV1,
+} from "@knodia/organization-models";
 
 export const createOrganizationCreatedV1Event = (
   organization: Organization,

@@ -3,8 +3,11 @@
 import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import {
   getMockEservice,
   getMockOrganization,
