@@ -114,10 +114,12 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-    getFormSchema(version: PurposeFormSchemaVersion): unknown {
+    getFormSchema(version: PurposeFormSchemaVersion): Record<string, unknown> {
       return getFormSchema(version);
     },
-    getFormUiSchema(version: PurposeFormSchemaVersion): unknown {
+    getFormUiSchema(
+      version: PurposeFormSchemaVersion,
+    ): Record<string, unknown> {
       return getFormUiSchema(version);
     },
     async getPurpose(
