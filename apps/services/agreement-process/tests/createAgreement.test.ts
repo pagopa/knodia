@@ -323,7 +323,7 @@ describe("POST /agreements - attribute validation", async () => {
     eserviceVersionId: eserviceVersion.id,
   };
 
-  it("should return 201 when consumer has extra unrelated attributes alongside valid ones", async () => {
+  it("should return 201 and only save matching attributes when consumer has extra unrelated attributes", async () => {
     await eserviceWriterService.upsertEservice(eservice, 1);
 
     const response = await injectAppRequest({ type: "internal" })
@@ -336,6 +336,15 @@ describe("POST /agreements - attribute validation", async () => {
         ],
       });
     expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Agreement>();
+    expect(responseBody.attributes).toEqual(
+      expect.arrayContaining(validAttributes),
+    );
+    expect(responseBody.attributes).not.toContainEqual({
+      code: "extra",
+      scheme: "extra",
+    });
   });
 
   it("should return 403 when consumer does not possess any required attribute", async () => {

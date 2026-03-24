@@ -84,9 +84,18 @@ export function agreementServiceBuilder(
         eserviceId,
       );
 
+      const allRequiredAttributes = eserviceVersion.requiredAttributes.flat();
+      const matchingAttributes = consumerAttributes.filter((consumerAtt) =>
+        allRequiredAttributes.some(
+          (required) =>
+            required.code === consumerAtt.code &&
+            required.scheme === consumerAtt.scheme,
+        ),
+      );
+
       const now = new Date();
       const agreement: Agreement = {
-        attributes: consumerAttributes,
+        attributes: matchingAttributes,
         consumer: {
           id: consumer.id,
           knodeId: consumer.knodeId,
