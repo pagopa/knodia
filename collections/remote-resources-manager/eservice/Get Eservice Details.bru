@@ -4,7 +4,7 @@ meta {
 }
 
 get {
-  url: {{host-remote-resources-manager}}/eservices/:eserviceId?knodeId=Lynx
+  url: {{host-remote-resources-manager}}/eservices/:eserviceId?knodeId={{other-knode-id}}
   body: none
   auth: none
 }
@@ -14,7 +14,7 @@ params:path {
 }
 
 params:query {
-  knodeId: Lynx
+  knodeId: {{other-knode-id}}
 }
 
 headers {
