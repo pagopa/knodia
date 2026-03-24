@@ -14,17 +14,12 @@ headers {
   Authorization: {{ui-session-jwt}}
 }
 
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
 body:json {
   {
-    "userId": "{{userId}}",
+    "userId": "{{userId}}"
   }
-}
-
-vars:post-response {
-  consumerKeychainId: res.body.id
-}
-
-script:pre-request {
-  const random = Math.round(Math.random() * 1000)
-  bru.setVar("randomName", `Test Consumer Keychain ${random}`)
 }
