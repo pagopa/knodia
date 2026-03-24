@@ -1,0 +1,24 @@
+meta {
+  name: Get Eservices
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/eservices?limit=50&offset=0
+  body: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~eserviceId: {{eserviceId}}
+}
+
+headers {
+  ~Authorization:
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  eservices: res.body.results
+}
