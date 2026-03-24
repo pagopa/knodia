@@ -809,9 +809,6 @@ importers:
       '@knodia/db-event-store-commons':
         specifier: workspace:*
         version: link:../../../packages/db/event-store/commons
-      '@knodia/db-event-store-config':
-        specifier: workspace:*
-        version: link:../../../packages/db/event-store/config
       '@knodia/db-event-store-keychain':
         specifier: workspace:*
         version: link:../../../packages/db/event-store/keychain
@@ -821,9 +818,6 @@ importers:
       '@knodia/db-readmodel-commons':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/commons
-      '@knodia/db-readmodel-config':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/config
       '@knodia/db-readmodel-keychain':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/keychain
