@@ -481,6 +481,8 @@ export const createConsumerAgreementMutation = (options?: Partial<Options<Create
 };
 
 /**
+ * Create a consumer purpose
+ *
  * Create a new Purpose for an E-service
  */
 export const createConsumerPurposeMutation = (options?: Partial<Options<CreateConsumerPurposeData>>): UseMutationOptions<CreateConsumerPurposeResponse, AxiosError<CreateConsumerPurposeError>, Options<CreateConsumerPurposeData>> => {

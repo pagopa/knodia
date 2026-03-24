@@ -234,6 +234,8 @@ export const createConsumerAgreement = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Create a consumer purpose
+ *
  * Create a new Purpose for an E-service
  */
 export const createConsumerPurpose = <ThrowOnError extends boolean = true>(options: Options<CreateConsumerPurposeData, ThrowOnError>) => (options.client ?? client).post<CreateConsumerPurposeResponses, CreateConsumerPurposeErrors, ThrowOnError>({

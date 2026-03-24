@@ -2133,6 +2133,7 @@ paths:
   /consumer/purposes:
     post:
       operationId: createConsumerPurpose
+      summary: Create a consumer purpose
       tags:
         - purpose
       description: Create a new Purpose for an E-service
@@ -2173,6 +2174,22 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/agreements:
