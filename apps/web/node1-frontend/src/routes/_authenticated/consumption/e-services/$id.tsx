@@ -35,7 +35,7 @@ import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services_/$id",
+  "/_authenticated/consumption/e-services/$id",
 )({
   component: RouteComponent,
   loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),

@@ -4,9 +4,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import { ConsumptionEserviceList } from "@/features/e-service/components/ConsumptionEserviceList";
 
-export const Route = createFileRoute("/_authenticated/consumption/e-services")({
-  component: RouteComponent,
-});
+export const Route = createFileRoute("/_authenticated/consumption/e-services/")(
+  {
+    component: RouteComponent,
+  },
+);
 
 function RouteComponent() {
   return (

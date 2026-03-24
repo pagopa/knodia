@@ -1,44 +1,41 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
+import { RequestAgreementModal } from "@/features/agreement/components/RequestAgreementModal/RequestAgreementModal";
+import { requestAgreementSearchSchema } from "@/features/agreement/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
-import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services_/$id_/purposes/new",
+  "/_authenticated/consumption/e-services/request-agreement",
 )({
   component: RouteComponent,
-  loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),
+  loaderDeps: ({ search: { eserviceId, knodeId } }) => ({
+    eserviceId,
+    knodeId,
+  }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({
-    context: { queryClient },
-    deps: { knodeId },
-    params: { id },
-  }) =>
+  loader: async ({ context: { queryClient }, deps: { eserviceId, knodeId } }) =>
     await queryClient.ensureQueryData(
-      consumerEserviceDetailsQuery(id, knodeId),
+      consumerEserviceDetailsQuery(eserviceId, knodeId),
     ),
-  validateSearch: eserviceDetailSearchSchema,
+  validateSearch: requestAgreementSearchSchema,
 });
 
 function RouteComponent() {
   const bffDetail = Route.useLoaderData();
-  const { knodeId } = Route.useSearch();
-  const { id } = Route.useParams();
-  const navigate = useNavigate();
+  const { eserviceId, knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
+  const navigate = useNavigate();
 
   const onClose = () =>
     navigate({
-      params: { id },
-      replace: true,
+      params: { id: eserviceId },
       search: { knodeId },
       to: "/consumption/e-services/$id",
     });
 
   return (
-    <CreatePurposeModal
+    <RequestAgreementModal
       eservice={eservice}
       knodeId={knodeId}
       onClose={onClose}
