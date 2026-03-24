@@ -1,4 +1,3 @@
-import { getConsumerEservicesOptions } from "@knodia/bff-client/tanstack-query";
 import { ButtonLink, Empty, Pagination } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -9,21 +8,9 @@ import { ConsumptionEserviceFilters } from "@/features/e-service/components/Cons
 import { ConsumptionEserviceList } from "@/features/e-service/components/ConsumptionEserviceList";
 import {
   consumptionEserviceListDefaultValues,
-  type ConsumptionEserviceListParams,
   consumptionEserviceListSchema,
 } from "@/features/e-service/models/search-params";
-import { client } from "@/libs/axios";
-
-const ESERVICES_PAGE_LIMIT = 10;
-
-const eservicesQuery = (
-  offset: number,
-  agreementState: ConsumptionEserviceListParams["agreementState"],
-) =>
-  getConsumerEservicesOptions({
-    client,
-    query: { agreementState, limit: ESERVICES_PAGE_LIMIT, offset },
-  });
+import { consumerEservicesQuery } from "@/features/e-service/services/queries";
 
 export const Route = createFileRoute("/_authenticated/consumption/e-services/")(
   {
@@ -37,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/consumption/e-services/")(
       context: { queryClient },
       deps: { agreementState, offset },
     }) => {
-      queryClient.prefetchQuery(eservicesQuery(offset, agreementState));
+      queryClient.prefetchQuery(consumerEservicesQuery(offset, agreementState));
     },
     search: {
       middlewares: [stripSearchParams(consumptionEserviceListDefaultValues)],
@@ -51,7 +38,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const { data, isLoading } = useQuery({
-    ...eservicesQuery(search.offset, search.agreementState),
+    ...consumerEservicesQuery(search.offset, search.agreementState),
     placeholderData: keepPreviousData,
   });
 
