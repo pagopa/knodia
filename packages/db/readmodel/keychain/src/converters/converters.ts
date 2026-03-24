@@ -74,6 +74,7 @@ export const buildFlatConsumerKeychain = ({
   };
 };
 
+/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
 export function buildConsumerKeychainKey(
   keySQL: ConsumerKeychainKeySQL,
 ): ConsumerKeychainKey {
