@@ -6,7 +6,7 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { z } from "zod";
+import { type z } from "zod";
 
 const AgreementProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)

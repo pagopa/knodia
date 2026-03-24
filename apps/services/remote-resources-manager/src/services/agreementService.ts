@@ -10,7 +10,7 @@ import {
 } from "@knodia/k2k-gateway-client";
 
 import type {
-  API_AgreementDetails,
+  API_Agreement,
   API_Agreements,
   API_AgreementSeed,
   API_CreatedAgreementResource,
@@ -20,7 +20,6 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
   toAPI_Agreement,
-  toAPI_AgreementDetails,
   toK2KAPI_AgreementState,
 } from "../models/agreement/apiConverter.ts";
 import { agreementNotFound } from "../models/errors.ts";
@@ -73,13 +72,10 @@ export function agreementServiceBuilder(
       agreementId: ExternalId<AgreementId>,
       knodeId: KnodeId,
       { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<API_AgreementDetails> {
-      logger.info(
-        { agreementId, knodeId },
-        `Getting Agreement ${agreementId} from Knode ${knodeId}`,
-      );
+    ): Promise<API_Agreement> {
+      logger.info(`Getting Agreement ${agreementId} from Knode ${knodeId}`);
 
-      const remoteAgreement = await remoteResourceDbService.getByAgreementId(
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
         knodeId,
       );
@@ -93,7 +89,7 @@ export function agreementServiceBuilder(
         path: { agreementId },
       });
 
-      return toAPI_AgreementDetails(data);
+      return toAPI_Agreement(data);
     },
 
     async getAgreements(

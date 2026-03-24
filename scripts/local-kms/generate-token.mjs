@@ -15,15 +15,32 @@ const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
 const INTERNAL_SUB = "local-internal-service";
 
+import { TOKEN_TYPES } from "./token-types.mjs";
+
 // Token type: determines the audience, claims structure, and output filename.
 // All knodia-issued tokens share the "knodia" key regardless of type.
 // Cognito tokens are handled by the local-cognito OIDC provider instead.
 const type = process.argv[2] ?? "ui-session";
 
-if (type !== "ui-session" && type !== "internal") {
-  console.error("Usage: node generate-token.mjs [ui-session|internal]");
-  process.exit(1);
+function getClaimsAndEnvVar(type) {
+  switch (type) {
+    case "ui-session":
+      return {
+        claims: { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, type },
+        envVarName: "UI_SESSION_JWT",
+      };
+    case "internal":
+      return {
+        claims: { sub: INTERNAL_SUB, type },
+        envVarName: "INTERNAL_JWT",
+      };
+    default:
+      console.error(`Usage: node generate-token.mjs [${TOKEN_TYPES.join("|")}]`);
+      process.exit(1);
+  }
 }
+
+const { claims, envVarName } = getClaimsAndEnvVar(type);
 
 const KID = "alias/local-knodia-key";
 
@@ -40,19 +57,6 @@ const header = b64url(
 );
 
 const now = Math.floor(Date.now() / 1000);
-
-const claims =
-  type === "ui-session"
-    ? {
-        sub: USER_ID,
-        organizationId: ORG_ID,
-        roles: ROLES,
-        type,
-      }
-    : {
-        sub: INTERNAL_SUB,
-        type,
-      };
 
 const payload = b64url(
   JSON.stringify({
@@ -90,7 +94,6 @@ console.log(`\nToken written to ${tokenPath}`);
 
 const COLLECTIONS_DIR = resolve(__dirname, "../../collections");
 const envPath = resolve(COLLECTIONS_DIR, ".env");
-const envVarName = type === "ui-session" ? "UI_SESSION_JWT" : "INTERNAL_JWT";
 const envLine = `${envVarName}=${token}`;
 
 let existing = "";

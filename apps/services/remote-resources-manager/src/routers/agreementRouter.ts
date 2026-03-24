@@ -1,10 +1,9 @@
-import type { AgreementId } from "@knodia/common-models/ids";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { KnodeId } from "@knodia/common-models/ids";
+import { type AgreementId, KnodeId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
@@ -12,7 +11,7 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { AgreementService } from "../services/agreementService.ts";
 
 import {
-  API_AgreementDetails,
+  API_Agreement,
   API_Agreements,
   API_AgreementSeed,
   API_CreatedAgreementResource,
@@ -107,7 +106,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       params: API_AgreementIdPathParam,
       querystring: API_GetAgreementQueryParams,
       response: {
-        200: API_AgreementDetails.meta({
+        200: API_Agreement.meta({
           description: "Agreement retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

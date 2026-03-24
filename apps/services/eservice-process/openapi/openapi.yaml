@@ -253,15 +253,15 @@ components:
     Eservices:
       type: object
       properties:
-        items:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
           type: array
           items:
             $ref: "#/components/schemas/Eservice"
-        pagination:
-          $ref: "#/components/schemas/Pagination"
       required:
-        - items
         - pagination
+        - results
       additionalProperties: false
     EserviceVersion:
       type: object

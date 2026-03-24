@@ -1,15 +1,15 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
-  OrganizationId,
-  PurposeId,
+  type OrganizationId,
+  type PurposeId,
   unsafeBrandId,
-  UserId,
+  type UserId,
 } from "@knodia/common-models/ids";
 import {
-  ConsumerKeychain,
+  type ConsumerKeychain,
   type ConsumerKeychainKey,
-  FlatConsumerKeychain,
+  type FlatConsumerKeychain,
   KeyAlgorithm,
   KeyFormat,
   LocalizedDescription,
@@ -74,6 +74,7 @@ export const buildFlatConsumerKeychain = ({
   };
 };
 
+/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
 export function buildConsumerKeychainKey(
   keySQL: ConsumerKeychainKeySQL,
 ): ConsumerKeychainKey {

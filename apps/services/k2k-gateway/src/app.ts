@@ -1,22 +1,23 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 
-import { KnodeId } from "@knodia/common-models/ids";
+import { type KnodeId } from "@knodia/common-models/ids";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
+import { type PollingService, pollingServiceBuilder } from "@knodia/polling";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
-import type { K2KGatewayConfig } from "./config/config.ts";
-
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
+import { type K2KGatewayConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
+import { purposeRouter } from "./routers/purposeRouter.ts";
 
 export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
@@ -26,6 +27,8 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     internalJwt: config.internalJwt,
     loggerConfig: config,
     organizationProcessUrl: config.organizationProcessUrl,
+    pollingService: pollingServiceBuilder(config),
+    purposeProcessUrl: config.purposeProcessUrl,
   });
 
   return app;
@@ -38,6 +41,8 @@ function buildApp({
   internalJwt,
   loggerConfig,
   organizationProcessUrl,
+  pollingService,
+  purposeProcessUrl,
 }: {
   agreementProcessUrl: string;
   callerKnodeId: KnodeId;
@@ -45,14 +50,18 @@ function buildApp({
   internalJwt: K2KGatewayConfig["internalJwt"];
   loggerConfig: LoggerConfig;
   organizationProcessUrl: string;
+  pollingService: PollingService;
+  purposeProcessUrl: string;
 }) {
   const clients = getKnodiaClients({
     agreementProcessUrl,
     eserviceProcessUrl,
     organizationProcessUrl,
+    purposeProcessUrl,
   });
   const fileManager = initFileManager();
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
+
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -85,6 +94,10 @@ function buildApp({
             description: "Routes related to Organizations",
             name: apiTags.organization,
           },
+          {
+            description: "Routes related to Purposes",
+            name: apiTags.purpose,
+          },
         ],
       },
     },
@@ -102,10 +115,17 @@ function buildApp({
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
     callerKnodeId,
+    pollingService,
     tokenProvider,
   });
   app.register(organizationRouter, {
     organizationProcessClient: clients.organizationProcessClient,
+    tokenProvider,
+  });
+  app.register(purposeRouter, {
+    callerKnodeId,
+    pollingService,
+    purposeProcessClient: clients.purposeProcessClient,
     tokenProvider,
   });
 

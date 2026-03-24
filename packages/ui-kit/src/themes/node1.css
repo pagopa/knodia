@@ -124,8 +124,10 @@
   --line-height-title: 1.25;
   --font-size-title-sm: 16px;
   --font-size-title-md: 18px;
+  --font-size-title-lg: 24px;
   --letter-spacing-title-sm: 0px;
   --letter-spacing-title-md: 0px;
+  --letter-spacing-title-lg: 0px;
   --font-weight-title: 400;
   --font-weight-title-em: 600;
 
@@ -192,6 +194,13 @@
     font-size: var(--font-size-title-md);
     font-weight: var(--font-weight-title-em);
     letter-spacing: var(--letter-spacing-title-md);
+    line-height: var(--line-height-title);
+  }
+  .title-lg-em {
+    font-family: var(--font-family-title);
+    font-size: var(--font-size-title-lg);
+    font-weight: var(--font-weight-title-em);
+    letter-spacing: var(--letter-spacing-title-lg);
     line-height: var(--line-height-title);
   }
   .label-sm {
@@ -285,6 +294,14 @@
     font-family: var(--font-family-headline);
     font-size: var(--font-size-headline-md);
     font-weight: var(--font-weight-headline);
+    letter-spacing: var(--letter-spacing-headline-md);
+    line-height: var(--line-height-headline);
+  }
+
+  .headline-md-em {
+    font-family: var(--font-family-headline);
+    font-size: var(--font-size-headline-md);
+    font-weight: var(--font-weight-headline-em);
     letter-spacing: var(--letter-spacing-headline-md);
     line-height: var(--line-height-headline);
   }

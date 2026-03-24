@@ -1,19 +1,24 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
-import type { OrganizationId, PurposeId } from "@knodia/common-models/ids";
 import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
+import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type {
+  AuthData,
   InternalAuthData,
-  UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { EserviceId, generateId } from "@knodia/common-models/ids";
+import {
+  type EserviceId,
+  generateId,
+  type OrganizationId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import { EserviceMode } from "@knodia/eservice-models";
 import {
-  LocalizedPurposeDescription,
-  LocalizedPurposeName,
+  type LocalizedPurposeDescription,
+  type LocalizedPurposeName,
   type Purpose,
-  PurposeFormAnswers,
+  type PurposeFormAnswers,
   PurposeState,
 } from "@knodia/purpose-models";
 
@@ -55,7 +60,7 @@ export function purposeServiceBuilder(
         name: LocalizedPurposeName;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
-    ): Promise<Purpose> {
+    ): Promise<WithMetadata<Purpose>> {
       const purposeId = generateId<PurposeId>();
       logger.info(
         { requestBody: { consumer, eserviceId, name } },
@@ -95,16 +100,19 @@ export function purposeServiceBuilder(
         updatedAt: now,
       };
 
-      await eventStoreWriter.insertEvent(
+      const { newVersion } = await eventStoreWriter.insertEvent(
         createPurposeActivatedV1Event(purpose, correlationId),
       );
 
-      return purpose;
+      return {
+        data: purpose,
+        metadata: { version: newVersion },
+      };
     },
     async getPurpose(
       purposeId: PurposeId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<Purpose> {
+      { logger }: AuthorizedContext<AuthData>,
+    ): Promise<WithMetadata<Purpose>> {
       logger.info(`Getting Purpose with ID ${purposeId}`);
 
       return await retrievePurpose(purposeId, readmodelService);

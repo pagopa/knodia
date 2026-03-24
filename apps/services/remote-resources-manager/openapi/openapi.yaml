@@ -139,6 +139,17 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -230,46 +241,6 @@ components:
         - pagination
         - results
       additionalProperties: false
-    AgreementDetails:
-      description: Agreement for an E-service
-      type: object
-      properties:
-        attributes:
-          type: array
-          items:
-            $ref: "#/components/schemas/Attribute"
-        consumer:
-          $ref: "#/components/schemas/AgreementConsumer"
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        eserviceVersionId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        producerId:
-          $ref: "#/components/schemas/OrganizationId"
-        state:
-          $ref: "#/components/schemas/AgreementState"
-        updatedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-      required:
-        - attributes
-        - consumer
-        - eserviceId
-        - eserviceVersionId
-        - id
-        - producerId
-        - state
-        - updatedAt
-      additionalProperties: false
     EserviceVersionState:
       type: string
       enum:
@@ -319,6 +290,24 @@ components:
       enum:
         - Bearer
         - DPoP
+    CompactOrganization:
+      description: Organization with only id, knodeId, and name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          type: string
+          minLength: 1
+      required:
+        - id
+        - knodeId
+        - name
+      additionalProperties: false
     GetCatalogEserviceSearchParams:
       anyOf:
         - type: object
@@ -429,7 +418,7 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-    EserviceDetailsLatestVersion:
+    EserviceVersionDetails:
       type: object
       properties:
         accessTokenAudience:
@@ -511,9 +500,25 @@ components:
         - name
         - notes
       additionalProperties: false
+    EserviceAgreementDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+      required:
+        - id
+        - state
+      additionalProperties: false
     EserviceDetails:
       type: object
       properties:
+        agreement:
+          allOf:
+            - $ref: "#/components/schemas/EserviceAgreementDetail"
         categories:
           type: array
           items:
@@ -531,7 +536,7 @@ components:
         isSignalHubEnabled:
           type: boolean
         latestVersion:
-          $ref: "#/components/schemas/EserviceDetailsLatestVersion"
+          $ref: "#/components/schemas/EserviceVersionDetails"
         mode:
           $ref: "#/components/schemas/EserviceMode"
         name:
@@ -550,6 +555,176 @@ components:
         - name
         - producer
       additionalProperties: false
+    EserviceVersion:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        requiredAttributes:
+          type: array
+          items:
+            type: array
+            items:
+              $ref: "#/components/schemas/Attribute"
+        state:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - id
+        - requiredAttributes
+        - state
+      additionalProperties: false
+    Eservice:
+      type: object
+      properties:
+        agreement:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+            state:
+              $ref: "#/components/schemas/AgreementState"
+          required:
+            - id
+            - state
+          additionalProperties: false
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/EserviceCategory"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        mode:
+          $ref: "#/components/schemas/EserviceMode"
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        version:
+          $ref: "#/components/schemas/EserviceVersion"
+      required:
+        - agreement
+        - categories
+        - id
+        - mode
+        - name
+        - producer
+        - updatedAt
+        - version
+      additionalProperties: false
+    Eservices:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Eservice"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
+    Organization:
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          type: string
+      required:
+        - attributes
+        - id
+        - name
+      additionalProperties: false
+    Organizations:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
+    LocalizedPurposeName:
+      description: Name of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedPurposeDescription:
+      description: Description of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormAnswers:
+      type: object
+      additionalProperties: {}
+    PurposeSeed:
+      description: Seed data to create a new Purpose
+      type: object
+      properties:
+        dailyCalls:
+          description: Expected number of daily API calls for this Purpose
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          description: Identifier of the E-service this Purpose refers to
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - dailyCalls
+        - description
+        - eserviceId
+        - formAnswersJson
+        - knodeId
+        - name
+      additionalProperties: false
+    CreatedPurposeResource:
+      description: Unique identifier of the created Purpose resource
+      allOf:
+        - $ref: "#/components/schemas/CreatedResource"
 paths:
   /status:
     get:
@@ -691,6 +866,78 @@ paths:
             application/problem+json:
               schema:
                 description: E-service not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /eservices:
+    get:
+      operationId: getEservices
+      summary: Get E-services
+      tags:
+        - eservice
+      description: Retrieve E-services
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/AgreementState"
+          in: query
+          name: agreementState
+          required: false
+      responses:
+        "200":
+          description: E-services retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: E-services retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Eservices"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /eservices/{eserviceId}/interface:
@@ -915,7 +1162,7 @@ paths:
               schema:
                 description: Agreement retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/AgreementDetails"
+                  - $ref: "#/components/schemas/Agreement"
         "400":
           description: Bad Request
           content:
@@ -948,6 +1195,200 @@ paths:
                 description: Agreement not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /purposes:
+    post:
+      operationId: createPurpose
+      tags:
+        - purpose
+      description: Create a new Purpose
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurposeSeed"
+      responses:
+        "201":
+          description: Purpose created successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedPurposeResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /organizations/{organizationId}:
+    get:
+      operationId: getOrganization
+      summary: Get Organization
+      tags:
+        - organization
+      description: Retrieve an Organization by its ID
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: organizationId
+          required: true
+      responses:
+        "200":
+          description: Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Organization retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Organization"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Organization not found
+          content:
+            application/problem+json:
+              schema:
+                description: Organization not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /organizations:
+    get:
+      operationId: getOrganizations
+      tags:
+        - organization
+      description: Retrieve a list of Organizations
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+              pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: organizationId
+          required: false
+          description: Filter by Organization ID
+      responses:
+        "200":
+          description: Organizations retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Organizations retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Organizations"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Remote Resources Manager API
     url: /
@@ -960,3 +1401,7 @@ tags:
     name: agreement
   - description: Routes related to E-services
     name: eservice
+  - description: Routes related to Purposes
+    name: purpose
+  - description: Routes related to Organizations
+    name: organization

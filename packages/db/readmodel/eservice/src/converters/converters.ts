@@ -1,7 +1,7 @@
 import type { AttributeGroup, AttributeId } from "@knodia/attribute-models";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { EserviceInterface, LocalizedName } from "@knodia/eservice-models";
+import { type EserviceInterface, LocalizedName } from "@knodia/eservice-models";
 
 import type {
   EserviceInterfaceSQL,

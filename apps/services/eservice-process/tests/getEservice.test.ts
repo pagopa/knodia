@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { type EserviceId, generateId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";
@@ -51,8 +51,10 @@ describe("GET /eservices/:eserviceId (getEservice)", () => {
     const listResponse = await injectAppRequest(uiToken)
       .get("/eservices")
       .query({ limit: "50", offset: "0" });
-    const listBody = listResponse.json<{ items: API_Eservice[] }>();
-    const expectedItem = listBody.items.find((i) => i.id === VALID_ESERVICE_ID);
+    const listBody = listResponse.json<{ results: API_Eservice[] }>();
+    const expectedItem = listBody.results.find(
+      (i) => i.id === VALID_ESERVICE_ID,
+    );
 
     const response = await getEservice(VALID_ESERVICE_ID);
     const body = response.json<API_Eservice>();

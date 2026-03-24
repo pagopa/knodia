@@ -28,6 +28,7 @@ beforeAll(async () => {
     nodeEnv: "test",
     organizationProcessUrl: "http://localhost:0",
     port: 0,
+    recentEserviceUpdateDays: 3,
     redisUrl: inject("REDIS_CONNECTION_STRING"),
     refreshJwt: { secondsDuration: 86400 },
     remoteResourcesManagerUrl: "http://localhost:0",

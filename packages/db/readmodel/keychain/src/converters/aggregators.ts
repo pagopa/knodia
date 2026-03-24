@@ -9,8 +9,8 @@ import {
   throwIfMultipleOrEmpty,
 } from "@knodia/db-readmodel-commons/utils";
 import {
-  ConsumerKeychain,
-  FlatConsumerKeychain,
+  type ConsumerKeychain,
+  type FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 
 import {
@@ -129,6 +129,7 @@ const toConsumerKeychainAggregator = (
     consumerKeychainSQL: throwIfMultipleOrEmpty(
       consumerKeychainsSQL,
       "consumerKeychain",
+      (ck) => ck.id,
     ),
     consumerKeychainUsersSQL: usersSQL,
   };

@@ -1,6 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { Agreement, AgreementState } from "@knodia/agreement-models";
+import { type Agreement, AgreementState } from "@knodia/agreement-models";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type AgreementId,
@@ -104,7 +104,11 @@ const toAgreementAggregator = (
   const { agreementsSQL, attributesSQL } = toAgreementsAggregator(queryRes);
 
   return {
-    agreementSQL: throwIfMultipleOrEmpty(agreementsSQL, "agreement"),
+    agreementSQL: throwIfMultipleOrEmpty(
+      agreementsSQL,
+      "agreement",
+      (a) => a.id,
+    ),
     attributesSQL,
   };
 };

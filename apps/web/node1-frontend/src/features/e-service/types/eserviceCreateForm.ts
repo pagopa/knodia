@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import type { StepConfig } from "@/contexts/steps";
-
 import { schemeRefSchema } from "@/types/schemeRef";
 
 const ACCEPTED_MIME_TYPES = [
@@ -141,11 +139,3 @@ export const ESERVICE_FORM_DEFAULTS: EServiceFormDraftData = {
   ...DOCS_STEP_DEFAULTS,
   ...ATTRIBUTES_STEP_DEFAULTS,
 };
-
-export const CREATE_FORM_STEPS: StepConfig[] = [
-  { label: "General" },
-  { label: "Technical" },
-  { label: "Docs" },
-  { label: "Attributes" },
-  { label: "Recap" },
-];

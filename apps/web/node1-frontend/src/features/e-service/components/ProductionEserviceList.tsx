@@ -1,4 +1,4 @@
-import { bffApi } from "@knodia/bff-client";
+import { type bffApi } from "@knodia/bff-client";
 import { Empty, Loader } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 

@@ -1,16 +1,20 @@
-import type { OrganizationProcessClient } from "@knodia/organization-process-client";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { organizationProcessApi } from "@knodia/organization-process-client";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
 
 import { apiTags } from "../models/apiTags.ts";
 import {
+  API_GetOrganizationsQueryParams,
   API_Organization,
   API_OrganizationIdPathParam,
+  API_Organizations,
 } from "../models/organization/api.ts";
 import { toAPI_Organization } from "../models/organization/apiConverters.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
@@ -59,5 +63,44 @@ export const organizationRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.organization],
     },
     url: "/organizations/:organizationId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestQuery: req.query },
+        "Getting Organizations with params",
+      );
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await organizationProcessApi.getOrganizations({
+        client: organizationProcessClient,
+        headers,
+        query: req.query,
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map(toAPI_Organization),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Organizations",
+      operationId: "getOrganizations",
+      querystring: API_GetOrganizationsQueryParams,
+      response: {
+        200: API_Organizations.meta({
+          description: "Organizations retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      tags: [apiTags.organization],
+    },
+    url: "/organizations",
   });
 };

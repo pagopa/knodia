@@ -96,6 +96,17 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    CreatedResource:
+      description: Unique identifier of the created resource
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - id
+      additionalProperties: false
     KnodeId:
       description: Unique Knode identifier
       type: string
@@ -558,6 +569,82 @@ components:
         - id
         - name
       additionalProperties: false
+    Organizations:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/Organization"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
+    LocalizedPurposeName:
+      description: Name of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedPurposeDescription:
+      description: Description of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormAnswers:
+      description: Key-value pairs representing the Consumer's answers to the Knode's
+        purpose form
+      type: object
+      additionalProperties: {}
+    PurposeSeed:
+      description: Seed data to create a new Purpose
+      type: object
+      properties:
+        consumerId:
+          description: Identifier of the Consumer Organization creating the Purpose
+          allOf:
+            - $ref: "#/components/schemas/OrganizationId"
+        dailyCalls:
+          description: Expected number of daily API calls for this Purpose
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          description: Identifier of the E-service this Purpose refers to
+          allOf:
+            - $ref: "#/components/schemas/EserviceId"
+        formAnswersJson:
+          $ref: "#/components/schemas/PurposeFormAnswers"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+      required:
+        - consumerId
+        - dailyCalls
+        - description
+        - eserviceId
+        - formAnswersJson
+        - name
+      additionalProperties: false
+    CreatedPurposeResource:
+      description: Unique identifier of the created Purpose resource
+      allOf:
+        - $ref: "#/components/schemas/CreatedResource"
 paths:
   /status:
     get:
@@ -828,6 +915,13 @@ paths:
           description: Filter by Consumer ID
         - schema:
             allOf:
+              - $ref: "#/components/schemas/EserviceId"
+          in: query
+          name: eserviceId
+          required: false
+          description: Filter by E-service ID
+        - schema:
+            allOf:
               - $ref: "#/components/schemas/AgreementState"
           in: query
           name: state
@@ -927,6 +1021,103 @@ paths:
                 description: Organization not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /organizations:
+    get:
+      operationId: getOrganizations
+      tags:
+        - organization
+      description: Retrieve a list of Organizations
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/OrganizationId"
+          in: query
+          name: organizationId
+          required: false
+          description: Filter by Organization ID
+      responses:
+        "200":
+          description: Organizations retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Organizations retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Organizations"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes:
+    post:
+      operationId: createPurpose
+      summary: Create a new Purpose
+      tags:
+        - resource
+        - purpose
+      description: Create a new Purpose for a Consumer to declare the intended use of
+        a Producer's E-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurposeSeed"
+      responses:
+        "201":
+          description: Purpose created successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose created successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedPurposeResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: Knode to Knode API
     url: /
@@ -943,3 +1134,5 @@ tags:
     name: eservice
   - description: Routes related to Organizations
     name: organization
+  - description: Routes related to Purposes
+    name: purpose

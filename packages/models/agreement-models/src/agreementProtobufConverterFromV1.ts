@@ -4,15 +4,15 @@ import {
 } from "@knodia/common-models/externalResource";
 import {
   KnodeId,
-  OrganizationId,
+  type OrganizationId,
   unsafeBrandId,
 } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
-import { Agreement, AgreementState } from "./agreement.ts";
+import { type Agreement, AgreementState } from "./agreement.ts";
 import {
-  AgreementConsumerV1,
+  type AgreementConsumerV1,
   AgreementStateV1,
   type AgreementV1,
 } from "./generated/v1/agreement.ts";

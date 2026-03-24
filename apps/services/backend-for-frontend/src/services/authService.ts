@@ -98,7 +98,7 @@ export function authServiceBuilder(
 
     const claimsParsed = ClaimsFromCognito.safeParse({
       organizationId: orgGroup.slice("org:".length),
-      roles: roles,
+      roles,
       sub: cognitoPayload.sub,
     });
 

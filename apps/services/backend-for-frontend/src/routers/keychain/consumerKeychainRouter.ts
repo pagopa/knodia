@@ -8,13 +8,17 @@ import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  KnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
 } from "@knodia/keychain-process-client";
+import {
+  isPolledVersionAtLeastResponseVersion,
+  type PollingService,
+} from "@knodia/polling";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
@@ -30,10 +34,6 @@ import {
   toAPI_KeychainDetails,
 } from "../../models/keychain/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
-import {
-  isPolledVersionAtLeastResponseVersion,
-  type PollingService,
-} from "../../utils/polling.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -69,7 +69,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   ) =>
     pollingService.pollResourceUntilDeletion(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
-    )({});
+    )();
 
   fastify.route({
     handler: async (req, res) => {
@@ -251,14 +251,14 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       });
 
       res.send({
-        items: data.items.map((keychain) =>
+        pagination: data.pagination,
+        results: data.results.map((keychain) =>
           toAPI_Keychain(keychain, {
             // TODO: retrieve real keysCount and membersCount from keychainProcessApi when available
             keysCount: 0,
             membersCount: 0,
           }),
         ),
-        pagination: data.pagination,
       });
     },
     method: "GET",
