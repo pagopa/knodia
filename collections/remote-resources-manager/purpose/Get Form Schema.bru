@@ -1,0 +1,19 @@
+meta {
+  name: Get Form Schema
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/purposes/formSchemas/:version
+  body: none
+  auth: none
+}
+
+params:path {
+  version: 1.0
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}

@@ -1,0 +1,18 @@
+meta {
+  name: Get Form Schema
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/purposes/formSchemas/:version
+  body: none
+  auth: none
+}
+
+params:path {
+  version: 1.0
+}
+
+headers {
+  ~Authorization:
+}
