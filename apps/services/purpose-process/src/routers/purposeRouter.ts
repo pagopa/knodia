@@ -134,10 +134,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
-        {
-          tokenType: "ui-session",
-          userRoles: ["administrative", "technical"],
-        },
       ]);
 
       const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);
@@ -173,10 +169,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
-        {
-          tokenType: "ui-session",
-          userRoles: ["administrative", "technical"],
-        },
       ]);
 
       const parsed = PurposeFormSchemaVersion.safeParse(req.params.version);

@@ -6,11 +6,7 @@ import { describe, expect, it } from "vitest";
 import { getFormSchema, getFormUiSchema } from "../src/models/formSchemas.ts";
 import { injectAppRequest } from "./utils.ts";
 
-const allowedTestTokens: TestToken[] = [
-  { type: "internal" },
-  { roles: ["administrative"], type: "ui-session" },
-  { roles: ["technical"], type: "ui-session" },
-];
+const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 describe("GET /purposes/formSchemas/:version (getFormSchema)", () => {
   it.each(allowedTestTokens)(
