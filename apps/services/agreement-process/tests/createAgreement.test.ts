@@ -13,6 +13,7 @@ import {
   EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockAgreement,
@@ -20,8 +21,6 @@ import {
   getMockEserviceVersion,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
-
-import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 
 import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
