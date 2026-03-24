@@ -26,13 +26,13 @@ export function ConsumptionEserviceCard({
         title={eservice.name.en}
         to="/consumption/e-services/$id"
       />
-      <ConsumptionEserviceInfoGrid>
+      <div className="grid grid-cols-3 gap-1.5">
         <AgreementInfoCard
           state={eservice.agreement.state as "Active" | "Suspended"}
         />
         <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
         <GenericInfoCard label="Keychains">-</GenericInfoCard>
-      </ConsumptionEserviceInfoGrid>
+      </div>
       <EserviceCardFooter
         mode={eservice.mode}
         state={eservice.state}
@@ -73,10 +73,3 @@ function AgreementInfoCard({ state }: { state: "Active" | "Suspended" }) {
   );
 }
 
-function ConsumptionEserviceInfoGrid({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return <div className="grid grid-cols-3 gap-1.5">{children}</div>;
-}
