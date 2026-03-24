@@ -19,31 +19,7 @@ import {
   getMockEservice,
   getMockEserviceVersion,
 } from "@knodia/test-commons/utils";
-import { describe, expect, it, vi } from "vitest";
-
-const getEserviceByIdMock = vi.hoisted(() => vi.fn());
-
-vi.mock("@knodia/db-readmodel-eservice/services", async (importOriginal) => {
-  const original =
-    await importOriginal<
-      typeof import("@knodia/db-readmodel-eservice/services")
-    >();
-  return {
-    ...original,
-    eserviceReadmodelServiceBuilder: (
-      db: Parameters<typeof original.eserviceReadmodelServiceBuilder>[0],
-    ) => {
-      const realService = original.eserviceReadmodelServiceBuilder(db);
-      getEserviceByIdMock.mockImplementation(
-        realService.getEserviceById.bind(realService),
-      );
-      return {
-        ...realService,
-        getEserviceById: getEserviceByIdMock,
-      };
-    },
-  };
-});
+import { describe, expect, it } from "vitest";
 
 import { API_Agreement, API_AgreementSeed } from "../src/models/api.ts";
 import { toAPI_Agreement } from "../src/models/apiConverter.ts";
@@ -269,10 +245,7 @@ describe("POST /agreements (createAgreement)", async () => {
       versions: [eserviceVersion1, eserviceVersion2],
     };
 
-    getEserviceByIdMock.mockResolvedValueOnce({
-      data: eserviceWithMultipleVersions,
-      metadata: { version: 1 },
-    });
+    await eserviceWriterService.upsertEservice(eserviceWithMultipleVersions, 1);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post("/agreements")
