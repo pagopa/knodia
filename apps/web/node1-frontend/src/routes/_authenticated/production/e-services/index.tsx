@@ -1,4 +1,3 @@
-import { getProducerEservicesOptions } from "@knodia/bff-client/tanstack-query";
 import { Button, ButtonLink, Pagination } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -11,20 +10,14 @@ import {
   productionEserviceSearchDefaultValues,
   productionEserviceSearchSchema,
 } from "@/features/e-service/models/search-params";
-import { client } from "@/libs/axios";
-
-const eservicesQuery = (offset: number) =>
-  getProducerEservicesOptions({
-    client,
-    query: { limit: 10, offset },
-  });
+import { producerEservicesQuery } from "@/features/e-service/services/queries";
 
 export const Route = createFileRoute("/_authenticated/production/e-services/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps: { offset } }) => {
-    queryClient.prefetchQuery(eservicesQuery(offset));
+    queryClient.prefetchQuery(producerEservicesQuery(offset));
   },
   search: {
     middlewares: [stripSearchParams(productionEserviceSearchDefaultValues)],
@@ -39,7 +32,7 @@ function RouteComponent() {
   const { offset, ...filterDefaultValues } = search;
 
   const { data, isLoading } = useQuery({
-    ...eservicesQuery(offset),
+    ...producerEservicesQuery(offset),
     placeholderData: keepPreviousData,
   });
 

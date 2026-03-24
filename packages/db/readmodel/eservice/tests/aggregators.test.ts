@@ -1,6 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { Eservice } from "@knodia/eservice-models";
+import { type Eservice } from "@knodia/eservice-models";
 import { getMockEservice, toExpectEservice } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 

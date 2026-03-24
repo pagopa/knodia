@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { EserviceId, generateId } from "@knodia/common-models/ids";
+import { type EserviceId, generateId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { toExpectAPI_Eservice } from "@knodia/test-commons/utils";

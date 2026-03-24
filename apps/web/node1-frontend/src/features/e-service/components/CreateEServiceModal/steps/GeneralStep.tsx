@@ -3,16 +3,15 @@ import { Button, Select, TextArea, TextField } from "@knodia/ui-kit/ui";
 import { BookOpenTextIcon } from "@phosphor-icons/react";
 
 import { ModalFooter } from "@/components/ModalFooter";
+import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
 import { useGeneralStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
-import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
 import {
   parseSchemeRefKeys,
   renderSchemeRefItems,
   toSchemeRefKey,
 } from "@/features/e-service/utils/schemeRef";
-
-import { StepHeader } from "../components/StepHeader";
+import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 interface Props {
   onCancel: () => void;

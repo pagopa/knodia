@@ -4,7 +4,7 @@ import {
   OrganizationTopicConfig,
 } from "@knodia/kafka-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { z } from "zod";
+import { type z } from "zod";
 
 const OrganizationReadmodelWriterConfig = LoggerConfig.and(
   ReadmodelOrganizationConfig,

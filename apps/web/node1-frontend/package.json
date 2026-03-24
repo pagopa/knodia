@@ -16,6 +16,7 @@
     "@knodia/bff-client": "workspace:*",
     "@knodia/common-models": "workspace:*",
     "@knodia/category-models": "workspace:*",
+    "@knodia/purpose-models": "workspace:*",
     "@knodia/ui-kit": "workspace:*",
     "@phosphor-icons/react": "catalog:",
     "@tailwindcss/vite": "catalog:",

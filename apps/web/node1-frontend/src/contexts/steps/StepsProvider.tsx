@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 
 import { type StepConfig, StepsContext } from "./useStepsContext";
 
@@ -15,6 +15,10 @@ export function StepsProvider({
 }: StepsProviderProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(initialStep);
   const totalSteps = stepConfig.length;
+  const stepLabels = useMemo(
+    () => stepConfig.map((s) => s.label),
+    [stepConfig],
+  );
 
   const goToStep = (stepIndex: number) => {
     if (stepIndex >= 0 && stepIndex < totalSteps) {
@@ -32,6 +36,7 @@ export function StepsProvider({
         goToStep,
         nextStep,
         prevStep,
+        stepLabels,
         steps: stepConfig,
         totalSteps,
       }}

@@ -12,11 +12,11 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import {
-  AgreementId,
-  EserviceId,
-  EserviceVersionId,
+  type AgreementId,
+  type EserviceId,
+  type EserviceVersionId,
   generateId,
-  OrganizationId,
+  type OrganizationId,
 } from "@knodia/common-models/ids";
 
 import type { API_GetAgreementsQueryParams } from "../models/api.ts";

@@ -1,9 +1,9 @@
-import { Agreement, AgreementState } from "@knodia/agreement-models";
+import { Agreement, type AgreementState } from "@knodia/agreement-models";
 import {
   Eservice,
   EserviceCategory,
   EserviceVersion,
-  EserviceVersionState,
+  type EserviceVersionState,
 } from "@knodia/eservice-models";
 import { ConsumerKeychain } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";

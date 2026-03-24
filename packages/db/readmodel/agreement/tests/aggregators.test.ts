@@ -1,6 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { Agreement } from "@knodia/agreement-models";
+import { type Agreement } from "@knodia/agreement-models";
 import {
   getMockAgreement,
   toExpectAgreement,

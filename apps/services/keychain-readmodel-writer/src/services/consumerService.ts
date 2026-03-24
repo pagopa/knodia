@@ -1,8 +1,10 @@
 import type { KeychainWriterService } from "@knodia/db-readmodel-keychain/writer";
-import type { KeychainEventEnvelopeV1 } from "@knodia/keychain-models";
 
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
-import { fromConsumerKeychainV1 } from "@knodia/keychain-models";
+import {
+  fromConsumerKeychainV1,
+  type KeychainEventEnvelopeV1,
+} from "@knodia/keychain-models";
 import { match, P } from "ts-pattern";
 
 export async function handleKeychainEvent(

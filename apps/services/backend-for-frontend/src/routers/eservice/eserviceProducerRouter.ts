@@ -7,7 +7,10 @@ import {
   API_CreatedResource,
   API_FileDownload,
 } from "@knodia/common-models/api";
-import { EserviceInterfaceId, generateId } from "@knodia/common-models/ids";
+import {
+  type EserviceInterfaceId,
+  generateId,
+} from "@knodia/common-models/ids";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import {
   eserviceProcessApi,
@@ -16,7 +19,7 @@ import {
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
-  KnodiaServiceHeaders,
+  type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   isPolledVersionAtLeastResponseVersion,

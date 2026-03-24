@@ -1,12 +1,12 @@
 import { Banner, FileUpload } from "@knodia/ui-kit/ui";
 
 import { ModalFooter } from "@/components/ModalFooter";
+import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
 import { useDocsStepForm } from "@/features/e-service/contexts/useEServiceFormContext";
-import { getFieldErrorMessage } from "@/features/e-service/utils/getFieldErrorMessage";
+import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import { RemovableDocumentRecap } from "../components/RemovableDocumentRecap";
-import { StepHeader } from "../components/StepHeader";
 
 export function DocsStep() {
   const { nextStep, prevStep } = useStepsContext();

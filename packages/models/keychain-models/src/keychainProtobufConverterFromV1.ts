@@ -1,16 +1,20 @@
-import { PurposeId, unsafeBrandId, UserId } from "@knodia/common-models/ids";
+import {
+  type PurposeId,
+  unsafeBrandId,
+  type UserId,
+} from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
 import {
-  ConsumerKeychainKeyV1,
-  ConsumerKeychainV1,
+  type ConsumerKeychainKeyV1,
+  type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
 } from "./generated/v1/keychain.ts";
 import {
-  ConsumerKeychain,
-  ConsumerKeychainKey,
+  type ConsumerKeychain,
+  type ConsumerKeychainKey,
   KeyAlgorithm,
   KeyFormat,
 } from "./keychain.ts";

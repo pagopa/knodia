@@ -1,33 +1,36 @@
-import config, { blockTestCommonsImports } from "./eslint.node.js";
 import path from "path";
+import { fileURLToPath } from "url";
 
-const cwd = process.cwd();
-const folderName = path.basename(cwd);
-const allowedReadmodelWriter = `@knodia/db-readmodel-${folderName.replace(
-  "-readmodel-writer",
-  ""
-)}/writer`;
+import config, { blockTestCommonsImports } from "./eslint.node.js";
 
-export default [
-  ...config,
-  {
-    files: ["**/src/**/*.ts"],
-    rules: {
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            blockTestCommonsImports,
-            {
-              group: [
-                "@knodia/db-readmodel-*/writer",
-                `!${allowedReadmodelWriter}`,
-              ],
-              message: `Only ${allowedReadmodelWriter} are allowed`,
-            },
-          ],
-        },
-      ],
+export function createReadmodelConfig(importMetaUrl) {
+  const folderName = path.basename(path.dirname(fileURLToPath(importMetaUrl)));
+  const allowedReadmodelWriter = `@knodia/db-readmodel-${folderName.replace(
+    "-readmodel-writer",
+    "",
+  )}/writer`;
+
+  return [
+    ...config,
+    {
+      files: ["**/src/**/*.ts"],
+      rules: {
+        "no-restricted-imports": [
+          "error",
+          {
+            patterns: [
+              blockTestCommonsImports,
+              {
+                group: [
+                  "@knodia/db-readmodel-*/writer",
+                  `!${allowedReadmodelWriter}`,
+                ],
+                message: `Only ${allowedReadmodelWriter} are allowed`,
+              },
+            ],
+          },
+        ],
+      },
     },
-  },
-];
+  ];
+}
