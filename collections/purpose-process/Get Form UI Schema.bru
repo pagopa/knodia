@@ -1,0 +1,15 @@
+meta {
+  name: Get Form UI Schema
+  type: http
+}
+
+get {
+  url: {{host-purpose-process}}/purposes/formSchemas/1.0/ui
+  body: none
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{internal-jwt}}
+}
