@@ -1,0 +1,19 @@
+meta {
+  name: Get Consumer E-services
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/eservices?offset=0&limit=50
+  body: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~agreementState: Active
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

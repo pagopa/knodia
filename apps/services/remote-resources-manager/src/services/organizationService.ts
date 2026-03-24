@@ -8,7 +8,11 @@ import {
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 
-import type { API_Organization } from "../models/organization/api.ts";
+import type {
+  API_GetOrganizationsQueryParams,
+  API_Organization,
+  API_Organizations,
+} from "../models/organization/api.ts";
 
 import { toAPI_Organization } from "../models/organization/apiConverter.ts";
 
@@ -33,6 +37,26 @@ export function organizationServiceBuilder(
       });
 
       return toAPI_Organization(data);
+    },
+    async getOrganizations(
+      requestQuery: API_GetOrganizationsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Organizations> {
+      const { knodeId, ...queryWithoutKnodeId } = requestQuery;
+      logger.info({
+        message: `Getting Organizations from Knode ${knodeId} with query`,
+        requestQuery,
+      });
+
+      const { data } = await k2kGatewayApi.getOrganizations({
+        client: k2kGatewayClient,
+        query: queryWithoutKnodeId,
+      });
+
+      return {
+        pagination: data.pagination,
+        results: data.results.map(toAPI_Organization),
+      };
     },
   };
 }

@@ -3,10 +3,13 @@ import type {
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import type { OrganizationId, UserId } from "@knodia/common-models/ids";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  type OrganizationId,
+  unsafeBrandId,
+  type UserId,
+} from "@knodia/common-models/ids";
 import { UnsecuredJWT } from "jose";
 import { match } from "ts-pattern";
 

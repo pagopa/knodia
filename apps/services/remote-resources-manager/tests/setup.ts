@@ -66,8 +66,10 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await readmodelDb.$client.end();
-  await remoteResourceDb.$client.end();
+  await Promise.all([
+    remoteResourceDb.$client.end(),
+    readmodelDb.$client.end(),
+  ]);
 });
 
 export { app, remoteResourceDbService };

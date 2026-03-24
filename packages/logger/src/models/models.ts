@@ -1,7 +1,7 @@
 import {
-  CorrelationId,
-  OrganizationId,
-  UserId,
+  type CorrelationId,
+  type OrganizationId,
+  type UserId,
 } from "@knodia/common-models/ids";
 
 export interface HTTPServiceLoggerMetadata extends LoggerMetadataCommon {

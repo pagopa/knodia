@@ -53,8 +53,8 @@ export type Organization = {
 };
 
 export type Organizations = {
-    items: Array<Organization>;
     pagination: Pagination;
+    results: Array<Organization>;
 };
 
 export type OrganizationSeed = {
@@ -96,6 +96,10 @@ export type GetOrganizationsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Organization ID
+         */
+        organizationId?: Array<string>;
     };
     url: '/organizations';
 };

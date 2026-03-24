@@ -102,6 +102,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       pollingService,
     });
     protectedApp.register(eserviceConsumerRouter, {
+      config,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementConsumerRouter, {

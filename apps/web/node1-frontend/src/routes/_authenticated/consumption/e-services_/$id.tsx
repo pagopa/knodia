@@ -1,7 +1,6 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { bffApi } from "@knodia/bff-client";
-import { getConsumerEserviceDetailsOptions } from "@knodia/bff-client/tanstack-query";
 import {
   Avatar,
   Banner,
@@ -27,18 +26,13 @@ import {
 } from "@/features/e-service/components/EserviceDetailSections";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
+import { OrgConsumptionStatusSection } from "@/features/e-service/components/OrgConsumptionStatusSection";
 import { Section } from "@/features/e-service/components/Section";
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
+import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
-
-const eserviceQuery = (eserviceId: string, knodeId: bffApi.KnodeId) =>
-  getConsumerEserviceDetailsOptions({
-    client,
-    path: { eserviceId },
-    query: { knodeId },
-  });
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services_/$id",
@@ -50,7 +44,10 @@ export const Route = createFileRoute(
     context: { queryClient },
     deps: { knodeId },
     params: { id },
-  }) => await queryClient.ensureQueryData(eserviceQuery(id, knodeId)),
+  }) =>
+    await queryClient.ensureQueryData(
+      consumerEserviceDetailsQuery(id, knodeId),
+    ),
   validateSearch: eserviceDetailSearchSchema,
 });
 
@@ -191,8 +188,16 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
-      {/* TODO: if an agreement already exists for this eservice, hide ConsumptionRequirementsSection
-          and show "Your Org's consumption status" section instead */}
+      {/* TODO(KN-287): also show when agreement is in "requested" state */}
+      {eservice.hasActiveAgreement && (
+        <>
+          <OrgConsumptionStatusSection
+            eserviceId={eservice.id}
+            knodeId={knodeId}
+          />
+          <Divider className="my-10" />
+        </>
+      )}
       <ConsumptionRequirementsSection
         eserviceId={eservice.id}
         hasRequiredAttributes={eservice.hasRequiredAttributes}

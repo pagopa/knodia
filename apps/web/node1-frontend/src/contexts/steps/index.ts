@@ -1,2 +1,6 @@
 export { StepsProvider } from "./StepsProvider";
-export { type StepConfig, useStepsContext } from "./useStepsContext";
+export {
+  type StepConfig,
+  useCurrentStep,
+  useStepsContext,
+} from "./useStepsContext";

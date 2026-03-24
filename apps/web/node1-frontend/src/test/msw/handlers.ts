@@ -9,8 +9,8 @@ export const handlers = [
     const offset = Number(url.searchParams.get("offset") ?? 0);
 
     return HttpResponse.json({
-      items: [],
       pagination: { limit, offset, total: 0 },
+      results: [],
     });
   }),
 

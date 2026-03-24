@@ -1,7 +1,7 @@
 import type { RequestContextData } from "@fastify/request-context";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
-import { CorrelationId, generateId } from "@knodia/common-models/ids";
+import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import {
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,
@@ -9,14 +9,15 @@ import {
 import { createTestLogger } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import type { AuthorizationRule } from "../../src/auth/authorization.ts";
-
 import {
   extractAuthDataFromToken,
   type InternalAuthData,
   type UISessionAuthData,
 } from "../../src/auth/authData.ts";
-import { validateAuthorization } from "../../src/auth/authorization.ts";
+import {
+  type AuthorizationRule,
+  validateAuthorization,
+} from "../../src/auth/authorization.ts";
 import {
   forbiddenError,
   unauthorizedError,

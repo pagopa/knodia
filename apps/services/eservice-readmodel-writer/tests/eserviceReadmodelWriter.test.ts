@@ -3,7 +3,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import { generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
-  Eservice,
+  type Eservice,
   eserviceEvents,
   toEserviceV1,
 } from "@knodia/eservice-models";

@@ -1,12 +1,15 @@
 import { Steps } from "@knodia/ui-kit/ui";
-import { match } from "ts-pattern";
 
-import { StepsProvider, useStepsContext } from "@/contexts/steps";
+import {
+  type StepConfig,
+  StepsProvider,
+  useCurrentStep,
+  useStepsContext,
+} from "@/contexts/steps";
 import { EServiceFormProvider } from "@/features/e-service/contexts/EServiceFormProvider";
+import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
-import { useLeaveConfirmModal } from "../../hooks/useLeaveConfirmModal";
-import { CREATE_FORM_STEPS } from "../../types/eserviceCreateForm";
 import { AttributesStep } from "./steps/AttributesStep";
 import { DocsStep } from "./steps/DocsStep";
 import { GeneralStep } from "./steps/GeneralStep";
@@ -21,12 +24,23 @@ export function CreateEServiceModal({ onClose }: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
+  const steps: StepConfig[] = [
+    {
+      content: <GeneralStep onCancel={handleShowLeaveConfirm} />,
+      label: "General",
+    },
+    { content: <TechnicalStep />, label: "Technical" },
+    { content: <DocsStep />, label: "Docs" },
+    { content: <AttributesStep />, label: "Attributes" },
+    { content: <RecapStep />, label: "Recap" },
+  ];
+
   return (
     <>
       <FullPageModal onClose={handleShowLeaveConfirm} title="Create E-Service">
-        <StepsProvider stepConfig={CREATE_FORM_STEPS}>
+        <StepsProvider stepConfig={steps}>
           <EServiceFormProvider>
-            <ModalContent onCloseRequest={handleShowLeaveConfirm} />
+            <ModalContent />
           </EServiceFormProvider>
         </StepsProvider>
       </FullPageModal>
@@ -36,17 +50,9 @@ export function CreateEServiceModal({ onClose }: Props) {
   );
 }
 
-function ModalContent({ onCloseRequest }: { onCloseRequest: () => void }) {
-  const { currentStepIndex, steps } = useStepsContext();
-  const stepLabels = steps.map((s) => s.label);
-
-  const currentStep = match(currentStepIndex)
-    .with(0, () => <GeneralStep onCancel={onCloseRequest} />)
-    .with(1, () => <TechnicalStep />)
-    .with(2, () => <DocsStep />)
-    .with(3, () => <AttributesStep />)
-    .with(4, () => <RecapStep />)
-    .otherwise(() => null);
+function ModalContent() {
+  const { currentStepIndex, stepLabels } = useStepsContext();
+  const { content } = useCurrentStep();
 
   return (
     <div className="mx-auto max-w-160 p-10 pb-16 flex flex-col gap-16">
@@ -55,7 +61,7 @@ function ModalContent({ onCloseRequest }: { onCloseRequest: () => void }) {
         current={currentStepIndex}
         steps={stepLabels}
       />
-      {currentStep}
+      {content}
     </div>
   );
 }

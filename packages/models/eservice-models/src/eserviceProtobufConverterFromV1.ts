@@ -7,19 +7,19 @@ import { match } from "ts-pattern";
 import {
   type Eservice,
   EserviceAccessTokenType,
-  EserviceInterface,
+  type EserviceInterface,
   EserviceMode,
   type EserviceVersion,
   EserviceVersionState,
 } from "./eservice.ts";
 import {
   EserviceAccessTokenTypeV1,
-  EserviceInterfaceV1,
+  type EserviceInterfaceV1,
   EserviceModeV1,
   type EserviceV1,
-  EserviceVersionRequiredAttributeGroupV1,
+  type EserviceVersionRequiredAttributeGroupV1,
   EserviceVersionStateV1,
-  EserviceVersionV1,
+  type EserviceVersionV1,
 } from "./generated/v1/eservice.ts";
 
 export const fromEserviceV1 = (input: EserviceV1): Eservice => {

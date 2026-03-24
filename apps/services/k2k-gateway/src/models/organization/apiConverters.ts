@@ -1,4 +1,4 @@
-import { organizationProcessApi } from "@knodia/organization-process-client";
+import { type organizationProcessApi } from "@knodia/organization-process-client";
 
 import type { API_Organization } from "./api.ts";
 

@@ -3,7 +3,11 @@ import type { RemoteResourcePurposeSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { generateId, KnodeId, OrganizationId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  KnodeId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import {
   forbiddenTestTokens,
   TEST_ORGANIZATION_ID,
@@ -85,7 +89,7 @@ describe("POST /purposes (createPurpose)", () => {
 
     expect(response.json()).toEqual(mockK2KResponse);
 
-    const remoteResourcePurpose = await remoteResourceDbService.getByPurposeId(
+    const remoteResourcePurpose = await remoteResourceDbService.getPurposeById(
       unsafeBrandExternalId(purpose.id),
       KnodeId.parse(knodeId),
     );
