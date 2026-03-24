@@ -365,7 +365,7 @@ export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalU
 
 export type GetTechnicalUsersResponses = {
     /**
-     * Technical users retrieved successfully
+     * Technical Users retrieved successfully
      */
     200: Users;
 };

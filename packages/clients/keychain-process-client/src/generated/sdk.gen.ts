@@ -85,7 +85,7 @@ export const updateConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
- * Retrieve technical users of the requesting user's organization
+ * Retrieve technical users of the requesting User's Organization
  */
 export const getTechnicalUsers = <ThrowOnError extends boolean = true>(options: Options<GetTechnicalUsersData, ThrowOnError>) => (options.client ?? client).get<GetTechnicalUsersResponses, GetTechnicalUsersErrors, ThrowOnError>({
     responseType: 'json',

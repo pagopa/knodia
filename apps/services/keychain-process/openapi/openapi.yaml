@@ -548,7 +548,7 @@ paths:
       operationId: getTechnicalUsers
       tags:
         - user
-      description: Retrieve technical users of the requesting user's organization
+      description: Retrieve technical users of the requesting User's Organization
       parameters:
         - schema:
             allOf:
@@ -559,11 +559,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Technical users retrieved successfully
+          description: Technical Users retrieved successfully
           content:
             application/json:
               schema:
-                description: Technical users retrieved successfully
+                description: Technical Users retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Users"
         "400":
