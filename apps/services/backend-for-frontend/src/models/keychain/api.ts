@@ -62,6 +62,13 @@ export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
 >;
 
+export const API_KeychainMemberSeed = z
+  .strictObject({
+    userId: z.uuid(),
+  })
+  .meta({ id: "KeychainMemberSeed" });
+export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
+
 export const API_User = z
   .strictObject({
     email: z.string(),
