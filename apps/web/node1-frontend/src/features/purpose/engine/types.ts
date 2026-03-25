@@ -107,19 +107,19 @@ interface Rule {
   effect: "DISABLE" | "ENABLE" | "HIDE" | "SHOW";
 }
 
-// Typed loaders for JSON imports (centralises the cast in one place).
-// The parameter accepts any object with the required shape so that
-// JSON imports (which carry their literal type) pass through cleanly.
-export function loadSchema(json: {
-  properties: Record<string, object>;
-  type: string;
-}): JsonSchema {
+// Typed loaders that centralise the cast in one place.
+// Accepts both JSON imports (which carry their literal type) and
+// API responses (Record<string, unknown>).
+export function loadSchema(
+  json:
+    | Record<string, unknown>
+    | { properties: Record<string, object>; type: string },
+): JsonSchema {
   return json as JsonSchema;
 }
 
-export function loadUiSchema(json: {
-  elements: readonly object[];
-  type: string;
-}): UISchema {
+export function loadUiSchema(
+  json: Record<string, unknown> | { elements: readonly object[]; type: string },
+): UISchema {
   return json as UISchema;
 }
