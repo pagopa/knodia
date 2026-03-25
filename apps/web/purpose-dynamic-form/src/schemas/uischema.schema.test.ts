@@ -1,11 +1,17 @@
 import Ajv from "ajv/dist/2020";
 import { describe, expect, it } from "vitest";
 
+import { scopeToFieldName } from "../engine/dependencyResolver";
+import { loadUiSchema } from "../engine/types";
+import { collectAllScopes } from "../engine/uischemaParser";
 import compactFormUiSchema from "./compact-form/uischema.json";
+import dataSharingDataSchema from "./data-sharing/schema.json";
 import dataSharingUiSchema from "./data-sharing/uischema.json";
 import flatFormUiSchema from "./flat-form/uischema.json";
+import pa31DataSchema from "./pa31/schema.json";
 import pa31UiSchema from "./pa31/uischema.json";
 import threeStepFormUiSchema from "./three-step-form/uischema.json";
+import twoFormDataSchema from "./two-form/schema.json";
 import twoFormUiSchema from "./two-form/uischema.json";
 import metaSchema from "./uischema.schema.json";
 
@@ -370,5 +376,27 @@ describe("UI Schema meta-schema — rejects invalid schemas", () => {
       }),
     ]);
     expect(validate(schema)).toBe(false);
+  });
+});
+
+describe("UI schema scopes match data schema properties", () => {
+  it.each([
+    ["pa31", pa31UiSchema, pa31DataSchema],
+    ["two-form", twoFormUiSchema, twoFormDataSchema],
+    ["flat-form", flatFormUiSchema, twoFormDataSchema],
+    ["compact-form", compactFormUiSchema, twoFormDataSchema],
+    ["three-step-form", threeStepFormUiSchema, twoFormDataSchema],
+    ["data-sharing", dataSharingUiSchema, dataSharingDataSchema],
+  ])("%s", (_name, uiSchema, dataSchema) => {
+    const scopes = collectAllScopes(loadUiSchema(uiSchema));
+    const properties = Object.keys(
+      (dataSchema as { properties: Record<string, unknown> }).properties,
+    );
+
+    for (const scope of scopes) {
+      expect(properties, `scope "${scope}" not found in data schema`).toContain(
+        scopeToFieldName(scope),
+      );
+    }
   });
 });

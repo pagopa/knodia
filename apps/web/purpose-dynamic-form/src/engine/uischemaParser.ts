@@ -1,6 +1,8 @@
 import type {
+  AndCondition,
   ControlElement,
   LabelElement,
+  RuleCondition,
   UISchema,
   UISchemaElement,
 } from "./types";
@@ -15,6 +17,41 @@ export interface StepLayout {
   description?: string | undefined;
   elements: UISchemaElement[];
   label?: string | undefined;
+}
+
+export function collectAllScopes(element: UISchemaElement): string[] {
+  const scopes: string[] = [];
+
+  if (element.type === "Control") {
+    scopes.push(element.scope);
+    if (element.options?.hideOptions) {
+      for (const hide of Object.values(element.options.hideOptions)) {
+        scopes.push(hide.scope);
+      }
+    }
+  }
+
+  if (
+    (element.type === "Control" || element.type === "Label") &&
+    element.rule
+  ) {
+    scopes.push(...collectConditionScopes(element.rule.condition));
+  }
+
+  if ("elements" in element) {
+    for (const child of element.elements) {
+      scopes.push(...collectAllScopes(child));
+    }
+  }
+
+  return scopes;
+}
+
+export function collectConditionScopes(condition: RuleCondition): string[] {
+  if (isAndCondition(condition)) {
+    return condition.conditions.flatMap(collectConditionScopes);
+  }
+  return [condition.scope];
 }
 
 // Recursively flattens the UI Schema tree into a list of Control elements.
@@ -95,6 +132,10 @@ export function collectSteps(uischema: UISchema): StepLayout[] {
   }
 
   return steps;
+}
+
+export function isAndCondition(c: RuleCondition): c is AndCondition {
+  return "type" in c && c.type === "AND";
 }
 
 function collectGroupElements(

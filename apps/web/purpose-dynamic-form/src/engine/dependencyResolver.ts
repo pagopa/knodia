@@ -1,12 +1,15 @@
 import type {
-  AndCondition,
   FormValues,
   LabelElement,
   RuleCondition,
   UISchema,
 } from "./types";
 
-import { collectControls } from "./uischemaParser";
+import {
+  collectConditionScopes,
+  collectControls,
+  isAndCondition,
+} from "./uischemaParser";
 
 export function evaluateCondition(
   condition: RuleCondition,
@@ -68,7 +71,9 @@ export function isLabelVisible(
   visibleFieldNames: Set<string>,
 ): boolean {
   if (!label.rule) return true;
-  const scopes = collectScopes(label.rule.condition);
+  const scopes = collectConditionScopes(label.rule.condition).map(
+    scopeToFieldName,
+  );
   if (scopes.some((s) => !visibleFieldNames.has(s))) return false;
   const conditionMet = evaluateCondition(label.rule.condition, allValues);
   return label.rule.effect === "SHOW" ? conditionMet : !conditionMet;
@@ -76,15 +81,4 @@ export function isLabelVisible(
 
 export function scopeToFieldName(scope: string): string {
   return scope.replace("#/properties/", "");
-}
-
-function collectScopes(condition: RuleCondition): string[] {
-  if (isAndCondition(condition)) {
-    return condition.conditions.flatMap(collectScopes);
-  }
-  return [scopeToFieldName(condition.scope)];
-}
-
-function isAndCondition(c: RuleCondition): c is AndCondition {
-  return "type" in c && c.type === "AND";
 }
