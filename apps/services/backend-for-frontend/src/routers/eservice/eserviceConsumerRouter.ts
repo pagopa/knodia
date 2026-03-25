@@ -1,11 +1,17 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { API_FileDownload } from "@knodia/common-models/api";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -28,38 +34,55 @@ import {
   toAPI_ConsumerEservice,
   toAPI_ConsumerEserviceDetails,
 } from "../../models/eservice/apiConverter.ts";
+import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceConsumerRouterOptions {
   config: BffProcessConfig;
+  organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   EserviceConsumerRouterOptions
-> = async (fastify, { config, remoteResourcesManagerClient }) => {
+> = async (
+  fastify,
+  { config, organizationProcessClient, remoteResourcesManagerClient },
+) => {
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
 
       logger.info(
         { requestBody: req.body, requestQuery: req.query },
         `Getting E-services owned by Knode ${req.body.knodeId} with query parameters and body data`,
       );
 
-      const { data } = await remoteResourcesManagerApi.getCatalogEservices({
-        body: req.body,
-        client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        query: req.query,
-      });
+      const [{ data }, { data: consumerOrg }] = await Promise.all([
+        remoteResourcesManagerApi.getCatalogEservices({
+          body: req.body,
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          query: req.query,
+        }),
+        organizationProcessApi.getOrganization({
+          client: organizationProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId: consumerId },
+        }),
+      ]);
 
       res.send({
         pagination: data.pagination,
         results: data.results.map((r) =>
           toAPI_ConsumerCatalogEserviceSearchResult(
             r,
-            Math.random() >= 0.5, // TODO: hasRequiredAttributes - implement actual check
+            hasAllRequiredAttributes(
+              consumerOrg.attributes,
+              r.latestVersionRequiredAttributes,
+            ),
             req.body.knodeId,
           ),
         ),
@@ -89,21 +112,30 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
 
       logger.info(
         { params: req.params, query: req.query },
         `Getting consumer E-service details with ID ${req.params.eserviceId}`,
       );
 
-      const { data } = await remoteResourcesManagerApi.getEserviceDetails({
-        client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { eserviceId: req.params.eserviceId },
-        query: { knodeId: req.query.knodeId },
-      });
+      const [{ data }, { data: consumerOrg }] = await Promise.all([
+        remoteResourcesManagerApi.getEserviceDetails({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { eserviceId: req.params.eserviceId },
+          query: { knodeId: req.query.knodeId },
+        }),
+        organizationProcessApi.getOrganization({
+          client: organizationProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId: consumerId },
+        }),
+      ]);
 
-      res.send(toAPI_ConsumerEserviceDetails(data));
+      res.send(toAPI_ConsumerEserviceDetails(data, consumerOrg.attributes));
     },
     method: "GET",
     schema: {
