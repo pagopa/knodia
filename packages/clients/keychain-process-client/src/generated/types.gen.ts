@@ -101,7 +101,7 @@ export type User = {
 export type Users = Array<User>;
 
 export type KeychainMemberSeed = {
-    userId: string;
+    userId: UserId;
 };
 
 export type GetStatusData = {

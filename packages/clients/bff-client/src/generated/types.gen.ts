@@ -527,7 +527,7 @@ export type ConsumerKeychainPatch = {
 };
 
 export type KeychainMemberSeed = {
-    userId: string;
+    userId: UserId;
 };
 
 export type User = {
