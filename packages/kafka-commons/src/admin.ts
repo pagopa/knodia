@@ -1,6 +1,11 @@
 import type { Kafka } from "@confluentinc/kafka-javascript/types/kafkajs.ts";
 import type { Logger } from "pino";
 
+// fetchTopicMetadata({ topics }) times out with OAUTHBEARER/SASL_SSL when
+// called as the first admin operation. Admin ops need the controller broker,
+// which is only known after a metadata fetch — but with OAUTHBEARER the
+// background metadata refresh hasn't completed yet. `listTopics()` in
+// `initKafkaAdmin` forces a metadata fetch first, populating the controller cache.
 export async function checkTopicsExist(
   kafka: Kafka,
   topicNames: string[],
@@ -11,16 +16,14 @@ export async function checkTopicsExist(
   const admin = await initKafkaAdmin(kafka);
 
   try {
-    const { topics } = await admin.fetchTopicMetadata({
+    await admin.fetchTopicMetadata({
       topics: [...topicNames],
     });
-    logger.debug(`Topic metadata: ${JSON.stringify(topics)} `);
+    logger.debug("Topic metadata fetched successfully");
     return true;
   } catch (e) {
     logger.error(
-      `Unable to subscribe to topics "${topicNames}"! Error during topic metadata fetch: ${JSON.stringify(
-        e,
-      )}`,
+      `Unable to subscribe to topics "${topicNames}"! Error during topic metadata fetch: ${e instanceof Error ? e.message : JSON.stringify(e)}`,
     );
     return false;
   } finally {
@@ -31,5 +34,8 @@ export async function checkTopicsExist(
 async function initKafkaAdmin(kafka: Kafka) {
   const admin = kafka.admin();
   await admin.connect();
+  // Populate controller broker cache via rd_kafka_metadata — without this,
+  // admin operations (describeTopics) time out with OAUTHBEARER/SASL_SSL.
+  await admin.listTopics({ timeout: 10000 });
   return admin;
 }
