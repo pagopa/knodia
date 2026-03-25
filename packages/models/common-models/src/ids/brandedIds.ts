@@ -34,25 +34,10 @@ export type ConsumerKeychainId = z.infer<typeof ConsumerKeychainId>;
 export const PurposeId = z.uuid().brand<"PurposeId">();
 export type PurposeId = z.infer<typeof PurposeId>;
 
-// UserId uses guid() instead of uuid() because Cognito user pool subs
-// don't conform to RFC 4122 variant bits. guid() validates the hex format
-// without enforcing variant/version. toLowerCase() normalizes case for
-// consistent storage and comparison.
-export const UserId = z.guid().toLowerCase().brand<"UserId">();
-export type UserId = z.infer<typeof UserId>;
-
 export function generateId<T extends IDS>(): T {
   return crypto.randomUUID() as T;
 }
 
-export function generateUserId(): UserId {
-  return crypto.randomUUID() as UserId;
-}
-
 export function unsafeBrandId<T extends IDS>(id: string): T {
   return z.uuid().parse(id) as T;
-}
-
-export function unsafeBrandUserId(id: string): UserId {
-  return UserId.parse(id);
 }
