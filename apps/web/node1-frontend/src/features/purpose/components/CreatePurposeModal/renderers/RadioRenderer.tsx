@@ -24,6 +24,7 @@ export function RadioRenderer({
       isInvalid={!!error}
       label={control.label}
       onChange={onChange}
+      orientation="vertical"
       value={value}
     >
       {options.map((opt) => (

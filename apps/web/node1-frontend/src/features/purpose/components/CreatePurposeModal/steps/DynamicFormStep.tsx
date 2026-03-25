@@ -191,7 +191,7 @@ function GroupSection({
   visibleFieldNames: Set<string>;
 }) {
   return (
-    <div className="flex flex-col gap-6 py-6 first:pt-0">
+    <div className="flex flex-col gap-6">
       {group.label && (
         <div className="flex flex-col gap-3">
           <h3 className="title-sm-em text-primary-light-high-contrast">
@@ -232,7 +232,7 @@ function GroupSection({
           />
         );
       })}
-      {!isLast && <hr className="border-secondary-light-low-contrast" />}
+      {!isLast && <hr className="border-primary-light-decorative mt-2" />}
     </div>
   );
 }

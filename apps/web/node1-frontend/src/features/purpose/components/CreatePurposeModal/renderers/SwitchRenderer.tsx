@@ -15,7 +15,7 @@ export function SwitchRenderer({ control, error, onChange, value }: Props) {
     control.options?.optionLabels?.["true"] ?? control.label ?? "";
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-3">
       {control.label && (
         <span className="label-md text-primary-light-high-contrast">
           {control.label}
