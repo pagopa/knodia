@@ -12,7 +12,8 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
+const { HTTP_STATUS_CONFLICT, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -22,6 +23,7 @@ const errorCodes = {
   AGREEMENT_ALREADY_EXISTS: "0004",
   AGREEMENT_NOT_FOUND: "0005",
   ESERVICE_VERSION_NOT_LATEST: "0006",
+  CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -54,6 +56,18 @@ export function agreementNotFound(id: AgreementId) {
     detail: `Agreement with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement Not Found",
+  });
+}
+
+export function consumerMissingRequiredAttributes(
+  consumerId: ExternalId<OrganizationId>,
+  eserviceId: EserviceId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "CONSUMER_MISSING_REQUIRED_ATTRIBUTES",
+    detail: `Consumer ${consumerId} missing required attributes for the requested E-service ${eserviceId}`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Consumer Missing Required Attributes",
   });
 }
 

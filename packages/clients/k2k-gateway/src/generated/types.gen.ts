@@ -295,6 +295,10 @@ export type AgreementConsumer = {
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
+    /**
+     * Consumer Organization Attributes
+     */
+    consumerAttributes: Array<Attribute>;
     consumerId: OrganizationId;
     eserviceId: EserviceId;
     eserviceVersionId: EserviceVersionId;

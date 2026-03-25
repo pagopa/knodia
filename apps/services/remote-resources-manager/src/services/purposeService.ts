@@ -14,7 +14,7 @@ import type {
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { assertOrganizationExists } from "../utils/validators.ts";
+import { retrieveOrganization } from "../utils/readmodelUtils.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
 
@@ -44,7 +44,7 @@ export function purposeServiceBuilder(
         `Creating purpose for e-service owned by Knode ${knodeId} with body data`,
       );
 
-      await assertOrganizationExists(consumerId, readmodelService);
+      await retrieveOrganization(consumerId, readmodelService);
 
       const { data } = await k2kGatewayApi.createPurpose({
         body: {
