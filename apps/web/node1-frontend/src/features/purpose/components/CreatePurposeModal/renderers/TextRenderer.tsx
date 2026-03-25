@@ -17,32 +17,12 @@ export function TextRenderer({
   onChange,
   value,
 }: Props) {
-  const isTextarea = control.options?.widget === "textarea";
-
-  if (isTextarea) {
-    return (
-      <div className="flex flex-col gap-1">
-        <TextArea
-          description={control.options?.infoLabel}
-          errorMessage={error}
-          isInvalid={!!error}
-          label={control.label}
-          onChange={onChange}
-          value={value}
-          {...(maxLength !== undefined && { maxLength })}
-        />
-        {maxLength != null && (
-          <span className="text-xs text-primary-light-low-contrast self-end">
-            {value.length}/{maxLength}
-          </span>
-        )}
-      </div>
-    );
-  }
+  const Component =
+    control.options?.widget === "textarea" ? TextArea : TextField;
 
   return (
     <div className="flex flex-col gap-1">
-      <TextField
+      <Component
         description={control.options?.infoLabel}
         errorMessage={error}
         isInvalid={!!error}
