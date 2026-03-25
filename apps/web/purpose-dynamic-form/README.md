@@ -1,6 +1,6 @@
 # Dynamic Form Engine
 
-A dynamic form engine that generates forms from two standard spec files: **JSON Schema** for validation and **UI Schema** (JSON Forms format) for rendering. Supports dynamic validation, conditional field visibility, option-level filtering, and multiple layout modes at runtime.
+A dynamic form engine that generates forms from three standard spec files: **JSON Schema** for validation, **UI Schema** (JSON Forms format) for rendering, and **texts.json** for all human-readable strings. Supports dynamic validation, conditional field visibility, option-level filtering, and multiple layout modes at runtime.
 
 ## Stack
 
@@ -22,8 +22,8 @@ pnpm --filter purpose-dynamic-form lint          # lint
 
 ```
 src/
-  schemas/       JSON Schema + UI Schema spec files (pa31, two-form, data-sharing, layout variants)
-  engine/        Pure logic: schema parsing, dependency resolution, Zod/AJV validation
+  schemas/       JSON Schema + UI Schema + texts spec files (pa31, two-form, data-sharing, layout variants)
+  engine/        Pure logic: schema parsing, text resolution, dependency resolution, Zod/AJV validation
   hooks/         React hooks: visible field tracking
   renderers/     react-aria, ui-kit, and JSON Forms renderers (swappable)
   components/    Form layout components (DynamicForm, GroupSection, StepIndicator)
@@ -32,7 +32,7 @@ src/
 
 ## How it works
 
-Each form is defined by two JSON files, with no application code needed:
+Each form is defined by three JSON files, with no application code needed:
 
 ### JSON Schema (`schema.json`)
 
@@ -49,12 +49,45 @@ Example: if `personalDataTypes` contains `"OTHER"`, then `otherPersonalDataTypes
 Uses the [JSON Forms UI Schema](https://jsonforms.io/docs/uischema/) format. Defines:
 
 - **Widget types**: `radio`, `text`, `textarea`, `checkbox`, `select`, `switch`
-- **Layout**: groups/sections with titles and descriptions, horizontal/vertical arrangement
+- **Layout**: groups/sections with `textKey` references to titles and descriptions in `texts.json`
 - **Visibility rules**: `rule.effect: "SHOW"` or `"HIDE"` with conditions on other field values
 - **Option hiding**: `hideOptions` to conditionally hide individual options within a field
 - **Labels**: non-field informational elements (e.g., banners with conditional visibility and variant styling)
 
 All UI schemas are validated against a [meta-schema](src/schemas/uischema.schema.json) to catch structural errors early.
+
+### Texts (`texts.json`)
+
+All human-readable strings live in a dedicated file, separate from the UI schema structure. This enables i18n by swapping the texts file without touching the schema.
+
+```json
+{
+  "banners": {
+    "dpiaReminder": "Banner text shown to the user"
+  },
+  "fields": {
+    "fieldName": {
+      "label": "Field Label",
+      "description": "Help text below the label",
+      "options": {
+        "VALUE_1": "Display Text 1",
+        "VALUE_2": "Display Text 2"
+      },
+      "errors": {
+        "required": "Custom required error message"
+      }
+    }
+  },
+  "groups": {
+    "groupKey": {
+      "label": "Group Title",
+      "description": "Group description text"
+    }
+  }
+}
+```
+
+Groups and labels in the UI schema reference texts via `textKey`. Controls are matched to texts by their field name (extracted from `scope`).
 
 #### UI Schema extensions
 
@@ -62,12 +95,7 @@ The following custom properties live under `options`, which JSON Forms declares 
 
 | Property                | Description                                                  |
 | ----------------------- | ------------------------------------------------------------ |
-| `options.infoLabel`     | Help text displayed below the field label                    |
-| `options.description`   | Description text below switch/checkbox controls              |
-| `options.layout`        | `"horizontal"` or `"vertical"` for radio/checkbox layout     |
-| `options.optionLabels`  | Value-to-label map for enum/radio/checkbox                   |
 | `options.hideOptions`   | Conditionally hide individual options based on form values   |
-| `options.errorMessages` | Custom error messages keyed by validation keyword            |
 | `options.variant`       | Banner variant for Label elements: `"info"`, `"warning"`, `"error"` |
 
 ## Engine
@@ -78,6 +106,8 @@ The engine (`src/engine/`) is a set of **pure functions** with no React dependen
 | -------------------- | ----------------------------------------------------------------------------------------- |
 | `schemaParser`       | Extracts default values from JSON Schema properties                                       |
 | `uischemaParser`     | Traverses the UI Schema tree to collect controls, groups, error messages                  |
+| `textsResolver`      | Extracts labels, descriptions, option labels, error messages, and banner text from `texts.json` |
+| `hydrateUiSchema`    | Re-injects text from `texts.json` into a stripped UI schema for libraries expecting inline text |
 | `dependencyResolver` | Evaluates visibility rules and returns the set of currently visible fields                |
 | `requiredFields`     | Evaluates `allOf` conditionals to compute which fields are required at runtime            |
 | `optionFilter`       | Evaluates `hideOptions` conditions to determine which options to hide per field           |
@@ -125,12 +155,12 @@ All layout variants reuse the same engine, hooks, and renderers. Only the page-l
 The intended real-world usage has two forms:
 
 1. **Static form**: a hardcoded React component with fixed questions
-2. **Dynamic form**: rendered by this engine from JSON Schema + UI Schema
+2. **Dynamic form**: rendered by this engine from JSON Schema + UI Schema + texts
 
 The static form's fields are defined in the same JSON Schema and UI Schema as the dynamic form's fields. The engine handles both in a single form, using visibility rules and conditional requirements to show/hide fields based on current values. Only visible fields are validated and submitted.
 
 ## Testing
 
-- **Engine unit tests**: `dependencyResolver`, `optionFilter`, `schemaBuilder` tested with Vitest
+- **Engine unit tests**: `dependencyResolver`, `optionFilter`, `schemaBuilder`, `textsResolver`, `hydrateUiSchema` tested with Vitest
 - **Data schema validation**: AJV tests verify all JSON Schemas handle conditional requirements correctly (`schemas/schema.test.ts`)
 - **UI Schema validation**: all UI Schemas validated against a meta-schema to catch structural errors (`schemas/uischema.schema.test.ts`)
