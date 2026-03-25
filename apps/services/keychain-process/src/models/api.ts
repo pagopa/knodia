@@ -55,3 +55,23 @@ export const API_ConsumerKeychainPatch = z
 export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
 >;
+
+export const API_ConsumerKeychainPurposeLinkSeed = z
+  .strictObject({
+    purposeId: z.uuid(),
+  })
+  .meta({ id: "ConsumerKeychainPurposeLinkSeed" });
+export type API_ConsumerKeychainPurposeLinkSeed = z.infer<
+  typeof API_ConsumerKeychainPurposeLinkSeed
+>;
+
+export const API_ConsumerKeychainPurpose = z
+  .strictObject({
+    consumerKeychainId: API_KeychainId,
+    linkedAt: z.iso.datetime(),
+    purposeId: z.uuid(),
+  })
+  .meta({ id: "ConsumerKeychainPurpose" });
+export type API_ConsumerKeychainPurpose = z.infer<
+  typeof API_ConsumerKeychainPurpose
+>;

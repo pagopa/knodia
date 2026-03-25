@@ -5,6 +5,7 @@ import {
   type ConsumerKeychain,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
+import { type Purpose, toPurposeV1 } from "@knodia/purpose-models";
 
 export const createConsumerKeychainCreatedV1Event = (
   keychain: ConsumerKeychain,
@@ -51,4 +52,24 @@ export const createConsumerKeychainUpdatedV1Event = (
     type: "ConsumerKeychainUpdatedV1",
   },
   streamId: keychain.id,
+});
+
+export const createConsumerKeychainPurposeLinkedV1Event = (
+  consumerKeychain: ConsumerKeychain,
+  purpose: Purpose,
+  linkedAt: Date,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+      linkedAt: linkedAt.getTime(),
+      purpose: toPurposeV1(purpose),
+    },
+    type: "ConsumerKeychainPurposeLinkedV1",
+  },
+  streamId: consumerKeychain.id,
 });

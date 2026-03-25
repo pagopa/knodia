@@ -1,6 +1,8 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -16,12 +18,17 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 
 import {
   API_ConsumerKeychainPatch,
+  API_ConsumerKeychainPurpose,
+  API_ConsumerKeychainPurposeLinkSeed,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
   API_Keychains,
 } from "../models/api.ts";
-import { toAPI_Keychain } from "../models/apiConverter.ts";
+import {
+  toAPI_ConsumerKeychainPurpose,
+  toAPI_Keychain,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 export const consumerKeychainRouter: FastifyPluginAsyncZod<
@@ -214,5 +221,50 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
+
+      const {
+        data: consumerKeychainPurpose,
+        metadata: { version },
+      } = await consumerKeychainService.linkPurposeToConsumerKeychain(
+        req.params.consumerKeychainId,
+        unsafeBrandId(req.body.purposeId),
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+
+      res
+        .status(200)
+        .send(toAPI_ConsumerKeychainPurpose(consumerKeychainPurpose));
+    },
+    method: "POST",
+    schema: {
+      body: API_ConsumerKeychainPurposeLinkSeed,
+      description: "Link a Purpose to a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "linkPurposeToConsumerKeychain",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_ConsumerKeychainPurpose.meta({
+            description: "Purpose successfully linked to Consumer Keychain",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes",
   });
 };

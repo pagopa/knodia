@@ -10,10 +10,15 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type {
   ConsumerKeychain,
+  ConsumerKeychainPurpose,
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 
-import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  generateId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import { match, P } from "ts-pattern";
 
 import type {
@@ -26,9 +31,13 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
+  createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
-import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
+import {
+  retrieveConsumerKeychain,
+  retrievePurpose,
+} from "../utils/readmodelUtils.ts";
 import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
@@ -118,6 +127,41 @@ export function consumerKeychainServiceBuilder(
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);
+    },
+
+    async linkPurposeToConsumerKeychain(
+      consumerKeychainId: ConsumerKeychainId,
+      purposeId: PurposeId,
+      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
+      logger.info(
+        `Linking Purpose ${purposeId} to Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const [consumerKeychain, purpose] = await Promise.all([
+        retrieveConsumerKeychain(consumerKeychainId, readmodelService),
+        retrievePurpose(purposeId, readmodelService),
+      ]);
+
+      const linkedAt = new Date();
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainPurposeLinkedV1Event(
+          consumerKeychain.data,
+          purpose.data,
+          linkedAt,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: {
+          consumerKeychainId,
+          linkedAt,
+          purposeId,
+        },
+        metadata: { version: newVersion },
+      };
     },
 
     async updateConsumerKeychain(
