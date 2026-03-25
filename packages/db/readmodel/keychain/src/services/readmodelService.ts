@@ -11,7 +11,6 @@ import { eq } from "drizzle-orm";
 import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
-  readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
 import {
@@ -30,7 +29,6 @@ export function consumerKeychainReadmodelServiceBuilder(
         .select({
           consumerKeychain: readmodelConsumerKeychain,
           key: readmodelConsumerKeychainKey,
-          purpose: readmodelConsumerKeychainPurpose,
           user: readmodelConsumerKeychainUser,
         })
         .from(readmodelConsumerKeychain)
@@ -38,13 +36,6 @@ export function consumerKeychainReadmodelServiceBuilder(
           readmodelConsumerKeychainKey,
           eq(
             readmodelConsumerKeychainKey.consumerKeychainId,
-            readmodelConsumerKeychain.id,
-          ),
-        )
-        .leftJoin(
-          readmodelConsumerKeychainPurpose,
-          eq(
-            readmodelConsumerKeychainPurpose.consumerKeychainId,
             readmodelConsumerKeychain.id,
           ),
         )
