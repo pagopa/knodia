@@ -29,7 +29,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 86_400,
     UserLastModifiedDate: NOW_IN_SECONDS - 3_600,
     UserStatus: "CONFIRMED",
-    Username: "mario.rossi@example.com",
+    Username: "Mario Rossi",
   },
   {
     Attributes: [
@@ -45,7 +45,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 43_200,
     UserLastModifiedDate: NOW_IN_SECONDS - 1_800,
     UserStatus: "CONFIRMED",
-    Username: "giulia.bianchi@example.com",
+    Username: "Giulia Bianchi",
   },
   {
     Attributes: [
@@ -64,7 +64,7 @@ const MOCK_USERS = [
     UserCreateDate: NOW_IN_SECONDS - 21_600,
     UserLastModifiedDate: NOW_IN_SECONDS - 900,
     UserStatus: "CONFIRMED",
-    Username: "luca.neri@example.com",
+    Username: "Luca Neri",
   },
 ];
 
