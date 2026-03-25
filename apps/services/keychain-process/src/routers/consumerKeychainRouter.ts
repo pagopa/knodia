@@ -2,7 +2,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -276,9 +276,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const {
         data: consumerKeychain,
         metadata: { version },
-      } = await consumerKeychainService.removeKeychainMember(
+      } = await consumerKeychainService.removeConsumerKeychainMember(
         unsafeBrandId(req.params.consumerKeychainId),
-        unsafeBrandId(req.params.userId),
+        unsafeBrandUserId(req.params.userId),
         ctx,
       );
 

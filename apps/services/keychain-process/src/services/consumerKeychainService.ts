@@ -199,7 +199,7 @@ export function consumerKeychainServiceBuilder(
       return await readmodelService.getConsumerKeychains(params);
     },
 
-    async removeKeychainMember(
+    async removeConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
       userId: UserId,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
@@ -233,6 +233,7 @@ export function consumerKeychainServiceBuilder(
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainMemberRemovedV1Event(
           updatedConsumerKeychain,
+          userId,
           correlationId,
           consumerKeychain.metadata.version,
         ),

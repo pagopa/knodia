@@ -3,7 +3,7 @@
 import {
   generateId,
   type OrganizationId,
-  unsafeBrandId,
+  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -28,14 +28,14 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-const memberId = unsafeBrandId("10000000-1000-1000-8000-000000000011");
+const memberId = unsafeBrandUserId("10000000-1000-1000-8000-000000000011");
 const mockConsumerKeychain = getMockConsumerKeychain();
 
 describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeConsumerKeychainMember)", () => {
   it("should correctly create consumer keychain member removal event", async () => {
     const consumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
-      users: [unsafeBrandId(memberId)],
+      users: [unsafeBrandUserId(memberId)],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -70,6 +70,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeC
     const removedEventData = KeychainEventV1.parse(removedEvent).data;
     expect(removedEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
+      userId: memberId,
     });
   });
 
@@ -77,7 +78,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeC
     const consumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
       ownerId: generateId<OrganizationId>(),
-      users: [unsafeBrandId(memberId)],
+      users: [unsafeBrandUserId(memberId)],
     };
 
     await seedConsumerKeychain(consumerKeychain);
