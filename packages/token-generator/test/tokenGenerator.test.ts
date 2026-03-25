@@ -42,6 +42,7 @@ const testCases = [
       roles: ["administrative"],
       sub: "660e8400-e29b-41d4-a716-446655440000",
       type: "ui-session",
+      username: "test-user",
     },
     generate: () =>
       generator.generateUISessionToken({
@@ -52,6 +53,7 @@ const testCases = [
         roles: ["administrative"] as NonEmptyArray<"administrative">,
         secondsDuration: SECONDS_DURATION,
         subject: unsafeBrandUserId("660e8400-e29b-41d4-a716-446655440000"),
+        username: "test-user",
       }),
     name: "generateUISessionToken",
   },

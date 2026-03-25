@@ -18,6 +18,7 @@ const UserTokenClaims = BaseJwtClaims.extend({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
   sub: UserId,
+  username: z.string(),
 });
 
 export const UISessionTokenClaims = UserTokenClaims.extend({
