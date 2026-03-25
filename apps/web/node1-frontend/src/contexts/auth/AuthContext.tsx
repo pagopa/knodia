@@ -1,6 +1,14 @@
 import { createSessionMutation } from "@knodia/bff-client/tanstack-query";
+import { UISessionTokenClaims } from "@knodia/common-models/auth";
 import { useMutation } from "@tanstack/react-query";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { decodeJwt } from "jose";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   AuthProvider as OidcProvider,
   useAuth as useOidcAuth,
@@ -73,6 +81,16 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     }
   }, [user?.access_token, uiSessionToken, mutate]);
 
+  const sessionClaims = useMemo(() => {
+    if (!uiSessionToken) return null;
+    try {
+      return UISessionTokenClaims.parse(decodeJwt(uiSessionToken));
+    } catch (error) {
+      console.warn("Failed to decode UI session token claims", error);
+      return null;
+    }
+  }, [uiSessionToken]);
+
   const login = useCallback(() => {
     void signinRedirect();
   }, [signinRedirect]);
@@ -96,7 +114,9 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
         isLoading: oidcIsLoading || isExchangePending,
         login,
         logout,
+        roles: sessionClaims?.roles ?? [],
         token: uiSessionToken,
+        username: sessionClaims?.username ?? null,
       }}
     >
       {children}

@@ -42,6 +42,28 @@ vi.mock("@/libs/router", () => ({
 import { OidcAuthProvider } from "./AuthContext";
 import { useAuth } from "./useAuthContext";
 
+/** Builds a fake JWT with the given payload (no real signature). */
+function fakeJwt(payload: Record<string, unknown>): string {
+  const toBase64Url = (s: string) =>
+    btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const header = toBase64Url(JSON.stringify({ alg: "none" }));
+  const body = toBase64Url(JSON.stringify(payload));
+  return `${header}.${body}.`;
+}
+
+const fakeSessionToken = fakeJwt({
+  aud: "test",
+  exp: Math.floor(Date.now() / 1000) + 3600,
+  iat: Math.floor(Date.now() / 1000),
+  iss: "test",
+  jti: "test-jti",
+  organizationId: "00000000-0000-4000-8000-000000000002",
+  roles: ["administrative"],
+  sub: "00000000-0000-4000-8000-000000000001",
+  type: "ui-session",
+  username: "jane.doe",
+});
+
 function AuthConsumer({
   onAuth,
 }: {
@@ -139,5 +161,27 @@ describe("AuthContext", () => {
     lastCall?.login();
 
     expect(mockSigninRedirect).toHaveBeenCalled();
+  });
+
+  it("provides username and roles from decoded UI session token", () => {
+    getAuthToken.mockReturnValue(fakeSessionToken);
+
+    const onAuth = vi.fn();
+    renderWithAuth(onAuth);
+
+    const lastCall = onAuth.mock.calls.at(-1)?.[0];
+    expect(lastCall?.username).toBe("jane.doe");
+    expect(lastCall?.roles).toEqual(["administrative"]);
+  });
+
+  it("username is null and roles is empty when not authenticated", () => {
+    getAuthToken.mockReturnValue(null);
+
+    const onAuth = vi.fn();
+    renderWithAuth(onAuth);
+
+    const lastCall = onAuth.mock.calls.at(-1)?.[0];
+    expect(lastCall?.username).toBeNull();
+    expect(lastCall?.roles).toEqual([]);
   });
 });
