@@ -9,6 +9,7 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "http://localhost:5175")
 
 // Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
+const USERNAME = "jane.doe";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
 
@@ -176,6 +177,7 @@ createServer(async (req, res) => {
 
       const accessToken = signJwt({
         sub: USER_ID,
+        username: USERNAME,
         "cognito:groups": [...ROLES, `org:${ORG_ID}`],
         token_use: "access",
         iss: ISSUER,
