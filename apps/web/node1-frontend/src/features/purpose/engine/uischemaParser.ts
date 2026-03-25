@@ -19,34 +19,6 @@ export interface StepLayout {
   label?: string | undefined;
 }
 
-export function collectAllScopes(element: UISchemaElement): string[] {
-  const scopes: string[] = [];
-
-  if (element.type === "Control") {
-    scopes.push(element.scope);
-    if (element.options?.hideOptions) {
-      for (const hide of Object.values(element.options.hideOptions)) {
-        scopes.push(hide.scope);
-      }
-    }
-  }
-
-  if (
-    (element.type === "Control" || element.type === "Label") &&
-    element.rule
-  ) {
-    scopes.push(...collectConditionScopes(element.rule.condition));
-  }
-
-  if ("elements" in element) {
-    for (const child of element.elements) {
-      scopes.push(...collectAllScopes(child));
-    }
-  }
-
-  return scopes;
-}
-
 export function collectConditionScopes(condition: RuleCondition): string[] {
   if (isAndCondition(condition)) {
     return condition.conditions.flatMap(collectConditionScopes);

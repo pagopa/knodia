@@ -29,37 +29,6 @@ export function createAjvValidator(
   };
 }
 
-// Patches a full JSON Schema so `required` means "non-empty".
-// Base required: patched on properties. Conditional required (allOf): patched inside
-// then/else so constraints only apply when the condition is met.
-export function injectNonEmptyConstraints(
-  schema: JsonSchema,
-): Record<string, unknown> {
-  const baseRequired = new Set(schema.required ?? []);
-
-  const properties: Record<string, JsonSchemaProperty> = {};
-  for (const [name, prop] of Object.entries(schema.properties)) {
-    properties[name] = baseRequired.has(name) ? patchPropNonEmpty(prop) : prop;
-  }
-
-  const allOf = (schema.allOf ?? []).map((cond) => {
-    const patched: Record<string, unknown> = { ...cond };
-    for (const key of ["then", "else"] as const) {
-      const block = cond[key];
-      if (!block?.required?.length) continue;
-      const blockProps: Record<string, JsonSchemaProperty> = {};
-      for (const field of block.required) {
-        if (schema.properties[field])
-          blockProps[field] = patchPropNonEmpty(schema.properties[field]);
-      }
-      patched[key] = { ...block, properties: blockProps };
-    }
-    return patched;
-  });
-
-  return { ...schema, allOf, properties };
-}
-
 function addInstancePathError(
   fieldErrors: Record<string, string>,
   err: {
