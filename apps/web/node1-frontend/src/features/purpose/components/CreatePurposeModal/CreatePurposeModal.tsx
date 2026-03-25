@@ -7,7 +7,7 @@ import {
 import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -116,9 +116,17 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
 function ModalContent() {
   const { currentStepIndex, stepLabels } = useStepsContext();
   const { content } = useCurrentStep();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    containerRef.current?.parentElement?.scrollTo(0, 0);
+  }, [currentStepIndex]);
 
   return (
-    <div className="mx-auto flex max-w-160 flex-col gap-16 p-10 pb-16">
+    <div
+      className="mx-auto flex max-w-160 flex-col gap-16 p-10 pb-16"
+      ref={containerRef}
+    >
       <Steps
         ariaLabel="Purpose creation steps"
         current={currentStepIndex}
