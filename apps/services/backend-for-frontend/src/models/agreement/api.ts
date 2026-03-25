@@ -10,6 +10,16 @@ import z from "zod";
 
 import { API_CompactEservice } from "../eservice/api.ts";
 
+export const API_CompactAgreement = z
+  .strictObject({
+    id: z.uuid(),
+    state: API_AgreementState,
+  })
+  .meta({
+    description: "Agreement with only id and state",
+    id: "CompactAgreement",
+  });
+
 export const API_AgreementSeed = z
   .strictObject({
     eserviceId: z.uuid(),
