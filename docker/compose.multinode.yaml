@@ -482,6 +482,13 @@ services:
       REMOTE_RESOURCE_DB_USE_SSL: "false"
       REMOTE_RESOURCE_DB_AGREEMENT_SCHEMA: local_orion_agreement
       REMOTE_RESOURCE_DB_PURPOSE_SCHEMA: local_orion_purpose
+      READMODEL_DB_USER: local_orion_remote_resources_manager_user
+      READMODEL_DB_PASSWORD: local_orion_remote_resources_manager_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: orion_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ORGANIZATION_SCHEMA: local_orion_organization
     depends_on:
       k2k-gateway-lynx:
         condition: service_started
@@ -968,6 +975,13 @@ services:
       REMOTE_RESOURCE_DB_USE_SSL: "false"
       REMOTE_RESOURCE_DB_AGREEMENT_SCHEMA: local_lynx_agreement
       REMOTE_RESOURCE_DB_PURPOSE_SCHEMA: local_lynx_purpose
+      READMODEL_DB_USER: local_lynx_remote_resources_manager_user
+      READMODEL_DB_PASSWORD: local_lynx_remote_resources_manager_user
+      READMODEL_DB_HOST: postgres
+      READMODEL_DB_PORT: "5432"
+      READMODEL_DB_NAME: lynx_readmodel
+      READMODEL_DB_USE_SSL: "false"
+      READMODEL_DB_ORGANIZATION_SCHEMA: local_lynx_organization
     depends_on:
       k2k-gateway-orion:
         condition: service_started

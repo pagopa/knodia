@@ -273,6 +273,11 @@ export type EserviceVersion = {
     versionNumber: number;
 };
 
+export type Eservices = {
+    pagination: Pagination;
+    results: Array<Eservice>;
+};
+
 /**
  * Unique identifier of the Agreement
  */
@@ -290,6 +295,10 @@ export type AgreementConsumer = {
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
+    /**
+     * Consumer Organization Attributes
+     */
+    consumerAttributes: Array<Attribute>;
     consumerId: OrganizationId;
     eserviceId: EserviceId;
     eserviceVersionId: EserviceVersionId;
@@ -536,6 +545,44 @@ export type DownloadEserviceLatestVersionInterfaceResponses = {
 };
 
 export type DownloadEserviceLatestVersionInterfaceResponse = DownloadEserviceLatestVersionInterfaceResponses[keyof DownloadEserviceLatestVersionInterfaceResponses];
+
+export type GetEservicesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: Array<EserviceId>;
+    };
+    url: '/eservices';
+};
+
+export type GetEservicesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetEservicesError = GetEservicesErrors[keyof GetEservicesErrors];
+
+export type GetEservicesResponses = {
+    /**
+     * E-services retrieved successfully
+     */
+    200: Eservices;
+};
+
+export type GetEservicesResponse = GetEservicesResponses[keyof GetEservicesResponses];
 
 export type GetAgreementsData = {
     body?: never;

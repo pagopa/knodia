@@ -28,6 +28,9 @@ export type API_AgreementConsumer = z.infer<typeof API_AgreementConsumer>;
 
 export const API_AgreementSeed = z
   .strictObject({
+    consumerAttributes: z.array(API_Attribute).meta({
+      description: "Consumer Organization Attributes",
+    }),
     consumerId: API_OrganizationId,
     eserviceId: API_EserviceId,
     eserviceVersionId: API_EserviceVersionId,

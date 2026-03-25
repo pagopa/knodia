@@ -4,7 +4,7 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/consumer/eservices/:eserviceId?knodeId=Lynx
+  url: {{host-backend-for-frontend}}/consumer/eservices/:eserviceId?knodeId={{other-knode-id}}
   body: none
   auth: none
 }
@@ -14,7 +14,7 @@ params:path {
 }
 
 params:query {
-  knodeId: Lynx
+  knodeId: {{other-knode-id}}
 }
 
 headers {

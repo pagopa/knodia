@@ -68,6 +68,27 @@ export type ConsumptionEserviceSearchParams = z.infer<
   typeof consumptionEserviceSearchSchema
 >;
 
+export const consumptionEserviceListDefaultValues = {
+  agreementState: undefined,
+  offset: 0,
+} as const;
+
+export const consumptionEserviceListSchema = z.object({
+  agreementState: z
+    .enum(["Active", "Suspended"])
+    .optional()
+    .catch(consumptionEserviceListDefaultValues.agreementState),
+  offset: z
+    .number()
+    .min(0)
+    .default(consumptionEserviceListDefaultValues.offset)
+    .catch(consumptionEserviceListDefaultValues.offset),
+});
+
+export type ConsumptionEserviceListParams = z.infer<
+  typeof consumptionEserviceListSchema
+>;
+
 export const eserviceDetailSearchSchema = z.object({
   knodeId: KnodeId,
 });
