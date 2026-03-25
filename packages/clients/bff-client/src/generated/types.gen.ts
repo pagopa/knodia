@@ -330,7 +330,7 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeName: string;
+    knodeId: KnodeId;
     name: string;
     notes: string;
 };
