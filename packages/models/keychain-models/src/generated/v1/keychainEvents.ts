@@ -26,7 +26,7 @@ export interface ConsumerKeychainUpdatedV1 {
 export interface ConsumerKeychainPurposeLinkedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
   purpose: PurposeV1 | undefined;
-  createdAt: number;
+  linkedAt: number;
 }
 
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
@@ -222,7 +222,7 @@ export const ConsumerKeychainUpdatedV1: MessageFns<ConsumerKeychainUpdatedV1> = 
 };
 
 function createBaseConsumerKeychainPurposeLinkedV1(): ConsumerKeychainPurposeLinkedV1 {
-  return { consumerKeychain: undefined, purpose: undefined, createdAt: 0 };
+  return { consumerKeychain: undefined, purpose: undefined, linkedAt: 0 };
 }
 
 export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurposeLinkedV1> = {
@@ -233,8 +233,8 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     if (message.purpose !== undefined) {
       PurposeV1.encode(message.purpose, writer.uint32(18).fork()).join();
     }
-    if (message.createdAt !== 0) {
-      writer.uint32(24).int64(message.createdAt);
+    if (message.linkedAt !== 0) {
+      writer.uint32(24).int64(message.linkedAt);
     }
     return writer;
   },
@@ -267,7 +267,7 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
             break;
           }
 
-          message.createdAt = longToNumber(reader.int64());
+          message.linkedAt = longToNumber(reader.int64());
           continue;
         }
       }
@@ -285,7 +285,7 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
         ? ConsumerKeychainV1.fromJSON(object.consumerKeychain)
         : undefined,
       purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined,
-      createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
+      linkedAt: isSet(object.linkedAt) ? globalThis.Number(object.linkedAt) : 0,
     };
   },
 
@@ -297,8 +297,8 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     if (message.purpose !== undefined) {
       obj.purpose = PurposeV1.toJSON(message.purpose);
     }
-    if (message.createdAt !== 0) {
-      obj.createdAt = Math.round(message.createdAt);
+    if (message.linkedAt !== 0) {
+      obj.linkedAt = Math.round(message.linkedAt);
     }
     return obj;
   },
@@ -316,7 +316,7 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     message.purpose = (object.purpose !== undefined && object.purpose !== null)
       ? PurposeV1.fromPartial(object.purpose)
       : undefined;
-    message.createdAt = object.createdAt ?? 0;
+    message.linkedAt = object.linkedAt ?? 0;
     return message;
   },
 };
