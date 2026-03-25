@@ -79,47 +79,39 @@ export async function setupKafkaTestProducerAndConsumer(
   };
 
   const setupKafkaTestConsumer = async (): Promise<{
+    disconnect: () => Promise<void>;
     waitForNextMessage: () => Promise<void>;
   }> => {
-    const pendingResolvers: {
-      reject: (err: unknown) => void;
-      resolve: () => void;
-    }[] = [];
+    const pendingResolvers: (() => void)[] = [];
 
     // Wrap processMessage to notify the test when a message is processed
     const handlerWrapper = async (payload: EachMessagePayload) => {
-      try {
-        await processMessage(payload);
-        const pending = pendingResolvers.shift();
-        pending?.resolve();
-      } catch (err) {
-        const pending = pendingResolvers.shift();
-        pending?.reject(err);
-        throw err;
-      }
+      await processMessage(payload);
+      const resolver = pendingResolvers.shift();
+      resolver?.();
     };
 
-    const runTestConsumer = async () => {
-      await new Promise<void>((resolve, reject) => {
-        runConsumer(
-          [topicName],
-          handlerWrapper,
-          kafkaConfig,
-          logger,
-          new Pool({ connectionString: "" }),
-        )
-          .then(resolve)
-          .catch(reject);
-      });
-    };
-    // Start the real consumer once in the background
-    void runTestConsumer();
+    let disconnect: () => Promise<void> = () => Promise.resolve();
+    // Await until the consumer is subscribed and ready before returning
+    await new Promise<void>((resolve) => {
+      void runConsumer(
+        [topicName],
+        handlerWrapper,
+        kafkaConfig,
+        logger,
+        // Dummy pool, not used in tests. The real Pool instance is closed in the test files' afterAll hooks.
+        new Pool({ connectionString: "" }),
+        (dc) => {
+          disconnect = dc;
+          resolve();
+        },
+      );
+    });
 
     return {
+      disconnect: () => disconnect(),
       waitForNextMessage: () =>
-        new Promise<void>((resolve, reject) =>
-          pendingResolvers.push({ reject, resolve }),
-        ),
+        new Promise<void>((resolver) => pendingResolvers.push(resolver)),
     };
   };
   const consumer = await setupKafkaTestConsumer();

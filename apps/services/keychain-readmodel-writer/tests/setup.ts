@@ -52,8 +52,11 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await readmodelDb.$client.end();
-  await producer.disconnect();
+  await Promise.all([
+    readmodelDb.$client.end(),
+    producer.disconnect(),
+    consumer.disconnect(),
+  ]);
 });
 
 export {
