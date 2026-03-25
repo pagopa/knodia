@@ -8,6 +8,7 @@ import {
 import {
   type ConsumerKeychain,
   type ConsumerKeychainKey,
+  type ConsumerKeychainPurpose,
   type FlatConsumerKeychain,
   KeyAlgorithm,
   KeyFormat,
@@ -18,6 +19,7 @@ import {
 import type {
   ConsumerKeychainItemsSQL,
   ConsumerKeychainKeySQL,
+  ConsumerKeychainPurposeSQL,
   FlatConsumerKeychainItemsSQL,
 } from "../consumerKeychain.ts";
 
@@ -81,5 +83,20 @@ export function buildConsumerKeychainKey(
     kid: keySQL.kid,
     name: LocalizedName.parse(keySQL.name),
     userId: unsafeBrandId<UserId>(keySQL.userId),
+  };
+}
+
+export function toConsumerKeychainPurpose(
+  consumerKeychainPurposeSQL: ConsumerKeychainPurposeSQL,
+): WithMetadata<ConsumerKeychainPurpose> {
+  return {
+    data: {
+      consumerKeychainId: unsafeBrandId(
+        consumerKeychainPurposeSQL.consumerKeychainId,
+      ),
+      linkedAt: consumerKeychainPurposeSQL.linkedAt,
+      purposeId: unsafeBrandId(consumerKeychainPurposeSQL.purposeId),
+    },
+    metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
   };
 }

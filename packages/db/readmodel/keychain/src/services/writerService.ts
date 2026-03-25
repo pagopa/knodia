@@ -1,16 +1,28 @@
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { checkMetadataVersion } from "@knodia/db-readmodel-commons/utils";
-import { type ConsumerKeychain } from "@knodia/keychain-models";
+import {
+  checkMetadataVersion,
+  updateMetadataVersionInTables,
+} from "@knodia/db-readmodel-commons/utils";
+import {
+  type ConsumerKeychain,
+  type ConsumerKeychainPurpose,
+} from "@knodia/keychain-models";
 import { and, eq, lte } from "drizzle-orm";
 
 import {
+  consumerKeychainSubTables,
+  consumerKeychainTables,
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
+  readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
-import { splitConsumerKeychainIntoObjectsSQL } from "../converters/splitters.ts";
+import {
+  splitConsumerKeychainIntoObjectsSQL,
+  toConsumerKeychainPurposeSQL,
+} from "../converters/splitters.ts";
 
 export type KeychainWriterService = ReturnType<
   typeof keychainWriterServiceBuilder
@@ -47,9 +59,13 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
           return;
         }
 
-        await tx
-          .delete(readmodelConsumerKeychain)
-          .where(eq(readmodelConsumerKeychain.id, consumerKeychain.id));
+        await Promise.all([
+          consumerKeychainSubTables.map((table) =>
+            tx
+              .delete(table)
+              .where(eq(table.consumerKeychainId, consumerKeychain.id)),
+          ),
+        ]);
 
         const {
           consumerKeychainKeysSQL,
@@ -60,7 +76,13 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
           metadataVersion,
         );
 
-        await tx.insert(readmodelConsumerKeychain).values(consumerKeychainSQL);
+        await tx
+          .insert(readmodelConsumerKeychain)
+          .values(consumerKeychainSQL)
+          .onConflictDoUpdate({
+            set: consumerKeychainSQL,
+            target: [readmodelConsumerKeychain.id],
+          });
 
         if (consumerKeychainUsersSQL.length > 0) {
           await tx
@@ -73,6 +95,71 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
             .insert(readmodelConsumerKeychainKey)
             .values(consumerKeychainKeysSQL);
         }
+
+        await updateMetadataVersionInTables({
+          db: tx,
+          getIdColumn: (table) => table.consumerKeychainId,
+          id: consumerKeychain.id,
+          newMetadataVersion: metadataVersion,
+          tables: [readmodelConsumerKeychainPurpose],
+        });
+      });
+    },
+    async upsertConsumerKeychainPurpose(
+      consumerKeychainPurpose: ConsumerKeychainPurpose,
+      metadataVersion: number,
+    ): Promise<void> {
+      return db.transaction(async (tx) => {
+        const shouldUpsert = await checkMetadataVersion(
+          tx,
+          readmodelConsumerKeychain,
+          metadataVersion,
+          consumerKeychainPurpose.consumerKeychainId,
+        );
+
+        if (!shouldUpsert) {
+          return;
+        }
+
+        await tx
+          .delete(readmodelConsumerKeychainPurpose)
+          .where(
+            and(
+              eq(
+                readmodelConsumerKeychainPurpose.consumerKeychainId,
+                consumerKeychainPurpose.consumerKeychainId,
+              ),
+              eq(
+                readmodelConsumerKeychainPurpose.purposeId,
+                consumerKeychainPurpose.purposeId,
+              ),
+            ),
+          );
+
+        await Promise.all([
+          tx
+            .insert(readmodelConsumerKeychainPurpose)
+            .values(
+              toConsumerKeychainPurposeSQL(
+                consumerKeychainPurpose,
+                metadataVersion,
+              ),
+            ),
+          updateMetadataVersionInTables({
+            db: tx,
+            getIdColumn: (table) => {
+              if ("consumerKeychainId" in table) {
+                return table.consumerKeychainId;
+              }
+              return table.id;
+            },
+            id: consumerKeychainPurpose.consumerKeychainId,
+            newMetadataVersion: metadataVersion,
+            tables: consumerKeychainTables.filter(
+              (t) => t !== readmodelConsumerKeychainPurpose,
+            ),
+          }),
+        ]);
       });
     },
   };
