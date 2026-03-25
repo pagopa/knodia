@@ -3,7 +3,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import {
   type OrganizationId,
   unsafeBrandId,
-  type UserId,
+  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
@@ -40,7 +40,7 @@ export const buildConsumerKeychain = ({
     ownerId: unsafeBrandId<OrganizationId>(consumerKeychainSQL.ownerId),
     updatedAt: consumerKeychainSQL.updatedAt,
     users: consumerKeychainUsersSQL.map((userSQL) =>
-      unsafeBrandId<UserId>(userSQL.userId),
+      unsafeBrandUserId(userSQL.userId),
     ),
   };
 
@@ -82,7 +82,7 @@ export function buildConsumerKeychainKey(
     format: KeyFormat.parse(keySQL.format),
     kid: keySQL.kid,
     name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandId<UserId>(keySQL.userId),
+    userId: unsafeBrandUserId(keySQL.userId),
   };
 }
 

@@ -3,7 +3,6 @@ import { QuestionIcon, SelectionIcon } from "@phosphor-icons/react";
 import { TooltipTrigger } from "react-aria-components";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
-import { formatNumber } from "@/utils/formatters";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
 import { Section } from "../Section";
@@ -54,6 +53,7 @@ function NewPurposesTable() {
   );
 }
 
+// TODO: replace "-" with real agreement counters (total and active)
 function ProductionEserviceAgreements() {
   const { agreements } = useProductionEserviceDetailsContext();
 
@@ -69,12 +69,8 @@ function ProductionEserviceAgreements() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-4">
-            <GenericInfoCard label="Total">
-              {formatNumber(agreements.total)}
-            </GenericInfoCard>
-            <GenericInfoCard label="Active">
-              {formatNumber(agreements.active)}
-            </GenericInfoCard>
+            <GenericInfoCard label="Total">-</GenericInfoCard>
+            <GenericInfoCard label="Active">-</GenericInfoCard>
           </div>
           <NewAgreementsTable />
         </>
@@ -83,6 +79,7 @@ function ProductionEserviceAgreements() {
   );
 }
 
+// TODO: replace "-" with real purpose counters (total, active and calls per day)
 function ProductionEservicePurposes() {
   const { purposes } = useProductionEserviceDetailsContext();
 
@@ -98,12 +95,8 @@ function ProductionEservicePurposes() {
       ) : (
         <>
           <div className="grid grid-cols-3 gap-4">
-            <GenericInfoCard label="Total">
-              {formatNumber(purposes.total)}
-            </GenericInfoCard>
-            <GenericInfoCard label="Active">
-              {formatNumber(purposes.active)}
-            </GenericInfoCard>
+            <GenericInfoCard label="Total">-</GenericInfoCard>
+            <GenericInfoCard label="Active">-</GenericInfoCard>
             <GenericInfoCard
               label={
                 <div className="flex items-center gap-2">
@@ -119,7 +112,7 @@ function ProductionEservicePurposes() {
                 </div>
               }
             >
-              {purposes.totalApiCallsPerDay}
+              -
             </GenericInfoCard>
           </div>
           <NewPurposesTable />
