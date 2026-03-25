@@ -29,8 +29,6 @@ export function Navbar() {
         name={displayName}
         role={roles.length > 0 ? displayRole : undefined}
       >
-        <MenuItem>Edit Profile</MenuItem>
-        <MenuItem>Settings</MenuItem>
         <MenuItem onAction={handleLogout}>Logout</MenuItem>
       </NavbarUserMenu>
     </UINavbar>
