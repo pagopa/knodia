@@ -69,6 +69,11 @@ export function consumerKeychainServiceBuilder(
       );
 
       const userId = unsafeBrandUserId(member.userId);
+
+      if (consumerKeychain.data.users.includes(userId)) {
+        throw userAlreadyMember(consumerKeychainId, userId);
+      }
+
       const user = await userService.getOrganizationTechnicalUser(
         authData.organizationId,
         userId,
@@ -76,10 +81,6 @@ export function consumerKeychainServiceBuilder(
 
       if (!user) {
         throw userNotFound(userId);
-      }
-
-      if (consumerKeychain.data.users.includes(user.id)) {
-        throw userAlreadyMember(consumerKeychainId, user.id);
       }
 
       const updatedConsumerKeychain: ConsumerKeychain = {
