@@ -17,9 +17,7 @@ const API_AgreementSeedConsumer = API_AgreementConsumer.extend({
     description: "Consumer Organization Attributes",
   }),
 }).meta({ id: "AgreementSeedConsumer" });
-type API_AgreementSeedConsumer = z.infer<
-  typeof API_AgreementSeedConsumer
->;
+type API_AgreementSeedConsumer = z.infer<typeof API_AgreementSeedConsumer>;
 
 export const API_AgreementSeed = z
   .strictObject({
