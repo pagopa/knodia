@@ -44,8 +44,13 @@ describe("POST /agreements (createAgreement)", async () => {
   const eserviceVersion = eservice.versions[0]!;
   const consumerId = generateExternalId<OrganizationId>();
 
+  const consumerAttributes = eserviceVersion.requiredAttributes.map(
+    (group) => group[0]!,
+  );
+
   const body: API_AgreementSeed = {
     consumer: {
+      attributes: consumerAttributes,
       id: consumerId,
       knodeId: "Orion",
     },
@@ -88,7 +93,7 @@ describe("POST /agreements (createAgreement)", async () => {
       const responseBody = response.json<API_Agreement>();
 
       const expectedAgreement: Agreement = {
-        attributes: [],
+        attributes: consumerAttributes,
         consumer: {
           id: consumerId,
           knodeId: KnodeId.parse(body.consumer.knodeId),
@@ -210,10 +215,14 @@ describe("POST /agreements (createAgreement)", async () => {
       });
       await eserviceWriterService.upsertEservice(testEservice, 1);
 
+      const testConsumerAttributes =
+        testEservice.versions[0]!.requiredAttributes.map((group) => group[0]!);
+
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .post("/agreements")
         .body({
           ...body,
+          consumer: { ...body.consumer, attributes: testConsumerAttributes },
           eserviceId: testEservice.id,
           eserviceVersionId: testEservice.versions[0]!.id,
         } satisfies API_AgreementSeed);
@@ -298,4 +307,78 @@ describe("POST /agreements (createAgreement)", async () => {
       expect(response.statusCode).toBe(403);
     },
   );
+});
+
+describe("POST /agreements - attribute validation", async () => {
+  const eservice = getMockEservice({ latestVersionState: "Active" });
+  const eserviceVersion = eservice.versions[0]!;
+  const consumerId = generateExternalId<OrganizationId>();
+  const validAttributes = eserviceVersion.requiredAttributes.map(
+    (group) => group[0]!,
+  );
+  const body: API_AgreementSeed = {
+    consumer: { attributes: validAttributes, id: consumerId, knodeId: "Orion" },
+    eserviceId: eservice.id,
+    eserviceVersionId: eserviceVersion.id,
+  };
+
+  it("should return 201 and only save matching attributes when consumer has extra unrelated attributes", async () => {
+    await eserviceWriterService.upsertEservice(eservice, 1);
+
+    const response = await injectAppRequest({ type: "internal" })
+      .post("/agreements")
+      .body({
+        ...body,
+        consumer: {
+          ...body.consumer,
+          attributes: [...validAttributes, { code: "extra", scheme: "extra" }],
+        },
+      });
+    expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Agreement>();
+    expect(responseBody.attributes).toEqual(
+      expect.arrayContaining(validAttributes),
+    );
+    expect(responseBody.attributes).not.toContainEqual({
+      code: "extra",
+      scheme: "extra",
+    });
+  });
+
+  it("should return 403 when consumer does not possess any required attribute", async () => {
+    await eserviceWriterService.upsertEservice(eservice, 1);
+
+    const response = await injectAppRequest({ type: "internal" })
+      .post("/agreements")
+      .body({
+        ...body,
+        consumer: {
+          ...body.consumer,
+          attributes: [{ code: "unknown", scheme: "unknown" }],
+        },
+      } satisfies API_AgreementSeed);
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 403 when consumer fails to satisfy one attribute group", async () => {
+    const eserviceWith2Groups = getMockEservice({
+      latestVersionState: "Active",
+      minArrayLength: 2,
+    });
+    const version = eserviceWith2Groups.versions[0]!;
+    await eserviceWriterService.upsertEservice(eserviceWith2Groups, 1);
+
+    const response = await injectAppRequest({ type: "internal" })
+      .post("/agreements")
+      .body({
+        consumer: {
+          ...body.consumer,
+          attributes: [version.requiredAttributes[0]![0]!],
+        },
+        eserviceId: eserviceWith2Groups.id,
+        eserviceVersionId: version.id,
+      } satisfies API_AgreementSeed);
+    expect(response.statusCode).toBe(403);
+  });
 });
