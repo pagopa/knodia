@@ -29,18 +29,24 @@ function renderWizard(onClose = vi.fn()) {
 }
 
 describe("CreatePurposeModal", () => {
-  it("shows e-service maxDailyCallsPerConsumer in the daily calls field description", () => {
+  it("shows e-service maxDailyCallsPerConsumer in the daily calls field description", async () => {
     renderWizard();
 
-    expect(
-      screen.getByText(
-        new RegExp(`up to ${MAX_DAILY_CALLS_PER_CONSUMER} API calls/day`),
-      ),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          new RegExp(`up to ${MAX_DAILY_CALLS_PER_CONSUMER} API calls/day`),
+        ),
+      ).toBeInTheDocument();
+    });
   });
 
   it("validates dailyCalls against the e-service limit", async () => {
     const { user } = renderWizard();
+
+    await waitFor(() => {
+      expect(screen.getByLabelText("Name")).toBeInTheDocument();
+    });
 
     await user.type(screen.getByLabelText("Name"), "Valid Purpose Name");
     await user.type(
@@ -55,7 +61,7 @@ describe("CreatePurposeModal", () => {
     await user.type(dailyCallsInput, String(MAX_DAILY_CALLS_PER_CONSUMER + 1));
 
     // onDynamic validator runs on submit (revalidateLogic default mode)
-    await user.click(screen.getByRole("button", { name: "Create Purpose" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
 
     await waitFor(() => {
       expect(
@@ -68,6 +74,12 @@ describe("CreatePurposeModal", () => {
 
   it("shows leave confirmation modal and calls onClose when confirmed", async () => {
     const { onClose, user } = renderWizard();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /close/i }),
+      ).toBeInTheDocument();
+    });
 
     await user.click(screen.getByRole("button", { name: /close/i }));
 

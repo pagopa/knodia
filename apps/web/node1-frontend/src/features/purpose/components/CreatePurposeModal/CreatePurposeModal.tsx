@@ -119,7 +119,7 @@ function ModalContent() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    containerRef.current?.parentElement?.scrollTo(0, 0);
+    containerRef.current?.parentElement?.scrollTo?.(0, 0);
   }, [currentStepIndex]);
 
   return (
