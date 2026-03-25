@@ -108,18 +108,12 @@ interface Rule {
 }
 
 // Typed loaders that centralise the cast in one place.
-// Accepts both JSON imports (which carry their literal type) and
-// API responses (Record<string, unknown>).
-export function loadSchema(
-  json:
-    | Record<string, unknown>
-    | { properties: Record<string, object>; type: string },
-): JsonSchema {
-  return json as JsonSchema;
+// The API returns Record<string, unknown>; these functions cast to the
+// engine's internal types so the cast is isolated here.
+export function loadSchema(json: Record<string, unknown>): JsonSchema {
+  return json as unknown as JsonSchema;
 }
 
-export function loadUiSchema(
-  json: Record<string, unknown> | { elements: readonly object[]; type: string },
-): UISchema {
-  return json as UISchema;
+export function loadUiSchema(json: Record<string, unknown>): UISchema {
+  return json as unknown as UISchema;
 }
