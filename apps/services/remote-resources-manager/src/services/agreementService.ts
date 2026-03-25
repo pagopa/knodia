@@ -23,7 +23,7 @@ import {
   toK2KAPI_AgreementState,
 } from "../models/agreement/apiConverter.ts";
 import { agreementNotFound } from "../models/errors.ts";
-import { assertOrganizationExists } from "../utils/validators.ts";
+import { retrieveOrganization } from "../utils/readmodelUtils.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -45,10 +45,14 @@ export function agreementServiceBuilder(
         `Creating agreement for e-service owned by Knode ${knodeId} with body data`,
       );
 
-      await assertOrganizationExists(consumerId, readmodelService);
+      const organization = await retrieveOrganization(
+        consumerId,
+        readmodelService,
+      );
 
       const { data } = await k2kGatewayApi.createAgreement({
         body: {
+          consumerAttributes: organization.attributes,
           consumerId,
           eserviceId,
           eserviceVersionId,
