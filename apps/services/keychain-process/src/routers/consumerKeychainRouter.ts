@@ -229,6 +229,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
+        data: consumerKeychain,
         metadata: { version },
       } = await consumerKeychainService.addKeychainMember(
         req.params.consumerKeychainId,
@@ -237,7 +238,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       );
 
       setMetadataVersionHeader(res, version);
-      res.status(204).send();
+      res.status(200).send(toAPI_Keychain(consumerKeychain));
     },
     method: "POST",
     schema: {
@@ -247,9 +248,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "addConsumerKeychainMember",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        204: {
+        200: {
           headers: MetadataVersionHeader,
-          properties: z.undefined().meta({
+          properties: API_Keychain.meta({
             description: "Consumer Keychain member added successfully",
           }),
         },

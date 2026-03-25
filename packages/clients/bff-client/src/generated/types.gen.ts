@@ -526,6 +526,10 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type KeychainMemberSeed = {
+    userId: string;
+};
+
 export type User = {
     email: string;
     id: UserId;
@@ -1002,6 +1006,45 @@ export type UpdateConsumerKeychainResponses = {
 };
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
+
+export type AddKeychainMemberData = {
+    body: KeychainMemberSeed;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members';
+};
+
+export type AddKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type AddKeychainMemberError = AddKeychainMemberErrors[keyof AddKeychainMemberErrors];
+
+export type AddKeychainMemberResponses = {
+    /**
+     * Consumer Keychain member added successfully
+     */
+    204: void;
+};
+
+export type AddKeychainMemberResponse = AddKeychainMemberResponses[keyof AddKeychainMemberResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;

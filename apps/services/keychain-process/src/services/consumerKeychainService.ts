@@ -54,7 +54,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<null>> {
+    ): Promise<WithMetadata<ConsumerKeychain>> {
       logger.info(
         `Adding member ${member.userId} to Consumer Keychain ${consumerKeychainId}`,
       );
@@ -98,7 +98,7 @@ export function consumerKeychainServiceBuilder(
       );
 
       return {
-        data: null,
+        data: updatedConsumerKeychain,
         metadata: { version: newVersion },
       };
     },
