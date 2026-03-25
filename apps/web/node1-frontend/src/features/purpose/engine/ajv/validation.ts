@@ -131,6 +131,12 @@ function buildSubsetSchema(
   };
 }
 
+// JSON Schema `required` only checks that a property key exists in the object —
+// it does NOT reject empty strings ("") or empty arrays ([]).
+// Since our form initializes fields with these empty defaults, a required field
+// would pass AJV validation even when the user hasn't filled it in.
+// This function patches required properties so AJV enforces non-empty values:
+// strings get minLength: 1, arrays get minItems: 1.
 function patchPropNonEmpty(prop: JsonSchemaProperty): JsonSchemaProperty {
   if (prop.type === "array")
     return { ...prop, minItems: Math.max(1, prop.minItems ?? 0) };
