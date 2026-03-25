@@ -33,39 +33,27 @@ describe("assertFormAnswersAreValid", () => {
     expect(() =>
       assertFormAnswersAreValid(
         {
-          isRequestOnBehalfOfThirdParties: "NO",
+          // Missing purposeDescription which is top-level required
+          legalBasis: ["PUBLIC_INTEREST"],
+          // Missing publicInterestReasons and legalBasisPublicInterest
+          personalDataTypes: ["WITH_IDENTIFYING_DATA"],
           purpose: "INSTITUTIONAL",
-          // institutionalPurpose is conditionally required but missing
-          usesPersonalData: "YES",
-          // personalDataTypes and legalBasis are conditionally required but missing
+          usesThirdPartyPersonalData: "NO",
         },
         version,
       ),
     ).toThrow();
   });
 
-  it("should not throw when conditional required fields are provided", () => {
+  it("should not throw when all required fields are provided", () => {
     expect(() =>
       assertFormAnswersAreValid(
         {
-          checkedAllDataNeeded: "true",
-          checkedExistenceMereCorrectnessInteropCatalogue: "true",
-          confirmPrincipleIntegrityAndDiscretion: "true",
-          dataDownload: "NO",
-          declarationConfirmGDPR: "true",
-          deliveryMethod: "CLEARTEXT",
-          doneDpia: "NO",
-          institutionalPurpose: "Testing purpose",
-          isRequestOnBehalfOfThirdParties: "NO",
-          knowsDataQuantity: "NO",
           legalBasis: ["CONSENT"],
           personalDataTypes: ["WITH_IDENTIFYING_DATA"],
-          policyProvided: "YES",
-          policyProvidedMedium: "ONLINE",
-          policyProvidedOnlineLink: "https://example.com/policy",
           purpose: "INSTITUTIONAL",
-          purposePursuit: "MERE_CORRECTNESS",
-          usesPersonalData: "YES",
+          purposeDescription: "Testing purpose",
+          usesThirdPartyPersonalData: "NO",
         },
         version,
       ),

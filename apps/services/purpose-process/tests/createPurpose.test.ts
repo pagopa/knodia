@@ -371,7 +371,7 @@ describe("POST /purposes (createPurpose)", () => {
         ...body,
         formAnswersJson: {
           purpose: "INVALID_VALUE",
-          usesPersonalData: "YES",
+          purposeDescription: "test",
         },
       } satisfies API_PurposeSeed);
     expect(response.statusCode).toBe(400);
@@ -385,11 +385,11 @@ describe("POST /purposes (createPurpose)", () => {
       .body({
         ...body,
         formAnswersJson: {
-          isRequestOnBehalfOfThirdParties: "NO",
+          legalBasis: ["PUBLIC_INTEREST"],
+          // Missing publicInterestReasons and legalBasisPublicInterest
+          personalDataTypes: ["WITH_IDENTIFYING_DATA"],
           purpose: "INSTITUTIONAL",
-          // institutionalPurpose is required when purpose is INSTITUTIONAL, but missing
-          usesPersonalData: "YES",
-          // personalDataTypes and legalBasis are required when usesPersonalData is YES, but missing
+          usesThirdPartyPersonalData: "NO",
         },
       } satisfies API_PurposeSeed);
     expect(response.statusCode).toBe(400);
