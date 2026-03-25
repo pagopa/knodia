@@ -18,6 +18,7 @@ import {
   type ConsumerKeychainId,
   generateId,
   unsafeBrandUserId,
+  type UserId,
 } from "@knodia/common-models/ids";
 import { match, P } from "ts-pattern";
 
@@ -47,7 +48,6 @@ import {
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
 } from "../utils/validators.ts";
-import { type UserService } from "./userService.ts";
 
 export type ConsumerKeychainService = ReturnType<
   typeof consumerKeychainServiceBuilder
