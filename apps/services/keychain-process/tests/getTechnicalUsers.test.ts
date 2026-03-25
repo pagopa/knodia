@@ -71,12 +71,12 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
               makeCognitoUser({
                 email: "mario.rossi@example.com",
                 id: "10000000-1000-1000-8000-000000000011",
-                username: "mario.rossi@example.com",
+                username: "Mario Rossi",
               }),
               makeCognitoUser({
                 email: "giulia.bianchi@example.com",
                 id: "10000000-1000-1000-8000-000000000012",
-                username: "giulia.bianchi@example.com",
+                username: "Giulia Bianchi",
               }),
             ],
           };
@@ -91,7 +91,7 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
               makeCognitoUser({
                 email: "luca.neri@example.com",
                 id: "10000000-1000-1000-8000-000000000013",
-                username: "luca.neri@example.com",
+                username: "Luca Neri",
               }),
             ],
           };
@@ -107,7 +107,7 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
               makeCognitoUser({
                 email: "mario.rossi@example.com",
                 id: "10000000-1000-1000-8000-000000000011",
-                username: "mario.rossi@example.com",
+                username: "Mario Rossi",
               }),
             ],
           };
@@ -122,7 +122,7 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
               makeCognitoUser({
                 email: "luca.neri@example.com",
                 id: "10000000-1000-1000-8000-000000000013",
-                username: "luca.neri@example.com",
+                username: "Luca Neri",
               }),
             ],
           };
@@ -143,12 +143,12 @@ describe("GET /users/technical (getTechnicalUsers)", () => {
       {
         email: "mario.rossi@example.com",
         id: "10000000-1000-1000-8000-000000000011",
-        username: "mario.rossi@example.com",
+        username: "Mario Rossi",
       },
       {
         email: "luca.neri@example.com",
         id: "10000000-1000-1000-8000-000000000013",
-        username: "luca.neri@example.com",
+        username: "Luca Neri",
       },
     ]);
     expect(sendMock).toHaveBeenCalledTimes(4);
