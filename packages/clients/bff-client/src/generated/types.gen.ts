@@ -45,6 +45,11 @@ export type Pagination = {
 export type FileDownload = Blob | File;
 
 /**
+ * Unique identifier of the User
+ */
+export type UserId = string;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -523,7 +528,7 @@ export type ConsumerKeychainPatch = {
 
 export type User = {
     email: string;
-    id: string;
+    id: UserId;
     username: string;
 };
 

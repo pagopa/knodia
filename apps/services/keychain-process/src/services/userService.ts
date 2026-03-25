@@ -6,7 +6,7 @@ import {
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type OrganizationId,
-  unsafeBrandId,
+  unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
 
@@ -82,7 +82,7 @@ function toUser(user: UserType): IdmUser {
 
   return {
     email,
-    id: unsafeBrandId(id),
+    id: unsafeBrandUserId(id),
     username,
   };
 }

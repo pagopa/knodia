@@ -27,6 +27,7 @@ export const userRouter: FastifyPluginAsyncZod<UserService> = async (
       const technicalUsers = await userService.getOrganizationTechnicalUsers(
         ctx.authData.organizationId,
       );
+
       res.status(200).send(technicalUsers.map(toAPI_User));
     },
     method: "GET",

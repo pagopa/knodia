@@ -98,6 +98,11 @@ components:
       description: Binary file content
       format: binary
       type: string
+    UserId:
+      description: Unique identifier of the User
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -1125,9 +1130,7 @@ components:
         email:
           type: string
         id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          $ref: "#/components/schemas/UserId"
         username:
           type: string
       required:

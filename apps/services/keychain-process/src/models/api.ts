@@ -2,6 +2,7 @@ import {
   API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
+  API_UserId,
 } from "@knodia/common-models/api";
 import {
   API_KeychainLocalizedDescription,
@@ -59,7 +60,7 @@ export type API_ConsumerKeychainPatch = z.infer<
 export const API_User = z
   .strictObject({
     email: z.string(),
-    id: z.uuid(),
+    id: API_UserId,
     username: z.string(),
   })
   .meta({ id: "User" });
