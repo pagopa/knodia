@@ -23,6 +23,7 @@ import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRoute
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
+import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
@@ -35,6 +36,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     eserviceProcessUrl: config.eserviceProcessUrl,
     keychainProcessUrl: config.keychainProcessUrl,
     organizationProcessUrl: config.organizationProcessUrl,
+    purposeProcessUrl: config.purposeProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
@@ -116,6 +118,14 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       eserviceProcessClient: clients.eserviceProcessClient,
       knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(purposeProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
+      eserviceProcessClient: clients.eserviceProcessClient,
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
+      purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });
