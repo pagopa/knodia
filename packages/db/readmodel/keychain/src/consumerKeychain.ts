@@ -75,7 +75,7 @@ export const readmodelConsumerKeychainPurpose = keychainSchema.table(
   "consumer_keychain_purpose",
   {
     consumerKeychainId: uuid("consumer_keychain_id").notNull(),
-    createdAt: timestamp("created_at", { mode: "date", withTimezone: true })
+    linkedAt: timestamp("linked_at", { mode: "date", withTimezone: true })
       .defaultNow()
       .notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),

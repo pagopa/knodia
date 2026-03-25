@@ -20,5 +20,5 @@ message ConsumerKeychainUpdatedV1 {
 message ConsumerKeychainPurposeLinkedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
   purpose.v1.PurposeV1 purpose = 2;
-  int64 createdAt = 3;
+  int64 linkedAt = 3;
 }
