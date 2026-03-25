@@ -12,6 +12,7 @@ import { eq } from "drizzle-orm";
 import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
+  readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
 import {
