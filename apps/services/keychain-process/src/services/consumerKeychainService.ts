@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -28,11 +29,16 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { userAlreadyMember, userNotFound } from "../models/errors.ts";
+import {
+  userAlreadyMember,
+  userNotFound,
+  userNotMember,
+} from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
   createConsumerKeychainMemberAddedV1Event,
+  createConsumerKeychainMemberRemovedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
@@ -147,7 +153,6 @@ export function consumerKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-
     async deleteConsumerKeychain(
       consumerKeychainId: ConsumerKeychainId,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
@@ -192,6 +197,51 @@ export function consumerKeychainServiceBuilder(
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);
+    },
+
+    async removeKeychainMember(
+      consumerKeychainId: ConsumerKeychainId,
+      userId: UserId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychain>> {
+      logger.info(
+        `Removing member ${userId} from Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      if (!consumerKeychain.data.users.includes(userId)) {
+        throw userNotMember(consumerKeychainId, userId);
+      }
+
+      const updatedConsumerKeychain: ConsumerKeychain = {
+        ...consumerKeychain.data,
+        updatedAt: new Date(),
+        users: consumerKeychain.data.users.filter(
+          (memberId) => memberId !== userId,
+        ),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainMemberRemovedV1Event(
+          updatedConsumerKeychain,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedConsumerKeychain,
+        metadata: { version: newVersion },
+      };
     },
 
     async updateConsumerKeychain(

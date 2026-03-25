@@ -2,6 +2,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -16,6 +17,7 @@ import { z } from "zod";
 import type { ConsumerKeychainService } from "../services/consumerKeychainService.ts";
 
 import {
+  API_ConsumerKeychainMemberPathParam,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
@@ -263,5 +265,47 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        data: consumerKeychain,
+        metadata: { version },
+      } = await consumerKeychainService.removeKeychainMember(
+        unsafeBrandId(req.params.consumerKeychainId),
+        unsafeBrandId(req.params.userId),
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(consumerKeychain));
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a member from a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "removeConsumerKeychainMember",
+      params: API_ConsumerKeychainMemberPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Keychain.meta({
+            description: "Consumer Keychain member removed successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/members/:userId",
   });
 };

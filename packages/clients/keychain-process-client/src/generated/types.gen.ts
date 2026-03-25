@@ -391,6 +391,56 @@ export type AddConsumerKeychainMemberResponses = {
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
 
+export type RemoveConsumerKeychainMemberData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+        userId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members/{userId}';
+};
+
+export type RemoveConsumerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type RemoveConsumerKeychainMemberError = RemoveConsumerKeychainMemberErrors[keyof RemoveConsumerKeychainMemberErrors];
+
+export type RemoveConsumerKeychainMemberResponses = {
+    /**
+     * Consumer Keychain member removed successfully
+     */
+    200: Keychain;
+};
+
+export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
 export type GetTechnicalUsersData = {
     body?: never;
     headers: {
