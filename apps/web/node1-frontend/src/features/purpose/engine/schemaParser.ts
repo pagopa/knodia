@@ -8,11 +8,15 @@ export function getDefaultValues(schema: JsonSchema): FormValues {
       values[name] = prop.default;
     } else if (prop.type === "array") {
       values[name] = [];
-    } else if (prop.type === "string" && !prop.enum) {
+    } else if (
+      prop.type === "string" &&
+      !prop.enum &&
+      prop.const === undefined
+    ) {
       values[name] = "";
     }
-    // Enum fields without a default (radios/selects) are left undefined
-    // so AJV doesn't validate "" against the enum constraint
+    // Enum/const fields without a default are left undefined
+    // so AJV doesn't validate "" against the enum/const constraint
   }
 
   return values;

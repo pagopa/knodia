@@ -49,6 +49,8 @@ describe("assertFormAnswersAreValid", () => {
     expect(() =>
       assertFormAnswersAreValid(
         {
+          confirmPrincipleIntegrityAndDiscretion: "true",
+          declarationConfirmGDPR: "true",
           legalBasis: ["CONSENT"],
           personalDataTypes: ["WITH_IDENTIFYING_DATA"],
           purpose: "INSTITUTIONAL",

@@ -15,18 +15,19 @@ export function SwitchRenderer({ control, error, onChange, value }: Props) {
     control.options?.optionLabels?.["true"] ?? control.label ?? "";
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col">
       {control.label && (
         <span className="label-md text-primary-light-high-contrast">
           {control.label}
         </span>
       )}
       {control.options?.infoLabel && (
-        <span className="body-sm text-primary-light-mid-contrast">
+        <span className="body-sm text-primary-light-mid-contrast mt-3">
           {control.options.infoLabel}
         </span>
       )}
       <Checkbox
+        className="mt-3"
         description={control.options?.description}
         isInvalid={!!error}
         isSelected={isChecked}
@@ -35,7 +36,9 @@ export function SwitchRenderer({ control, error, onChange, value }: Props) {
         {switchLabel}
       </Checkbox>
       {error && (
-        <span className="body-sm text-error-light-low-contrast">{error}</span>
+        <span className="body-sm text-error-light-low-contrast mt-1">
+          {error}
+        </span>
       )}
     </div>
   );

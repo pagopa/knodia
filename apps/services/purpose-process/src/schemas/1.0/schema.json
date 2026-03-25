@@ -122,8 +122,7 @@
     },
     "confirmPrincipleIntegrityAndDiscretion": {
       "type": "string",
-      "enum": ["true", "false"],
-      "default": "false"
+      "const": "true"
     },
     "dataProtectionMeasures": {
       "type": "string",
@@ -154,13 +153,11 @@
     },
     "checkedExistenceMereCorrectnessInteropCatalogue": {
       "type": "string",
-      "enum": ["true", "false"],
-      "default": "false"
+      "const": "true"
     },
     "checkedAllDataNeeded": {
       "type": "string",
-      "enum": ["true", "false"],
-      "default": "false"
+      "const": "true"
     },
     "thirdPartiesRequestDataUsage": {
       "type": "string",
@@ -168,8 +165,7 @@
     },
     "declarationConfirmGDPR": {
       "type": "string",
-      "enum": ["true", "false"],
-      "default": "false"
+      "const": "true"
     }
   },
   "required": [
@@ -177,7 +173,9 @@
     "purposeDescription",
     "personalDataTypes",
     "legalBasis",
-    "usesThirdPartyPersonalData"
+    "usesThirdPartyPersonalData",
+    "confirmPrincipleIntegrityAndDiscretion",
+    "declarationConfirmGDPR"
   ],
   "allOf": [
     {
