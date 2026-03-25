@@ -46,17 +46,20 @@ export const ConsumerKeychain = z.strictObject({
   keys: z.array(ConsumerKeychainKey),
   name: LocalizedName,
   ownerId: OrganizationId,
-  purposes: z.array(PurposeId),
   updatedAt: z.coerce.date(),
   users: z.array(UserId),
 });
-
 export type ConsumerKeychain = z.infer<typeof ConsumerKeychain>;
 
 export const FlatConsumerKeychain = ConsumerKeychain.omit({
   keys: true,
-  purposes: true,
   users: true,
 });
-
 export type FlatConsumerKeychain = z.infer<typeof FlatConsumerKeychain>;
+
+export const ConsumerKeychainPurpose = z.strictObject({
+  consumerKeychainId: ConsumerKeychainId,
+  linkedAt: z.coerce.date(),
+  purposeId: PurposeId,
+});
+export type ConsumerKeychainPurpose = z.infer<typeof ConsumerKeychainPurpose>;

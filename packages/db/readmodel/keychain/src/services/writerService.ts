@@ -8,7 +8,6 @@ import { and, eq, lte } from "drizzle-orm";
 import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
-  readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
 import { splitConsumerKeychainIntoObjectsSQL } from "../converters/splitters.ts";
@@ -52,7 +51,6 @@ export function keychainWriterBuilder(db: NodePgDatabase) {
 
         const {
           consumerKeychainKeysSQL,
-          consumerKeychainPurposesSQL,
           consumerKeychainSQL,
           consumerKeychainUsersSQL,
         } = splitConsumerKeychainIntoObjectsSQL(
@@ -66,12 +64,6 @@ export function keychainWriterBuilder(db: NodePgDatabase) {
           await tx
             .insert(readmodelConsumerKeychainUser)
             .values(consumerKeychainUsersSQL);
-        }
-
-        if (consumerKeychainPurposesSQL.length > 0) {
-          await tx
-            .insert(readmodelConsumerKeychainPurpose)
-            .values(consumerKeychainPurposesSQL);
         }
 
         if (consumerKeychainKeysSQL.length > 0) {
