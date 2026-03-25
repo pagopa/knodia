@@ -64,7 +64,7 @@ export type API_ConsumerKeychainPatch = z.infer<
 
 export const API_KeychainMemberSeed = z
   .strictObject({
-    userId: z.uuid(),
+    userId: API_UserId,
   })
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;

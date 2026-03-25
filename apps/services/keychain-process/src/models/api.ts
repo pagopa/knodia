@@ -71,7 +71,7 @@ export type API_Users = z.infer<typeof API_Users>;
 
 export const API_KeychainMemberSeed = z
   .strictObject({
-    userId: z.uuid(),
+    userId: API_UserId,
   })
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
