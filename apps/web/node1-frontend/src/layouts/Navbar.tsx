@@ -7,12 +7,13 @@ import { MenuItem } from "@knodia/ui-kit/ui";
 
 import { config } from "@/config/config";
 import { useAuth } from "@/contexts/auth";
+import { getInitials } from "@/utils/getInitials";
 
 export function Navbar() {
   const { logout, roles, username } = useAuth();
 
   const displayName = username ?? "User";
-  const initials = displayName.slice(0, 2).toUpperCase();
+  const initials = getInitials(displayName);
   const displayRole = roles
     .map((r) => r.charAt(0).toUpperCase() + r.slice(1))
     .join(", ");
