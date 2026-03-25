@@ -82,6 +82,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     await seedConsumerKeychain(consumerKeychain);
 
     const memberId = "10000000-1000-1000-8000-000000000011";
+    const memberUsername = "Mario Rossi";
     const body: API_KeychainMemberSeed = {
       userId: memberId,
     };
@@ -98,13 +99,13 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
             makeCognitoUser({
               email: "mario.rossi@example.com",
               id: memberId,
-              username: "Mario Rossi",
+              username: memberUsername,
             }),
           ],
         };
       }
 
-      if (input.Username === memberId) {
+      if (input.Username === memberUsername) {
         return {
           Groups: [
             { GroupName: `org:${consumerKeychain.ownerId}` },
@@ -228,6 +229,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
   });
 
   it("should return 409 if the user is already a member", async () => {
+    const memberUsername = "Mario Rossi";
     const memberId = "10000000-1000-1000-8000-000000000011";
     const keychainWithExistingMember: ConsumerKeychain = {
       ...consumerKeychain,
@@ -248,13 +250,13 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
             makeCognitoUser({
               email: "mario.rossi@example.com",
               id: memberId,
-              username: "Mario Rossi",
+              username: memberUsername,
             }),
           ],
         };
       }
 
-      if (input.Username === memberId) {
+      if (input.Username === memberUsername) {
         return {
           Groups: [
             { GroupName: `org:${keychainWithExistingMember.ownerId}` },

@@ -61,7 +61,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
     return user ? toIdmUser(user) : undefined;
   }
 
-  async function listGroupsForUser(userId: UserId): Promise<string[]> {
+  async function listGroupsForUser(username: string): Promise<string[]> {
     const groups: string[] = [];
     let nextToken: string | undefined;
 
@@ -70,7 +70,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
         new AdminListGroupsForUserCommand({
           Limit: 60, // Max limit per AWS docs
           NextToken: nextToken,
-          Username: userId,
+          Username: username,
           UserPoolId: userPoolId,
         }),
       );
@@ -96,7 +96,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
         return undefined;
       }
 
-      const groups = await listGroupsForUser(userId);
+      const groups = await listGroupsForUser(user.username);
 
       const isTechnicalUser = groups.includes(TECHNICAL_ROLE_GROUP_NAME);
       const isOrgMember = groups.includes(
