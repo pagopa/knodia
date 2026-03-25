@@ -1,7 +1,12 @@
 import { Button, Steps } from "@knodia/ui-kit/ui";
 import { useCallback, useMemo, useState } from "react";
 
-import type { FormValues, JsonSchema, UISchema } from "../engine/types";
+import type {
+  FormTexts,
+  FormValues,
+  JsonSchema,
+  UISchema,
+} from "../engine/types";
 import type { GroupLayout, StepLayout } from "../engine/uischemaParser";
 
 import {
@@ -10,7 +15,8 @@ import {
   scopeToFieldName,
 } from "../engine/dependencyResolver";
 import { getDefaultValues } from "../engine/schemaParser";
-import { loadSchema, loadUiSchema } from "../engine/types";
+import { getBannerText } from "../engine/textsResolver";
+import { loadSchema, loadTexts, loadUiSchema } from "../engine/types";
 import {
   collectErrorMessages,
   collectGroups,
@@ -21,18 +27,20 @@ import { useVisibleFields } from "../hooks/useVisibleFields";
 import { FieldRenderer } from "../renderers/uikit/FieldRenderer";
 import { InfoBanner } from "../renderers/uikit/InfoBanner";
 import jsonSchemaData from "../schemas/two-form/schema.json";
+import textsData from "../schemas/two-form/texts.json";
 import uischemaData from "../schemas/two-form/uischema.json";
 
 const schema = loadSchema(jsonSchemaData);
 const ui = loadUiSchema(uischemaData);
+const texts = loadTexts(textsData);
 
 export function TwoFormUIKitPage() {
   const validate = useMemo(
-    () => createZodValidator(schema, collectErrorMessages(ui)),
+    () => createZodValidator(schema, collectErrorMessages(texts, schema)),
     [],
   );
 
-  const steps = useMemo(() => collectSteps(ui), []);
+  const steps = useMemo(() => collectSteps(ui, texts), []);
   const stepLabels = useMemo(() => steps.map((s) => s.label ?? ""), [steps]);
   const isMultiStep = steps.length > 1;
 
@@ -143,6 +151,7 @@ export function TwoFormUIKitPage() {
                 jsonSchema={schema}
                 onChange={handleChange}
                 stepUischema={stepUischema}
+                texts={texts}
                 values={values}
                 visibleFieldNames={visibleFieldNames}
               />
@@ -197,6 +206,7 @@ function FormStep({
   jsonSchema,
   onChange,
   stepUischema,
+  texts,
   values,
   visibleFieldNames,
 }: {
@@ -204,10 +214,14 @@ function FormStep({
   jsonSchema: JsonSchema;
   onChange: (fieldName: string, value: string | string[]) => void;
   stepUischema: UISchema;
+  texts: FormTexts;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {
-  const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
+  const groups = useMemo(
+    () => collectGroups(stepUischema, texts),
+    [stepUischema, texts],
+  );
 
   const visibleGroups = useMemo(
     () =>
@@ -233,6 +247,7 @@ function FormStep({
           jsonSchema={jsonSchema}
           key={group.label ?? groupIndex}
           onChange={onChange}
+          texts={texts}
           values={values}
           visibleFieldNames={visibleFieldNames}
         />
@@ -247,6 +262,7 @@ function GroupSection({
   isLast,
   jsonSchema,
   onChange,
+  texts,
   values,
   visibleFieldNames,
 }: {
@@ -255,6 +271,7 @@ function GroupSection({
   isLast: boolean;
   jsonSchema: JsonSchema;
   onChange: (fieldName: string, value: string | string[]) => void;
+  texts: FormTexts;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {
@@ -275,10 +292,12 @@ function GroupSection({
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
           if (!isLabelVisible(element, values, visibleFieldNames)) return null;
+          const text =
+            getBannerText(texts, element.textKey) ?? element.text ?? "";
           return (
             <InfoBanner
               key={`label-${i}`}
-              text={element.text}
+              text={text}
               variant={element.options?.variant}
             />
           );
@@ -293,6 +312,7 @@ function GroupSection({
             jsonSchema={jsonSchema}
             key={fieldName}
             onChange={(v) => onChange(fieldName, v)}
+            texts={texts}
             value={
               values[fieldName] ??
               (jsonSchema.properties[fieldName]?.type === "array" ? [] : "")

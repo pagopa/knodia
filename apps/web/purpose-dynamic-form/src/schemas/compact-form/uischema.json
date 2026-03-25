@@ -3,60 +3,35 @@
   "elements": [
     {
       "type": "Group",
-      "label": "Purpose and data types",
+      "textKey": "purposeAndDataTypes",
       "elements": [
         {
           "type": "Control",
           "scope": "#/properties/purpose",
           "label": "Purpose of access",
           "options": {
-            "widget": "select",
-            "optionLabels": {
-              "INSTITUTIONAL": "Institutional purposes",
-              "OTHER": "Other"
-            },
-            "errorMessages": { "required": "Please select a purpose" }
+            "widget": "select"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/purposeDescription",
-          "label": "Describe your purpose",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Please describe your purpose",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "textarea"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/personalDataTypes",
-          "label": "Type(s) of personal data",
           "options": {
-            "widget": "checkbox",
-            "optionLabels": {
-              "WITH_NON_IDENTIFYING_DATA": "Common non-identifying (e.g. license plate)",
-              "WITH_IDENTIFYING_DATA": "Common identifying (e.g. tax code)",
-              "GDPR_ART_8": "Minors (Art. 8 GDPR)",
-              "GDPR_ART_9": "Special categories (Art. 9 GDPR)",
-              "GDPR_ART_10": "Criminal-related (Art. 10 GDPR)",
-              "OTHER": "Other"
-            },
-            "errorMessages": { "required": "Please select at least one type" }
+            "widget": "checkbox"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/otherPersonalDataTypes",
-          "label": "Specify the type of personal data",
           "options": {
-            "widget": "text",
-            "errorMessages": {
-              "required": "Please specify the type of personal data",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "text"
           },
           "rule": {
             "effect": "SHOW",
@@ -71,9 +46,7 @@
           "scope": "#/properties/usesThirdPartyPersonalData",
           "label": "Accessing data on behalf of third parties?",
           "options": {
-            "widget": "radio",
-            "optionLabels": { "YES": "Yes", "NO": "No" },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "radio"
           }
         },
         {
@@ -81,12 +54,7 @@
           "scope": "#/properties/thirdPartiesRequestDataUsage",
           "label": "On behalf of entity under Section 2(2)(a) CAD?",
           "options": {
-            "widget": "select",
-            "optionLabels": {
-              "PA_ONLY": "Exclusively on behalf of such entity",
-              "PA_ALSO": "Also on behalf of such entity"
-            },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "select"
           },
           "rule": {
             "effect": "SHOW",
@@ -100,25 +68,14 @@
     },
     {
       "type": "Group",
-      "label": "Legal basis",
-      "options": {
-        "description": "Under Art. 6 of the GDPR, indicate the legal basis for processing."
-      },
+      "textKey": "legalBasisGroup",
       "elements": [
         {
           "type": "Control",
           "scope": "#/properties/legalBasis",
           "label": "Legal basis for processing",
           "options": {
-            "widget": "checkbox",
-            "optionLabels": {
-              "CONSENT": "Consent",
-              "CONTRACT": "Contractual performance",
-              "LEGAL_OBLIGATION": "Legal obligation",
-              "SAFEGUARD": "Vital interests",
-              "PUBLIC_INTEREST": "Public interest"
-            },
-            "errorMessages": { "required": "Please select at least one legal basis" }
+            "widget": "checkbox"
           }
         },
         {
@@ -126,11 +83,7 @@
           "scope": "#/properties/legalObligationReference",
           "label": "Relevant legal obligation",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Please specify the legal obligation",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -145,13 +98,7 @@
           "scope": "#/properties/publicInterestReasons",
           "label": "Public interest reasons",
           "options": {
-            "widget": "checkbox",
-            "optionLabels": {
-              "RULE_OF_LAW": "Law or regulation under Section 2-ter(1) of the Italian Privacy Code",
-              "ADMINISTRATIVE_ACT": "General administrative act under Section 2-ter(1) of the Italian Privacy Code",
-              "PUBLIC_INTEREST_TASK": "Public-interest task under Section 2-ter(1-bis) of the Italian Privacy Code"
-            },
-            "errorMessages": { "required": "Please select at least one reason" }
+            "widget": "checkbox"
           },
           "rule": {
             "effect": "SHOW",
@@ -167,18 +114,12 @@
           "label": "Public interest legal basis type",
           "options": {
             "widget": "select",
-            "optionLabels": {
-              "RULE_OF_LAW": "Law or regulation",
-              "ADMINISTRATIVE_ACT": "General administrative act",
-              "PUBLIC_INTEREST_TASK": "Public-interest task"
-            },
             "hideOptions": {
               "PUBLIC_INTEREST_TASK": {
                 "scope": "#/properties/personalDataTypes",
                 "schema": { "contains": { "const": "GDPR_ART_9" } }
               }
-            },
-            "errorMessages": { "required": "Please select an option" }
+            }
           },
           "rule": {
             "effect": "SHOW",
@@ -191,13 +132,8 @@
         {
           "type": "Control",
           "scope": "#/properties/ruleOfLawText",
-          "label": "Applicable law or regulation",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Please enter the applicable law or regulation",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -221,11 +157,7 @@
           "scope": "#/properties/administrativeActText",
           "label": "Applicable administrative act",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Please enter the applicable general administrative act",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -249,11 +181,7 @@
           "scope": "#/properties/publicInterestTaskText",
           "label": "Public-interest task reference",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Please enter the task performed or public reference",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -267,21 +195,14 @@
     },
     {
       "type": "Group",
-      "label": "Delivery and quantity",
+      "textKey": "deliveryAndQuantity",
       "elements": [
         {
           "type": "Control",
           "scope": "#/properties/deliveryMethod",
           "label": "Data delivery format",
           "options": {
-            "widget": "select",
-            "optionLabels": {
-              "ANONYMOUS": "Anonymized",
-              "AGGREGATE": "Aggregate",
-              "PSEUDOANONYMOUS": "Pseudonymized",
-              "CLEARTEXT": "Clear (unencrypted)"
-            },
-            "errorMessages": { "required": "Please select a format" }
+            "widget": "select"
           }
         },
         {
@@ -289,9 +210,7 @@
           "scope": "#/properties/knowsDataQuantity",
           "label": "Data quantity known?",
           "options": {
-            "widget": "radio",
-            "optionLabels": { "YES": "Yes", "NO": "No" },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "radio"
           }
         },
         {
@@ -299,15 +218,7 @@
           "scope": "#/properties/dataQuantity",
           "label": "Quantity range",
           "options": {
-            "widget": "select",
-            "optionLabels": {
-              "QUANTITY_0_TO_100": "0-100",
-              "QUANTITY_101_TO_500": "101-500",
-              "QUANTITY_500_TO_1000": "501-1,000",
-              "QUANTITY_1001_TO_5000": "1,001-5,000",
-              "QUANTITY_5001_OVER": "5,001 or more"
-            },
-            "errorMessages": { "required": "Please select a range" }
+            "widget": "select"
           },
           "rule": {
             "effect": "SHOW",
@@ -322,9 +233,7 @@
           "scope": "#/properties/dataDownload",
           "label": "Data download allowed?",
           "options": {
-            "widget": "radio",
-            "optionLabels": { "YES": "Yes", "NO": "No" },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "radio"
           }
         },
         {
@@ -332,12 +241,7 @@
           "scope": "#/properties/dataRetentionPeriod",
           "label": "Retention period",
           "options": {
-            "widget": "text",
-            "infoLabel": "E.g. 1 hour, 10 days, 3 months",
-            "errorMessages": {
-              "required": "Please enter the retention period",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "text"
           },
           "rule": {
             "effect": "SHOW",
@@ -351,16 +255,14 @@
     },
     {
       "type": "Group",
-      "label": "Privacy, security and compliance",
+      "textKey": "privacySecurityAndCompliance",
       "elements": [
         {
           "type": "Control",
           "scope": "#/properties/policyProvided",
           "label": "Privacy notice provided?",
           "options": {
-            "widget": "radio",
-            "optionLabels": { "YES": "Yes", "NO": "No" },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "radio"
           }
         },
         {
@@ -368,11 +270,7 @@
           "scope": "#/properties/reasonPolicyNotProvided",
           "label": "Reason for not providing notice",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Please explain why a privacy notice was not provided",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -387,9 +285,7 @@
           "scope": "#/properties/policyProvidedMedium",
           "label": "Notice delivery medium",
           "options": {
-            "widget": "select",
-            "optionLabels": { "PRINT": "Print", "ONLINE": "Online" },
-            "errorMessages": { "required": "Please select a medium" }
+            "widget": "select"
           },
           "rule": {
             "effect": "SHOW",
@@ -404,11 +300,7 @@
           "scope": "#/properties/policyProvidedOnlineLink",
           "label": "Privacy notice URL",
           "options": {
-            "widget": "text",
-            "errorMessages": {
-              "required": "Please enter the link",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "text"
           },
           "rule": {
             "effect": "SHOW",
@@ -432,9 +324,7 @@
           "scope": "#/properties/confirmPrincipleIntegrityAndDiscretion",
           "label": "Security measures adopted (Art. 5(1)(f) GDPR)",
           "options": {
-            "widget": "switch",
-            "optionLabels": { "true": "I confirm" },
-            "errorMessages": { "required": "Confirmation required" }
+            "widget": "switch"
           }
         },
         {
@@ -442,11 +332,7 @@
           "scope": "#/properties/dataProtectionMeasures",
           "label": "Technical and organizational measures",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Please describe the measures adopted",
-              "maxLength": "Must not exceed 2,000 characters"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -470,14 +356,12 @@
           "scope": "#/properties/doneDpia",
           "label": "DPIA carried out?",
           "options": {
-            "widget": "radio",
-            "optionLabels": { "YES": "Yes", "NO": "No" },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "radio"
           }
         },
         {
           "type": "Label",
-          "text": "The impact assessment is mandatory if the conditions set out in Section 35 of the GDPR exist.",
+          "textKey": "dpiaReminder",
           "options": { "variant": "info" },
           "rule": {
             "effect": "SHOW",
@@ -492,9 +376,7 @@
           "scope": "#/properties/confirmedDoneDpia",
           "label": "Prior consultation carried out?",
           "options": {
-            "widget": "radio",
-            "optionLabels": { "YES": "Yes", "NO": "No" },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "radio"
           },
           "rule": {
             "effect": "SHOW",
@@ -506,7 +388,7 @@
         },
         {
           "type": "Label",
-          "text": "Prior consultation is mandatory if the conditions set out in Section 36 of the GDPR exist.",
+          "textKey": "priorConsultationReminder",
           "options": { "variant": "info" },
           "rule": {
             "effect": "SHOW",
@@ -521,12 +403,7 @@
           "scope": "#/properties/purposePursuit",
           "label": "Data minimization",
           "options": {
-            "widget": "radio",
-            "optionLabels": {
-              "MERE_CORRECTNESS": "Verification of mere correctness",
-              "NEW_PERSONAL_DATA": "Receiving new personal data"
-            },
-            "errorMessages": { "required": "Please select an option" }
+            "widget": "radio"
           }
         },
         {
@@ -534,10 +411,7 @@
           "scope": "#/properties/checkedExistenceMereCorrectnessInteropCatalogue",
           "label": "API Catalogue check performed",
           "options": {
-            "widget": "switch",
-            "infoLabel": "Check whether another E-Service in the API Catalogue can perform the verification without new data.",
-            "optionLabels": { "true": "I confirm" },
-            "errorMessages": { "required": "Confirmation required" }
+            "widget": "switch"
           },
           "rule": {
             "effect": "SHOW",
@@ -552,9 +426,7 @@
           "scope": "#/properties/checkedAllDataNeeded",
           "label": "Data necessity check",
           "options": {
-            "widget": "switch",
-            "optionLabels": { "true": "I confirm" },
-            "errorMessages": { "required": "Confirmation required" }
+            "widget": "switch"
           },
           "rule": {
             "effect": "SHOW",
@@ -569,9 +441,7 @@
           "scope": "#/properties/declarationConfirmGDPR",
           "label": "GDPR compliance declaration (Art. 5(2))",
           "options": {
-            "widget": "switch",
-            "optionLabels": { "true": "I confirm" },
-            "errorMessages": { "required": "Confirmation required" }
+            "widget": "switch"
           }
         }
       ]

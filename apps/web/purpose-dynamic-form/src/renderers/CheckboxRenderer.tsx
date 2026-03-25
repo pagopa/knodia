@@ -1,18 +1,18 @@
 import { Checkbox, CheckboxGroup, Label, Text } from "react-aria-components";
 
-import type { ControlElement } from "../engine/types";
-
 interface Props {
-  control: ControlElement;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   onChange: (value: string[]) => void;
   options: { label: string; value: string }[];
   value: string[];
 }
 
 export function CheckboxRenderer({
-  control,
+  description,
   error,
+  label,
   onChange,
   options,
   value,
@@ -24,12 +24,10 @@ export function CheckboxRenderer({
       onChange={onChange}
       value={value}
     >
-      <Label className="text-sm font-medium text-gray-900">
-        {control.label}
-      </Label>
-      {control.options?.infoLabel && (
+      <Label className="text-sm font-medium text-gray-900">{label}</Label>
+      {description && (
         <Text className="text-xs text-gray-500" slot="description">
-          {control.options.infoLabel}
+          {description}
         </Text>
       )}
       <div className="flex flex-col gap-1">

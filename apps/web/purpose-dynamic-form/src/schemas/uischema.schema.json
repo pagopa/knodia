@@ -12,6 +12,7 @@
       "properties": {
         "type": { "const": "Group" },
         "label": { "type": "string" },
+        "textKey": { "type": "string" },
         "options": {
           "type": "object",
           "properties": {
@@ -61,10 +62,11 @@
     },
     "LabelElement": {
       "type": "object",
-      "required": ["type", "text"],
+      "required": ["type"],
       "properties": {
         "type": { "const": "Label" },
         "text": { "type": "string" },
+        "textKey": { "type": "string" },
         "options": {
           "type": "object",
           "properties": {
@@ -83,20 +85,11 @@
         "widget": {
           "enum": ["checkbox", "radio", "select", "switch", "text", "textarea"]
         },
-        "description": { "type": "string" },
-        "errorMessages": {
-          "type": "object",
-          "additionalProperties": { "type": "string" }
-        },
         "hideOptions": {
           "type": "object",
           "additionalProperties": { "$ref": "#/$defs/HideOptionCondition" }
         },
-        "infoLabel": { "type": "string" },
-        "optionLabels": {
-          "type": "object",
-          "additionalProperties": { "type": "string" }
-        }
+        "infoLabel": { "type": "string" }
       },
       "additionalProperties": false
     },

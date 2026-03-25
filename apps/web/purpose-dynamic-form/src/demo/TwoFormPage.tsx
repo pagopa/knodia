@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import type {
+  FormTexts,
   FormValues,
   JsonSchema,
   UISchema,
@@ -21,13 +22,20 @@ import { useVisibleFields } from "../hooks/useVisibleFields";
 
 interface Props {
   jsonSchema: JsonSchema;
+  texts: FormTexts;
   title: string;
   uischema: UISchema;
   validate: ValidateFn;
 }
 
-export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
-  const steps = useMemo(() => collectSteps(uischema), [uischema]);
+export function TwoFormPage({
+  jsonSchema,
+  texts,
+  title,
+  uischema,
+  validate,
+}: Props) {
+  const steps = useMemo(() => collectSteps(uischema, texts), [uischema, texts]);
   const isMultiStep = steps.length > 1;
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -136,6 +144,7 @@ export function TwoFormPage({ jsonSchema, title, uischema, validate }: Props) {
                 jsonSchema={jsonSchema}
                 onChange={handleChange}
                 stepUischema={stepUischema}
+                texts={texts}
                 values={values}
                 visibleFieldNames={visibleFieldNames}
               />
@@ -188,6 +197,7 @@ function FormStep({
   jsonSchema,
   onChange,
   stepUischema,
+  texts,
   values,
   visibleFieldNames,
 }: {
@@ -195,10 +205,14 @@ function FormStep({
   jsonSchema: JsonSchema;
   onChange: (fieldName: string, value: string | string[]) => void;
   stepUischema: UISchema;
+  texts: FormTexts;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {
-  const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
+  const groups = useMemo(
+    () => collectGroups(stepUischema, texts),
+    [stepUischema, texts],
+  );
 
   const visibleGroups = useMemo(
     () =>
@@ -224,6 +238,7 @@ function FormStep({
           jsonSchema={jsonSchema}
           key={group.label ?? groupIndex}
           onChange={onChange}
+          texts={texts}
           values={values}
           visibleFieldNames={visibleFieldNames}
         />

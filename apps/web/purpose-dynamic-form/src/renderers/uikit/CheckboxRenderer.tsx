@@ -1,28 +1,28 @@
 import { Checkbox, CheckboxGroup } from "@knodia/ui-kit/ui";
 
-import type { ControlElement } from "../../engine/types";
-
 interface Props {
-  control: ControlElement;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   onChange: (value: string[]) => void;
   options: { label: string; value: string }[];
   value: string[];
 }
 
 export function CheckboxRenderer({
-  control,
+  description,
   error,
+  label,
   onChange,
   options,
   value,
 }: Props) {
   return (
     <CheckboxGroup
-      description={control.options?.infoLabel}
+      description={description}
       errorMessage={error}
       isInvalid={!!error}
-      label={control.label}
+      label={label}
       onChange={onChange}
       value={value}
     >

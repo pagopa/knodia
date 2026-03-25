@@ -11,10 +11,12 @@ import type { StepLayout } from "../engine/uischemaParser";
 
 import { StepIndicator } from "../components/StepIndicator";
 import { injectNonEmptyConstraints } from "../engine/ajv/validation";
-import { loadSchema, loadUiSchema } from "../engine/types";
+import { hydrateUiSchema } from "../engine/hydrateUiSchema";
+import { loadSchema, loadTexts, loadUiSchema } from "../engine/types";
 import { collectSteps } from "../engine/uischemaParser";
 import { customRenderers } from "../renderers/jsonforms";
 import rawJsonSchema from "../schemas/two-form/schema.json";
+import textsData from "../schemas/two-form/texts.json";
 import uischema from "../schemas/two-form/uischema.json";
 
 // Strip $schema so JSON Forms' internal AJV (Draft 7) doesn't choke on the 2020-12 meta-schema ref.
@@ -36,7 +38,8 @@ for (const [name, prop] of Object.entries(rawJsonSchema.properties)) {
 }
 
 const renderers = [...vanillaRenderers, ...customRenderers];
-const ui = loadUiSchema(uischema);
+const texts = loadTexts(textsData);
+const ui = hydrateUiSchema(loadUiSchema(uischema), texts);
 
 interface UISchemaElement {
   elements?: UISchemaElement[];
@@ -47,7 +50,7 @@ interface UISchemaElement {
 }
 
 export function TwoFormJsonFormsPage() {
-  const steps = useMemo(() => collectSteps(ui), []);
+  const steps = useMemo(() => collectSteps(ui, texts), []);
   const isMultiStep = steps.length > 1;
 
   const [currentStep, setCurrentStep] = useState(0);

@@ -109,18 +109,13 @@ describe("UI Schema meta-schema", () => {
     it("Control with all options", () => {
       const schema = verticalLayout([
         {
-          label: "Full control",
           options: {
-            description: "Pick one",
-            errorMessages: { required: "Required" },
             hideOptions: {
               B: {
                 schema: { const: "hide_b" },
                 scope: "#/properties/other",
               },
             },
-            infoLabel: "Extra info",
-            optionLabels: { A: "Option A", B: "Option B" },
             widget: "radio",
           },
           scope: "#/properties/field",
@@ -281,10 +276,6 @@ describe("UI Schema meta-schema — rejects invalid schemas", () => {
 
   it("invalid scope format", () => {
     expect(validate(verticalLayout([control("properties/foo")]))).toBe(false);
-  });
-
-  it("LabelElement missing text", () => {
-    expect(validate(verticalLayout([{ type: "Label" }]))).toBe(false);
   });
 
   it("Group missing elements", () => {

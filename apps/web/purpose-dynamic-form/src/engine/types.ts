@@ -14,9 +14,13 @@ export interface ControlElement {
 }
 
 // Form values
-export type FormValues = Record<string, string | string[]>;
+export interface FormTexts {
+  banners?: Record<string, string>;
+  fields: Record<string, FieldTexts>;
+  groups?: Record<string, { description?: string; label?: string }>;
+}
 
-// UI Schema types (JSON Forms format + extensions)
+export type FormValues = Record<string, string | string[]>;
 
 export interface JsonSchema {
   $schema?: string;
@@ -25,6 +29,8 @@ export interface JsonSchema {
   required?: string[];
   type: "object";
 }
+
+// UI Schema types (JSON Forms format + extensions)
 
 export interface JsonSchemaProperty {
   const?: string;
@@ -41,7 +47,8 @@ export interface JsonSchemaProperty {
 export interface LabelElement {
   options?: { variant?: "error" | "info" | "warning" };
   rule?: Rule;
-  text: string;
+  text?: string;
+  textKey?: string;
   type: "Label";
 }
 
@@ -62,18 +69,23 @@ export type ValidateFn = (
 ) => Record<string, string>;
 
 interface ControlOptions {
-  description?: string;
-  errorMessages?: Record<string, string>;
   hideOptions?: Record<string, HideOptionCondition>;
-  infoLabel?: string;
   optionLabels?: Record<string, string>;
   widget: "checkbox" | "radio" | "select" | "switch" | "text" | "textarea";
+}
+
+interface FieldTexts {
+  description?: string;
+  errors?: Record<string, string>;
+  label?: string;
+  options?: Record<string, string>;
 }
 
 interface GroupElement {
   elements: UISchemaElement[];
   label?: string;
   options?: { description?: string };
+  textKey?: string;
   type: "Group";
 }
 
@@ -115,6 +127,14 @@ export function loadSchema(json: {
   type: string;
 }): JsonSchema {
   return json as JsonSchema;
+}
+
+export function loadTexts(json: {
+  banners?: Record<string, string>;
+  fields: Record<string, object>;
+  groups?: Record<string, object>;
+}): FormTexts {
+  return json as FormTexts;
 }
 
 export function loadUiSchema(json: {

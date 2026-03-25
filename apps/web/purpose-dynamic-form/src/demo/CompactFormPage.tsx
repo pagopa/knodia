@@ -2,13 +2,20 @@ import { useMemo, useState } from "react";
 
 import { DynamicForm } from "../components/DynamicForm";
 import { createAjvValidator } from "../engine/ajv/validation";
-import { type FormValues, loadSchema, loadUiSchema } from "../engine/types";
+import {
+  type FormValues,
+  loadSchema,
+  loadTexts,
+  loadUiSchema,
+} from "../engine/types";
 import { collectErrorMessages } from "../engine/uischemaParser";
+import textsData from "../schemas/compact-form/texts.json";
 import uischema from "../schemas/compact-form/uischema.json";
 import jsonSchema from "../schemas/two-form/schema.json";
 
 const schema = loadSchema(jsonSchema);
 const ui = loadUiSchema(uischema);
+const texts = loadTexts(textsData);
 
 export function CompactFormPage() {
   const [submittedValues, setSubmittedValues] = useState<FormValues | null>(
@@ -16,7 +23,7 @@ export function CompactFormPage() {
   );
 
   const validate = useMemo(
-    () => createAjvValidator(schema, collectErrorMessages(ui)),
+    () => createAjvValidator(schema, collectErrorMessages(texts, schema)),
     [],
   );
 
@@ -31,6 +38,7 @@ export function CompactFormPage() {
           <DynamicForm
             jsonSchema={schema}
             onSubmit={setSubmittedValues}
+            texts={texts}
             uischema={ui}
             validate={validate}
           />

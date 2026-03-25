@@ -1,30 +1,31 @@
 import { Checkbox, Label, Text } from "react-aria-components";
 
-import type { ControlElement } from "../engine/types";
-
 interface Props {
-  control: ControlElement;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   onChange: (value: string) => void;
+  switchLabel: string;
   value: string;
 }
 
-export function SwitchRenderer({ control, error, onChange, value }: Props) {
+export function SwitchRenderer({
+  description,
+  error,
+  label,
+  onChange,
+  switchLabel,
+  value,
+}: Props) {
   const isChecked = value === "true";
-  const switchLabel =
-    control.options?.optionLabels?.["true"] ?? control.label ?? "";
 
   return (
     <div className="flex flex-col gap-1">
-      {control.label && (
-        <span className="text-sm font-medium text-gray-900">
-          {control.label}
-        </span>
+      {label && (
+        <span className="text-sm font-medium text-gray-900">{label}</span>
       )}
-      {control.options?.infoLabel && (
-        <span className="text-xs text-gray-500">
-          {control.options.infoLabel}
-        </span>
+      {description && (
+        <span className="text-xs text-gray-500">{description}</span>
       )}
       <Checkbox
         className="group flex items-start gap-2 text-sm text-gray-700 cursor-pointer"
@@ -45,11 +46,6 @@ export function SwitchRenderer({ control, error, onChange, value }: Props) {
         </div>
         <Label>{switchLabel}</Label>
       </Checkbox>
-      {control.options?.description && (
-        <p className="pl-6 text-xs leading-relaxed text-gray-500">
-          {control.options.description}
-        </p>
-      )}
       {error && <Text className="text-xs text-red-600">{error}</Text>}
     </div>
   );

@@ -1,10 +1,20 @@
 import { useMemo } from "react";
 import { match } from "ts-pattern";
 
-import type { ControlElement, FormValues, JsonSchema } from "../engine/types";
+import type {
+  ControlElement,
+  FormTexts,
+  FormValues,
+  JsonSchema,
+} from "../engine/types";
 
 import { scopeToFieldName } from "../engine/dependencyResolver";
 import { getFilteredOptionValues } from "../engine/optionFilter";
+import {
+  getFieldDescription,
+  getFieldLabel,
+  getFieldOptionLabels,
+} from "../engine/textsResolver";
 import { CheckboxRenderer } from "./CheckboxRenderer";
 import { RadioRenderer } from "./RadioRenderer";
 import { SelectRenderer } from "./SelectRenderer";
@@ -17,6 +27,7 @@ interface Props {
   error?: string | undefined;
   jsonSchema: JsonSchema;
   onChange: (value: string | string[]) => void;
+  texts: FormTexts;
   value: string | string[];
 }
 
@@ -26,30 +37,40 @@ export function FieldRenderer({
   error,
   jsonSchema,
   onChange,
+  texts,
   value,
 }: Props) {
   const widget = control.options?.widget ?? "text";
   const fieldName = scopeToFieldName(control.scope);
   const maxLength = jsonSchema.properties[fieldName]?.maxLength;
 
+  const label = control.label ?? getFieldLabel(texts, fieldName);
+  const description = getFieldDescription(texts, fieldName);
+
   const options = useMemo(() => {
-    const optionLabels = control.options?.optionLabels ?? {};
-    const allOptions = Object.entries(optionLabels).map(([val, label]) => ({
-      label,
-      value: val,
-    }));
+    const optionLabels =
+      control.options?.optionLabels ?? getFieldOptionLabels(texts, fieldName);
+
+    const prop = jsonSchema.properties[fieldName];
+    const enumOrder: string[] =
+      prop?.enum ?? prop?.items?.enum ?? Object.keys(optionLabels);
+
+    const allOptions = enumOrder
+      .filter((val) => val in optionLabels)
+      .map((val) => ({ label: optionLabels[val] ?? val, value: val }));
 
     const hiddenValues = getFilteredOptionValues(control, allValues);
     if (!hiddenValues) return allOptions;
 
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
-  }, [control, allValues]);
+  }, [control, allValues, texts, fieldName, jsonSchema]);
 
   return match(widget)
     .with("radio", () => (
       <RadioRenderer
-        control={control}
+        description={description}
         error={error}
+        label={label}
         onChange={(v) => onChange(v)}
         options={options}
         value={value as string}
@@ -57,8 +78,10 @@ export function FieldRenderer({
     ))
     .with("text", "textarea", () => (
       <TextRenderer
-        control={control}
+        description={description}
         error={error}
+        isTextarea={widget === "textarea"}
+        label={label}
         maxLength={maxLength}
         onChange={(v) => onChange(v)}
         value={value as string}
@@ -66,8 +89,9 @@ export function FieldRenderer({
     ))
     .with("checkbox", () => (
       <CheckboxRenderer
-        control={control}
+        description={description}
         error={error}
+        label={label}
         onChange={(v) => onChange(v)}
         options={options}
         value={value as string[]}
@@ -75,20 +99,28 @@ export function FieldRenderer({
     ))
     .with("select", () => (
       <SelectRenderer
-        control={control}
+        description={description}
         error={error}
+        label={label}
         onChange={(v) => onChange(v)}
         options={options}
         value={value as string}
       />
     ))
-    .with("switch", () => (
-      <SwitchRenderer
-        control={control}
-        error={error}
-        onChange={(v) => onChange(v)}
-        value={value as string}
-      />
-    ))
+    .with("switch", () => {
+      const switchOptionLabels =
+        control.options?.optionLabels ?? getFieldOptionLabels(texts, fieldName);
+      const switchLabel = switchOptionLabels["true"] ?? label ?? "";
+      return (
+        <SwitchRenderer
+          description={description}
+          error={error}
+          label={label}
+          onChange={(v) => onChange(v)}
+          switchLabel={switchLabel}
+          value={value as string}
+        />
+      );
+    })
     .exhaustive();
 }

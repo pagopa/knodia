@@ -1,28 +1,28 @@
 import { Select, SelectItem } from "@knodia/ui-kit/ui";
 
-import type { ControlElement } from "../../engine/types";
-
 interface Props {
-  control: ControlElement;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   onChange: (value: string) => void;
   options: { label: string; value: string }[];
   value: string;
 }
 
 export function SelectRenderer({
-  control,
+  description,
   error,
+  label,
   onChange,
   options,
   value,
 }: Props) {
   return (
     <Select
-      description={control.options?.infoLabel}
+      description={description}
       errorMessage={error}
       isInvalid={!!error}
-      label={control.label}
+      label={label}
       onSelectionChange={(key) => onChange(key as string)}
       selectedKey={value}
     >

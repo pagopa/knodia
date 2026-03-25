@@ -1,7 +1,8 @@
-import type { FormValues, JsonSchema } from "../engine/types";
+import type { FormTexts, FormValues, JsonSchema } from "../engine/types";
 import type { GroupLayout } from "../engine/uischemaParser";
 
 import { isLabelVisible, scopeToFieldName } from "../engine/dependencyResolver";
+import { getBannerText } from "../engine/textsResolver";
 import { FieldRenderer } from "../renderers/FieldRenderer";
 import { InfoBanner } from "../renderers/InfoBanner";
 
@@ -11,6 +12,7 @@ interface GroupSectionProps {
   isLast: boolean;
   jsonSchema: JsonSchema;
   onChange: (fieldName: string, value: string | string[]) => void;
+  texts: FormTexts;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }
@@ -21,6 +23,7 @@ export function GroupSection({
   isLast,
   jsonSchema,
   onChange,
+  texts,
   values,
   visibleFieldNames,
 }: GroupSectionProps) {
@@ -41,10 +44,12 @@ export function GroupSection({
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
           if (!isLabelVisible(element, values, visibleFieldNames)) return null;
+          const text =
+            getBannerText(texts, element.textKey) ?? element.text ?? "";
           return (
             <InfoBanner
               key={`label-${i}`}
-              text={element.text}
+              text={text}
               variant={element.options?.variant}
             />
           );
@@ -59,6 +64,7 @@ export function GroupSection({
             jsonSchema={jsonSchema}
             key={fieldName}
             onChange={(v) => onChange(fieldName, v)}
+            texts={texts}
             value={
               values[fieldName] ??
               (jsonSchema.properties[fieldName]?.type === "array" ? [] : "")

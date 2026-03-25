@@ -1,7 +1,12 @@
 import { useForm, useStore } from "@tanstack/react-form";
 import { useCallback, useMemo, useState } from "react";
 
-import type { FormValues, JsonSchema, UISchema } from "../engine/types";
+import type {
+  FormTexts,
+  FormValues,
+  JsonSchema,
+  UISchema,
+} from "../engine/types";
 import type { StepLayout } from "../engine/uischemaParser";
 
 import { GroupSection } from "../components/GroupSection";
@@ -13,7 +18,7 @@ import {
   scopeToFieldName,
 } from "../engine/dependencyResolver";
 import { getDefaultValues } from "../engine/schemaParser";
-import { loadSchema, loadUiSchema } from "../engine/types";
+import { loadSchema, loadTexts, loadUiSchema } from "../engine/types";
 import {
   collectErrorMessages,
   collectGroups,
@@ -21,17 +26,19 @@ import {
 } from "../engine/uischemaParser";
 import { useVisibleFields } from "../hooks/useVisibleFields";
 import jsonSchema from "../schemas/two-form/schema.json";
+import textsData from "../schemas/two-form/texts.json";
 import uischema from "../schemas/two-form/uischema.json";
 
 const schema = loadSchema(jsonSchema);
 const ui = loadUiSchema(uischema);
+const texts = loadTexts(textsData);
 
 export function TwoFormTanstackAjvPage() {
   const validate = useMemo(
-    () => createAjvValidator(schema, collectErrorMessages(ui)),
+    () => createAjvValidator(schema, collectErrorMessages(texts, schema)),
     [],
   );
-  const steps = useMemo(() => collectSteps(ui), []);
+  const steps = useMemo(() => collectSteps(ui, texts), []);
   const isMultiStep = steps.length > 1;
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -148,6 +155,7 @@ export function TwoFormTanstackAjvPage() {
                 jsonSchema={schema}
                 onChange={handleChange}
                 stepUischema={stepUischema}
+                texts={texts}
                 values={values}
                 visibleFieldNames={visibleFieldNames}
               />
@@ -200,6 +208,7 @@ function TanstackFormStep({
   jsonSchema,
   onChange,
   stepUischema,
+  texts,
   values,
   visibleFieldNames,
 }: {
@@ -207,10 +216,14 @@ function TanstackFormStep({
   jsonSchema: JsonSchema;
   onChange: (fieldName: string, value: string | string[]) => void;
   stepUischema: UISchema;
+  texts: FormTexts;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {
-  const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
+  const groups = useMemo(
+    () => collectGroups(stepUischema, texts),
+    [stepUischema, texts],
+  );
 
   const visibleGroups = useMemo(
     () =>
@@ -236,6 +249,7 @@ function TanstackFormStep({
           jsonSchema={jsonSchema}
           key={group.label ?? groupIndex}
           onChange={onChange}
+          texts={texts}
           values={values}
           visibleFieldNames={visibleFieldNames}
         />

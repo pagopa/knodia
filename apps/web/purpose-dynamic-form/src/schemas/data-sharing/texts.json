@@ -1,0 +1,150 @@
+{
+  "banners": {
+    "externalSharingWarning": "External sharing requires additional compliance review. Contact the DPO before proceeding."
+  },
+  "fields": {
+    "additionalNotes": {
+      "description": "Any additional information relevant to this data sharing agreement.",
+      "label": "Additional notes"
+    },
+    "agreementType": {
+      "errors": {
+        "required": "Select an agreement type"
+      },
+      "label": "Agreement type",
+      "options": {
+        "CUSTOM": "Custom agreement",
+        "STANDARD": "Standard agreement"
+      }
+    },
+    "consentReference": {
+      "description": "Provide a reference number or document identifier for the obtained consent.",
+      "errors": {
+        "required": "Provide the consent reference"
+      },
+      "label": "Consent reference"
+    },
+    "consentStatus": {
+      "errors": {
+        "required": "Select the consent status"
+      },
+      "label": "Consent status",
+      "options": {
+        "NOT_APPLICABLE": "Not applicable",
+        "NOT_OBTAINED": "Consent not yet obtained",
+        "OBTAINED": "Consent obtained"
+      }
+    },
+    "customDescription": {
+      "description": "Describe the specific terms that differ from the standard agreement.",
+      "errors": {
+        "required": "Provide a description for the custom agreement"
+      },
+      "label": "Custom agreement description"
+    },
+    "dataCategories": {
+      "errors": {
+        "required": "Select at least one data category"
+      },
+      "label": "Data categories",
+      "options": {
+        "BEHAVIORAL": "Behavioral data",
+        "CONTACT": "Contact information",
+        "FINANCIAL": "Financial data",
+        "HEALTH": "Health data",
+        "OTHER": "Other"
+      }
+    },
+    "dpoNotified": {
+      "description": "Confirm the Data Protection Officer has been notified.",
+      "label": "DPO notification",
+      "options": {
+        "true": "DPO has been notified"
+      }
+    },
+    "encryptionMethod": {
+      "errors": {
+        "required": "Select an encryption method"
+      },
+      "label": "Encryption method",
+      "options": {
+        "AES_256": "AES-256",
+        "OTHER": "Other",
+        "RSA": "RSA",
+        "TLS": "TLS"
+      }
+    },
+    "encryptionRequired": {
+      "description": "Enable if data must be encrypted in transit and at rest.",
+      "label": "Encryption required",
+      "options": {
+        "true": "Encryption is required for this agreement"
+      }
+    },
+    "externalParties": {
+      "description": "List all external parties that will receive the shared data.",
+      "errors": {
+        "required": "List the external parties involved"
+      },
+      "label": "External parties"
+    },
+    "noConsentReason": {
+      "errors": {
+        "required": "Explain why consent has not been obtained"
+      },
+      "label": "Reason consent not obtained"
+    },
+    "otherDataCategories": {
+      "errors": {
+        "required": "Specify the other data categories"
+      },
+      "label": "Other data categories"
+    },
+    "otherEncryptionMethod": {
+      "errors": {
+        "required": "Specify the encryption method"
+      },
+      "label": "Other encryption method"
+    },
+    "retentionJustification": {
+      "errors": {
+        "required": "Provide a justification for indefinite retention"
+      },
+      "label": "Justification for indefinite retention"
+    },
+    "retentionPeriod": {
+      "errors": {
+        "required": "Select a retention period"
+      },
+      "label": "Data retention period",
+      "options": {
+        "1_YEAR": "1 year",
+        "3_YEARS": "3 years",
+        "5_YEARS": "5 years",
+        "6_MONTHS": "6 months",
+        "INDEFINITE": "Indefinite"
+      }
+    },
+    "sharingScope": {
+      "errors": {
+        "required": "Select a sharing scope"
+      },
+      "label": "Sharing scope",
+      "options": {
+        "BOTH": "Internal and external",
+        "EXTERNAL": "External parties",
+        "INTERNAL": "Internal only"
+      }
+    }
+  },
+  "groups": {
+    "agreementDetails": {
+      "description": "Define the type and scope of the data sharing agreement.",
+      "label": "Agreement details"
+    },
+    "complianceAndSecurity": {
+      "description": "Specify retention, encryption, and consent details.",
+      "label": "Compliance and security"
+    }
+  }
+}

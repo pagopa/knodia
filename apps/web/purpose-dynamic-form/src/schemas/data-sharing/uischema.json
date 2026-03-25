@@ -3,36 +3,20 @@
   "elements": [
     {
       "type": "Group",
-      "label": "Agreement details",
-      "options": {
-        "description": "Define the type and scope of the data sharing agreement."
-      },
+      "textKey": "agreementDetails",
       "elements": [
         {
           "type": "Control",
           "scope": "#/properties/agreementType",
-          "label": "Agreement type",
           "options": {
-            "widget": "radio",
-            "optionLabels": {
-              "STANDARD": "Standard agreement",
-              "CUSTOM": "Custom agreement"
-            },
-            "errorMessages": {
-              "required": "Select an agreement type"
-            }
+            "widget": "radio"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/customDescription",
-          "label": "Custom agreement description",
           "options": {
-            "widget": "textarea",
-            "infoLabel": "Describe the specific terms that differ from the standard agreement.",
-            "errorMessages": {
-              "required": "Provide a description for the custom agreement"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -45,36 +29,21 @@
         {
           "type": "Control",
           "scope": "#/properties/dataCategories",
-          "label": "Data categories",
           "options": {
             "widget": "checkbox",
-            "optionLabels": {
-              "FINANCIAL": "Financial data",
-              "HEALTH": "Health data",
-              "BEHAVIORAL": "Behavioral data",
-              "CONTACT": "Contact information",
-              "OTHER": "Other"
-            },
             "hideOptions": {
               "HEALTH": {
                 "scope": "#/properties/sharingScope",
                 "schema": { "const": "EXTERNAL" }
               }
-            },
-            "errorMessages": {
-              "required": "Select at least one data category"
             }
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/otherDataCategories",
-          "label": "Other data categories",
           "options": {
-            "widget": "text",
-            "errorMessages": {
-              "required": "Specify the other data categories"
-            }
+            "widget": "text"
           },
           "rule": {
             "effect": "SHOW",
@@ -87,22 +56,13 @@
         {
           "type": "Control",
           "scope": "#/properties/sharingScope",
-          "label": "Sharing scope",
           "options": {
-            "widget": "radio",
-            "optionLabels": {
-              "INTERNAL": "Internal only",
-              "EXTERNAL": "External parties",
-              "BOTH": "Internal and external"
-            },
-            "errorMessages": {
-              "required": "Select a sharing scope"
-            }
+            "widget": "radio"
           }
         },
         {
           "type": "Label",
-          "text": "External sharing requires additional compliance review. Contact the DPO before proceeding.",
+          "textKey": "externalSharingWarning",
           "options": { "variant": "warning" },
           "rule": {
             "effect": "SHOW",
@@ -115,13 +75,8 @@
         {
           "type": "Control",
           "scope": "#/properties/externalParties",
-          "label": "External parties",
           "options": {
-            "widget": "textarea",
-            "infoLabel": "List all external parties that will receive the shared data.",
-            "errorMessages": {
-              "required": "List the external parties involved"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "HIDE",
@@ -135,38 +90,20 @@
     },
     {
       "type": "Group",
-      "label": "Compliance and security",
-      "options": {
-        "description": "Specify retention, encryption, and consent details."
-      },
+      "textKey": "complianceAndSecurity",
       "elements": [
         {
           "type": "Control",
           "scope": "#/properties/retentionPeriod",
-          "label": "Data retention period",
           "options": {
-            "widget": "select",
-            "optionLabels": {
-              "6_MONTHS": "6 months",
-              "1_YEAR": "1 year",
-              "3_YEARS": "3 years",
-              "5_YEARS": "5 years",
-              "INDEFINITE": "Indefinite"
-            },
-            "errorMessages": {
-              "required": "Select a retention period"
-            }
+            "widget": "select"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/retentionJustification",
-          "label": "Justification for indefinite retention",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Provide a justification for indefinite retention"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -179,30 +116,15 @@
         {
           "type": "Control",
           "scope": "#/properties/encryptionRequired",
-          "label": "Encryption required",
           "options": {
-            "widget": "switch",
-            "description": "Enable if data must be encrypted in transit and at rest.",
-            "optionLabels": {
-              "true": "Encryption is required for this agreement"
-            }
+            "widget": "switch"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/encryptionMethod",
-          "label": "Encryption method",
           "options": {
-            "widget": "radio",
-            "optionLabels": {
-              "AES_256": "AES-256",
-              "RSA": "RSA",
-              "TLS": "TLS",
-              "OTHER": "Other"
-            },
-            "errorMessages": {
-              "required": "Select an encryption method"
-            }
+            "widget": "radio"
           },
           "rule": {
             "effect": "SHOW",
@@ -215,12 +137,8 @@
         {
           "type": "Control",
           "scope": "#/properties/otherEncryptionMethod",
-          "label": "Other encryption method",
           "options": {
-            "widget": "text",
-            "errorMessages": {
-              "required": "Specify the encryption method"
-            }
+            "widget": "text"
           },
           "rule": {
             "effect": "SHOW",
@@ -242,29 +160,15 @@
         {
           "type": "Control",
           "scope": "#/properties/consentStatus",
-          "label": "Consent status",
           "options": {
-            "widget": "radio",
-            "optionLabels": {
-              "OBTAINED": "Consent obtained",
-              "NOT_OBTAINED": "Consent not yet obtained",
-              "NOT_APPLICABLE": "Not applicable"
-            },
-            "errorMessages": {
-              "required": "Select the consent status"
-            }
+            "widget": "radio"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/consentReference",
-          "label": "Consent reference",
           "options": {
-            "widget": "text",
-            "infoLabel": "Provide a reference number or document identifier for the obtained consent.",
-            "errorMessages": {
-              "required": "Provide the consent reference"
-            }
+            "widget": "text"
           },
           "rule": {
             "effect": "SHOW",
@@ -277,12 +181,8 @@
         {
           "type": "Control",
           "scope": "#/properties/noConsentReason",
-          "label": "Reason consent not obtained",
           "options": {
-            "widget": "textarea",
-            "errorMessages": {
-              "required": "Explain why consent has not been obtained"
-            }
+            "widget": "textarea"
           },
           "rule": {
             "effect": "SHOW",
@@ -295,22 +195,15 @@
         {
           "type": "Control",
           "scope": "#/properties/dpoNotified",
-          "label": "DPO notification",
           "options": {
-            "widget": "switch",
-            "description": "Confirm the Data Protection Officer has been notified.",
-            "optionLabels": {
-              "true": "DPO has been notified"
-            }
+            "widget": "switch"
           }
         },
         {
           "type": "Control",
           "scope": "#/properties/additionalNotes",
-          "label": "Additional notes",
           "options": {
-            "widget": "textarea",
-            "infoLabel": "Any additional information relevant to this data sharing agreement."
+            "widget": "textarea"
           }
         }
       ]

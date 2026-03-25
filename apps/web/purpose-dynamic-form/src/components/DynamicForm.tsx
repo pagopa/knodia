@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import type {
+  FormTexts,
   FormValues,
   JsonSchema,
   UISchema,
@@ -20,6 +21,7 @@ import { GroupSection } from "./GroupSection";
 interface Props {
   jsonSchema: JsonSchema;
   onSubmit?: (values: FormValues) => void;
+  texts: FormTexts;
   uischema: UISchema;
   validate: ValidateFn;
 }
@@ -27,6 +29,7 @@ interface Props {
 export function DynamicForm({
   jsonSchema,
   onSubmit,
+  texts,
   uischema,
   validate,
 }: Props) {
@@ -36,7 +39,10 @@ export function DynamicForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
-  const groups = useMemo(() => collectGroups(uischema), [uischema]);
+  const groups = useMemo(
+    () => collectGroups(uischema, texts),
+    [uischema, texts],
+  );
   const { visibleFieldNames } = useVisibleFields(uischema, values);
 
   const handleChange = useCallback(
@@ -102,6 +108,7 @@ export function DynamicForm({
           jsonSchema={jsonSchema}
           key={group.label ?? groupIndex}
           onChange={handleChange}
+          texts={texts}
           values={values}
           visibleFieldNames={visibleFieldNames}
         />

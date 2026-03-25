@@ -1,24 +1,24 @@
 import { Input, Label, Text, TextArea, TextField } from "react-aria-components";
 
-import type { ControlElement } from "../engine/types";
-
 interface Props {
-  control: ControlElement;
+  description?: string | undefined;
   error?: string | undefined;
+  isTextarea: boolean;
+  label?: string | undefined;
   maxLength?: number | undefined;
   onChange: (value: string) => void;
   value: string;
 }
 
 export function TextRenderer({
-  control,
+  description,
   error,
+  isTextarea,
+  label,
   maxLength,
   onChange,
   value,
 }: Props) {
-  const isTextarea = control.options?.widget === "textarea";
-
   return (
     <TextField
       isInvalid={!!error}
@@ -27,12 +27,10 @@ export function TextRenderer({
       {...(maxLength !== undefined && { maxLength })}
       className="flex flex-col gap-1"
     >
-      <Label className="text-sm font-medium text-gray-900">
-        {control.label}
-      </Label>
-      {control.options?.infoLabel && (
+      <Label className="text-sm font-medium text-gray-900">{label}</Label>
+      {description && (
         <Text className="text-xs text-gray-500" slot="description">
-          {control.options.infoLabel}
+          {description}
         </Text>
       )}
       {isTextarea ? (

@@ -9,19 +9,19 @@ import {
   Text,
 } from "react-aria-components";
 
-import type { ControlElement } from "../engine/types";
-
 interface Props {
-  control: ControlElement;
+  description?: string | undefined;
   error?: string | undefined;
+  label?: string | undefined;
   onChange: (value: string) => void;
   options: { label: string; value: string }[];
   value: string;
 }
 
 export function SelectRenderer({
-  control,
+  description,
   error,
+  label,
   onChange,
   options,
   value,
@@ -33,12 +33,10 @@ export function SelectRenderer({
       onSelectionChange={(key) => onChange(key as string)}
       selectedKey={value}
     >
-      <Label className="text-sm font-medium text-gray-900">
-        {control.label}
-      </Label>
-      {control.options?.infoLabel && (
+      <Label className="text-sm font-medium text-gray-900">{label}</Label>
+      {description && (
         <Text className="text-xs text-gray-500" slot="description">
-          {control.options.infoLabel}
+          {description}
         </Text>
       )}
       <Button className="border border-gray-300 rounded-md px-3 py-2 text-sm text-left bg-white flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-blue-500">
