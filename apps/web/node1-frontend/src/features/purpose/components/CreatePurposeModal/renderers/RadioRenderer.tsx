@@ -1,6 +1,6 @@
 import { Radio, RadioGroup } from "@knodia/ui-kit/ui";
 
-import type { ControlElement } from "../../engine/types";
+import type { ControlElement } from "@/features/purpose/engine/types";
 
 interface Props {
   control: ControlElement;

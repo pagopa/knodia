@@ -5,10 +5,11 @@ import type {
   ControlElement,
   FormValues,
   JsonSchema,
-} from "../../engine/types";
+} from "@/features/purpose/engine/types";
 
-import { scopeToFieldName } from "../../engine/dependencyResolver";
-import { getFilteredOptionValues } from "../../engine/optionFilter";
+import { scopeToFieldName } from "@/features/purpose/engine/dependencyResolver";
+import { getFilteredOptionValues } from "@/features/purpose/engine/optionFilter";
+
 import { CheckboxRenderer } from "./CheckboxRenderer";
 import { RadioRenderer } from "./RadioRenderer";
 import { SelectRenderer } from "./SelectRenderer";
