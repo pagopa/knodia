@@ -156,6 +156,19 @@ describe("toConsumptionEserviceDetail", () => {
     ]);
     expect(result.state).toBe("Active");
   });
+
+  it("passes through agreement when present", () => {
+    const agreement = { id: crypto.randomUUID(), state: "Active" as const };
+    const result = toConsumptionEserviceDetail(createBffDetail({ agreement }));
+
+    expect(result.agreement).toEqual(agreement);
+  });
+
+  it("sets agreement to undefined when absent", () => {
+    const result = toConsumptionEserviceDetail(createBffDetail());
+
+    expect(result.agreement).toBeUndefined();
+  });
 });
 
 describe("toEserviceSeed", () => {

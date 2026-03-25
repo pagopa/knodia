@@ -1,5 +1,5 @@
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
-import { generateId } from "@knodia/common-models/ids";
+import { generateId, generateUserId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
 
@@ -26,14 +26,13 @@ describe("KeychainEventV1 codec", () => {
         format: "jwk",
         kid: "kid-1",
         name: { en: "Primary key" },
-        userId: generateId(),
+        userId: generateUserId(),
       },
     ],
     name: { en: "Test Consumer keychain" },
     ownerId: generateId(),
-    purposes: [generateId()],
     updatedAt: new Date(1),
-    users: [generateId()],
+    users: [generateUserId()],
   };
 
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);

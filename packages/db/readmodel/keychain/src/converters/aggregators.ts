@@ -16,12 +16,10 @@ import {
 import {
   type ConsumerKeychainItemsSQL,
   type ConsumerKeychainKeySQL,
-  type ConsumerKeychainPurposeSQL,
   type ConsumerKeychainSQL,
   type ConsumerKeychainUserSQL,
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
-  readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
 import {
@@ -32,7 +30,6 @@ import {
 type ConsumerKeychainAggregatorInput = {
   consumerKeychain: ConsumerKeychainSQL;
   key?: ConsumerKeychainKeySQL | null;
-  purpose?: ConsumerKeychainPurposeSQL | null;
   user?: ConsumerKeychainUserSQL | null;
 }[];
 
@@ -71,13 +68,11 @@ export const aggregateFlatConsumerKeychains = (
 export const aggregateConsumerKeychains = (
   queryRes: ConsumerKeychainAggregatorInput,
 ): WithMetadata<ConsumerKeychain>[] => {
-  const { consumerKeychainsSQL, keysSQL, purposesSQL, usersSQL } =
+  const { consumerKeychainsSQL, keysSQL, usersSQL } =
     toConsumerKeychainsAggregator(queryRes);
 
   const keysSQLByConsumerKeychainId =
     createConsumerKeychainSQLPropertyMap(keysSQL);
-  const purposesSQLByConsumerKeychainId =
-    createConsumerKeychainSQLPropertyMap(purposesSQL);
   const usersSQLByConsumerKeychainId =
     createConsumerKeychainSQLPropertyMap(usersSQL);
 
@@ -89,8 +84,6 @@ export const aggregateConsumerKeychains = (
     return buildConsumerKeychain({
       consumerKeychainKeysSQL:
         keysSQLByConsumerKeychainId.get(consumerKeychainId) || [],
-      consumerKeychainPurposesSQL:
-        purposesSQLByConsumerKeychainId.get(consumerKeychainId) || [],
       consumerKeychainSQL,
       consumerKeychainUsersSQL:
         usersSQLByConsumerKeychainId.get(consumerKeychainId) || [],
@@ -99,10 +92,7 @@ export const aggregateConsumerKeychains = (
 };
 
 const createConsumerKeychainSQLPropertyMap = <
-  T extends
-    | ConsumerKeychainKeySQL
-    | ConsumerKeychainPurposeSQL
-    | ConsumerKeychainUserSQL,
+  T extends ConsumerKeychainKeySQL | ConsumerKeychainUserSQL,
 >(
   items: T[],
 ): Map<ConsumerKeychainId, T[]> =>
@@ -120,12 +110,11 @@ const createConsumerKeychainSQLPropertyMap = <
 const toConsumerKeychainAggregator = (
   queryRes: ConsumerKeychainAggregatorInput,
 ): ConsumerKeychainItemsSQL => {
-  const { consumerKeychainsSQL, keysSQL, purposesSQL, usersSQL } =
+  const { consumerKeychainsSQL, keysSQL, usersSQL } =
     toConsumerKeychainsAggregator(queryRes);
 
   return {
     consumerKeychainKeysSQL: keysSQL,
-    consumerKeychainPurposesSQL: purposesSQL,
     consumerKeychainSQL: throwIfMultipleOrEmpty(
       consumerKeychainsSQL,
       "consumerKeychain",
@@ -140,7 +129,6 @@ const toConsumerKeychainsAggregator = (
 ): {
   consumerKeychainsSQL: ConsumerKeychainSQL[];
   keysSQL: ConsumerKeychainKeySQL[];
-  purposesSQL: ConsumerKeychainPurposeSQL[];
   usersSQL: ConsumerKeychainUserSQL[];
 } => {
   const consumerKeychainPKSet = new Set<string>();
@@ -148,9 +136,6 @@ const toConsumerKeychainsAggregator = (
 
   const keyPKSet = new Set<string>();
   const keysSQL: ConsumerKeychainKeySQL[] = [];
-
-  const purposePKSet = new Set<string>();
-  const purposesSQL: ConsumerKeychainPurposeSQL[] = [];
 
   const userPKSet = new Set<string>();
   const usersSQL: ConsumerKeychainUserSQL[] = [];
@@ -169,12 +154,6 @@ const toConsumerKeychainsAggregator = (
       readmodelConsumerKeychainKey,
     );
     aggregateByPKString(
-      row.purpose,
-      purposePKSet,
-      purposesSQL,
-      readmodelConsumerKeychainPurpose,
-    );
-    aggregateByPKString(
       row.user,
       userPKSet,
       usersSQL,
@@ -185,7 +164,6 @@ const toConsumerKeychainsAggregator = (
   return {
     consumerKeychainsSQL,
     keysSQL,
-    purposesSQL,
     usersSQL,
   };
 };
