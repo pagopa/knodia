@@ -331,10 +331,7 @@ describe("POST /agreements - attribute validation", async () => {
         ...body,
         consumer: {
           ...body.consumer,
-          attributes: [
-            ...validAttributes,
-            { code: "extra", scheme: "extra" },
-          ],
+          attributes: [...validAttributes, { code: "extra", scheme: "extra" }],
         },
       });
     expect(response.statusCode).toBe(201);
