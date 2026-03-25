@@ -1,7 +1,5 @@
-import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
-
 import { readmodelOrganization } from "@knodia/db-readmodel-organization";
-import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
+import { setupKafkaTestProducerAndConsumer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import {
   createTestLogger,
@@ -12,22 +10,26 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 import { createProcessMessage } from "../src/utils/utils.ts";
 
 let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
-let producer: Awaited<ReturnType<typeof setupKafkaTestProducer>>["producer"];
-let topicName: Awaited<ReturnType<typeof setupKafkaTestProducer>>["topicName"];
-let kafkaConfig: KafkaConsumerConfig;
-let processMessage: ReturnType<typeof createProcessMessage>;
+let producer: Awaited<
+  ReturnType<typeof setupKafkaTestProducerAndConsumer>
+>["producer"];
+let consumer: Awaited<
+  ReturnType<typeof setupKafkaTestProducerAndConsumer>
+>["consumer"];
+let topicName: Awaited<
+  ReturnType<typeof setupKafkaTestProducerAndConsumer>
+>["topicName"];
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
     inject("POSTGRES_CONNECTION_STRING"),
   );
 
-  ({ kafkaConfig, producer, topicName } = await setupKafkaTestProducer(
-    inject("KAFKA_BROKER"),
-  ));
-
   const { logger } = createTestLogger();
-  processMessage = createProcessMessage(readmodelDb, logger);
+  ({ consumer, producer, topicName } = await setupKafkaTestProducerAndConsumer(
+    inject("KAFKA_BROKER"),
+    createProcessMessage(readmodelDb, logger),
+  ));
 });
 
 afterEach(async () => {
@@ -39,4 +41,4 @@ afterAll(async () => {
   await producer.disconnect();
 });
 
-export { kafkaConfig, processMessage, producer, readmodelDb, topicName };
+export { consumer, producer, readmodelDb, topicName };

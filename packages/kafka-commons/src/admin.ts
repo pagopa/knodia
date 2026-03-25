@@ -28,7 +28,7 @@ export async function checkTopicsExist(
   }
 }
 
-async function initKafkaAdmin(kafka: Kafka) {
+export async function initKafkaAdmin(kafka: Kafka) {
   const admin = kafka.admin();
   await admin.connect();
   return admin;

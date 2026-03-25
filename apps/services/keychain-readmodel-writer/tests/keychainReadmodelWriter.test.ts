@@ -6,7 +6,7 @@ import {
   keychainEvents,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
-import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
+import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockConsumerKeychain,
   toExpectConsumerKeychain,
@@ -14,8 +14,7 @@ import {
 import { describe, expect, it } from "vitest";
 
 import {
-  kafkaConfig,
-  processMessage,
+  consumer,
   producer,
   readmodelDb,
   topicName,
@@ -42,7 +41,7 @@ describe("Consumer keychain read model writer tests", async () => {
       topicName,
     });
 
-    await runTestConsumer(topicName, processMessage, kafkaConfig);
+    await consumer.waitForNextMessage();
 
     const retrievedKeychains = await getAllConsumerKeychains(readmodelDb);
 
