@@ -229,6 +229,98 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     expect(response.statusCode).toBe(404);
   });
 
+  it("should return 404 if the user does not belong to the caller organization", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
+    const memberId = "10000000-1000-1000-8000-000000000011";
+    const memberUsername = "Mario Rossi";
+
+    sendMock.mockImplementation(async (command: { input: unknown }) => {
+      const input = command.input as {
+        Filter?: string;
+        Username?: string;
+      };
+
+      if (input.Filter === `sub = "${memberId}"`) {
+        return {
+          Users: [
+            makeCognitoUser({
+              email: "mario.rossi@example.com",
+              id: memberId,
+              username: memberUsername,
+            }),
+          ],
+        };
+      }
+
+      if (input.Username === memberUsername) {
+        return {
+          Groups: [{ GroupName: "role:technical" }],
+        };
+      }
+
+      throw new Error(
+        `Unexpected Cognito request ${JSON.stringify(command.input)}`,
+      );
+    });
+
+    const response = await injectAppRequest({
+      ...allowedTestTokens[0]!,
+      organizationId: consumerKeychain.ownerId,
+      type: "ui-session",
+    })
+      .post(`/consumerKeychains/${consumerKeychain.id}/members`)
+      .body({ userId: memberId });
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 409 if the user does not have the technical role", async () => {
+    await seedConsumerKeychain(consumerKeychain);
+
+    const memberId = "10000000-1000-1000-8000-000000000011";
+    const memberUsername = "Mario Rossi";
+
+    sendMock.mockImplementation(async (command: { input: unknown }) => {
+      const input = command.input as {
+        Filter?: string;
+        Username?: string;
+      };
+
+      if (input.Filter === `sub = "${memberId}"`) {
+        return {
+          Users: [
+            makeCognitoUser({
+              email: "mario.rossi@example.com",
+              id: memberId,
+              username: memberUsername,
+            }),
+          ],
+        };
+      }
+
+      if (input.Username === memberUsername) {
+        return {
+          Groups: [{ GroupName: `org:${consumerKeychain.ownerId}` }],
+        };
+      }
+
+      throw new Error(
+        `Unexpected Cognito request ${JSON.stringify(command.input)}`,
+      );
+    });
+
+    const response = await injectAppRequest({
+      ...allowedTestTokens[0]!,
+      organizationId: consumerKeychain.ownerId,
+      type: "ui-session",
+    })
+      .post(`/consumerKeychains/${consumerKeychain.id}/members`)
+      .body({ userId: memberId });
+
+    expect(response.statusCode).toBe(409);
+  });
+
   it("should return 409 if the user is already a member", async () => {
     const memberUsername = "Mario Rossi";
     const memberId = "10000000-1000-1000-8000-000000000011";

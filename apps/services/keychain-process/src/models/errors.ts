@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-objects */
 import type { ConsumerKeychainId, UserId } from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -10,6 +11,7 @@ const errorCodes = {
   CONSUMER_KEYCHAIN_NOT_FOUND: "0001",
   USER_ALREADY_MEMBER: "0002",
   USER_NOT_FOUND: "0003",
+  INVALID_USER_ROLE: "0004",
 } as const;
 
 type ErrorCodes = keyof typeof errorCodes;
@@ -24,6 +26,15 @@ export function consumerKeychainNotFound(id: ConsumerKeychainId) {
     detail: `Consumer keychain with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Consumer Keychain Not Found",
+  });
+}
+
+export function invalidUserRole(userId: UserId, requiredRole: string) {
+  return createApiError<ErrorCodes>({
+    code: "INVALID_USER_ROLE",
+    detail: `User ${userId} does not have the required role: ${requiredRole}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Invalid User Role",
   });
 }
 

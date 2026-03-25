@@ -14,8 +14,8 @@ import {
 
 export type UserService = ReturnType<typeof userServiceBuilder>;
 
-const TECHNICAL_ROLE_GROUP_NAME = "role:technical";
-const getOrganizationGroupName = (organizationId: OrganizationId) =>
+export const TECHNICAL_ROLE_GROUP_NAME = "role:technical";
+export const getOrganizationGroupName = (organizationId: OrganizationId) =>
   `org:${organizationId}`;
 
 export interface IdmUser {
@@ -48,64 +48,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
     return users.map(toIdmUser);
   }
 
-  async function getUserById(userId: UserId): Promise<IdmUser | undefined> {
-    const reponse = await client.send(
-      new ListUsersCommand({
-        Filter: `sub = "${userId}"`,
-        Limit: 1,
-        UserPoolId: userPoolId,
-      }),
-    );
-
-    const user = reponse.Users?.[0];
-    return user ? toIdmUser(user) : undefined;
-  }
-
-  async function listGroupsForUser(username: string): Promise<string[]> {
-    const groups: string[] = [];
-    let nextToken: string | undefined;
-
-    do {
-      const response = await client.send(
-        new AdminListGroupsForUserCommand({
-          Limit: 60, // Max limit per AWS docs
-          NextToken: nextToken,
-          Username: username,
-          UserPoolId: userPoolId,
-        }),
-      );
-
-      groups.push(
-        ...(response.Groups ?? []).flatMap((group) =>
-          group.GroupName ? [group.GroupName] : [],
-        ),
-      );
-      nextToken = response.NextToken;
-    } while (nextToken);
-
-    return groups;
-  }
-
   return {
-    async getOrganizationTechnicalUser(
-      organizationId: OrganizationId,
-      userId: UserId,
-    ): Promise<IdmUser | undefined> {
-      const user = await getUserById(userId);
-      if (!user) {
-        return undefined;
-      }
-
-      const groups = await listGroupsForUser(user.username);
-
-      const isTechnicalUser = groups.includes(TECHNICAL_ROLE_GROUP_NAME);
-      const isOrgMember = groups.includes(
-        getOrganizationGroupName(organizationId),
-      );
-
-      return isTechnicalUser && isOrgMember ? user : undefined;
-    },
-
     async getOrganizationTechnicalUsers(
       organizationId: OrganizationId,
     ): Promise<IdmUser[]> {
@@ -117,6 +60,44 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
       const technicalUserIds = new Set(technicalUsers.map((user) => user.id));
 
       return organizationUsers.filter((user) => technicalUserIds.has(user.id));
+    },
+
+    async getUserById(userId: UserId): Promise<IdmUser | undefined> {
+      const reponse = await client.send(
+        new ListUsersCommand({
+          Filter: `sub = "${userId}"`,
+          Limit: 1,
+          UserPoolId: userPoolId,
+        }),
+      );
+
+      const user = reponse.Users?.[0];
+      return user ? toIdmUser(user) : undefined;
+    },
+
+    async getUserGroups(username: string): Promise<string[]> {
+      const groups: string[] = [];
+      let nextToken: string | undefined;
+
+      do {
+        const response = await client.send(
+          new AdminListGroupsForUserCommand({
+            Limit: 60, // Max limit per AWS docs
+            NextToken: nextToken,
+            Username: username,
+            UserPoolId: userPoolId,
+          }),
+        );
+
+        groups.push(
+          ...(response.Groups ?? []).flatMap((group) =>
+            group.GroupName ? [group.GroupName] : [],
+          ),
+        );
+        nextToken = response.NextToken;
+      } while (nextToken);
+
+      return groups;
     },
   };
 }
