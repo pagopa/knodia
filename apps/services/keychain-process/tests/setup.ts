@@ -1,8 +1,8 @@
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
 import {
-  keychainWriterBuilder,
   type KeychainWriterService,
+  keychainWriterServiceBuilder,
 } from "@knodia/db-readmodel-keychain/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
@@ -41,7 +41,7 @@ beforeAll(async () => {
     readmodelDb,
   });
 
-  keychainWriterService = keychainWriterBuilder(readmodelDb);
+  keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
