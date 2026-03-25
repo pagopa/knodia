@@ -44,20 +44,29 @@ export function ConsumerAgreementsSummary({
   return (
     <>
       <div className="grid grid-cols-3 gap-4">
-        {/* TODO: Add agreement status filter search param when navigating to e-services list */}
         <AgreementCounterCard
           count={activeAgreements}
           icon={<CheckIcon />}
           kind="success"
           label="Active"
-          onViewAll={() => navigate({ to: "/consumption/e-services" })}
+          onViewAll={() =>
+            navigate({
+              search: { agreementState: "Active" },
+              to: "/consumption/e-services",
+            })
+          }
         />
         <AgreementCounterCard
           count={suspendedAgreements}
           icon={<XIcon />}
           kind="error"
           label="Suspended"
-          onViewAll={() => navigate({ to: "/consumption/e-services" })}
+          onViewAll={() =>
+            navigate({
+              search: { agreementState: "Suspended" },
+              to: "/consumption/e-services",
+            })
+          }
         />
         <AgreementCounterCard
           count={archivedAgreements}
