@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { Agreement } from "@knodia/agreement-models";
 import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
-import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
@@ -15,7 +14,11 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
-import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
+import {
+  getMockAgreement,
+  getMockEservice,
+  getMockOrganization,
+} from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
@@ -49,11 +52,7 @@ const allowedTestTokens: TestToken[] = [
 
 describe("POST /agreements (createAgreement)", () => {
   const eservice = getMockEservice({ latestVersionState: "Active" });
-  const k2kBody: k2kGatewayApi.AgreementSeed = {
-    consumerId: TEST_ORGANIZATION_ID,
-    eserviceId: eservice.id,
-    eserviceVersionId: eservice.versions[0]!.id,
-  };
+  const testOrganization = getMockOrganization();
   const body: API_AgreementSeed = {
     eserviceId: eservice.id,
     eserviceVersionId: eservice.versions[0]!.id,
@@ -95,7 +94,12 @@ describe("POST /agreements (createAgreement)", () => {
 
     expect(createAgreementMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        body: k2kBody,
+        body: expect.objectContaining({
+          consumerAttributes: testOrganization.attributes,
+          consumerId: TEST_ORGANIZATION_ID,
+          eserviceId: body.eserviceId,
+          eserviceVersionId: body.eserviceVersionId,
+        }),
       }),
     );
 
@@ -130,25 +134,13 @@ describe("POST /agreements (createAgreement)", () => {
 
   it.each([
     { body: {} },
-    {
-      body: { ...body, wrongProperty: "wrong" },
-    },
-    {
-      body: { ...body, eserviceId: 99 },
-    },
-    {
-      body: { ...body, eserviceId: "" },
-    },
-    {
-      body: { ...body, eserviceVersionId: 99 },
-    },
+    { body: { ...body, wrongProperty: "wrong" } },
+    { body: { ...body, eserviceId: 99 } },
+    { body: { ...body, eserviceId: "" } },
+    { body: { ...body, eserviceVersionId: 99 } },
     { body: { ...body, eserviceVersionId: "" } },
-    {
-      body: { ...body, consumerId: 99 },
-    },
-    {
-      body: { ...body, consumerId: "" },
-    },
+    { body: { ...body, consumerId: 99 } },
+    { body: { ...body, consumerId: "" } },
   ])(
     "should return 400 if query/body parameters are formatted incorrectly (%o)",
     async ({ body }) => {
