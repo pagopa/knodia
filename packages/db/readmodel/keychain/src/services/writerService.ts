@@ -16,7 +16,6 @@ import {
   consumerKeychainTables,
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
-  readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "../consumerKeychain.ts";
 import {
