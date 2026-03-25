@@ -231,7 +231,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const {
         data: consumerKeychain,
         metadata: { version },
-      } = await consumerKeychainService.addKeychainMember(
+      } = await consumerKeychainService.addConsumerKeychainMember(
         req.params.consumerKeychainId,
         req.body,
         ctx,

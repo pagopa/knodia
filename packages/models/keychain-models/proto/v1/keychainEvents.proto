@@ -25,4 +25,5 @@ message ConsumerKeychainPurposeLinkedV1 {
 
 message ConsumerKeychainMemberAddedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
+  string userId = 2;
 }

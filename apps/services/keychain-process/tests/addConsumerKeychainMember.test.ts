@@ -3,7 +3,7 @@
 import {
   generateId,
   type OrganizationId,
-  unsafeBrandId,
+  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -134,7 +134,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       updatedAt: new Date(responseBody.updatedAt),
-      users: [...consumerKeychain.users, unsafeBrandId(memberId)],
+      users: [...consumerKeychain.users, unsafeBrandUserId(memberId)],
     };
 
     expect(responseBody).toEqual(toAPI_Keychain(expectedConsumerKeychain));
@@ -151,6 +151,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     const updatedEventData = KeychainEventV1.parse(updatedEvent).data;
     expect(updatedEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(expectedConsumerKeychain),
+      userId: memberId,
     });
   });
 
@@ -233,7 +234,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     const memberId = "10000000-1000-1000-8000-000000000011";
     const keychainWithExistingMember: ConsumerKeychain = {
       ...consumerKeychain,
-      users: [unsafeBrandId(memberId)],
+      users: [unsafeBrandUserId(memberId)],
     };
 
     await seedConsumerKeychain(keychainWithExistingMember);

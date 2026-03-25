@@ -16,8 +16,7 @@ import type {
 import {
   type ConsumerKeychainId,
   generateId,
-  unsafeBrandId,
-  type UserId,
+  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import { match, P } from "ts-pattern";
 
@@ -50,7 +49,7 @@ export function consumerKeychainServiceBuilder(
   userService: UserService,
 ) {
   return {
-    async addKeychainMember(
+    async addConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
       member: API_KeychainMemberSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
@@ -69,7 +68,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data,
       );
 
-      const userId = unsafeBrandId<UserId>(member.userId);
+      const userId = unsafeBrandUserId(member.userId);
       const user = await userService.getOrganizationTechnicalUser(
         authData.organizationId,
         userId,
@@ -92,6 +91,7 @@ export function consumerKeychainServiceBuilder(
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainMemberAddedV1Event(
           updatedConsumerKeychain,
+          user.id,
           correlationId,
           consumerKeychain.metadata.version,
         ),

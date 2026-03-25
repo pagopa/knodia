@@ -1,4 +1,4 @@
-import type { CorrelationId } from "@knodia/common-models/ids";
+import type { CorrelationId, UserId } from "@knodia/common-models/ids";
 import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/keychain";
 
 import {
@@ -55,6 +55,7 @@ export const createConsumerKeychainUpdatedV1Event = (
 
 export const createConsumerKeychainMemberAddedV1Event = (
   keychain: ConsumerKeychain,
+  userId: UserId,
   correlationId: CorrelationId,
   currentMetadataVersion: number,
 ): NewEventStoreKeychainEvent => ({
@@ -63,6 +64,7 @@ export const createConsumerKeychainMemberAddedV1Event = (
   event: {
     data: {
       consumerKeychain: toConsumerKeychainV1(keychain),
+      userId,
     },
     type: "ConsumerKeychainMemberAddedV1",
   },
