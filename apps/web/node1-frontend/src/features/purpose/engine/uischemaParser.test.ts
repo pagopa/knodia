@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 import type { ControlElement, LabelElement, UISchema } from "./types";
 
 import {
-  collectAllScopes,
   collectConditionScopes,
   collectControls,
   collectErrorMessages,
@@ -37,20 +36,6 @@ const conditionalControl: ControlElement = {
     effect: "SHOW",
   },
   scope: "#/properties/otherPurpose",
-  type: "Control",
-};
-
-const controlWithHideOptions: ControlElement = {
-  options: {
-    hideOptions: {
-      PUBLIC_INTEREST_TASK: {
-        schema: { contains: { const: "GDPR_ART_9" } },
-        scope: "#/properties/personalDataTypes",
-      },
-    },
-    widget: "radio",
-  },
-  scope: "#/properties/legalBasisPublicInterest",
   type: "Control",
 };
 
@@ -106,39 +91,6 @@ describe("collectConditionScopes", () => {
       type: "AND",
     });
     expect(scopes).toEqual(["#/properties/a", "#/properties/b"]);
-  });
-});
-
-describe("collectAllScopes", () => {
-  it("collects scope from a Control", () => {
-    expect(collectAllScopes(radioControl)).toEqual(["#/properties/purpose"]);
-  });
-
-  it("collects scope from rule condition", () => {
-    const scopes = collectAllScopes(conditionalControl);
-    expect(scopes).toContain("#/properties/otherPurpose");
-    expect(scopes).toContain("#/properties/purpose");
-  });
-
-  it("collects scope from hideOptions", () => {
-    const scopes = collectAllScopes(controlWithHideOptions);
-    expect(scopes).toContain("#/properties/legalBasisPublicInterest");
-    expect(scopes).toContain("#/properties/personalDataTypes");
-  });
-
-  it("collects scope from Label rule condition", () => {
-    const scopes = collectAllScopes(labelElement);
-    expect(scopes).toContain("#/properties/doneDpia");
-  });
-
-  it("recurses into layout elements", () => {
-    const layout: UISchema = {
-      elements: [radioControl, conditionalControl],
-      type: "VerticalLayout",
-    };
-    const scopes = collectAllScopes(layout);
-    expect(scopes).toContain("#/properties/purpose");
-    expect(scopes).toContain("#/properties/otherPurpose");
   });
 });
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { JsonSchema } from "../types";
 
-import { createAjvValidator, injectNonEmptyConstraints } from "./validation";
+import { createAjvValidator } from "./validation";
 
 const schema: JsonSchema = {
   allOf: [
@@ -142,57 +142,5 @@ describe("createAjvValidator", () => {
       new Set(["description", "legalBasis", "purpose"]),
     );
     expect(errors["purpose"]).toBeDefined();
-  });
-});
-
-describe("injectNonEmptyConstraints", () => {
-  it("adds minLength to required string properties", () => {
-    const patched = injectNonEmptyConstraints(schema) as {
-      properties: Record<string, { minLength?: number }>;
-    };
-    expect(patched.properties["description"]?.minLength).toBe(1);
-    expect(patched.properties["purpose"]?.minLength).toBe(1);
-  });
-
-  it("adds minItems to required array properties", () => {
-    const patched = injectNonEmptyConstraints(schema) as {
-      properties: Record<string, { minItems?: number }>;
-    };
-    expect(patched.properties["legalBasis"]?.minItems).toBe(1);
-  });
-
-  it("does not add constraints to non-required properties", () => {
-    const patched = injectNonEmptyConstraints(schema) as {
-      properties: Record<string, { minItems?: number; minLength?: number }>;
-    };
-    expect(patched.properties["knowsDataQuantity"]?.minLength).toBeUndefined();
-    expect(patched.properties["dataQuantity"]?.minLength).toBeUndefined();
-  });
-
-  it("patches then/else properties in allOf conditions", () => {
-    const patched = injectNonEmptyConstraints(schema) as {
-      allOf: {
-        then: { properties?: Record<string, { minLength?: number }> };
-      }[];
-    };
-    // First allOf condition: then requires dataQuantity (enum string)
-    const thenProps = patched.allOf.at(0)?.then.properties;
-    expect(thenProps?.["dataQuantity"]?.minLength).toBe(1);
-  });
-
-  it("preserves existing minLength/minItems if larger", () => {
-    const schemaWithExisting: JsonSchema = {
-      properties: {
-        items: { items: { type: "string" }, minItems: 3, type: "array" },
-        name: { minLength: 5, type: "string" },
-      },
-      required: ["name", "items"],
-      type: "object",
-    };
-    const patched = injectNonEmptyConstraints(schemaWithExisting) as {
-      properties: Record<string, { minItems?: number; minLength?: number }>;
-    };
-    expect(patched.properties["name"]?.minLength).toBe(5);
-    expect(patched.properties["items"]?.minItems).toBe(3);
   });
 });

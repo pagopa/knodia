@@ -70,6 +70,20 @@ describe("getDefaultValues", () => {
     expect(values["choice"]).toBeUndefined();
   });
 
+  it("leaves const fields undefined", () => {
+    const schema: JsonSchema = {
+      properties: {
+        confirmation: {
+          const: "true",
+          type: "string",
+        },
+      },
+      type: "object",
+    };
+    const values = getDefaultValues(schema);
+    expect(values["confirmation"]).toBeUndefined();
+  });
+
   it("handles a mixed schema", () => {
     const schema: JsonSchema = {
       properties: {
