@@ -410,6 +410,10 @@ export type PurposeFormSchema = {
     [key: string]: unknown;
 };
 
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -852,7 +856,7 @@ export type GetPurposeFormUiSchemaResponses = {
     /**
      * Purpose form UI schema retrieved successfully
      */
-    200: PurposeFormSchema;
+    200: PurposeFormUiSchema;
 };
 
 export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];

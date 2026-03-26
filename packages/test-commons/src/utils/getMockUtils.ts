@@ -29,12 +29,16 @@ export function getMockAgreement({
 }
 
 export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
-  return zocker(ConsumerKeychain)
-    .array({
-      min: 1,
-    })
-    .setSeed(seed)
-    .generate();
+  // Re-parse through the schema to normalize zocker's mixed-case GUIDs
+  // (zocker ignores Zod transforms like toLowerCase on guid-based UserId)
+  return ConsumerKeychain.parse(
+    zocker(ConsumerKeychain)
+      .array({
+        min: 1,
+      })
+      .setSeed(seed)
+      .generate(),
+  );
 }
 
 export function getMockEservice({

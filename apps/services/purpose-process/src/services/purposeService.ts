@@ -115,12 +115,18 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-    getFormSchema(version: PurposeFormSchemaVersion): Record<string, unknown> {
+    getFormSchema(
+      version: PurposeFormSchemaVersion,
+      { logger }: AuthorizedContext<AuthData>,
+    ): Record<string, unknown> {
+      logger.info(`Getting Purpose form schema version ${version}`);
       return getFormSchema(version);
     },
     getFormUiSchema(
       version: PurposeFormSchemaVersion,
+      { logger }: AuthorizedContext<AuthData>,
     ): Record<string, unknown> {
+      logger.info(`Getting Purpose form UI schema version ${version}`);
       return getFormUiSchema(version);
     },
     async getPurpose(
