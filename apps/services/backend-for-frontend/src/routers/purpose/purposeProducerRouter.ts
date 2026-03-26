@@ -104,6 +104,8 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
           path: { organizationId: purpose.consumer.id },
           query: { knodeId: consumerKnodeId },
         }),
+        // TODO: When agreement archiving is implemented, filter out archived agreements
+        //       (e.g. pass a state filter) to avoid selecting an archived one.
         agreementProcessApi.getAgreements({
           client: agreementProcessClient,
           headers,
