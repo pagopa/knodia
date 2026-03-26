@@ -1,4 +1,3 @@
-import type { AttributeId } from "@knodia/attribute-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   EserviceId,
@@ -8,6 +7,10 @@ import type {
 } from "@knodia/common-models/ids";
 
 import { AgreementState } from "@knodia/agreement-models";
+import {
+  type AttributeId,
+  hasAllRequiredAttributes,
+} from "@knodia/attribute-models";
 import {
   type Eservice,
   type EserviceVersion,
@@ -62,16 +65,7 @@ export function assertConsumerHasRequiredAttributes(
   consumerId: ExternalId<OrganizationId>,
   eserviceId: EserviceId,
 ): void {
-  const hasAll = requiredAttributes.every((group) =>
-    group.some((requiredAtt) =>
-      consumerAttributes.some(
-        (consumerAtt) =>
-          consumerAtt.code === requiredAtt.code &&
-          consumerAtt.scheme === requiredAtt.scheme,
-      ),
-    ),
-  );
-  if (!hasAll) {
+  if (!hasAllRequiredAttributes(consumerAttributes, requiredAttributes)) {
     throw consumerMissingRequiredAttributes(consumerId, eserviceId);
   }
 }

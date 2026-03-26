@@ -45,6 +45,11 @@ export type Pagination = {
 export type FileDownload = Blob | File;
 
 /**
+ * Unique identifier of the User
+ */
+export type UserId = string;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -521,6 +526,14 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type User = {
+    email: string;
+    id: UserId;
+    username: string;
+};
+
+export type Users = Array<User>;
+
 /**
  * Name of the Purpose
  */
@@ -989,6 +1002,39 @@ export type UpdateConsumerKeychainResponses = {
 };
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
+
+export type GetTechnicalUsersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/users/technical';
+};
+
+export type GetTechnicalUsersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
+
+export type GetTechnicalUsersResponses = {
+    /**
+     * Technical Users retrieved successfully
+     */
+    200: Users;
+};
+
+export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];
 
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
