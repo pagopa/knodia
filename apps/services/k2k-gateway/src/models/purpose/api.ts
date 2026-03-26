@@ -12,11 +12,11 @@ import {
 } from "@knodia/purpose-models";
 import { z } from "zod";
 
+import { API_EserviceId } from "../eservice/api.ts";
+
 const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
   id: "PurposeFormSchemaVersion",
 });
-
-import { API_EserviceId } from "../eservice/api.ts";
 
 const API_LocalizedPurposeName = z
   .strictObject({
