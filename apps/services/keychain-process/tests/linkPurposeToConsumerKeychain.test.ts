@@ -1,4 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type {
+  API_ConsumerKeychainPurpose,
+  API_ConsumerKeychainPurposeLinkSeed,
+} from "@knodia/keychain-models/api";
+
 import { generateId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -14,10 +19,6 @@ import {
 } from "@knodia/test-commons/utils";
 import { assert, beforeAll, describe, expect, it } from "vitest";
 
-import {
-  type API_ConsumerKeychainPurpose,
-  type API_ConsumerKeychainPurposeLinkSeed,
-} from "../src/models/api.ts";
 import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
 import { purposeWriterService } from "./setup.ts";
 import {

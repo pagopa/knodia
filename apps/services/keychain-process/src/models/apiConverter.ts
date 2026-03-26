@@ -2,8 +2,9 @@ import type {
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
+import type { API_ConsumerKeychainPurpose } from "@knodia/keychain-models/api";
 
-import type { API_ConsumerKeychainPurpose, API_Keychain } from "./api.ts";
+import type { API_Keychain } from "./api.ts";
 
 export const toAPI_Keychain = (
   keychain: FlatConsumerKeychain,
