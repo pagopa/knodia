@@ -1,10 +1,10 @@
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
-import { maxDailyCalls, minDailyCalls } from "@knodia/purpose-models";
 import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
+  API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeFormSchemaVersion,
   API_PurposeState,
@@ -16,12 +16,7 @@ import { API_CompactEservice } from "../eservice/api.ts";
 
 export const API_PurposeSeed = z
   .strictObject({
-    dailyCalls: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({ format: "int32" }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     formAnswersJson: API_PurposeFormAnswers,
@@ -39,12 +34,7 @@ export const API_ProducerPurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
     consumer: API_CompactOrganization,
-    dailyCalls: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({ format: "int32" }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice.extend({
       latestVersionState: API_EserviceVersionState,
