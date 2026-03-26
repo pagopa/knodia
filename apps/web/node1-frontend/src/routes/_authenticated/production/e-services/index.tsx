@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
+import { useHasRole } from "@/contexts/auth";
 import { ProductionEserviceFilters } from "@/features/e-service/components/ProductionEserviceFilters";
 import { ProductionEserviceList } from "@/features/e-service/components/ProductionEserviceList";
 import {
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/production/e-services/")({
 });
 
 function RouteComponent() {
+  const canPublishEservices = useHasRole("technical");
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
@@ -44,18 +46,20 @@ function RouteComponent() {
     <>
       <PageHeader
         actions={
-          <>
-            <Button hierarchy="neutral" kind="ghost">
-              <ArchiveIcon />
-              Archive
-            </Button>
-            <ButtonLink
-              hierarchy="brand"
-              href={{ to: "/production/e-services/new" }}
-            >
-              Create E-Service
-            </ButtonLink>
-          </>
+          canPublishEservices && (
+            <>
+              <Button hierarchy="neutral" kind="ghost">
+                <ArchiveIcon />
+                Archive
+              </Button>
+              <ButtonLink
+                hierarchy="brand"
+                href={{ to: "/production/e-services/new" }}
+              >
+                Create E-Service
+              </ButtonLink>
+            </>
+          )
         }
         overline="Production"
         title="E-Services"
