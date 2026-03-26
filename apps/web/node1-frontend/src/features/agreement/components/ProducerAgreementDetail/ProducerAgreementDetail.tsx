@@ -7,6 +7,7 @@ import { match } from "ts-pattern";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
+import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
 import { AgreementStateChip } from "../AgreementStateChip";
@@ -18,10 +19,16 @@ export function ProducerAgreementDetail({
 }: {
   agreement: bffApi.ProducerAgreementDetails;
 }) {
+  const canManageAgreementState = useHasRole("administrative");
+
   return (
     <>
       <PageHeader
-        actions={<AgreementActionButton state={agreement.state} />}
+        actions={
+          canManageAgreementState && (
+            <AgreementActionButton state={agreement.state} />
+          )
+        }
         resourceStatusChip={
           <AgreementStateChip state={agreement.state} type="light" />
         }
