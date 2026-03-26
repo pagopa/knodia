@@ -118,7 +118,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       ]);
 
       const agreement = assertEntityExists(
-        agreements.results[0],
+        agreements.results.at(0),
         `Agreement not found for Purpose ${purpose.id} (eserviceId: ${purpose.eserviceId}, consumerId: ${purpose.consumer.id})`,
       );
 
