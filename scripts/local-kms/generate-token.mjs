@@ -26,7 +26,7 @@ function getClaimsAndEnvVar(type) {
   switch (type) {
     case "ui-session":
       return {
-        claims: { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, type },
+        claims: { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "jane.doe", type },
         envVarName: "UI_SESSION_JWT",
       };
     case "internal":
