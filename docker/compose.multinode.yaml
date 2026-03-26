@@ -404,7 +404,6 @@ services:
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
@@ -904,7 +903,6 @@ services:
       AWS_REGION: eu-south-1
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
-      AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_S3: http://minio:9000
     depends_on:
