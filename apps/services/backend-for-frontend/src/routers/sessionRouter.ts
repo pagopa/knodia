@@ -1,0 +1,61 @@
+import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
+
+import { requestContext } from "@fastify/request-context";
+import type { KnodeId } from "@knodia/common-models/ids";
+import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
+import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
+import { API_CompactOrganization } from "@knodia/organization-models/api";
+
+import { apiTags } from "../models/apiTags.ts";
+import { getUISessionAuthData } from "../utils/authData.ts";
+import { getKnodiaServiceHeaders } from "../utils/headers.ts";
+
+interface SessionRouterOptions {
+  knodeId: KnodeId;
+  organizationProcessClient: OrganizationProcessClient;
+}
+
+export const sessionRouter: FastifyPluginAsyncZod<SessionRouterOptions> =
+  async (fastify, { knodeId, organizationProcessClient }) => {
+    fastify.route({
+      handler: async (req, res) => {
+        const { authData, correlationId, logger } =
+          getContextValues(requestContext);
+        const { organizationId } = getUISessionAuthData(authData);
+
+        logger.info("Getting organization info for the current session");
+
+        const { data } = await organizationProcessApi.getOrganization({
+          client: organizationProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId },
+        });
+
+        res.send({
+          id: data.id,
+          knodeId,
+          name: data.name,
+        });
+      },
+      method: "GET",
+      schema: {
+        description:
+          "Retrieve the Organization of the current session's User",
+        operationId: "getSessionOrganization",
+        response: {
+          200: API_CompactOrganization.meta({
+            description: "Session Organization retrieved successfully",
+          }),
+          400: API_Problem.meta({ description: "Bad Request" }),
+          401: API_Problem.meta({ description: "Unauthorized" }),
+          403: API_Problem.meta({ description: "Forbidden" }),
+        },
+        tags: [apiTags.auth],
+      },
+      url: "/session/organization",
+    });
+  };

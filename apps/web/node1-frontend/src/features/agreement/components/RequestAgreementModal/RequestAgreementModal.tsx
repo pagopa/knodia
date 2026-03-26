@@ -2,18 +2,17 @@ import type { KnodeId } from "@knodia/common-models/ids";
 
 import { Banner, Divider, Empty } from "@knodia/ui-kit/ui";
 import { SealCheckIcon } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { ModalFooter } from "@/components/ModalFooter";
 import { SettingsCard } from "@/components/SettingCard";
+import { config } from "@/config/config";
 import { useCreateAgreement } from "@/features/agreement/hooks/useCreateAgreement";
+import { sessionOrganizationQuery } from "@/features/session/services/queries";
 import { FullPageModal } from "@/layouts/FullPageModal";
-
-// TODO: use real consumer organization info from BFF (same pattern as Navbar.tsx)
-const CONSUMER_ORG_NAME = "Ursa";
-const CONSUMER_KNODE_NAME = "Orion Knode";
 
 interface RequestAgreementModalProps {
   eservice: ConsumptionEserviceDetail;
@@ -81,6 +80,8 @@ function FormContent({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const { data: organization } = useQuery(sessionOrganizationQuery());
+
   return (
     <div className="flex flex-col gap-10">
       <h2 className="headline-md text-primary-light-high-contrast">
@@ -92,7 +93,7 @@ function FormContent({
           {eservice.producer.name} - {eservice.producer.knodeId} Knode
         </SettingsCard>
         <SettingsCard label="Consumer">
-          {CONSUMER_ORG_NAME} - {CONSUMER_KNODE_NAME}
+          {organization?.name ?? ""} - {config.knodeId} Knode
         </SettingsCard>
       </div>
 

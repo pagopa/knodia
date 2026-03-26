@@ -77,12 +77,17 @@ function useErrorHandler() {
 }
 
 describe("RequestAgreementModal", () => {
-  it("renders the form state with e-service details", () => {
+  it("renders the form state with e-service details", async () => {
     renderModal();
 
     expect(screen.getByText("Request Agreement")).toBeInTheDocument();
     expect(screen.getByText("Test E-Service")).toBeInTheDocument();
     expect(screen.getByText(/Ursa Major - Lynx Knode/)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(/Test Organization - Orion Knode/),
+      ).toBeInTheDocument();
+    });
     expect(
       screen.getByText("Your organization has the required attributes."),
     ).toBeInTheDocument();
