@@ -231,20 +231,16 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      try {
-        const {
-          data: consumerKeychain,
-          metadata: { version },
-        } = await consumerKeychainService.addConsumerKeychainMember(
-          req.params.consumerKeychainId,
-          req.body,
-          ctx,
-        );
-        setMetadataVersionHeader(res, version);
-        res.status(200).send(toAPI_Keychain(consumerKeychain));
-      } catch (error) {
-        console.log(error);
-      }
+      const {
+        data: consumerKeychain,
+        metadata: { version },
+      } = await consumerKeychainService.addConsumerKeychainMember(
+        req.params.consumerKeychainId,
+        req.body,
+        ctx,
+      );
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Keychain(consumerKeychain));
     },
     method: "POST",
     schema: {
