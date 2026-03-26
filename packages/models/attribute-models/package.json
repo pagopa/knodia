@@ -5,7 +5,9 @@
     "dev": "tsc --watch",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix"
+    "lint:autofix": "eslint . --fix",
+    "test": "pnpm -w test --project @knodia/attribute-models",
+    "test:watch": "pnpm test --watch"
   },
   "exports": {
     ".": "./src/attributes.ts",
@@ -19,6 +21,7 @@
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }
