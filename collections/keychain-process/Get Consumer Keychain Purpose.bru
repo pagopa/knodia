@@ -1,0 +1,19 @@
+meta {
+  name: Get Consumer Keychain Purpose
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/purposes/:purposeId
+  body: none
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+  purposeId: {{purposeId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

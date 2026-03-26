@@ -6,10 +6,13 @@ import { constants } from "http2";
 
 const { HTTP_STATUS_NOT_FOUND } = constants;
 
+/* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   CONSUMER_KEYCHAIN_NOT_FOUND: "0001",
   PURPOSE_NOT_FOUND: "0002",
+  CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND: "0003",
 } as const;
+/* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
 
@@ -23,6 +26,18 @@ export function consumerKeychainNotFound(id: ConsumerKeychainId) {
     detail: `Consumer keychain with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Consumer Keychain Not Found",
+  });
+}
+
+export function consumerKeychainPurposeNotFound(
+  consumerKeychainId: ConsumerKeychainId,
+  purposeId: PurposeId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND",
+    detail: `Purpose ${purposeId} not linked to Consumer Keychain ${consumerKeychainId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Consumer Keychain Purpose Not Found",
   });
 }
 

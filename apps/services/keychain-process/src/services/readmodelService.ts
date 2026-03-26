@@ -28,6 +28,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         consumerKeychainId,
       );
     },
+    async getConsumerKeychainPurposeByKeychainId(
+      consumerKeychainId: ConsumerKeychainId,
+      purposeId: PurposeId,
+    ) {
+      return await consumerKeychainReadmodelService.getConsumerKeychainPurposeByKeychainId(
+        consumerKeychainId,
+        purposeId,
+      );
+    },
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
     ): Promise<ListResult<FlatConsumerKeychain>> {
