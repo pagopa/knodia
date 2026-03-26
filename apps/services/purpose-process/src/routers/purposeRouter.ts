@@ -129,11 +129,11 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      validateAuthorization(getContextValues(requestContext), [
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
       ]);
 
-      res.status(200).send(purposeService.getFormSchema(req.params.version));
+      res.status(200).send(purposeService.getFormSchema(req.params.version, ctx));
     },
     method: "GET",
     schema: {
@@ -158,11 +158,11 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      validateAuthorization(getContextValues(requestContext), [
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
       ]);
 
-      res.status(200).send(purposeService.getFormUiSchema(req.params.version));
+      res.status(200).send(purposeService.getFormUiSchema(req.params.version, ctx));
     },
     method: "GET",
     schema: {
