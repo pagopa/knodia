@@ -111,6 +111,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     });
     protectedApp.register(eserviceConsumerRouter, {
       config,
+      organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementConsumerRouter, {
