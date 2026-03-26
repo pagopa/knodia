@@ -35,6 +35,11 @@ export const API_OrganizationId = z.uuid().meta({
   id: "OrganizationId",
 });
 
+export const API_UserId = z.guid().toLowerCase().meta({
+  description: "Unique identifier of the User",
+  id: "UserId",
+});
+
 export const API_CreatedResource = z
   .strictObject({
     id: z.uuid(),

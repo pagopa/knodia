@@ -68,6 +68,7 @@ function makeCognitoPayload(
       "role:technical",
     ],
     sub: TEST_USER_ID,
+    username: "test-user",
     ...overrides,
   };
 }
@@ -85,6 +86,7 @@ function makeRefreshPayload(
     roles: ["administrative", "technical"],
     sub: TEST_USER_ID,
     type: "refresh-ui-session",
+    username: "test-user",
     ...overrides,
   };
 }
@@ -138,12 +140,14 @@ describe("generateTokenPair", () => {
     expect(uiPayload.sub).toBe(TEST_USER_ID);
     expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
     expect(uiPayload.roles).toEqual(["administrative", "technical"]);
+    expect(uiPayload.username).toBe("test-user");
     expect(uiPayload.type).toBe("ui-session");
 
     const refreshPayload = UISessionRefreshTokenClaims.parse(
       parseJwtPayload(result.refreshToken),
     );
     expect(refreshPayload.sub).toBe(TEST_USER_ID);
+    expect(refreshPayload.username).toBe("test-user");
     expect(refreshPayload.type).toBe("refresh-ui-session");
   });
 
@@ -198,6 +202,20 @@ describe("generateTokenPair", () => {
     const service = buildService();
     await expect(service.generateUISessionTokenPair("token")).rejects.toThrow(
       unauthorizedError("Missing role claims in cognito token"),
+    );
+  });
+
+  it("throws unauthorized when username is missing from Cognito token", async () => {
+    mockJwtVerify.mockResolvedValue({
+      payload: {
+        "cognito:groups": [`org:${TEST_ORG_ID}`, "role:administrative"],
+        sub: TEST_USER_ID,
+      },
+      protectedHeader: { alg: "RS256" },
+    });
+    const service = buildService();
+    await expect(service.generateUISessionTokenPair("token")).rejects.toThrow(
+      unauthorizedError("Invalid Cognito token payload"),
     );
   });
 
@@ -275,12 +293,14 @@ describe("refreshTokenPair", () => {
     expect(uiPayload.sub).toBe(TEST_USER_ID);
     expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
     expect(uiPayload.roles).toEqual(["administrative", "technical"]);
+    expect(uiPayload.username).toBe("test-user");
     expect(uiPayload.type).toBe("ui-session");
 
     const refreshPayload = UISessionRefreshTokenClaims.parse(
       parseJwtPayload(result.refreshToken),
     );
     expect(refreshPayload.sub).toBe(TEST_USER_ID);
+    expect(refreshPayload.username).toBe("test-user");
     expect(refreshPayload.type).toBe("refresh-ui-session");
   });
 

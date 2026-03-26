@@ -4,7 +4,7 @@ import { Avatar } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
-import { getOrganizationInitials } from "@/utils/getOrganizationInitials";
+import { getInitials } from "@/utils/getInitials";
 
 import { CategoryChip } from "./CategoryChip";
 import {
@@ -37,7 +37,7 @@ export function ConsumptionEserviceCard({
         trailing={
           <Avatar
             className="bg-brand-dark text-white"
-            fallback={getOrganizationInitials(eservice.producer.name)}
+            fallback={getInitials(eservice.producer.name)}
             name={eservice.producer.name}
             size="sm"
           />
