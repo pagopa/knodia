@@ -83,7 +83,6 @@ export interface ConsumerKeychainV1 {
   description?: LocalizedTextV1 | undefined;
   ownerId: string;
   users: string[];
-  purposes: string[];
   keys: ConsumerKeychainKeyV1[];
   createdAt: number;
   updatedAt: number;
@@ -111,7 +110,6 @@ function createBaseConsumerKeychainV1(): ConsumerKeychainV1 {
     description: undefined,
     ownerId: "",
     users: [],
-    purposes: [],
     keys: [],
     createdAt: 0,
     updatedAt: 0,
@@ -135,17 +133,14 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
     for (const v of message.users) {
       writer.uint32(42).string(v!);
     }
-    for (const v of message.purposes) {
-      writer.uint32(50).string(v!);
-    }
     for (const v of message.keys) {
-      ConsumerKeychainKeyV1.encode(v!, writer.uint32(58).fork()).join();
+      ConsumerKeychainKeyV1.encode(v!, writer.uint32(50).fork()).join();
     }
     if (message.createdAt !== 0) {
-      writer.uint32(64).int64(message.createdAt);
+      writer.uint32(56).int64(message.createdAt);
     }
     if (message.updatedAt !== 0) {
-      writer.uint32(72).int64(message.updatedAt);
+      writer.uint32(64).int64(message.updatedAt);
     }
     return writer;
   },
@@ -202,27 +197,19 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
             break;
           }
 
-          message.purposes.push(reader.string());
-          continue;
-        }
-        case 7: {
-          if (tag !== 58) {
-            break;
-          }
-
           message.keys.push(ConsumerKeychainKeyV1.decode(reader, reader.uint32()));
           continue;
         }
-        case 8: {
-          if (tag !== 64) {
+        case 7: {
+          if (tag !== 56) {
             break;
           }
 
           message.createdAt = longToNumber(reader.int64());
           continue;
         }
-        case 9: {
-          if (tag !== 72) {
+        case 8: {
+          if (tag !== 64) {
             break;
           }
 
@@ -245,7 +232,6 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
       description: isSet(object.description) ? LocalizedTextV1.fromJSON(object.description) : undefined,
       ownerId: isSet(object.ownerId) ? globalThis.String(object.ownerId) : "",
       users: globalThis.Array.isArray(object?.users) ? object.users.map((e: any) => globalThis.String(e)) : [],
-      purposes: globalThis.Array.isArray(object?.purposes) ? object.purposes.map((e: any) => globalThis.String(e)) : [],
       keys: globalThis.Array.isArray(object?.keys)
         ? object.keys.map((e: any) => ConsumerKeychainKeyV1.fromJSON(e))
         : [],
@@ -270,9 +256,6 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
     }
     if (message.users?.length) {
       obj.users = message.users;
-    }
-    if (message.purposes?.length) {
-      obj.purposes = message.purposes;
     }
     if (message.keys?.length) {
       obj.keys = message.keys.map((e) => ConsumerKeychainKeyV1.toJSON(e));
@@ -300,7 +283,6 @@ export const ConsumerKeychainV1: MessageFns<ConsumerKeychainV1> = {
       : undefined;
     message.ownerId = object.ownerId ?? "";
     message.users = object.users?.map((e) => e) || [];
-    message.purposes = object.purposes?.map((e) => e) || [];
     message.keys = object.keys?.map((e) => ConsumerKeychainKeyV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;

@@ -9,12 +9,6 @@ import {
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
-
-export {
-  API_PurposeFormSchema,
-  API_PurposeFormSchemaVersionPathParam,
-} from "@knodia/purpose-models/api";
-
 export const API_PurposeSeed = z
   .strictObject({
     consumer: API_PurposeConsumer,

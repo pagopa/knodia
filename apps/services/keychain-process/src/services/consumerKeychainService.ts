@@ -61,7 +61,6 @@ export function consumerKeychainServiceBuilder(
         keys: [],
         name: seed.name,
         ownerId,
-        purposes: [],
         updatedAt: now,
         users: [],
       };

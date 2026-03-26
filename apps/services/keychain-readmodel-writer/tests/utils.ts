@@ -3,7 +3,6 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   readmodelConsumerKeychain,
   readmodelConsumerKeychainKey,
-  readmodelConsumerKeychainPurpose,
   readmodelConsumerKeychainUser,
 } from "@knodia/db-readmodel-keychain";
 import { aggregateConsumerKeychains } from "@knodia/db-readmodel-keychain/converters";
@@ -14,17 +13,9 @@ export async function getAllConsumerKeychains(readmodelDb: NodePgDatabase) {
     .select({
       consumerKeychain: readmodelConsumerKeychain,
       key: readmodelConsumerKeychainKey,
-      purpose: readmodelConsumerKeychainPurpose,
       user: readmodelConsumerKeychainUser,
     })
     .from(readmodelConsumerKeychain)
-    .leftJoin(
-      readmodelConsumerKeychainPurpose,
-      eq(
-        readmodelConsumerKeychain.id,
-        readmodelConsumerKeychainPurpose.consumerKeychainId,
-      ),
-    )
     .leftJoin(
       readmodelConsumerKeychainUser,
       eq(
