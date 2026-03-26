@@ -1,3 +1,4 @@
+import type { UserRole } from "@knodia/common-models/auth";
 import type { ReactElement, ReactNode } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -11,6 +12,8 @@ import {
 import { render, type RenderOptions } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { AuthContext } from "@/contexts/auth";
+
 interface RouteConfig {
   component?: () => ReactNode;
   path: string;
@@ -19,6 +22,7 @@ interface RouteConfig {
 interface WrapperOptions {
   initialPath?: string | undefined;
   queryClient?: QueryClient | undefined;
+  roles?: readonly UserRole[] | undefined;
   routes?: RouteConfig[] | undefined;
 }
 
@@ -26,12 +30,12 @@ export function renderWithProviders(
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper"> & WrapperOptions,
 ) {
-  const { initialPath, queryClient, ...renderOptions } = options ?? {};
+  const { initialPath, queryClient, roles, ...renderOptions } = options ?? {};
   const {
     queryClient: testQueryClient,
     router,
     TestWrapper,
-  } = createTestWrapper({ initialPath, queryClient });
+  } = createTestWrapper({ initialPath, queryClient, roles });
 
   const user = userEvent.setup();
 
@@ -56,6 +60,7 @@ function createTestWrapper(options: WrapperOptions = {}) {
   const {
     initialPath = "/",
     queryClient = createTestQueryClient(),
+    roles = ["administrative", "technical"] as const,
     routes = [],
   } = options;
 
@@ -86,9 +91,21 @@ function createTestWrapper(options: WrapperOptions = {}) {
   function TestWrapper({ children }: { children: ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <RouterContextProvider router={router}>
-          {children}
-        </RouterContextProvider>
+        <AuthContext.Provider
+          value={{
+            isAuthenticated: true,
+            isLoading: false,
+            login: () => undefined,
+            logout: () => Promise.resolve(),
+            roles,
+            token: "test-token",
+            username: "test-user",
+          }}
+        >
+          <RouterContextProvider router={router}>
+            {children}
+          </RouterContextProvider>
+        </AuthContext.Provider>
       </QueryClientProvider>
     );
   }
