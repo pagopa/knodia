@@ -30,7 +30,6 @@ import {
 import { apiTags } from "../../models/apiTags.ts";
 import { API_ProducerPurposeDetails } from "../../models/purpose/api.ts";
 import { toAPI_ProducerPurposeDetails } from "../../models/purpose/apiConverter.ts";
-import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface PurposeProducerRouterOptions {
@@ -57,9 +56,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
 ) => {
   fastify.route({
     handler: async (req, res) => {
-      const { authData, correlationId, logger } =
-        getContextValues(requestContext);
-      const { organizationId: producerId } = getUISessionAuthData(authData);
+      const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
         { requestParams: req.params },
@@ -79,7 +76,6 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       const [
         { data: eservice },
         { data: latestVersion },
-        { data: producer },
         { data: consumer },
         { data: agreements },
       ] = await Promise.all([
@@ -92,11 +88,6 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
           client: eserviceProcessClient,
           headers,
           path: { eserviceId: purpose.eserviceId },
-        }),
-        organizationProcessApi.getOrganization({
-          client: organizationProcessClient,
-          headers,
-          path: { organizationId: producerId },
         }),
         remoteResourcesManagerApi.getOrganization({
           client: remoteResourcesManagerClient,
@@ -118,6 +109,12 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
           },
         }),
       ]);
+
+      const { data: producer } = await organizationProcessApi.getOrganization({
+        client: organizationProcessClient,
+        headers,
+        path: { organizationId: eservice.producerId },
+      });
 
       const agreement = assertEntityExists(
         agreements.results.at(0),
