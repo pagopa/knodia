@@ -34,11 +34,6 @@ export type Problem = {
 };
 
 /**
- * Unique identifier of the Keychain
- */
-export type KeychainId = string;
-
-/**
  * Name of the Keychain
  */
 export type KeychainLocalizedName = {
@@ -52,16 +47,6 @@ export type KeychainLocalizedDescription = {
     en: string;
 };
 
-export type ConsumerKeychainPurposeLinkSeed = {
-    purposeId: string;
-};
-
-export type ConsumerKeychainPurpose = {
-    consumerKeychainId: KeychainId;
-    linkedAt: string;
-    purposeId: string;
-};
-
 export type Pagination = {
     limit: number;
     offset: number;
@@ -72,6 +57,16 @@ export type Pagination = {
  * Unique identifier of the Organization
  */
 export type OrganizationId = string;
+
+/**
+ * Unique identifier of the User
+ */
+export type UserId = string;
+
+/**
+ * Unique identifier of the Keychain
+ */
+export type KeychainId = string;
 
 export type Keychain = {
     createdAt: string;
@@ -95,6 +90,24 @@ export type ConsumerKeychainSeed = {
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
+};
+
+export type User = {
+    email: string;
+    id: UserId;
+    username: string;
+};
+
+export type Users = Array<User>;
+
+export type ConsumerKeychainPurposeLinkSeed = {
+    purposeId: string;
+};
+
+export type ConsumerKeychainPurpose = {
+    consumerKeychainId: KeychainId;
+    linkedAt: string;
+    purposeId: string;
 };
 
 export type GetStatusData = {
@@ -380,7 +393,7 @@ export type LinkPurposeToConsumerKeychainResponses = {
 
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
 
-export type GetConsumerKeychainPurposeData = {
+export type GetTechnicalUsersData = {
     body?: never;
     headers: {
         /**
@@ -388,15 +401,12 @@ export type GetConsumerKeychainPurposeData = {
          */
         'x-correlation-id': CorrelationId;
     };
-    path: {
-        consumerKeychainId: string;
-        purposeId: string;
-    };
+    path?: never;
     query?: never;
-    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}';
+    url: '/users/technical';
 };
 
-export type GetConsumerKeychainPurposeErrors = {
+export type GetTechnicalUsersErrors = {
     /**
      * Bad Request
      */
@@ -409,19 +419,15 @@ export type GetConsumerKeychainPurposeErrors = {
      * Forbidden
      */
     403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
 };
 
-export type GetConsumerKeychainPurposeError = GetConsumerKeychainPurposeErrors[keyof GetConsumerKeychainPurposeErrors];
+export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
 
-export type GetConsumerKeychainPurposeResponses = {
+export type GetTechnicalUsersResponses = {
     /**
-     * Purpose successfully linked to Consumer Keychain
+     * Technical Users retrieved successfully
      */
-    200: ConsumerKeychainPurpose;
+    200: Users;
 };
 
-export type GetConsumerKeychainPurposeResponse = GetConsumerKeychainPurposeResponses[keyof GetConsumerKeychainPurposeResponses];
+export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];

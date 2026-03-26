@@ -1,3 +1,5 @@
+import type { FastifyInstance } from "fastify";
+
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
 import {
@@ -10,14 +12,15 @@ import {
 } from "@knodia/db-readmodel-purpose/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { type TestDrizzleDb } from "@knodia/test-commons/types";
 import { resetTestDatabase } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
-let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
-let app: ReturnType<typeof buildApp>;
+let eventStoreDb: TestDrizzleDb;
+let readmodelDb: TestDrizzleDb;
+let app: FastifyInstance;
 let keychainWriterService: KeychainWriterService;
 let purposeWriterService: PurposeWriterService;
 
@@ -37,6 +40,7 @@ beforeAll(async () => {
   app = buildApp({
     config: {
       acceptedAudiences: ["test-audience"],
+      cognitoUserPoolId: "test-user-pool-id",
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",

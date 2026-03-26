@@ -1,3 +1,6 @@
+import type { TestDrizzleDb } from "@knodia/test-commons/types";
+import type { FastifyInstance } from "fastify";
+
 import { eventStorePurposeEvents } from "@knodia/db-event-store-purpose";
 import { readmodelAgreement } from "@knodia/db-readmodel-agreement";
 import {
@@ -12,14 +15,14 @@ import {
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import { resetTestDatabase } from "@knodia/test-commons/utils";
 import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
-import { resetTestDatabase } from "../../../../packages/test-commons/src/utils/dbIsolation.ts";
 import { buildApp } from "../src/app.ts";
 
-let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
-let app: ReturnType<typeof buildApp>;
+let eventStoreDb: TestDrizzleDb;
+let readmodelDb: TestDrizzleDb;
+let app: FastifyInstance;
 let eserviceWriterService: EserviceWriterService;
 let agreementWriterService: AgreementWriterService;
 

@@ -1,3 +1,4 @@
+import { createTestTokenPayload } from "@knodia/test-commons/auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
@@ -41,6 +42,11 @@ vi.mock("@/libs/router", () => ({
 
 import { OidcAuthProvider } from "./AuthContext";
 import { useAuth } from "./useAuthContext";
+
+const fakeSessionToken = createTestTokenPayload({
+  type: "ui-session",
+  username: "jane.doe",
+});
 
 function AuthConsumer({
   onAuth,
@@ -139,5 +145,27 @@ describe("AuthContext", () => {
     lastCall?.login();
 
     expect(mockSigninRedirect).toHaveBeenCalled();
+  });
+
+  it("provides username and roles from decoded UI session token", () => {
+    getAuthToken.mockReturnValue(fakeSessionToken);
+
+    const onAuth = vi.fn();
+    renderWithAuth(onAuth);
+
+    const lastCall = onAuth.mock.calls.at(-1)?.[0];
+    expect(lastCall?.username).toBe("jane.doe");
+    expect(lastCall?.roles).toEqual(["administrative"]);
+  });
+
+  it("username is null and roles is empty when not authenticated", () => {
+    getAuthToken.mockReturnValue(null);
+
+    const onAuth = vi.fn();
+    renderWithAuth(onAuth);
+
+    const lastCall = onAuth.mock.calls.at(-1)?.[0];
+    expect(lastCall?.username).toBeNull();
+    expect(lastCall?.roles).toEqual([]);
   });
 });
