@@ -545,6 +545,10 @@ export type PurposeFormSchema = {
     [key: string]: unknown;
 };
 
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
+};
+
 /**
  * Seed data to create a new Purpose
  */
@@ -1280,7 +1284,9 @@ export type GetConsumerPurposeFormSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/consumer/purposes/formSchemas/{version}';
 };
 
@@ -1315,7 +1321,9 @@ export type GetConsumerPurposeFormUiSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/consumer/purposes/formSchemas/{version}/ui';
 };
 
@@ -1340,7 +1348,7 @@ export type GetConsumerPurposeFormUiSchemaResponses = {
     /**
      * Purpose form UI schema retrieved successfully
      */
-    200: PurposeFormSchema;
+    200: PurposeFormUiSchema;
 };
 
 export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];

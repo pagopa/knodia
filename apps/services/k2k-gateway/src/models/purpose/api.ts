@@ -12,11 +12,11 @@ import {
 } from "@knodia/purpose-models";
 import { z } from "zod";
 
+import { API_EserviceId } from "../eservice/api.ts";
+
 const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
   id: "PurposeFormSchemaVersion",
 });
-
-import { API_EserviceId } from "../eservice/api.ts";
 
 const API_LocalizedPurposeName = z
   .strictObject({
@@ -82,3 +82,8 @@ export const API_PurposeFormSchema = z
   .record(z.string(), z.unknown())
   .meta({ id: "PurposeFormSchema" });
 export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
+
+export const API_PurposeFormUiSchema = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "PurposeFormUiSchema" });
+export type API_PurposeFormUiSchema = z.infer<typeof API_PurposeFormUiSchema>;

@@ -24,6 +24,7 @@ import {
   API_CreatedPurposeResource,
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersionPathParam,
+  API_PurposeFormUiSchema,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
 import { toProcessAPI_PurposeSeed } from "../models/purpose/apiConverter.ts";
@@ -160,7 +161,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       operationId: "getPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
-        200: API_PurposeFormSchema.meta({
+        200: API_PurposeFormUiSchema.meta({
           description: "Purpose form UI schema retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

@@ -4,9 +4,13 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/consumer/purposes/formSchemas/:purposeSchemaVersion
+  url: {{host-backend-for-frontend}}/consumer/purposes/formSchemas/:purposeSchemaVersion?knodeId=Orion
   body: none
   auth: none
+}
+
+params:query {
+  knodeId: Orion
 }
 
 params:path {

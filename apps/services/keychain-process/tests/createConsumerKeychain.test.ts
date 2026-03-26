@@ -47,7 +47,6 @@ describe("POST /consumerKeychains (createConsumerKeychain)", () => {
       keys: [],
       name: body.name,
       ownerId: TEST_ORGANIZATION_ID,
-      purposes: [],
       updatedAt: new Date(responseBody.updatedAt),
       users: [],
     };
