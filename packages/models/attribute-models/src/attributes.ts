@@ -32,3 +32,25 @@ export const Attribute = z.strictObject({
   name: z.string(),
 });
 export type Attribute = z.infer<typeof Attribute>;
+
+export function hasAllRequiredAttributes(
+  ownedAttributes: readonly AttributeId[],
+  requiredAttributeGroups: readonly AttributeId[][],
+): boolean {
+  return requiredAttributeGroups.every((group) =>
+    group.some((requiredAttr) =>
+      isAttributePossessed(ownedAttributes, requiredAttr),
+    ),
+  );
+}
+
+export function isAttributePossessed(
+  ownedAttributes: readonly AttributeId[],
+  requiredAttribute: AttributeId,
+): boolean {
+  return ownedAttributes.some(
+    (attr) =>
+      attr.code === requiredAttribute.code &&
+      attr.scheme === requiredAttribute.scheme,
+  );
+}
