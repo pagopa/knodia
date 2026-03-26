@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -45,6 +44,7 @@ interface EserviceConsumerRouterOptions {
 
 export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   EserviceConsumerRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
   { config, organizationProcessClient, remoteResourcesManagerClient },
