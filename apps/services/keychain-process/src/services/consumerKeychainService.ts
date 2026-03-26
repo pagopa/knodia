@@ -29,7 +29,7 @@ import type {
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
-import type { UserService } from "./userService.ts";
+import type { IdmUser, UserService } from "./userService.ts";
 
 import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
@@ -186,6 +186,35 @@ export function consumerKeychainServiceBuilder(
         consumerKeychainId,
         readmodelService,
       );
+    },
+
+    async getConsumerKeychainMembers(
+      consumerKeychainId: ConsumerKeychainId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<IdmUser[]> {
+      logger.info(
+        `Getting members of Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      async function retrieveUser(userId: UserId): Promise<IdmUser> {
+        const user = await userService.getUserById(userId);
+        if (!user) {
+          throw userNotFound(userId);
+        }
+        return user;
+      }
+
+      return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
     },
 
     async getConsumerKeychains(
