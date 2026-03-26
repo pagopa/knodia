@@ -1,3 +1,9 @@
+import type {
+  TestConsumer,
+  TestDrizzleDb,
+  TestProducer,
+} from "@knodia/test-commons/types";
+
 import { readmodelOrganization } from "@knodia/db-readmodel-organization";
 import { setupKafkaTestProducerAndConsumer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
@@ -9,16 +15,10 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { createProcessMessage } from "../src/utils/utils.ts";
 
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
-let producer: Awaited<
-  ReturnType<typeof setupKafkaTestProducerAndConsumer>
->["producer"];
-let consumer: Awaited<
-  ReturnType<typeof setupKafkaTestProducerAndConsumer>
->["consumer"];
-let topicName: Awaited<
-  ReturnType<typeof setupKafkaTestProducerAndConsumer>
->["topicName"];
+let readmodelDb: TestDrizzleDb;
+let producer: TestProducer;
+let consumer: TestConsumer;
+let topicName: string;
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
