@@ -100,6 +100,16 @@ export type User = {
 
 export type Users = Array<User>;
 
+export type ConsumerKeychainPurposeLinkSeed = {
+    purposeId: string;
+};
+
+export type ConsumerKeychainPurpose = {
+    consumerKeychainId: KeychainId;
+    linkedAt: string;
+    purposeId: string;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -337,6 +347,51 @@ export type UpdateConsumerKeychainResponses = {
 };
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
+
+export type LinkPurposeToConsumerKeychainData = {
+    body: ConsumerKeychainPurposeLinkSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/purposes';
+};
+
+export type LinkPurposeToConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type LinkPurposeToConsumerKeychainError = LinkPurposeToConsumerKeychainErrors[keyof LinkPurposeToConsumerKeychainErrors];
+
+export type LinkPurposeToConsumerKeychainResponses = {
+    /**
+     * Purpose successfully linked to Consumer Keychain
+     */
+    200: ConsumerKeychainPurpose;
+};
+
+export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;
