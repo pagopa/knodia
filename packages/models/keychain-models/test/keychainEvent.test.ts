@@ -8,6 +8,7 @@ import type { ConsumerKeychain } from "../src/keychain.ts";
 import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
+  ConsumerKeychainMemberAddedV1,
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
@@ -36,29 +37,36 @@ describe("KeychainEventV1 codec", () => {
   };
 
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
-  const value = { consumerKeychain: consumerKeychainV1 };
   const cases = [
     {
+      data: { consumerKeychain: consumerKeychainV1 },
       message: ConsumerKeychainCreatedV1,
       type: "ConsumerKeychainCreatedV1" as const,
     },
     {
+      data: { consumerKeychain: consumerKeychainV1 },
       message: ConsumerKeychainDeletedV1,
       type: "ConsumerKeychainDeletedV1" as const,
     },
     {
+      data: { consumerKeychain: consumerKeychainV1 },
       message: ConsumerKeychainUpdatedV1,
       type: "ConsumerKeychainUpdatedV1" as const,
     },
-  ];
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        userId: generateUserId(),
+      },
+      message: ConsumerKeychainMemberAddedV1,
+      type: "ConsumerKeychainMemberAddedV1" as const,
+    },
+  ] as const;
 
   it.each(cases)(
     "encodes and decodes a $type payload (KeychainEventV1 full codec)",
-    ({ type }) => {
-      const event: KeychainEventV1 = {
-        data: value,
-        type,
-      };
+    ({ data, type }) => {
+      const event = { data, type } as KeychainEventV1;
       const encoded = KeychainEventV1.encode(event);
       expect(encoded).toMatchObject({ type });
       expect(encoded.data).toBeInstanceOf(Uint8Array);
@@ -70,11 +78,11 @@ describe("KeychainEventV1 codec", () => {
 
   it.each(cases)(
     "encodes and decodes a $type payload (protobufBinaryCodec-only)",
-    ({ message }) => {
-      const codec = protobufBinaryCodec(message);
-      const bytes = codec.encode(value);
+    ({ data, message }) => {
+      const codec = protobufBinaryCodec(message as never);
+      const bytes = codec.encode(data);
       expect(bytes).toBeInstanceOf(Uint8Array);
-      expect(codec.decode(bytes)).toEqual(value);
+      expect(codec.decode(bytes)).toEqual(data);
     },
   );
 

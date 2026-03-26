@@ -159,13 +159,9 @@ function filterUsersByGroup(groupName) {
   return MOCK_USERS.filter((user) => user.Groups?.includes(groupName));
 }
 
-function findUserByUsernameOrSub(username) {
+function findUserByUsername(username) {
   return MOCK_USERS.find(
-    (user) =>
-      user.Username === username ||
-      user.Attributes?.some(
-        (attribute) => attribute.Name === "sub" && attribute.Value === username,
-      ),
+    (user) => user.Username === username
   );
 }
 
@@ -225,7 +221,7 @@ function handleListUsers(req, res, payload) {
 }
 
 function handleAdminListGroupsForUser(req, res, payload) {
-  const user = findUserByUsernameOrSub(payload.Username);
+  const user = findUserByUsername(payload.Username);
   const groups = (user?.Groups ?? []).map((groupName) => ({
     GroupName: groupName,
   }));

@@ -63,7 +63,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
     },
 
     async getUserById(userId: UserId): Promise<IdmUser | undefined> {
-      const reponse = await client.send(
+      const response = await client.send(
         new ListUsersCommand({
           Filter: `sub = "${userId}"`,
           Limit: 1,
@@ -71,7 +71,7 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
         }),
       );
 
-      const user = reponse.Users?.[0];
+      const user = response.Users?.[0];
       return user ? toIdmUser(user) : undefined;
     },
 

@@ -1815,7 +1815,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members:
     post:
-      operationId: addKeychainMember
+      operationId: addConsumerKeychainMember
       tags:
         - consumerKeychain
       description: Add a member to a Consumer Keychain
@@ -1866,6 +1866,14 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /users/technical:

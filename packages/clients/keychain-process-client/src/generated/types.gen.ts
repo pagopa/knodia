@@ -374,6 +374,10 @@ export type AddConsumerKeychainMemberErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type AddConsumerKeychainMemberError = AddConsumerKeychainMemberErrors[keyof AddConsumerKeychainMemberErrors];

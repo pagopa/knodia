@@ -1007,7 +1007,7 @@ export type UpdateConsumerKeychainResponses = {
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
 
-export type AddKeychainMemberData = {
+export type AddConsumerKeychainMemberData = {
     body: KeychainMemberSeed;
     path: {
         consumerKeychainId: string;
@@ -1016,7 +1016,7 @@ export type AddKeychainMemberData = {
     url: '/consumerKeychains/{consumerKeychainId}/members';
 };
 
-export type AddKeychainMemberErrors = {
+export type AddConsumerKeychainMemberErrors = {
     /**
      * Bad Request
      */
@@ -1033,18 +1033,22 @@ export type AddKeychainMemberErrors = {
      * Consumer Keychain not found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
-export type AddKeychainMemberError = AddKeychainMemberErrors[keyof AddKeychainMemberErrors];
+export type AddConsumerKeychainMemberError = AddConsumerKeychainMemberErrors[keyof AddConsumerKeychainMemberErrors];
 
-export type AddKeychainMemberResponses = {
+export type AddConsumerKeychainMemberResponses = {
     /**
      * Consumer Keychain member added successfully
      */
     204: void;
 };
 
-export type AddKeychainMemberResponse = AddKeychainMemberResponses[keyof AddKeychainMemberResponses];
+export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;

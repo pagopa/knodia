@@ -1,4 +1,3 @@
-/* eslint-disable perfectionist/sort-objects */
 import type { ConsumerKeychainId, UserId } from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
@@ -7,12 +6,14 @@ import { constants } from "http2";
 
 const { HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } = constants;
 
+/* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
   CONSUMER_KEYCHAIN_NOT_FOUND: "0001",
   USER_ALREADY_MEMBER: "0002",
   USER_NOT_FOUND: "0003",
   INVALID_USER_ROLE: "0004",
 } as const;
+/* eslint-enable perfectionist/sort-objects */
 
 type ErrorCodes = keyof typeof errorCodes;
 

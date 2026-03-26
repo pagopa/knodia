@@ -28,11 +28,7 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import {
-  invalidUserRole,
-  userAlreadyMember,
-  userNotFound,
-} from "../models/errors.ts";
+import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
@@ -40,12 +36,12 @@ import {
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
-import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
 import {
-  getOrganizationGroupName,
-  TECHNICAL_ROLE_GROUP_NAME,
-  type UserService,
-} from "./userService.ts";
+  assertOrganizationIsKeychainOwner,
+  assertUserBelongsToOrganization,
+  assertUserHasTechnicalRole,
+} from "../utils/validators.ts";
+import { type UserService } from "./userService.ts";
 
 export type ConsumerKeychainService = ReturnType<
   typeof consumerKeychainServiceBuilder
@@ -90,15 +86,12 @@ export function consumerKeychainServiceBuilder(
 
       const userGroups = await userService.getUserGroups(user.username);
 
-      if (
-        !userGroups.includes(getOrganizationGroupName(authData.organizationId))
-      ) {
-        throw userNotFound(userId);
-      }
-
-      if (!userGroups.includes(TECHNICAL_ROLE_GROUP_NAME)) {
-        throw invalidUserRole(userId, "technical");
-      }
+      assertUserBelongsToOrganization(
+        userId,
+        authData.organizationId,
+        userGroups,
+      );
+      assertUserHasTechnicalRole(userId, userGroups);
 
       const updatedConsumerKeychain: ConsumerKeychain = {
         ...consumerKeychain.data,
