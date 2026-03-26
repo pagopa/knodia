@@ -83,7 +83,7 @@ function createTestWrapper(options: WrapperOptions = {}) {
   );
 
   const router = createRouter({
-    context: { queryClient },
+    context: { auth: { isAuthenticated: true, roles }, queryClient },
     history: createMemoryHistory({ initialEntries: [initialPath] }),
     routeTree: rootRoute.addChildren([indexRoute, ...extraRoutes]),
   });
