@@ -89,7 +89,7 @@ function FormContent({
 
       <div className="grid grid-cols-2 gap-6">
         <SettingsCard label="Producer">
-          {eservice.producer.name} - {eservice.producer.knodeId}
+          {eservice.producer.name} - {eservice.producer.knodeId} Knode
         </SettingsCard>
         <SettingsCard label="Consumer">
           {CONSUMER_ORG_NAME} - {CONSUMER_KNODE_NAME}
