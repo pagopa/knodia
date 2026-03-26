@@ -5,10 +5,19 @@ import {
   HTTPServerConfig,
 } from "@knodia/fastify-zod-api-commons/config";
 import { LoggerConfig } from "@knodia/logger/config";
-import { type z } from "zod";
+import { z } from "zod";
 
 const KeychainProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(AuthConfig)
+  .and(
+    z
+      .object({
+        COGNITO_USER_POOL_ID: z.string().min(1),
+      })
+      .transform((c) => ({
+        cognitoUserPoolId: c.COGNITO_USER_POOL_ID,
+      })),
+  )
   .and(EventStoreKeychainConfig)
   .and(ReadmodelKeychainConfig);
 export type KeychainProcessConfig = z.infer<typeof KeychainProcessConfig>;

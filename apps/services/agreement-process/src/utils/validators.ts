@@ -7,12 +7,21 @@ import type {
 } from "@knodia/common-models/ids";
 
 import { AgreementState } from "@knodia/agreement-models";
-import { type Eservice, EserviceVersionState } from "@knodia/eservice-models";
+import {
+  type AttributeId,
+  hasAllRequiredAttributes,
+} from "@knodia/attribute-models";
+import {
+  type Eservice,
+  type EserviceVersion,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
+  consumerMissingRequiredAttributes,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
 } from "../models/errors.ts";
@@ -29,7 +38,7 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
 export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,
   eserviceVersionId: EserviceVersionId,
-) => {
+): EserviceVersion => {
   const eserviceVersion = retrieveEserviceVersionFromEservice(
     eservice,
     eserviceVersionId,
@@ -46,7 +55,20 @@ export const assertEserviceVersionAllowsAgreementCreation = (
       agreementCreationAllowedEserviceVersionStates,
     );
   }
+
+  return eserviceVersion;
 };
+
+export function assertConsumerHasRequiredAttributes(
+  consumerAttributes: readonly AttributeId[],
+  requiredAttributes: readonly AttributeId[][],
+  consumerId: ExternalId<OrganizationId>,
+  eserviceId: EserviceId,
+): void {
+  if (!hasAllRequiredAttributes(consumerAttributes, requiredAttributes)) {
+    throw consumerMissingRequiredAttributes(consumerId, eserviceId);
+  }
+}
 
 export const assertEserviceVersionIsLatest = (
   eservice: Eservice,

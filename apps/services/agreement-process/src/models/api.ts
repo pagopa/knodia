@@ -12,9 +12,16 @@ import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { z } from "zod";
 
+const API_AgreementSeedConsumer = API_AgreementConsumer.extend({
+  attributes: z.array(API_Attribute).meta({
+    description: "Consumer Organization Attributes",
+  }),
+}).meta({ id: "AgreementSeedConsumer" });
+type API_AgreementSeedConsumer = z.infer<typeof API_AgreementSeedConsumer>;
+
 export const API_AgreementSeed = z
   .strictObject({
-    consumer: API_AgreementConsumer,
+    consumer: API_AgreementSeedConsumer,
     eserviceId: z.uuid(),
     eserviceVersionId: z.uuid(),
   })

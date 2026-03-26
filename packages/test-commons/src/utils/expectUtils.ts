@@ -84,7 +84,6 @@ export function toExpectConsumerKeychain(consumerKeychain: ConsumerKeychain) {
   return expect.objectContaining({
     ...consumerKeychain,
     keys: expect.arrayContaining(consumerKeychain.keys),
-    purposes: expect.arrayContaining(consumerKeychain.purposes),
     users: expect.arrayContaining(consumerKeychain.users),
   });
 }
