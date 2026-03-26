@@ -59,13 +59,13 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
           return;
         }
 
-        await Promise.all([
+        await Promise.all(
           consumerKeychainSubTables.map((table) =>
             tx
               .delete(table)
               .where(eq(table.consumerKeychainId, consumerKeychain.id)),
           ),
-        ]);
+        );
 
         const {
           consumerKeychainKeysSQL,
