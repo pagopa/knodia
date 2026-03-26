@@ -2,6 +2,11 @@ import type { API_KnodeId } from "@knodia/common-models/internalApi";
 import type { eserviceProcessApi } from "@knodia/eservice-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
+import {
+  type AttributeId,
+  isAttributePossessed,
+} from "@knodia/attribute-models";
+
 import type {
   API_ConsumerCatalogEserviceSearchResult,
   API_ConsumerEservice,
@@ -78,6 +83,7 @@ export const toAPI_ProducerEserviceDetails = ({
 
 export const toAPI_ConsumerEserviceDetails = (
   detail: remoteResourcesManagerApi.EserviceDetails,
+  consumerAttributes: readonly AttributeId[],
 ): API_ConsumerEserviceDetails => ({
   accessToken: {
     audience: detail.latestVersion.accessTokenAudience,
@@ -106,7 +112,7 @@ export const toAPI_ConsumerEserviceDetails = (
     (group: remoteResourcesManagerApi.Attribute[]) =>
       group.map((attr: remoteResourcesManagerApi.Attribute) => ({
         ...attr,
-        possessed: Math.random() >= 0.5, // TODO: check actual attribute possession
+        possessed: isAttributePossessed(consumerAttributes, attr),
       })),
   ),
   state: detail.latestVersion.state,
