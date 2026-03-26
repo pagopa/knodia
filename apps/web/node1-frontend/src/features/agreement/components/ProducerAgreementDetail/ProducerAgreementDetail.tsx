@@ -52,7 +52,7 @@ export function ProducerAgreementDetail({
               {/* TODO: Replace mocked contact info with real data from the API when available in ProducerAgreementDetails */}
               <OrganizationContactPopover
                 email="contact@example.com"
-                knodeName={agreement.consumer.knodeId}
+                knodeId={agreement.consumer.knodeId}
                 name={agreement.consumer.name}
                 notes="—"
               />
