@@ -2,6 +2,7 @@ import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type {
   ConsumerKeychain,
   ConsumerKeychainKey,
+  ConsumerKeychainPurpose,
 } from "@knodia/keychain-models";
 
 import type {
@@ -37,18 +38,8 @@ export const splitConsumerKeychainIntoObjectsSQL = (
     }),
   );
 
-  const consumerKeychainPurposesSQL = consumerKeychain.purposes.map(
-    (purposeId) =>
-      toConsumerKeychainPurposeSQL({
-        consumerKeychainId: consumerKeychain.id,
-        metadataVersion,
-        purposeId,
-      }),
-  );
-
   return {
     consumerKeychainKeysSQL,
-    consumerKeychainPurposesSQL,
     consumerKeychainSQL,
     consumerKeychainUsersSQL,
   };
@@ -103,16 +94,10 @@ export const toConsumerKeychainUserSQL = ({
 });
 
 /** @knipignore -  Will be used when implementing the consumer keychain purposes lifecycle */
-export const toConsumerKeychainPurposeSQL = ({
-  consumerKeychainId,
+export const toConsumerKeychainPurposeSQL = (
+  consumerKeychainPurpose: ConsumerKeychainPurpose,
+  metadataVersion: number,
+): ConsumerKeychainPurposeSQL => ({
+  ...consumerKeychainPurpose,
   metadataVersion,
-  purposeId,
-}: {
-  consumerKeychainId: ConsumerKeychainId;
-  metadataVersion: number;
-  purposeId: ConsumerKeychainPurposeSQL["purposeId"];
-}): ConsumerKeychainPurposeSQL => ({
-  consumerKeychainId,
-  metadataVersion,
-  purposeId,
 });

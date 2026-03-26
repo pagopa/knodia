@@ -50,6 +50,7 @@ export function buildApp({
   });
   const remoteResourceDbService =
     remoteResourceDbServiceBuilder(remoteResourceDb);
+  const readmodelService = readmodelServiceBuilder(readmodelDb);
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -103,7 +104,6 @@ export function buildApp({
         remoteResourceDbService,
       ),
     });
-    const readmodelService = readmodelServiceBuilder(readmodelDb);
     protectedApp.register(agreementRouter, {
       agreementService: agreementServiceBuilder(
         k2kGatewayClient,

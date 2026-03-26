@@ -1468,7 +1468,7 @@ paths:
   /producer/eservices/{eserviceId}/interface:
     get:
       operationId: getProducerEserviceLatestVersionInterface
-      summary: Download producer E-service latest version interface
+      summary: Download producer E-service latest Version Interface
       tags:
         - eservice
       description: Download the interface document for the latest version of a
@@ -1915,7 +1915,7 @@ paths:
   /consumer/eservices/{eserviceId}/interface:
     get:
       operationId: getConsumerEserviceLatestVersionInterface
-      summary: Download consumer E-service latest version interface
+      summary: Download consumer E-service latest Version Interface
       tags:
         - eservice
       description: Download the interface document for the latest version of an E-service
@@ -2051,7 +2051,7 @@ paths:
   /consumer/agreements:
     post:
       operationId: createConsumerAgreement
-      summary: Create a consumer agreement
+      summary: Create a consumer Agreement
       tags:
         - agreement
       description: Create a new Agreement for the consumer to access a Producer's E-service
@@ -2135,6 +2135,7 @@ paths:
   /consumer/purposes:
     post:
       operationId: createConsumerPurpose
+      summary: Create a consumer Purpose
       tags:
         - purpose
       description: Create a new Purpose for an E-service
@@ -2175,6 +2176,22 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/agreements:

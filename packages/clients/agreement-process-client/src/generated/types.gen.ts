@@ -61,8 +61,17 @@ export type Pagination = {
  */
 export type OrganizationId = string;
 
+export type AgreementSeedConsumer = {
+    id: string;
+    knodeId: KnodeId;
+    /**
+     * Consumer Organization Attributes
+     */
+    attributes: Array<Attribute>;
+};
+
 export type AgreementSeed = {
-    consumer: AgreementConsumer;
+    consumer: AgreementSeedConsumer;
     eserviceId: string;
     eserviceVersionId: string;
 };

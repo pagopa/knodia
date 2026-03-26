@@ -117,7 +117,9 @@ export function buildAppFromConfig(config: BffProcessConfig) {
     protectedApp.register(agreementConsumerRouter, {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
-    protectedApp.register(purposeConsumerRouter);
+    protectedApp.register(purposeConsumerRouter, {
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,

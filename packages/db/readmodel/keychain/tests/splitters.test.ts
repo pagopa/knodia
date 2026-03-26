@@ -3,7 +3,6 @@ import { describe, expect, it } from "vitest";
 
 import type {
   ConsumerKeychainKeySQL,
-  ConsumerKeychainPurposeSQL,
   ConsumerKeychainSQL,
   ConsumerKeychainUserSQL,
 } from "../src/consumerKeychain.ts";
@@ -17,7 +16,6 @@ describe("Consumer keychain splitters", () => {
 
     const {
       consumerKeychainKeysSQL,
-      consumerKeychainPurposesSQL,
       consumerKeychainSQL,
       consumerKeychainUsersSQL,
     } = splitConsumerKeychainIntoObjectsSQL(consumerKeychain, metadataVersion);
@@ -45,13 +43,6 @@ describe("Consumer keychain splitters", () => {
         userId: key.userId,
       }));
 
-    const expectedConsumerKeychainPurposesSQL: ConsumerKeychainPurposeSQL[] =
-      consumerKeychain.purposes.map((purposeId) => ({
-        consumerKeychainId: consumerKeychain.id,
-        metadataVersion,
-        purposeId,
-      }));
-
     const expectedConsumerKeychainUsersSQL: ConsumerKeychainUserSQL[] =
       consumerKeychain.users.map((userId) => ({
         consumerKeychainId: consumerKeychain.id,
@@ -62,9 +53,6 @@ describe("Consumer keychain splitters", () => {
     expect(consumerKeychainSQL).toEqual(expectedConsumerKeychainSQL);
     expect(consumerKeychainKeysSQL).toEqual(
       expect.arrayContaining(expectedConsumerKeychainKeysSQL),
-    );
-    expect(consumerKeychainPurposesSQL).toEqual(
-      expect.arrayContaining(expectedConsumerKeychainPurposesSQL),
     );
     expect(consumerKeychainUsersSQL).toEqual(
       expect.arrayContaining(expectedConsumerKeychainUsersSQL),

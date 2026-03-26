@@ -35,7 +35,7 @@ import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 
 export const Route = createFileRoute(
-  "/_authenticated/consumption/e-services_/$id",
+  "/_authenticated/consumption/e-services/$id",
 )({
   component: RouteComponent,
   loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),
@@ -53,6 +53,7 @@ export const Route = createFileRoute(
 
 function ConsumptionRequirementsSection({
   eserviceId,
+  hasAgreement,
   hasRequiredAttributes,
   identificationRequired,
   knodeId,
@@ -60,7 +61,7 @@ function ConsumptionRequirementsSection({
 }: Pick<
   ConsumptionEserviceDetail,
   "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
-> & { eserviceId: EserviceId; knodeId: KnodeId }) {
+> & { eserviceId: EserviceId; hasAgreement: boolean; knodeId: KnodeId }) {
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -89,7 +90,7 @@ function ConsumptionRequirementsSection({
                   ? "Your organization has the required attributes."
                   : "Your organization does not have the required attributes."}
               </span>
-              {hasRequiredAttributes && (
+              {hasRequiredAttributes && !hasAgreement && (
                 <ButtonLink
                   className="shrink-0"
                   hierarchy="brand"
@@ -126,6 +127,8 @@ function RouteComponent() {
   const bffDetail = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
+  const { agreement } = eservice;
+  const hasAgreement = agreement !== undefined;
 
   async function downloadInterfaceDocument() {
     const response = await bffApi.getConsumerEserviceLatestVersionInterface({
@@ -188,10 +191,10 @@ function RouteComponent() {
 
       <Divider className="my-10" />
 
-      {/* TODO(KN-287): also show when agreement is in "requested" state */}
-      {eservice.hasActiveAgreement && (
+      {agreement && (
         <>
           <OrgConsumptionStatusSection
+            agreement={agreement}
             eserviceId={eservice.id}
             knodeId={knodeId}
           />
@@ -200,6 +203,7 @@ function RouteComponent() {
       )}
       <ConsumptionRequirementsSection
         eserviceId={eservice.id}
+        hasAgreement={hasAgreement}
         hasRequiredAttributes={eservice.hasRequiredAttributes}
         identificationRequired={eservice.identificationRequired}
         knodeId={knodeId}

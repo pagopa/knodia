@@ -19,6 +19,8 @@ export function assertEntityExists<TEntity>(
   return entity;
 }
 
+// Safe: `items` are paginated with the OpenAPI safe limit, and `fetchFn` receives only unique IDs from `items`.
+// This ensures `entityIds.length` never exceeds the safe limit.
 export async function getExternalEntitiesMap<
   TItem,
   TEntity extends { id: string },
