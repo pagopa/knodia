@@ -15,7 +15,7 @@ import {
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 
-import { getOrganizationInitials } from "@/utils/getOrganizationInitials";
+import { getInitials } from "@/utils/getInitials";
 
 import { AgreementStateChip } from "../AgreementStateChip";
 
@@ -57,7 +57,7 @@ export function ProducerAgreementTable({
             <Cell>
               <Avatar
                 className="bg-brand-dark text-white"
-                fallback={getOrganizationInitials(agreement.consumer.name)}
+                fallback={getInitials(agreement.consumer.name)}
                 name={agreement.consumer.name}
                 size="sm"
               />

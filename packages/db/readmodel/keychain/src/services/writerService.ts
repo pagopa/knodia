@@ -155,9 +155,7 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
             },
             id: consumerKeychainPurpose.consumerKeychainId,
             newMetadataVersion: metadataVersion,
-            tables: consumerKeychainTables.filter(
-              (t) => t !== readmodelConsumerKeychainPurpose,
-            ),
+            tables: consumerKeychainTables,
           }),
         ]);
       });

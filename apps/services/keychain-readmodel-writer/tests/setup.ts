@@ -10,6 +10,11 @@ import {
 import { setupKafkaTestProducerAndConsumer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import {
+  type TestConsumer,
+  type TestDrizzleDb,
+  type TestProducer,
+} from "@knodia/test-commons/types";
+import {
   createTestLogger,
   resetTestDatabase,
 } from "@knodia/test-commons/utils";
@@ -17,16 +22,10 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { createProcessMessage } from "../src/utils/utils.ts";
 
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
-let producer: Awaited<
-  ReturnType<typeof setupKafkaTestProducerAndConsumer>
->["producer"];
-let consumer: Awaited<
-  ReturnType<typeof setupKafkaTestProducerAndConsumer>
->["consumer"];
-let topicName: Awaited<
-  ReturnType<typeof setupKafkaTestProducerAndConsumer>
->["topicName"];
+let readmodelDb: TestDrizzleDb;
+let producer: TestProducer;
+let consumer: TestConsumer;
+let topicName: string;
 let keychainWriterService: KeychainWriterService;
 let consumerKeychainReadmodelService: ConsumerKeychainReadmodelService;
 
