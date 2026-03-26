@@ -133,7 +133,9 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      res.status(200).send(purposeService.getFormSchema(req.params.version, ctx));
+      res
+        .status(200)
+        .send(purposeService.getFormSchema(req.params.version, ctx));
     },
     method: "GET",
     schema: {
@@ -162,7 +164,9 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      res.status(200).send(purposeService.getFormUiSchema(req.params.version, ctx));
+      res
+        .status(200)
+        .send(purposeService.getFormUiSchema(req.params.version, ctx));
     },
     method: "GET",
     schema: {
