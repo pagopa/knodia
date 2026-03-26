@@ -19,11 +19,13 @@ import {
   type LocalizedPurposeName,
   type Purpose,
   type PurposeFormAnswers,
+  type PurposeFormSchemaVersion,
   PurposeState,
 } from "@knodia/purpose-models";
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
 import {
   retrieveAgreements,
@@ -50,6 +52,7 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         formAnswersJson,
+        formSchemaVersion,
         name,
       }: {
         consumer: ExternalResource<OrganizationId>;
@@ -57,6 +60,7 @@ export function purposeServiceBuilder(
         description: LocalizedPurposeDescription;
         eserviceId: EserviceId;
         formAnswersJson: PurposeFormAnswers;
+        formSchemaVersion: PurposeFormSchemaVersion;
         name: LocalizedPurposeName;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
@@ -94,6 +98,7 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         formAnswersJson,
+        formSchemaVersion,
         id: purposeId,
         name,
         state: PurposeState.enum.Active,
@@ -108,6 +113,20 @@ export function purposeServiceBuilder(
         data: purpose,
         metadata: { version: newVersion },
       };
+    },
+    getFormSchema(
+      version: PurposeFormSchemaVersion,
+      { logger }: AuthorizedContext<AuthData>,
+    ): Record<string, unknown> {
+      logger.info(`Getting Purpose form schema version ${version}`);
+      return getFormSchema(version);
+    },
+    getFormUiSchema(
+      version: PurposeFormSchemaVersion,
+      { logger }: AuthorizedContext<AuthData>,
+    ): Record<string, unknown> {
+      logger.info(`Getting Purpose form UI schema version ${version}`);
+      return getFormUiSchema(version);
     },
     async getPurpose(
       purposeId: PurposeId,

@@ -13,6 +13,7 @@ import {
   fromPurposeV1,
   type Purpose,
   PurposeEventV1,
+  PurposeFormSchemaVersion,
 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
@@ -49,6 +50,7 @@ const body: API_PurposeSeed = {
   description: { en: "A test purpose description" },
   eserviceId: eservice.id,
   formAnswersJson: MOCK_PURPOSE_FORM_ANSWERS,
+  formSchemaVersion: PurposeFormSchemaVersion.enum["1.0"],
   name: { en: "Test Purpose" },
 };
 
@@ -88,6 +90,7 @@ describe("POST /purposes (createPurpose)", () => {
         description: body.description,
         eserviceId: eservice.id,
         formAnswersJson: body.formAnswersJson,
+        formSchemaVersion: PurposeFormSchemaVersion.enum["1.0"],
         id: expect.any(String),
         name: body.name,
         state: "Active",

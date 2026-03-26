@@ -356,6 +356,8 @@ export type Organizations = {
     results: Array<Organization>;
 };
 
+export type PurposeFormSchemaVersion = '1.0';
+
 /**
  * Name of the Purpose
  */
@@ -395,6 +397,7 @@ export type PurposeSeed = {
      */
     eserviceId: EserviceId;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
     name: LocalizedPurposeName;
 };
 

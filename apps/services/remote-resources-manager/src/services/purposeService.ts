@@ -32,6 +32,7 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         formAnswersJson,
+        formSchemaVersion,
         knodeId,
         name,
       } = reqBody;
@@ -51,6 +52,7 @@ export function purposeServiceBuilder(
           description,
           eserviceId,
           formAnswersJson,
+          formSchemaVersion,
           name,
         },
         client: k2kGatewayClient,

@@ -49,6 +49,7 @@ describe("POST /purposes (createPurpose)", () => {
     description: purpose.description,
     eserviceId: purpose.eserviceId,
     formAnswersJson: purpose.formAnswersJson,
+    formSchemaVersion: purpose.formSchemaVersion,
     knodeId,
     name: purpose.name,
   };
@@ -59,6 +60,7 @@ describe("POST /purposes (createPurpose)", () => {
     description: purpose.description,
     eserviceId: purpose.eserviceId,
     formAnswersJson: purpose.formAnswersJson,
+    formSchemaVersion: purpose.formSchemaVersion,
     name: purpose.name,
   };
 
