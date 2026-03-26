@@ -1450,6 +1450,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../../packages/eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../../../packages/test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../../packages/typescript-config

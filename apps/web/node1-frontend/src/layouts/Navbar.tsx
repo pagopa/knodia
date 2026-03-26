@@ -12,22 +12,23 @@ import { getInitials } from "@/utils/getInitials";
 export function Navbar() {
   const { logout, roles, username } = useAuth();
 
-  const displayName = username ?? "User";
-  const initials = getInitials(displayName);
-  const displayRole = roles
-    .map((r) => r.charAt(0).toUpperCase() + r.slice(1))
-    .join(", ");
-
   const handleLogout = () => {
     void logout();
   };
+
+  if (!username) return null;
+
+  const initials = getInitials(username);
+  const displayRole = roles
+    .map((r) => r.charAt(0).toUpperCase() + r.slice(1))
+    .join(", ");
 
   return (
     <UINavbar>
       <NavbarBrand>{config.knodeId} Knode</NavbarBrand>
       <NavbarUserMenu
         avatar={{ fallback: initials }}
-        name={displayName}
+        name={username}
         role={roles.length > 0 ? displayRole : undefined}
       >
         <MenuItem onAction={handleLogout}>Logout</MenuItem>

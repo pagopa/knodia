@@ -57,6 +57,7 @@
     "globals": "catalog:",
     "jsdom": "catalog:",
     "msw": "catalog:",
+    "@knodia/test-commons": "workspace:*",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
