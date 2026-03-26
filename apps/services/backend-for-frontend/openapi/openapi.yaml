@@ -1151,6 +1151,9 @@ components:
     PurposeFormSchema:
       type: object
       additionalProperties: {}
+    PurposeFormUiSchema:
+      type: object
+      additionalProperties: {}
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -2269,7 +2272,7 @@ paths:
               schema:
                 description: Purpose form UI schema retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchema"
+                  - $ref: "#/components/schemas/PurposeFormUiSchema"
         "400":
           description: Bad Request
           content:

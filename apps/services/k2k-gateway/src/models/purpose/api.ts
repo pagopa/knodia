@@ -82,3 +82,8 @@ export const API_PurposeFormSchema = z
   .record(z.string(), z.unknown())
   .meta({ id: "PurposeFormSchema" });
 export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
+
+export const API_PurposeFormUiSchema = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "PurposeFormUiSchema" });
+export type API_PurposeFormUiSchema = z.infer<typeof API_PurposeFormUiSchema>;

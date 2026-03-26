@@ -7,6 +7,7 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersionPathParam,
+  API_PurposeFormUiSchema,
 } from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
@@ -104,7 +105,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       operationId: "getPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
-        200: API_PurposeFormSchema.meta({
+        200: API_PurposeFormUiSchema.meta({
           description: "Purpose form UI schema retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
