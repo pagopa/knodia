@@ -1284,7 +1284,9 @@ export type GetConsumerPurposeFormSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/consumer/purposes/formSchemas/{version}';
 };
 
@@ -1319,7 +1321,9 @@ export type GetConsumerPurposeFormUiSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/consumer/purposes/formSchemas/{version}/ui';
 };
 

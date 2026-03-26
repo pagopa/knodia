@@ -2214,6 +2214,11 @@ paths:
       description: Retrieve the JSON Schema for validating Purpose form answers
       parameters:
         - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
             $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path
           name: version
@@ -2259,6 +2264,11 @@ paths:
         - purpose
       description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
       parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
         - schema:
             $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path

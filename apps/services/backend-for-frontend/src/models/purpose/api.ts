@@ -28,3 +28,10 @@ export const API_PurposeSeed = z
     id: "PurposeSeed",
   });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
+
+export const API_GetConsumerPurposeFormSchemaQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetConsumerPurposeFormSchemaQueryParams = z.infer<
+  typeof API_GetConsumerPurposeFormSchemaQueryParams
+>;

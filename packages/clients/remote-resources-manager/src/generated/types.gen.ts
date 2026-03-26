@@ -682,7 +682,9 @@ export type GetPurposeFormSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/purposes/formSchemas/{version}';
 };
 
@@ -717,7 +719,9 @@ export type GetPurposeFormUiSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/purposes/formSchemas/{version}/ui';
 };
 
