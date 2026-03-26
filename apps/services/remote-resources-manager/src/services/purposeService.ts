@@ -1,7 +1,7 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { KnodeId } from "@knodia/common-models/ids";
 import type { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 
 import {
