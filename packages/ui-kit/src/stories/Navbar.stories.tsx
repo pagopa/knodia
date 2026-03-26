@@ -25,8 +25,6 @@ export const Default: Story = {
         name="User Name"
         role="User Role"
       >
-        <MenuItem>Edit Profile</MenuItem>
-        <MenuItem>Settings</MenuItem>
         <MenuItem>Logout</MenuItem>
       </NavbarUserMenu>
     </Navbar>

@@ -205,7 +205,7 @@ export type EserviceDetailsInterfaceDocument = {
 export type EserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeName: string;
+    knodeId: KnodeId;
     name: string;
     notes: string;
 };
