@@ -4,13 +4,13 @@ meta {
 }
 
 get {
-  url: {{host-remote-resources-manager}}/purposes/formSchemas/:purposeSchemaVersion/ui?knodeId=Orion
+  url: {{host-remote-resources-manager}}/purposes/formSchemas/:purposeSchemaVersion/ui?knodeId={{other-knode-id}}
   body: none
   auth: none
 }
 
 params:query {
-  knodeId: Orion
+  knodeId: {{other-knode-id}}
 }
 
 params:path {

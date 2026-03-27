@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { refreshableInternalTokenGenerator } from "../src/refreshableInternalTokenGenerator.ts";
+import {
+  refreshableInternalTokenGenerator,
+  type RefreshableInternalTokenGenerator,
+} from "../src/refreshableInternalTokenGenerator.ts";
 import {
   type InternalTokenInput,
   tokenGeneratorBuilder,
@@ -21,7 +24,7 @@ const input: InternalTokenInput = {
 };
 
 describe("refreshableInternalTokenGenerator", () => {
-  let refreshable: ReturnType<typeof refreshableInternalTokenGenerator>;
+  let refreshable: RefreshableInternalTokenGenerator;
   beforeEach(() => {
     refreshable = refreshableInternalTokenGenerator(input, generator);
   });

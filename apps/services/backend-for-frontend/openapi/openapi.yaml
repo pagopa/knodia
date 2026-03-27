@@ -98,6 +98,11 @@ components:
       description: Binary file content
       format: binary
       type: string
+    UserId:
+      description: Unique identifier of the User
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -648,8 +653,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeName:
-          type: string
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -657,7 +662,7 @@ components:
       required:
         - email
         - id
-        - knodeName
+        - knodeId
         - name
         - notes
       additionalProperties: false
@@ -1119,6 +1124,24 @@ components:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
       additionalProperties: false
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        username:
+          type: string
+      required:
+        - email
+        - id
+        - username
+      additionalProperties: false
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -1795,6 +1818,45 @@ paths:
                 description: Consumer keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /users/technical:
+    get:
+      operationId: getTechnicalUsers
+      tags:
+        - user
+      description: Retrieve technical users of the requesting User's Organization
+      responses:
+        "200":
+          description: Technical Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Technical Users retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Users"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
     post:
       operationId: getConsumerCatalogEservices
@@ -2438,3 +2500,5 @@ tags:
     name: consumerKeychain
   - description: Purpose routes
     name: purpose
+  - description: User routes
+    name: user
