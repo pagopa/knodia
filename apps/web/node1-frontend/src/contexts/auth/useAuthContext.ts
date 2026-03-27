@@ -9,7 +9,7 @@ interface AuthContextValue {
   isLoading: boolean;
   login: () => void;
   logout: () => Promise<void>;
-  organizationId: OrganizationId | null;
+  organizationId: null | OrganizationId;
   roles: readonly UserRole[];
   token: null | string;
   username: null | string;
