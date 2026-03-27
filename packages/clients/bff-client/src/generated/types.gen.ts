@@ -1093,8 +1093,8 @@ export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberRespons
 export type RemoveConsumerKeychainMemberData = {
     body?: never;
     path: {
+        userId: UserId;
         consumerKeychainId: string;
-        userId: string;
     };
     query?: never;
     url: '/consumerKeychains/{consumerKeychainId}/members/{userId}';

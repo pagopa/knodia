@@ -15,6 +15,7 @@ import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
   ConsumerKeychainMemberAddedV1,
+  ConsumerKeychainMemberRemovedV1,
   ConsumerKeychainPurposeLinkedV1,
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
@@ -100,7 +101,15 @@ describe("KeychainEventV1 codec", () => {
       message: ConsumerKeychainMemberAddedV1,
       type: "ConsumerKeychainMemberAddedV1" as const,
     },
-  ];
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        userId: generateUserId(),
+      },
+      message: ConsumerKeychainMemberRemovedV1,
+      type: "ConsumerKeychainMemberRemovedV1" as const,
+    },
+  ] as const;
 
   it.each(cases)(
     "encodes and decodes a $type payload (KeychainEventV1 full codec)",
@@ -125,6 +134,9 @@ describe("KeychainEventV1 codec", () => {
           testFullCodec({ data, type }),
         )
         .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainMemberRemovedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
         .exhaustive();
@@ -154,6 +166,10 @@ describe("KeychainEventV1 codec", () => {
         )
         .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, message }) =>
           testProtobufCodec(message, data),
+        )
+        .with(
+          { type: "ConsumerKeychainMemberRemovedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
         )
         .exhaustive();
     },

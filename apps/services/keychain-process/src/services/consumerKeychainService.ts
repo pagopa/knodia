@@ -30,11 +30,7 @@ import type {
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import {
-  userAlreadyMember,
-  userNotFound,
-  userNotMember,
-} from "../models/errors.ts";
+import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
@@ -47,6 +43,7 @@ import {
   assertOrganizationIsKeychainOwner,
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
+  assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
@@ -218,9 +215,11 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data,
       );
 
-      if (!consumerKeychain.data.users.includes(userId)) {
-        throw userNotMember(consumerKeychainId, userId);
-      }
+      assertUserIsMemberOfKeychain(
+        userId,
+        consumerKeychainId,
+        consumerKeychain.data.users,
+      );
 
       const updatedConsumerKeychain: ConsumerKeychain = {
         ...consumerKeychain.data,

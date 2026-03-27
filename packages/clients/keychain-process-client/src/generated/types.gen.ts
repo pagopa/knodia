@@ -400,8 +400,8 @@ export type RemoveConsumerKeychainMemberData = {
         'x-correlation-id': CorrelationId;
     };
     path: {
+        userId: UserId;
         consumerKeychainId: string;
-        userId: string;
     };
     query?: never;
     url: '/consumerKeychains/{consumerKeychainId}/members/{userId}';
