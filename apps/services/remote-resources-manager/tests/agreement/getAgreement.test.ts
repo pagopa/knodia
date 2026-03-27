@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
+import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
+
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement } from "@knodia/test-commons/utils";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { API_Agreement } from "../src/models/agreement/api.ts";
+import type { API_Agreement } from "../../src/models/agreement/api.ts";
 
-import { toAPI_Agreement } from "../src/models/agreement/apiConverter.ts";
-import { toK2KAgreement } from "./k2kConverters.ts";
-import { remoteResourceDbService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { toAPI_Agreement } from "../../src/models/agreement/apiConverter.ts";
+import { toK2KAgreement } from "../k2kConverters.ts";
+import { remoteResourceDbService } from "../setup.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const getAgreementMock = vi.hoisted(() => vi.fn());
 
@@ -31,7 +33,9 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-const toRemoteResourceAgreement = (apiDetail: API_Agreement) => ({
+const toRemoteResourceAgreement = (
+  apiDetail: API_Agreement,
+): RemoteResourceAgreementSQL => ({
   agreementId: apiDetail.id,
   consumerId: apiDetail.consumer.id,
   eserviceId: apiDetail.eserviceId,

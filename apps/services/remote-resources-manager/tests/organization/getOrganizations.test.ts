@@ -5,12 +5,10 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
-import { API_Agreement } from "../src/models/agreement/api.ts";
-import { toK2KAPI_AgreementState } from "../src/models/agreement/apiConverter.ts";
-import { toK2KKnodeId } from "./k2kConverters.ts";
-import { injectAppRequest } from "./utils.ts";
+import { API_Organization } from "../../src/models/organization/api.ts";
+import { injectAppRequest } from "../utils.ts";
 
-const getAgreementsMock = vi.hoisted(() => vi.fn());
+const getOrganizationsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -20,23 +18,17 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     ...original,
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
-      getAgreements: getAgreementsMock,
+      getOrganizations: getOrganizationsMock,
     },
   };
 });
 
-const toK2KResult = (apiResult: API_Agreement): k2kGatewayApi.Agreement => ({
+const toK2KResult = (
+  apiResult: API_Organization,
+): k2kGatewayApi.Organization => ({
   attributes: apiResult.attributes,
-  consumer: {
-    id: apiResult.consumer.id,
-    knodeId: toK2KKnodeId(apiResult.consumer.knodeId),
-  },
-  eserviceId: apiResult.eserviceId,
-  eserviceVersionId: apiResult.eserviceVersionId,
   id: apiResult.id,
-  producerId: apiResult.producerId,
-  state: toK2KAPI_AgreementState(apiResult.state),
-  updatedAt: apiResult.updatedAt,
+  name: apiResult.name,
 });
 
 const allowedTestTokens: TestToken[] = [
@@ -44,8 +36,9 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-describe("GET /agreements (getAgreements)", () => {
+describe("GET /organizations (getOrganizations)", () => {
   const defaultQuery = {
+    knodeId: "Orion",
     limit: "10",
     offset: "0",
   };
@@ -54,30 +47,33 @@ describe("GET /agreements (getAgreements)", () => {
     offset: 0,
   };
 
-  const expectedApiResult = zocker(API_Agreement).generate();
+  const expectedApiResult = zocker(API_Organization).generate();
   const k2kResult = toK2KResult(expectedApiResult);
 
-  const mockK2KResponse: k2kGatewayApi.Agreements = {
-    pagination: { ...parsedDefaultQuery, total: 1 },
+  const mockK2KResponse: k2kGatewayApi.Organizations = {
+    pagination: {
+      ...parsedDefaultQuery,
+      total: 1,
+    },
     results: [k2kResult],
   };
 
   beforeEach(() => {
-    getAgreementsMock.mockReset();
+    getOrganizationsMock.mockReset();
   });
 
   it("should return 200 with converted results on success", async () => {
-    getAgreementsMock.mockResolvedValue({
+    getOrganizationsMock.mockResolvedValue({
       data: mockK2KResponse,
     });
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
-      .get("/agreements")
+      .get("/organizations")
       .query(defaultQuery);
 
     expect(response.statusCode).toBe(200);
 
-    expect(getAgreementsMock).toHaveBeenCalledWith(
+    expect(getOrganizationsMock).toHaveBeenCalledWith(
       expect.objectContaining({
         query: parsedDefaultQuery,
       }),
@@ -93,7 +89,7 @@ describe("GET /agreements (getAgreements)", () => {
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {
       const response = await injectAppRequest(spec)
-        .get("/agreements")
+        .get("/organizations")
         .query(defaultQuery);
       expect(response.statusCode).toBe(403);
     },
@@ -106,11 +102,7 @@ describe("GET /agreements (getAgreements)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    {
-      ...defaultQuery,
-      state: "InvalidState",
-    },
-    { ...defaultQuery, consumerId: "InvalidConsumerId" },
+    { ...defaultQuery, organizationId: ["InvalidOrganizationId"] },
     {
       ...defaultQuery,
       invalidParam: "invalid",
@@ -119,7 +111,7 @@ describe("GET /agreements (getAgreements)", () => {
     "should return 400 if query parameters are formatted incorrectly (%o)",
     async (query) => {
       const response = await injectAppRequest(allowedTestTokens[0]!)
-        .get("/agreements")
+        .get("/organizations")
         .query(query as never);
 
       expect(response.statusCode).toBe(400);
