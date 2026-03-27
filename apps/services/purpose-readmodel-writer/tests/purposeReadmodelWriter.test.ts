@@ -6,17 +6,11 @@ import {
   purposeEvents,
   toPurposeV1,
 } from "@knodia/purpose-models";
-import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
+import { sendTestEvent } from "@knodia/test-commons/kafka";
 import { getMockPurpose } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import {
-  kafkaConfig,
-  processMessage,
-  producer,
-  readmodelDb,
-  topicName,
-} from "./setup.ts";
+import { consumer, producer, readmodelDb, topicName } from "./setup.ts";
 import { getAllPurposes } from "./utils.ts";
 
 describe("Purpose read model writer tests", async () => {
@@ -38,7 +32,7 @@ describe("Purpose read model writer tests", async () => {
       topicName,
     });
 
-    await runTestConsumer(topicName, processMessage, kafkaConfig);
+    await consumer.waitForNextMessage();
 
     const retrievedPurposes = await getAllPurposes(readmodelDb);
 

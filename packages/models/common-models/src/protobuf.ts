@@ -5,7 +5,7 @@ const protobufBytes = z.custom<Uint8Array<ArrayBufferLike>>(
   { message: "Expected Uint8Array" },
 );
 
-interface ProtobufCodec<T> {
+export interface ProtobufCodec<T> {
   decode: (input: Uint8Array) => T;
   encode: (value: T) => Uint8Array | { finish: () => Uint8Array };
 }

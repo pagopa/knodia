@@ -22,11 +22,12 @@
   "dependencies": {
     "@confluentinc/kafka-javascript": "catalog:",
     "@knodia/common-models": "workspace:*",
-    "@knodia/keychain-models": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-keychain": "workspace:*",
     "@knodia/kafka-commons": "workspace:*",
+    "@knodia/keychain-models": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/purpose-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
