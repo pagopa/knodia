@@ -120,7 +120,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
         headers,
         path: { purposeId: req.params.purposeId },
       });
-      console.log("🚀 ~ purposeRouter ~ data:", data);
 
       res.send(toAPI_Purpose(data));
     },
