@@ -1,10 +1,10 @@
+import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateId } from "@knodia/common-models/ids";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import { describe, expect, it } from "vitest";
 
 import type { Eservice } from "../src/eservice.ts";
 
-import { KafkaMessageEnvelope } from "../../common-models/src/events.ts";
 import { EserviceEventV1 } from "../src/eserviceEvent.ts";
 import { toEserviceV1 } from "../src/eserviceProtobufConverterToV1.ts";
 import { EserviceVersionActivatedV1 } from "../src/generated/v1/eserviceEvents.ts";

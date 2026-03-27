@@ -1,7 +1,13 @@
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateId, generateUserId } from "@knodia/common-models/ids";
-import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
+import {
+  protobufBinaryCodec,
+  type ProtobufCodec,
+} from "@knodia/common-models/protobuf";
+import { Purpose, toPurposeV1 } from "@knodia/purpose-models";
+import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
+import { zocker } from "zocker";
 
 import type { ConsumerKeychain } from "../src/keychain.ts";
 
@@ -9,6 +15,7 @@ import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
   ConsumerKeychainMemberAddedV1,
+  ConsumerKeychainPurposeLinkedV1,
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
@@ -36,22 +43,54 @@ describe("KeychainEventV1 codec", () => {
     users: [generateUserId()],
   };
 
+  const purpose: Purpose = {
+    ...zocker(Purpose).generate(),
+    // zocker generates non-JSON-serializable values for Record<string, unknown>;
+    // override with a realistic JSON-safe object
+    formAnswersJson: {
+      checked: true,
+      count: 42,
+      nested: { deep: "value" },
+      options: ["a", "b", "c"],
+      question1: "answer1",
+    },
+  };
+  const purposeV1 = toPurposeV1(purpose);
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
+  const defaultData = { consumerKeychain: consumerKeychainV1 };
   const cases = [
     {
-      data: { consumerKeychain: consumerKeychainV1 },
+      data: defaultData,
       message: ConsumerKeychainCreatedV1,
       type: "ConsumerKeychainCreatedV1" as const,
     },
     {
-      data: { consumerKeychain: consumerKeychainV1 },
+      data: defaultData,
       message: ConsumerKeychainDeletedV1,
       type: "ConsumerKeychainDeletedV1" as const,
     },
     {
-      data: { consumerKeychain: consumerKeychainV1 },
+      data: defaultData,
       message: ConsumerKeychainUpdatedV1,
       type: "ConsumerKeychainUpdatedV1" as const,
+    },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        linkedAt: new Date().getTime(),
+        purpose: purposeV1,
+      },
+      message: ConsumerKeychainPurposeLinkedV1,
+      type: "ConsumerKeychainPurposeLinkedV1" as const,
+    },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        linkedAt: new Date().getTime(),
+        purpose: purposeV1,
+      },
+      message: ConsumerKeychainPurposeLinkedV1,
+      type: "ConsumerKeychainPurposeLinkedV1" as const,
     },
     {
       data: {
@@ -61,28 +100,62 @@ describe("KeychainEventV1 codec", () => {
       message: ConsumerKeychainMemberAddedV1,
       type: "ConsumerKeychainMemberAddedV1" as const,
     },
-  ] as const;
+  ];
 
   it.each(cases)(
     "encodes and decodes a $type payload (KeychainEventV1 full codec)",
-    ({ data, type }) => {
-      const event = { data, type } as KeychainEventV1;
-      const encoded = KeychainEventV1.encode(event);
-      expect(encoded).toMatchObject({ type });
-      expect(encoded.data).toBeInstanceOf(Uint8Array);
+    (caseItem) => {
+      function testFullCodec<E extends KeychainEventV1>(event: E) {
+        const encoded = KeychainEventV1.encode(event);
+        expect(encoded).toMatchObject({ type: event.type });
+        expect(encoded.data).toBeInstanceOf(Uint8Array);
 
-      const decoded = KeychainEventV1.decode(encoded);
-      expect(decoded).toMatchObject(event);
+        const decoded = KeychainEventV1.decode(encoded);
+        expect(decoded).toMatchObject(event);
+      }
+
+      match(caseItem)
+        .with(
+          { type: "ConsumerKeychainCreatedV1" },
+          { type: "ConsumerKeychainDeletedV1" },
+          { type: "ConsumerKeychainUpdatedV1" },
+          ({ data, type }) => testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainPurposeLinkedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .exhaustive();
     },
   );
 
   it.each(cases)(
     "encodes and decodes a $type payload (protobufBinaryCodec-only)",
-    ({ data, message }) => {
-      const codec = protobufBinaryCodec(message as never);
-      const bytes = codec.encode(data);
-      expect(bytes).toBeInstanceOf(Uint8Array);
-      expect(codec.decode(bytes)).toEqual(data);
+    (caseItem) => {
+      function testProtobufCodec<T>(message: ProtobufCodec<T>, data: T) {
+        const codec = protobufBinaryCodec(message);
+        const bytes = codec.encode(data);
+        expect(bytes).toBeInstanceOf(Uint8Array);
+        expect(codec.decode(bytes)).toEqual(data);
+      }
+
+      match(caseItem)
+        .with(
+          { type: "ConsumerKeychainCreatedV1" },
+          { type: "ConsumerKeychainDeletedV1" },
+          { type: "ConsumerKeychainUpdatedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
+        )
+        .with(
+          { type: "ConsumerKeychainPurposeLinkedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
+        )
+        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, message }) =>
+          testProtobufCodec(message, data),
+        )
+        .exhaustive();
     },
   );
 

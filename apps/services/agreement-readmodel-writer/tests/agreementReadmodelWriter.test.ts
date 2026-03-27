@@ -6,20 +6,14 @@ import {
   toAgreementV1,
 } from "@knodia/agreement-models";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
-import { runTestConsumer, sendTestEvent } from "@knodia/test-commons/kafka";
+import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockAgreement,
   toExpectAgreement,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
-import {
-  kafkaConfig,
-  processMessage,
-  producer,
-  readmodelDb,
-  topicName,
-} from "./setup.ts";
+import { consumer, producer, readmodelDb, topicName } from "./setup.ts";
 import { getAllAgreements } from "./utils.ts";
 
 describe("Agreement read model writer tests", async () => {
@@ -41,7 +35,7 @@ describe("Agreement read model writer tests", async () => {
       topicName,
     });
 
-    await runTestConsumer(topicName, processMessage, kafkaConfig);
+    await consumer.waitForNextMessage();
 
     const retrievedAgreements = await getAllAgreements(readmodelDb);
 
