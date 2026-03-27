@@ -5,7 +5,7 @@ import {
   getConsumerPurposeFormUiSchemaOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
-import { Steps } from "@knodia/ui-kit/ui";
+import { Banner, Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 
@@ -39,7 +39,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
-  const { data: jsonSchemaData } = useQuery(
+  const { data: jsonSchemaData, isError: isSchemaError } = useQuery(
     getConsumerPurposeFormSchemaOptions({
       client,
       path: { version: FORM_SCHEMA_VERSION },
@@ -47,7 +47,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     }),
   );
 
-  const { data: uiSchemaData } = useQuery(
+  const { data: uiSchemaData, isError: isUiSchemaError } = useQuery(
     getConsumerPurposeFormUiSchemaOptions({
       client,
       path: { version: FORM_SCHEMA_VERSION },
@@ -69,6 +69,18 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     () => (uiSchema ? collectSteps(uiSchema) : []),
     [uiSchema],
   );
+
+  if (isSchemaError || isUiSchemaError) {
+    return (
+      <FullPageModal onClose={onClose} title="Create Purpose">
+        <div className="mx-auto flex max-w-160 flex-col items-center gap-6 p-10">
+          <Banner kind="error">
+            Failed to load the form. Please try again later.
+          </Banner>
+        </div>
+      </FullPageModal>
+    );
+  }
 
   if (!jsonSchema || !uiSchema) {
     return (
