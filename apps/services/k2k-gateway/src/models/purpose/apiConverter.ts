@@ -16,6 +16,7 @@ export function toProcessAPI_PurposeSeed(
     description: purposeSeed.description,
     eserviceId: purposeSeed.eserviceId,
     formAnswersJson: purposeSeed.formAnswersJson,
+    formSchemaVersion: purposeSeed.formSchemaVersion,
     name: purposeSeed.name,
   };
 }

@@ -12,6 +12,10 @@ import {
 } from "@knodia/purpose-models";
 import { z } from "zod";
 
+const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
+  id: "PurposeFormSchemaVersion",
+});
+
 import { API_EserviceId } from "../eservice/api.ts";
 
 const API_LocalizedPurposeName = z
@@ -53,6 +57,7 @@ export const API_PurposeSeed = z
       description: "Identifier of the E-service this Purpose refers to",
     }),
     formAnswersJson: API_PurposeFormAnswers,
+    formSchemaVersion: API_PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
   })
   .meta({

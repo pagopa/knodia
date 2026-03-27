@@ -1,0 +1,19 @@
+meta {
+  name: Get Form Schema
+  type: http
+}
+
+get {
+  url: {{host-purpose-process}}/purposes/formSchemas/:purposeSchemaVersion
+  body: none
+  auth: none
+}
+
+params:path {
+  purposeSchemaVersion: 1.0
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{internal-jwt}}
+}

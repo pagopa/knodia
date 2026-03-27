@@ -4,6 +4,7 @@ import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
   API_PurposeFormAnswers,
+  API_PurposeFormSchemaVersion,
 } from "@knodia/purpose-models/api";
 import z from "zod";
 
@@ -18,6 +19,7 @@ export const API_PurposeSeed = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     formAnswersJson: API_PurposeFormAnswers,
+    formSchemaVersion: API_PurposeFormSchemaVersion,
     knodeId: API_KnodeId,
     name: API_LocalizedPurposeName,
   })
