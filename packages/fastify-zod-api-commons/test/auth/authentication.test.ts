@@ -1,3 +1,5 @@
+import type { FastifyInstance } from "fastify";
+
 import { requestContext } from "@fastify/request-context";
 import {
   getTestInternalTokenClaims,
@@ -55,7 +57,7 @@ const validInternalPayload = getTestInternalTokenClaims();
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
 describe("authenticationPlugin", () => {
-  let app: ReturnType<typeof buildTestApp>;
+  let app: FastifyInstance;
 
   beforeAll(async () => {
     app = buildTestApp();
@@ -222,7 +224,7 @@ describe("authenticationPlugin", () => {
 });
 
 describe("authenticationPlugin with multiple JWKS", () => {
-  let multiJwksApp: Awaited<ReturnType<typeof buildTestApp>>;
+  let multiJwksApp: FastifyInstance;
 
   beforeAll(async () => {
     multiJwksApp = buildTestApp();

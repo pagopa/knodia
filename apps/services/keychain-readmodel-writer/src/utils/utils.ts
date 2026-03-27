@@ -4,7 +4,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import type { Logger } from "pino";
 
 import { unsafeBrandId } from "@knodia/common-models/ids";
-import { keychainWriterBuilder } from "@knodia/db-readmodel-keychain/writer";
+import { keychainWriterServiceBuilder } from "@knodia/db-readmodel-keychain/writer";
 import { decodeKafkaMessageEvent } from "@knodia/kafka-commons/utils";
 import { KeychainEventV1 } from "@knodia/keychain-models";
 
@@ -14,7 +14,7 @@ export const createProcessMessage = (
   readmodelDb: NodePgDatabase,
   logger: Logger,
 ) => {
-  const keychainWriterService = keychainWriterBuilder(readmodelDb);
+  const keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
 
   return async function processMessage({
     message,
