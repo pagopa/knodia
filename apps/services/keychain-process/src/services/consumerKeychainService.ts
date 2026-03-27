@@ -29,6 +29,7 @@ import type {
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
+import type { UserService } from "./userService.ts";
 
 import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {

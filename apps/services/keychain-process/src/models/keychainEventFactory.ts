@@ -73,6 +73,7 @@ export const createConsumerKeychainMemberAddedV1Event = (
 
 export const createConsumerKeychainMemberRemovedV1Event = (
   keychain: ConsumerKeychain,
+  userId: UserId,
   correlationId: CorrelationId,
   currentMetadataVersion: number,
 ): NewEventStoreKeychainEvent => ({
@@ -81,6 +82,7 @@ export const createConsumerKeychainMemberRemovedV1Event = (
   event: {
     data: {
       consumerKeychain: toConsumerKeychainV1(keychain),
+      userId,
     },
     type: "ConsumerKeychainMemberRemovedV1",
   },

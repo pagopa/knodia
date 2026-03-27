@@ -36,6 +36,7 @@ export interface ConsumerKeychainMemberAddedV1 {
 
 export interface ConsumerKeychainMemberRemovedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
+  userId: string;
 }
 
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
@@ -413,13 +414,16 @@ export const ConsumerKeychainMemberAddedV1: MessageFns<ConsumerKeychainMemberAdd
 };
 
 function createBaseConsumerKeychainMemberRemovedV1(): ConsumerKeychainMemberRemovedV1 {
-  return { consumerKeychain: undefined };
+  return { consumerKeychain: undefined, userId: "" };
 }
 
 export const ConsumerKeychainMemberRemovedV1: MessageFns<ConsumerKeychainMemberRemovedV1> = {
   encode(message: ConsumerKeychainMemberRemovedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.consumerKeychain !== undefined) {
       ConsumerKeychainV1.encode(message.consumerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.userId !== "") {
+      writer.uint32(18).string(message.userId);
     }
     return writer;
   },
@@ -439,6 +443,14 @@ export const ConsumerKeychainMemberRemovedV1: MessageFns<ConsumerKeychainMemberR
           message.consumerKeychain = ConsumerKeychainV1.decode(reader, reader.uint32());
           continue;
         }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -453,6 +465,7 @@ export const ConsumerKeychainMemberRemovedV1: MessageFns<ConsumerKeychainMemberR
       consumerKeychain: isSet(object.consumerKeychain)
         ? ConsumerKeychainV1.fromJSON(object.consumerKeychain)
         : undefined,
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
     };
   },
 
@@ -460,6 +473,9 @@ export const ConsumerKeychainMemberRemovedV1: MessageFns<ConsumerKeychainMemberR
     const obj: any = {};
     if (message.consumerKeychain !== undefined) {
       obj.consumerKeychain = ConsumerKeychainV1.toJSON(message.consumerKeychain);
+    }
+    if (message.userId !== "") {
+      obj.userId = message.userId;
     }
     return obj;
   },
@@ -474,6 +490,7 @@ export const ConsumerKeychainMemberRemovedV1: MessageFns<ConsumerKeychainMemberR
     message.consumerKeychain = (object.consumerKeychain !== undefined && object.consumerKeychain !== null)
       ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
       : undefined;
+    message.userId = object.userId ?? "";
     return message;
   },
 };
