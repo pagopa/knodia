@@ -74,7 +74,7 @@ export const API_ConsumerKeychainMemberPathParam = z
   .strictObject({
     userId: API_UserId,
   })
-  .and(API_ConsumerKeychainIdPathParam);
+  .extend(API_ConsumerKeychainIdPathParam.shape);
 
 export type API_ConsumerKeychainMemberPathParam = z.infer<
   typeof API_ConsumerKeychainMemberPathParam

@@ -2,6 +2,7 @@
 
 import {
   generateId,
+  generateUserId,
   type OrganizationId,
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
@@ -28,7 +29,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-const memberId = unsafeBrandUserId("10000000-1000-1000-8000-000000000011");
+const memberId = generateUserId();
 const mockConsumerKeychain = getMockConsumerKeychain();
 
 describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeConsumerKeychainMember)", () => {
