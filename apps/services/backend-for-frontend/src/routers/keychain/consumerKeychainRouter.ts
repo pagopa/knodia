@@ -27,7 +27,7 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
-  API_Keychain,
+  type API_Keychain,
   API_KeychainDetails,
   API_KeychainMemberSeed,
   API_Keychains,
