@@ -23,6 +23,7 @@ export type TestToken =
       organizationId?: OrganizationId;
       roles?: NonEmptyArray<UserRole>;
       type: "ui-session";
+      username?: string;
     }
   | { type: "internal" };
 
@@ -32,8 +33,8 @@ export type TestToken =
  */
 export function createTestTokenPayload(spec: TestToken): string {
   const claims = match(spec)
-    .with({ type: "ui-session" }, ({ organizationId, roles }) =>
-      getTestUISessionTokenClaims({ organizationId, roles }),
+    .with({ type: "ui-session" }, ({ organizationId, roles, username }) =>
+      getTestUISessionTokenClaims({ organizationId, roles, username }),
     )
     .with({ type: "internal" }, getTestInternalTokenClaims)
     .exhaustive();
@@ -56,6 +57,7 @@ export function getTestUISessionTokenClaims(
   props: {
     organizationId?: OrganizationId;
     roles?: NonEmptyArray<UserRole>;
+    username?: string;
   } = {},
 ): UISessionTokenClaims {
   return {
@@ -68,5 +70,6 @@ export function getTestUISessionTokenClaims(
     roles: props.roles ?? ["administrative"],
     sub: TEST_USER_ID,
     type: "ui-session",
+    username: props.username ?? "test-user",
   };
 }

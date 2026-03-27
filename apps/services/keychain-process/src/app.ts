@@ -24,15 +24,19 @@ import type { KeychainProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
+import { userRouter } from "./routers/userRouter.ts";
 import { consumerKeychainServiceBuilder } from "./services/consumerKeychainService.ts";
 import { readmodelServiceBuilder } from "./services/readmodelService.ts";
+import { userServiceBuilder } from "./services/userService.ts";
 
 export function buildApp({
   config,
   eventStoreDb,
   readmodelDb,
 }: {
-  config: AuthConfig & LoggerConfig;
+  config: AuthConfig &
+    LoggerConfig &
+    Pick<KeychainProcessConfig, "cognitoUserPoolId">;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
@@ -52,6 +56,10 @@ export function buildApp({
           {
             description: "Consumer keychain routes",
             name: apiTags.consumerKeychain,
+          },
+          {
+            description: "User routes",
+            name: apiTags.user,
           },
         ],
       },
@@ -76,6 +84,10 @@ export function buildApp({
         keychainEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
       ),
+    );
+    protectedApp.register(
+      userRouter,
+      userServiceBuilder({ userPoolId: config.cognitoUserPoolId }),
     );
   });
 
