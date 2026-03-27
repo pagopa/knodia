@@ -36,6 +36,7 @@ interface UISessionTokenInput extends TokenParams {
   organizationId: OrganizationId;
   roles: NonEmptyArray<z.infer<typeof UserRole>>;
   subject: UserId;
+  username: string;
 }
 
 const b64url = (data: string): string =>
@@ -104,6 +105,7 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       organizationId: input.organizationId,
       roles: input.roles,
       sub: input.subject,
+      username: input.username,
     };
   }
 

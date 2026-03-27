@@ -60,11 +60,10 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
   const organization = getMockOrganization();
   const k2kOrganization = toK2KOrganization(organization);
 
-  const expectedApiDetail = toAPI_EserviceDetails(
-    k2kEservice,
-    k2kVersion,
-    k2kOrganization,
-  );
+  const expectedApiDetail = toAPI_EserviceDetails(k2kEservice, k2kVersion, {
+    ...k2kOrganization,
+    knodeId,
+  });
 
   const emptyAgreementsResponse = {
     pagination: { limit: 1, offset: 0, total: 0 },
@@ -135,7 +134,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
       producer: {
         email: "info@example.com",
         id: k2kOrganization.id,
-        knodeName: "Knode",
+        knodeId,
         name: k2kOrganization.name,
         notes: "Notes",
       },
