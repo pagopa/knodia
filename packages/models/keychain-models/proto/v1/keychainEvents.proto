@@ -21,4 +21,5 @@ message ConsumerKeychainPurposeLinkedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
   purpose.v1.PurposeV1 purpose = 2;
   int64 linkedAt = 3;
+  string knodeId = 4;
 }

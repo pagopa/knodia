@@ -27,6 +27,7 @@ export interface ConsumerKeychainPurposeLinkedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
   purpose: PurposeV1 | undefined;
   linkedAt: number;
+  knodeId: string;
 }
 
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
@@ -222,7 +223,7 @@ export const ConsumerKeychainUpdatedV1: MessageFns<ConsumerKeychainUpdatedV1> = 
 };
 
 function createBaseConsumerKeychainPurposeLinkedV1(): ConsumerKeychainPurposeLinkedV1 {
-  return { consumerKeychain: undefined, purpose: undefined, linkedAt: 0 };
+  return { consumerKeychain: undefined, purpose: undefined, linkedAt: 0, knodeId: "" };
 }
 
 export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurposeLinkedV1> = {
@@ -235,6 +236,9 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     }
     if (message.linkedAt !== 0) {
       writer.uint32(24).int64(message.linkedAt);
+    }
+    if (message.knodeId !== "") {
+      writer.uint32(34).string(message.knodeId);
     }
     return writer;
   },
@@ -270,6 +274,14 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
           message.linkedAt = longToNumber(reader.int64());
           continue;
         }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.knodeId = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -286,6 +298,7 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
         : undefined,
       purpose: isSet(object.purpose) ? PurposeV1.fromJSON(object.purpose) : undefined,
       linkedAt: isSet(object.linkedAt) ? globalThis.Number(object.linkedAt) : 0,
+      knodeId: isSet(object.knodeId) ? globalThis.String(object.knodeId) : "",
     };
   },
 
@@ -299,6 +312,9 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
     }
     if (message.linkedAt !== 0) {
       obj.linkedAt = Math.round(message.linkedAt);
+    }
+    if (message.knodeId !== "") {
+      obj.knodeId = message.knodeId;
     }
     return obj;
   },
@@ -317,6 +333,7 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
       ? PurposeV1.fromPartial(object.purpose)
       : undefined;
     message.linkedAt = object.linkedAt ?? 0;
+    message.knodeId = object.knodeId ?? "";
     return message;
   },
 };
