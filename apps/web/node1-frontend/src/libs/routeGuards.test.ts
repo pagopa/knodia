@@ -21,9 +21,27 @@ describe("requireRole", () => {
     ).not.toThrow();
   });
 
+  it("does not throw when user has both roles", () => {
+    expect(() =>
+      requireRole(
+        makeContext(["administrative", "technical"]),
+        "administrative",
+      ),
+    ).not.toThrow();
+  });
+
   it("throws notFound when user lacks the required role", () => {
     try {
       requireRole(makeContext(["technical"]), "administrative");
+      expect.fail("Expected requireRole to throw");
+    } catch (error) {
+      expect(isNotFound(error)).toBe(true);
+    }
+  });
+
+  it("throws notFound when roles array is empty", () => {
+    try {
+      requireRole(makeContext([]), "administrative");
       expect.fail("Expected requireRole to throw");
     } catch (error) {
       expect(isNotFound(error)).toBe(true);

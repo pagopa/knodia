@@ -48,4 +48,8 @@ describe("useHasRole", () => {
       true,
     );
   });
+
+  it("returns false when roles array is empty", () => {
+    expect(renderUseHasRole("administrative", [])).toBe(false);
+  });
 });
