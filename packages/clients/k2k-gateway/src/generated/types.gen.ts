@@ -412,14 +412,20 @@ export type PurposeSeed = {
 export type CreatedPurposeResource = CreatedResource;
 
 export type PurposeConsumer = {
-    id: string;
+    id: OrganizationId;
     knodeId: KnodeId;
 };
 
 export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
 
+/**
+ * A Consumer's Purpose to access an E-service
+ */
 export type Purpose = {
     consumer: PurposeConsumer;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eserviceId: EserviceId;

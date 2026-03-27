@@ -680,9 +680,7 @@ components:
       type: object
       properties:
         id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          $ref: "#/components/schemas/OrganizationId"
         knodeId:
           $ref: "#/components/schemas/KnodeId"
       required:
@@ -696,11 +694,13 @@ components:
         - SUSPENDED
         - ARCHIVED
     Purpose:
+      description: A Consumer's Purpose to access an E-service
       type: object
       properties:
         consumer:
           $ref: "#/components/schemas/PurposeConsumer"
         dailyCalls:
+          description: Expected number of daily API calls for this Purpose
           format: int32
           type: integer
           minimum: 0

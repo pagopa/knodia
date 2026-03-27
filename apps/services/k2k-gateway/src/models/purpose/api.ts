@@ -48,16 +48,22 @@ const API_PurposeFormAnswers = z.record(z.string(), z.unknown()).meta({
   id: "PurposeFormAnswers",
 });
 
+const API_PurposeDailyCalls = z
+  .int()
+  .min(minDailyCalls)
+  .max(maxDailyCalls)
+  .meta({
+    description: "Expected number of daily API calls for this Purpose",
+    format: "int32",
+  });
+
 export const API_PurposeSeed = z
   .strictObject({
     consumerId: API_OrganizationId.meta({
       description:
         "Identifier of the Consumer Organization creating the Purpose",
     }),
-    dailyCalls: z.number().int().min(minDailyCalls).max(maxDailyCalls).meta({
-      description: "Expected number of daily API calls for this Purpose",
-      format: "int32",
-    }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: API_EserviceId.meta({
       description: "Identifier of the E-service this Purpose refers to",
@@ -83,7 +89,7 @@ export const API_PurposeIdPathParam = z.strictObject({
 
 const API_PurposeConsumer = z
   .strictObject({
-    id: z.uuid(),
+    id: API_OrganizationId,
     knodeId: API_KnodeId,
   })
   .meta({ id: "PurposeConsumer" });
@@ -98,11 +104,7 @@ export const API_Purpose = z
     // formAnswersJson and formSchemaVersion are intentionally excluded —
     // they can be retrieved via separate routes
     consumer: API_PurposeConsumer,
-    dailyCalls: z
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({ format: "int32" }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: API_EserviceId,
     id: API_PurposeId,
@@ -110,5 +112,8 @@ export const API_Purpose = z
     state: API_PurposeState,
     updatedAt: z.iso.datetime(),
   })
-  .meta({ id: "Purpose" });
+  .meta({
+    description: "A Consumer's Purpose to access an E-service",
+    id: "Purpose",
+  });
 export type API_Purpose = z.infer<typeof API_Purpose>;
