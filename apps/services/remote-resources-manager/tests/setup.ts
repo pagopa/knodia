@@ -1,3 +1,6 @@
+import type { TestDrizzleDb } from "@knodia/test-commons/types";
+import type { FastifyInstance } from "fastify";
+
 import { organizationWriterServiceBuilder } from "@knodia/db-readmodel-organization/writer";
 import {
   remoteResourceAgreement,
@@ -18,11 +21,9 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
-let app: ReturnType<typeof buildApp>;
-let remoteResourceDb: Awaited<
-  ReturnType<typeof setupRemoteResourceTestDatabase>
->;
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
+let app: FastifyInstance;
+let remoteResourceDb: TestDrizzleDb;
+let readmodelDb: TestDrizzleDb;
 let remoteResourceDbService: RemoteResourceDbService;
 
 beforeAll(async () => {

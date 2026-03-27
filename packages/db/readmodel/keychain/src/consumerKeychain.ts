@@ -183,3 +183,13 @@ export type ReadmodelConsumerKeychainPurpose =
   typeof readmodelConsumerKeychainPurpose.$inferSelect;
 export type ReadmodelConsumerKeychainUser =
   typeof readmodelConsumerKeychainUser.$inferSelect;
+
+export const consumerKeychainSubTables = [
+  readmodelConsumerKeychainUser,
+  readmodelConsumerKeychainKey,
+];
+export const consumerKeychainTables = [
+  ...consumerKeychainSubTables,
+  readmodelConsumerKeychainPurpose,
+  readmodelConsumerKeychain,
+];

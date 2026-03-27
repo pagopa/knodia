@@ -16,6 +16,7 @@ allowBuilds:
   msw: true
 
 catalog:
+  "@aws-sdk/client-cognito-identity-provider": 3.1012.0
   "@aws-sdk/client-kms": 3.992.0
   "@aws-sdk/client-s3": 3.992.0
   "@bufbuild/buf": 1.61.0

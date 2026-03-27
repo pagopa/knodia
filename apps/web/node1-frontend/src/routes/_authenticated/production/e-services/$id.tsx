@@ -1,15 +1,10 @@
-import {
-  Breadcrumb,
-  Breadcrumbs,
-  Button,
-  Chip,
-  Modal,
-} from "@knodia/ui-kit/ui";
+import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
+import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
@@ -79,11 +74,11 @@ function RouteComponent() {
       <div className="mt-10 flex gap-2">
         <EserviceModeChip mode={eservice.mode} />
         {eservice.categories.map((category) => (
-          <Chip
+          <CategoryChip
+            code={category.code}
             key={category.code}
-            kind="neutral"
-            label={category.code}
-            type="light"
+            scheme={category.scheme}
+            showIcon={false}
           />
         ))}
       </div>
