@@ -177,7 +177,7 @@ function RouteComponent() {
           />
           <OrganizationContactPopover
             email={eservice.producer.email}
-            knodeName={knodeId}
+            knodeId={eservice.producer.knodeId}
             name={eservice.producer.name}
             notes={eservice.producer.notes}
           />

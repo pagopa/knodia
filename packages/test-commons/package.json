@@ -42,6 +42,7 @@
     "./minio": "./src/testcontainers/minio.ts",
     "./readmodel": "./src/readmodel.ts",
     "./remoteResourceDb": "./src/remoteResourceDb.ts",
+    "./types": "./src/models/types.ts",
     "./utils": "./src/utils/index.ts"
   }
 }

@@ -8,10 +8,9 @@ message ConsumerKeychainV1 {
   optional LocalizedTextV1 description = 3;
   string ownerId = 4;
   repeated string users = 5;
-  repeated string purposes = 6;
-  repeated ConsumerKeychainKeyV1 keys = 7;
-  int64 createdAt = 8;
-  int64 updatedAt = 9;
+  repeated ConsumerKeychainKeyV1 keys = 6;
+  int64 createdAt = 7;
+  int64 updatedAt = 8;
 }
 
 message ConsumerKeychainKeyV1 {

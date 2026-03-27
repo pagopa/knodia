@@ -6,7 +6,7 @@ import type {
 
 import { KafkaJS } from "@confluentinc/kafka-javascript";
 import { generateId } from "@knodia/common-models/ids";
-import { initKafka, runConsumer } from "@knodia/kafka-commons";
+import { initKafka, initKafkaAdmin, runConsumer } from "@knodia/kafka-commons";
 import { KafkaContainer } from "@testcontainers/kafka";
 import { Pool } from "pg";
 
@@ -44,7 +44,10 @@ export async function setupKafkaTestContainer() {
  *
  * Intended to be called in beforeAll of each test file.
  */
-export async function setupKafkaTestProducer(broker: string) {
+export async function setupKafkaTestProducerAndConsumer(
+  broker: string,
+  processMessage: (payload: EachMessagePayload) => Promise<void>,
+) {
   const randomId = crypto.randomUUID();
   const topicName = `test_kafka_topic_worker_${randomId}`;
 
@@ -61,10 +64,11 @@ export async function setupKafkaTestProducer(broker: string) {
     logger,
   );
 
-  const producer = kafka.producer({
-    "allow.auto.create.topics": true,
-  });
+  const admin = await initKafkaAdmin(kafka);
+  await admin.createTopics({ topics: [{ topic: topicName }] });
+  await admin.disconnect();
 
+  const producer = kafka.producer();
   await producer.connect();
 
   const kafkaConfig: KafkaConsumerConfig = {
@@ -74,37 +78,55 @@ export async function setupKafkaTestProducer(broker: string) {
     ...kafkaCommonConfig,
   };
 
-  return { kafkaConfig, producer, topicName };
+  const setupKafkaTestConsumer = async (): Promise<{
+    disconnect: () => Promise<void>;
+    waitForNextMessage: () => Promise<void>;
+  }> => {
+    const pendingResolvers: (() => void)[] = [];
+
+    // Wrap processMessage to notify the test when a message is processed
+    const handlerWrapper = async (payload: EachMessagePayload) => {
+      await processMessage(payload);
+      const resolver = pendingResolvers.shift();
+      resolver?.();
+    };
+
+    let disconnect: () => Promise<void> = () => Promise.resolve();
+    // Await until the consumer is subscribed and ready before returning
+    await new Promise<void>((resolve) => {
+      void runConsumer(
+        [topicName],
+        handlerWrapper,
+        kafkaConfig,
+        logger,
+        // Dummy pool, not used in tests. The real Pool instance is closed in the test files' afterAll hooks.
+        new Pool({ connectionString: "" }),
+        (dc) => {
+          disconnect = dc;
+          resolve();
+        },
+      );
+    });
+
+    return {
+      disconnect: () => disconnect(),
+      waitForNextMessage: () =>
+        new Promise<void>((resolver) => pendingResolvers.push(resolver)),
+    };
+  };
+  const consumer = await setupKafkaTestConsumer();
+
+  return {
+    consumer,
+    producer,
+    topicName,
+  };
 }
 
 declare module "vitest" {
   export interface ProvidedContext {
     KAFKA_BROKER: string;
   }
-}
-
-export async function runTestConsumer(
-  topicName: string,
-  processMessage: (readmodelDb: EachMessagePayload) => Promise<void>,
-  kafkaConfig: KafkaConsumerConfig,
-) {
-  await new Promise<void>((resolve, reject) => {
-    runConsumer(
-      [topicName],
-      async (payload) => {
-        try {
-          await processMessage(payload);
-          resolve();
-        } catch (err) {
-          reject(err);
-        }
-      },
-      kafkaConfig,
-      logger,
-      // Dummy pool, not used in tests. The real Pool instance is closed in the test files' afterAll hooks.
-      new Pool({ connectionString: "" }),
-    );
-  });
 }
 
 export async function sendTestEvent({

@@ -19,11 +19,13 @@
   "devDependencies": {
     "@bufbuild/buf": "catalog:",
     "@knodia/eslint-config": "workspace:*",
+    "@knodia/purpose-models": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@types/node": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "zocker": "catalog:"
   },
   "exports": {
     ".": "./src/index.ts",
