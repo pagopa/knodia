@@ -12,11 +12,17 @@ import {
 } from "@knodia/purpose-models";
 import { z } from "zod";
 
+import { API_EserviceId } from "../eservice/api.ts";
+import { API_KnodeId } from "../knode/api.ts";
+
+export const API_PurposeId = z.uuid().meta({
+  description: "Unique identifier of the Purpose",
+  id: "PurposeId",
+});
+
 const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
   id: "PurposeFormSchemaVersion",
 });
-
-import { API_EserviceId } from "../eservice/api.ts";
 
 const API_LocalizedPurposeName = z
   .strictObject({
@@ -70,3 +76,39 @@ export const API_CreatedPurposeResource = API_CreatedResource.meta({
   description: "Unique identifier of the created Purpose resource",
   id: "CreatedPurposeResource",
 });
+
+export const API_PurposeIdPathParam = z.strictObject({
+  purposeId: API_PurposeId,
+});
+
+const API_PurposeConsumer = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({ id: "PurposeConsumer" });
+
+const API_PurposeState = z
+  .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
+  .meta({ id: "PurposeState" });
+export type API_PurposeState = z.infer<typeof API_PurposeState>;
+
+export const API_Purpose = z
+  .strictObject({
+    // formAnswersJson and formSchemaVersion are intentionally excluded —
+    // they can be retrieved via separate routes
+    consumer: API_PurposeConsumer,
+    dailyCalls: z
+      .int()
+      .min(minDailyCalls)
+      .max(maxDailyCalls)
+      .meta({ format: "int32" }),
+    description: API_LocalizedPurposeDescription,
+    eserviceId: API_EserviceId,
+    id: API_PurposeId,
+    name: API_LocalizedPurposeName,
+    state: API_PurposeState,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({ id: "Purpose" });
+export type API_Purpose = z.infer<typeof API_Purpose>;
