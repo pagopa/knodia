@@ -15,7 +15,7 @@ import { z } from "zod";
 import { API_EserviceId } from "../eservice/api.ts";
 import { API_KnodeId } from "../knode/api.ts";
 
-export const API_PurposeId = z.uuid().meta({
+const API_PurposeId = z.uuid().meta({
   description: "Unique identifier of the Purpose",
   id: "PurposeId",
 });
