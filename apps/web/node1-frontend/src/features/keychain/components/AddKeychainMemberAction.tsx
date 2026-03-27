@@ -1,5 +1,5 @@
 import {
-  addKeychainMemberMutation,
+  addConsumerKeychainMemberMutation,
   getConsumerKeychainMembersOptions,
   getTechnicalUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
@@ -64,7 +64,7 @@ function AddKeychainMemberModal({
 }) {
   const queryClient = useQueryClient();
   const { isPending, mutate: addConsumerKeychainMember } = useMutation({
-    ...addKeychainMemberMutation({ client }),
+    ...addConsumerKeychainMemberMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries(
         getConsumerKeychainMembersOptions({
