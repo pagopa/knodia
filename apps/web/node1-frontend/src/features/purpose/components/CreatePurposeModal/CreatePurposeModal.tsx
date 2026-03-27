@@ -43,6 +43,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     getConsumerPurposeFormSchemaOptions({
       client,
       path: { version: FORM_SCHEMA_VERSION },
+      query: { knodeId },
     }),
   );
 
@@ -50,6 +51,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     getConsumerPurposeFormUiSchemaOptions({
       client,
       path: { version: FORM_SCHEMA_VERSION },
+      query: { knodeId },
     }),
   );
 
@@ -80,11 +82,15 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     );
   }
 
-  const steps: StepConfig[] = [
+  const baseSteps: StepConfig[] = [
     {
       content: <DetailsStep onCancel={handleShowLeaveConfirm} />,
       label: "Details",
     },
+  ];
+
+  const steps: StepConfig[] = [
+    ...baseSteps,
     ...dynamicSteps.map((step, index) => ({
       content: (
         <DynamicFormStep
@@ -94,7 +100,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
           uischema={uiSchema}
         />
       ),
-      label: step.label ?? `Step ${index + 2}`,
+      label: step.label ?? `Step ${index + baseSteps.length + 1}`,
     })),
   ];
 
