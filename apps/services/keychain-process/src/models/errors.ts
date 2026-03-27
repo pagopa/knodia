@@ -12,7 +12,7 @@ const errorCodes = {
   USER_ALREADY_MEMBER: "0002",
   USER_NOT_FOUND: "0003",
   INVALID_USER_ROLE: "0004",
-  USER_NOT_MEMBER: "0005",
+  KEYCHAIN_MEMBER_NOT_FOUND: "0005",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -40,6 +40,18 @@ export function invalidUserRole(userId: UserId, requiredRole: string) {
   });
 }
 
+export function keychainMemberNotFound(
+  consumerKeychainId: ConsumerKeychainId,
+  userId: UserId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "KEYCHAIN_MEMBER_NOT_FOUND",
+    detail: `User ${userId} is not a member of consumer keychain ${consumerKeychainId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Keychain Member Not Found",
+  });
+}
+
 export function userAlreadyMember(
   consumerKeychainId: ConsumerKeychainId,
   userId: UserId,
@@ -58,17 +70,5 @@ export function userNotFound(userId: UserId) {
     detail: `User ${userId} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "User Not Found",
-  });
-}
-
-export function userNotMember(
-  consumerKeychainId: ConsumerKeychainId,
-  userId: UserId,
-) {
-  return createApiError<ErrorCodes>({
-    code: "USER_NOT_MEMBER",
-    detail: `User ${userId} is not a member of consumer keychain ${consumerKeychainId}`,
-    status: HTTP_STATUS_CONFLICT,
-    title: "User Not Member",
   });
 }

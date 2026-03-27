@@ -8,8 +8,8 @@ import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import {
   invalidUserRole,
+  keychainMemberNotFound,
   userNotFound,
-  userNotMember,
 } from "../models/errors.ts";
 import {
   getOrganizationGroupName,
@@ -54,6 +54,6 @@ export function assertUserIsMemberOfKeychain(
 ): void {
   const isMember = members.includes(userId);
   if (!isMember) {
-    throw userNotMember(keychainId, userId);
+    throw keychainMemberNotFound(keychainId, userId);
   }
 }

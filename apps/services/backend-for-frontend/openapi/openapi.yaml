@@ -2022,14 +2022,6 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-        "409":
-          description: User is not a member of the Consumer Keychain
-          content:
-            application/problem+json:
-              schema:
-                description: User is not a member of the Consumer Keychain
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
   /users/technical:
     get:
       operationId: getTechnicalUsers

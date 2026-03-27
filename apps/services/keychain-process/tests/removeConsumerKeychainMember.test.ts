@@ -99,7 +99,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeC
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 409 if the user is not a member", async () => {
+  it("should return 404 if the user is not a member", async () => {
     await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
@@ -110,7 +110,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeC
       `/consumerKeychains/${mockConsumerKeychain.id}/members/${memberId}`,
     );
 
-    expect(response.statusCode).toBe(409);
+    expect(response.statusCode).toBe(404);
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
