@@ -411,11 +411,17 @@ export type PurposeSeed = {
  */
 export type CreatedPurposeResource = CreatedResource;
 
+/**
+ * Consumer Organization of the Purpose
+ */
 export type PurposeConsumer = {
     id: OrganizationId;
     knodeId: KnodeId;
 };
 
+/**
+ * Describes the states a Purpose can be in
+ */
 export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
 
 /**

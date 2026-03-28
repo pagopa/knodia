@@ -92,11 +92,15 @@ const API_PurposeConsumer = z
     id: API_OrganizationId,
     knodeId: API_KnodeId,
   })
-  .meta({ id: "PurposeConsumer" });
+  .meta({
+    description: "Consumer Organization of the Purpose",
+    id: "PurposeConsumer",
+  });
 
-const API_PurposeState = z
-  .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
-  .meta({ id: "PurposeState" });
+const API_PurposeState = z.enum(["ACTIVE", "SUSPENDED", "ARCHIVED"]).meta({
+  description: "Describes the states a Purpose can be in",
+  id: "PurposeState",
+});
 export type API_PurposeState = z.infer<typeof API_PurposeState>;
 
 export const API_Purpose = z
