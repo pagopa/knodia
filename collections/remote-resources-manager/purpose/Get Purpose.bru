@@ -1,0 +1,22 @@
+meta {
+  name: Get Purpose
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/purposes/:purposeId?knodeId={{other-knode-id}}
+  body: none
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

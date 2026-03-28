@@ -107,12 +107,6 @@ components:
       required:
         - id
       additionalProperties: false
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - ORION
-        - LYNX
     Attribute:
       description: Identifies an Attribute standardized within Knodia
       type: object
@@ -459,6 +453,12 @@ components:
         - pagination
         - results
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - ORION
+        - LYNX
     AgreementId:
       description: Unique identifier of the Agreement
       type: string
@@ -601,6 +601,11 @@ components:
         - pagination
         - results
       additionalProperties: false
+    PurposeId:
+      description: Unique identifier of the Purpose
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     PurposeFormSchemaVersion:
       type: string
       enum:
@@ -671,6 +676,61 @@ components:
       description: Unique identifier of the created Purpose resource
       allOf:
         - $ref: "#/components/schemas/CreatedResource"
+    PurposeConsumer:
+      description: Consumer Organization of the Purpose
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/OrganizationId"
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
+    PurposeState:
+      description: Describes the states a Purpose can be in
+      type: string
+      enum:
+        - ACTIVE
+        - SUSPENDED
+        - ARCHIVED
+    Purpose:
+      description: A Consumer's Purpose to access an E-service
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/PurposeConsumer"
+        dailyCalls:
+          description: Expected number of daily API calls for this Purpose
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eserviceId:
+          $ref: "#/components/schemas/EserviceId"
+        id:
+          $ref: "#/components/schemas/PurposeId"
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - consumer
+        - dailyCalls
+        - description
+        - eserviceId
+        - id
+        - name
+        - state
+        - updatedAt
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -1191,6 +1251,44 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/{purposeId}:
+    get:
+      operationId: getPurpose
+      summary: Get Purpose
+      tags:
+        - purpose
+      description: Retrieve a Purpose
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/PurposeId"
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "200":
+          description: Purpose retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Purpose"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Purpose not found
+          content:
+            application/problem+json:
+              schema:
+                description: Purpose not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

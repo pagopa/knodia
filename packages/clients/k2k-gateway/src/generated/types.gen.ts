@@ -57,11 +57,6 @@ export type CreatedResource = {
 };
 
 /**
- * Unique Knode identifier
- */
-export type KnodeId = 'ORION' | 'LYNX';
-
-/**
  * Identifies an Attribute standardized within Knodia
  */
 export type Attribute = {
@@ -279,6 +274,11 @@ export type Eservices = {
 };
 
 /**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'ORION' | 'LYNX';
+
+/**
  * Unique identifier of the Agreement
  */
 export type AgreementId = string;
@@ -356,6 +356,11 @@ export type Organizations = {
     results: Array<Organization>;
 };
 
+/**
+ * Unique identifier of the Purpose
+ */
+export type PurposeId = string;
+
 export type PurposeFormSchemaVersion = '1.0';
 
 /**
@@ -405,6 +410,36 @@ export type PurposeSeed = {
  * Unique identifier of the created Purpose resource
  */
 export type CreatedPurposeResource = CreatedResource;
+
+/**
+ * Consumer Organization of the Purpose
+ */
+export type PurposeConsumer = {
+    id: OrganizationId;
+    knodeId: KnodeId;
+};
+
+/**
+ * Describes the states a Purpose can be in
+ */
+export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+
+/**
+ * A Consumer's Purpose to access an E-service
+ */
+export type Purpose = {
+    consumer: PurposeConsumer;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: EserviceId;
+    id: PurposeId;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+    updatedAt: string;
+};
 
 export type GetStatusData = {
     body?: never;
@@ -798,3 +833,34 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type GetPurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}';
+};
+
+export type GetPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeError = GetPurposeErrors[keyof GetPurposeErrors];
+
+export type GetPurposeResponses = {
+    /**
+     * Purpose retrieved successfully
+     */
+    200: Purpose;
+};
+
+export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
