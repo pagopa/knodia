@@ -356,6 +356,9 @@ export type Organizations = {
     results: Array<Organization>;
 };
 
+/**
+ * Version identifier for the Purpose form schema provided by this Knode
+ */
 export type PurposeFormSchemaVersion = '1.0';
 
 /**
@@ -406,10 +409,16 @@ export type PurposeSeed = {
  */
 export type CreatedPurposeResource = CreatedResource;
 
+/**
+ * JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers
+ */
 export type PurposeFormSchema = {
     [key: string]: unknown;
 };
 
+/**
+ * UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)
+ */
 export type PurposeFormUiSchema = {
     [key: string]: unknown;
 };
