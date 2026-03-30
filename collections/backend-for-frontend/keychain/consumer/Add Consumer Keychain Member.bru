@@ -1,0 +1,24 @@
+meta {
+  name: Add Consumer Keychain Member
+  type: http
+}
+
+post {
+  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId/members
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+body:json {
+  {
+    "userId": "{{userId}}"
+  }
+}

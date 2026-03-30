@@ -14,6 +14,7 @@ import type { ConsumerKeychain } from "../src/keychain.ts";
 import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
+  ConsumerKeychainMemberAddedV1,
   ConsumerKeychainPurposeLinkedV1,
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
@@ -82,6 +83,23 @@ describe("KeychainEventV1 codec", () => {
       message: ConsumerKeychainPurposeLinkedV1,
       type: "ConsumerKeychainPurposeLinkedV1" as const,
     },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        linkedAt: new Date().getTime(),
+        purpose: purposeV1,
+      },
+      message: ConsumerKeychainPurposeLinkedV1,
+      type: "ConsumerKeychainPurposeLinkedV1" as const,
+    },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        userId: generateUserId(),
+      },
+      message: ConsumerKeychainMemberAddedV1,
+      type: "ConsumerKeychainMemberAddedV1" as const,
+    },
   ];
 
   it.each(cases)(
@@ -104,6 +122,9 @@ describe("KeychainEventV1 codec", () => {
           ({ data, type }) => testFullCodec({ data, type }),
         )
         .with({ type: "ConsumerKeychainPurposeLinkedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
         .exhaustive();
@@ -130,6 +151,9 @@ describe("KeychainEventV1 codec", () => {
         .with(
           { type: "ConsumerKeychainPurposeLinkedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
+        )
+        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, message }) =>
+          testProtobufCodec(message, data),
         )
         .exhaustive();
     },
