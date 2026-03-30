@@ -1,9 +1,9 @@
 import { PurposeId } from "@knodia/common-models/ids";
-import { maxDailyCalls, minDailyCalls } from "@knodia/purpose-models";
 import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
   API_PurposeConsumer,
+  API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeFormSchemaVersion,
   API_PurposeState,
@@ -12,12 +12,7 @@ import z from "zod";
 export const API_PurposeSeed = z
   .strictObject({
     consumer: API_PurposeConsumer,
-    dailyCalls: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({ format: "int32" }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     formAnswersJson: API_PurposeFormAnswers,
@@ -33,12 +28,7 @@ export const API_Purpose = z
     // they can be retrieved via separate routes
     consumer: API_PurposeConsumer,
     createdAt: z.iso.datetime(),
-    dailyCalls: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({ format: "int32" }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     id: PurposeId,
