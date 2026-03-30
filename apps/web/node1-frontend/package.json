@@ -28,6 +28,7 @@
     "@tanstack/react-query-devtools": "catalog:",
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-devtools": "catalog:",
+    "ajv": "catalog:",
     "axios": "catalog:",
     "jose": "catalog:",
     "oidc-client-ts": "catalog:",
