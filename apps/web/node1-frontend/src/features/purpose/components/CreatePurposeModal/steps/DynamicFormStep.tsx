@@ -180,7 +180,7 @@ export function DynamicFormStep({
       <ModalFooter
         cancelLabel="Previous"
         confirmLabel={isLastStep ? "Create Purpose" : "Next"}
-        isDisabled={isPending}
+        isDisabled={isPending || Object.keys(errors).length > 0}
         onCancel={prevStep}
         onConfirm={handleNext}
       />
