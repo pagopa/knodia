@@ -69,11 +69,11 @@ function ConsumptionRequirementsSection() {
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Identification
           </h3>
-          <Banner kind="neutral">
-            {isConsumerOperatorIdentificationRequired
-              ? "Identification required"
-              : "Identification not required"}
-          </Banner>
+          {isConsumerOperatorIdentificationRequired ? (
+            <Banner kind="informative">Identification required</Banner>
+          ) : (
+            <Banner kind="neutral">Identification not required</Banner>
+          )}
         </div>
       </div>
     </Section>
