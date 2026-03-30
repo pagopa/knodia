@@ -2,9 +2,13 @@ import type React from "react";
 
 import { twMerge } from "tailwind-merge";
 
+import { CopyableValueField } from "@/components/CopyableValueField";
+
 interface PageHeaderProps extends React.ComponentProps<"header"> {
   actions?: React.ReactNode;
   children?: React.ReactNode;
+  copyableId?: string;
+  description?: string;
   overline?: string;
   resourceStatusChip?: React.ReactNode;
   title: string;
@@ -14,6 +18,8 @@ export function PageHeader({
   actions,
   children,
   className,
+  copyableId,
+  description,
   overline,
   resourceStatusChip,
   title,
@@ -36,6 +42,14 @@ export function PageHeader({
         <h1 className="headline-md text-primary-light-high-contrast">
           {title}
         </h1>
+        {copyableId && (
+          <CopyableValueField className="mt-3" label="ID" value={copyableId} />
+        )}
+        {description && (
+          <p className="mt-4 body-md text-primary-light-low-contrast max-w-160">
+            {description}
+          </p>
+        )}
         {children}
       </div>
       {(actions || resourceStatusChip) && (

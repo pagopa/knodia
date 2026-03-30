@@ -2,7 +2,6 @@ import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
-import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
@@ -60,16 +59,13 @@ function RouteComponent() {
 
       <PageHeader
         actions={<EServiceActions />}
+        copyableId={eservice.id}
+        description={eservice.description.en}
         resourceStatusChip={
           <EserviceStateChip state={eservice.version.state} />
         }
         title={eservice.name.en}
-      >
-        <CopyableValueField className="mt-3" label="ID" value={eservice.id} />
-        <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
-          {eservice.description.en}
-        </p>
-      </PageHeader>
+      />
 
       <div className="mt-10 flex gap-2">
         <EserviceModeChip mode={eservice.mode} />
