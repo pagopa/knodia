@@ -1,5 +1,6 @@
 import { Banner } from "@knodia/ui-kit/ui";
-import { useCallback, useMemo, useState } from "react";
+import { useForm, useStore } from "@tanstack/react-form";
+import { useMemo, useState } from "react";
 
 import type {
   FormValues,
@@ -51,10 +52,6 @@ export function DynamicFormStep({
     knodeId,
   );
 
-  const [values, setValues] = useState<FormValues>(() => ({
-    ...getDefaultValues(jsonSchema),
-    ...formAnswers,
-  }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -62,13 +59,6 @@ export function DynamicFormStep({
     () => ({ elements: step.elements, type: "VerticalLayout" as const }),
     [step.elements],
   );
-
-  const { visibleFieldNames } = useVisibleFields(uischema, values);
-
-  const stepVisibleFields = useMemo(() => {
-    const stepVisible = getVisibleFields(stepUischema, values);
-    return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
-  }, [stepUischema, values, visibleFieldNames]);
 
   const errorMessages = useMemo(
     () => collectErrorMessages(uischema),
@@ -80,59 +70,68 @@ export function DynamicFormStep({
     [jsonSchema, errorMessages],
   );
 
-  const handleChange = useCallback(
-    (fieldName: string, newValue: string | string[]) => {
-      setValues((prev) => ({ ...prev, [fieldName]: newValue }));
-      if (submitted) {
-        setErrors((prev) =>
-          Object.fromEntries(
-            Object.entries(prev).filter(([key]) => key !== fieldName),
-          ),
-        );
+  const form = useForm({
+    defaultValues: {
+      ...getDefaultValues(jsonSchema),
+      ...formAnswers,
+    } as Record<string, string | string[]>,
+    onSubmit: ({ value }) => {
+      setErrors({});
+      updateFormAnswers(value);
+
+      if (isLastStep) {
+        const allAnswers = { ...formAnswers, ...value };
+        const filteredAnswers: Record<string, unknown> = {};
+        for (const [key, val] of Object.entries(allAnswers)) {
+          if (Array.isArray(val) ? val.length > 0 : val !== "") {
+            filteredAnswers[key] = val;
+          }
+        }
+        createPurpose({ formAnswersJson: filteredAnswers });
+      } else {
+        nextStep();
       }
     },
-    [submitted],
-  );
-
-  const handleNext = useCallback(() => {
-    setSubmitted(true);
-    const fieldErrors = validate(values, stepVisibleFields);
-
-    if (Object.keys(fieldErrors).length > 0) {
-      setErrors(fieldErrors);
-      requestAnimationFrame(() => {
-        const firstInvalid = document.querySelector("[data-invalid=true]");
-        firstInvalid?.scrollIntoView({ behavior: "smooth", block: "center" });
-      });
-      return;
-    }
-
-    setErrors({});
-    updateFormAnswers(values);
-
-    if (isLastStep) {
-      // Filter out empty/default values before submitting
-      const allAnswers = { ...formAnswers, ...values };
-      const filteredAnswers: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(allAnswers)) {
-        if (Array.isArray(value) ? value.length > 0 : value !== "") {
-          filteredAnswers[key] = value;
+    validators: {
+      onSubmit: ({ value }) => {
+        setSubmitted(true);
+        const fieldErrors = validate(value, stepVisibleFields);
+        if (Object.keys(fieldErrors).length > 0) {
+          setErrors(fieldErrors);
+          requestAnimationFrame(() => {
+            const firstInvalid = document.querySelector("[data-invalid=true]");
+            firstInvalid?.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+          });
+          return "Validation failed";
         }
-      }
-      createPurpose({ formAnswersJson: filteredAnswers });
-    } else {
-      nextStep();
+        setErrors({});
+        return undefined;
+      },
+    },
+  });
+
+  const values = useStore(form.store, (state) => state.values);
+
+  const { visibleFieldNames } = useVisibleFields(uischema, values);
+
+  const stepVisibleFields = (() => {
+    const stepVisible = getVisibleFields(stepUischema, values);
+    return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
+  })();
+
+  const handleChange = (fieldName: string, newValue: string | string[]) => {
+    form.setFieldValue(fieldName, newValue);
+    if (submitted) {
+      setErrors((prev) =>
+        Object.fromEntries(
+          Object.entries(prev).filter(([key]) => key !== fieldName),
+        ),
+      );
     }
-  }, [
-    validate,
-    values,
-    stepVisibleFields,
-    updateFormAnswers,
-    isLastStep,
-    formAnswers,
-    createPurpose,
-    nextStep,
-  ]);
+  };
 
   const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
 
@@ -182,7 +181,7 @@ export function DynamicFormStep({
         confirmLabel={isLastStep ? "Create Purpose" : "Next"}
         isDisabled={isPending || Object.keys(errors).length > 0}
         onCancel={prevStep}
-        onConfirm={handleNext}
+        onConfirm={() => form.handleSubmit()}
       />
     </>
   );
