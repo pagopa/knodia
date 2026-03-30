@@ -27,3 +27,8 @@ message ConsumerKeychainMemberAddedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
   string userId = 2;
 }
+
+message ConsumerKeychainMemberRemovedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+  string userId = 2;
+}
