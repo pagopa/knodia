@@ -99,7 +99,8 @@ export function purposeServiceBuilder(
         path: { purposeId },
       });
 
-      return toAPI_Purpose(data);}),
+      return toAPI_Purpose(data);
+    },
     async getPurposeFormSchema(
       version: PurposeFormSchemaVersion,
       knodeId: KnodeId,

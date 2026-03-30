@@ -57,11 +57,6 @@ export type CreatedResource = {
 };
 
 /**
- * Unique Knode identifier
- */
-export type KnodeId = 'ORION' | 'LYNX';
-
-/**
  * Identifies an Attribute standardized within Knodia
  */
 export type Attribute = {
@@ -279,6 +274,11 @@ export type Eservices = {
 };
 
 /**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'ORION' | 'LYNX';
+
+/**
  * Unique identifier of the Agreement
  */
 export type AgreementId = string;
@@ -357,6 +357,11 @@ export type Organizations = {
 };
 
 /**
+ * Unique identifier of the Purpose
+ */
+export type PurposeId = string;
+
+/**
  * Version identifier for the Purpose form schema provided by this Knode
  */
 export type PurposeFormSchemaVersion = '1.0';
@@ -408,6 +413,37 @@ export type PurposeSeed = {
  * Unique identifier of the created Purpose resource
  */
 export type CreatedPurposeResource = CreatedResource;
+
+/**
+ * Consumer Organization of the Purpose
+ */
+export type PurposeConsumer = {
+    id: OrganizationId;
+    knodeId: KnodeId;
+};
+
+/**
+ * Describes the states a Purpose can be in
+ */
+export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+
+/**
+ * A Consumer's Purpose to access an E-service
+ */
+export type Purpose = {
+    consumer: PurposeConsumer;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: EserviceId;
+    formSchemaVersion: PurposeFormSchemaVersion;
+    id: PurposeId;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+    updatedAt: string;
+};
 
 /**
  * JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers
@@ -869,3 +905,34 @@ export type GetPurposeFormUiSchemaResponses = {
 };
 
 export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
+
+export type GetPurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}';
+};
+
+export type GetPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeError = GetPurposeErrors[keyof GetPurposeErrors];
+
+export type GetPurposeResponses = {
+    /**
+     * Purpose retrieved successfully
+     */
+    200: Purpose;
+};
+
+export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
