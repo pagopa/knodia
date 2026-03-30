@@ -1,0 +1,25 @@
+meta {
+  name: Add Consumer Keychain Member
+  type: http
+}
+
+post {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/members
+  body: json
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+body:json {
+  {
+    "userId": "{{userId}}"
+  }
+}
