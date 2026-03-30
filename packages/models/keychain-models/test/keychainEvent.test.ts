@@ -32,7 +32,7 @@ describe("KeychainEventV1 codec", () => {
         algorithm: "RS256",
         createdAt: new Date(1),
         encodedPem: "-----BEGIN CERTIFICATE-----xyz",
-        format: "jwk",
+        format: "PublicKey",
         kid: "kid-1",
         name: { en: "Primary key" },
         userId: generateUserId(),

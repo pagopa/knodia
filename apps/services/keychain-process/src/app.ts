@@ -36,7 +36,7 @@ export function buildApp({
 }: {
   config: AuthConfig &
     LoggerConfig &
-    Pick<KeychainProcessConfig, "cognitoUserPoolId">;
+    Pick<KeychainProcessConfig, "cognitoUserPoolId" | "maxKeysPerKeychain">;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
@@ -87,6 +87,7 @@ export function buildApp({
         keychainEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
         userService,
+        config,
       ),
     });
     protectedApp.register(userRouter, userService);

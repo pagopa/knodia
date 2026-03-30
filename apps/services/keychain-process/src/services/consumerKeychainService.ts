@@ -11,12 +11,14 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 import type {
   ConsumerKeychain,
+  ConsumerKeychainKey,
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type ConsumerKeychainId,
+  ConsumerKeychainKeyId,
   generateId,
   unsafeBrandUserId,
   type UserId,
@@ -27,21 +29,29 @@ import type {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
+  API_KeychainKeySeed,
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 import type { IdmUser, UserService } from "./userService.ts";
 
-import { userAlreadyMember, userNotFound } from "../models/errors.ts";
+import {
+  keyAlreadyExists,
+  userAlreadyMember,
+  userNotFound,
+} from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
+  createConsumerKeychainKeyAddedV1Event,
   createConsumerKeychainMemberAddedV1Event,
   createConsumerKeychainMemberRemovedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
+import { calculateKid, createJWK } from "../utils/crypto.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
+  assertKeychainKeysCountIsBelowThreshold,
   assertOrganizationIsKeychainOwner,
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
@@ -56,6 +66,7 @@ export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
   userService: UserService,
+  config: { maxKeysPerKeychain: number },
 ) {
   return {
     async addConsumerKeychainMember(
@@ -320,6 +331,77 @@ export function consumerKeychainServiceBuilder(
 
       return {
         data: updatedConsumerKeychain,
+        metadata: { version: newVersion },
+      };
+    },
+
+    async uploadConsumerKeychainKey(
+      consumerKeychainId: ConsumerKeychainId,
+      keySeed: API_KeychainKeySeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychainKey>> {
+      logger.info(`Uploading key to Consumer Keychain ${consumerKeychainId}`);
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      assertUserIsMemberOfKeychain(
+        authData.userId,
+        consumerKeychainId,
+        consumerKeychain.data.users,
+      );
+
+      assertKeychainKeysCountIsBelowThreshold(
+        consumerKeychainId,
+        config.maxKeysPerKeychain,
+        consumerKeychain.data.keys.length + 1,
+      );
+
+      const jwk = createJWK({ pemKeyBase64: keySeed.encodedPem });
+      const kid = calculateKid(jwk) as ConsumerKeychainKeyId;
+
+      const alreadyExists =
+        consumerKeychain.data.keys.some((key) => key.kid === kid) ||
+        (await readmodelService.checkConsumerKeychainKeyExists(kid));
+
+      if (alreadyExists) {
+        throw keyAlreadyExists(kid);
+      }
+
+      const newKey: ConsumerKeychainKey = {
+        algorithm: "RS256",
+        createdAt: new Date(),
+        encodedPem: keySeed.encodedPem,
+        format: "PublicKey",
+        kid,
+        name: keySeed.name,
+        userId: authData.userId,
+      };
+
+      const updatedConsumerKeychain: ConsumerKeychain = {
+        ...consumerKeychain.data,
+        keys: [...consumerKeychain.data.keys, newKey],
+        updatedAt: new Date(),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainKeyAddedV1Event(
+          updatedConsumerKeychain,
+          kid,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: newKey,
         metadata: { version: newVersion },
       };
     },

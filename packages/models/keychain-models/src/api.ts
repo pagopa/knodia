@@ -24,6 +24,17 @@ export type API_KeychainLocalizedName = z.infer<
   typeof API_KeychainLocalizedName
 >;
 
+export const API_KeychainKeyLocalizedName = LocalizedText(
+  minNameLength,
+  maxNameLength,
+).meta({
+  description: "Name of the Keychain Key",
+  id: "KeychainKeyLocalizedName",
+});
+export type API_KeychainKeyLocalizedName = z.infer<
+  typeof API_KeychainKeyLocalizedName
+>;
+
 export const API_KeychainLocalizedDescription = LocalizedText(
   minDescriptionLength,
   maxDescriptionLength,
@@ -35,6 +46,10 @@ export type API_KeychainLocalizedDescription = z.infer<
   typeof API_KeychainLocalizedDescription
 >;
 
-/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
-export const API_KeyFormat = z.enum(["jwk", "x509"]).meta({ id: "KeyFormat" });
+export const API_KeyFormat = z
+  .enum(["PublicKey", "x509Certificate"])
+  .meta({ id: "KeyFormat" });
 export type API_KeyFormat = z.infer<typeof API_KeyFormat>;
+
+export const API_KeyAlgorithm = z.enum(["RS256"]).meta({ id: "KeyAlgorithm" });
+export type API_KeyAlgorithm = z.infer<typeof API_KeyAlgorithm>;

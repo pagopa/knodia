@@ -22,7 +22,7 @@ export const LocalizedDescription = LocalizedText(
 );
 export type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 
-export const KeyFormat = z.enum(["jwk", "x509"]);
+export const KeyFormat = z.enum(["PublicKey", "x509Certificate"]);
 export type KeyFormat = z.infer<typeof KeyFormat>;
 
 export const KeyAlgorithm = z.enum(["RS256"]);

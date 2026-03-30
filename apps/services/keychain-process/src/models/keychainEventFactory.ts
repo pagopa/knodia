@@ -1,4 +1,8 @@
-import type { CorrelationId, UserId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainKeyId,
+  CorrelationId,
+  UserId,
+} from "@knodia/common-models/ids";
 import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/keychain";
 
 import {
@@ -85,6 +89,24 @@ export const createConsumerKeychainMemberRemovedV1Event = (
       userId,
     },
     type: "ConsumerKeychainMemberRemovedV1",
+  },
+  streamId: keychain.id,
+});
+
+export const createConsumerKeychainKeyAddedV1Event = (
+  keychain: ConsumerKeychain,
+  kid: ConsumerKeychainKeyId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      consumerKeychain: toConsumerKeychainV1(keychain),
+      kid,
+    },
+    type: "ConsumerKeychainKeyAddedV1",
   },
   streamId: keychain.id,
 });

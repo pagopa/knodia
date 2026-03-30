@@ -57,8 +57,8 @@ const fromKeyAlgorithmV1 = (input: KeyAlgorithmV1): KeyAlgorithm =>
 
 const fromKeyFormatV1 = (input: KeyFormatV1): KeyFormat =>
   match(input)
-    .with(KeyFormatV1.JWK, () => KeyFormat.enum.jwk)
-    .with(KeyFormatV1.X509, () => KeyFormat.enum.x509)
+    .with(KeyFormatV1.PublicKey, () => KeyFormat.enum.PublicKey)
+    .with(KeyFormatV1.x509Certificate, () => KeyFormat.enum.x509Certificate)
     .with(KeyFormatV1.UNRECOGNIZED, () => {
       throw new Error("Unrecognized KeyFormatV1 value");
     })

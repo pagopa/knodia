@@ -1041,6 +1041,17 @@ components:
       required:
         - en
       additionalProperties: false
+    KeychainKeyLocalizedName:
+      description: Name of the Keychain Key
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
     KeychainLocalizedDescription:
       description: Description of the Keychain
       type: object
@@ -1137,6 +1148,17 @@ components:
         name:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
+      additionalProperties: false
+    KeychainKeySeed:
+      type: object
+      properties:
+        encodedPem:
+          type: string
+        name:
+          $ref: "#/components/schemas/KeychainKeyLocalizedName"
+      required:
+        - encodedPem
+        - name
       additionalProperties: false
     KeychainMemberSeed:
       type: object
@@ -2099,6 +2121,75 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/keys:
+    post:
+      operationId: uploadConsumerKeychainKey
+      tags:
+        - consumerKeychain
+      description: Upload a key to a Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainKeySeed"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "201":
+          description: Consumer Keychain key uploaded successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain key uploaded successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members/{userId}:

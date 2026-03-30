@@ -9,6 +9,7 @@ import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 import {
   invalidUserRole,
   keychainMemberNotFound,
+  tooManyKeysPerKeychain,
   userNotFound,
 } from "../models/errors.ts";
 import {
@@ -57,3 +58,13 @@ export function assertUserIsMemberOfKeychain(
     throw keychainMemberNotFound(keychainId, userId);
   }
 }
+
+export const assertKeychainKeysCountIsBelowThreshold = (
+  keychainId: ConsumerKeychainId,
+  maxKeysPerKeychain: number,
+  size: number,
+): void => {
+  if (size > maxKeysPerKeychain) {
+    throw tooManyKeysPerKeychain(keychainId, size);
+  }
+};

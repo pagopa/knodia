@@ -13,9 +13,11 @@ const KeychainProcessConfig = LoggerConfig.and(HTTPServerConfig)
     z
       .object({
         COGNITO_USER_POOL_ID: z.string().min(1),
+        MAX_KEYS_PER_KEYCHAIN: z.coerce.number().default(100),
       })
       .transform((c) => ({
         cognitoUserPoolId: c.COGNITO_USER_POOL_ID,
+        maxKeysPerKeychain: c.MAX_KEYS_PER_KEYCHAIN,
       })),
   )
   .and(EventStoreKeychainConfig)

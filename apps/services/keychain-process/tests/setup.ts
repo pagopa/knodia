@@ -18,6 +18,7 @@ let eventStoreDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let keychainWriterService: KeychainWriterService;
+export const mockMaxKeysPerKeychain = 100;
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -38,6 +39,7 @@ beforeAll(async () => {
       cognitoUserPoolId: "test-user-pool-id",
       isProduction: false,
       logLevel: "silent",
+      maxKeysPerKeychain: mockMaxKeysPerKeychain,
       nodeEnv: "test",
       wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
     },

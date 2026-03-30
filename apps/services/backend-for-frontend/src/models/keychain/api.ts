@@ -5,6 +5,7 @@ import {
 } from "@knodia/common-models/api";
 import {
   API_ConsumerKeychainIdPathParam,
+  API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
 } from "@knodia/keychain-models/api";
@@ -62,6 +63,14 @@ export const API_ConsumerKeychainPatch = z
 export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
 >;
+
+export const API_KeychainKeySeed = z
+  .strictObject({
+    encodedPem: z.string(),
+    name: API_KeychainKeyLocalizedName,
+  })
+  .meta({ id: "KeychainKeySeed" });
+export type API_KeychainKeySeed = z.infer<typeof API_KeychainKeySeed>;
 
 export const API_KeychainMemberSeed = z
   .strictObject({

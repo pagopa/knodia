@@ -16,8 +16,8 @@ import {
 
 const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
   match(format)
-    .with("jwk", () => KeyFormatV1.JWK)
-    .with("x509", () => KeyFormatV1.X509)
+    .with("PublicKey", () => KeyFormatV1.PublicKey)
+    .with("x509Certificate", () => KeyFormatV1.x509Certificate)
     .exhaustive();
 
 /** @knipignore -  Will be used when implementing the keychain keys lifecycle */
