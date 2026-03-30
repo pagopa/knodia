@@ -45,11 +45,6 @@ export type Pagination = {
 export type FileDownload = Blob | File;
 
 /**
- * Unique identifier of the User
- */
-export type UserId = string;
-
-/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -335,7 +330,7 @@ export type ConsumerCatalogEserviceSearchResults = {
 export type ConsumerEserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeId: KnodeId;
+    knodeName: string;
     name: string;
     notes: string;
 };
@@ -420,6 +415,14 @@ export type ConsumerEservice = {
 export type ConsumerEservices = {
     pagination: Pagination;
     results: Array<ConsumerEservice>;
+};
+
+/**
+ * Agreement with only id and state
+ */
+export type CompactAgreement = {
+    id: string;
+    state: AgreementState;
 };
 
 /**
@@ -526,13 +529,7 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
-export type User = {
-    email: string;
-    id: UserId;
-    username: string;
-};
-
-export type Users = Array<User>;
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
 /**
  * Name of the Purpose
@@ -552,8 +549,6 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
-export type PurposeFormSchemaVersion = '1.0';
-
 /**
  * Seed data to create a new Purpose
  */
@@ -562,9 +557,27 @@ export type PurposeSeed = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
-    formSchemaVersion: PurposeFormSchemaVersion;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+};
+
+export type ProducerPurposeDetailsEservice = {
+    id: string;
+    name: LocalizedName;
+    latestVersionState: EserviceVersionState;
+};
+
+export type ProducerPurposeDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: ProducerPurposeDetailsEservice;
+    id: string;
+    maxDailyCallsPerConsumer: number;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
 };
 
 export type GetStatusData = {
@@ -1006,39 +1019,6 @@ export type UpdateConsumerKeychainResponses = {
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
 
-export type GetTechnicalUsersData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/users/technical';
-};
-
-export type GetTechnicalUsersErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetTechnicalUsersError = GetTechnicalUsersErrors[keyof GetTechnicalUsersErrors];
-
-export type GetTechnicalUsersResponses = {
-    /**
-     * Technical Users retrieved successfully
-     */
-    200: Users;
-};
-
-export type GetTechnicalUsersResponse = GetTechnicalUsersResponses[keyof GetTechnicalUsersResponses];
-
 export type GetConsumerCatalogEservicesData = {
     body: GetConsumerCatalogEserviceSearchParams;
     path?: never;
@@ -1397,3 +1377,42 @@ export type GetProducerAgreementDetailsResponses = {
 };
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
+
+export type GetProducerPurposeDetailsData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}';
+};
+
+export type GetProducerPurposeDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetProducerPurposeDetailsError = GetProducerPurposeDetailsErrors[keyof GetProducerPurposeDetailsErrors];
+
+export type GetProducerPurposeDetailsResponses = {
+    /**
+     * Producer Purpose details retrieved successfully
+     */
+    200: ProducerPurposeDetails;
+};
+
+export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];
