@@ -51,16 +51,16 @@ const agreement = {
 };
 
 const seedAll = async () => {
-  await Promise.all(
-    mockPurposes.map((p, i) =>
+  await Promise.all([
+    ...mockPurposes.map((p, i) =>
       readmodelDb
         .insert(readmodelPurpose)
         .values(splitPurposeIntoObjectsSQL(p, i).purposeSQL),
     ),
-  );
-  await eserviceWriterService.upsertEservice(eservice1, 1);
-  await eserviceWriterService.upsertEservice(eservice2, 1);
-  await agreementWriterService.upsertAgreement(agreement, 1);
+    eserviceWriterService.upsertEservice(eservice1, 1),
+    eserviceWriterService.upsertEservice(eservice2, 1),
+    agreementWriterService.upsertAgreement(agreement, 1),
+  ]);
 };
 
 describe("GET /purposes (getPurposes)", () => {
