@@ -602,6 +602,7 @@ components:
         - results
       additionalProperties: false
     PurposeFormSchemaVersion:
+      description: Version identifier for the Purpose form schema provided by this Knode
       type: string
       enum:
         - "1.0"
@@ -672,9 +673,13 @@ components:
       allOf:
         - $ref: "#/components/schemas/CreatedResource"
     PurposeFormSchema:
+      description: JSON Schema (Draft-07) that defines the structure and validation
+        rules for the Purpose form answers
       type: object
       additionalProperties: {}
     PurposeFormUiSchema:
+      description: UI Schema that defines how to render the Purpose form (layout,
+        widgets, visibility rules)
       type: object
       additionalProperties: {}
 paths:
