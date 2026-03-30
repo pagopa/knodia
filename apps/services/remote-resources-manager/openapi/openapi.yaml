@@ -694,6 +694,12 @@ components:
       type: string
       enum:
         - "1.0"
+    PurposeFormSchema:
+      type: object
+      additionalProperties: {}
+    PurposeFormUiSchema:
+      type: object
+      additionalProperties: {}
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -1205,6 +1211,7 @@ paths:
   /purposes:
     post:
       operationId: createPurpose
+      summary: Create a Purpose
       tags:
         - purpose
       description: Create a new Purpose
@@ -1261,6 +1268,108 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/formSchemas/{version}:
+    get:
+      operationId: getPurposeFormSchema
+      summary: Get Purpose form schema by version
+      tags:
+        - purpose
+      description: Retrieve the JSON Schema for validating Purpose form answers
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/PurposeFormSchemaVersion"
+          in: path
+          name: version
+          required: true
+      responses:
+        "200":
+          description: Purpose form schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose form schema retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /purposes/formSchemas/{version}/ui:
+    get:
+      operationId: getPurposeFormUiSchema
+      summary: Get Purpose form UI schema by version
+      tags:
+        - purpose
+      description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/PurposeFormSchemaVersion"
+          in: path
+          name: version
+          required: true
+      responses:
+        "200":
+          description: Purpose form UI schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose form UI schema retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormUiSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /organizations/{organizationId}:
