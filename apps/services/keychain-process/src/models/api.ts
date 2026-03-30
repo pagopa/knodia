@@ -4,6 +4,7 @@ import {
   API_PaginationQueryParams,
   API_UserId,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
@@ -71,6 +72,7 @@ export type API_Users = z.infer<typeof API_Users>;
 
 export const API_ConsumerKeychainPurposeLinkSeed = z
   .strictObject({
+    knodeId: API_KnodeId,
     purposeId: z.uuid(),
   })
   .meta({ id: "ConsumerKeychainPurposeLinkSeed" });

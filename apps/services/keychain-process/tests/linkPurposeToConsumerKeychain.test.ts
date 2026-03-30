@@ -1,12 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import {
+  generateExternalId,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
 import { generateId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychainPurpose,
   KeychainEventV1,
+  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
-import { type PurposeV1, toPurposeV1 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockConsumerKeychain,
@@ -34,6 +38,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
   const consumerKeychain = getMockConsumerKeychain();
   const purpose = getMockPurpose();
   const body: API_ConsumerKeychainPurposeLinkSeed = {
+    knodeId: "Orion",
     purposeId: purpose.id,
   };
 
@@ -57,7 +62,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     const expectedConsumerKeychainPurpose: ConsumerKeychainPurpose = {
       consumerKeychainId: consumerKeychain.id,
       linkedAt: new Date(responseBody.linkedAt),
-      purposeId: purpose.id,
+      purposeId: unsafeBrandExternalId(purpose.id),
     };
 
     expect(responseBody).toMatchObject(
@@ -77,23 +82,20 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     assert(parsedEvent.type === "ConsumerKeychainPurposeLinkedV1");
 
     const linkEventData = parsedEvent.data;
-    const expectedPurpose = toPurposeV1(purpose);
 
     expect(linkEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date(responseBody.linkedAt).getTime(),
-      purpose: {
-        ...expectedPurpose,
-        formAnswersJson: expect.any(String),
-      } satisfies PurposeV1,
+      purpose: toConsumerKeychainLinkedPurposeV1(
+        unsafeBrandExternalId(purpose.id),
+        body.knodeId,
+      ),
     });
-    expect(JSON.parse(linkEventData.purpose!.formAnswersJson!)).toEqual(
-      JSON.parse(expectedPurpose.formAnswersJson!),
-    );
   });
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],
+    ["invalid property", { ...body, knodeId: "InvalidKnodeId" }],
     ["purposeId is invalid", { purposeId: "not-a-valid-uuid" }],
     ["empty body", {}],
   ])(
@@ -120,7 +122,8 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
       .body({
-        purposeId: generateId(),
+        ...body,
+        purposeId: generateExternalId(),
       } satisfies API_ConsumerKeychainPurposeLinkSeed);
     expect(response.statusCode).toBe(404);
   });

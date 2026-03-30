@@ -64,6 +64,11 @@ export type OrganizationId = string;
 export type UserId = string;
 
 /**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+/**
  * Unique identifier of the Keychain
  */
 export type KeychainId = string;
@@ -101,6 +106,7 @@ export type User = {
 export type Users = Array<User>;
 
 export type ConsumerKeychainPurposeLinkSeed = {
+    knodeId: KnodeId;
     purposeId: string;
 };
 

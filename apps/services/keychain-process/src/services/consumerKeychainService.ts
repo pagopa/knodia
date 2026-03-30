@@ -8,17 +8,27 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type {
-  ConsumerKeychain,
-  ConsumerKeychainPurpose,
-  FlatConsumerKeychain,
-} from "@knodia/keychain-models";
+import type { FastifyRequest } from "fastify";
 
+import {
+  type ExternalId,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychainId,
   generateId,
+  type KnodeId,
   type PurposeId,
 } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychain,
+  type ConsumerKeychainPurpose,
+  type FlatConsumerKeychain,
+} from "@knodia/keychain-models";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 import { match, P } from "ts-pattern";
 
 import type {
@@ -34,11 +44,13 @@ import {
   createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
+import { getKnodiaServiceHeaders } from "../utils/headers.ts";
+import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
-  retrieveConsumerKeychain,
-  retrievePurpose,
-} from "../utils/readmodelUtils.ts";
-import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
+  assertOrganizationIsKeychainOwner,
+  assertOrganizationIsPurposeConsumer,
+  assertPurposeIsNotLinkedToConsumerKeychain,
+} from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
   typeof consumerKeychainServiceBuilder
@@ -47,6 +59,7 @@ export type ConsumerKeychainService = ReturnType<
 export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
+  remoteResourcesManagerClient: RemoteResourcesManagerClient,
 ) {
   return {
     async createConsumerKeychain(
@@ -130,28 +143,56 @@ export function consumerKeychainServiceBuilder(
     },
 
     async linkPurposeToConsumerKeychain(
-      consumerKeychainId: ConsumerKeychainId,
-      purposeId: PurposeId,
-      { correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+      {
+        consumerKeychainId,
+        knodeId,
+        purposeId,
+        req,
+      }: {
+        consumerKeychainId: ConsumerKeychainId;
+        knodeId: KnodeId;
+        purposeId: ExternalId<PurposeId>;
+        req: FastifyRequest;
+      },
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
       logger.info(
         `Linking Purpose ${purposeId} to Consumer Keychain ${consumerKeychainId}`,
       );
 
-      const [consumerKeychain, purpose] = await Promise.all([
+      const [consumerKeychain, { data: purpose }] = await Promise.all([
         retrieveConsumerKeychain(consumerKeychainId, readmodelService),
-        retrievePurpose(purposeId, readmodelService),
+        remoteResourcesManagerApi.getPurpose({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { purposeId },
+          query: { knodeId },
+        }),
       ]);
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+      assertOrganizationIsPurposeConsumer(
+        unsafeBrandExternalId(authData.organizationId),
+        purpose,
+      );
+      await assertPurposeIsNotLinkedToConsumerKeychain(
+        consumerKeychainId,
+        purposeId,
+        readmodelService,
+      );
 
       const linkedAt = new Date();
       const { newVersion } = await eventStoreWriter.insertEvent(
-        createConsumerKeychainPurposeLinkedV1Event(
-          consumerKeychain.data,
-          purpose.data,
-          linkedAt,
+        createConsumerKeychainPurposeLinkedV1Event({
+          consumerKeychain: consumerKeychain.data,
           correlationId,
-          consumerKeychain.metadata.version,
-        ),
+          currentMetadataVersion: consumerKeychain.metadata.version,
+          knodeId,
+          linkedAt,
+          purposeId,
+        }),
       );
 
       return {

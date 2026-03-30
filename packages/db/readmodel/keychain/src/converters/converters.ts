@@ -1,5 +1,6 @@
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type OrganizationId,
   unsafeBrandId,
@@ -95,7 +96,7 @@ export function toConsumerKeychainPurpose(
         consumerKeychainPurposeSQL.consumerKeychainId,
       ),
       linkedAt: consumerKeychainPurposeSQL.linkedAt,
-      purposeId: unsafeBrandId(consumerKeychainPurposeSQL.purposeId),
+      purposeId: unsafeBrandExternalId(consumerKeychainPurposeSQL.purposeId),
     },
     metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
   };

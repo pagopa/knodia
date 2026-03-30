@@ -1,3 +1,4 @@
+import type { ExternalId } from "@knodia/common-models/externalResource";
 import type { ConsumerKeychainId, PurposeId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { FlatConsumerKeychain } from "@knodia/keychain-models";
@@ -7,11 +8,13 @@ import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
-import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
+import {
+  readmodelConsumerKeychain,
+  readmodelConsumerKeychainPurpose,
+} from "@knodia/db-readmodel-keychain";
 import { aggregateFlatConsumerKeychains } from "@knodia/db-readmodel-keychain/converters";
 import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
-import { purposeReadmodelServiceBuilder } from "@knodia/db-readmodel-purpose/services";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";
 
@@ -20,12 +23,25 @@ export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
   const consumerKeychainReadmodelService =
     consumerKeychainReadmodelServiceBuilder(readmodelDb);
-  const purposeReadmodelService = purposeReadmodelServiceBuilder(readmodelDb);
 
   return {
     async getConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
       return await consumerKeychainReadmodelService.getConsumerKeychainById(
         consumerKeychainId,
+      );
+    },
+    async getConsumerKeychainPurpose(
+      consumerKeychainId: ConsumerKeychainId,
+      purposeId: ExternalId<PurposeId>,
+    ) {
+      return await consumerKeychainReadmodelService.getConsumerKeychainPurposeByFilter(
+        and(
+          eq(
+            readmodelConsumerKeychainPurpose.consumerKeychainId,
+            consumerKeychainId,
+          ),
+          eq(readmodelConsumerKeychainPurpose.purposeId, purposeId),
+        ),
       );
     },
     async getConsumerKeychains(
@@ -74,9 +90,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           totalCount,
         };
       });
-    },
-    async getPurpose(purposeId: PurposeId) {
-      return await purposeReadmodelService.getPurposeById(purposeId);
     },
   };
 }

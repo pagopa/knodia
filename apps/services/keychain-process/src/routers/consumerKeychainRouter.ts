@@ -2,7 +2,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -233,8 +233,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         data: consumerKeychainPurpose,
         metadata: { version },
       } = await consumerKeychainService.linkPurposeToConsumerKeychain(
-        req.params.consumerKeychainId,
-        unsafeBrandId(req.body.purposeId),
+        {
+          consumerKeychainId: req.params.consumerKeychainId,
+          knodeId: req.body.knodeId,
+          purposeId: unsafeBrandExternalId(req.body.purposeId),
+          req,
+        },
         ctx,
       );
 
