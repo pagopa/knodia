@@ -93,7 +93,8 @@ export const API_PurposeFormUiSchemaResponse = z
     version: API_PurposeFormSchemaVersion,
   })
   .meta({
-    description: "Purpose form UI Schema with its version identifier",
+    description:
+      "Purpose form UI Schema (JSON Forms) with its version identifier",
     id: "PurposeFormUiSchemaResponse",
   });
 export type API_PurposeFormUiSchemaResponse = z.infer<

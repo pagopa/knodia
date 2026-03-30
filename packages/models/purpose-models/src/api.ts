@@ -107,7 +107,8 @@ export const API_ExternalPurposeFormUiSchemaResponse = z
     version: API_ExternalPurposeFormSchemaVersion,
   })
   .meta({
-    description: "Purpose form UI Schema with its version identifier",
+    description:
+      "Purpose form UI Schema (JSON Forms) with its version identifier",
     id: "PurposeFormUiSchemaResponse",
   });
 export type API_ExternalPurposeFormUiSchemaResponse = z.infer<
