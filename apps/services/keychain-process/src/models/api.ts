@@ -6,6 +6,7 @@ import {
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
+  API_ConsumerKeychainIdPathParam,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
 } from "@knodia/keychain-models/api";
@@ -69,6 +70,22 @@ export type API_User = z.infer<typeof API_User>;
 
 export const API_Users = z.array(API_User).meta({ id: "Users" });
 export type API_Users = z.infer<typeof API_Users>;
+
+export const API_KeychainMemberSeed = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .meta({ id: "KeychainMemberSeed" });
+export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
+
+export const API_ConsumerKeychainMemberPathParam = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .extend(API_ConsumerKeychainIdPathParam.shape);
+export type API_ConsumerKeychainMemberPathParam = z.infer<
+  typeof API_ConsumerKeychainMemberPathParam
+>;
 
 export const API_ConsumerKeychainPurposeLinkSeed = z
   .strictObject({

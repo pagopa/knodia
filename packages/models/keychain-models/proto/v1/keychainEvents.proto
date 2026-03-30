@@ -21,3 +21,13 @@ message ConsumerKeychainPurposeLinkedV1 {
   ConsumerKeychainLinkedPurposeV1 purpose = 2;
   int64 linkedAt = 3;
 }
+
+message ConsumerKeychainMemberAddedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+  string userId = 2;
+}
+
+message ConsumerKeychainMemberRemovedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+  string userId = 2;
+}

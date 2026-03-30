@@ -126,12 +126,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
     KeychainId:
       description: Unique identifier of the Keychain
       type: string
@@ -217,36 +211,13 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/User"
-    ConsumerKeychainPurposeLinkSeed:
+    KeychainMemberSeed:
       type: object
       properties:
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        purposeId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        userId:
+          $ref: "#/components/schemas/UserId"
       required:
-        - knodeId
-        - purposeId
-      additionalProperties: false
-    ConsumerKeychainPurpose:
-      type: object
-      properties:
-        consumerKeychainId:
-          $ref: "#/components/schemas/KeychainId"
-        linkedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        purposeId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - consumerKeychainId
-        - linkedAt
-        - purposeId
+        - userId
       additionalProperties: false
 paths:
   /status:
@@ -583,18 +554,18 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{consumerKeychainId}/purposes:
+  /consumerKeychains/{consumerKeychainId}/members:
     post:
-      operationId: linkPurposeToConsumerKeychain
+      operationId: addConsumerKeychainMember
       tags:
         - consumerKeychain
-      description: Link a Purpose to a Consumer Keychain
+      description: Add a member to a Consumer Keychain
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ConsumerKeychainPurposeLinkSeed"
+              $ref: "#/components/schemas/KeychainMemberSeed"
       parameters:
         - schema:
             type: string
@@ -612,13 +583,13 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Purpose successfully linked to Consumer Keychain
+          description: Consumer Keychain member added successfully
           content:
             application/json:
               schema:
-                description: Purpose successfully linked to Consumer Keychain
+                description: Consumer Keychain member added successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerKeychainPurpose"
+                  - $ref: "#/components/schemas/Keychain"
           headers:
             metadata-version:
               required: true
@@ -650,11 +621,92 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Not Found
+          description: Consumer Keychain not found
           content:
             application/problem+json:
               schema:
-                description: Not Found
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/members/{userId}:
+    delete:
+      operationId: removeConsumerKeychainMember
+      tags:
+        - consumerKeychain
+      description: Remove a member from a Consumer Keychain
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/UserId"
+          in: path
+          name: userId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Consumer Keychain member removed successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain member removed successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychain"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /users/technical:

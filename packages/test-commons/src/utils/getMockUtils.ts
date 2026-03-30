@@ -86,6 +86,8 @@ export function getMockOrganization(seed = 0): Organization {
 }
 
 export const MOCK_PURPOSE_FORM_ANSWERS = {
+  confirmPrincipleIntegrityAndDiscretion: "true",
+  declarationConfirmGDPR: "true",
   legalBasis: ["CONSENT"],
   personalDataTypes: ["WITH_IDENTIFYING_DATA"],
   purpose: "INSTITUTIONAL",

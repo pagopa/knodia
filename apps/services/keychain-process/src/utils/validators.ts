@@ -3,6 +3,7 @@ import type {
   ConsumerKeychainId,
   OrganizationId,
   PurposeId,
+  UserId,
 } from "@knodia/common-models/ids";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -10,7 +11,16 @@ import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
-import { purposeAlreadyLinkedToConsumerKeychain } from "../models/errors.ts";
+import {
+  invalidUserRole,
+  keychainMemberNotFound,
+  purposeAlreadyLinkedToConsumerKeychain,
+  userNotFound,
+} from "../models/errors.ts";
+import {
+  getOrganizationGroupName,
+  TECHNICAL_ROLE_GROUP_NAME,
+} from "../services/userService.ts";
 import { retrieveConsumerKeychainPurpose } from "./readmodelUtils.ts";
 
 export function assertOrganizationIsKeychainOwner(
@@ -48,5 +58,36 @@ export async function assertPurposeIsNotLinkedToConsumerKeychain(
 
   if (consumerKeychainPurpose) {
     throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purposeId);
+  }
+}
+
+export function assertUserBelongsToOrganization(
+  userId: UserId,
+  organizationId: OrganizationId,
+  userGroups: string[],
+): void {
+  const organizationGroupName = getOrganizationGroupName(organizationId);
+  if (!userGroups.includes(organizationGroupName)) {
+    throw userNotFound(userId);
+  }
+}
+
+export function assertUserHasTechnicalRole(
+  userId: UserId,
+  userGroups: string[],
+): void {
+  if (!userGroups.includes(TECHNICAL_ROLE_GROUP_NAME)) {
+    throw invalidUserRole(userId, TECHNICAL_ROLE_GROUP_NAME);
+  }
+}
+
+export function assertUserIsMemberOfKeychain(
+  userId: UserId,
+  keychainId: ConsumerKeychainId,
+  members: UserId[],
+): void {
+  const isMember = members.includes(userId);
+  if (!isMember) {
+    throw keychainMemberNotFound(keychainId, userId);
   }
 }

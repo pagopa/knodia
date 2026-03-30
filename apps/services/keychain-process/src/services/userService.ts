@@ -1,5 +1,7 @@
 import {
+  AdminListGroupsForUserCommand,
   CognitoIdentityProviderClient,
+  ListUsersCommand,
   ListUsersInGroupCommand,
   type UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
@@ -12,7 +14,9 @@ import {
 
 export type UserService = ReturnType<typeof userServiceBuilder>;
 
-const TECHNICAL_ROLE_GROUP_NAME = "role:technical";
+export const TECHNICAL_ROLE_GROUP_NAME = "role:technical";
+export const getOrganizationGroupName = (organizationId: OrganizationId) =>
+  `org:${organizationId}`;
 
 export interface IdmUser {
   email: string;
@@ -41,24 +45,64 @@ export function userServiceBuilder({ userPoolId }: { userPoolId: string }) {
       nextToken = response.NextToken;
     } while (nextToken);
 
-    return users.map(toUser);
+    return users.map(toIdmUser);
   }
 
   return {
     async getOrganizationTechnicalUsers(
       organizationId: OrganizationId,
     ): Promise<IdmUser[]> {
-      const organizationUsers = await listUsersInGroup(`org:${organizationId}`);
+      const organizationUsers = await listUsersInGroup(
+        getOrganizationGroupName(organizationId),
+      );
       const technicalUsers = await listUsersInGroup(TECHNICAL_ROLE_GROUP_NAME);
 
       const technicalUserIds = new Set(technicalUsers.map((user) => user.id));
 
       return organizationUsers.filter((user) => technicalUserIds.has(user.id));
     },
+
+    async getUserById(userId: UserId): Promise<IdmUser | undefined> {
+      const response = await client.send(
+        new ListUsersCommand({
+          Filter: `sub = "${userId}"`,
+          Limit: 1,
+          UserPoolId: userPoolId,
+        }),
+      );
+
+      const user = response.Users?.[0];
+      return user ? toIdmUser(user) : undefined;
+    },
+
+    async getUserGroups(username: string): Promise<string[]> {
+      const groups: string[] = [];
+      let nextToken: string | undefined;
+
+      do {
+        const response = await client.send(
+          new AdminListGroupsForUserCommand({
+            Limit: 60, // Max limit per AWS docs
+            NextToken: nextToken,
+            Username: username,
+            UserPoolId: userPoolId,
+          }),
+        );
+
+        groups.push(
+          ...(response.Groups ?? []).flatMap((group) =>
+            group.GroupName ? [group.GroupName] : [],
+          ),
+        );
+        nextToken = response.NextToken;
+      } while (nextToken);
+
+      return groups;
+    },
   };
 }
 
-function toUser(user: UserType): IdmUser {
+function toIdmUser(user: UserType): IdmUser {
   const attributes = new Map(
     (user.Attributes ?? []).map((attr) => [attr.Name, attr.Value]),
   );

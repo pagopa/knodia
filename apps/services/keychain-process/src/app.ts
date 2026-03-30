@@ -76,6 +76,10 @@ export function buildApp({
     serviceName: "keychain-process",
   });
 
+  const userService = userServiceBuilder({
+    userPoolId: config.cognitoUserPoolId,
+  });
+
   // Public routes (no auth required)
   app.register(healthRouter);
 
@@ -85,18 +89,15 @@ export function buildApp({
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(requireCorrelationIdHeaderPlugin, { makeApiProblem });
-    protectedApp.register(
-      consumerKeychainRouter,
-      consumerKeychainServiceBuilder(
+    protectedApp.register(consumerKeychainRouter, {
+      consumerKeychainService: consumerKeychainServiceBuilder(
         keychainEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
+        userService,
         clients.remoteResourcesManagerClient,
       ),
-    );
-    protectedApp.register(
-      userRouter,
-      userServiceBuilder({ userPoolId: config.cognitoUserPoolId }),
-    );
+    });
+    protectedApp.register(userRouter, userService);
   });
 
   return app;
