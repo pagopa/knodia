@@ -82,6 +82,7 @@ function AgreementStatusBanner({ state }: { state: bffApi.AgreementState }) {
     .with("Active", () => (
       <Banner
         action={{
+          isDisabled: true,
           label: "Suspend",
           // TODO: implement suspend agreement action
         }}
@@ -95,11 +96,13 @@ function AgreementStatusBanner({ state }: { state: bffApi.AgreementState }) {
     .with("Suspended", () => (
       <Banner
         action={{
+          isDisabled: true,
           label: "Archive",
           // TODO: implement archive agreement action
         }}
         kind="error"
         prominentAction={{
+          isDisabled: true,
           label: "Reactivate",
           // TODO: implement reactivate agreement action
         }}

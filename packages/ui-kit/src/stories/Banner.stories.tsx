@@ -83,6 +83,18 @@ export const MediumWithAction: Story = {
   ),
 };
 
+export const WithDisabledActions: Story = {
+  render: (args) => (
+    <Banner
+      {...args}
+      action={{ isDisabled: true, label: "Action" }}
+      prominentAction={{ isDisabled: true, label: "Prominent Action" }}
+    >
+      Banner with disabled actions
+    </Banner>
+  ),
+};
+
 export const StickerSheet: Story = {
   render: () => (
     <div className="flex flex-col gap-8">
