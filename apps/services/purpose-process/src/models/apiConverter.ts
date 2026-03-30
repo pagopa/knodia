@@ -8,7 +8,6 @@ export const toAPI_Purpose = (purpose: Purpose): API_Purpose => ({
   dailyCalls: purpose.dailyCalls,
   description: purpose.description,
   eserviceId: purpose.eserviceId,
-  formSchemaVersion: purpose.formSchemaVersion,
   id: purpose.id,
   name: purpose.name,
   state: purpose.state,

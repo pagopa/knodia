@@ -712,8 +712,6 @@ components:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
         eserviceId:
           $ref: "#/components/schemas/EserviceId"
-        formSchemaVersion:
-          $ref: "#/components/schemas/PurposeFormSchemaVersion"
         id:
           $ref: "#/components/schemas/PurposeId"
         name:
@@ -729,7 +727,6 @@ components:
         - dailyCalls
         - description
         - eserviceId
-        - formSchemaVersion
         - id
         - name
         - state

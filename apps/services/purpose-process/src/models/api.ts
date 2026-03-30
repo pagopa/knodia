@@ -31,7 +31,6 @@ export const API_Purpose = z
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
-    formSchemaVersion: API_PurposeFormSchemaVersion,
     id: PurposeId,
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
