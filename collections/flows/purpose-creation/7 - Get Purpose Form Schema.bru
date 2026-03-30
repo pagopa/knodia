@@ -1,7 +1,7 @@
 meta {
-  name: 6 - Get Form Schema
+  name: 7 - Get Purpose Form Schema
   type: http
-  seq: 6
+  seq: 7
 }
 
 get {
@@ -16,5 +16,5 @@ headers {
 }
 
 vars:post-response {
-  purposeFormSchemaVersion.body.version
+  purposeFormSchemaVersion: res.body.version
 }
