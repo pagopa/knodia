@@ -105,8 +105,8 @@ export type API_PurposeState = z.infer<typeof API_PurposeState>;
 
 export const API_Purpose = z
   .strictObject({
-    // formAnswersJson and formSchemaVersion are intentionally excluded —
-    // they can be retrieved via separate routes
+    // formAnswersJson is intentionally excluded —
+    // it can be retrieved via a separate route
     consumer: API_PurposeConsumer,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
