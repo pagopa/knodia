@@ -5,7 +5,7 @@ import {
   getConsumerPurposeFormUiSchemaOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
-import { Steps } from "@knodia/ui-kit/ui";
+import { Banner, Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
 
@@ -39,17 +39,19 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
-  const { data: jsonSchemaData } = useQuery(
+  const { data: jsonSchemaData, isError: isSchemaError } = useQuery(
     getConsumerPurposeFormSchemaOptions({
       client,
       path: { version: FORM_SCHEMA_VERSION },
+      query: { knodeId },
     }),
   );
 
-  const { data: uiSchemaData } = useQuery(
+  const { data: uiSchemaData, isError: isUiSchemaError } = useQuery(
     getConsumerPurposeFormUiSchemaOptions({
       client,
       path: { version: FORM_SCHEMA_VERSION },
+      query: { knodeId },
     }),
   );
 
@@ -68,6 +70,18 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     [uiSchema],
   );
 
+  if (isSchemaError || isUiSchemaError) {
+    return (
+      <FullPageModal onClose={onClose} title="Create Purpose">
+        <div className="mx-auto flex max-w-160 flex-col items-center gap-6 p-10">
+          <Banner kind="error">
+            Failed to load the form. Please try again later.
+          </Banner>
+        </div>
+      </FullPageModal>
+    );
+  }
+
   if (!jsonSchema || !uiSchema) {
     return (
       <FullPageModal onClose={onClose} title="Create Purpose">
@@ -80,11 +94,15 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     );
   }
 
-  const steps: StepConfig[] = [
+  const baseSteps: StepConfig[] = [
     {
       content: <DetailsStep onCancel={handleShowLeaveConfirm} />,
       label: "Details",
     },
+  ];
+
+  const steps: StepConfig[] = [
+    ...baseSteps,
     ...dynamicSteps.map((step, index) => ({
       content: (
         <DynamicFormStep
@@ -94,7 +112,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
           uischema={uiSchema}
         />
       ),
-      label: step.label ?? `Step ${index + 2}`,
+      label: step.label ?? `Step ${index + baseSteps.length + 1}`,
     })),
   ];
 
@@ -119,7 +137,7 @@ function ModalContent() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    containerRef.current?.parentElement?.scrollTo(0, 0);
+    containerRef.current?.parentElement?.scrollTo?.(0, 0);
   }, [currentStepIndex]);
 
   return (

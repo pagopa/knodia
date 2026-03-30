@@ -30,6 +30,7 @@
     "@tanstack/react-router-devtools": "catalog:",
     "ajv": "catalog:",
     "axios": "catalog:",
+    "jose": "catalog:",
     "oidc-client-ts": "catalog:",
     "react": "catalog:",
     "react-aria-components": "catalog:",
@@ -57,6 +58,7 @@
     "globals": "catalog:",
     "jsdom": "catalog:",
     "msw": "catalog:",
+    "@knodia/test-commons": "workspace:*",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

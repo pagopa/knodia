@@ -1,8 +1,19 @@
-import type { KafkaConsumerConfig } from "@knodia/kafka-commons/config";
-
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
-import { setupKafkaTestProducer } from "@knodia/test-commons/kafka";
+import {
+  type ConsumerKeychainReadmodelService,
+  consumerKeychainReadmodelServiceBuilder,
+} from "@knodia/db-readmodel-keychain/services";
+import {
+  type KeychainWriterService,
+  keychainWriterServiceBuilder,
+} from "@knodia/db-readmodel-keychain/writer";
+import { setupKafkaTestProducerAndConsumer } from "@knodia/test-commons/kafka";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
+import {
+  type TestConsumer,
+  type TestDrizzleDb,
+  type TestProducer,
+} from "@knodia/test-commons/types";
 import {
   createTestLogger,
   resetTestDatabase,
@@ -11,23 +22,28 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { createProcessMessage } from "../src/utils/utils.ts";
 
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
-let producer: Awaited<ReturnType<typeof setupKafkaTestProducer>>["producer"];
-let topicName: Awaited<ReturnType<typeof setupKafkaTestProducer>>["topicName"];
-let kafkaConfig: KafkaConsumerConfig;
-let processMessage: ReturnType<typeof createProcessMessage>;
+let readmodelDb: TestDrizzleDb;
+let producer: TestProducer;
+let consumer: TestConsumer;
+let topicName: string;
+let keychainWriterService: KeychainWriterService;
+let consumerKeychainReadmodelService: ConsumerKeychainReadmodelService;
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
     inject("POSTGRES_CONNECTION_STRING"),
   );
 
-  ({ kafkaConfig, producer, topicName } = await setupKafkaTestProducer(
+  const { logger } = createTestLogger();
+
+  ({ consumer, producer, topicName } = await setupKafkaTestProducerAndConsumer(
     inject("KAFKA_BROKER"),
+    createProcessMessage(readmodelDb, logger),
   ));
 
-  const { logger } = createTestLogger();
-  processMessage = createProcessMessage(readmodelDb, logger);
+  keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
+  consumerKeychainReadmodelService =
+    consumerKeychainReadmodelServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -35,8 +51,18 @@ afterEach(async () => {
 });
 
 afterAll(async () => {
-  await readmodelDb.$client.end();
-  await producer.disconnect();
+  await Promise.all([
+    readmodelDb.$client.end(),
+    producer.disconnect(),
+    consumer.disconnect(),
+  ]);
 });
 
-export { kafkaConfig, processMessage, producer, readmodelDb, topicName };
+export {
+  consumer,
+  consumerKeychainReadmodelService,
+  keychainWriterService,
+  producer,
+  readmodelDb,
+  topicName,
+};

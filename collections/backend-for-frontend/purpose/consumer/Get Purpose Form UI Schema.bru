@@ -4,9 +4,13 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/consumer/purposes/formSchemas/:purposeSchemaVersion/ui
+  url: {{host-backend-for-frontend}}/consumer/purposes/formSchemas/:purposeSchemaVersion/ui?knodeId={{other-knode-id}}
   body: none
   auth: none
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
 }
 
 params:path {

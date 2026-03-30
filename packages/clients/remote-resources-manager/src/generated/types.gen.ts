@@ -205,7 +205,7 @@ export type EserviceDetailsInterfaceDocument = {
 export type EserviceDetailsProducer = {
     email: string;
     id: string;
-    knodeName: string;
+    knodeId: KnodeId;
     name: string;
     notes: string;
 };
@@ -286,6 +286,10 @@ export type PurposeFormAnswers = {
 export type PurposeFormSchemaVersion = '1.0';
 
 export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
+export type PurposeFormUiSchema = {
     [key: string]: unknown;
 };
 
@@ -678,7 +682,9 @@ export type GetPurposeFormSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/purposes/formSchemas/{version}';
 };
 
@@ -713,7 +719,9 @@ export type GetPurposeFormUiSchemaData = {
     path: {
         version: PurposeFormSchemaVersion;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/purposes/formSchemas/{version}/ui';
 };
 
@@ -738,7 +746,7 @@ export type GetPurposeFormUiSchemaResponses = {
     /**
      * Purpose form UI schema retrieved successfully
      */
-    200: PurposeFormSchema;
+    200: PurposeFormUiSchema;
 };
 
 export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];

@@ -2,13 +2,13 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import {
   type OrganizationId,
-  type PurposeId,
   unsafeBrandId,
-  type UserId,
+  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainKey,
+  type ConsumerKeychainPurpose,
   type FlatConsumerKeychain,
   KeyAlgorithm,
   KeyFormat,
@@ -19,12 +19,12 @@ import {
 import type {
   ConsumerKeychainItemsSQL,
   ConsumerKeychainKeySQL,
+  ConsumerKeychainPurposeSQL,
   FlatConsumerKeychainItemsSQL,
 } from "../consumerKeychain.ts";
 
 export const buildConsumerKeychain = ({
   consumerKeychainKeysSQL,
-  consumerKeychainPurposesSQL,
   consumerKeychainSQL,
   consumerKeychainUsersSQL,
 }: ConsumerKeychainItemsSQL): WithMetadata<ConsumerKeychain> => {
@@ -38,12 +38,9 @@ export const buildConsumerKeychain = ({
     keys: consumerKeychainKeysSQL.map(buildConsumerKeychainKey),
     name: LocalizedName.parse(consumerKeychainSQL.name),
     ownerId: unsafeBrandId<OrganizationId>(consumerKeychainSQL.ownerId),
-    purposes: consumerKeychainPurposesSQL.map((purposeSQL) =>
-      unsafeBrandId<PurposeId>(purposeSQL.purposeId),
-    ),
     updatedAt: consumerKeychainSQL.updatedAt,
     users: consumerKeychainUsersSQL.map((userSQL) =>
-      unsafeBrandId<UserId>(userSQL.userId),
+      unsafeBrandUserId(userSQL.userId),
     ),
   };
 
@@ -85,6 +82,21 @@ export function buildConsumerKeychainKey(
     format: KeyFormat.parse(keySQL.format),
     kid: keySQL.kid,
     name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandId<UserId>(keySQL.userId),
+    userId: unsafeBrandUserId(keySQL.userId),
+  };
+}
+
+export function toConsumerKeychainPurpose(
+  consumerKeychainPurposeSQL: ConsumerKeychainPurposeSQL,
+): WithMetadata<ConsumerKeychainPurpose> {
+  return {
+    data: {
+      consumerKeychainId: unsafeBrandId(
+        consumerKeychainPurposeSQL.consumerKeychainId,
+      ),
+      linkedAt: consumerKeychainPurposeSQL.linkedAt,
+      purposeId: unsafeBrandId(consumerKeychainPurposeSQL.purposeId),
+    },
+    metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
   };
 }

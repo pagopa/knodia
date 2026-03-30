@@ -1,6 +1,7 @@
 import z from "zod";
 
-import { OrganizationId, UserId } from "../ids/brandedIds.ts";
+import { OrganizationId } from "../ids/brandedIds.ts";
+import { UserId } from "../ids/userId.ts";
 import { NonEmptyArray } from "../types.ts";
 import { UserRole } from "./roles.ts";
 
@@ -17,6 +18,7 @@ const UserTokenClaims = BaseJwtClaims.extend({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
   sub: UserId,
+  username: z.string(),
 });
 
 export const UISessionTokenClaims = UserTokenClaims.extend({

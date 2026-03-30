@@ -1,8 +1,4 @@
-import {
-  type PurposeId,
-  unsafeBrandId,
-  type UserId,
-} from "@knodia/common-models/ids";
+import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
@@ -31,9 +27,8 @@ export const fromConsumerKeychainV1 = (
     keys: input.keys.map(fromConsumerKeychainKeyV1),
     name: input.name,
     ownerId: unsafeBrandId(input.ownerId),
-    purposes: input.purposes.map(unsafeBrandId<PurposeId>),
     updatedAt: new Date(input.updatedAt),
-    users: input.users.map(unsafeBrandId<UserId>),
+    users: input.users.map(unsafeBrandUserId),
   };
 };
 
@@ -48,7 +43,7 @@ const fromConsumerKeychainKeyV1 = (
     createdAt: new Date(input.createdAt),
     format: fromKeyFormatV1(input.format),
     name: input.name,
-    userId: unsafeBrandId(input.userId),
+    userId: unsafeBrandUserId(input.userId),
   };
 };
 

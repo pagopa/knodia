@@ -7,10 +7,9 @@ export interface ConsumptionEserviceDetail {
     durationInMinutes: number;
     type: bffApi.AccessTokenType;
   };
+  agreement?: bffApi.EserviceAgreementDetail;
   categories: bffApi.EserviceCategory[];
   description: string;
-  // TODO(KN-287): fetch agreement state from BFF (needs BFF to call RRM for active agreements)
-  hasActiveAgreement: boolean;
   hasRequiredAttributes: boolean;
   id: EserviceId;
   identificationRequired: boolean;
@@ -23,7 +22,7 @@ export interface ConsumptionEserviceDetail {
   producer: {
     email: string;
     initials: string;
-    knodeName: string;
+    knodeId: string;
     name: string;
     notes: string;
   };

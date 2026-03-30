@@ -96,6 +96,10 @@ export function DynamicFormStep({
 
     if (Object.keys(fieldErrors).length > 0) {
       setErrors(fieldErrors);
+      requestAnimationFrame(() => {
+        const firstInvalid = document.querySelector("[data-invalid=true]");
+        firstInvalid?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
       return;
     }
 

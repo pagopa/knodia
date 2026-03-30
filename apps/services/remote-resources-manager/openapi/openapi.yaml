@@ -487,8 +487,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeName:
-          type: string
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -496,7 +496,7 @@ components:
       required:
         - email
         - id
-        - knodeName
+        - knodeId
         - name
         - notes
       additionalProperties: false
@@ -695,6 +695,9 @@ components:
       enum:
         - "1.0"
     PurposeFormSchema:
+      type: object
+      additionalProperties: {}
+    PurposeFormUiSchema:
       type: object
       additionalProperties: {}
     PurposeSeed:
@@ -1276,6 +1279,11 @@ paths:
       description: Retrieve the JSON Schema for validating Purpose form answers
       parameters:
         - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
             $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path
           name: version
@@ -1322,6 +1330,11 @@ paths:
       description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
       parameters:
         - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
             $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path
           name: version
@@ -1334,7 +1347,7 @@ paths:
               schema:
                 description: Purpose form UI schema retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchema"
+                  - $ref: "#/components/schemas/PurposeFormUiSchema"
         "400":
           description: Bad Request
           content:

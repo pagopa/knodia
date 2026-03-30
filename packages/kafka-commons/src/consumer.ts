@@ -14,12 +14,28 @@ import { initKafka } from "./kafka.ts";
 import { errorEventsListener } from "./listeners.ts";
 import { processExitAndDisconnect } from "./utils/utils.ts";
 
+/**
+ * Starts a Kafka consumer and processes messages from the provided topics.
+ *
+ * The consumer connects, verifies the topics exist, subscribes, and then
+ * runs `consumerHandler` for each message. Offsets are committed only after
+ * successful processing.
+ *
+ * @param topics - Kafka topics to subscribe to.
+ * @param consumerHandler - Function invoked for each consumed message.
+ * @param config - Kafka consumer configuration.
+ * @param logger - Logger used for consumer events and errors.
+ * @param readmodelPool - Database pool used for shutdown handling.
+ * @param onReady - Optional callback invoked once the consumer is connected
+ * and subscribed. Receives a `disconnect` function to gracefully stop the consumer.
+ */
 export async function runConsumer(
   topics: string[],
   consumerHandler: (messagePayload: EachMessagePayload) => Promise<void>,
   config: KafkaConsumerConfig,
   logger: Logger,
   readmodelPool: Pool,
+  onReady?: (disconnect: () => Promise<void>) => void,
 ) {
   try {
     logger.debug(`Kafka consumer connecting to topics: ${topics}`);
@@ -44,6 +60,8 @@ export async function runConsumer(
 
     await consumer.subscribe({ topics });
     logger.info(`Kafka subscribed to topics: ${topics}`);
+
+    onReady?.(() => consumer.disconnect());
 
     await consumer.run({
       eachMessage: async (payload: EachMessagePayload): Promise<void> => {

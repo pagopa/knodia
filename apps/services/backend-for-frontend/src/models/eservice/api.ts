@@ -347,7 +347,7 @@ const API_ConsumerEserviceDetailsProducer = z
   .strictObject({
     email: z.string(),
     id: z.uuid(),
-    knodeName: z.string(),
+    knodeId: API_KnodeId,
     name: z.string(),
     notes: z.string(),
   })
@@ -357,6 +357,8 @@ const API_ConsumerRequiredAttribute = API_Attribute.extend({
   possessed: z.boolean(),
 }).meta({ id: "ConsumerRequiredAttribute" });
 
+// Intentionally duplicated from API_CompactAgreement in agreement/api.ts
+// to avoid a circular dependency (agreement/api.ts imports API_CompactEservice from this file).
 const API_EserviceAgreementDetail = z
   .strictObject({
     id: z.uuid(),

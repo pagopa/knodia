@@ -4,8 +4,10 @@ import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
 
 import {
+  maxDailyCalls,
   maxDescriptionLength,
   maxNameLength,
+  minDailyCalls,
   minDescriptionLength,
   minNameLength,
 } from "./purpose.ts";
@@ -14,6 +16,13 @@ export const API_PurposeState = z
   .enum(["Active", "Suspended", "Archived"])
   .meta({ id: "PurposeState" });
 export type API_PurposeState = z.infer<typeof API_PurposeState>;
+
+export const API_PurposeDailyCalls = z
+  .number()
+  .int()
+  .min(minDailyCalls)
+  .max(maxDailyCalls)
+  .meta({ format: "int32" });
 
 export const API_PurposeConsumer = z
   .strictObject({
@@ -63,6 +72,11 @@ export const API_PurposeFormSchema = z
   .record(z.string(), z.unknown())
   .meta({ id: "PurposeFormSchema" });
 export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
+
+export const API_PurposeFormUiSchema = z
+  .record(z.string(), z.unknown())
+  .meta({ id: "PurposeFormUiSchema" });
+export type API_PurposeFormUiSchema = z.infer<typeof API_PurposeFormUiSchema>;
 
 export const API_PurposeIdPathParam = z.strictObject({
   purposeId: PurposeId,

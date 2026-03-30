@@ -2,7 +2,7 @@
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { type SignCommand } from "@aws-sdk/client-kms";
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
 import { tokenGeneratorBuilder } from "../src/tokenGenerator.ts";
@@ -42,6 +42,7 @@ const testCases = [
       roles: ["administrative"],
       sub: "660e8400-e29b-41d4-a716-446655440000",
       type: "ui-session",
+      username: "test-user",
     },
     generate: () =>
       generator.generateUISessionToken({
@@ -51,7 +52,8 @@ const testCases = [
         organizationId: unsafeBrandId("550e8400-e29b-41d4-a716-446655440000"),
         roles: ["administrative"] as NonEmptyArray<"administrative">,
         secondsDuration: SECONDS_DURATION,
-        subject: unsafeBrandId("660e8400-e29b-41d4-a716-446655440000"),
+        subject: unsafeBrandUserId("660e8400-e29b-41d4-a716-446655440000"),
+        username: "test-user",
       }),
     name: "generateUISessionToken",
   },

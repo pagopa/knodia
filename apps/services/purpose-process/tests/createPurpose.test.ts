@@ -370,8 +370,8 @@ describe("POST /purposes (createPurpose)", () => {
       .body({
         ...body,
         formAnswersJson: {
+          ...MOCK_PURPOSE_FORM_ANSWERS,
           purpose: "INVALID_VALUE",
-          purposeDescription: "test",
         },
       } satisfies API_PurposeSeed);
     expect(response.statusCode).toBe(400);

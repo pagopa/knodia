@@ -11,16 +11,16 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
+import {
+  API_PurposeFormSchema,
+  API_PurposeFormSchemaVersionPathParam,
+  API_PurposeFormUiSchema,
+  API_PurposeIdPathParam,
+} from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
 
-import {
-  API_Purpose,
-  API_PurposeFormSchema,
-  API_PurposeFormSchemaVersionPathParam,
-  API_PurposeSeed,
-} from "../models/api.ts";
+import { API_Purpose, API_PurposeSeed } from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -129,11 +129,13 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      validateAuthorization(getContextValues(requestContext), [
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
       ]);
 
-      res.status(200).send(purposeService.getFormSchema(req.params.version));
+      res
+        .status(200)
+        .send(purposeService.getFormSchema(req.params.version, ctx));
     },
     method: "GET",
     schema: {
@@ -158,11 +160,13 @@ export const purposeRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      validateAuthorization(getContextValues(requestContext), [
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
       ]);
 
-      res.status(200).send(purposeService.getFormUiSchema(req.params.version));
+      res
+        .status(200)
+        .send(purposeService.getFormUiSchema(req.params.version, ctx));
     },
     method: "GET",
     schema: {
@@ -172,7 +176,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       operationId: "getPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
       response: {
-        200: API_PurposeFormSchema.meta({
+        200: API_PurposeFormUiSchema.meta({
           description: "Purpose form UI schema retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

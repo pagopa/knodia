@@ -8,8 +8,7 @@ export type IDS =
   | EserviceInterfaceId
   | EserviceVersionId
   | OrganizationId
-  | PurposeId
-  | UserId;
+  | PurposeId;
 
 export const CorrelationId = z.uuid().brand<"CorrelationId">();
 export type CorrelationId = z.infer<typeof CorrelationId>;
@@ -25,9 +24,6 @@ export type EserviceInterfaceId = z.infer<typeof EserviceInterfaceId>;
 
 export const OrganizationId = z.uuid().brand<"OrganizationId">();
 export type OrganizationId = z.infer<typeof OrganizationId>;
-
-export const UserId = z.uuid().brand<"UserId">();
-export type UserId = z.infer<typeof UserId>;
 
 export const AgreementId = z.uuid().brand<"AgreementId">();
 export type AgreementId = z.infer<typeof AgreementId>;

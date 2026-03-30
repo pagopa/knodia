@@ -155,7 +155,12 @@ export function eserviceServiceBuilder(
         path: { organizationId: eservice.producerId },
       });
 
-      return toAPI_EserviceDetails(eservice, version, producer, agreement);
+      return toAPI_EserviceDetails(
+        eservice,
+        version,
+        { ...producer, knodeId: eserviceId.knodeId },
+        agreement,
+      );
     },
 
     async getEservices(

@@ -1,3 +1,5 @@
+import type { FastifyInstance } from "fastify";
+
 import { requestContext } from "@fastify/request-context";
 import { generateId } from "@knodia/common-models/ids";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -17,7 +19,7 @@ const makeApiProblem = makeApiProblemBuilder(
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
 describe("requireCorrelationIdHeaderPlugin", () => {
-  let app: ReturnType<typeof buildTestApp>;
+  let app: FastifyInstance;
 
   beforeAll(async () => {
     app = buildTestApp();
@@ -96,7 +98,7 @@ describe("requireCorrelationIdHeaderPlugin", () => {
 });
 
 describe("correlation ID header injection prevention", () => {
-  let app: ReturnType<typeof buildTestApp>;
+  let app: FastifyInstance;
 
   beforeAll(async () => {
     // Simulates a frontier service (BFF, k2k-gateway):

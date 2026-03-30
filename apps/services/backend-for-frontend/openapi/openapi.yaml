@@ -98,6 +98,11 @@ components:
       description: Binary file content
       format: binary
       type: string
+    UserId:
+      description: Unique identifier of the User
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -648,8 +653,8 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeName:
-          type: string
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
         name:
           type: string
         notes:
@@ -657,7 +662,7 @@ components:
       required:
         - email
         - id
-        - knodeName
+        - knodeId
         - name
         - notes
       additionalProperties: false
@@ -875,6 +880,20 @@ components:
       required:
         - pagination
         - results
+      additionalProperties: false
+    CompactAgreement:
+      description: Agreement with only id and state
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+      required:
+        - id
+        - state
       additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
@@ -1119,6 +1138,30 @@ components:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
       additionalProperties: false
+    User:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          $ref: "#/components/schemas/UserId"
+        username:
+          type: string
+      required:
+        - email
+        - id
+        - username
+      additionalProperties: false
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    PurposeState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -1149,6 +1192,9 @@ components:
       enum:
         - "1.0"
     PurposeFormSchema:
+      type: object
+      additionalProperties: {}
+    PurposeFormUiSchema:
       type: object
       additionalProperties: {}
     PurposeSeed:
@@ -1182,6 +1228,65 @@ components:
         - formSchemaVersion
         - knodeId
         - name
+      additionalProperties: false
+    ProducerPurposeDetailsEservice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        latestVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - id
+        - name
+        - latestVersionState
+      additionalProperties: false
+    ProducerPurposeDetails:
+      type: object
+      properties:
+        agreement:
+          $ref: "#/components/schemas/CompactAgreement"
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eservice:
+          $ref: "#/components/schemas/ProducerPurposeDetailsEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        maxDailyCallsPerConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+      required:
+        - agreement
+        - consumer
+        - dailyCalls
+        - description
+        - eservice
+        - id
+        - maxDailyCallsPerConsumer
+        - name
+        - producer
+        - state
       additionalProperties: false
 paths:
   /status:
@@ -1792,6 +1897,45 @@ paths:
                 description: Consumer keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /users/technical:
+    get:
+      operationId: getTechnicalUsers
+      tags:
+        - user
+      description: Retrieve technical users of the requesting User's Organization
+      responses:
+        "200":
+          description: Technical Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Technical Users retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Users"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumer/catalog:
     post:
       operationId: getConsumerCatalogEservices
@@ -2211,6 +2355,11 @@ paths:
       description: Retrieve the JSON Schema for validating Purpose form answers
       parameters:
         - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
             $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path
           name: version
@@ -2257,6 +2406,11 @@ paths:
       description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
       parameters:
         - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
             $ref: "#/components/schemas/PurposeFormSchemaVersion"
           in: path
           name: version
@@ -2269,7 +2423,7 @@ paths:
               schema:
                 description: Purpose form UI schema retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchema"
+                  - $ref: "#/components/schemas/PurposeFormUiSchema"
         "400":
           description: Bad Request
           content:
@@ -2407,6 +2561,61 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /producer/purposes/{purposeId}:
+    get:
+      operationId: getProducerPurposeDetails
+      tags:
+        - purpose
+      description: Retrieve a Producer Purpose with details
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "200":
+          description: Producer Purpose details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Purpose details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ProducerPurposeDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
 servers:
   - description: BFF API
     url: /
@@ -2425,3 +2634,5 @@ tags:
     name: consumerKeychain
   - description: Purpose routes
     name: purpose
+  - description: User routes
+    name: user
