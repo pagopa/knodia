@@ -601,6 +601,10 @@ components:
         - pagination
         - results
       additionalProperties: false
+    PurposeFormSchemaVersion:
+      type: string
+      enum:
+        - "1.0"
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -650,6 +654,8 @@ components:
             - $ref: "#/components/schemas/EserviceId"
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
+        formSchemaVersion:
+          $ref: "#/components/schemas/PurposeFormSchemaVersion"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
       required:
@@ -658,6 +664,7 @@ components:
         - description
         - eserviceId
         - formAnswersJson
+        - formSchemaVersion
         - name
       additionalProperties: false
     CreatedPurposeResource:

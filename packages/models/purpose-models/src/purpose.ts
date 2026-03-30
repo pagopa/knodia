@@ -35,6 +35,9 @@ export type PurposeState = z.infer<typeof PurposeState>;
 export const PurposeFormAnswers = z.record(z.string(), z.unknown());
 export type PurposeFormAnswers = z.infer<typeof PurposeFormAnswers>;
 
+export const PurposeFormSchemaVersion = z.enum(["1.0"]);
+export type PurposeFormSchemaVersion = z.infer<typeof PurposeFormSchemaVersion>;
+
 export const Purpose = z.strictObject({
   consumer: ExternalResource<OrganizationId>(),
   createdAt: z.coerce.date(),
@@ -42,6 +45,7 @@ export const Purpose = z.strictObject({
   description: LocalizedPurposeDescription,
   eserviceId: EserviceId,
   formAnswersJson: PurposeFormAnswers,
+  formSchemaVersion: PurposeFormSchemaVersion,
   id: PurposeId,
   name: LocalizedPurposeName,
   state: PurposeState,

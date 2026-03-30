@@ -552,6 +552,8 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormSchemaVersion = '1.0';
+
 /**
  * Seed data to create a new Purpose
  */
@@ -560,6 +562,7 @@ export type PurposeSeed = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
 };
