@@ -19,12 +19,12 @@ const tabItems = [
     isDisabled: true,
     title: "Keychains",
   },
-] satisfies ReadonlyArray<{
+] satisfies readonly {
   content: React.ReactNode;
   id: number;
   isDisabled?: boolean;
   title: string;
-}>;
+}[];
 
 export function ProductionEServiceDetailsTabs({
   eservice,
