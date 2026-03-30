@@ -1,3 +1,7 @@
+<<<<<<< feat/KN-320_purpose-form-engine-tests
+=======
+import { Banner } from "@knodia/ui-kit/ui";
+>>>>>>> main
 import { useCallback, useMemo, useState } from "react";
 
 import type {
@@ -45,7 +49,14 @@ export function DynamicFormStep({
   const { nextStep, prevStep } = useStepsContext();
   const { eserviceId, formAnswers, knodeId, updateFormAnswers } =
     usePurposeWizardContext();
+<<<<<<< feat/KN-320_purpose-form-engine-tests
   const { createPurpose } = useCreatePurpose(eserviceId, knodeId);
+=======
+  const { createPurpose, isError, isPending } = useCreatePurpose(
+    eserviceId,
+    knodeId,
+  );
+>>>>>>> main
 
   const [values, setValues] = useState<FormValues>(() => ({
     ...getDefaultValues(jsonSchema),
@@ -167,9 +178,22 @@ export function DynamicFormStep({
         ))}
       </div>
 
+<<<<<<< feat/KN-320_purpose-form-engine-tests
       <ModalFooter
         cancelLabel="Previous"
         confirmLabel={isLastStep ? "Create Purpose" : "Next"}
+=======
+      {isError && (
+        <Banner kind="error" size="md" title="Something went wrong">
+          Please try again. Don&apos;t refresh the page to avoid data loss.
+        </Banner>
+      )}
+
+      <ModalFooter
+        cancelLabel="Previous"
+        confirmLabel={isLastStep ? "Create Purpose" : "Next"}
+        isDisabled={isPending || Object.keys(errors).length > 0}
+>>>>>>> main
         onCancel={prevStep}
         onConfirm={handleNext}
       />
