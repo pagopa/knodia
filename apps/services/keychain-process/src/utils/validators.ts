@@ -1,8 +1,16 @@
-import type { OrganizationId, UserId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  OrganizationId,
+  UserId,
+} from "@knodia/common-models/ids";
 
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
-import { invalidUserRole, userNotFound } from "../models/errors.ts";
+import {
+  invalidUserRole,
+  keychainMemberNotFound,
+  userNotFound,
+} from "../models/errors.ts";
 import {
   getOrganizationGroupName,
   TECHNICAL_ROLE_GROUP_NAME,
@@ -36,5 +44,16 @@ export function assertUserHasTechnicalRole(
 ): void {
   if (!userGroups.includes(TECHNICAL_ROLE_GROUP_NAME)) {
     throw invalidUserRole(userId, TECHNICAL_ROLE_GROUP_NAME);
+  }
+}
+
+export function assertUserIsMemberOfKeychain(
+  userId: UserId,
+  keychainId: ConsumerKeychainId,
+  members: UserId[],
+): void {
+  const isMember = members.includes(userId);
+  if (!isMember) {
+    throw keychainMemberNotFound(keychainId, userId);
   }
 }
