@@ -16,12 +16,14 @@ import { type RefreshTokenStore } from "./refreshTokenStore.ts";
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
   sub: z.string(),
+  username: z.string(),
 });
 
 const ClaimsFromCognito = z.object({
   organizationId: OrganizationId,
   roles: NonEmptyArray(UserRole),
   sub: UserId,
+  username: z.string(),
 });
 
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
@@ -52,6 +54,7 @@ export function authServiceBuilder(
         roles: claims.roles,
         secondsDuration: config.uiSessionJwt.secondsDuration,
         subject: claims.sub,
+        username: claims.username,
       }),
       tokenGenerator.generateUIRefreshToken({
         ...tokenParams,
@@ -59,6 +62,7 @@ export function authServiceBuilder(
         roles: claims.roles,
         secondsDuration: config.refreshJwt.secondsDuration,
         subject: claims.sub,
+        username: claims.username,
       }),
     ]);
     return {
@@ -100,6 +104,7 @@ export function authServiceBuilder(
       organizationId: orgGroup.slice("org:".length),
       roles,
       sub: cognitoPayload.sub,
+      username: cognitoPayload.username,
     });
 
     if (!claimsParsed.success) {
@@ -152,6 +157,7 @@ export function authServiceBuilder(
       organizationId: parsed.data.organizationId,
       roles: parsed.data.roles,
       sub: parsed.data.sub,
+      username: parsed.data.username,
     });
   }
 

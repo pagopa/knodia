@@ -24,7 +24,9 @@ import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
 import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRouter.ts";
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
+import { userRouter } from "./routers/keychain/userRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
+import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
@@ -34,6 +36,7 @@ export function buildAppFromConfig(config: BffProcessConfig) {
     eserviceProcessUrl: config.eserviceProcessUrl,
     keychainProcessUrl: config.keychainProcessUrl,
     organizationProcessUrl: config.organizationProcessUrl,
+    purposeProcessUrl: config.purposeProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
@@ -73,6 +76,10 @@ export function buildAppFromConfig(config: BffProcessConfig) {
             description: "Purpose routes",
             name: apiTags.purpose,
           },
+          {
+            description: "User routes",
+            name: apiTags.user,
+          },
         ],
       },
     },
@@ -110,8 +117,12 @@ export function buildAppFromConfig(config: BffProcessConfig) {
       keychainProcessClient: clients.keychainProcessClient,
       pollingService,
     });
+    protectedApp.register(userRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
+    });
     protectedApp.register(eserviceConsumerRouter, {
       config,
+      organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementConsumerRouter, {
@@ -125,6 +136,14 @@ export function buildAppFromConfig(config: BffProcessConfig) {
       eserviceProcessClient: clients.eserviceProcessClient,
       knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(purposeProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
+      eserviceProcessClient: clients.eserviceProcessClient,
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
+      purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });

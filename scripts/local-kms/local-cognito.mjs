@@ -6,11 +6,68 @@ const ISSUER = process.env.ISSUER ?? "http://localhost:4567";
 const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "http://localhost:5175")
   .split(",")
   .map((s) => s.trim());
+const DEFAULT_USER_POOL_ID =
+  process.env.USER_POOL_ID ?? "local-user-pool-id-for-tests";
 
 // Hardcoded user for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
+const USERNAME = "jane.doe";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["role:administrative", "role:technical"];
+const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
+const MOCK_USERS = [
+  {
+    Attributes: [
+      { Name: "sub", Value: USER_ID },
+      { Name: "email", Value: "mario.rossi@example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Mario" },
+      { Name: "family_name", Value: "Rossi" },
+      { Name: "custom:organizationId", Value: ORG_ID },
+    ],
+    Enabled: true,
+    Groups: [...ROLES, `org:${ORG_ID}`],
+    UserCreateDate: NOW_IN_SECONDS - 86_400,
+    UserLastModifiedDate: NOW_IN_SECONDS - 3_600,
+    UserStatus: "CONFIRMED",
+    Username: "Mario Rossi",
+  },
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000003" },
+      { Name: "email", Value: "giulia.bianchi@example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Giulia" },
+      { Name: "family_name", Value: "Bianchi" },
+      { Name: "custom:organizationId", Value: ORG_ID },
+    ],
+    Enabled: true,
+    Groups: [`org:${ORG_ID}`],
+    UserCreateDate: NOW_IN_SECONDS - 43_200,
+    UserLastModifiedDate: NOW_IN_SECONDS - 1_800,
+    UserStatus: "CONFIRMED",
+    Username: "Giulia Bianchi",
+  },
+  {
+    Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000004" },
+      { Name: "email", Value: "luca.neri@example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Luca" },
+      { Name: "family_name", Value: "Neri" },
+      {
+        Name: "custom:organizationId",
+        Value: "00000000-0000-4000-8000-000000000099",
+      },
+    ],
+    Enabled: true,
+    Groups: ["role:technical", "org:00000000-0000-4000-8000-000000000099"],
+    UserCreateDate: NOW_IN_SECONDS - 21_600,
+    UserLastModifiedDate: NOW_IN_SECONDS - 900,
+    UserStatus: "CONFIRMED",
+    Username: "Luca Neri",
+  },
+];
 
 const { privateKey, publicKey } = generateKeyPairSync("rsa", {
   modulusLength: 2048,
@@ -48,6 +105,13 @@ function readBody(req) {
   });
 }
 
+function readJsonBody(req) {
+  return readBody(req).then((body) => {
+    if (!body) return {};
+    return JSON.parse(body);
+  });
+}
+
 function setCorsHeaders(req, res) {
   const requestOrigin = req.headers.origin;
   const allowedOrigin = ALLOWED_ORIGINS.find((o) => o === requestOrigin);
@@ -69,6 +133,49 @@ function isAllowedRedirect(target) {
   } catch {
     return false;
   }
+}
+
+function writeJson(res, statusCode, body, headers = {}) {
+  res.writeHead(statusCode, {
+    "Content-Type": "application/json",
+    ...headers,
+  });
+  res.end(JSON.stringify(body));
+}
+
+function paginateUsers(users, limit, nextToken) {
+  const safeLimit =
+    typeof limit === "number" && limit > 0 ? Math.floor(limit) : 60;
+  const startIndex = nextToken ? Number.parseInt(nextToken, 10) : 0;
+  const page = users.slice(startIndex, startIndex + safeLimit);
+  const nextIndex = startIndex + safeLimit;
+
+  return {
+    NextToken:
+      nextIndex < users.length ? String(nextIndex) : undefined,
+    Users: page,
+  };
+}
+
+function filterUsersByGroup(groupName) {
+  return MOCK_USERS.filter((user) => user.Groups?.includes(groupName));
+}
+
+function handleListUsersInGroup(req, res, payload) {
+  const filteredUsers = filterUsersByGroup(payload.GroupName);
+  const response = paginateUsers(
+    filteredUsers,
+    payload.Limit,
+    payload.NextToken,
+  );
+
+  console.log(
+    `[list-users-in-group] Returned ${response.Users.length} users for group ${payload.GroupName} in pool ${payload.UserPoolId ?? DEFAULT_USER_POOL_ID}`,
+  );
+
+  writeJson(res, 200, response, {
+    "x-amz-target": req.headers["x-amz-target"] ?? "",
+  });
 }
 
 createServer(async (req, res) => {
@@ -113,6 +220,17 @@ createServer(async (req, res) => {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(JSON.stringify(JWKS));
       return;
+    }
+
+    // Minimal mock for Cognito User Pool administrative APIs used in local tests
+    if (req.method === "POST" && url.pathname === "/") {
+      const target = req.headers["x-amz-target"];
+      const payload = await readJsonBody(req);
+
+      if (target === "AWSCognitoIdentityProviderService.ListUsersInGroup") {
+        handleListUsersInGroup(req, res, payload);
+        return;
+      }
     }
 
     // Authorization endpoint — auto-approve, redirect with code
@@ -176,6 +294,7 @@ createServer(async (req, res) => {
 
       const accessToken = signJwt({
         sub: USER_ID,
+        username: USERNAME,
         "cognito:groups": [...ROLES, `org:${ORG_ID}`],
         token_use: "access",
         iss: ISSUER,

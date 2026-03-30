@@ -48,7 +48,7 @@ const toAPI_EserviceAgreementDetail = (
 export const toAPI_EserviceDetails = (
   eservice: k2kGatewayApi.Eservice,
   version: k2kGatewayApi.EserviceVersion,
-  producer: k2kGatewayApi.Organization,
+  producer: k2kGatewayApi.Organization & { knodeId: API_KnodeId },
   agreement?: k2kGatewayApi.Agreement,
 ): API_EserviceDetails => ({
   agreement: toAPI_EserviceAgreementDetail(agreement),
@@ -78,7 +78,7 @@ export const toAPI_EserviceDetails = (
   producer: {
     email: "info@example.com", // TODO: retrieve real data from producer knode
     id: producer.id,
-    knodeName: "Knode", // TODO: retrieve real data from producer knode
+    knodeId: producer.knodeId,
     name: producer.name,
     notes: "Notes", // TODO: retrieve real data from producer knode
   },

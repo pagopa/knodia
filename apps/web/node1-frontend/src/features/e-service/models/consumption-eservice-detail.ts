@@ -22,7 +22,7 @@ export interface ConsumptionEserviceDetail {
   producer: {
     email: string;
     initials: string;
-    knodeName: string;
+    knodeId: string;
     name: string;
     notes: string;
   };

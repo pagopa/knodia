@@ -1,3 +1,6 @@
+import type { TestDrizzleDb } from "@knodia/test-commons/types";
+import type { FastifyInstance } from "fastify";
+
 import { eventStoreOrganizationEvents } from "@knodia/db-event-store-organization";
 import { readmodelOrganization } from "@knodia/db-readmodel-organization";
 import {
@@ -11,9 +14,9 @@ import { afterAll, afterEach, beforeAll, inject } from "vitest";
 
 import { buildApp } from "../src/app.ts";
 
-let eventStoreDb: Awaited<ReturnType<typeof setupEventstoreTestDatabase>>;
-let readmodelDb: Awaited<ReturnType<typeof setupReadmodelTestDatabase>>;
-let app: ReturnType<typeof buildApp>;
+let eventStoreDb: TestDrizzleDb;
+let readmodelDb: TestDrizzleDb;
+let app: FastifyInstance;
 let organizationWriterService: OrganizationWriterService;
 
 async function resetTestDatabases() {

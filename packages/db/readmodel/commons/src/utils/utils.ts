@@ -1,12 +1,16 @@
+import type { IDS } from "@knodia/common-models/ids";
+
 import { genericInternalError } from "@knodia/common-models/errors";
 import { type ReadmodelConfig } from "@knodia/db-readmodel-config/config";
 import {
+  and,
   asc,
   count,
   desc,
   eq,
   getTableColumns,
   type InferSelectModel,
+  lte,
   sql,
   type SQL,
 } from "drizzle-orm";
@@ -276,3 +280,35 @@ export function ilikeJsonB({
     )
   `;
 }
+
+export const updateMetadataVersionInTables = async <
+  T extends AnyPgTable & {
+    $inferInsert: { metadataVersion: number };
+    metadataVersion: AnyPgColumn<{ data: number }>;
+  },
+>({
+  db,
+  getIdColumn,
+  id,
+  newMetadataVersion,
+  tables,
+}: {
+  db: NodePgDatabase;
+  getIdColumn: (table: T) => AnyPgColumn;
+  id: IDS;
+  newMetadataVersion: number;
+  tables: T[];
+}): Promise<void> => {
+  for (const table of tables) {
+    const idColumn = getIdColumn(table);
+
+    await db
+      .update(table)
+      .set({
+        metadataVersion: newMetadataVersion,
+      })
+      .where(
+        and(eq(idColumn, id), lte(table.metadataVersion, newMetadataVersion)),
+      );
+  }
+};

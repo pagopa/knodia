@@ -20,6 +20,7 @@ const toPurposeSQL = (
   description: purpose.description,
   eserviceId: purpose.eserviceId,
   formAnswersJson: purpose.formAnswersJson,
+  formSchemaVersion: purpose.formSchemaVersion,
   id: purpose.id,
   metadataVersion,
   name: purpose.name,

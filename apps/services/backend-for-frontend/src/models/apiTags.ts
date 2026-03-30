@@ -4,4 +4,5 @@ export const apiTags = {
   consumerKeychain: "consumerKeychain",
   eservice: "eservice",
   purpose: "purpose",
+  user: "user",
 } as const;

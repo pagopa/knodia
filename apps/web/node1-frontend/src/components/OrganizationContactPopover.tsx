@@ -4,12 +4,12 @@ import { DialogTrigger } from "react-aria-components";
 
 export function OrganizationContactPopover({
   email,
-  knodeName,
+  knodeId,
   name,
   notes,
 }: {
   email: string;
-  knodeName: string;
+  knodeId: string;
   name: string;
   notes: string;
 }) {
@@ -30,7 +30,7 @@ export function OrganizationContactPopover({
       <Popover
         className="max-w-md"
         placement="bottom start"
-        title={`${name} – ${knodeName} Knode`}
+        title={`${name} – ${knodeId} Knode`}
       >
         <dl className="body-sm flex flex-col gap-1">
           <div className="flex gap-2">

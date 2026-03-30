@@ -1,5 +1,6 @@
 import type { KeychainWriterService } from "@knodia/db-readmodel-keychain/writer";
 
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
@@ -32,6 +33,20 @@ export async function handleKeychainEvent(
       assertDataExistsInEvent(msg, "consumerKeychain");
       await keychainWriterService.deleteConsumerKeychain(
         fromConsumerKeychainV1(msg.data.consumerKeychain).id,
+        message.version,
+      );
+    })
+    .with({ type: "ConsumerKeychainPurposeLinkedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "consumerKeychain");
+      assertDataExistsInEvent(msg, "purpose");
+
+      const { consumerKeychain, purpose } = msg.data;
+      await keychainWriterService.upsertConsumerKeychainPurpose(
+        {
+          consumerKeychainId: unsafeBrandId(consumerKeychain.id),
+          linkedAt: new Date(msg.data.linkedAt),
+          purposeId: unsafeBrandId(purpose.id),
+        },
         message.version,
       );
     })

@@ -69,6 +69,7 @@ function makeCognitoPayload(
       "role:technical",
     ],
     sub: TEST_USER_ID,
+    username: "test-user",
     ...overrides,
   };
 }
@@ -86,6 +87,7 @@ function makeRefreshPayload(
     roles: ["administrative", "technical"],
     sub: TEST_USER_ID,
     type: "refresh-ui-session",
+    username: "test-user",
     ...overrides,
   };
 }
@@ -150,6 +152,7 @@ describe("auth integration", () => {
       expect(uiPayload.sub).toBe(TEST_USER_ID);
       expect(uiPayload.organizationId).toBe(TEST_ORG_ID);
       expect(uiPayload.roles).toEqual(["administrative", "technical"]);
+      expect(uiPayload.username).toBe("test-user");
       expect(uiPayload.type).toBe("ui-session");
     });
 
@@ -174,6 +177,7 @@ describe("auth integration", () => {
         parseJwtPayload(refreshCookie!["value"]!),
       );
       expect(refreshPayload.sub).toBe(TEST_USER_ID);
+      expect(refreshPayload.username).toBe("test-user");
       expect(refreshPayload.type).toBe("refresh-ui-session");
     });
 
@@ -237,6 +241,24 @@ describe("auth integration", () => {
     it("returns 401 when no valid role: group is present", async () => {
       setupValidCognitoToken({
         "cognito:groups": [`org:${TEST_ORG_ID}`, "role:invalidrole"],
+      });
+
+      const response = await app.inject({
+        method: "POST",
+        payload: { oidcToken: "token" },
+        url: "/auth/ui-session",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 401 when username is missing from Cognito token", async () => {
+      mockJwtVerify.mockResolvedValue({
+        payload: {
+          "cognito:groups": [`org:${TEST_ORG_ID}`, "role:administrative"],
+          sub: TEST_USER_ID,
+        },
+        protectedHeader: { alg: "RS256" },
       });
 
       const response = await app.inject({
@@ -324,6 +346,11 @@ describe("auth integration", () => {
 
       const body = response.json<{ uiSessionToken: string }>();
       expect(body.uiSessionToken).toBeDefined();
+
+      const uiPayload = UISessionTokenClaims.parse(
+        parseJwtPayload(body.uiSessionToken),
+      );
+      expect(uiPayload.username).toBe("test-user");
 
       // Should set a new refresh cookie (rotation)
       const refreshCookie = getSetCookie(response, "refresh");

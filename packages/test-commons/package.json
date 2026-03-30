@@ -43,6 +43,7 @@
     "./redis": "./src/testcontainers/redis.ts",
     "./readmodel": "./src/readmodel.ts",
     "./remoteResourceDb": "./src/remoteResourceDb.ts",
+    "./types": "./src/models/types.ts",
     "./utils": "./src/utils/index.ts"
   }
 }

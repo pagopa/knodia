@@ -1,0 +1,13 @@
+meta {
+  name: Get Technical Users
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/users/technical
+  body: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

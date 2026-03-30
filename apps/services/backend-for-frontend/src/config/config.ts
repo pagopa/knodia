@@ -23,6 +23,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         KEYCHAIN_PROCESS_URL: z.url(),
         KNODE_ID: KnodeId,
         ORGANIZATION_PROCESS_URL: z.url(),
+        PURPOSE_PROCESS_URL: z.url(),
         RECENT_ESERVICE_UPDATE_DAYS: z.coerce.number().positive().default(3),
         REDIS_URL: z.url(),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
@@ -53,6 +54,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         knodeId: c.KNODE_ID,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
+        purposeProcessUrl: c.PURPOSE_PROCESS_URL,
         recentEserviceUpdateDays: c.RECENT_ESERVICE_UPDATE_DAYS,
         redisUrl: c.REDIS_URL,
         refreshJwt: {
