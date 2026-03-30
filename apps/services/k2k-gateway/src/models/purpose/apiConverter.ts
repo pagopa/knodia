@@ -1,6 +1,8 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 import type { purposeProcessApi } from "@knodia/purpose-process-client";
 
+import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
+
 import type { API_PurposeSeed } from "./api.ts";
 
 export function toProcessAPI_PurposeSeed(
@@ -16,7 +18,9 @@ export function toProcessAPI_PurposeSeed(
     description: purposeSeed.description,
     eserviceId: purposeSeed.eserviceId,
     formAnswersJson: purposeSeed.formAnswersJson,
-    formSchemaVersion: purposeSeed.formSchemaVersion,
+    formSchemaVersion: PurposeFormSchemaVersion.parse(
+      purposeSeed.formSchemaVersion,
+    ),
     name: purposeSeed.name,
   };
 }

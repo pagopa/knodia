@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createSession, deleteConsumerKeychain, getConsumerAgreements, getConsumerCatalogEservices, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychains, getConsumerPurposeFormSchema, getConsumerPurposeFormUiSchema, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getStatus, getTechnicalUsers, type Options, refreshSession, updateConsumerKeychain } from '../sdk.gen.ts';
-import type { CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeFormSchemaData, GetConsumerPurposeFormSchemaError, GetConsumerPurposeFormSchemaResponse, GetConsumerPurposeFormUiSchemaData, GetConsumerPurposeFormUiSchemaError, GetConsumerPurposeFormUiSchemaResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetStatusData, GetStatusResponse, GetTechnicalUsersData, GetTechnicalUsersError, GetTechnicalUsersResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse } from '../types.gen.ts';
+import { createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createSession, deleteConsumerKeychain, getConsumerAgreements, getConsumerCatalogEservices, getConsumerCurrentPurposeFormSchema, getConsumerCurrentPurposeFormUiSchema, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychains, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getStatus, getTechnicalUsers, type Options, refreshSession, updateConsumerKeychain } from '../sdk.gen.ts';
+import type { CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerCurrentPurposeFormSchemaData, GetConsumerCurrentPurposeFormSchemaError, GetConsumerCurrentPurposeFormSchemaResponse, GetConsumerCurrentPurposeFormUiSchemaData, GetConsumerCurrentPurposeFormUiSchemaError, GetConsumerCurrentPurposeFormUiSchemaResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetStatusData, GetStatusResponse, GetTechnicalUsersData, GetTechnicalUsersError, GetTechnicalUsersResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -517,16 +517,16 @@ export const createConsumerPurposeMutation = (options?: Partial<Options<CreateCo
     return mutationOptions;
 };
 
-export const getConsumerPurposeFormSchemaQueryKey = (options: Options<GetConsumerPurposeFormSchemaData>) => createQueryKey('getConsumerPurposeFormSchema', options);
+export const getConsumerCurrentPurposeFormSchemaQueryKey = (options: Options<GetConsumerCurrentPurposeFormSchemaData>) => createQueryKey('getConsumerCurrentPurposeFormSchema', options);
 
 /**
- * Get Purpose form schema by version
+ * Get current Purpose form schema
  *
- * Retrieve the JSON Schema for validating Purpose form answers
+ * Retrieve the current JSON Schema for validating Purpose form answers
  */
-export const getConsumerPurposeFormSchemaOptions = (options: Options<GetConsumerPurposeFormSchemaData>) => queryOptions<GetConsumerPurposeFormSchemaResponse, AxiosError<GetConsumerPurposeFormSchemaError>, GetConsumerPurposeFormSchemaResponse, ReturnType<typeof getConsumerPurposeFormSchemaQueryKey>>({
+export const getConsumerCurrentPurposeFormSchemaOptions = (options: Options<GetConsumerCurrentPurposeFormSchemaData>) => queryOptions<GetConsumerCurrentPurposeFormSchemaResponse, AxiosError<GetConsumerCurrentPurposeFormSchemaError>, GetConsumerCurrentPurposeFormSchemaResponse, ReturnType<typeof getConsumerCurrentPurposeFormSchemaQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getConsumerPurposeFormSchema({
+        const { data } = await getConsumerCurrentPurposeFormSchema({
             ...options,
             ...queryKey[0],
             signal,
@@ -534,19 +534,19 @@ export const getConsumerPurposeFormSchemaOptions = (options: Options<GetConsumer
         });
         return data;
     },
-    queryKey: getConsumerPurposeFormSchemaQueryKey(options)
+    queryKey: getConsumerCurrentPurposeFormSchemaQueryKey(options)
 });
 
-export const getConsumerPurposeFormUiSchemaQueryKey = (options: Options<GetConsumerPurposeFormUiSchemaData>) => createQueryKey('getConsumerPurposeFormUiSchema', options);
+export const getConsumerCurrentPurposeFormUiSchemaQueryKey = (options: Options<GetConsumerCurrentPurposeFormUiSchemaData>) => createQueryKey('getConsumerCurrentPurposeFormUiSchema', options);
 
 /**
- * Get Purpose form UI schema by version
+ * Get current Purpose form UI schema
  *
- * Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
+ * Retrieve the current UI Schema for rendering the Purpose form
  */
-export const getConsumerPurposeFormUiSchemaOptions = (options: Options<GetConsumerPurposeFormUiSchemaData>) => queryOptions<GetConsumerPurposeFormUiSchemaResponse, AxiosError<GetConsumerPurposeFormUiSchemaError>, GetConsumerPurposeFormUiSchemaResponse, ReturnType<typeof getConsumerPurposeFormUiSchemaQueryKey>>({
+export const getConsumerCurrentPurposeFormUiSchemaOptions = (options: Options<GetConsumerCurrentPurposeFormUiSchemaData>) => queryOptions<GetConsumerCurrentPurposeFormUiSchemaResponse, AxiosError<GetConsumerCurrentPurposeFormUiSchemaError>, GetConsumerCurrentPurposeFormUiSchemaResponse, ReturnType<typeof getConsumerCurrentPurposeFormUiSchemaQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getConsumerPurposeFormUiSchema({
+        const { data } = await getConsumerCurrentPurposeFormUiSchema({
             ...options,
             ...queryKey[0],
             signal,
@@ -554,7 +554,7 @@ export const getConsumerPurposeFormUiSchemaOptions = (options: Options<GetConsum
         });
         return data;
     },
-    queryKey: getConsumerPurposeFormUiSchemaQueryKey(options)
+    queryKey: getConsumerCurrentPurposeFormUiSchemaQueryKey(options)
 });
 
 export const getProducerAgreementsQueryKey = (options: Options<GetProducerAgreementsData>) => createQueryKey('getProducerAgreements', options);

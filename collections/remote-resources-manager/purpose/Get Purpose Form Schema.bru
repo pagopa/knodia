@@ -4,17 +4,13 @@ meta {
 }
 
 get {
-  url: {{host-remote-resources-manager}}/purposes/formSchemas/:purposeSchemaVersion?knodeId={{other-knode-id}}
+  url: {{host-remote-resources-manager}}/purposes/formSchemas/current?knodeId={{other-knode-id}}
   body: none
   auth: none
 }
 
 params:query {
   knodeId: {{other-knode-id}}
-}
-
-params:path {
-  purposeSchemaVersion: 1.0
 }
 
 headers {

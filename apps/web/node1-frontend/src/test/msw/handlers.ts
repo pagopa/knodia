@@ -3,33 +3,39 @@ import { http, HttpResponse } from "msw";
 const BASE_URL = import.meta.env["BFF_URL"];
 
 export const handlers = [
-  http.get(`${BASE_URL}/consumer/purposes/formSchemas/:version`, () =>
+  http.get(`${BASE_URL}/consumer/purposes/formSchemas/current`, () =>
     HttpResponse.json({
-      properties: {
-        purpose: { enum: ["INSTITUTIONAL", "OTHER"], type: "string" },
-        purposeDescription: { type: "string" },
+      schema: {
+        properties: {
+          purpose: { enum: ["INSTITUTIONAL", "OTHER"], type: "string" },
+          purposeDescription: { type: "string" },
+        },
+        required: ["purpose", "purposeDescription"],
+        type: "object",
       },
-      required: ["purpose", "purposeDescription"],
-      type: "object",
+      version: "1.0",
     }),
   ),
 
-  http.get(`${BASE_URL}/consumer/purposes/formSchemas/:version/ui`, () =>
+  http.get(`${BASE_URL}/consumer/purposes/formSchemas/current/ui`, () =>
     HttpResponse.json({
-      elements: [
-        {
-          elements: [
-            {
-              options: { widget: "radio" },
-              scope: "#/properties/purpose",
-              type: "Control",
-            },
-          ],
-          label: "Test",
-          type: "Group",
-        },
-      ],
-      type: "VerticalLayout",
+      uiSchema: {
+        elements: [
+          {
+            elements: [
+              {
+                options: { widget: "radio" },
+                scope: "#/properties/purpose",
+                type: "Control",
+              },
+            ],
+            label: "Test",
+            type: "Group",
+          },
+        ],
+        type: "VerticalLayout",
+      },
+      version: "1.0",
     }),
   ),
 

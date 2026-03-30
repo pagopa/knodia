@@ -14,9 +14,9 @@ import { z } from "zod";
 
 import { API_EserviceId } from "../eservice/api.ts";
 
-const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
+const API_PurposeFormSchemaVersion = z.string().meta({
   description:
-    "Version identifier for the Purpose form schema provided by this Knode",
+    'Version identifier for the Purpose form schema provided by this Knode (e.g., "1.0")',
   id: "PurposeFormSchemaVersion",
 });
 
@@ -73,23 +73,29 @@ export const API_CreatedPurposeResource = API_CreatedResource.meta({
   id: "CreatedPurposeResource",
 });
 
-export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
-  version: API_PurposeFormSchemaVersion,
-});
-export type API_PurposeFormSchemaVersionPathParam = z.infer<
-  typeof API_PurposeFormSchemaVersionPathParam
+export const API_PurposeFormSchemaResponse = z
+  .strictObject({
+    schema: z.record(z.string(), z.unknown()),
+    version: API_PurposeFormSchemaVersion,
+  })
+  .meta({
+    description:
+      "Purpose form JSON Schema (Draft-07) with its version identifier",
+    id: "PurposeFormSchemaResponse",
+  });
+export type API_PurposeFormSchemaResponse = z.infer<
+  typeof API_PurposeFormSchemaResponse
 >;
 
-export const API_PurposeFormSchema = z.record(z.string(), z.unknown()).meta({
-  description:
-    "JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers",
-  id: "PurposeFormSchema",
-});
-export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
-
-export const API_PurposeFormUiSchema = z.record(z.string(), z.unknown()).meta({
-  description:
-    "UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)",
-  id: "PurposeFormUiSchema",
-});
-export type API_PurposeFormUiSchema = z.infer<typeof API_PurposeFormUiSchema>;
+export const API_PurposeFormUiSchemaResponse = z
+  .strictObject({
+    uiSchema: z.record(z.string(), z.unknown()),
+    version: API_PurposeFormSchemaVersion,
+  })
+  .meta({
+    description: "Purpose form UI Schema with its version identifier",
+    id: "PurposeFormUiSchemaResponse",
+  });
+export type API_PurposeFormUiSchemaResponse = z.infer<
+  typeof API_PurposeFormUiSchemaResponse
+>;

@@ -25,7 +25,11 @@ import {
 
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
+import {
+  CURRENT_FORM_SCHEMA_VERSION,
+  getFormSchema,
+  getFormUiSchema,
+} from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
 import { assertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import {
@@ -115,19 +119,25 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-    getFormSchema(
-      version: PurposeFormSchemaVersion,
-      { logger }: AuthorizedContext<AuthData>,
-    ): Record<string, unknown> {
-      logger.info(`Getting Purpose form schema version ${version}`);
-      return getFormSchema(version);
+    getCurrentFormSchema({ logger }: AuthorizedContext<AuthData>): {
+      schema: Record<string, unknown>;
+      version: PurposeFormSchemaVersion;
+    } {
+      logger.info("Getting current Purpose form schema");
+      return {
+        schema: getFormSchema(CURRENT_FORM_SCHEMA_VERSION),
+        version: CURRENT_FORM_SCHEMA_VERSION,
+      };
     },
-    getFormUiSchema(
-      version: PurposeFormSchemaVersion,
-      { logger }: AuthorizedContext<AuthData>,
-    ): Record<string, unknown> {
-      logger.info(`Getting Purpose form UI schema version ${version}`);
-      return getFormUiSchema(version);
+    getCurrentFormUiSchema({ logger }: AuthorizedContext<AuthData>): {
+      uiSchema: Record<string, unknown>;
+      version: PurposeFormSchemaVersion;
+    } {
+      logger.info("Getting current Purpose form UI schema");
+      return {
+        uiSchema: getFormUiSchema(CURRENT_FORM_SCHEMA_VERSION),
+        version: CURRENT_FORM_SCHEMA_VERSION,
+      };
     },
     async getPurpose(
       purposeId: PurposeId,

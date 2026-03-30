@@ -4,13 +4,9 @@ meta {
 }
 
 get {
-  url: {{host-k2k-gateway}}/purposes/formSchemas/:purposeSchemaVersion
+  url: {{host-k2k-gateway}}/purposes/formSchemas/current
   body: none
   auth: none
-}
-
-params:path {
-  purposeSchemaVersion: 1.0
 }
 
 headers {

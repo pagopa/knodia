@@ -283,14 +283,30 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
-export type PurposeFormSchemaVersion = '1.0';
-
-export type PurposeFormSchema = {
-    [key: string]: unknown;
+/**
+ * Purpose form JSON Schema (Draft-07) with its version identifier
+ */
+export type PurposeFormSchemaResponse = {
+    schema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
 };
 
-export type PurposeFormUiSchema = {
-    [key: string]: unknown;
+/**
+ * Purpose form UI Schema with its version identifier
+ */
+export type PurposeFormUiSchemaResponse = {
+    uiSchema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
 };
 
 /**
@@ -307,7 +323,10 @@ export type PurposeSeed = {
      */
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
-    formSchemaVersion: PurposeFormSchemaVersion;
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
 };
@@ -677,18 +696,16 @@ export type CreatePurposeResponses = {
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
 
-export type GetPurposeFormSchemaData = {
+export type GetCurrentPurposeFormSchemaData = {
     body?: never;
-    path: {
-        version: PurposeFormSchemaVersion;
-    };
+    path?: never;
     query: {
         knodeId: KnodeId;
     };
-    url: '/purposes/formSchemas/{version}';
+    url: '/purposes/formSchemas/current';
 };
 
-export type GetPurposeFormSchemaErrors = {
+export type GetCurrentPurposeFormSchemaErrors = {
     /**
      * Bad Request
      */
@@ -703,29 +720,27 @@ export type GetPurposeFormSchemaErrors = {
     403: Problem;
 };
 
-export type GetPurposeFormSchemaError = GetPurposeFormSchemaErrors[keyof GetPurposeFormSchemaErrors];
+export type GetCurrentPurposeFormSchemaError = GetCurrentPurposeFormSchemaErrors[keyof GetCurrentPurposeFormSchemaErrors];
 
-export type GetPurposeFormSchemaResponses = {
+export type GetCurrentPurposeFormSchemaResponses = {
     /**
-     * Purpose form schema retrieved successfully
+     * Current Purpose form schema retrieved successfully
      */
-    200: PurposeFormSchema;
+    200: PurposeFormSchemaResponse;
 };
 
-export type GetPurposeFormSchemaResponse = GetPurposeFormSchemaResponses[keyof GetPurposeFormSchemaResponses];
+export type GetCurrentPurposeFormSchemaResponse = GetCurrentPurposeFormSchemaResponses[keyof GetCurrentPurposeFormSchemaResponses];
 
-export type GetPurposeFormUiSchemaData = {
+export type GetCurrentPurposeFormUiSchemaData = {
     body?: never;
-    path: {
-        version: PurposeFormSchemaVersion;
-    };
+    path?: never;
     query: {
         knodeId: KnodeId;
     };
-    url: '/purposes/formSchemas/{version}/ui';
+    url: '/purposes/formSchemas/current/ui';
 };
 
-export type GetPurposeFormUiSchemaErrors = {
+export type GetCurrentPurposeFormUiSchemaErrors = {
     /**
      * Bad Request
      */
@@ -740,16 +755,16 @@ export type GetPurposeFormUiSchemaErrors = {
     403: Problem;
 };
 
-export type GetPurposeFormUiSchemaError = GetPurposeFormUiSchemaErrors[keyof GetPurposeFormUiSchemaErrors];
+export type GetCurrentPurposeFormUiSchemaError = GetCurrentPurposeFormUiSchemaErrors[keyof GetCurrentPurposeFormUiSchemaErrors];
 
-export type GetPurposeFormUiSchemaResponses = {
+export type GetCurrentPurposeFormUiSchemaResponses = {
     /**
-     * Purpose form UI schema retrieved successfully
+     * Current Purpose form UI schema retrieved successfully
      */
-    200: PurposeFormUiSchema;
+    200: PurposeFormUiSchemaResponse;
 };
 
-export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
+export type GetCurrentPurposeFormUiSchemaResponse = GetCurrentPurposeFormUiSchemaResponses[keyof GetCurrentPurposeFormUiSchemaResponses];
 
 export type GetOrganizationData = {
     body?: never;

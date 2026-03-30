@@ -2,11 +2,11 @@ import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
+  API_ExternalPurposeFormSchemaVersion,
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
-  API_PurposeFormSchemaVersion,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
@@ -20,7 +20,7 @@ export const API_PurposeSeed = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     formAnswersJson: API_PurposeFormAnswers,
-    formSchemaVersion: API_PurposeFormSchemaVersion,
+    formSchemaVersion: API_ExternalPurposeFormSchemaVersion,
     knodeId: API_KnodeId,
     name: API_LocalizedPurposeName,
   })

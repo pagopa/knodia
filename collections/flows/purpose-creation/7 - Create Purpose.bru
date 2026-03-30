@@ -1,5 +1,5 @@
 meta {
-  name: 6 - Create Purpose
+  name: 7 - Create Purpose
   type: http
 }
 
@@ -32,7 +32,7 @@ body:json {
       "legalBasis": ["CONSENT"],
       "usesThirdPartyPersonalData": "NO"
     },
-    "formSchemaVersion": "1.0",
+    "formSchemaVersion": "{{formSchemaVersion}}",
     "name": {
       "en": "My Test Purpose"
     }
@@ -46,4 +46,3 @@ vars:post-response {
 script:post-response {
   await new Promise(r => setTimeout(r, 1000))
 }
-

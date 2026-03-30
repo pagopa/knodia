@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetPurposeData, GetPurposeErrors, GetPurposeFormSchemaData, GetPurposeFormSchemaErrors, GetPurposeFormSchemaResponses, GetPurposeFormUiSchemaData, GetPurposeFormUiSchemaErrors, GetPurposeFormUiSchemaResponses, GetPurposeResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetCurrentPurposeFormSchemaData, GetCurrentPurposeFormSchemaErrors, GetCurrentPurposeFormSchemaResponses, GetCurrentPurposeFormUiSchemaData, GetCurrentPurposeFormUiSchemaErrors, GetCurrentPurposeFormUiSchemaResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -56,25 +56,25 @@ export const getPurpose = <ThrowOnError extends boolean = true>(options: Options
 });
 
 /**
- * Get Purpose form schema by version
+ * Get current Purpose form schema
  *
- * Retrieve the JSON Schema for validating Purpose form answers
+ * Retrieve the current JSON Schema for validating Purpose form answers
  */
-export const getPurposeFormSchema = <ThrowOnError extends boolean = true>(options: Options<GetPurposeFormSchemaData, ThrowOnError>) => (options.client ?? client).get<GetPurposeFormSchemaResponses, GetPurposeFormSchemaErrors, ThrowOnError>({
+export const getCurrentPurposeFormSchema = <ThrowOnError extends boolean = true>(options: Options<GetCurrentPurposeFormSchemaData, ThrowOnError>) => (options.client ?? client).get<GetCurrentPurposeFormSchemaResponses, GetCurrentPurposeFormSchemaErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/purposes/formSchemas/{version}',
+    url: '/purposes/formSchemas/current',
     ...options
 });
 
 /**
- * Get Purpose form UI schema by version
+ * Get current Purpose form UI schema
  *
- * Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
+ * Retrieve the current UI Schema for rendering the Purpose form
  */
-export const getPurposeFormUiSchema = <ThrowOnError extends boolean = true>(options: Options<GetPurposeFormUiSchemaData, ThrowOnError>) => (options.client ?? client).get<GetPurposeFormUiSchemaResponses, GetPurposeFormUiSchemaErrors, ThrowOnError>({
+export const getCurrentPurposeFormUiSchema = <ThrowOnError extends boolean = true>(options: Options<GetCurrentPurposeFormUiSchemaData, ThrowOnError>) => (options.client ?? client).get<GetCurrentPurposeFormUiSchemaResponses, GetCurrentPurposeFormUiSchemaErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/purposes/formSchemas/{version}/ui',
+    url: '/purposes/formSchemas/current/ui',
     ...options
 });

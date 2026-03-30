@@ -690,16 +690,36 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
-    PurposeFormSchemaVersion:
-      type: string
-      enum:
-        - "1.0"
-    PurposeFormSchema:
+    PurposeFormSchemaResponse:
+      description: Purpose form JSON Schema (Draft-07) with its version identifier
       type: object
-      additionalProperties: {}
-    PurposeFormUiSchema:
+      properties:
+        schema:
+          type: object
+          additionalProperties: {}
+        version:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+      required:
+        - schema
+        - version
+      additionalProperties: false
+    PurposeFormUiSchemaResponse:
+      description: Purpose form UI Schema with its version identifier
       type: object
-      additionalProperties: {}
+      properties:
+        uiSchema:
+          type: object
+          additionalProperties: {}
+        version:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+      required:
+        - uiSchema
+        - version
+      additionalProperties: false
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -720,7 +740,9 @@ components:
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
-          $ref: "#/components/schemas/PurposeFormSchemaVersion"
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
         knodeId:
           $ref: "#/components/schemas/KnodeId"
         name:
@@ -1270,33 +1292,28 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/{version}:
+  /purposes/formSchemas/current:
     get:
-      operationId: getPurposeFormSchema
-      summary: Get Purpose form schema by version
+      operationId: getCurrentPurposeFormSchema
+      summary: Get current Purpose form schema
       tags:
         - purpose
-      description: Retrieve the JSON Schema for validating Purpose form answers
+      description: Retrieve the current JSON Schema for validating Purpose form answers
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
           required: true
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
       responses:
         "200":
-          description: Purpose form schema retrieved successfully
+          description: Current Purpose form schema retrieved successfully
           content:
             application/json:
               schema:
-                description: Purpose form schema retrieved successfully
+                description: Current Purpose form schema retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchema"
+                  - $ref: "#/components/schemas/PurposeFormSchemaResponse"
         "400":
           description: Bad Request
           content:
@@ -1321,33 +1338,28 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/{version}/ui:
+  /purposes/formSchemas/current/ui:
     get:
-      operationId: getPurposeFormUiSchema
-      summary: Get Purpose form UI schema by version
+      operationId: getCurrentPurposeFormUiSchema
+      summary: Get current Purpose form UI schema
       tags:
         - purpose
-      description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
+      description: Retrieve the current UI Schema for rendering the Purpose form
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
           required: true
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
       responses:
         "200":
-          description: Purpose form UI schema retrieved successfully
+          description: Current Purpose form UI schema retrieved successfully
           content:
             application/json:
               schema:
-                description: Purpose form UI schema retrieved successfully
+                description: Current Purpose form UI schema retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormUiSchema"
+                  - $ref: "#/components/schemas/PurposeFormUiSchemaResponse"
         "400":
           description: Bad Request
           content:
