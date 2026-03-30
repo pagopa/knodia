@@ -361,6 +361,9 @@ export type Organizations = {
  */
 export type PurposeId = string;
 
+/**
+ * Version identifier for the Purpose form schema provided by this Knode
+ */
 export type PurposeFormSchemaVersion = '1.0';
 
 /**
@@ -435,11 +438,24 @@ export type Purpose = {
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eserviceId: EserviceId;
-    formSchemaVersion: PurposeFormSchemaVersion;
     id: PurposeId;
     name: LocalizedPurposeName;
     state: PurposeState;
     updatedAt: string;
+};
+
+/**
+ * JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers
+ */
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
+/**
+ * UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)
+ */
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
 };
 
 export type GetStatusData = {
@@ -834,6 +850,60 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type GetPurposeFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}';
+};
+
+export type GetPurposeFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetPurposeFormSchemaError = GetPurposeFormSchemaErrors[keyof GetPurposeFormSchemaErrors];
+
+export type GetPurposeFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetPurposeFormSchemaResponse = GetPurposeFormSchemaResponses[keyof GetPurposeFormSchemaResponses];
+
+export type GetPurposeFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}/ui';
+};
+
+export type GetPurposeFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetPurposeFormUiSchemaError = GetPurposeFormUiSchemaErrors[keyof GetPurposeFormUiSchemaErrors];
+
+export type GetPurposeFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormUiSchema;
+};
+
+export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
 
 export type GetPurposeData = {
     body?: never;

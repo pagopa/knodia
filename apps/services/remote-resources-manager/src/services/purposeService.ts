@@ -3,6 +3,7 @@ import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
+import type { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 
 import {
   type K2K2GatewayApiClient,
@@ -99,6 +100,34 @@ export function purposeServiceBuilder(
       });
 
       return toAPI_Purpose(data);
+    },
+    async getPurposeFormSchema(
+      version: PurposeFormSchemaVersion,
+      knodeId: KnodeId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<Record<string, unknown>> {
+      logger.info(
+        `Getting Purpose form schema version ${version} from Knode ${knodeId}`,
+      );
+      const { data } = await k2kGatewayApi.getPurposeFormSchema({
+        client: k2kGatewayClient,
+        path: { version },
+      });
+      return data;
+    },
+    async getPurposeFormUiSchema(
+      version: PurposeFormSchemaVersion,
+      knodeId: KnodeId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<Record<string, unknown>> {
+      logger.info(
+        `Getting Purpose form UI schema version ${version} from Knode ${knodeId}`,
+      );
+      const { data } = await k2kGatewayApi.getPurposeFormUiSchema({
+        client: k2kGatewayClient,
+        path: { version },
+      });
+      return data;
     },
   };
 }

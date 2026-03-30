@@ -423,6 +423,14 @@ export type ConsumerEservices = {
 };
 
 /**
+ * Agreement with only id and state
+ */
+export type CompactAgreement = {
+    id: string;
+    state: AgreementState;
+};
+
+/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -534,6 +542,8 @@ export type User = {
 
 export type Users = Array<User>;
 
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
 /**
  * Name of the Purpose
  */
@@ -554,6 +564,14 @@ export type PurposeFormAnswers = {
 
 export type PurposeFormSchemaVersion = '1.0';
 
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
+};
+
 /**
  * Seed data to create a new Purpose
  */
@@ -565,6 +583,25 @@ export type PurposeSeed = {
     formSchemaVersion: PurposeFormSchemaVersion;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+};
+
+export type ProducerPurposeDetailsEservice = {
+    id: string;
+    name: LocalizedName;
+    latestVersionState: EserviceVersionState;
+};
+
+export type ProducerPurposeDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: ProducerPurposeDetailsEservice;
+    id: string;
+    maxDailyCallsPerConsumer: number;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
 };
 
 export type GetStatusData = {
@@ -1317,6 +1354,80 @@ export type CreateConsumerPurposeResponses = {
 
 export type CreateConsumerPurposeResponse = CreateConsumerPurposeResponses[keyof CreateConsumerPurposeResponses];
 
+export type GetConsumerPurposeFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/formSchemas/{version}';
+};
+
+export type GetConsumerPurposeFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerPurposeFormSchemaError = GetConsumerPurposeFormSchemaErrors[keyof GetConsumerPurposeFormSchemaErrors];
+
+export type GetConsumerPurposeFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetConsumerPurposeFormSchemaResponse = GetConsumerPurposeFormSchemaResponses[keyof GetConsumerPurposeFormSchemaResponses];
+
+export type GetConsumerPurposeFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/formSchemas/{version}/ui';
+};
+
+export type GetConsumerPurposeFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerPurposeFormUiSchemaError = GetConsumerPurposeFormUiSchemaErrors[keyof GetConsumerPurposeFormUiSchemaErrors];
+
+export type GetConsumerPurposeFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormUiSchema;
+};
+
+export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];
+
 export type GetProducerAgreementsData = {
     body?: never;
     path?: never;
@@ -1397,3 +1508,42 @@ export type GetProducerAgreementDetailsResponses = {
 };
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
+
+export type GetProducerPurposeDetailsData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}';
+};
+
+export type GetProducerPurposeDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetProducerPurposeDetailsError = GetProducerPurposeDetailsErrors[keyof GetProducerPurposeDetailsErrors];
+
+export type GetProducerPurposeDetailsResponses = {
+    /**
+     * Producer Purpose details retrieved successfully
+     */
+    200: ProducerPurposeDetails;
+};
+
+export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];

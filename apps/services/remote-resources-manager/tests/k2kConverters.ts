@@ -120,7 +120,6 @@ export const toK2KPurpose = (purpose: Purpose): k2kGatewayApi.Purpose => ({
     en: purpose.description.en,
   },
   eserviceId: purpose.eserviceId,
-  formSchemaVersion: purpose.formSchemaVersion,
   id: purpose.id,
   name: {
     en: purpose.name.en,
