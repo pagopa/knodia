@@ -46,6 +46,7 @@ function AccessTokenSettingsSectionAdapter() {
 
 function ConsumptionRequirementsSection() {
   const {
+    isConsumerOperatorIdentificationRequired,
     version: { requiredAttributes },
   } = useProductionEserviceDetailsContext();
 
@@ -68,8 +69,11 @@ function ConsumptionRequirementsSection() {
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Identification
           </h3>
-          {/** It depends on the Knode, this could be set with a env flag? */}
-          <Banner kind="informative">Identification required</Banner>
+          <Banner kind="neutral">
+            {isConsumerOperatorIdentificationRequired
+              ? "Identification required"
+              : "Identification not required"}
+          </Banner>
         </div>
       </div>
     </Section>
