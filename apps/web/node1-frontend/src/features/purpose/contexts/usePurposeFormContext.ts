@@ -7,6 +7,8 @@ import {
 } from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
+import type { FormValues } from "@/features/purpose/engine/types";
+
 import {
   DETAILS_STEP_DEFAULTS,
   type DetailsStepData,
@@ -18,9 +20,11 @@ export interface PurposeWizardContextValue {
   data: PurposeFormDraftData;
   eserviceId: EserviceId;
   eserviceName: string;
+  formAnswers: FormValues;
   knodeId: KnodeId;
   maxDailyCallsPerConsumer: number;
   updateDetailsStep: (data: DetailsStepData) => void;
+  updateFormAnswers: (answers: FormValues) => void;
 }
 
 export const PurposeWizardContext =
