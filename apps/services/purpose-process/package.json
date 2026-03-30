@@ -40,6 +40,7 @@
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
+    "ajv": "catalog:",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

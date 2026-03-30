@@ -32,6 +32,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 
 import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
+import { assertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import {
   retrieveAgreements,
   retrieveEservice,
@@ -93,7 +94,7 @@ export function purposeServiceBuilder(
         eserviceId,
       });
 
-      // TODO form answers validation against the Knode purpose form JSON schema
+      assertFormAnswersAreValid(formAnswersJson, formSchemaVersion);
 
       const now = new Date();
       const purpose: Purpose = {

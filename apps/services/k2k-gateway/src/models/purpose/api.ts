@@ -12,11 +12,13 @@ import {
 } from "@knodia/purpose-models";
 import { z } from "zod";
 
+import { API_EserviceId } from "../eservice/api.ts";
+
 const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
+  description:
+    "Version identifier for the Purpose form schema provided by this Knode",
   id: "PurposeFormSchemaVersion",
 });
-
-import { API_EserviceId } from "../eservice/api.ts";
 
 const API_LocalizedPurposeName = z
   .strictObject({
@@ -70,3 +72,24 @@ export const API_CreatedPurposeResource = API_CreatedResource.meta({
   description: "Unique identifier of the created Purpose resource",
   id: "CreatedPurposeResource",
 });
+
+export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
+  version: API_PurposeFormSchemaVersion,
+});
+export type API_PurposeFormSchemaVersionPathParam = z.infer<
+  typeof API_PurposeFormSchemaVersionPathParam
+>;
+
+export const API_PurposeFormSchema = z.record(z.string(), z.unknown()).meta({
+  description:
+    "JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers",
+  id: "PurposeFormSchema",
+});
+export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
+
+export const API_PurposeFormUiSchema = z.record(z.string(), z.unknown()).meta({
+  description:
+    "UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)",
+  id: "PurposeFormUiSchema",
+});
+export type API_PurposeFormUiSchema = z.infer<typeof API_PurposeFormUiSchema>;
