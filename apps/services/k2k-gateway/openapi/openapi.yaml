@@ -685,7 +685,7 @@ components:
         - version
       additionalProperties: false
     PurposeFormUiSchemaResponse:
-      description: Purpose form UI Schema with its version identifier
+      description: Purpose form UI Schema (JSON Forms) with its version identifier
       type: object
       properties:
         uiSchema:

@@ -297,7 +297,7 @@ export type PurposeFormSchemaResponse = {
 };
 
 /**
- * Purpose form UI Schema with its version identifier
+ * Purpose form UI Schema (JSON Forms) with its version identifier
  */
 export type PurposeFormUiSchemaResponse = {
     uiSchema: {
