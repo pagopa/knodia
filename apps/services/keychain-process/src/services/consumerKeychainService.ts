@@ -20,6 +20,8 @@ import {
   generateId,
   type KnodeId,
   type PurposeId,
+  unsafeBrandUserId,
+  type UserId,
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
@@ -47,12 +49,15 @@ import {
   createConsumerKeychainDeletedV1Event,
   createConsumerKeychainMemberAddedV1Event,
   createConsumerKeychainMemberRemovedV1Event,
+  createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
   assertOrganizationIsKeychainOwner,
+  assertOrganizationIsPurposeConsumer,
+  assertPurposeIsNotLinkedToConsumerKeychain,
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsMemberOfKeychain,
