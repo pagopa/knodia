@@ -14,6 +14,7 @@ import type {
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 
+import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type ConsumerKeychainId,
   generateId,
@@ -209,7 +210,14 @@ export function consumerKeychainServiceBuilder(
       async function retrieveUser(userId: UserId): Promise<IdmUser> {
         const user = await userService.getUserById(userId);
         if (!user) {
-          throw userNotFound(userId);
+          /**
+           * This should not happen as users are validated when added as members.
+           * If it does happen, it means there's a data inconsistency that should be investigated.
+           * Hence, we throw a generic internal error.
+           */
+          throw genericInternalError(
+            `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
+          );
         }
         return user;
       }
