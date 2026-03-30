@@ -1,7 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Chip, type ChipProps, Link } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
+import { Button, Link } from "@knodia/ui-kit/ui";
 import { createLink } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
@@ -10,6 +9,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
 import { AgreementCard } from "@/features/agreement/components/AgreementCard";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
+import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 
 const RouterLink = createLink(Link);
 
@@ -60,7 +60,7 @@ export function ProducerPurposeDetail({
         </div>
 
         <SettingsCard label="Declared API calls per day">
-          {purpose.dailyCalls}{" "}
+          {purpose.dailyCalls.toLocaleString()}{" "}
           <span className="title-md font-normal">
             (max {purpose.maxDailyCallsPerConsumer.toLocaleString()})
           </span>
@@ -72,11 +72,7 @@ export function ProducerPurposeDetail({
   );
 }
 
-function PurposeActionButton({
-  state,
-}: {
-  state: bffApi.ProducerPurposeDetails["state"];
-}) {
+function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
   return match(state)
     .with("Active", () => (
       <Button hierarchy="danger" isDisabled kind="tonal" size="md">
@@ -92,30 +88,5 @@ function PurposeActionButton({
       console.warn("Unhandled purpose state: Archived");
       return null;
     })
-    .exhaustive();
-}
-
-function PurposeStateChip({
-  state,
-  type = "light",
-}: {
-  state: bffApi.PurposeState;
-  type?: ChipProps["type"];
-}) {
-  return match(state)
-    .with("Active", () => (
-      <Chip icon={<CheckIcon />} kind="success" label="Active" type={type} />
-    ))
-    .with("Suspended", () => (
-      <Chip icon={<XIcon />} kind="error" label="Suspended" type={type} />
-    ))
-    .with("Archived", () => (
-      <Chip
-        icon={<ArchiveIcon />}
-        kind="neutral"
-        label="Archived"
-        type={type}
-      />
-    ))
     .exhaustive();
 }
