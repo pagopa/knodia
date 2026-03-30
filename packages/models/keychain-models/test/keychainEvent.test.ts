@@ -1,10 +1,11 @@
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { generateId, generateUserId } from "@knodia/common-models/ids";
 import {
   protobufBinaryCodec,
   type ProtobufCodec,
 } from "@knodia/common-models/protobuf";
-import { Purpose, toPurposeV1 } from "@knodia/purpose-models";
+import { Purpose } from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
@@ -18,7 +19,10 @@ import {
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
-import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
+import {
+  toConsumerKeychainLinkedPurposeV1,
+  toConsumerKeychainV1,
+} from "../src/keychainProtobufConverterToV1.ts";
 
 describe("KeychainEventV1 codec", () => {
   const consumerKeychain: ConsumerKeychain = {
@@ -54,7 +58,10 @@ describe("KeychainEventV1 codec", () => {
       question1: "answer1",
     },
   };
-  const purposeV1 = toPurposeV1(purpose);
+  const linkedPurposeV1 = toConsumerKeychainLinkedPurposeV1(
+    unsafeBrandExternalId(purpose.id),
+    "Orion",
+  );
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
   const defaultData = { consumerKeychain: consumerKeychainV1 };
   const cases = [
@@ -77,7 +84,7 @@ describe("KeychainEventV1 codec", () => {
       data: {
         consumerKeychain: consumerKeychainV1,
         linkedAt: new Date().getTime(),
-        purpose: purposeV1,
+        purpose: linkedPurposeV1,
       },
       message: ConsumerKeychainPurposeLinkedV1,
       type: "ConsumerKeychainPurposeLinkedV1" as const,
