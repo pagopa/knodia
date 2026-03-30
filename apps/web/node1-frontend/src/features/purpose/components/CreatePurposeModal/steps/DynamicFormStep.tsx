@@ -76,7 +76,6 @@ export function DynamicFormStep({
       ...formAnswers,
     } as Record<string, string | string[]>,
     onSubmit: ({ value }) => {
-      setErrors({});
       updateFormAnswers(value);
 
       if (isLastStep) {
