@@ -12,6 +12,7 @@ const errorCodes = {
   USER_ALREADY_MEMBER: "0002",
   USER_NOT_FOUND: "0003",
   INVALID_USER_ROLE: "0004",
+  KEYCHAIN_MEMBER_NOT_FOUND: "0005",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -36,6 +37,18 @@ export function invalidUserRole(userId: UserId, requiredRole: string) {
     detail: `User ${userId} does not have the required role: ${requiredRole}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Invalid User Role",
+  });
+}
+
+export function keychainMemberNotFound(
+  consumerKeychainId: ConsumerKeychainId,
+  userId: UserId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "KEYCHAIN_MEMBER_NOT_FOUND",
+    detail: `User ${userId} is not a member of consumer keychain ${consumerKeychainId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Keychain Member Not Found",
   });
 }
 
