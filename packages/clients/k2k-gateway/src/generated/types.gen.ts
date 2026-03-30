@@ -435,6 +435,7 @@ export type Purpose = {
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eserviceId: EserviceId;
+    formSchemaVersion: PurposeFormSchemaVersion;
     id: PurposeId;
     name: LocalizedPurposeName;
     state: PurposeState;

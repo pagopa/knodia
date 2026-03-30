@@ -60,6 +60,7 @@ export const API_Purpose = z
       .meta({ format: "int32" }),
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
+    formSchemaVersion: API_PurposeFormSchemaVersion,
     id: z.uuid(),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
