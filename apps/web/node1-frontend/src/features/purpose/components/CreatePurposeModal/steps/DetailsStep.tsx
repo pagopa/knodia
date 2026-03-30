@@ -1,12 +1,12 @@
-import { Banner, NumberField, TextArea, TextField } from "@knodia/ui-kit/ui";
+import { NumberField, TextArea, TextField } from "@knodia/ui-kit/ui";
 
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
+import { useStepsContext } from "@/contexts/steps";
 import {
   useDetailsStepForm,
   usePurposeWizardContext,
 } from "@/features/purpose/contexts/usePurposeFormContext";
-import { useCreatePurpose } from "@/features/purpose/hooks/useCreatePurpose";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 interface Props {
@@ -14,13 +14,9 @@ interface Props {
 }
 
 export function DetailsStep({ onCancel }: Props) {
-  const { eserviceId, eserviceName, knodeId, maxDailyCallsPerConsumer } =
-    usePurposeWizardContext();
-  const { createPurpose, isError, isPending } = useCreatePurpose(
-    eserviceId,
-    knodeId,
-  );
-  const form = useDetailsStepForm((value) => createPurpose(value));
+  const { eserviceName, maxDailyCallsPerConsumer } = usePurposeWizardContext();
+  const { nextStep } = useStepsContext();
+  const form = useDetailsStepForm(() => nextStep());
 
   return (
     <>
@@ -98,18 +94,12 @@ export function DetailsStep({ onCancel }: Props) {
         </div>
       </div>
 
-      {isError && (
-        <Banner kind="error" size="md" title="Something went wrong">
-          Please try again. Don&apos;t refresh the page to avoid data loss.
-        </Banner>
-      )}
-
       <form.Subscribe selector={(state) => state.canSubmit}>
         {(canSubmit) => (
           <ModalFooter
             cancelLabel="Cancel"
-            confirmLabel="Create Purpose"
-            isDisabled={!canSubmit || isPending}
+            confirmLabel="Next"
+            isDisabled={!canSubmit}
             onCancel={onCancel}
             onConfirm={form.handleSubmit}
           />

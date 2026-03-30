@@ -26,10 +26,12 @@ body:json {
     "knodeId": "{{other-knode-id}}",
     "dailyCalls": 100,
     "formAnswersJson": {
+      "confirmPrincipleIntegrityAndDiscretion": "true",
+      "declarationConfirmGDPR": "true",
+      "legalBasis": ["CONSENT"],
+      "personalDataTypes": ["WITH_IDENTIFYING_DATA"],
       "purpose": "INSTITUTIONAL",
       "purposeDescription": "Test purpose",
-      "personalDataTypes": ["WITH_IDENTIFYING_DATA"],
-      "legalBasis": ["CONSENT"],
       "usesThirdPartyPersonalData": "NO"
     },
     "formSchemaVersion": "1.0"
