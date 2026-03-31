@@ -1,4 +1,3 @@
-// TODO: replace ConsumerPurpose with ProducerPurpose when endpoint is renamed to /producer/purposes
 import type { bffApi } from "@knodia/bff-client";
 
 import {
@@ -26,7 +25,7 @@ export function ProducerPurposeTable({
   purposes,
 }: {
   isLoading: boolean;
-  purposes: bffApi.ConsumerPurpose[];
+  purposes: bffApi.ProducerPurpose[];
 }) {
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
