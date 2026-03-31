@@ -1623,6 +1623,14 @@ export type GetProducerPurposesData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: Array<PurposeState>;
     };
     url: '/producer/purposes';
 };

@@ -4,6 +4,7 @@ import {
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   API_LocalizedPurposeDescription,
@@ -41,7 +42,16 @@ export type API_GetConsumerPurposeFormSchemaQueryParams = z.infer<
   typeof API_GetConsumerPurposeFormSchemaQueryParams
 >;
 
-export const API_GetProducerPurposesQueryParams = API_PaginationQueryParams;
+export const API_GetProducerPurposesQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by E-service ID" }),
+    state: arrayQueryParam(API_PurposeState)
+      .optional()
+      .meta({ description: "Filter by Purpose State" }),
+  });
 export type API_GetProducerPurposesQueryParams = z.infer<
   typeof API_GetProducerPurposesQueryParams
 >;
