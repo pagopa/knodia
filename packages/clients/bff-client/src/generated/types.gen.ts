@@ -534,6 +534,10 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type KeychainMemberSeed = {
+    userId: UserId;
+};
+
 export type User = {
     email: string;
     id: UserId;
@@ -563,6 +567,14 @@ export type PurposeFormAnswers = {
 };
 
 export type PurposeFormSchemaVersion = '1.0';
+
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
+};
 
 /**
  * Seed data to create a new Purpose
@@ -1035,6 +1047,89 @@ export type UpdateConsumerKeychainResponses = {
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
 
+export type AddConsumerKeychainMemberData = {
+    body: KeychainMemberSeed;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members';
+};
+
+export type AddConsumerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type AddConsumerKeychainMemberError = AddConsumerKeychainMemberErrors[keyof AddConsumerKeychainMemberErrors];
+
+export type AddConsumerKeychainMemberResponses = {
+    /**
+     * Consumer Keychain member added successfully
+     */
+    204: void;
+};
+
+export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
+
+export type RemoveConsumerKeychainMemberData = {
+    body?: never;
+    path: {
+        userId: UserId;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members/{userId}';
+};
+
+export type RemoveConsumerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type RemoveConsumerKeychainMemberError = RemoveConsumerKeychainMemberErrors[keyof RemoveConsumerKeychainMemberErrors];
+
+export type RemoveConsumerKeychainMemberResponses = {
+    /**
+     * Consumer Keychain member removed successfully
+     */
+    204: void;
+};
+
+export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
 export type GetTechnicalUsersData = {
     body?: never;
     path?: never;
@@ -1345,6 +1440,80 @@ export type CreateConsumerPurposeResponses = {
 };
 
 export type CreateConsumerPurposeResponse = CreateConsumerPurposeResponses[keyof CreateConsumerPurposeResponses];
+
+export type GetConsumerPurposeFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/formSchemas/{version}';
+};
+
+export type GetConsumerPurposeFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerPurposeFormSchemaError = GetConsumerPurposeFormSchemaErrors[keyof GetConsumerPurposeFormSchemaErrors];
+
+export type GetConsumerPurposeFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetConsumerPurposeFormSchemaResponse = GetConsumerPurposeFormSchemaResponses[keyof GetConsumerPurposeFormSchemaResponses];
+
+export type GetConsumerPurposeFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/formSchemas/{version}/ui';
+};
+
+export type GetConsumerPurposeFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerPurposeFormUiSchemaError = GetConsumerPurposeFormUiSchemaErrors[keyof GetConsumerPurposeFormUiSchemaErrors];
+
+export type GetConsumerPurposeFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormUiSchema;
+};
+
+export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;
