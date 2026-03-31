@@ -4,13 +4,14 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
 
 import { apiTags } from "../models/apiTags.ts";
+import { API_SessionOrganization } from "../models/organization/api.ts";
+import { toAPI_SessionOrganization } from "../models/organization/apiConverter.ts";
 import { getUISessionAuthData } from "../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
@@ -36,18 +37,14 @@ export const sessionRouter: FastifyPluginAsyncZod<
         path: { organizationId },
       });
 
-      res.send({
-        id: data.id,
-        knodeId,
-        name: data.name,
-      });
+      res.send(toAPI_SessionOrganization(data, knodeId));
     },
     method: "GET",
     schema: {
       description: "Retrieve the Organization of the current session's User",
       operationId: "getSessionOrganization",
       response: {
-        200: API_CompactOrganization.meta({
+        200: API_SessionOrganization.meta({
           description: "Session Organization retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

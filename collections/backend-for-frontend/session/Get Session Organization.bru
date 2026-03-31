@@ -1,0 +1,14 @@
+meta {
+  name: Get Session Organization
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/session/organization
+  body: none
+  auth: none
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

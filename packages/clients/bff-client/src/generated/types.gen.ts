@@ -608,6 +608,16 @@ export type ProducerPurposeDetails = {
     state: PurposeState;
 };
 
+/**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -1543,7 +1553,7 @@ export type GetSessionOrganizationResponses = {
     /**
      * Session Organization retrieved successfully
      */
-    200: CompactOrganization;
+    200: SessionOrganization;
 };
 
 export type GetSessionOrganizationResponse = GetSessionOrganizationResponses[keyof GetSessionOrganizationResponses];
