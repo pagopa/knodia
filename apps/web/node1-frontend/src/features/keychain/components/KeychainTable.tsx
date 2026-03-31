@@ -14,6 +14,8 @@ import {
 import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
+import { useHasRole } from "@/contexts/auth";
+
 import type { KeychainType } from "../models/commons";
 
 interface KeychainTableProps {
@@ -27,6 +29,8 @@ export function KeychainTable({
   keychains,
   type,
 }: KeychainTableProps) {
+  const canCreateKeychain = useHasRole("administrative");
+
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
   }
@@ -35,7 +39,11 @@ export function KeychainTable({
     return (
       <Empty
         className="mt-10"
-        description="Create your first one"
+        description={
+          canCreateKeychain
+            ? "Create your first one"
+            : "New Keychains will appear here."
+        }
         icon={<SelectionPlusIcon />}
         title="You don't have any Keychains yet"
       />
