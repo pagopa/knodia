@@ -1,4 +1,4 @@
-import { TextArea, TextField } from "@knodia/ui-kit/ui";
+import { TextField } from "@knodia/ui-kit/ui";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -39,7 +39,7 @@ export function DetailsAndAttributesPage() {
               label="E-mail address"
               value="info@example.com"
             />
-            <TextArea isDisabled label="Notes" value="Notes" />
+            <TextField isDisabled label="Notes" value="Notes" />
           </div>
         </Section>
 
