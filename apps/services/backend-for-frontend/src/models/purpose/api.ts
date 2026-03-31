@@ -4,6 +4,7 @@ import {
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
+import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   API_LocalizedPurposeDescription,
@@ -41,12 +42,21 @@ export type API_GetConsumerPurposeFormSchemaQueryParams = z.infer<
   typeof API_GetConsumerPurposeFormSchemaQueryParams
 >;
 
-export const API_GetConsumerPurposesQueryParams = API_PaginationQueryParams;
-export type API_GetConsumerPurposesQueryParams = z.infer<
-  typeof API_GetConsumerPurposesQueryParams
+export const API_GetProducerPurposesQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by E-service ID" }),
+    state: arrayQueryParam(API_PurposeState)
+      .optional()
+      .meta({ description: "Filter by Purpose State" }),
+  });
+export type API_GetProducerPurposesQueryParams = z.infer<
+  typeof API_GetProducerPurposesQueryParams
 >;
 
-export const API_ConsumerPurpose = z
+export const API_ProducerPurpose = z
   .strictObject({
     consumer: API_CompactOrganization,
     dailyCalls: API_PurposeDailyCalls,
@@ -56,16 +66,16 @@ export const API_ConsumerPurpose = z
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
   })
-  .meta({ id: "ConsumerPurpose" });
-export type API_ConsumerPurpose = z.infer<typeof API_ConsumerPurpose>;
+  .meta({ id: "ProducerPurpose" });
+export type API_ProducerPurpose = z.infer<typeof API_ProducerPurpose>;
 
-export const API_ConsumerPurposes = z
+export const API_ProducerPurposes = z
   .strictObject({
     pagination: API_Pagination,
-    results: z.array(API_ConsumerPurpose),
+    results: z.array(API_ProducerPurpose),
   })
-  .meta({ id: "ConsumerPurposes" });
-export type API_ConsumerPurposes = z.infer<typeof API_ConsumerPurposes>;
+  .meta({ id: "ProducerPurposes" });
+export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 
 export const API_ProducerPurposeDetails = z
   .strictObject({

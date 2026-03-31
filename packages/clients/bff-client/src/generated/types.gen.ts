@@ -589,7 +589,7 @@ export type PurposeSeed = {
     name: LocalizedPurposeName;
 };
 
-export type ConsumerPurpose = {
+export type ProducerPurpose = {
     consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
@@ -599,9 +599,9 @@ export type ConsumerPurpose = {
     state: PurposeState;
 };
 
-export type ConsumerPurposes = {
+export type ProducerPurposes = {
     pagination: Pagination;
-    results: Array<ConsumerPurpose>;
+    results: Array<ProducerPurpose>;
 };
 
 export type ProducerPurposeDetailsEservice = {
@@ -1415,48 +1415,6 @@ export type CreateConsumerAgreementResponses = {
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
 
-export type GetConsumerPurposesData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-    };
-    url: '/consumer/purposes';
-};
-
-export type GetConsumerPurposesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];
-
-export type GetConsumerPurposesResponses = {
-    /**
-     * Consumer Purposes retrieved successfully
-     */
-    200: ConsumerPurposes;
-};
-
-export type GetConsumerPurposesResponse = GetConsumerPurposesResponses[keyof GetConsumerPurposesResponses];
-
 export type CreateConsumerPurposeData = {
     body: PurposeSeed;
     path?: never;
@@ -1652,6 +1610,56 @@ export type GetProducerAgreementDetailsResponses = {
 };
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
+
+export type GetProducerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: Array<PurposeState>;
+    };
+    url: '/producer/purposes';
+};
+
+export type GetProducerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerPurposesError = GetProducerPurposesErrors[keyof GetProducerPurposesErrors];
+
+export type GetProducerPurposesResponses = {
+    /**
+     * Producer Purposes retrieved successfully
+     */
+    200: ProducerPurposes;
+};
+
+export type GetProducerPurposesResponse = GetProducerPurposesResponses[keyof GetProducerPurposesResponses];
 
 export type GetProducerPurposeDetailsData = {
     body?: never;
