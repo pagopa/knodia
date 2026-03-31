@@ -11,6 +11,7 @@ import { SettingsCard } from "@/components/SettingCard";
 import { AgreementCard } from "@/features/agreement/components/AgreementCard";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
+import { formatNumber } from "@/utils/formatters";
 
 const RouterLink = createLink(Link);
 
@@ -61,9 +62,9 @@ export function ProducerPurposeDetail({
         </div>
 
         <SettingsCard label="Declared API calls per day">
-          {purpose.dailyCalls.toLocaleString()}{" "}
+          {formatNumber(purpose.dailyCalls)}{" "}
           <span className="title-md font-normal">
-            (max {purpose.maxDailyCallsPerConsumer.toLocaleString()})
+            (max {formatNumber(purpose.maxDailyCallsPerConsumer)})
           </span>
         </SettingsCard>
       </div>
