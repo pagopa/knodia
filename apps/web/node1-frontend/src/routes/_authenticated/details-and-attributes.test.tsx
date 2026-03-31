@@ -34,11 +34,9 @@ describe("DetailsAndAttributesPage", () => {
     });
 
     expect(screen.getByLabelText("E-mail address")).toHaveValue(
-      "info@organization.example",
+      "info@example.com",
     );
-    expect(screen.getByLabelText("Notes")).toHaveValue(
-      "Offices are open from Monday to Friday, 8:00 - 17:00",
-    );
+    expect(screen.getByLabelText("Notes")).toHaveValue("Notes");
   });
 
   it("renders the Attributes section with resolved attribute names", async () => {

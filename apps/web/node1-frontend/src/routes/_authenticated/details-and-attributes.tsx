@@ -37,13 +37,9 @@ export function DetailsAndAttributesPage() {
             <TextField
               isDisabled
               label="E-mail address"
-              value="info@organization.example"
+              value="info@example.com"
             />
-            <TextArea
-              isDisabled
-              label="Notes"
-              value="Offices are open from Monday to Friday, 8:00 - 17:00"
-            />
+            <TextArea isDisabled label="Notes" value="Notes" />
           </div>
         </Section>
 
