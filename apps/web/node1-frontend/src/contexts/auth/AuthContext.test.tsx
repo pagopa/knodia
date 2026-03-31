@@ -147,7 +147,7 @@ describe("AuthContext", () => {
     expect(mockSigninRedirect).toHaveBeenCalled();
   });
 
-  it("provides username, roles, and organizationId from decoded UI session token", () => {
+  it("provides username and roles from decoded UI session token", () => {
     getAuthToken.mockReturnValue(fakeSessionToken);
 
     const onAuth = vi.fn();
@@ -156,10 +156,9 @@ describe("AuthContext", () => {
     const lastCall = onAuth.mock.calls.at(-1)?.[0];
     expect(lastCall?.username).toBe("jane.doe");
     expect(lastCall?.roles).toEqual(["administrative"]);
-    expect(lastCall?.organizationId).toEqual(expect.any(String));
   });
 
-  it("username is null, roles is empty, and organizationId is null when not authenticated", () => {
+  it("username is null and roles is empty when not authenticated", () => {
     getAuthToken.mockReturnValue(null);
 
     const onAuth = vi.fn();
@@ -168,6 +167,5 @@ describe("AuthContext", () => {
     const lastCall = onAuth.mock.calls.at(-1)?.[0];
     expect(lastCall?.username).toBeNull();
     expect(lastCall?.roles).toEqual([]);
-    expect(lastCall?.organizationId).toBeNull();
   });
 });

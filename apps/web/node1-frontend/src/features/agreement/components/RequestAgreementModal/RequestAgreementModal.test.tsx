@@ -54,8 +54,8 @@ function renderModal(onClose = vi.fn()) {
     ...renderWithProviders(
       <RequestAgreementModal
         eservice={eservice}
-        knodeId={TEST_KNODE_ID}
         onClose={onClose}
+        producerKnodeId={TEST_KNODE_ID}
       />,
     ),
   };
@@ -192,8 +192,8 @@ describe("RequestAgreementModal", () => {
     renderWithProviders(
       <RequestAgreementModal
         eservice={eservice}
-        knodeId={TEST_KNODE_ID}
         onClose={vi.fn()}
+        producerKnodeId={TEST_KNODE_ID}
       />,
     );
 
@@ -212,8 +212,8 @@ describe("RequestAgreementModal", () => {
     renderWithProviders(
       <RequestAgreementModal
         eservice={eservice}
-        knodeId={TEST_KNODE_ID}
         onClose={vi.fn()}
+        producerKnodeId={TEST_KNODE_ID}
       />,
     );
 

@@ -114,7 +114,6 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
         isLoading: oidcIsLoading || isExchangePending,
         login,
         logout,
-        organizationId: sessionClaims?.organizationId ?? null,
         roles: sessionClaims?.roles ?? [],
         token: uiSessionToken,
         username: sessionClaims?.username ?? null,

@@ -79,11 +79,11 @@ const SidebarNavItemLink = createLink(SidebarNavItem);
 
 export function Sidebar() {
   const location = useLocation();
-  const { data: organization } = useQuery(sessionOrganizationQuery());
+  const { data: sessionOrganization } = useQuery(sessionOrganizationQuery());
 
   return (
     <UISidebar>
-      <SidebarHeader>{organization?.name ?? ""}</SidebarHeader>
+      <SidebarHeader>{sessionOrganization?.name ?? ""}</SidebarHeader>
       {SIDEBAR_SECTIONS.map((section, idx) => (
         <SidebarSection key={idx} title={section.title}>
           {section.items.map((item) => (

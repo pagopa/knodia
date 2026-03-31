@@ -9,25 +9,24 @@ import type { ConsumptionEserviceDetail } from "@/features/e-service/models/cons
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { ModalFooter } from "@/components/ModalFooter";
 import { SettingsCard } from "@/components/SettingCard";
-import { config } from "@/config/config";
 import { useCreateAgreement } from "@/features/agreement/hooks/useCreateAgreement";
 import { sessionOrganizationQuery } from "@/features/session/services/queries";
 import { FullPageModal } from "@/layouts/FullPageModal";
 
 interface RequestAgreementModalProps {
   eservice: ConsumptionEserviceDetail;
-  knodeId: KnodeId;
   onClose: () => void;
+  producerKnodeId: KnodeId;
 }
 
 export function RequestAgreementModal({
   eservice,
-  knodeId,
   onClose,
+  producerKnodeId,
 }: RequestAgreementModalProps) {
   const { createAgreement, isError, isPending } = useCreateAgreement({
     eserviceId: eservice.id,
-    knodeId,
+    knodeId: producerKnodeId,
   });
 
   const handleConfirm = () => {
@@ -80,7 +79,7 @@ function FormContent({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
-  const { data: organization } = useQuery(sessionOrganizationQuery());
+  const { data: sessionOrganization } = useQuery(sessionOrganizationQuery());
 
   return (
     <div className="flex flex-col gap-10">
@@ -93,7 +92,8 @@ function FormContent({
           {eservice.producer.name} - {eservice.producer.knodeId} Knode
         </SettingsCard>
         <SettingsCard label="Consumer">
-          {organization?.name ?? ""} - {config.knodeId} Knode
+          {sessionOrganization?.name ?? ""} -{" "}
+          {sessionOrganization?.knodeId ?? ""} Knode
         </SettingsCard>
       </div>
 
