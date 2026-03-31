@@ -59,16 +59,14 @@ export function ProducerPurposeTable({
             <Cell className="body-md-em text-primary-light-mid-contrast">
               {purpose.name.en}
             </Cell>
-            {/* TODO: replace eserviceId with eservice name when BFF response is enriched */}
             <Cell className="body-md text-primary-light-mid-contrast">
-              {purpose.eserviceId}
+              {purpose.eservice.name.en}
             </Cell>
             <Cell>
-              {/* TODO: replace knodeId with consumer name when BFF response is enriched */}
               <Avatar
                 className="bg-brand-dark text-white"
                 fallback={getInitials(purpose.consumer.knodeId)}
-                name={purpose.consumer.knodeId}
+                name={purpose.consumer.name}
                 size="sm"
               />
             </Cell>
