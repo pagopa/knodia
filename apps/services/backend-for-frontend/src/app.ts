@@ -120,9 +120,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
-      eserviceProcessClient: clients.eserviceProcessClient,
-      organizationProcessClient: clients.organizationProcessClient,
-      purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(agreementProducerRouter, {
