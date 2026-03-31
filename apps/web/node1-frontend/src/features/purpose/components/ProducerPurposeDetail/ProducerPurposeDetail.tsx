@@ -1,7 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Link } from "@knodia/ui-kit/ui";
+import { Button, Link, Modal } from "@knodia/ui-kit/ui";
 import { createLink } from "@tanstack/react-router";
+import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
@@ -72,12 +73,24 @@ export function ProducerPurposeDetail({
   );
 }
 
+// TODO(KN-390): hide action buttons for technical users (depends on role-based visibility from PR #285)
 function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
   return match(state)
     .with("Active", () => (
-      <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-        Suspend
-      </Button>
+      <DialogTrigger>
+        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
+          Suspend
+        </Button>
+        <Modal
+          actionLabel="Suspend anyway"
+          description="If you suspend it, the Consumer won't be able to use the associated E-Service for this Purpose. Are you sure you want to suspend this Purpose? You will be able to reactivate it later."
+          isDismissable
+          kind="destructive"
+          // eslint-disable-next-line @typescript-eslint/no-empty-function -- TODO: implement suspend mutation
+          onConfirm={() => {}}
+          title="Suspend Purpose"
+        />
+      </DialogTrigger>
     ))
     .with("Suspended", () => (
       <Button hierarchy="brand" isDisabled kind="filled" size="md">
