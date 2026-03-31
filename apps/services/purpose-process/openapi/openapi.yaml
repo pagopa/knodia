@@ -341,6 +341,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getPurposes
+      summary: List Purposes
       tags:
         - purpose
       description: Retrieve a list of Purposes

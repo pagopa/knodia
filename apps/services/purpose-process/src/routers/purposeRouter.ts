@@ -116,6 +116,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       description: "Retrieve a list of Purposes",
       headers: KnodiaServiceHeaders,
       operationId: "getPurposes",
+      summary: "List Purposes",
       querystring: API_GetPurposesQueryParams,
       response: {
         200: API_Purposes.meta({
