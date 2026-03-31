@@ -1170,19 +1170,6 @@ components:
         - Active
         - Suspended
         - Archived
-    PurposeConsumer:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - id
-        - knodeId
-      additionalProperties: false
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -1254,7 +1241,7 @@ components:
       type: object
       properties:
         consumer:
-          $ref: "#/components/schemas/PurposeConsumer"
+          $ref: "#/components/schemas/CompactOrganization"
         dailyCalls:
           format: int32
           type: integer
@@ -1262,10 +1249,8 @@ components:
           maximum: 1000000000
         description:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
-        eserviceId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
         id:
           type: string
           format: uuid
@@ -1278,7 +1263,7 @@ components:
         - consumer
         - dailyCalls
         - description
-        - eserviceId
+        - eservice
         - id
         - name
         - state

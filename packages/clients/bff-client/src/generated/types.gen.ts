@@ -548,11 +548,6 @@ export type Users = Array<User>;
 
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
-export type PurposeConsumer = {
-    id: string;
-    knodeId: KnodeId;
-};
-
 /**
  * Name of the Purpose
  */
@@ -595,10 +590,10 @@ export type PurposeSeed = {
 };
 
 export type ConsumerPurpose = {
-    consumer: PurposeConsumer;
+    consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
-    eserviceId: string;
+    eservice: CompactEservice;
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
