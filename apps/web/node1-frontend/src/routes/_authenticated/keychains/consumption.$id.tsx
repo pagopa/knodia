@@ -17,7 +17,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
-import { Section } from "@/features/e-service/components/Section";
+import { Section } from "@/components/Section";
 import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDeleteAction";
 import { KeychainEditAction } from "@/features/keychain/components/KeychainEditAction";
 import { client } from "@/libs/axios";

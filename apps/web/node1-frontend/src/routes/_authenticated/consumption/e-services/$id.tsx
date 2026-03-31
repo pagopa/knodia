@@ -17,6 +17,7 @@ import type { ConsumptionEserviceDetail } from "@/features/e-service/models/cons
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
+import { Section } from "@/components/Section";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
   AccessTokenSettingsSection,
@@ -27,7 +28,6 @@ import {
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { OrgConsumptionStatusSection } from "@/features/e-service/components/OrgConsumptionStatusSection";
-import { Section } from "@/features/e-service/components/Section";
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";

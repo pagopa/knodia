@@ -2,6 +2,7 @@ import { bffApi } from "@knodia/bff-client";
 import { Banner, Divider } from "@knodia/ui-kit/ui";
 
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
+import { Section } from "@/components/Section";
 import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 
@@ -12,7 +13,6 @@ import {
   MaxAPICallsPerDaySection,
   SignalHubSection,
 } from "../EserviceDetailSections";
-import { Section } from "../Section";
 
 export function ProductionEServiceDetailsTab() {
   return (
