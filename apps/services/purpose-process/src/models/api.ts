@@ -58,6 +58,9 @@ export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
     .uuid()
     .optional()
     .meta({ description: "Filter by Agreement ID" }),
+  consumerId: API_OrganizationId.optional().meta({
+    description: "Filter by Consumer Organization ID",
+  }),
   eserviceId: z
     .uuid()
     .optional()

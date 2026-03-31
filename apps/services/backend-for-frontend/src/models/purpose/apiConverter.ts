@@ -7,13 +7,26 @@ import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager
 
 import type { API_ConsumerPurpose, API_ProducerPurposeDetails } from "./api.ts";
 
-export const toAPI_ConsumerPurpose = (
-  purpose: purposeProcessApi.Purpose,
-): API_ConsumerPurpose => ({
-  consumer: purpose.consumer,
+export const toAPI_ConsumerPurpose = ({
+  consumer,
+  eservice,
+  purpose,
+}: {
+  consumer: organizationProcessApi.Organization;
+  eservice: eserviceProcessApi.Eservice;
+  purpose: purposeProcessApi.Purpose;
+}): API_ConsumerPurpose => ({
+  consumer: {
+    id: consumer.id,
+    knodeId: purpose.consumer.knodeId,
+    name: consumer.name,
+  },
   dailyCalls: purpose.dailyCalls,
   description: purpose.description,
-  eserviceId: purpose.eserviceId,
+  eservice: {
+    id: eservice.id,
+    name: eservice.name,
+  },
   id: purpose.id,
   name: purpose.name,
   state: purpose.state,

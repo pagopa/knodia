@@ -1,5 +1,3 @@
-import type { Purpose } from "@knodia/purpose-models";
-
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   type EserviceId,
@@ -7,6 +5,7 @@ import {
   KnodeId,
   type OrganizationId,
 } from "@knodia/common-models/ids";
+import { type Purpose, PurposeState } from "@knodia/purpose-models";
 import { getMockPurpose } from "@knodia/test-commons/utils";
 
 const createdAt = new Date();
@@ -29,7 +28,7 @@ export const mockPurposes: Purpose[] = [
     description: { en: "Purpose 1 description" },
     eserviceId: eserviceId1,
     name: { en: "Purpose 1" },
-    state: "Active",
+    state: PurposeState.enum.Active,
     updatedAt: new Date(createdAt.getTime() + 1000),
   },
   {
@@ -39,7 +38,7 @@ export const mockPurposes: Purpose[] = [
     description: { en: "Purpose 2 description" },
     eserviceId: eserviceId1,
     name: { en: "Purpose 2" },
-    state: "Active",
+    state: PurposeState.enum.Active,
     updatedAt: new Date(createdAt.getTime() + 2000),
   },
   {
@@ -49,7 +48,7 @@ export const mockPurposes: Purpose[] = [
     description: { en: "Purpose 3 description" },
     eserviceId: eserviceId1,
     name: { en: "Purpose 3" },
-    state: "Suspended",
+    state: PurposeState.enum.Suspended,
     updatedAt: new Date(createdAt.getTime() + 3000),
   },
   {
@@ -59,7 +58,7 @@ export const mockPurposes: Purpose[] = [
     description: { en: "Purpose 4 description" },
     eserviceId: eserviceId2,
     name: { en: "Purpose 4" },
-    state: "Archived",
+    state: PurposeState.enum.Archived,
     updatedAt: new Date(createdAt.getTime() + 4000),
   },
   {
@@ -69,7 +68,7 @@ export const mockPurposes: Purpose[] = [
     description: { en: "Purpose 5 description" },
     eserviceId: eserviceId2,
     name: { en: "Purpose 5" },
-    state: "Active",
+    state: PurposeState.enum.Active,
     updatedAt: new Date(createdAt.getTime() + 5000),
   },
 ];

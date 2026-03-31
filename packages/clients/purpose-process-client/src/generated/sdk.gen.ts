@@ -28,6 +28,8 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
+ * List Purposes
+ *
  * Retrieve a list of Purposes
  */
 export const getPurposes = <ThrowOnError extends boolean = true>(options: Options<GetPurposesData, ThrowOnError>) => (options.client ?? client).get<GetPurposesResponses, GetPurposesErrors, ThrowOnError>({

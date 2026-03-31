@@ -8,7 +8,6 @@ import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
-  API_PurposeConsumer,
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeFormSchemaVersion,
@@ -49,10 +48,10 @@ export type API_GetConsumerPurposesQueryParams = z.infer<
 
 export const API_ConsumerPurpose = z
   .strictObject({
-    consumer: API_PurposeConsumer,
+    consumer: API_CompactOrganization,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
-    eserviceId: z.uuid(),
+    eservice: API_CompactEservice,
     id: z.uuid(),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,

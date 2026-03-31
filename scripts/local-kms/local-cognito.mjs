@@ -13,7 +13,7 @@ const DEFAULT_USER_POOL_ID =
 const USER_ID = "00000000-0000-4000-8000-000000000001";
 const USERNAME = "jane.doe";
 const ORG_ID = "00000000-0000-4000-8000-000000000002";
-const ROLES = ["role:administrative", "role:technical"];
+const ROLES = ["role:administrative"];
 const NOW_IN_SECONDS = Math.floor(Date.now() / 1000);
 const MOCK_USERS = [
   {

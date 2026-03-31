@@ -2,8 +2,17 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import {
+  eserviceProcessApi,
+  type EserviceProcessClient,
+} from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
 import {
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersionPathParam,
@@ -30,16 +39,30 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface PurposeConsumerRouterOptions {
+  eserviceProcessClient: EserviceProcessClient;
+  organizationProcessClient: OrganizationProcessClient;
   purposeProcessClient: PurposeProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const purposeConsumerRouter: FastifyPluginAsyncZod<
   PurposeConsumerRouterOptions
-> = async (fastify, { purposeProcessClient, remoteResourcesManagerClient }) => {
+  // eslint-disable-next-line max-lines-per-function
+> = async (
+  fastify,
+  {
+    eserviceProcessClient,
+    organizationProcessClient,
+    purposeProcessClient,
+    remoteResourcesManagerClient,
+  },
+) => {
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
 
       logger.info(
         { requestQuery: req.query },
@@ -50,14 +73,58 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
+          consumerId,
           limit: req.query.limit,
           offset: req.query.offset,
         },
       });
 
-      res.status(200).send({
+      if (data.results.length === 0) {
+        res.send({ pagination: data.pagination, results: [] });
+        return;
+      }
+
+      const eserviceIds = new Set(
+        data.results.map((purpose) => purpose.eserviceId),
+      );
+      const [eservicesMap, { data: consumer }] = await Promise.all([
+        eserviceProcessApi
+          .getEservices({
+            client: eserviceProcessClient,
+            headers: getKnodiaServiceHeaders(req, correlationId),
+            query: {
+              eserviceId: Array.from(eserviceIds),
+              limit: eserviceIds.size,
+              offset: 0,
+            },
+          })
+          .then(
+            (res) =>
+              new Map(
+                res.data.results.map((eservice) => [eservice.id, eservice]),
+              ),
+          ),
+        organizationProcessApi.getOrganization({
+          client: organizationProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId: consumerId },
+        }),
+      ]);
+
+      const results = data.results.map((purpose) =>
+        toAPI_ConsumerPurpose({
+          consumer,
+          eservice: assertEntityExists(
+            eservicesMap.get(purpose.eserviceId),
+            `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
+          ),
+          purpose,
+        }),
+      );
+
+      res.send({
         pagination: data.pagination,
-        results: data.results.map(toAPI_ConsumerPurpose),
+        results,
       });
     },
     method: "GET",
