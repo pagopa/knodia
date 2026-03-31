@@ -39,7 +39,10 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
 > = async (fastify, { purposeProcessClient, remoteResourcesManagerClient }) => {
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
 
       logger.info(
         { requestQuery: req.query },
@@ -50,6 +53,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
+          consumerId,
           limit: req.query.limit,
           offset: req.query.offset,
         },
