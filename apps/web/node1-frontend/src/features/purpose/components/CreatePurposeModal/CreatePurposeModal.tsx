@@ -1,6 +1,13 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
-import { Steps } from "@knodia/ui-kit/ui";
+import {
+  getConsumerPurposeFormSchemaOptions,
+  getConsumerPurposeFormUiSchemaOptions,
+} from "@knodia/bff-client/tanstack-query";
+import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
+import { Banner, Steps } from "@knodia/ui-kit/ui";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -11,10 +18,14 @@ import {
   useStepsContext,
 } from "@/contexts/steps";
 import { PurposeFormProvider } from "@/features/purpose/contexts/PurposeFormProvider";
+import { loadSchema, loadUiSchema } from "@/features/purpose/engine/types";
+import { collectSteps } from "@/features/purpose/engine/uischemaParser";
 import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
+import { client } from "@/libs/axios";
 
 import { DetailsStep } from "./steps/DetailsStep";
+import { DynamicFormStep } from "./steps/DynamicFormStep";
 
 interface Props {
   eservice: ConsumptionEserviceDetail;
@@ -22,19 +33,87 @@ interface Props {
   onClose: () => void;
 }
 
+const FORM_SCHEMA_VERSION = PurposeFormSchemaVersion.enum["1.0"];
+
 export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
-  // TODO: Steps 2 and 3 will be replaced with the proper dynamic form
-  // generated from the Knode's JSON schema once that feature is implemented
-  const steps: StepConfig[] = [
+  const { data: jsonSchemaData, isError: isSchemaError } = useQuery(
+    getConsumerPurposeFormSchemaOptions({
+      client,
+      path: { version: FORM_SCHEMA_VERSION },
+      query: { knodeId },
+    }),
+  );
+
+  const { data: uiSchemaData, isError: isUiSchemaError } = useQuery(
+    getConsumerPurposeFormUiSchemaOptions({
+      client,
+      path: { version: FORM_SCHEMA_VERSION },
+      query: { knodeId },
+    }),
+  );
+
+  const jsonSchema = useMemo(
+    () => (jsonSchemaData ? loadSchema(jsonSchemaData) : undefined),
+    [jsonSchemaData],
+  );
+
+  const uiSchema = useMemo(
+    () => (uiSchemaData ? loadUiSchema(uiSchemaData) : undefined),
+    [uiSchemaData],
+  );
+
+  const dynamicSteps = useMemo(
+    () => (uiSchema ? collectSteps(uiSchema) : []),
+    [uiSchema],
+  );
+
+  if (isSchemaError || isUiSchemaError) {
+    return (
+      <FullPageModal onClose={onClose} title="Create Purpose">
+        <div className="mx-auto flex max-w-160 flex-col items-center gap-6 p-10">
+          <Banner kind="error">
+            Failed to load the form. Please try again later.
+          </Banner>
+        </div>
+      </FullPageModal>
+    );
+  }
+
+  if (!jsonSchema || !uiSchema) {
+    return (
+      <FullPageModal onClose={onClose} title="Create Purpose">
+        <div className="mx-auto flex max-w-160 items-center justify-center p-10">
+          <span className="body-lg text-primary-light-low-contrast">
+            Loading form...
+          </span>
+        </div>
+      </FullPageModal>
+    );
+  }
+
+  const baseSteps: StepConfig[] = [
     {
       content: <DetailsStep onCancel={handleShowLeaveConfirm} />,
       label: "Details",
     },
-    { content: <PlaceholderStep label="Step 2" />, label: "Step 2" },
-    { content: <PlaceholderStep label="Step 3" />, label: "Step 3" },
+  ];
+
+  const steps: StepConfig[] = [
+    ...baseSteps,
+    ...dynamicSteps.map((step, index) => ({
+      content: (
+        <DynamicFormStep
+          isLastStep={index === dynamicSteps.length - 1}
+          jsonSchema={jsonSchema}
+          step={step}
+          uischema={uiSchema}
+        />
+      ),
+      label: step.label ?? `Step ${index + baseSteps.length + 1}`,
+    })),
   ];
 
   return (
@@ -55,23 +134,23 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
 function ModalContent() {
   const { currentStepIndex, stepLabels } = useStepsContext();
   const { content } = useCurrentStep();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    containerRef.current?.parentElement?.scrollTo?.(0, 0);
+  }, [currentStepIndex]);
 
   return (
-    <div className="mx-auto flex max-w-160 flex-col gap-16 p-10 pb-16">
+    <div
+      className="mx-auto flex max-w-160 flex-col gap-16 p-10 pb-16"
+      ref={containerRef}
+    >
       <Steps
         ariaLabel="Purpose creation steps"
         current={currentStepIndex}
         steps={stepLabels}
       />
       {content}
-    </div>
-  );
-}
-
-function PlaceholderStep({ label }: { label: string }) {
-  return (
-    <div className="flex items-center justify-center py-20">
-      <p className="body-lg text-primary-light-low-contrast">{label} - TODO</p>
     </div>
   );
 }
