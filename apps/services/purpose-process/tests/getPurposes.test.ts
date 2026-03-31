@@ -97,6 +97,16 @@ describe("GET /purposes (getPurposes)", () => {
     },
     {
       expectedResult: [
+        mockPurposes[4],
+        mockPurposes[1],
+        mockPurposes[0],
+      ] as Purpose[],
+      query: { ...defaultQuery, consumerId: consumerId1 },
+      testCase: "filter by consumerId",
+      totalCount: 3,
+    },
+    {
+      expectedResult: [
         mockPurposes[2],
         mockPurposes[1],
         mockPurposes[0],

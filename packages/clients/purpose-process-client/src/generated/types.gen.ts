@@ -150,6 +150,10 @@ export type GetPurposesData = {
          */
         agreementId?: string;
         /**
+         * Filter by Consumer Organization ID
+         */
+        consumerId?: OrganizationId;
+        /**
          * Filter by E-service ID
          */
         eserviceId?: string;

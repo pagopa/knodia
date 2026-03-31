@@ -116,7 +116,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
       description: "Retrieve a list of Purposes",
       headers: KnodiaServiceHeaders,
       operationId: "getPurposes",
-      summary: "List Purposes",
       querystring: API_GetPurposesQueryParams,
       response: {
         200: API_Purposes.meta({
@@ -126,6 +125,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      summary: "List Purposes",
       tags: [apiTags.purpose],
     },
     url: "/purposes",
