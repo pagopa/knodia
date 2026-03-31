@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { Purpose } from "@knodia/purpose-models";
 import type z from "zod";
 
+import { AgreementState } from "@knodia/agreement-models";
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { splitPurposeIntoObjectsSQL } from "@knodia/db-readmodel-purpose/converters";
+import { EserviceMode, EserviceVersionState } from "@knodia/eservice-models";
+import { type Purpose, PurposeState } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement, getMockEservice } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -31,14 +33,17 @@ const allowedTestTokens: TestToken[] = [
 ];
 
 const eservice1 = {
-  ...getMockEservice({ latestVersionState: "Active" }),
+  ...getMockEservice({ latestVersionState: EserviceVersionState.enum.Active }),
   id: eserviceId1,
-  mode: "ProvideData" as const,
+  mode: EserviceMode.enum.ProvideData,
 };
 const eservice2 = {
-  ...getMockEservice({ latestVersionState: "Active", seed: 1 }),
+  ...getMockEservice({
+    latestVersionState: EserviceVersionState.enum.Active,
+    seed: 1,
+  }),
   id: eserviceId2,
-  mode: "ProvideData" as const,
+  mode: EserviceMode.enum.ProvideData,
 };
 
 const agreement = {
@@ -47,7 +52,7 @@ const agreement = {
   eserviceId: eserviceId1,
   eserviceVersionId: eservice1.versions[0]!.id,
   producerId: eservice1.producerId,
-  state: "Active" as const,
+  state: AgreementState.enum.Active,
 };
 
 const seedAll = async () => {
@@ -106,13 +111,16 @@ describe("GET /purposes (getPurposes)", () => {
         mockPurposes[1],
         mockPurposes[0],
       ] as Purpose[],
-      query: { ...defaultQuery, state: ["Active"] },
+      query: { ...defaultQuery, state: [PurposeState.enum.Active] },
       testCase: "filter by single state",
       totalCount: 3,
     },
     {
       expectedResult: [mockPurposes[3], mockPurposes[2]] as Purpose[],
-      query: { ...defaultQuery, state: ["Suspended", "Archived"] },
+      query: {
+        ...defaultQuery,
+        state: [PurposeState.enum.Suspended, PurposeState.enum.Archived],
+      },
       testCase: "filter by multiple states",
       totalCount: 2,
     },
