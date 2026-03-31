@@ -9,7 +9,7 @@ import { renderWithProviders, screen, waitFor } from "@/test/utils";
 import { RequestAgreementModal } from "./RequestAgreementModal";
 
 const BASE_URL = "http://localhost:3000/bff";
-const TEST_KNODE_ID = "Orion" as const;
+const TEST_PRODUCER_KNODE_ID = "Lynx" as const;
 
 function createEservice(
   overrides?: Partial<ConsumptionEserviceDetail>,
@@ -55,7 +55,7 @@ function renderModal(onClose = vi.fn()) {
       <RequestAgreementModal
         eservice={eservice}
         onClose={onClose}
-        producerKnodeId={TEST_KNODE_ID}
+        producerKnodeId={TEST_PRODUCER_KNODE_ID}
       />,
     ),
   };
@@ -114,7 +114,7 @@ describe("RequestAgreementModal", () => {
       expect(capturedBody).toEqual({
         eserviceId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
         eserviceVersionId: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
-        knodeId: TEST_KNODE_ID,
+        knodeId: TEST_PRODUCER_KNODE_ID,
       });
     });
   });
@@ -135,7 +135,7 @@ describe("RequestAgreementModal", () => {
         "/consumption/e-services/f47ac10b-58cc-4372-a567-0e02b2c3d479",
       );
       expect(router.state.location.search).toEqual({
-        knodeId: TEST_KNODE_ID,
+        knodeId: TEST_PRODUCER_KNODE_ID,
       });
     });
   });
@@ -193,7 +193,7 @@ describe("RequestAgreementModal", () => {
       <RequestAgreementModal
         eservice={eservice}
         onClose={vi.fn()}
-        producerKnodeId={TEST_KNODE_ID}
+        producerKnodeId={TEST_PRODUCER_KNODE_ID}
       />,
     );
 
@@ -213,7 +213,7 @@ describe("RequestAgreementModal", () => {
       <RequestAgreementModal
         eservice={eservice}
         onClose={vi.fn()}
-        producerKnodeId={TEST_KNODE_ID}
+        producerKnodeId={TEST_PRODUCER_KNODE_ID}
       />,
     );
 
