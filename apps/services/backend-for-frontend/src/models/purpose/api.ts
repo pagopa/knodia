@@ -1,9 +1,14 @@
+import {
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { API_EserviceVersionState } from "@knodia/eservice-models/api";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
+  API_PurposeConsumer,
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeFormSchemaVersion,
@@ -36,6 +41,32 @@ export const API_GetConsumerPurposeFormSchemaQueryParams = z.strictObject({
 export type API_GetConsumerPurposeFormSchemaQueryParams = z.infer<
   typeof API_GetConsumerPurposeFormSchemaQueryParams
 >;
+
+export const API_GetConsumerPurposesQueryParams = API_PaginationQueryParams;
+export type API_GetConsumerPurposesQueryParams = z.infer<
+  typeof API_GetConsumerPurposesQueryParams
+>;
+
+export const API_ConsumerPurpose = z
+  .strictObject({
+    consumer: API_PurposeConsumer,
+    dailyCalls: API_PurposeDailyCalls,
+    description: API_LocalizedPurposeDescription,
+    eserviceId: z.uuid(),
+    id: z.uuid(),
+    name: API_LocalizedPurposeName,
+    state: API_PurposeState,
+  })
+  .meta({ id: "ConsumerPurpose" });
+export type API_ConsumerPurpose = z.infer<typeof API_ConsumerPurpose>;
+
+export const API_ConsumerPurposes = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerPurpose),
+  })
+  .meta({ id: "ConsumerPurposes" });
+export type API_ConsumerPurposes = z.infer<typeof API_ConsumerPurposes>;
 
 export const API_ProducerPurposeDetails = z
   .strictObject({

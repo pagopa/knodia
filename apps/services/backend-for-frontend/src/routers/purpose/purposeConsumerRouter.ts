@@ -10,25 +10,75 @@ import {
   API_PurposeFormUiSchema,
 } from "@knodia/purpose-models/api";
 import {
+  purposeProcessApi,
+  type PurposeProcessClient,
+} from "@knodia/purpose-process-client";
+import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
+  API_ConsumerPurposes,
   API_GetConsumerPurposeFormSchemaQueryParams,
+  API_GetConsumerPurposesQueryParams,
   API_PurposeSeed,
 } from "../../models/purpose/api.ts";
+import { toAPI_ConsumerPurpose } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface PurposeConsumerRouterOptions {
+  purposeProcessClient: PurposeProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const purposeConsumerRouter: FastifyPluginAsyncZod<
   PurposeConsumerRouterOptions
-> = async (fastify, { remoteResourcesManagerClient }) => {
+> = async (fastify, { purposeProcessClient, remoteResourcesManagerClient }) => {
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestQuery: req.query },
+        "Getting Consumer Purposes with query parameters",
+      );
+
+      const { data } = await purposeProcessApi.getPurposes({
+        client: purposeProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        query: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+        },
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map(toAPI_ConsumerPurpose),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a paginated list of consumer Purposes",
+      operationId: "getConsumerPurposes",
+      querystring: API_GetConsumerPurposesQueryParams,
+      response: {
+        200: API_ConsumerPurposes.meta({
+          description: "Consumer Purposes retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      summary: "List consumer Purposes",
+      tags: [apiTags.purpose],
+    },
+    url: "/consumer/purposes",
+  });
+
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =

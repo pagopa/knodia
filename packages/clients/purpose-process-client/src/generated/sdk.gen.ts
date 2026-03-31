@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetPurposeData, GetPurposeErrors, GetPurposeFormSchemaData, GetPurposeFormSchemaErrors, GetPurposeFormSchemaResponses, GetPurposeFormUiSchemaData, GetPurposeFormUiSchemaErrors, GetPurposeFormUiSchemaResponses, GetPurposeResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetPurposeData, GetPurposeErrors, GetPurposeFormSchemaData, GetPurposeFormSchemaErrors, GetPurposeFormSchemaResponses, GetPurposeFormUiSchemaData, GetPurposeFormUiSchemaErrors, GetPurposeFormUiSchemaResponses, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -24,6 +24,16 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 export const getStatus = <ThrowOnError extends boolean = true>(options?: Options<GetStatusData, ThrowOnError>) => (options?.client ?? client).get<GetStatusResponses, unknown, ThrowOnError>({
     responseType: 'json',
     url: '/status',
+    ...options
+});
+
+/**
+ * Retrieve a list of Purposes
+ */
+export const getPurposes = <ThrowOnError extends boolean = true>(options: Options<GetPurposesData, ThrowOnError>) => (options.client ?? client).get<GetPurposesResponses, GetPurposesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes',
     ...options
 });
 
