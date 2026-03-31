@@ -72,7 +72,7 @@ export function ProducerPurposeDetail({
   );
 }
 
-// TODO: hide action buttons for technical users (depends on role-based visibility from PR #285)
+// TODO(KN-390): hide action buttons for technical users (depends on role-based visibility from PR #285)
 function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
   return match(state)
     .with("Active", () => (
