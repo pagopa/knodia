@@ -4,6 +4,7 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { PurposeId } from "@knodia/common-models/ids";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { arrayQueryParam } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_LocalizedPurposeDescription,
@@ -60,6 +61,9 @@ export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
     .meta({ description: "Filter by Agreement ID" }),
   consumerId: API_OrganizationId.optional().meta({
     description: "Filter by Consumer Organization ID",
+  }),
+  consumerKnodeId: API_KnodeId.optional().meta({
+    description: "Filter by Consumer Knode ID",
   }),
   eserviceId: z
     .uuid()
