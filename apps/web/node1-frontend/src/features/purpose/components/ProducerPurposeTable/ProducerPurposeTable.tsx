@@ -2,7 +2,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  Avatar,
   ButtonLink,
   Cell,
   Column,
@@ -16,7 +15,7 @@ import {
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 
-import { getInitials } from "@/utils/getInitials";
+import { KnodeAvatar } from "@/components/KnodeAvatar";
 
 import { PurposeStateChip } from "../PurposeStateChip";
 
@@ -63,9 +62,9 @@ export function ProducerPurposeTable({
               {purpose.eservice.name.en}
             </Cell>
             <Cell>
-              <Avatar
+              <KnodeAvatar
                 className="bg-brand-dark text-white"
-                fallback={getInitials(purpose.consumer.knodeId)}
+                knodeId={purpose.consumer.knodeId}
                 name={purpose.consumer.name}
                 size="sm"
               />
