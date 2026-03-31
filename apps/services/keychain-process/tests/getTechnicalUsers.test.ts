@@ -28,30 +28,12 @@ vi.mock("@aws-sdk/client-cognito-identity-provider", () => {
 });
 
 import { API_Users } from "../src/models/api.ts";
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest, makeCognitoUser } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
 ];
-
-function makeCognitoUser({
-  email,
-  id,
-  username,
-}: {
-  email: string;
-  id: string;
-  username: string;
-}) {
-  return {
-    Attributes: [
-      { Name: "sub", Value: id },
-      { Name: "email", Value: email },
-    ],
-    Username: username,
-  };
-}
 
 describe("GET /users/technical (getTechnicalUsers)", () => {
   beforeEach(() => {

@@ -30,6 +30,13 @@ export const API_PurposeSeed = z
   });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
 
+export const API_GetPurposeFormSchemaQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetPurposeFormSchemaQueryParams = z.infer<
+  typeof API_GetPurposeFormSchemaQueryParams
+>;
+
 export const API_CreatedPurposeResource = API_CreatedResource.meta({
   description: "Unique identifier of the created Purpose resource",
   id: "CreatedPurposeResource",

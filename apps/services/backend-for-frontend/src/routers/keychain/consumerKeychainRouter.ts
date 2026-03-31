@@ -23,10 +23,12 @@ import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
+  API_ConsumerKeychainMemberPathParam,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_KeychainDetails,
+  API_KeychainMemberSeed,
   API_Keychains,
 } from "../../models/keychain/api.ts";
 import {
@@ -151,6 +153,92 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body, requestParams: req.params },
+        `Adding member to Consumer Keychain with ID ${req.params.consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.addConsumerKeychainMember({
+        body: req.body,
+        client: keychainProcessClient,
+        headers,
+        path: { consumerKeychainId: req.params.consumerKeychainId },
+      });
+
+      await pollConsumerKeychain(response, headers);
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainMemberSeed,
+      description: "Add a member to a Consumer Keychain",
+      operationId: "addConsumerKeychainMember",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Consumer Keychain member added successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestParams: req.params },
+        `Removing member ${req.params.userId} from Consumer Keychain with ID ${req.params.consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.removeConsumerKeychainMember({
+        client: keychainProcessClient,
+        headers,
+        path: {
+          consumerKeychainId: req.params.consumerKeychainId,
+          userId: req.params.userId,
+        },
+      });
+
+      await pollConsumerKeychain(response, headers);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a member from a Consumer Keychain",
+      operationId: "removeConsumerKeychainMember",
+      params: API_ConsumerKeychainMemberPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Consumer Keychain member removed successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/members/:userId",
   });
 
   fastify.route({

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -13,23 +14,38 @@ import type {
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
 
-import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  generateId,
+  unsafeBrandUserId,
+  type UserId,
+} from "@knodia/common-models/ids";
 import { match, P } from "ts-pattern";
 
 import type {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
+  API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
+import type { UserService } from "./userService.ts";
 
+import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
+  createConsumerKeychainMemberAddedV1Event,
+  createConsumerKeychainMemberRemovedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
-import { assertOrganizationIsKeychainOwner } from "../utils/validators.ts";
+import {
+  assertOrganizationIsKeychainOwner,
+  assertUserBelongsToOrganization,
+  assertUserHasTechnicalRole,
+  assertUserIsMemberOfKeychain,
+} from "../utils/validators.ts";
 
 export type ConsumerKeychainService = ReturnType<
   typeof consumerKeychainServiceBuilder
@@ -38,8 +54,69 @@ export type ConsumerKeychainService = ReturnType<
 export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
+  userService: UserService,
 ) {
   return {
+    async addConsumerKeychainMember(
+      consumerKeychainId: ConsumerKeychainId,
+      member: API_KeychainMemberSeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychain>> {
+      logger.info(
+        `Adding member ${member.userId} to Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      const userId = unsafeBrandUserId(member.userId);
+
+      if (consumerKeychain.data.users.includes(userId)) {
+        throw userAlreadyMember(consumerKeychainId, userId);
+      }
+
+      const user = await userService.getUserById(userId);
+
+      if (!user) {
+        throw userNotFound(userId);
+      }
+
+      const userGroups = await userService.getUserGroups(user.username);
+
+      assertUserBelongsToOrganization(
+        userId,
+        authData.organizationId,
+        userGroups,
+      );
+      assertUserHasTechnicalRole(userId, userGroups);
+
+      const updatedConsumerKeychain: ConsumerKeychain = {
+        ...consumerKeychain.data,
+        updatedAt: new Date(),
+        users: [...consumerKeychain.data.users, user.id],
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainMemberAddedV1Event(
+          updatedConsumerKeychain,
+          user.id,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedConsumerKeychain,
+        metadata: { version: newVersion },
+      };
+    },
     async createConsumerKeychain(
       seed: API_ConsumerKeychainSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
@@ -118,6 +195,54 @@ export function consumerKeychainServiceBuilder(
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);
+    },
+
+    async removeConsumerKeychainMember(
+      consumerKeychainId: ConsumerKeychainId,
+      userId: UserId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychain>> {
+      logger.info(
+        `Removing member ${userId} from Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      assertUserIsMemberOfKeychain(
+        userId,
+        consumerKeychainId,
+        consumerKeychain.data.users,
+      );
+
+      const updatedConsumerKeychain: ConsumerKeychain = {
+        ...consumerKeychain.data,
+        updatedAt: new Date(),
+        users: consumerKeychain.data.users.filter(
+          (memberId) => memberId !== userId,
+        ),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainMemberRemovedV1Event(
+          updatedConsumerKeychain,
+          userId,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: updatedConsumerKeychain,
+        metadata: { version: newVersion },
+      };
     },
 
     async updateConsumerKeychain(

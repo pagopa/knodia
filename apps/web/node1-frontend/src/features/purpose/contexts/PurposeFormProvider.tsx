@@ -3,6 +3,7 @@ import type { KnodeId } from "@knodia/common-models/ids";
 import { useCallback, useMemo, useState } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
+import type { FormValues } from "@/features/purpose/engine/types";
 
 import {
   type DetailsStepData,
@@ -23,9 +24,14 @@ interface Props {
 
 export function PurposeFormProvider({ children, eservice, knodeId }: Props) {
   const [data, setData] = useState<PurposeFormDraftData>(PURPOSE_FORM_DEFAULTS);
+  const [formAnswers, setFormAnswers] = useState<FormValues>({});
 
   const updateDetailsStep = useCallback((stepData: DetailsStepData) => {
     setData((prev) => ({ ...prev, ...stepData }));
+  }, []);
+
+  const updateFormAnswers = useCallback((answers: FormValues) => {
+    setFormAnswers((prev) => ({ ...prev, ...answers }));
   }, []);
 
   const value = useMemo<PurposeWizardContextValue>(
@@ -33,11 +39,20 @@ export function PurposeFormProvider({ children, eservice, knodeId }: Props) {
       data,
       eserviceId: eservice.id,
       eserviceName: eservice.name,
+      formAnswers,
       knodeId,
       maxDailyCallsPerConsumer: eservice.maxDailyCalls.perConsumer,
       updateDetailsStep,
+      updateFormAnswers,
     }),
-    [data, eservice, knodeId, updateDetailsStep],
+    [
+      data,
+      eservice,
+      formAnswers,
+      knodeId,
+      updateDetailsStep,
+      updateFormAnswers,
+    ],
   );
 
   return (
