@@ -35,11 +35,11 @@ export function DetailsAndAttributesPage() {
           <div className="flex flex-col gap-6 rounded-lg bg-secondary-light p-6">
             {/* TODO: Replace with real data when contacts API is available */}
             <TextField
-              isDisabled
+              isReadOnly
               label="E-mail address"
               value="info@example.com"
             />
-            <TextField isDisabled label="Notes" value="Notes" />
+            <TextField isReadOnly label="Notes" value="Notes" />
           </div>
         </Section>
 
