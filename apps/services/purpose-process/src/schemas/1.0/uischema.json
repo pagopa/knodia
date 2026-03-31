@@ -469,7 +469,7 @@
               "options": {
                 "widget": "switch",
                 "optionLabels": { "true": "I confirm" },
-                "errorMessages": { "required": "Confirmation required" }
+                "errorMessages": { "const": "Please confirm to proceed", "required": "Please confirm to proceed" }
               }
             },
             {
@@ -628,7 +628,7 @@
                 "widget": "switch",
                 "infoLabel": "NB: Before confirming, please check whether another E-Service in the API Catalogue can perform the verification of personal data you need.",
                 "optionLabels": { "true": "I confirm" },
-                "errorMessages": { "required": "Confirmation required" }
+                "errorMessages": { "const": "Please confirm to proceed", "required": "Please confirm to proceed" }
               },
               "rule": {
                 "effect": "SHOW",
@@ -652,7 +652,7 @@
                 "widget": "switch",
                 "description": "NB: If you only need some of the personal data provided by this E-Service, check whether a more limited one already exists. If not, ask a Producer to set one up.",
                 "optionLabels": { "true": "I confirm" },
-                "errorMessages": { "required": "Confirmation required" }
+                "errorMessages": { "const": "Please confirm to proceed", "required": "Please confirm to proceed" }
               },
               "rule": {
                 "effect": "SHOW",
@@ -711,7 +711,7 @@
               "options": {
                 "widget": "switch",
                 "optionLabels": { "true": "I confirm" },
-                "errorMessages": { "required": "Confirmation required" }
+                "errorMessages": { "const": "Please confirm to proceed", "required": "Please confirm to proceed" }
               }
             }
           ]
