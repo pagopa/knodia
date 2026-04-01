@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
 import { PageHeader } from "@/components/PageHeader";
+import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
@@ -45,6 +46,7 @@ function EServiceActions() {
 }
 
 function RouteComponent() {
+  const canManageEserviceState = useHasRole("administrative");
   const eservice = Route.useLoaderData();
 
   return (
@@ -58,7 +60,7 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader
-        actions={<EServiceActions />}
+        actions={canManageEserviceState && <EServiceActions />}
         copyableId={eservice.id}
         description={eservice.description.en}
         resourceStatusChip={
