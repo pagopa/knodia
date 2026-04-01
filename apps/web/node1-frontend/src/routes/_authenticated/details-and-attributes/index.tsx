@@ -7,9 +7,11 @@ import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
 import { sessionOrganizationQuery } from "@/features/session/services/queries";
 
-export const Route = createFileRoute("/_authenticated/details-and-attributes")({
-  component: DetailsAndAttributesPage,
-});
+export const Route = createFileRoute("/_authenticated/details-and-attributes/")(
+  {
+    component: DetailsAndAttributesPage,
+  },
+);
 
 export function DetailsAndAttributesPage() {
   const { data: sessionOrganization } = useSuspenseQuery(

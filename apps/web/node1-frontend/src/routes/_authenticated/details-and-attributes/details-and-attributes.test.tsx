@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { renderWithProviders, screen, waitFor } from "@/test/utils";
 
-import { DetailsAndAttributesPage } from "./details-and-attributes";
+import { DetailsAndAttributesPage } from "./index";
 
 describe("DetailsAndAttributesPage", () => {
   it("renders the page title and organization ID", async () => {
