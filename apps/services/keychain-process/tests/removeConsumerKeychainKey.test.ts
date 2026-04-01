@@ -109,7 +109,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 404 if the caller is not a member of the consumer keychain", async () => {
+  it("should return 403 if the caller is not a member of the consumer keychain", async () => {
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
       keys: [existingKey],
@@ -123,7 +123,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
       type: "ui-session",
     }).delete(`/consumerKeychains/${consumerKeychain.id}/keys/${keyId}`);
 
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(403);
   });
 
   it("should return 404 if the key is not in the consumer keychain", async () => {

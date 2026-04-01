@@ -369,7 +369,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data,
       );
 
-      assertUserIsMemberOfKeychain(
+      assertUserIsAllowedToPerformKeychainOperation(
         authData.userId,
         consumerKeychainId,
         consumerKeychain.data.users,
