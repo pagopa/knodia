@@ -41,7 +41,7 @@ export function KeychainTable({
         className="mt-10"
         description={
           canCreateKeychain
-            ? "Create your first one"
+            ? "Create your first one."
             : "New Keychains will appear here."
         }
         icon={<SelectionPlusIcon />}
