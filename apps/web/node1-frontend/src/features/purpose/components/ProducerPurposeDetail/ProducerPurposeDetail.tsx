@@ -1,6 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Link, Modal } from "@knodia/ui-kit/ui";
+import { Button, ButtonLink, Link, Modal } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
@@ -15,6 +16,7 @@ import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip
 import { formatNumber } from "@/utils/formatters";
 
 const RouterLink = createLink(Link);
+const RouterButtonLink = createLink(ButtonLink);
 
 export function ProducerPurposeDetail({
   purpose,
@@ -69,7 +71,21 @@ export function ProducerPurposeDetail({
         </SettingsCard>
       </div>
 
-      <AgreementCard agreement={purpose.agreement} className="mt-10" />
+      <AgreementCard
+        action={
+          <RouterButtonLink
+            aria-label="Go to agreement"
+            hierarchy="neutral"
+            kind="tonal"
+            params={{ id: purpose.agreement.id }}
+            size="icon-md"
+            to="/production/agreements/$id"
+          >
+            <ArrowRightIcon />
+          </RouterButtonLink>
+        }
+        agreement={purpose.agreement}
+      />
     </>
   );
 }

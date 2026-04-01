@@ -11,7 +11,7 @@ import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
-import { AgreementStateChip } from "@/features/agreement/components/AgreementStateChip";
+import { AgreementCard } from "@/features/agreement/components/AgreementCard";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 import { formatNumber } from "@/utils/formatters";
@@ -75,23 +75,22 @@ export function ConsumerPurposeDetail({
         </SettingsCard>
       </div>
 
-      <article className="mt-10 p-4 flex items-center justify-between rounded-2xl elevation-1 border border-slate-100">
-        <span className="flex items-center gap-4">
-          <span className="body-lg-em">Agreement</span>
-          <AgreementStateChip state={purpose.agreement.state} type="light" />
-        </span>
-        <RouterButtonLink
-          aria-label="Go to E-Service"
-          hierarchy="neutral"
-          kind="tonal"
-          params={{ id: purpose.eservice.id }}
-          search={{ knodeId }}
-          size="icon-md"
-          to="/consumption/e-services/$id"
-        >
-          <ArrowRightIcon />
-        </RouterButtonLink>
-      </article>
+      <AgreementCard
+        action={
+          <RouterButtonLink
+            aria-label="Go to E-Service"
+            hierarchy="neutral"
+            kind="tonal"
+            params={{ id: purpose.eservice.id }}
+            search={{ knodeId }}
+            size="icon-md"
+            to="/consumption/e-services/$id"
+          >
+            <ArrowRightIcon />
+          </RouterButtonLink>
+        }
+        agreement={purpose.agreement}
+      />
     </>
   );
 }
