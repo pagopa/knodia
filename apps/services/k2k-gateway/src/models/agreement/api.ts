@@ -6,9 +6,9 @@ import {
 } from "@knodia/common-models/api";
 import { z } from "zod";
 
-import { API_KnodeId } from "../api.ts";
 import { API_Attribute } from "../attribute/api.ts";
 import { API_EserviceId, API_EserviceVersionId } from "../eservice/api.ts";
+import { API_KnodeId } from "../knode/api.ts";
 
 const API_AgreementId = z.uuid().meta({
   description: "Unique identifier of the Agreement",

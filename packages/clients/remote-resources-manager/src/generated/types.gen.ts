@@ -265,6 +265,13 @@ export type Organizations = {
     results: Array<Organization>;
 };
 
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+export type PurposeConsumer = {
+    id: string;
+    knodeId: KnodeId;
+};
+
 /**
  * Name of the Purpose
  */
@@ -316,6 +323,17 @@ export type PurposeSeed = {
  * Unique identifier of the created Purpose resource
  */
 export type CreatedPurposeResource = CreatedResource;
+
+export type Purpose = {
+    consumer: PurposeConsumer;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    id: string;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+    updatedAt: string;
+};
 
 export type GetStatusData = {
     body?: never;
@@ -750,6 +768,47 @@ export type GetPurposeFormUiSchemaResponses = {
 };
 
 export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
+
+export type GetPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}';
+};
+
+export type GetPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeError = GetPurposeErrors[keyof GetPurposeErrors];
+
+export type GetPurposeResponses = {
+    /**
+     * Purpose retrieved successfully
+     */
+    200: Purpose;
+};
+
+export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
 
 export type GetOrganizationData = {
     body?: never;

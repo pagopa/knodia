@@ -1,5 +1,9 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { AgreementId, OrganizationId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  OrganizationId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -10,6 +14,7 @@ const { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } = constants;
 const errorCodes = {
   AGREEMENT_NOT_FOUND: "0001",
   ORGANIZATION_NOT_FOUND: "0002",
+  PURPOSE_NOT_FOUND: "0003",
 } as const;
 
 type ErrorCodes = keyof typeof errorCodes;
@@ -33,5 +38,14 @@ export function organizationNotFound(organizationId: OrganizationId) {
     detail: `Organization with id ${organizationId} not found`,
     status: HTTP_STATUS_FORBIDDEN,
     title: "Organization Not Found",
+  });
+}
+
+export function purposeNotFound(purposeId: ExternalId<PurposeId>) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_NOT_FOUND",
+    detail: `Purpose with id ${purposeId} not found`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Purpose Not Found",
   });
 }

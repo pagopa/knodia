@@ -35,11 +35,11 @@ export const API_PurposeSeed = z
   });
 export type API_PurposeSeed = z.infer<typeof API_PurposeSeed>;
 
-export const API_GetConsumerPurposeFormSchemaQueryParams = z.strictObject({
+export const API_GetConsumerPurposeQueryParams = z.strictObject({
   knodeId: API_KnodeId,
 });
-export type API_GetConsumerPurposeFormSchemaQueryParams = z.infer<
-  typeof API_GetConsumerPurposeFormSchemaQueryParams
+export type API_GetConsumerPurposeQueryParams = z.infer<
+  typeof API_GetConsumerPurposeQueryParams
 >;
 
 export const API_GetProducerPurposesQueryParams =
@@ -77,7 +77,7 @@ export const API_ProducerPurposes = z
   .meta({ id: "ProducerPurposes" });
 export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 
-export const API_ProducerPurposeDetails = z
+export const API_PurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
     consumer: API_CompactOrganization,
@@ -85,14 +85,12 @@ export const API_ProducerPurposeDetails = z
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice.extend({
       latestVersionState: API_EserviceVersionState,
-    }).meta({ id: "ProducerPurposeDetailsEservice" }),
+    }).meta({ id: "PurposeDetailsEservice" }),
     id: z.uuid(),
     maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
     name: API_LocalizedPurposeName,
     producer: API_CompactOrganization,
     state: API_PurposeState,
   })
-  .meta({ id: "ProducerPurposeDetails" });
-export type API_ProducerPurposeDetails = z.infer<
-  typeof API_ProducerPurposeDetails
->;
+  .meta({ id: "PurposeDetails" });
+export type API_PurposeDetails = z.infer<typeof API_PurposeDetails>;

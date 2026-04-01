@@ -1,13 +1,20 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
 import {
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersionPathParam,
   API_PurposeFormUiSchema,
+  API_PurposeIdPathParam,
 } from "@knodia/purpose-models/api";
 import {
   remoteResourcesManagerApi,
@@ -16,19 +23,26 @@ import {
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
-  API_GetConsumerPurposeFormSchemaQueryParams,
+  API_GetConsumerPurposeQueryParams,
+  API_PurposeDetails,
   API_PurposeSeed,
 } from "../../models/purpose/api.ts";
+import { toAPI_ConsumerPurposeDetails } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface PurposeConsumerRouterOptions {
+  knodeId: KnodeId;
+  organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
 
 export const purposeConsumerRouter: FastifyPluginAsyncZod<
   PurposeConsumerRouterOptions
-> = async (fastify, { remoteResourcesManagerClient }) => {
+> = async (
+  fastify,
+  { knodeId, organizationProcessClient, remoteResourcesManagerClient },
+) => {
   fastify.route({
     handler: async (req, res) => {
       const { authData, correlationId, logger } =
@@ -93,7 +107,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         "Retrieve the JSON Schema for validating Purpose form answers",
       operationId: "getConsumerPurposeFormSchema",
       params: API_PurposeFormSchemaVersionPathParam,
-      querystring: API_GetConsumerPurposeFormSchemaQueryParams,
+      querystring: API_GetConsumerPurposeQueryParams,
       response: {
         200: API_PurposeFormSchema.meta({
           description: "Purpose form schema retrieved successfully",
@@ -131,7 +145,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
       operationId: "getConsumerPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
-      querystring: API_GetConsumerPurposeFormSchemaQueryParams,
+      querystring: API_GetConsumerPurposeQueryParams,
       response: {
         200: API_PurposeFormUiSchema.meta({
           description: "Purpose form UI schema retrieved successfully",
@@ -144,5 +158,77 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/consumer/purposes/formSchemas/:version/ui",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
+
+      logger.info(
+        { requestParams: req.params, requestQuery: req.query },
+        `Getting Consumer Purpose with ID ${req.params.purposeId} from Knode ${req.query.knodeId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const { data: purpose } = await remoteResourcesManagerApi.getPurpose({
+        client: remoteResourcesManagerClient,
+        headers,
+        path: { purposeId: req.params.purposeId },
+        query: { knodeId: req.query.knodeId },
+      });
+
+      const [{ data: eserviceDetails }, { data: consumer }] = await Promise.all(
+        [
+          remoteResourcesManagerApi.getEserviceDetails({
+            client: remoteResourcesManagerClient,
+            headers,
+            path: { eserviceId: purpose.eserviceId },
+            query: { knodeId: req.query.knodeId },
+          }),
+          organizationProcessApi.getOrganization({
+            client: organizationProcessClient,
+            headers,
+            path: { organizationId: consumerId },
+          }),
+        ],
+      );
+
+      const agreement = assertEntityExists(
+        eserviceDetails.agreement,
+        `Agreement not found for Purpose ${purpose.id} (eserviceId: ${purpose.eserviceId})`,
+      );
+
+      res.status(200).send(
+        toAPI_ConsumerPurposeDetails({
+          agreement,
+          consumer: { ...consumer, knodeId },
+          eserviceDetails,
+          purpose,
+        }),
+      );
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Consumer Purpose with details",
+      operationId: "getConsumerPurposeDetails",
+      params: API_PurposeIdPathParam,
+      querystring: API_GetConsumerPurposeQueryParams,
+      response: {
+        200: API_PurposeDetails.meta({
+          description: "Consumer Purpose details retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      summary: "Get consumer Purpose details",
+      tags: [apiTags.purpose],
+    },
+    url: "/consumer/purposes/:purposeId",
   });
 };
