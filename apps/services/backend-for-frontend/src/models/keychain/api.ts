@@ -89,6 +89,16 @@ export type API_ConsumerKeychainMemberPathParam = z.infer<
   typeof API_ConsumerKeychainMemberPathParam
 >;
 
+export const API_ConsumerKeychainKeyPathParam = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ConsumerKeychainIdPathParam.shape);
+
+export type API_ConsumerKeychainKeyPathParam = z.infer<
+  typeof API_ConsumerKeychainKeyPathParam
+>;
+
 export const API_User = z
   .strictObject({
     email: z.string(),

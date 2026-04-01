@@ -1,0 +1,19 @@
+meta {
+  name: Remove Consumer Keychain Key
+  type: http
+}
+
+delete {
+  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId/keys/:keyId
+  body: none
+  auth: none
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+  keyId: {{keyId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
