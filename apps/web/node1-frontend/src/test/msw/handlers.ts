@@ -3,6 +3,14 @@ import { http, HttpResponse } from "msw";
 const BASE_URL = import.meta.env["BFF_URL"];
 
 export const handlers = [
+  http.get(`${BASE_URL}/session/organization`, () =>
+    HttpResponse.json({
+      id: "20000000-2000-1000-8000-000000000002",
+      knodeId: "Orion",
+      name: "Test Organization",
+    }),
+  ),
+
   http.get(`${BASE_URL}/consumer/purposes/formSchemas/:version`, () =>
     HttpResponse.json({
       properties: {
