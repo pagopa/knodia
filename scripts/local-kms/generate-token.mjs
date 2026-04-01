@@ -25,41 +25,42 @@ if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
   process.exit(1);
 }
 
-// Extract node name once — null for local, "lynx"/"orion" for dev environments
-const node = targetEnv === "local" ? null : targetEnv.replace("dev-", "");
+function getClaims(targetEnv, type) {
+  const aud = targetEnv === "local"
+    ? `local.knodia.test/${type}`
+    : `app.${targetEnv.replace("dev-", "")}.dev.knodia.com/${type}`;
 
-function getClaimsAndEnvVar(type) {
   switch (type) {
     case "ui-session":
-      return {
-        claims: { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "jane.doe", type },
-        envVarName: "UI_SESSION_JWT",
-      };
+      return { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "jane.doe", type, aud };
     case "internal":
-      return {
-        claims: { sub: INTERNAL_SUB, type },
-        envVarName: "INTERNAL_JWT",
-      };
+      return { sub: INTERNAL_SUB, type, aud };
   }
 }
 
-async function buildTokenParameters(kmsClient, node, type) {
-  if (!node) {
-    return { kid: "alias/local-knodia-key", aud: `local.knodia.test/${type}` };
+function getEnvVarName(targetEnv, type) {
+  const base = type === "ui-session" ? "UI_SESSION_JWT" : "INTERNAL_JWT";
+  if (targetEnv === "local") return base;
+  return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
+}
+
+async function resolveKeyId(kmsClient, targetEnv, type) {
+  if (targetEnv === "local") {
+    return "alias/local-knodia-key";
   }
   const keyName = type === "internal" ? "internal" : "bff-session";
-  const alias = `alias/dev-${node}/app/${keyName}-tokens`;
+  const alias = `alias/${targetEnv}/app/${keyName}-tokens`;
   const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
-  return { kid: KeyMetadata.KeyId, aud: `app.${node}.dev.knodia.com/${type}` };
+  return KeyMetadata.KeyId;
 }
 
-const { claims, envVarName } = getClaimsAndEnvVar(type);
+const claims = getClaims(targetEnv, type);
 
-const kmsClient = new KMSClient(node
-  ? { region: "eu-south-1" }
-  : { endpoint: "http://localhost:4566", region: "eu-south-1", credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" } }
+const kmsClient = new KMSClient(targetEnv === "local"
+  ? { endpoint: "http://localhost:4566", region: "eu-south-1", credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" } }
+  : { region: "eu-south-1" }
 );
-const { kid, aud } = await buildTokenParameters(kmsClient, node, type);
+const kid = await resolveKeyId(kmsClient, targetEnv, type);
 
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
@@ -72,7 +73,6 @@ const now = Math.floor(Date.now() / 1000);
 const payload = b64url(
   JSON.stringify({
     ...claims,
-    aud,
     exp: now + 3600,
     iat: now,
     iss: "local-knodia",
@@ -98,13 +98,15 @@ const token = `${message}.${signature}`;
 console.log(`Generated ${type} token (${targetEnv}):`);
 console.log(token);
 
-mkdirSync(TOKENS_DIR, { recursive: true });
-const tokenPath = resolve(TOKENS_DIR, `${type}.token`);
+const envTokensDir = resolve(TOKENS_DIR, targetEnv);
+mkdirSync(envTokensDir, { recursive: true });
+const tokenPath = resolve(envTokensDir, `${type}.token`);
 writeFileSync(tokenPath, token);
 console.log(`\nToken written to ${tokenPath}`);
 
 const COLLECTIONS_DIR = resolve(__dirname, "../../collections");
 const envPath = resolve(COLLECTIONS_DIR, ".env");
+const envVarName = getEnvVarName(targetEnv, type);
 const envLine = `${envVarName}=${token}`;
 
 let existing = "";
