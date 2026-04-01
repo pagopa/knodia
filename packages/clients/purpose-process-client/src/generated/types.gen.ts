@@ -154,6 +154,10 @@ export type GetPurposesData = {
          */
         consumerId?: OrganizationId;
         /**
+         * Filter by Consumer Knode ID
+         */
+        consumerKnodeId?: KnodeId;
+        /**
          * Filter by E-service ID
          */
         eserviceId?: string;

@@ -81,6 +81,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       const {
         agreementId,
         consumerId,
+        consumerKnodeId,
         eserviceId,
         limit,
         offset,
@@ -126,6 +127,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             and(
               consumerId
                 ? eq(readmodelPurpose.consumerId, consumerId)
+                : undefined,
+              consumerKnodeId
+                ? eq(readmodelPurpose.consumerKnodeId, consumerKnodeId)
                 : undefined,
               eserviceId
                 ? eq(readmodelPurpose.eserviceId, eserviceId)

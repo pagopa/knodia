@@ -107,6 +107,16 @@ describe("GET /purposes (getPurposes)", () => {
     },
     {
       expectedResult: [
+        mockPurposes[4],
+        mockPurposes[1],
+        mockPurposes[0],
+      ] as Purpose[],
+      query: { ...defaultQuery, consumerKnodeId: "Orion" },
+      testCase: "filter by consumerKnodeId",
+      totalCount: 3,
+    },
+    {
+      expectedResult: [
         mockPurposes[2],
         mockPurposes[1],
         mockPurposes[0],
@@ -179,6 +189,7 @@ describe("GET /purposes (getPurposes)", () => {
     { limit: "0", offset: "0" },
     { limit: "51", offset: "0" },
     { limit: "10", offset: "-1" },
+    { ...defaultQuery, consumerKnodeId: "InvalidConsumerKnodeId" },
     { ...defaultQuery, producerId: "InvalidProducerId" },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
     { ...defaultQuery, agreementId: "InvalidAgreementId" },
