@@ -23,7 +23,7 @@ function EServiceActions() {
   return (
     <>
       <DialogTrigger>
-        <Button hierarchy="danger" kind="tonal" size="md">
+        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
           Suspend
         </Button>
         <Modal
@@ -35,7 +35,7 @@ function EServiceActions() {
         />
       </DialogTrigger>
       <DialogTrigger>
-        <Button hierarchy="brand" kind="filled" size="md">
+        <Button hierarchy="brand" isDisabled kind="filled" size="md">
           Edit
         </Button>
         <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
