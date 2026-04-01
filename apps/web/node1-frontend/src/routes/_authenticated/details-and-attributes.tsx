@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/details-and-attributes")({
 });
 
 export function DetailsAndAttributesPage() {
-  const { data: organization } = useSuspenseQuery(sessionOrganizationQuery());
+  const { data: sessionOrganization } = useSuspenseQuery(sessionOrganizationQuery());
 
   return (
     <>
@@ -21,7 +21,7 @@ export function DetailsAndAttributesPage() {
         <CopyableValueField
           className="mt-4"
           label="ID"
-          value={organization.id}
+          value={sessionOrganization.id}
         />
       </PageHeader>
 
@@ -47,7 +47,7 @@ export function DetailsAndAttributesPage() {
           title="Attributes"
         >
           <ul className="flex flex-col gap-2" role="list">
-            {organization.attributes.map((attr) => (
+            {sessionOrganization.attributes.map((attr) => (
               <li key={`${attr.scheme}$${attr.code}`}>
                 <AttributeGroupContainer
                   attributes={[{ ...attr, possessed: true }]}
