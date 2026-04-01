@@ -12,3 +12,7 @@ get {
 headers {
   ~Authorization:
 }
+
+vars:post-response {
+  purposeFormSchemasVersion: res.body.version
+}
