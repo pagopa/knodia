@@ -27,6 +27,7 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
+  API_CreatedKeyResource,
   type API_Keychain,
   API_KeychainDetails,
   API_KeychainKeySeed,
@@ -234,7 +235,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       await pollConsumerKeychainById(consumerKeychainId, response, headers);
 
-      res.status(201).send({ id: response.data.kid });
+      res.status(201).send({ kid: response.data.kid });
     },
     method: "POST",
     schema: {
@@ -243,7 +244,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "uploadConsumerKeychainKey",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        201: API_CreatedResource.meta({
+        201: API_CreatedKeyResource.meta({
           description: "Consumer Keychain key uploaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

@@ -3,6 +3,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import {
   type OrganizationId,
   unsafeBrandId,
+  unsafeBrandKeyId,
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
@@ -71,21 +72,6 @@ export const buildFlatConsumerKeychain = ({
   };
 };
 
-/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
-export function buildConsumerKeychainKey(
-  keySQL: ConsumerKeychainKeySQL,
-): ConsumerKeychainKey {
-  return {
-    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
-    createdAt: keySQL.createdAt,
-    encodedPem: keySQL.encodedPem,
-    format: KeyFormat.parse(keySQL.format),
-    kid: keySQL.kid,
-    name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandUserId(keySQL.userId),
-  };
-}
-
 export function toConsumerKeychainPurpose(
   consumerKeychainPurposeSQL: ConsumerKeychainPurposeSQL,
 ): WithMetadata<ConsumerKeychainPurpose> {
@@ -98,5 +84,19 @@ export function toConsumerKeychainPurpose(
       purposeId: unsafeBrandId(consumerKeychainPurposeSQL.purposeId),
     },
     metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
+  };
+}
+
+function buildConsumerKeychainKey(
+  keySQL: ConsumerKeychainKeySQL,
+): ConsumerKeychainKey {
+  return {
+    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
+    createdAt: keySQL.createdAt,
+    encodedPem: keySQL.encodedPem,
+    format: KeyFormat.parse(keySQL.format),
+    kid: unsafeBrandKeyId(keySQL.kid),
+    name: LocalizedName.parse(keySQL.name),
+    userId: unsafeBrandUserId(keySQL.userId),
   };
 }

@@ -30,7 +30,7 @@ const API_InterfaceDocumentSeed = z
       description:
         "SHA-256 checksum of the uploaded E-service interface document",
     }),
-    content: z.base64().meta({
+    content: z.base64url().meta({
       description: "Base64-encoded file content",
     }),
     contentType: z.string().meta({

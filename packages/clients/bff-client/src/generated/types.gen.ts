@@ -558,6 +558,13 @@ export type User = {
 
 export type Users = Array<User>;
 
+/**
+ * Unique JWK identifier (kid) of the created key
+ */
+export type CreatedKeyResource = {
+    kid: string;
+};
+
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -1213,7 +1220,7 @@ export type UploadConsumerKeychainKeyResponses = {
     /**
      * Consumer Keychain key uploaded successfully
      */
-    201: CreatedResource;
+    201: CreatedKeyResource;
 };
 
 export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];

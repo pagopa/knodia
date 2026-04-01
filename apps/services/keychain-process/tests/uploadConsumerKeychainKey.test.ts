@@ -1,9 +1,9 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
-  type ConsumerKeychainKeyId,
   generateId,
   type OrganizationId,
+  unsafeBrandKeyId,
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
@@ -68,9 +68,9 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
 
     await seedConsumerKeychain(consumerKeychain);
 
-    const expectedKid = calculateKid(
-      createJWK({ pemKeyBase64: mockSeed.encodedPem }),
-    ) as ConsumerKeychainKeyId;
+    const expectedKid = unsafeBrandKeyId(
+      calculateKid(createJWK({ pemKeyBase64: mockSeed.encodedPem })),
+    );
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
@@ -211,9 +211,9 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
 
   it("should return 409 if the key already exists in the consumer keychain", async () => {
     const encodedPem = createRsaPublicKeyBase64();
-    const kid = calculateKid(
-      createJWK({ pemKeyBase64: encodedPem }),
-    ) as ConsumerKeychainKeyId;
+    const kid = unsafeBrandKeyId(
+      calculateKid(createJWK({ pemKeyBase64: encodedPem })),
+    );
 
     const existingKey: ConsumerKeychainKey = {
       algorithm: "RS256",

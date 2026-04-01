@@ -1,4 +1,8 @@
-import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
+import {
+  unsafeBrandId,
+  unsafeBrandKeyId,
+  unsafeBrandUserId,
+} from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
@@ -42,6 +46,7 @@ const fromConsumerKeychainKeyV1 = (
     algorithm: fromKeyAlgorithmV1(input.algorithm),
     createdAt: new Date(input.createdAt),
     format: fromKeyFormatV1(input.format),
+    kid: unsafeBrandKeyId(input.kid),
     name: input.name,
     userId: unsafeBrandUserId(input.userId),
   };

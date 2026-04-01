@@ -3,7 +3,6 @@ import z from "zod";
 export type IDS =
   | AgreementId
   | ConsumerKeychainId
-  | ConsumerKeychainKeyId
   | CorrelationId
   | EserviceId
   | EserviceInterfaceId
@@ -31,11 +30,6 @@ export type AgreementId = z.infer<typeof AgreementId>;
 
 export const ConsumerKeychainId = z.uuid().brand<"ConsumerKeychainId">();
 export type ConsumerKeychainId = z.infer<typeof ConsumerKeychainId>;
-
-export const ConsumerKeychainKeyId = z
-  .string()
-  .brand<"ConsumerKeychainKeyId">();
-export type ConsumerKeychainKeyId = z.infer<typeof ConsumerKeychainKeyId>;
 
 export const PurposeId = z.uuid().brand<"PurposeId">();
 export type PurposeId = z.infer<typeof PurposeId>;

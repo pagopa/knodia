@@ -18,8 +18,8 @@ import type {
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type ConsumerKeychainId,
-  type ConsumerKeychainKeyId,
   generateId,
+  unsafeBrandKeyId,
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
@@ -366,7 +366,7 @@ export function consumerKeychainServiceBuilder(
       );
 
       const jwk = createJWK({ pemKeyBase64: keySeed.encodedPem });
-      const kid = calculateKid(jwk) as ConsumerKeychainKeyId;
+      const kid = unsafeBrandKeyId(calculateKid(jwk));
 
       const alreadyExists =
         consumerKeychain.data.keys.some((key) => key.kid === kid) ||

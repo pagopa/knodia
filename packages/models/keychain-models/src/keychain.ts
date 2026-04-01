@@ -1,5 +1,6 @@
 import {
   ConsumerKeychainId,
+  KeyId,
   OrganizationId,
   PurposeId,
   UserId,
@@ -33,7 +34,7 @@ export const ConsumerKeychainKey = z.strictObject({
   createdAt: z.coerce.date(),
   encodedPem: z.string(),
   format: KeyFormat,
-  kid: z.string(),
+  kid: KeyId,
   name: LocalizedName,
   userId: UserId,
 });

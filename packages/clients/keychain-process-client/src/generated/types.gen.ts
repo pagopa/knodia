@@ -75,6 +75,11 @@ export type OrganizationId = string;
 export type UserId = string;
 
 /**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
+
+/**
  * Unique identifier of the Keychain
  */
 export type KeychainId = string;
@@ -113,7 +118,7 @@ export type KeychainKey = {
     createdAt: string;
     encodedPem: string;
     format: KeyFormat;
-    kid: string;
+    kid: KeyId;
     name: KeychainKeyLocalizedName;
     userId: UserId;
 };

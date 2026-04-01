@@ -100,3 +100,14 @@ export type API_User = z.infer<typeof API_User>;
 
 export const API_Users = z.array(API_User).meta({ id: "Users" });
 export type API_Users = z.infer<typeof API_Users>;
+
+export const API_CreatedKeyResource = z
+  .strictObject({
+    kid: z.base64url(),
+  })
+  .meta({
+    description: "Unique JWK identifier (kid) of the created key",
+    id: "CreatedKeyResource",
+  });
+
+export type API_CreatedKeyResource = z.infer<typeof API_CreatedKeyResource>;

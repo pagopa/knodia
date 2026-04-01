@@ -1,7 +1,4 @@
-import type {
-  ConsumerKeychainId,
-  ConsumerKeychainKeyId,
-} from "@knodia/common-models/ids";
+import type { ConsumerKeychainId, KeyId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { FlatConsumerKeychain } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
@@ -27,7 +24,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     consumerKeychainReadmodelServiceBuilder(readmodelDb);
 
   return {
-    async checkConsumerKeychainKeyExists(kid: ConsumerKeychainKeyId) {
+    async checkConsumerKeychainKeyExists(kid: KeyId) {
       const queryResult = await readmodelDb
         .select({ kid: readmodelConsumerKeychainKey.kid })
         .from(readmodelConsumerKeychainKey)

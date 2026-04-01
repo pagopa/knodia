@@ -224,8 +224,8 @@ components:
         content:
           description: Base64-encoded file content
           type: string
-          format: base64
-          pattern: ^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$
+          format: base64url
+          pattern: ^[A-Za-z0-9_-]*$
         contentType:
           description: MIME type of the uploaded E-service interface document
           type: string
@@ -1186,6 +1186,17 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/User"
+    CreatedKeyResource:
+      description: Unique JWK identifier (kid) of the created key
+      type: object
+      properties:
+        kid:
+          type: string
+          format: base64url
+          pattern: ^[A-Za-z0-9_-]*$
+      required:
+        - kid
+      additionalProperties: false
     PurposeState:
       type: string
       enum:
@@ -2151,7 +2162,7 @@ paths:
               schema:
                 description: Consumer Keychain key uploaded successfully
                 allOf:
-                  - $ref: "#/components/schemas/CreatedResource"
+                  - $ref: "#/components/schemas/CreatedKeyResource"
         "400":
           description: Bad Request
           content:

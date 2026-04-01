@@ -1,4 +1,5 @@
 import {
+  API_KeyId,
   API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
@@ -75,7 +76,7 @@ export const API_KeychainKey = z
     createdAt: z.iso.datetime(),
     encodedPem: z.string(),
     format: API_KeyFormat,
-    kid: z.string(),
+    kid: API_KeyId,
     name: API_KeychainKeyLocalizedName,
     userId: API_UserId,
   })

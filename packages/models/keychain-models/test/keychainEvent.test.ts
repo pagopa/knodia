@@ -1,5 +1,9 @@
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
-import { generateId, generateUserId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  generateUserId,
+  unsafeBrandKeyId,
+} from "@knodia/common-models/ids";
 import {
   protobufBinaryCodec,
   type ProtobufCodec,
@@ -33,7 +37,9 @@ describe("KeychainEventV1 codec", () => {
         createdAt: new Date(1),
         encodedPem: "-----BEGIN CERTIFICATE-----xyz",
         format: "PublicKey",
-        kid: "kid-1",
+        kid: unsafeBrandKeyId(
+          Buffer.from(crypto.randomUUID()).toString("base64"),
+        ),
         name: { en: "Primary key" },
         userId: generateUserId(),
       },
