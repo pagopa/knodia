@@ -6,8 +6,12 @@ import type {
   OrganizationId,
   PurposeId,
 } from "@knodia/common-models/ids";
-import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type { Eservice } from "@knodia/eservice-models";
+import type { Purpose } from "@knodia/purpose-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -15,9 +19,18 @@ import {
   readmodelAgreementAttribute,
 } from "@knodia/db-readmodel-agreement";
 import { aggregateAgreements } from "@knodia/db-readmodel-agreement/converters";
+import {
+  createOrderByFilters,
+  getTableTotalCount,
+} from "@knodia/db-readmodel-commons/utils";
+import { readmodelEservice } from "@knodia/db-readmodel-eservice";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
+import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
+import { aggregatePurposes } from "@knodia/db-readmodel-purpose/converters";
 import { purposeReadmodelServiceBuilder } from "@knodia/db-readmodel-purpose/services";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
+
+import type { API_GetPurposesQueryParams } from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
@@ -61,6 +74,102 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     },
     async getPurpose(purposeId: PurposeId) {
       return await purposeReadmodelService.getPurposeById(purposeId);
+    },
+    async getPurposes(
+      requestQuery: API_GetPurposesQueryParams,
+    ): Promise<ListResult<Purpose>> {
+      const {
+        agreementId,
+        consumerId,
+        consumerKnodeId,
+        eserviceId,
+        limit,
+        offset,
+        producerId,
+        state,
+      } = requestQuery;
+
+      return await readmodelDb.transaction(async (tx) => {
+        const orderByFilters = createOrderByFilters({
+          sortBy: "updatedAt",
+          sortOrder: "desc",
+          table: readmodelPurpose,
+        });
+
+        const createFilterQuery = () => {
+          let query = tx
+            .select({ purposeId: readmodelPurpose.id })
+            .from(readmodelPurpose)
+            .$dynamic();
+
+          if (producerId) {
+            query = query.leftJoin(
+              readmodelEservice,
+              eq(readmodelPurpose.eserviceId, readmodelEservice.id),
+            );
+          }
+
+          if (agreementId) {
+            query = query.leftJoin(
+              readmodelAgreement,
+              and(
+                eq(readmodelPurpose.eserviceId, readmodelAgreement.eserviceId),
+                eq(readmodelPurpose.consumerId, readmodelAgreement.consumerId),
+                eq(
+                  readmodelPurpose.consumerKnodeId,
+                  readmodelAgreement.consumerKnodeId,
+                ),
+              ),
+            );
+          }
+
+          return query.where(
+            and(
+              consumerId
+                ? eq(readmodelPurpose.consumerId, consumerId)
+                : undefined,
+              consumerKnodeId
+                ? eq(readmodelPurpose.consumerKnodeId, consumerKnodeId)
+                : undefined,
+              eserviceId
+                ? eq(readmodelPurpose.eserviceId, eserviceId)
+                : undefined,
+              state && state.length > 0
+                ? inArray(readmodelPurpose.state, state)
+                : undefined,
+              producerId
+                ? eq(readmodelEservice.producerId, producerId)
+                : undefined,
+              agreementId ? eq(readmodelAgreement.id, agreementId) : undefined,
+            ),
+          );
+        };
+
+        const paginatedIds = createFilterQuery()
+          .orderBy(...orderByFilters)
+          .limit(limit)
+          .offset(offset)
+          .as("paginatedIds");
+
+        const [queryRes, totalCount] = await Promise.all([
+          tx
+            .select({ purpose: readmodelPurpose })
+            .from(readmodelPurpose)
+            .innerJoin(
+              paginatedIds,
+              eq(readmodelPurpose.id, paginatedIds.purposeId),
+            )
+            .orderBy(...orderByFilters),
+          getTableTotalCount(tx, createFilterQuery()),
+        ]);
+
+        const purposes = aggregatePurposes(queryRes);
+
+        return {
+          results: purposes.map((p) => p.data),
+          totalCount,
+        };
+      });
     },
   };
 }
