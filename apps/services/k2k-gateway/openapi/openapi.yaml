@@ -671,29 +671,21 @@ components:
       description: Unique identifier of the created Purpose resource
       allOf:
         - $ref: "#/components/schemas/CreatedResource"
-    PurposeFormSchemaResponse:
-      description: Purpose form JSON Schema (Draft-07) with its version identifier
+    PurposeFormSchemasResponse:
+      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
+        version identifier
       type: object
       properties:
         schema:
           type: object
           additionalProperties: {}
-        version:
-          $ref: "#/components/schemas/PurposeFormSchemaVersion"
-      required:
-        - schema
-        - version
-      additionalProperties: false
-    PurposeFormUiSchemaResponse:
-      description: Purpose form UI Schema (JSON Forms) with its version identifier
-      type: object
-      properties:
         uiSchema:
           type: object
           additionalProperties: {}
         version:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:
+        - schema
         - uiSchema
         - version
       additionalProperties: false
@@ -1221,38 +1213,22 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/current:
     get:
-      operationId: getCurrentPurposeFormSchema
-      summary: Get current Purpose form schema
+      operationId: getCurrentPurposeFormSchemas
+      summary: Get current Purpose form schemas
       tags:
         - resource
         - purpose
-      description: Retrieve the current JSON Schema for validating Purpose form answers
+      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
+        with their version
       responses:
         "200":
-          description: Current Purpose form schema retrieved successfully
+          description: Current Purpose form schemas retrieved successfully
           content:
             application/json:
               schema:
-                description: Current Purpose form schema retrieved successfully
+                description: Current Purpose form schemas retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchemaResponse"
-  /purposes/formSchemas/current/ui:
-    get:
-      operationId: getCurrentPurposeFormUiSchema
-      summary: Get current Purpose form UI schema
-      tags:
-        - resource
-        - purpose
-      description: Retrieve the current UI Schema for rendering the Purpose form
-      responses:
-        "200":
-          description: Current Purpose form UI schema retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Current Purpose form UI schema retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/PurposeFormUiSchemaResponse"
+                  - $ref: "#/components/schemas/PurposeFormSchemasResponse"
 servers:
   - description: Knode to Knode API
     url: /

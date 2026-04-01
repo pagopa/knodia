@@ -1,10 +1,11 @@
 meta {
-  name: Get Form UI Schema
+  name: 7 - Get Purpose Form Schemas
   type: http
+  seq: 7
 }
 
 get {
-  url: {{host-purpose-process}}/purposes/formSchemas/current/ui
+  url: {{host-purpose-process}}/purposes/formSchemas/current
   body: none
   auth: none
 }
@@ -15,5 +16,5 @@ headers {
 }
 
 vars:post-response {
-  purposeFormSchemaVersion: res.body.version
+  purposeFormSchemasVersion: res.body.version
 }

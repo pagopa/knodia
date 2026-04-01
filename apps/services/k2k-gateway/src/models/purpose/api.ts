@@ -73,30 +73,17 @@ export const API_CreatedPurposeResource = API_CreatedResource.meta({
   id: "CreatedPurposeResource",
 });
 
-export const API_PurposeFormSchemaResponse = z
+export const API_PurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
-    version: API_PurposeFormSchemaVersion,
-  })
-  .meta({
-    description:
-      "Purpose form JSON Schema (Draft-07) with its version identifier",
-    id: "PurposeFormSchemaResponse",
-  });
-export type API_PurposeFormSchemaResponse = z.infer<
-  typeof API_PurposeFormSchemaResponse
->;
-
-export const API_PurposeFormUiSchemaResponse = z
-  .strictObject({
     uiSchema: z.record(z.string(), z.unknown()),
     version: API_PurposeFormSchemaVersion,
   })
   .meta({
     description:
-      "Purpose form UI Schema (JSON Forms) with its version identifier",
-    id: "PurposeFormUiSchemaResponse",
+      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+    id: "PurposeFormSchemasResponse",
   });
-export type API_PurposeFormUiSchemaResponse = z.infer<
-  typeof API_PurposeFormUiSchemaResponse
+export type API_PurposeFormSchemasResponse = z.infer<
+  typeof API_PurposeFormSchemasResponse
 >;

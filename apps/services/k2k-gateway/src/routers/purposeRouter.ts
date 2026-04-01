@@ -22,8 +22,7 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CreatedPurposeResource,
-  API_PurposeFormSchemaResponse,
-  API_PurposeFormUiSchemaResponse,
+  API_PurposeFormSchemasResponse,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
 import { toProcessAPI_PurposeSeed } from "../models/purpose/apiConverter.ts";
@@ -107,10 +106,10 @@ export const purposeRouter: FastifyPluginAsyncZod<
     handler: async (_req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
-      logger.info("Getting current Purpose form schema");
+      logger.info("Getting current Purpose form schemas");
 
       const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getCurrentPurposeFormSchema({
+      const { data } = await purposeProcessApi.getCurrentPurposeFormSchemas({
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(correlationId, token),
       });
@@ -120,46 +119,16 @@ export const purposeRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the current JSON Schema for validating Purpose form answers",
-      operationId: "getCurrentPurposeFormSchema",
+        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
+      operationId: "getCurrentPurposeFormSchemas",
       response: {
-        200: API_PurposeFormSchemaResponse.meta({
-          description: "Current Purpose form schema retrieved successfully",
+        200: API_PurposeFormSchemasResponse.meta({
+          description: "Current Purpose form schemas retrieved successfully",
         }),
       },
-      summary: "Get current Purpose form schema",
+      summary: "Get current Purpose form schemas",
       tags: [apiTags.resource, apiTags.purpose],
     },
     url: "/purposes/formSchemas/current",
-  });
-
-  fastify.route({
-    handler: async (_req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
-
-      logger.info("Getting current Purpose form UI schema");
-
-      const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getCurrentPurposeFormUiSchema({
-        client: purposeProcessClient,
-        headers: getKnodiaServiceHeaders(correlationId, token),
-      });
-
-      res.send(data);
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Retrieve the current UI Schema for rendering the Purpose form",
-      operationId: "getCurrentPurposeFormUiSchema",
-      response: {
-        200: API_PurposeFormUiSchemaResponse.meta({
-          description: "Current Purpose form UI schema retrieved successfully",
-        }),
-      },
-      summary: "Get current Purpose form UI schema",
-      tags: [apiTags.resource, apiTags.purpose],
-    },
-    url: "/purposes/formSchemas/current/ui",
   });
 };

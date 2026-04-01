@@ -410,19 +410,12 @@ export type PurposeSeed = {
 export type CreatedPurposeResource = CreatedResource;
 
 /**
- * Purpose form JSON Schema (Draft-07) with its version identifier
+ * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
  */
-export type PurposeFormSchemaResponse = {
+export type PurposeFormSchemasResponse = {
     schema: {
         [key: string]: unknown;
     };
-    version: PurposeFormSchemaVersion;
-};
-
-/**
- * Purpose form UI Schema (JSON Forms) with its version identifier
- */
-export type PurposeFormUiSchemaResponse = {
     uiSchema: {
         [key: string]: unknown;
     };
@@ -822,34 +815,18 @@ export type CreatePurposeResponses = {
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
 
-export type GetCurrentPurposeFormSchemaData = {
+export type GetCurrentPurposeFormSchemasData = {
     body?: never;
     path?: never;
     query?: never;
     url: '/purposes/formSchemas/current';
 };
 
-export type GetCurrentPurposeFormSchemaResponses = {
+export type GetCurrentPurposeFormSchemasResponses = {
     /**
-     * Current Purpose form schema retrieved successfully
+     * Current Purpose form schemas retrieved successfully
      */
-    200: PurposeFormSchemaResponse;
+    200: PurposeFormSchemasResponse;
 };
 
-export type GetCurrentPurposeFormSchemaResponse = GetCurrentPurposeFormSchemaResponses[keyof GetCurrentPurposeFormSchemaResponses];
-
-export type GetCurrentPurposeFormUiSchemaData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/purposes/formSchemas/current/ui';
-};
-
-export type GetCurrentPurposeFormUiSchemaResponses = {
-    /**
-     * Current Purpose form UI schema retrieved successfully
-     */
-    200: PurposeFormUiSchemaResponse;
-};
-
-export type GetCurrentPurposeFormUiSchemaResponse = GetCurrentPurposeFormUiSchemaResponses[keyof GetCurrentPurposeFormUiSchemaResponses];
+export type GetCurrentPurposeFormSchemasResponse = GetCurrentPurposeFormSchemasResponses[keyof GetCurrentPurposeFormSchemasResponses];
