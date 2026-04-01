@@ -604,6 +604,25 @@ export type ProducerPurposes = {
     results: Array<ProducerPurpose>;
 };
 
+export type ConsumerPurposeDetailsEservice = {
+    id: string;
+    name: LocalizedName;
+    latestVersionState: EserviceVersionState;
+};
+
+export type ConsumerPurposeDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: ConsumerPurposeDetailsEservice;
+    id: string;
+    maxDailyCallsPerConsumer: number;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
 export type ProducerPurposeDetailsEservice = {
     id: string;
     name: LocalizedName;
@@ -1529,6 +1548,47 @@ export type GetConsumerPurposeFormUiSchemaResponses = {
 };
 
 export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];
+
+export type GetConsumerPurposeDetailsData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}';
+};
+
+export type GetConsumerPurposeDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerPurposeDetailsError = GetConsumerPurposeDetailsErrors[keyof GetConsumerPurposeDetailsErrors];
+
+export type GetConsumerPurposeDetailsResponses = {
+    /**
+     * Consumer Purpose details retrieved successfully
+     */
+    200: ConsumerPurposeDetails;
+};
+
+export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;
