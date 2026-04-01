@@ -8,6 +8,7 @@ import { match } from "ts-pattern";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
+import { useHasRole } from "@/contexts/auth";
 import { AgreementCard } from "@/features/agreement/components/AgreementCard";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
@@ -20,10 +21,14 @@ export function ProducerPurposeDetail({
 }: {
   purpose: bffApi.ProducerPurposeDetails;
 }) {
+  const canManagePurposeState = useHasRole("administrative");
+
   return (
     <>
       <PageHeader
-        actions={<PurposeActionButton state={purpose.state} />}
+        actions={
+          canManagePurposeState && <PurposeActionButton state={purpose.state} />
+        }
         description={purpose.description.en}
         resourceStatusChip={<PurposeStateChip state={purpose.state} />}
         title={purpose.name.en}
@@ -74,7 +79,6 @@ export function ProducerPurposeDetail({
   );
 }
 
-// TODO(KN-390): hide action buttons for technical users (depends on role-based visibility from PR #285)
 function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
   return match(state)
     .with("Active", () => (
