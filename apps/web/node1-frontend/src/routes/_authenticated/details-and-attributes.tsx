@@ -3,7 +3,6 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
-import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
 import { sessionOrganizationQuery } from "@/features/session/services/queries";
@@ -13,17 +12,16 @@ export const Route = createFileRoute("/_authenticated/details-and-attributes")({
 });
 
 export function DetailsAndAttributesPage() {
-  const { data: sessionOrganization } = useSuspenseQuery(sessionOrganizationQuery());
+  const { data: sessionOrganization } = useSuspenseQuery(
+    sessionOrganizationQuery(),
+  );
 
   return (
     <>
-      <PageHeader title="Details and attributes">
-        <CopyableValueField
-          className="mt-4"
-          label="ID"
-          value={sessionOrganization.id}
-        />
-      </PageHeader>
+      <PageHeader
+        copyableId={sessionOrganization.id}
+        title="Details and attributes"
+      />
 
       <div className="flex flex-col gap-10">
         <Section
