@@ -15,7 +15,6 @@ import { SelectionIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
 import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDeleteAction";
@@ -62,19 +61,10 @@ function RouteComponent() {
             />
           </>
         }
+        copyableId={consumerKeychain.id}
+        description={consumerKeychain.description?.en}
         title={consumerKeychain.name.en}
-      >
-        <CopyableValueField
-          className="mt-3"
-          label="ID"
-          value={consumerKeychain.id}
-        />
-        {consumerKeychain.description && (
-          <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
-            {consumerKeychain.description.en}
-          </p>
-        )}
-      </PageHeader>
+      />
 
       <Chip kind="informative" label="Consumption" type="light" />
 
