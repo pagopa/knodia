@@ -1,4 +1,4 @@
-import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { KMSClient, SignCommand, DescribeKeyCommand } from "@aws-sdk/client-kms";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -6,8 +6,6 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TOKENS_DIR = resolve(__dirname, "../../docker/tokens");
-
-const KMS_ENDPOINT = "http://localhost:4566";
 
 // Hardcoded configuration for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
@@ -17,10 +15,18 @@ const INTERNAL_SUB = "local-internal-service";
 
 import { TOKEN_TYPES } from "./token-types.mjs";
 
-// Token type: determines the audience, claims structure, and output filename.
-// All knodia-issued tokens share the "knodia" key regardless of type.
-// Cognito tokens are handled by the local-cognito OIDC provider instead.
+const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
+
 const type = process.argv[2] ?? "ui-session";
+const targetEnv = process.argv[3] ?? "local";
+
+if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
+  console.error(`Usage: node generate-token.mjs [${TOKEN_TYPES.join("|")}] [${TARGET_ENVIRONMENTS.join("|")}]`);
+  process.exit(1);
+}
+
+// Extract node name once — null for local, "lynx"/"orion" for dev environments
+const node = targetEnv === "local" ? null : targetEnv.replace("dev-", "");
 
 function getClaimsAndEnvVar(type) {
   switch (type) {
@@ -34,26 +40,31 @@ function getClaimsAndEnvVar(type) {
         claims: { sub: INTERNAL_SUB, type },
         envVarName: "INTERNAL_JWT",
       };
-    default:
-      console.error(`Usage: node generate-token.mjs [${TOKEN_TYPES.join("|")}]`);
-      process.exit(1);
   }
+}
+
+async function buildTokenParameters(kmsClient, node, type) {
+  if (!node) {
+    return { kid: "alias/local-knodia-key", aud: `local.knodia.test/${type}` };
+  }
+  const keyName = type === "internal" ? "internal" : "bff-session";
+  const alias = `alias/dev-${node}/app/${keyName}-tokens`;
+  const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
+  return { kid: KeyMetadata.KeyId, aud: `app.${node}.dev.knodia.com/${type}` };
 }
 
 const { claims, envVarName } = getClaimsAndEnvVar(type);
 
-const KID = "alias/local-knodia-key";
-
-const kmsClient = new KMSClient({
-  endpoint: KMS_ENDPOINT,
-  region: "eu-south-1",
-  credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
-});
+const kmsClient = new KMSClient(node
+  ? { region: "eu-south-1" }
+  : { endpoint: "http://localhost:4566", region: "eu-south-1", credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" } }
+);
+const { kid, aud } = await buildTokenParameters(kmsClient, node, type);
 
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
 const header = b64url(
-  JSON.stringify({ alg: "RS256", typ: "JWT", kid: KID })
+  JSON.stringify({ alg: "RS256", typ: "JWT", kid })
 );
 
 const now = Math.floor(Date.now() / 1000);
@@ -61,7 +72,7 @@ const now = Math.floor(Date.now() / 1000);
 const payload = b64url(
   JSON.stringify({
     ...claims,
-    aud: `local.knodia.test/${type}`,
+    aud,
     exp: now + 3600,
     iat: now,
     iss: "local-knodia",
@@ -74,7 +85,7 @@ const digest = createHash("sha256").update(message).digest();
 
 const { Signature } = await kmsClient.send(
   new SignCommand({
-    KeyId: KID,
+    KeyId: kid,
     Message: digest,
     MessageType: "DIGEST",
     SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
@@ -84,7 +95,7 @@ const { Signature } = await kmsClient.send(
 const signature = Buffer.from(Signature).toString("base64url");
 const token = `${message}.${signature}`;
 
-console.log(`Generated ${type} token:`);
+console.log(`Generated ${type} token (${targetEnv}):`);
 console.log(token);
 
 mkdirSync(TOKENS_DIR, { recursive: true });
