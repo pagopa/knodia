@@ -29,10 +29,11 @@ export function DetailsAndAttributesPage() {
 
       <div className="flex flex-col gap-10">
         <Section
+          className="rounded-2xl border border-slate-100 p-6 elevation-1"
           description="This information will be visible to other people in Knodia."
           title="Contacts"
         >
-          <div className="flex flex-col gap-6 rounded-lg bg-secondary-light p-6">
+          <div className="flex flex-col gap-6">
             {/* TODO: Replace with real data when contacts API is available */}
             <TextField
               isReadOnly
