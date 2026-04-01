@@ -9,11 +9,10 @@ import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
-import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
-import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { AgreementCard } from "@/features/purpose/components/AgreementCard";
 import { DailyCallsCard } from "@/features/purpose/components/DailyCallsCard";
+import { EserviceCard } from "@/features/purpose/components/EserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 
 const RouterLink = createLink(Link);
@@ -40,8 +39,9 @@ export function ConsumerPurposeDetail({
       />
 
       <div className="mt-10 flex flex-col gap-4">
-        <SettingsCard label="E-Service">
-          <span className="flex items-center gap-6">
+        <EserviceCard
+          eservice={purpose.eservice}
+          link={
             <RouterLink
               params={{ id: purpose.eservice.id }}
               search={{ knodeId }}
@@ -50,9 +50,8 @@ export function ConsumerPurposeDetail({
             >
               {purpose.eservice.name.en}
             </RouterLink>
-            <EserviceStateChip state={purpose.eservice.latestVersionState} />
-          </span>
-        </SettingsCard>
+          }
+        />
 
         <div className="grid grid-cols-2 gap-4">
           <OrganizationCard
