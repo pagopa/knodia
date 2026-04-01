@@ -1,4 +1,5 @@
-import type { KnodeId } from "@knodia/common-models/ids";
+import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
@@ -11,10 +12,13 @@ import {
 
 import type {
   API_CreatedPurposeResource,
+  API_Purpose,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { purposeNotFound } from "../models/errors.ts";
+import { toAPI_Purpose } from "../models/purpose/apiConverter.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
 
 export type PurposeService = ReturnType<typeof purposeServiceBuilder>;
@@ -68,6 +72,34 @@ export function purposeServiceBuilder(
       });
 
       return data;
+    },
+    async getPurpose(
+      {
+        knodeId,
+        purposeId,
+      }: {
+        knodeId: KnodeId;
+        purposeId: ExternalId<PurposeId>;
+      },
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Purpose> {
+      logger.info(`Getting Purpose ${purposeId} from Knode ${knodeId}`);
+
+      const remotePurpose = await remoteResourceDbService.getPurposeById(
+        purposeId,
+        knodeId,
+      );
+
+      if (!remotePurpose) {
+        throw purposeNotFound(purposeId);
+      }
+
+      const { data } = await k2kGatewayApi.getPurpose({
+        client: k2kGatewayClient,
+        path: { purposeId },
+      });
+
+      return toAPI_Purpose(data);
     },
     async getPurposeFormSchema(
       version: PurposeFormSchemaVersion,
