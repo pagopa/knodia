@@ -1530,6 +1530,39 @@ export type GetConsumerPurposeFormUiSchemaResponses = {
 
 export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];
 
+export type GetSessionOrganizationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/session/organization';
+};
+
+export type GetSessionOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetSessionOrganizationError = GetSessionOrganizationErrors[keyof GetSessionOrganizationErrors];
+
+export type GetSessionOrganizationResponses = {
+    /**
+     * Session Organization retrieved successfully
+     */
+    200: CompactOrganization;
+};
+
+export type GetSessionOrganizationResponse = GetSessionOrganizationResponses[keyof GetSessionOrganizationResponses];
+
 export type GetProducerAgreementsData = {
     body?: never;
     path?: never;

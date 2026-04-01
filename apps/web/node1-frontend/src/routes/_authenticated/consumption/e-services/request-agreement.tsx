@@ -40,8 +40,8 @@ function RouteComponent() {
   return (
     <RequestAgreementModal
       eservice={eservice}
-      knodeId={knodeId}
       onClose={onClose}
+      producerKnodeId={knodeId}
     />
   );
 }
