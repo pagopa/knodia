@@ -12,7 +12,9 @@ import {
 
 import type {
   API_CreatedPurposeResource,
+  API_GetPurposesQueryParams,
   API_Purpose,
+  API_Purposes,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
@@ -128,6 +130,28 @@ export function purposeServiceBuilder(
         path: { version },
       });
       return data;
+    },
+
+    async getPurposes(
+      requestQuery: API_GetPurposesQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Purposes> {
+      logger.info({ requestQuery }, "Getting Purposes with query params");
+
+      const { data } = await k2kGatewayApi.getPurposes({
+        client: k2kGatewayClient,
+        query: {
+          consumerId: requestQuery.consumerId,
+          eserviceId: requestQuery.eserviceId,
+          limit: requestQuery.limit,
+          offset: requestQuery.offset,
+        },
+      });
+
+      return {
+        pagination: data.pagination,
+        results: data.results.map(toAPI_Purpose),
+      };
     },
   };
 }

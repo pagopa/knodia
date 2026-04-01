@@ -20,7 +20,9 @@ import {
   API_CreatedPurposeResource,
   API_GetPurposeFormSchemaQueryParams,
   API_GetPurposeQueryParams,
+  API_GetPurposesQueryParams,
   API_Purpose,
+  API_Purposes,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
 
@@ -165,5 +167,33 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes/:purposeId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const data = await purposeService.getPurposes(req.query, ctx);
+
+      res.status(200).send(data);
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Purposes",
+      operationId: "getPurposes",
+      querystring: API_GetPurposesQueryParams,
+      response: {
+        200: API_Purposes.meta({
+          description: "Purposes retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes",
   });
 };

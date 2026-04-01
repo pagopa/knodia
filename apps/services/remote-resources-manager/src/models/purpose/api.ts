@@ -1,4 +1,8 @@
-import { API_CreatedResource } from "@knodia/common-models/api";
+import {
+  API_CreatedResource,
+  API_Pagination,
+  API_PaginationQueryParams,
+} from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { maxDailyCalls, minDailyCalls } from "@knodia/purpose-models";
 import {
@@ -74,3 +78,25 @@ export const API_Purpose = z
   })
   .meta({ id: "Purpose" });
 export type API_Purpose = z.infer<typeof API_Purpose>;
+
+export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
+  consumerId: z
+    .uuid()
+    .optional()
+    .meta({ description: "Filter by Consumer ID" }),
+  eserviceId: z
+    .uuid()
+    .optional()
+    .meta({ description: "Filter by E-service ID" }),
+});
+export type API_GetPurposesQueryParams = z.infer<
+  typeof API_GetPurposesQueryParams
+>;
+
+export const API_Purposes = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_Purpose),
+  })
+  .meta({ id: "Purposes" });
+export type API_Purposes = z.infer<typeof API_Purposes>;
