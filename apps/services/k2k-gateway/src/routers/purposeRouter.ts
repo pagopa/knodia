@@ -22,11 +22,13 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CreatedPurposeResource,
+  API_GetPurposesQueryParams,
   API_Purpose,
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersionPathParam,
   API_PurposeFormUiSchema,
   API_PurposeIdPathParam,
+  API_Purposes,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
 import {
@@ -42,32 +44,35 @@ interface PurposeRouterOptions {
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
+const retrievePurpose = async (
+  purposeProcessClient: PurposeProcessClient,
+  purposeId: string,
+  headers: KnodiaServiceHeaders,
+) =>
+  await purposeProcessApi.getPurpose({
+    client: purposeProcessClient,
+    headers,
+    path: { purposeId },
+  });
+
+const pollPurpose = (
+  pollingService: PollingService,
+  purposeProcessClient: PurposeProcessClient,
+  response: AxiosResponse<API_CreatedResource>,
+  headers: KnodiaServiceHeaders,
+) =>
+  pollingService.pollResourceWithMetadata(() =>
+    retrievePurpose(purposeProcessClient, response.data.id, headers),
+  )({
+    condition: isPolledVersionAtLeastResponseVersion(response),
+  });
+
 export const purposeRouter: FastifyPluginAsyncZod<
   PurposeRouterOptions
 > = async (
   fastify,
   { callerKnodeId, pollingService, purposeProcessClient, tokenProvider },
 ) => {
-  const retrievePurpose = async (
-    purposeId: string,
-    headers: KnodiaServiceHeaders,
-  ) =>
-    await purposeProcessApi.getPurpose({
-      client: purposeProcessClient,
-      headers,
-      path: { purposeId },
-    });
-
-  const pollPurpose = (
-    response: AxiosResponse<API_CreatedResource>,
-    headers: KnodiaServiceHeaders,
-  ) =>
-    pollingService.pollResourceWithMetadata(() =>
-      retrievePurpose(response.data.id, headers),
-    )({
-      condition: isPolledVersionAtLeastResponseVersion(response),
-    });
-
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -83,7 +88,12 @@ export const purposeRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollPurpose(response, headers);
+      await pollPurpose(
+        pollingService,
+        purposeProcessClient,
+        response,
+        headers,
+      );
 
       res.status(201).send({
         id: response.data.id,
@@ -210,5 +220,52 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes/:purposeId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestQuery: req.query },
+        "Getting Purposes with query params",
+      );
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { consumerId, eserviceId, limit, offset } = req.query;
+
+      const { data } = await purposeProcessApi.getPurposes({
+        client: purposeProcessClient,
+        headers,
+        query: {
+          consumerId,
+          consumerKnodeId: callerKnodeId,
+          eserviceId,
+          limit,
+          offset,
+        },
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map(toAPI_Purpose),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Purposes",
+      operationId: "getPurposes",
+      querystring: API_GetPurposesQueryParams,
+      response: {
+        200: API_Purposes.meta({
+          description: "Purposes retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes",
   });
 };
