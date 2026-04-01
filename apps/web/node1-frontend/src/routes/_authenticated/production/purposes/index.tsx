@@ -23,7 +23,6 @@ export const Route = createFileRoute("/_authenticated/production/purposes/")({
   validateSearch: producerPurposeSearchSchema,
 });
 
-// TODO: When production purpose detail is implemented, hide state change buttons for technical-only users
 function RouteComponent() {
   const { offset } = Route.useSearch();
   const navigate = Route.useNavigate();
