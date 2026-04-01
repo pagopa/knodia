@@ -20,7 +20,12 @@ import {
 
 import type { PurposeService } from "../services/purposeService.ts";
 
-import { API_Purpose, API_PurposeSeed } from "../models/api.ts";
+import {
+  API_GetPurposesQueryParams,
+  API_Purpose,
+  API_Purposes,
+  API_PurposeSeed,
+} from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -80,6 +85,47 @@ export const purposeRouter: FastifyPluginAsyncZod<
         409: API_Problem.meta({ description: "Conflict" }),
       },
       summary: "Create Purpose",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "internal" },
+      ]);
+
+      const { results, totalCount } = await purposeService.getPurposes(
+        req.query,
+        ctx,
+      );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_Purpose),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Purposes",
+      headers: KnodiaServiceHeaders,
+      operationId: "getPurposes",
+      querystring: API_GetPurposesQueryParams,
+      response: {
+        200: API_Purposes.meta({
+          description: "Purposes retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      summary: "List Purposes",
       tags: [apiTags.purpose],
     },
     url: "/purposes",
