@@ -19,6 +19,8 @@ import {
 } from "react-aria-components";
 import { match } from "ts-pattern";
 
+import { useHasRole } from "@/contexts/auth";
+
 export function OrgConsumptionStatusSection({
   agreement,
   eserviceId,
@@ -28,6 +30,7 @@ export function OrgConsumptionStatusSection({
   eserviceId: EserviceId;
   knodeId: KnodeId;
 }) {
+  const canManageConsumption = useHasRole("administrative");
   const navigate = useNavigate();
 
   return (
@@ -38,22 +41,29 @@ export function OrgConsumptionStatusSection({
       <CollapseTrigger />
 
       <DisclosurePanel className="mt-6 flex flex-col gap-6">
-        <AgreementStatusBanner state={agreement.state} />
+        <AgreementStatusBanner
+          canManageAgreement={canManageConsumption}
+          state={agreement.state}
+        />
 
         <div className="flex flex-col gap-4">
           <h3 className="title-md-em text-primary-light-low-contrast">
             Purposes
           </h3>
           <Banner
-            action={{
-              label: "Create Purpose",
-              onPress: () =>
-                navigate({
-                  params: { id: eserviceId },
-                  search: { knodeId },
-                  to: "/consumption/e-services/$id/purposes/new",
-                }),
-            }}
+            action={
+              canManageConsumption
+                ? {
+                    label: "Create Purpose",
+                    onPress: () =>
+                      navigate({
+                        params: { id: eserviceId },
+                        search: { knodeId },
+                        to: "/consumption/e-services/$id/purposes/new",
+                      }),
+                  }
+                : undefined
+            }
             icon={<SelectionPlusIcon />}
             kind="neutral"
           >
@@ -77,15 +87,24 @@ export function OrgConsumptionStatusSection({
 }
 
 // TODO: implement the "Action needed" agreement state
-function AgreementStatusBanner({ state }: { state: bffApi.AgreementState }) {
+function AgreementStatusBanner({
+  canManageAgreement,
+  state,
+}: {
+  canManageAgreement: boolean;
+  state: bffApi.AgreementState;
+}) {
   const banner = match(state)
     .with("Active", () => (
       <Banner
-        action={{
-          isDisabled: true,
-          label: "Suspend",
-          // TODO: implement suspend agreement action
-        }}
+        action={
+          canManageAgreement
+            ? {
+                label: "Suspend",
+                // TODO: implement suspend agreement action
+              }
+            : undefined
+        }
         kind="success"
       >
         Active
@@ -95,17 +114,23 @@ function AgreementStatusBanner({ state }: { state: bffApi.AgreementState }) {
     // Producer-initiated suspension is not handled yet.
     .with("Suspended", () => (
       <Banner
-        action={{
-          isDisabled: true,
-          label: "Archive",
-          // TODO: implement archive agreement action
-        }}
+        action={
+          canManageAgreement
+            ? {
+                label: "Archive",
+                // TODO: implement archive agreement action
+              }
+            : undefined
+        }
         kind="error"
-        prominentAction={{
-          isDisabled: true,
-          label: "Reactivate",
-          // TODO: implement reactivate agreement action
-        }}
+        prominentAction={
+          canManageAgreement
+            ? {
+                label: "Reactivate",
+                // TODO: implement reactivate agreement action
+              }
+            : undefined
+        }
       >
         Suspended
       </Banner>

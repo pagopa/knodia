@@ -4,6 +4,7 @@ import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-p
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { CreatePurposeModal } from "@/features/purpose/components/CreatePurposeModal/CreatePurposeModal";
+import { requireRole } from "@/libs/routeGuards";
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services/$id_/purposes/new",
@@ -11,14 +12,12 @@ export const Route = createFileRoute(
   component: RouteComponent,
   loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({
-    context: { queryClient },
-    deps: { knodeId },
-    params: { id },
-  }) =>
-    await queryClient.ensureQueryData(
+  loader: async ({ context, deps: { knodeId }, params: { id } }) => {
+    requireRole(context, "administrative");
+    return await context.queryClient.ensureQueryData(
       consumerEserviceDetailsQuery(id, knodeId),
-    ),
+    );
+  },
   validateSearch: eserviceDetailSearchSchema,
 });
 
