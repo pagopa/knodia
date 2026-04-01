@@ -1,9 +1,6 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
-import {
-  getConsumerCurrentPurposeFormSchemaOptions,
-  getConsumerCurrentPurposeFormUiSchemaOptions,
-} from "@knodia/bff-client/tanstack-query";
+import { getConsumerCurrentPurposeFormSchemasOptions } from "@knodia/bff-client/tanstack-query";
 import { Banner, Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
@@ -36,31 +33,24 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
-  const { data: schemaResponse, isError: isSchemaError } = useQuery(
-    getConsumerCurrentPurposeFormSchemaOptions({
+  const { data: schemasResponse, isError: isSchemasError } = useQuery(
+    getConsumerCurrentPurposeFormSchemasOptions({
       client,
       query: { knodeId },
     }),
   );
 
-  const { data: uiSchemaResponse, isError: isUiSchemaError } = useQuery(
-    getConsumerCurrentPurposeFormUiSchemaOptions({
-      client,
-      query: { knodeId },
-    }),
-  );
-
-  const formSchemaVersion = schemaResponse?.version;
+  const formSchemaVersion = schemasResponse?.version;
 
   const jsonSchema = useMemo(
-    () => (schemaResponse ? loadSchema(schemaResponse.schema) : undefined),
-    [schemaResponse],
+    () => (schemasResponse ? loadSchema(schemasResponse.schema) : undefined),
+    [schemasResponse],
   );
 
   const uiSchema = useMemo(
     () =>
-      uiSchemaResponse ? loadUiSchema(uiSchemaResponse.uiSchema) : undefined,
-    [uiSchemaResponse],
+      schemasResponse ? loadUiSchema(schemasResponse.uiSchema) : undefined,
+    [schemasResponse],
   );
 
   const dynamicSteps = useMemo(
@@ -68,7 +58,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     [uiSchema],
   );
 
-  if (isSchemaError || isUiSchemaError) {
+  if (isSchemasError) {
     return (
       <FullPageModal onClose={onClose} title="Create Purpose">
         <div className="mx-auto flex max-w-160 flex-col items-center gap-6 p-10">

@@ -82,16 +82,10 @@ export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams
 >;
 
-export const API_CurrentPurposeFormSchemaResponse = z
+export const API_CurrentPurposeFormSchemasResponse = z
   .strictObject({
     schema: API_PurposeFormSchema,
-    version: API_PurposeFormSchemaVersion,
-  })
-  .meta({ id: "CurrentPurposeFormSchemaResponse" });
-
-export const API_CurrentPurposeFormUiSchemaResponse = z
-  .strictObject({
     uiSchema: API_PurposeFormUiSchema,
     version: API_PurposeFormSchemaVersion,
   })
-  .meta({ id: "CurrentPurposeFormUiSchemaResponse" });
+  .meta({ id: "CurrentPurposeFormSchemasResponse" });

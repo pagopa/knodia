@@ -68,24 +68,16 @@ export function purposeServiceBuilder(
 
       return data;
     },
-    async getCurrentFormSchema(
+    async getCurrentFormSchemas(
       knodeId: KnodeId,
       { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<{ schema: Record<string, unknown>; version: string }> {
-      logger.info(`Getting current Purpose form schema from Knode ${knodeId}`);
-      const { data } = await k2kGatewayApi.getCurrentPurposeFormSchema({
-        client: k2kGatewayClient,
-      });
-      return data;
-    },
-    async getCurrentFormUiSchema(
-      knodeId: KnodeId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<{ uiSchema: Record<string, unknown>; version: string }> {
-      logger.info(
-        `Getting current Purpose form UI schema from Knode ${knodeId}`,
-      );
-      const { data } = await k2kGatewayApi.getCurrentPurposeFormUiSchema({
+    ): Promise<{
+      schema: Record<string, unknown>;
+      uiSchema: Record<string, unknown>;
+      version: string;
+    }> {
+      logger.info(`Getting current Purpose form schemas from Knode ${knodeId}`);
+      const { data } = await k2kGatewayApi.getCurrentPurposeFormSchemas({
         client: k2kGatewayClient,
       });
       return data;

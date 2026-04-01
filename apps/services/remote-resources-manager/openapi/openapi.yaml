@@ -690,25 +690,14 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
-    PurposeFormSchemaResponse:
-      description: Purpose form JSON Schema (Draft-07) with its version identifier
+    PurposeFormSchemasResponse:
+      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
+        version identifier
       type: object
       properties:
         schema:
           type: object
           additionalProperties: {}
-        version:
-          description: Version identifier for the Purpose form schema provided by the
-            target Knode
-          type: string
-      required:
-        - schema
-        - version
-      additionalProperties: false
-    PurposeFormUiSchemaResponse:
-      description: Purpose form UI Schema (JSON Forms) with its version identifier
-      type: object
-      properties:
         uiSchema:
           type: object
           additionalProperties: {}
@@ -717,6 +706,7 @@ components:
             target Knode
           type: string
       required:
+        - schema
         - uiSchema
         - version
       additionalProperties: false
@@ -1294,11 +1284,12 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/current:
     get:
-      operationId: getCurrentPurposeFormSchema
-      summary: Get current Purpose form schema
+      operationId: getCurrentPurposeFormSchemas
+      summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the current JSON Schema for validating Purpose form answers
+      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
+        with their version
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1307,59 +1298,13 @@ paths:
           required: true
       responses:
         "200":
-          description: Current Purpose form schema retrieved successfully
+          description: Current Purpose form schemas retrieved successfully
           content:
             application/json:
               schema:
-                description: Current Purpose form schema retrieved successfully
+                description: Current Purpose form schemas retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchemaResponse"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/current/ui:
-    get:
-      operationId: getCurrentPurposeFormUiSchema
-      summary: Get current Purpose form UI schema
-      tags:
-        - purpose
-      description: Retrieve the current UI Schema for rendering the Purpose form
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/KnodeId"
-          in: query
-          name: knodeId
-          required: true
-      responses:
-        "200":
-          description: Current Purpose form UI schema retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Current Purpose form UI schema retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/PurposeFormUiSchemaResponse"
+                  - $ref: "#/components/schemas/PurposeFormSchemasResponse"
         "400":
           description: Bad Request
           content:

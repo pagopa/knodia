@@ -246,25 +246,17 @@ components:
         - pagination
         - results
       additionalProperties: false
-    CurrentPurposeFormSchemaResponse:
+    CurrentPurposeFormSchemasResponse:
       type: object
       properties:
         schema:
           $ref: "#/components/schemas/PurposeFormSchema"
-        version:
-          $ref: "#/components/schemas/PurposeFormSchemaVersion"
-      required:
-        - schema
-        - version
-      additionalProperties: false
-    CurrentPurposeFormUiSchemaResponse:
-      type: object
-      properties:
         uiSchema:
           $ref: "#/components/schemas/PurposeFormUiSchema"
         version:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:
+        - schema
         - uiSchema
         - version
       additionalProperties: false
@@ -541,11 +533,12 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /purposes/formSchemas/current:
     get:
-      operationId: getCurrentPurposeFormSchema
-      summary: Get current Purpose form schema
+      operationId: getCurrentPurposeFormSchemas
+      summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the current JSON Schema for validating Purpose form answers
+      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
+        with their version
       parameters:
         - schema:
             allOf:
@@ -556,53 +549,13 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Current Purpose form schema retrieved successfully
+          description: Current Purpose form schemas retrieved successfully
           content:
             application/json:
               schema:
-                description: Current Purpose form schema retrieved successfully
+                description: Current Purpose form schemas retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/CurrentPurposeFormSchemaResponse"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/current/ui:
-    get:
-      operationId: getCurrentPurposeFormUiSchema
-      summary: Get current Purpose form UI schema
-      tags:
-        - purpose
-      description: Retrieve the current UI Schema for rendering the Purpose form
-      parameters:
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "200":
-          description: Current Purpose form UI schema retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Current Purpose form UI schema retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/CurrentPurposeFormUiSchemaResponse"
+                  - $ref: "#/components/schemas/CurrentPurposeFormSchemasResponse"
         "401":
           description: Unauthorized
           content:

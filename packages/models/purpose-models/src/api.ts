@@ -87,30 +87,17 @@ export type API_ExternalPurposeFormSchemaVersion = z.infer<
   typeof API_ExternalPurposeFormSchemaVersion
 >;
 
-export const API_ExternalPurposeFormSchemaResponse = z
+export const API_ExternalPurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
-    version: API_ExternalPurposeFormSchemaVersion,
-  })
-  .meta({
-    description:
-      "Purpose form JSON Schema (Draft-07) with its version identifier",
-    id: "PurposeFormSchemaResponse",
-  });
-export type API_ExternalPurposeFormSchemaResponse = z.infer<
-  typeof API_ExternalPurposeFormSchemaResponse
->;
-
-export const API_ExternalPurposeFormUiSchemaResponse = z
-  .strictObject({
     uiSchema: z.record(z.string(), z.unknown()),
     version: API_ExternalPurposeFormSchemaVersion,
   })
   .meta({
     description:
-      "Purpose form UI Schema (JSON Forms) with its version identifier",
-    id: "PurposeFormUiSchemaResponse",
+      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+    id: "PurposeFormSchemasResponse",
   });
-export type API_ExternalPurposeFormUiSchemaResponse = z.infer<
-  typeof API_ExternalPurposeFormUiSchemaResponse
+export type API_ExternalPurposeFormSchemasResponse = z.infer<
+  typeof API_ExternalPurposeFormSchemasResponse
 >;

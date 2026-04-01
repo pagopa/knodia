@@ -16,8 +16,7 @@ import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 import type { PurposeService } from "../services/purposeService.ts";
 
 import {
-  API_CurrentPurposeFormSchemaResponse,
-  API_CurrentPurposeFormUiSchemaResponse,
+  API_CurrentPurposeFormSchemasResponse,
   API_GetPurposesQueryParams,
   API_Purpose,
   API_Purposes,
@@ -176,51 +175,24 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "internal" },
       ]);
 
-      res.status(200).send(purposeService.getCurrentFormSchema(ctx));
+      res.status(200).send(purposeService.getCurrentFormSchemas(ctx));
     },
     method: "GET",
     schema: {
       description:
-        "Retrieve the current JSON Schema for validating Purpose form answers",
+        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
       headers: KnodiaServiceHeaders,
-      operationId: "getCurrentPurposeFormSchema",
+      operationId: "getCurrentPurposeFormSchemas",
       response: {
-        200: API_CurrentPurposeFormSchemaResponse.meta({
-          description: "Current Purpose form schema retrieved successfully",
+        200: API_CurrentPurposeFormSchemasResponse.meta({
+          description: "Current Purpose form schemas retrieved successfully",
         }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
-      summary: "Get current Purpose form schema",
+      summary: "Get current Purpose form schemas",
       tags: [apiTags.purpose],
     },
     url: "/purposes/formSchemas/current",
-  });
-
-  fastify.route({
-    handler: async (_req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
-      ]);
-
-      res.status(200).send(purposeService.getCurrentFormUiSchema(ctx));
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Retrieve the current UI Schema for rendering the Purpose form",
-      headers: KnodiaServiceHeaders,
-      operationId: "getCurrentPurposeFormUiSchema",
-      response: {
-        200: API_CurrentPurposeFormUiSchemaResponse.meta({
-          description: "Current Purpose form UI schema retrieved successfully",
-        }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-      },
-      summary: "Get current Purpose form UI schema",
-      tags: [apiTags.purpose],
-    },
-    url: "/purposes/formSchemas/current/ui",
   });
 };

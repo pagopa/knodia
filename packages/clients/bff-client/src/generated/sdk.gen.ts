@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerCurrentPurposeFormSchemaData, GetConsumerCurrentPurposeFormSchemaErrors, GetConsumerCurrentPurposeFormSchemaResponses, GetConsumerCurrentPurposeFormUiSchemaData, GetConsumerCurrentPurposeFormUiSchemaErrors, GetConsumerCurrentPurposeFormUiSchemaResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasErrors, GetConsumerCurrentPurposeFormSchemasResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -282,26 +282,14 @@ export const createConsumerPurpose = <ThrowOnError extends boolean = true>(optio
 });
 
 /**
- * Get current Purpose form schema
+ * Get current Purpose form schemas
  *
- * Retrieve the current JSON Schema for validating Purpose form answers
+ * Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version
  */
-export const getConsumerCurrentPurposeFormSchema = <ThrowOnError extends boolean = true>(options: Options<GetConsumerCurrentPurposeFormSchemaData, ThrowOnError>) => (options.client ?? client).get<GetConsumerCurrentPurposeFormSchemaResponses, GetConsumerCurrentPurposeFormSchemaErrors, ThrowOnError>({
+export const getConsumerCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true>(options: Options<GetConsumerCurrentPurposeFormSchemasData, ThrowOnError>) => (options.client ?? client).get<GetConsumerCurrentPurposeFormSchemasResponses, GetConsumerCurrentPurposeFormSchemasErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumer/purposes/formSchemas/current',
-    ...options
-});
-
-/**
- * Get current Purpose form UI schema
- *
- * Retrieve the current UI Schema for rendering the Purpose form
- */
-export const getConsumerCurrentPurposeFormUiSchema = <ThrowOnError extends boolean = true>(options: Options<GetConsumerCurrentPurposeFormUiSchemaData, ThrowOnError>) => (options.client ?? client).get<GetConsumerCurrentPurposeFormUiSchemaResponses, GetConsumerCurrentPurposeFormUiSchemaErrors, ThrowOnError>({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/consumer/purposes/formSchemas/current/ui',
     ...options
 });
 

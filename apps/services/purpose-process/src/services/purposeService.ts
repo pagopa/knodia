@@ -124,22 +124,14 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-    getCurrentFormSchema({ logger }: AuthorizedContext<AuthData>): {
+    getCurrentFormSchemas({ logger }: AuthorizedContext<AuthData>): {
       schema: Record<string, unknown>;
-      version: PurposeFormSchemaVersion;
-    } {
-      logger.info("Getting current Purpose form schema");
-      return {
-        schema: getFormSchema(CURRENT_FORM_SCHEMA_VERSION),
-        version: CURRENT_FORM_SCHEMA_VERSION,
-      };
-    },
-    getCurrentFormUiSchema({ logger }: AuthorizedContext<AuthData>): {
       uiSchema: Record<string, unknown>;
       version: PurposeFormSchemaVersion;
     } {
-      logger.info("Getting current Purpose form UI schema");
+      logger.info("Getting current Purpose form schemas");
       return {
+        schema: getFormSchema(CURRENT_FORM_SCHEMA_VERSION),
         uiSchema: getFormUiSchema(CURRENT_FORM_SCHEMA_VERSION),
         version: CURRENT_FORM_SCHEMA_VERSION,
       };

@@ -11,33 +11,33 @@ export const handlers = [
     }),
   ),
 
-  http.get(`${BASE_URL}/consumer/purposes/formSchemas/:version`, () =>
+  http.get(`${BASE_URL}/consumer/purposes/formSchemas/current`, () =>
     HttpResponse.json({
-      properties: {
-        purpose: { enum: ["INSTITUTIONAL", "OTHER"], type: "string" },
-        purposeDescription: { type: "string" },
-      },
-      required: ["purpose", "purposeDescription"],
-      type: "object",
-    }),
-  ),
-
-  http.get(`${BASE_URL}/consumer/purposes/formSchemas/:version/ui`, () =>
-    HttpResponse.json({
-      elements: [
-        {
-          elements: [
-            {
-              options: { widget: "radio" },
-              scope: "#/properties/purpose",
-              type: "Control",
-            },
-          ],
-          label: "Test",
-          type: "Group",
+      schema: {
+        properties: {
+          purpose: { enum: ["INSTITUTIONAL", "OTHER"], type: "string" },
+          purposeDescription: { type: "string" },
         },
-      ],
-      type: "VerticalLayout",
+        required: ["purpose", "purposeDescription"],
+        type: "object",
+      },
+      uiSchema: {
+        elements: [
+          {
+            elements: [
+              {
+                options: { widget: "radio" },
+                scope: "#/properties/purpose",
+                type: "Control",
+              },
+            ],
+            label: "Test",
+            type: "Group",
+          },
+        ],
+        type: "VerticalLayout",
+      },
+      version: "1.0",
     }),
   ),
 

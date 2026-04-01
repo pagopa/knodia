@@ -1,5 +1,5 @@
 meta {
-  name: Get Form Schema
+  name: Get Form Schemas
   type: http
 }
 
@@ -13,8 +13,3 @@ headers {
   X-Correlation-Id: {{correlation-id}}
   Authorization: {{internal-jwt}}
 }
-
-vars:post-response {
-  purposeFormSchemaVersion: res.body.version
-}
-
