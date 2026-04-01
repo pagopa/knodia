@@ -46,7 +46,7 @@ export function PageHeader({
           <CopyableValueField className="mt-3" label="ID" value={copyableId} />
         )}
         {description && (
-          <p className="mt-4 body-md text-primary-light-low-contrast max-w-160">
+          <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
             {description}
           </p>
         )}
