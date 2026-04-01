@@ -2617,6 +2617,45 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /session/organization:
+    get:
+      operationId: getSessionOrganization
+      tags:
+        - auth
+      description: Retrieve the Organization of the current session's User
+      responses:
+        "200":
+          description: Session Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Session Organization retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/CompactOrganization"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/agreements:
     get:
       operationId: getProducerAgreements
