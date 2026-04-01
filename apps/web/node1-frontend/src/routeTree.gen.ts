@@ -18,12 +18,13 @@ import { Route as AuthenticatedDetailsAndAttributesRouteImport } from './routes/
 import { Route as AuthenticatedProductionIndexRouteImport } from './routes/_authenticated/production/index'
 import { Route as AuthenticatedKeychainsIndexRouteImport } from './routes/_authenticated/keychains/index'
 import { Route as AuthenticatedConsumptionIndexRouteImport } from './routes/_authenticated/consumption/index'
-import { Route as AuthenticatedProductionPurposesRouteImport } from './routes/_authenticated/production/purposes'
 import { Route as AuthenticatedConsumptionPurposesRouteImport } from './routes/_authenticated/consumption/purposes'
+import { Route as AuthenticatedProductionPurposesIndexRouteImport } from './routes/_authenticated/production/purposes/index'
 import { Route as AuthenticatedProductionEServicesIndexRouteImport } from './routes/_authenticated/production/e-services/index'
 import { Route as AuthenticatedProductionAgreementsIndexRouteImport } from './routes/_authenticated/production/agreements/index'
 import { Route as AuthenticatedConsumptionEServicesIndexRouteImport } from './routes/_authenticated/consumption/e-services/index'
 import { Route as AuthenticatedConsumptionAgreementsIndexRouteImport } from './routes/_authenticated/consumption/agreements/index'
+import { Route as AuthenticatedProductionPurposesIdRouteImport } from './routes/_authenticated/production/purposes/$id'
 import { Route as AuthenticatedProductionEServicesNewRouteImport } from './routes/_authenticated/production/e-services/new'
 import { Route as AuthenticatedProductionEServicesIdRouteImport } from './routes/_authenticated/production/e-services/$id'
 import { Route as AuthenticatedProductionAgreementsIdRouteImport } from './routes/_authenticated/production/agreements/$id'
@@ -82,16 +83,16 @@ const AuthenticatedConsumptionIndexRoute =
     path: '/consumption/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedProductionPurposesRoute =
-  AuthenticatedProductionPurposesRouteImport.update({
-    id: '/production/purposes',
-    path: '/production/purposes',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedConsumptionPurposesRoute =
   AuthenticatedConsumptionPurposesRouteImport.update({
     id: '/consumption/purposes',
     path: '/consumption/purposes',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionPurposesIndexRoute =
+  AuthenticatedProductionPurposesIndexRouteImport.update({
+    id: '/production/purposes/',
+    path: '/production/purposes/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProductionEServicesIndexRoute =
@@ -116,6 +117,12 @@ const AuthenticatedConsumptionAgreementsIndexRoute =
   AuthenticatedConsumptionAgreementsIndexRouteImport.update({
     id: '/consumption/agreements/',
     path: '/consumption/agreements/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedProductionPurposesIdRoute =
+  AuthenticatedProductionPurposesIdRouteImport.update({
+    id: '/production/purposes/$id',
+    path: '/production/purposes/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedProductionEServicesNewRoute =
@@ -180,7 +187,6 @@ export interface FileRoutesByFullPath {
   '/callback': typeof CallbackIndexRoute
   '/login': typeof LoginIndexRoute
   '/consumption/purposes': typeof AuthenticatedConsumptionPurposesRoute
-  '/production/purposes': typeof AuthenticatedProductionPurposesRoute
   '/consumption': typeof AuthenticatedConsumptionIndexRoute
   '/keychains': typeof AuthenticatedKeychainsIndexRoute
   '/production': typeof AuthenticatedProductionIndexRoute
@@ -192,10 +198,12 @@ export interface FileRoutesByFullPath {
   '/production/agreements/$id': typeof AuthenticatedProductionAgreementsIdRoute
   '/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
   '/production/e-services/new': typeof AuthenticatedProductionEServicesNewRoute
+  '/production/purposes/$id': typeof AuthenticatedProductionPurposesIdRoute
   '/consumption/agreements': typeof AuthenticatedConsumptionAgreementsIndexRoute
   '/consumption/e-services': typeof AuthenticatedConsumptionEServicesIndexRoute
   '/production/agreements': typeof AuthenticatedProductionAgreementsIndexRoute
   '/production/e-services': typeof AuthenticatedProductionEServicesIndexRoute
+  '/production/purposes': typeof AuthenticatedProductionPurposesIndexRoute
   '/consumption/e-services/$id/purposes/new': typeof AuthenticatedConsumptionEServicesIdPurposesNewRoute
 }
 export interface FileRoutesByTo {
@@ -205,7 +213,6 @@ export interface FileRoutesByTo {
   '/callback': typeof CallbackIndexRoute
   '/login': typeof LoginIndexRoute
   '/consumption/purposes': typeof AuthenticatedConsumptionPurposesRoute
-  '/production/purposes': typeof AuthenticatedProductionPurposesRoute
   '/consumption': typeof AuthenticatedConsumptionIndexRoute
   '/keychains': typeof AuthenticatedKeychainsIndexRoute
   '/production': typeof AuthenticatedProductionIndexRoute
@@ -217,10 +224,12 @@ export interface FileRoutesByTo {
   '/production/agreements/$id': typeof AuthenticatedProductionAgreementsIdRoute
   '/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
   '/production/e-services/new': typeof AuthenticatedProductionEServicesNewRoute
+  '/production/purposes/$id': typeof AuthenticatedProductionPurposesIdRoute
   '/consumption/agreements': typeof AuthenticatedConsumptionAgreementsIndexRoute
   '/consumption/e-services': typeof AuthenticatedConsumptionEServicesIndexRoute
   '/production/agreements': typeof AuthenticatedProductionAgreementsIndexRoute
   '/production/e-services': typeof AuthenticatedProductionEServicesIndexRoute
+  '/production/purposes': typeof AuthenticatedProductionPurposesIndexRoute
   '/consumption/e-services/$id/purposes/new': typeof AuthenticatedConsumptionEServicesIdPurposesNewRoute
 }
 export interface FileRoutesById {
@@ -232,7 +241,6 @@ export interface FileRoutesById {
   '/callback/': typeof CallbackIndexRoute
   '/login/': typeof LoginIndexRoute
   '/_authenticated/consumption/purposes': typeof AuthenticatedConsumptionPurposesRoute
-  '/_authenticated/production/purposes': typeof AuthenticatedProductionPurposesRoute
   '/_authenticated/consumption/': typeof AuthenticatedConsumptionIndexRoute
   '/_authenticated/keychains/': typeof AuthenticatedKeychainsIndexRoute
   '/_authenticated/production/': typeof AuthenticatedProductionIndexRoute
@@ -244,10 +252,12 @@ export interface FileRoutesById {
   '/_authenticated/production/agreements/$id': typeof AuthenticatedProductionAgreementsIdRoute
   '/_authenticated/production/e-services/$id': typeof AuthenticatedProductionEServicesIdRoute
   '/_authenticated/production/e-services/new': typeof AuthenticatedProductionEServicesNewRoute
+  '/_authenticated/production/purposes/$id': typeof AuthenticatedProductionPurposesIdRoute
   '/_authenticated/consumption/agreements/': typeof AuthenticatedConsumptionAgreementsIndexRoute
   '/_authenticated/consumption/e-services/': typeof AuthenticatedConsumptionEServicesIndexRoute
   '/_authenticated/production/agreements/': typeof AuthenticatedProductionAgreementsIndexRoute
   '/_authenticated/production/e-services/': typeof AuthenticatedProductionEServicesIndexRoute
+  '/_authenticated/production/purposes/': typeof AuthenticatedProductionPurposesIndexRoute
   '/_authenticated/consumption/e-services/$id_/purposes/new': typeof AuthenticatedConsumptionEServicesIdPurposesNewRoute
 }
 export interface FileRouteTypes {
@@ -259,7 +269,6 @@ export interface FileRouteTypes {
     | '/callback'
     | '/login'
     | '/consumption/purposes'
-    | '/production/purposes'
     | '/consumption'
     | '/keychains'
     | '/production'
@@ -271,10 +280,12 @@ export interface FileRouteTypes {
     | '/production/agreements/$id'
     | '/production/e-services/$id'
     | '/production/e-services/new'
+    | '/production/purposes/$id'
     | '/consumption/agreements'
     | '/consumption/e-services'
     | '/production/agreements'
     | '/production/e-services'
+    | '/production/purposes'
     | '/consumption/e-services/$id/purposes/new'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -284,7 +295,6 @@ export interface FileRouteTypes {
     | '/callback'
     | '/login'
     | '/consumption/purposes'
-    | '/production/purposes'
     | '/consumption'
     | '/keychains'
     | '/production'
@@ -296,10 +306,12 @@ export interface FileRouteTypes {
     | '/production/agreements/$id'
     | '/production/e-services/$id'
     | '/production/e-services/new'
+    | '/production/purposes/$id'
     | '/consumption/agreements'
     | '/consumption/e-services'
     | '/production/agreements'
     | '/production/e-services'
+    | '/production/purposes'
     | '/consumption/e-services/$id/purposes/new'
   id:
     | '__root__'
@@ -310,7 +322,6 @@ export interface FileRouteTypes {
     | '/callback/'
     | '/login/'
     | '/_authenticated/consumption/purposes'
-    | '/_authenticated/production/purposes'
     | '/_authenticated/consumption/'
     | '/_authenticated/keychains/'
     | '/_authenticated/production/'
@@ -322,10 +333,12 @@ export interface FileRouteTypes {
     | '/_authenticated/production/agreements/$id'
     | '/_authenticated/production/e-services/$id'
     | '/_authenticated/production/e-services/new'
+    | '/_authenticated/production/purposes/$id'
     | '/_authenticated/consumption/agreements/'
     | '/_authenticated/consumption/e-services/'
     | '/_authenticated/production/agreements/'
     | '/_authenticated/production/e-services/'
+    | '/_authenticated/production/purposes/'
     | '/_authenticated/consumption/e-services/$id_/purposes/new'
   fileRoutesById: FileRoutesById
 }
@@ -400,18 +413,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedConsumptionIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/production/purposes': {
-      id: '/_authenticated/production/purposes'
-      path: '/production/purposes'
-      fullPath: '/production/purposes'
-      preLoaderRoute: typeof AuthenticatedProductionPurposesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/consumption/purposes': {
       id: '/_authenticated/consumption/purposes'
       path: '/consumption/purposes'
       fullPath: '/consumption/purposes'
       preLoaderRoute: typeof AuthenticatedConsumptionPurposesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/production/purposes/': {
+      id: '/_authenticated/production/purposes/'
+      path: '/production/purposes'
+      fullPath: '/production/purposes'
+      preLoaderRoute: typeof AuthenticatedProductionPurposesIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/production/e-services/': {
@@ -440,6 +453,13 @@ declare module '@tanstack/react-router' {
       path: '/consumption/agreements'
       fullPath: '/consumption/agreements'
       preLoaderRoute: typeof AuthenticatedConsumptionAgreementsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/production/purposes/$id': {
+      id: '/_authenticated/production/purposes/$id'
+      path: '/production/purposes/$id'
+      fullPath: '/production/purposes/$id'
+      preLoaderRoute: typeof AuthenticatedProductionPurposesIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/production/e-services/new': {
@@ -513,7 +533,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOperatorsRoute: typeof AuthenticatedOperatorsRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedConsumptionPurposesRoute: typeof AuthenticatedConsumptionPurposesRoute
-  AuthenticatedProductionPurposesRoute: typeof AuthenticatedProductionPurposesRoute
   AuthenticatedConsumptionIndexRoute: typeof AuthenticatedConsumptionIndexRoute
   AuthenticatedKeychainsIndexRoute: typeof AuthenticatedKeychainsIndexRoute
   AuthenticatedProductionIndexRoute: typeof AuthenticatedProductionIndexRoute
@@ -525,10 +544,12 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedProductionAgreementsIdRoute: typeof AuthenticatedProductionAgreementsIdRoute
   AuthenticatedProductionEServicesIdRoute: typeof AuthenticatedProductionEServicesIdRoute
   AuthenticatedProductionEServicesNewRoute: typeof AuthenticatedProductionEServicesNewRoute
+  AuthenticatedProductionPurposesIdRoute: typeof AuthenticatedProductionPurposesIdRoute
   AuthenticatedConsumptionAgreementsIndexRoute: typeof AuthenticatedConsumptionAgreementsIndexRoute
   AuthenticatedConsumptionEServicesIndexRoute: typeof AuthenticatedConsumptionEServicesIndexRoute
   AuthenticatedProductionAgreementsIndexRoute: typeof AuthenticatedProductionAgreementsIndexRoute
   AuthenticatedProductionEServicesIndexRoute: typeof AuthenticatedProductionEServicesIndexRoute
+  AuthenticatedProductionPurposesIndexRoute: typeof AuthenticatedProductionPurposesIndexRoute
   AuthenticatedConsumptionEServicesIdPurposesNewRoute: typeof AuthenticatedConsumptionEServicesIdPurposesNewRoute
 }
 
@@ -538,7 +559,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOperatorsRoute: AuthenticatedOperatorsRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedConsumptionPurposesRoute: AuthenticatedConsumptionPurposesRoute,
-  AuthenticatedProductionPurposesRoute: AuthenticatedProductionPurposesRoute,
   AuthenticatedConsumptionIndexRoute: AuthenticatedConsumptionIndexRoute,
   AuthenticatedKeychainsIndexRoute: AuthenticatedKeychainsIndexRoute,
   AuthenticatedProductionIndexRoute: AuthenticatedProductionIndexRoute,
@@ -558,6 +578,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedProductionEServicesIdRoute,
   AuthenticatedProductionEServicesNewRoute:
     AuthenticatedProductionEServicesNewRoute,
+  AuthenticatedProductionPurposesIdRoute:
+    AuthenticatedProductionPurposesIdRoute,
   AuthenticatedConsumptionAgreementsIndexRoute:
     AuthenticatedConsumptionAgreementsIndexRoute,
   AuthenticatedConsumptionEServicesIndexRoute:
@@ -566,6 +588,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
     AuthenticatedProductionAgreementsIndexRoute,
   AuthenticatedProductionEServicesIndexRoute:
     AuthenticatedProductionEServicesIndexRoute,
+  AuthenticatedProductionPurposesIndexRoute:
+    AuthenticatedProductionPurposesIndexRoute,
   AuthenticatedConsumptionEServicesIdPurposesNewRoute:
     AuthenticatedConsumptionEServicesIdPurposesNewRoute,
 }

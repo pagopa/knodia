@@ -68,7 +68,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative"] },
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
       const detail = await eserviceService.getEserviceDetails(
@@ -135,7 +135,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative"] },
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
       const { buffer, contentType, fileName } =

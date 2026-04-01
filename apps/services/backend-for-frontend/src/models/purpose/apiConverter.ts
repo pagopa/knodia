@@ -5,7 +5,32 @@ import type { organizationProcessApi } from "@knodia/organization-process-client
 import type { purposeProcessApi } from "@knodia/purpose-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
-import type { API_ProducerPurposeDetails } from "./api.ts";
+import type { API_ProducerPurpose, API_ProducerPurposeDetails } from "./api.ts";
+
+export const toAPI_ProducerPurpose = ({
+  consumer,
+  eservice,
+  purpose,
+}: {
+  consumer: remoteResourcesManagerApi.Organization;
+  eservice: eserviceProcessApi.Eservice;
+  purpose: purposeProcessApi.Purpose;
+}): API_ProducerPurpose => ({
+  consumer: {
+    id: consumer.id,
+    knodeId: purpose.consumer.knodeId,
+    name: consumer.name,
+  },
+  dailyCalls: purpose.dailyCalls,
+  description: purpose.description,
+  eservice: {
+    id: eservice.id,
+    name: eservice.name,
+  },
+  id: purpose.id,
+  name: purpose.name,
+  state: purpose.state,
+});
 
 export const toAPI_ProducerPurposeDetails = ({
   agreement,
