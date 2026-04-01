@@ -112,7 +112,8 @@ const envLine = `${envVarName}=${token}`;
 let existing = "";
 try { existing = readFileSync(envPath, "utf-8"); } catch { /* new file */ }
 
-const pattern = new RegExp(`^${envVarName}=.*$`, "m");
+const escapedEnvVarName = envVarName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const pattern = new RegExp(`^${escapedEnvVarName}=.*$`, "m");
 const updated = pattern.test(existing)
   ? existing.replace(pattern, envLine)
   : existing.trimEnd() + "\n" + envLine + "\n";
