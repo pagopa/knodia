@@ -3,12 +3,16 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  forbiddenError,
+} from "@knodia/fastify-zod-api-commons/models";
 import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import { isAxiosError } from "axios";
 
 import { apiTags } from "../models/apiTags.ts";
 import { getUISessionAuthData } from "../utils/authData.ts";
@@ -30,17 +34,24 @@ export const sessionRouter: FastifyPluginAsyncZod<
 
       logger.info("Getting organization info for the current session");
 
-      const { data } = await organizationProcessApi.getOrganization({
-        client: organizationProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { organizationId },
-      });
+      try {
+        const { data } = await organizationProcessApi.getOrganization({
+          client: organizationProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { organizationId },
+        });
 
-      res.send({
-        id: data.id,
-        knodeId,
-        name: data.name,
-      });
+        res.send({
+          id: data.id,
+          knodeId,
+          name: data.name,
+        });
+      } catch (error) {
+        if (isAxiosError(error) && error.response?.status === 404) {
+          throw forbiddenError(`Organization ${organizationId} not found`);
+        }
+        throw error;
+      }
     },
     method: "GET",
     schema: {
