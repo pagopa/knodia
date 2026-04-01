@@ -117,7 +117,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     const expectedConsumerKeychainPurpose: ConsumerKeychainPurpose = {
       consumerKeychainId: consumerKeychain.id,
       linkedAt: new Date(responseBody.linkedAt),
-      purposeId: unsafeBrandExternalId(purpose.id),
+      purpose: { id: unsafeBrandExternalId(purpose.id), knodeId },
     };
 
     expect(responseBody).toMatchObject(
@@ -141,10 +141,10 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     expect(linkEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date(responseBody.linkedAt).getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(
-        unsafeBrandExternalId(purpose.id),
-        body.knodeId,
-      ),
+      purpose: toConsumerKeychainLinkedPurposeV1({
+        id: unsafeBrandExternalId(purpose.id),
+        knodeId,
+      }),
     });
   });
 

@@ -79,6 +79,7 @@ export const readmodelConsumerKeychainPurpose = keychainSchema.table(
       .defaultNow()
       .notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
+    producerKnodeId: text("producer_knode_id").notNull(),
     purposeId: uuid("purpose_id").notNull(),
   },
   (table) => [

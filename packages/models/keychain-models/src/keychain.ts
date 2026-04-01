@@ -1,4 +1,4 @@
-import { ExternalId } from "@knodia/common-models/externalResource";
+import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   ConsumerKeychainId,
   OrganizationId,
@@ -61,6 +61,6 @@ export type FlatConsumerKeychain = z.infer<typeof FlatConsumerKeychain>;
 export const ConsumerKeychainPurpose = z.strictObject({
   consumerKeychainId: ConsumerKeychainId,
   linkedAt: z.coerce.date(),
-  purposeId: ExternalId<PurposeId>(),
+  purpose: ExternalResource<PurposeId>(),
 });
 export type ConsumerKeychainPurpose = z.infer<typeof ConsumerKeychainPurpose>;

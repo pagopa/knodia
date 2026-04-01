@@ -46,10 +46,10 @@ describe("KeychainEventV1 codec", () => {
     users: [generateUserId()],
   };
 
-  const linkedPurposeV1 = toConsumerKeychainLinkedPurposeV1(
-    generateExternalId(),
-    "Orion",
-  );
+  const linkedPurposeV1 = toConsumerKeychainLinkedPurposeV1({
+    id: generateExternalId(),
+    knodeId: "Orion",
+  });
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
   const defaultData = { consumerKeychain: consumerKeychainV1 };
   const cases = [

@@ -1,5 +1,5 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type { PurposeId } from "@knodia/common-models/ids";
 
 import { match } from "ts-pattern";
 
@@ -50,9 +50,8 @@ export const toConsumerKeychainV1 = (
 });
 
 export const toConsumerKeychainLinkedPurposeV1 = (
-  purposeId: ExternalId<PurposeId>,
-  knodeId: KnodeId,
+  purpose: ExternalResource<PurposeId>,
 ): ConsumerKeychainLinkedPurposeV1 => ({
-  id: purposeId,
-  knodeId,
+  id: purpose.id,
+  knodeId: purpose.knodeId,
 });

@@ -32,5 +32,5 @@ export const toAPI_ConsumerKeychainPurpose = (
 ): API_ConsumerKeychainPurpose => ({
   consumerKeychainId: consumerKeychainPurpose.consumerKeychainId,
   linkedAt: consumerKeychainPurpose.linkedAt.toISOString(),
-  purposeId: consumerKeychainPurpose.purposeId,
+  purposeId: consumerKeychainPurpose.purpose.id,
 });

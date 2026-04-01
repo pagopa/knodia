@@ -1,7 +1,6 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   CorrelationId,
-  KnodeId,
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
@@ -100,16 +99,14 @@ export const createConsumerKeychainPurposeLinkedV1Event = ({
   consumerKeychain,
   correlationId,
   currentMetadataVersion,
-  knodeId,
   linkedAt,
-  purposeId,
+  purpose,
 }: {
   consumerKeychain: ConsumerKeychain;
   correlationId: CorrelationId;
   currentMetadataVersion: number;
-  knodeId: KnodeId;
   linkedAt: Date;
-  purposeId: ExternalId<PurposeId>;
+  purpose: ExternalResource<PurposeId>;
 }): NewEventStoreKeychainEvent => ({
   correlationId,
   currentMetadataVersion,
@@ -117,7 +114,7 @@ export const createConsumerKeychainPurposeLinkedV1Event = ({
     data: {
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: linkedAt.getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(purposeId, knodeId),
+      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
     },
     type: "ConsumerKeychainPurposeLinkedV1",
   },

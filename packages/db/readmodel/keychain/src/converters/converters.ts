@@ -2,6 +2,7 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
+  KnodeId,
   type OrganizationId,
   unsafeBrandId,
   unsafeBrandUserId,
@@ -96,7 +97,10 @@ export function toConsumerKeychainPurpose(
         consumerKeychainPurposeSQL.consumerKeychainId,
       ),
       linkedAt: consumerKeychainPurposeSQL.linkedAt,
-      purposeId: unsafeBrandExternalId(consumerKeychainPurposeSQL.purposeId),
+      purpose: {
+        id: unsafeBrandExternalId(consumerKeychainPurposeSQL.purposeId),
+        knodeId: KnodeId.parse(consumerKeychainPurposeSQL.producerKnodeId),
+      },
     },
     metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
   };

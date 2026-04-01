@@ -1,6 +1,11 @@
+import type { PurposeId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import {
+  type ExternalResource,
+  generateExternalId,
+  unsafeBrandExternalId,
+} from "@knodia/common-models/externalResource";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   type ConsumerKeychain,
@@ -12,7 +17,6 @@ import {
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockConsumerKeychain,
-  getMockPurpose,
   toExpectConsumerKeychain,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -59,7 +63,10 @@ describe("Consumer keychain read model writer tests", async () => {
 
   it("ConsumerKeychainPurposeLinkedV1", async () => {
     const consumerKeychain = getMockConsumerKeychain();
-    const purpose = getMockPurpose();
+    const purpose: ExternalResource<PurposeId> = {
+      id: generateExternalId(),
+      knodeId: "Orion",
+    };
 
     await keychainWriterService.upsertConsumerKeychain(consumerKeychain, 0);
 
@@ -68,10 +75,10 @@ describe("Consumer keychain read model writer tests", async () => {
     ).encode({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date().getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(
-        unsafeBrandExternalId(purpose.id),
-        "Orion",
-      ),
+      purpose: toConsumerKeychainLinkedPurposeV1({
+        id: unsafeBrandExternalId(purpose.id),
+        knodeId: purpose.knodeId,
+      }),
     });
 
     const metadataVersion = 1;
@@ -102,7 +109,10 @@ describe("Consumer keychain read model writer tests", async () => {
       data: {
         consumerKeychainId: consumerKeychain.id,
         linkedAt: expect.any(Date),
-        purposeId: unsafeBrandExternalId(purpose.id),
+        purpose: {
+          id: unsafeBrandExternalId(purpose.id),
+          knodeId: purpose.knodeId,
+        },
       },
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ConsumerKeychainPurpose>);

@@ -13,6 +13,7 @@ import type { FastifyRequest } from "fastify";
 
 import {
   type ExternalId,
+  type ExternalResource,
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import {
@@ -256,15 +257,18 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
+      const externalPurpose: ExternalResource<PurposeId> = {
+        id: purposeId,
+        knodeId: purpose.consumer.knodeId,
+      };
       const linkedAt = new Date();
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainPurposeLinkedV1Event({
           consumerKeychain: consumerKeychain.data,
           correlationId,
           currentMetadataVersion: consumerKeychain.metadata.version,
-          knodeId,
           linkedAt,
-          purposeId,
+          purpose: externalPurpose,
         }),
       );
 
@@ -272,7 +276,7 @@ export function consumerKeychainServiceBuilder(
         data: {
           consumerKeychainId,
           linkedAt,
-          purposeId,
+          purpose: externalPurpose,
         },
         metadata: { version: newVersion },
       };
