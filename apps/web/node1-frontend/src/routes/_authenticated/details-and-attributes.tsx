@@ -10,8 +10,6 @@ import { sessionOrganizationQuery } from "@/features/session/services/queries";
 
 export const Route = createFileRoute("/_authenticated/details-and-attributes")({
   component: DetailsAndAttributesPage,
-  loader: async ({ context: { queryClient } }) =>
-    await queryClient.ensureQueryData(sessionOrganizationQuery()),
 });
 
 export function DetailsAndAttributesPage() {
