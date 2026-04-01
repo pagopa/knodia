@@ -60,7 +60,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const data = await purposeService.getCurrentFormSchemas(
+      const data = await purposeService.getCurrentPurposeFormSchemas(
         KnodeId.parse(req.query.knodeId),
         ctx,
       );

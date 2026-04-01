@@ -68,7 +68,7 @@ export function purposeServiceBuilder(
 
       return data;
     },
-    async getCurrentFormSchemas(
+    async getCurrentPurposeFormSchemas(
       knodeId: KnodeId,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<{
