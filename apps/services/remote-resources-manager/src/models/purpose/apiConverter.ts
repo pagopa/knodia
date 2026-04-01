@@ -5,7 +5,7 @@ import { match } from "ts-pattern";
 
 import type { API_Purpose } from "./api.ts";
 
-import { toAPI_KnodeId } from "../knode/api.ts";
+import { toAPI_KnodeId } from "../knode/apiConverter.ts";
 
 export function toAPI_Purpose(purpose: k2kGatewayApi.Purpose): API_Purpose {
   return {

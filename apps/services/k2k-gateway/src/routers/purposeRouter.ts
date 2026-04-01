@@ -207,7 +207,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Purpose not found" }),
       },
       summary: "Get Purpose",
-      tags: [apiTags.purpose],
+      tags: [apiTags.purpose, apiTags.resource],
     },
     url: "/purposes/:purposeId",
   });

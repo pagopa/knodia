@@ -1,6 +1,6 @@
-import type { API_KnodeId } from "@knodia/common-models/internalApi";
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { organizationProcessApi } from "@knodia/organization-process-client";
 
 export type OrganizationWithKnode = organizationProcessApi.Organization & {
-  knodeId: API_KnodeId;
+  knodeId: KnodeId;
 };
