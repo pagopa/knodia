@@ -9,7 +9,6 @@ import {
   arrayBufferToBase64,
   getContentType,
 } from "@/features/e-service/utils/file";
-import { getInitials } from "@/utils/getInitials";
 
 export function toCatalogSearchResultUI(
   result: bffApi.ConsumerCatalogEserviceSearchResult,
@@ -22,7 +21,7 @@ export function toCatalogSearchResultUI(
     mode: result.mode,
     name: result.name.en,
     organization: {
-      initials: getInitials(result.producer.name),
+      knodeId: result.producer.knodeId,
       name: result.producer.name,
     },
     state: result.latestVersionState,
@@ -58,7 +57,6 @@ export function toConsumptionEserviceDetail(
     name: detail.name.en,
     producer: {
       email: detail.producer.email,
-      initials: getInitials(detail.producer.name),
       knodeId: detail.producer.knodeId,
       name: detail.producer.name,
       notes: detail.producer.notes,

@@ -83,7 +83,7 @@ describe("ProducerAgreementTable", () => {
     ]);
 
     expect(screen.getByText("Birth Certificate API")).toBeInTheDocument();
-    expect(screen.getByText("UM")).toBeInTheDocument(); // Avatar initials
+    expect(screen.getByText("LK")).toBeInTheDocument(); // KnodeAvatar initials (Lynx Knode)
     expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
