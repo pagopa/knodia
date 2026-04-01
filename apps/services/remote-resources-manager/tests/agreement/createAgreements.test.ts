@@ -24,10 +24,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   type API_AgreementSeed,
   type API_CreatedAgreementResource,
-} from "../src/models/agreement/api.ts";
-import { toK2KAgreement } from "./k2kConverters.ts";
-import { remoteResourceDbService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+} from "../../src/models/agreement/api.ts";
+import { toK2KAgreement } from "../k2kConverters.ts";
+import { remoteResourceDbService } from "../setup.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const createAgreementMock = vi.hoisted(() => vi.fn());
 const getAgreementMock = vi.hoisted(() => vi.fn());

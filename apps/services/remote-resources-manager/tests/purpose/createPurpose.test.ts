@@ -16,10 +16,10 @@ import {
 import { getMockPurpose } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { API_PurposeSeed } from "../src/models/purpose/api.ts";
+import type { API_PurposeSeed } from "../../src/models/purpose/api.ts";
 
-import { remoteResourceDbService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+import { remoteResourceDbService } from "../setup.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const createPurposeMock = vi.hoisted(() => vi.fn());
 
