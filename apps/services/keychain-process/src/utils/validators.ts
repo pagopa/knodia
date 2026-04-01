@@ -10,6 +10,7 @@ import {
   invalidUserRole,
   keychainMemberNotFound,
   tooManyKeysPerKeychain,
+  userNotAllowed,
   userNotFound,
 } from "../models/errors.ts";
 import {
@@ -45,6 +46,17 @@ export function assertUserHasTechnicalRole(
 ): void {
   if (!userGroups.includes(TECHNICAL_ROLE_GROUP_NAME)) {
     throw invalidUserRole(userId, TECHNICAL_ROLE_GROUP_NAME);
+  }
+}
+
+export function assertUserIsAllowedToPerformKeychainOperation(
+  userId: UserId,
+  keychainId: ConsumerKeychainId,
+  members: UserId[],
+): void {
+  const isMember = members.includes(userId);
+  if (!isMember) {
+    throw userNotAllowed(userId, keychainId);
   }
 }
 

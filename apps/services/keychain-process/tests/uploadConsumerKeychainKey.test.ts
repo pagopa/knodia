@@ -193,7 +193,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 404 if the caller is not a member of the consumer keychain", async () => {
+  it("should return 403 if the caller is not a member of the consumer keychain", async () => {
     const consumerKeychain = getMockConsumerKeychain();
 
     await seedConsumerKeychain(consumerKeychain);
@@ -206,7 +206,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       .post(`/consumerKeychains/${consumerKeychain.id}/keys`)
       .body(mockSeed);
 
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(403);
   });
 
   it("should return 409 if the key already exists in the consumer keychain", async () => {

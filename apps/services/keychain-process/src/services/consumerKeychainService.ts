@@ -55,6 +55,7 @@ import {
   assertOrganizationIsKeychainOwner,
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
+  assertUserIsAllowedToPerformKeychainOperation,
   assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
@@ -352,7 +353,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data,
       );
 
-      assertUserIsMemberOfKeychain(
+      assertUserIsAllowedToPerformKeychainOperation(
         authData.userId,
         consumerKeychainId,
         consumerKeychain.data.users,

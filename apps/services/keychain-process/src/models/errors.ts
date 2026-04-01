@@ -4,8 +4,12 @@ import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_CONFLICT, HTTP_STATUS_NOT_FOUND } =
-  constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_UNAUTHORIZED,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -23,6 +27,7 @@ const errorCodes = {
   NOT_AN_RSA_KEY: "0012",
   KEY_ALREADY_EXISTS: "0013",
   TOO_MANY_KEYS_PER_KEYCHAIN: "0014",
+  USER_NOT_ALLOWED: "0015",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -163,6 +168,15 @@ export function userAlreadyMember(
     detail: `User ${userId} is already a member of consumer keychain ${consumerKeychainId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "User Already Member",
+  });
+}
+
+export function userNotAllowed(userId: UserId, keychainId: ConsumerKeychainId) {
+  return createApiError<ErrorCodes>({
+    code: "USER_NOT_ALLOWED",
+    detail: `User ${userId} is not allowed to perform this action on keychain ${keychainId}`,
+    status: HTTP_STATUS_UNAUTHORIZED,
+    title: "User Not Allowed",
   });
 }
 
