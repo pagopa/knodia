@@ -1,6 +1,7 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
+  KeyId,
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
@@ -34,6 +35,7 @@ const errorCodes = {
   KEY_ALREADY_EXISTS: "0014",
   TOO_MANY_KEYS_PER_KEYCHAIN: "0015",
   USER_NOT_ALLOWED: "0016",
+  KEY_NOT_FOUND_IN_KEYCHAIN: "0017",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -100,6 +102,18 @@ export function keychainMemberNotFound(
     detail: `User ${userId} is not a member of consumer keychain ${consumerKeychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Keychain Member Not Found",
+  });
+}
+
+export function keyNotFoundInKeychain(
+  kid: KeyId,
+  keychainId: ConsumerKeychainId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "KEY_NOT_FOUND_IN_KEYCHAIN",
+    detail: `Key with kid ${kid} not found in keychain ${keychainId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Key Not Found in Keychain",
   });
 }
 

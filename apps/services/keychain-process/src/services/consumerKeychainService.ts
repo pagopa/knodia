@@ -24,6 +24,7 @@ import {
 import {
   type ConsumerKeychainId,
   generateId,
+  KeyId,
   type KnodeId,
   type PurposeId,
   unsafeBrandKeyId,
@@ -48,11 +49,16 @@ import type {
 import type { ReadmodelService } from "./readmodelService.ts";
 import type { IdmUser, UserService } from "./userService.ts";
 
-import { userAlreadyMember, userNotFound } from "../models/errors.ts";
+import {
+  keyNotFoundInKeychain,
+  userAlreadyMember,
+  userNotFound,
+} from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
   createConsumerKeychainKeyAddedV1Event,
+  createConsumerKeychainKeyRemovedV1Event,
   createConsumerKeychainMemberAddedV1Event,
   createConsumerKeychainMemberRemovedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
@@ -344,6 +350,60 @@ export function consumerKeychainServiceBuilder(
       };
     },
 
+    async removeConsumerKeychainKey(
+      consumerKeychainId: ConsumerKeychainId,
+      kid: KeyId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<null>> {
+      logger.info(
+        `Removing key ${kid} from Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      assertUserIsMemberOfKeychain(
+        authData.userId,
+        consumerKeychainId,
+        consumerKeychain.data.users,
+      );
+
+      const keyToRemove = consumerKeychain.data.keys.find(
+        (key) => key.kid === kid,
+      );
+
+      if (!keyToRemove) {
+        throw keyNotFoundInKeychain(kid, consumerKeychainId);
+      }
+
+      const updatedConsumerKeychain: ConsumerKeychain = {
+        ...consumerKeychain.data,
+        keys: consumerKeychain.data.keys.filter((key) => key.kid !== kid),
+        updatedAt: new Date(),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainKeyRemovedV1Event(
+          updatedConsumerKeychain,
+          kid,
+          correlationId,
+          consumerKeychain.metadata.version,
+        ),
+      );
+
+      return {
+        data: null,
+        metadata: { version: newVersion },
+      };
+    },
+
     async removeConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
       userId: UserId,
@@ -433,7 +493,6 @@ export function consumerKeychainServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-
     async uploadConsumerKeychainKey(
       consumerKeychainId: ConsumerKeychainId,
       keySeed: API_KeychainKeySeed,

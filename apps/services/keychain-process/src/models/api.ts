@@ -142,3 +142,13 @@ export const API_GetConsumerKeychainPurposesQueryParams =
 export type API_GetConsumerKeychainPurposesQueryParams = z.infer<
   typeof API_GetConsumerKeychainPurposesQueryParams
 >;
+
+export const API_ConsumerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ConsumerKeychainIdPathParam.shape);
+
+export type API_ConsumerKeychainKeyPathParams = z.infer<
+  typeof API_ConsumerKeychainKeyPathParams
+>;
