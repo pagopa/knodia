@@ -8,7 +8,7 @@ import { match } from "ts-pattern";
 
 import type { API_Agreement } from "./api.ts";
 
-import { toAPI_KnodeId } from "../knode/api.ts";
+import { toAPI_KnodeId } from "../knode/apiConverter.ts";
 
 export function toAPI_Agreement(
   agreement: k2kGatewayApi.Agreement,

@@ -87,7 +87,7 @@ export function SignalHubSection({
   isSignalHubEnabled: boolean;
 }) {
   return (
-    <Section className="mb-6" title="Signal hub">
+    <Section className="mb-6" title="Signal Hub">
       <p className="body-lg text-primary-dark">
         {isSignalHubEnabled
           ? "This E-Service is available on Signal Hub."

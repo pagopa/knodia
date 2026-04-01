@@ -604,18 +604,18 @@ export type ProducerPurposes = {
     results: Array<ProducerPurpose>;
 };
 
-export type PurposeDetailsEservice = {
+export type ProducerPurposeDetailsEservice = {
     id: string;
     name: LocalizedName;
     latestVersionState: EserviceVersionState;
 };
 
-export type PurposeDetails = {
+export type ProducerPurposeDetails = {
     agreement: CompactAgreement;
     consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
-    eservice: PurposeDetailsEservice;
+    eservice: ProducerPurposeDetailsEservice;
     id: string;
     maxDailyCallsPerConsumer: number;
     name: LocalizedPurposeName;
@@ -1530,18 +1530,14 @@ export type GetConsumerPurposeFormUiSchemaResponses = {
 
 export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];
 
-export type GetConsumerPurposeDetailsData = {
+export type GetSessionOrganizationData = {
     body?: never;
-    path: {
-        purposeId: string;
-    };
-    query: {
-        knodeId: KnodeId;
-    };
-    url: '/consumer/purposes/{purposeId}';
+    path?: never;
+    query?: never;
+    url: '/session/organization';
 };
 
-export type GetConsumerPurposeDetailsErrors = {
+export type GetSessionOrganizationErrors = {
     /**
      * Bad Request
      */
@@ -1554,22 +1550,18 @@ export type GetConsumerPurposeDetailsErrors = {
      * Forbidden
      */
     403: Problem;
-    /**
-     * Not Found
-     */
-    404: Problem;
 };
 
-export type GetConsumerPurposeDetailsError = GetConsumerPurposeDetailsErrors[keyof GetConsumerPurposeDetailsErrors];
+export type GetSessionOrganizationError = GetSessionOrganizationErrors[keyof GetSessionOrganizationErrors];
 
-export type GetConsumerPurposeDetailsResponses = {
+export type GetSessionOrganizationResponses = {
     /**
-     * Consumer Purpose details retrieved successfully
+     * Session Organization retrieved successfully
      */
-    200: PurposeDetails;
+    200: CompactOrganization;
 };
 
-export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
+export type GetSessionOrganizationResponse = GetSessionOrganizationResponses[keyof GetSessionOrganizationResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;
@@ -1736,7 +1728,7 @@ export type GetProducerPurposeDetailsResponses = {
     /**
      * Producer Purpose details retrieved successfully
      */
-    200: PurposeDetails;
+    200: ProducerPurposeDetails;
 };
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];

@@ -13,11 +13,14 @@ import {
   TargetIcon,
   UsersThreeIcon,
 } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 import {
   createLink,
   type LinkProps,
   useLocation,
 } from "@tanstack/react-router";
+
+import { sessionOrganizationQuery } from "@/features/session/services/queries";
 
 interface SidebarItem {
   Icon: Icon;
@@ -76,10 +79,11 @@ const SidebarNavItemLink = createLink(SidebarNavItem);
 
 export function Sidebar() {
   const location = useLocation();
+  const { data: sessionOrganization } = useQuery(sessionOrganizationQuery());
 
   return (
     <UISidebar>
-      <SidebarHeader>Rigel Org</SidebarHeader>
+      <SidebarHeader>{sessionOrganization?.name ?? ""}</SidebarHeader>
       {SIDEBAR_SECTIONS.map((section, idx) => (
         <SidebarSection key={idx} title={section.title}>
           {section.items.map((item) => (

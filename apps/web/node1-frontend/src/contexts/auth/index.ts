@@ -1,2 +1,3 @@
 export { OidcAuthProvider } from "./AuthContext";
-export { useAuth } from "./useAuthContext";
+export { AuthContext, useAuth } from "./useAuthContext";
+export { useHasRole } from "./useHasRole";

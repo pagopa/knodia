@@ -7,6 +7,7 @@ import { injectAppRequest } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
 ];
 
 const downloadEserviceLatestVersionInterfaceMock = vi.hoisted(() => vi.fn());

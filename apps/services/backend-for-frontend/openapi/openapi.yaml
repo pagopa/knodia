@@ -1281,7 +1281,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    PurposeDetailsEservice:
+    ProducerPurposeDetailsEservice:
       type: object
       properties:
         id:
@@ -1297,7 +1297,7 @@ components:
         - name
         - latestVersionState
       additionalProperties: false
-    PurposeDetails:
+    ProducerPurposeDetails:
       type: object
       properties:
         agreement:
@@ -1312,7 +1312,7 @@ components:
         description:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
         eservice:
-          $ref: "#/components/schemas/PurposeDetailsEservice"
+          $ref: "#/components/schemas/ProducerPurposeDetailsEservice"
         id:
           type: string
           format: uuid
@@ -2617,35 +2617,21 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer/purposes/{purposeId}:
+  /session/organization:
     get:
-      operationId: getConsumerPurposeDetails
-      summary: Get consumer Purpose details
+      operationId: getSessionOrganization
       tags:
-        - purpose
-      description: Retrieve a Consumer Purpose with details
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/KnodeId"
-          in: query
-          name: knodeId
-          required: true
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: purposeId
-          required: true
+        - auth
+      description: Retrieve the Organization of the current session's User
       responses:
         "200":
-          description: Consumer Purpose details retrieved successfully
+          description: Session Organization retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer Purpose details retrieved successfully
+                description: Session Organization retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeDetails"
+                  - $ref: "#/components/schemas/CompactOrganization"
         "400":
           description: Bad Request
           content:
@@ -2668,14 +2654,6 @@ paths:
             application/problem+json:
               schema:
                 description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Not Found
-          content:
-            application/problem+json:
-              schema:
-                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/agreements:
@@ -2888,7 +2866,7 @@ paths:
               schema:
                 description: Producer Purpose details retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeDetails"
+                  - $ref: "#/components/schemas/ProducerPurposeDetails"
         "400":
           description: Bad Request
           content:

@@ -1332,6 +1332,7 @@ paths:
       summary: Get Purpose
       tags:
         - purpose
+        - resource
       description: Retrieve a Purpose
       parameters:
         - schema:
