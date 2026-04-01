@@ -5,7 +5,7 @@ import { createLink } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
-import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
+import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
@@ -49,21 +49,16 @@ export function ProducerPurposeDetail({
         </SettingsCard>
 
         <div className="grid grid-cols-2 gap-4">
-          <SettingsCard label="Producer">
-            {purpose.producer.name} - {purpose.producer.knodeId} Knode
-          </SettingsCard>
-          <SettingsCard label="Consumer">
-            <span className="flex items-center gap-2">
-              {purpose.consumer.name} - {purpose.consumer.knodeId} Knode
-              {/* TODO: Replace mocked contact info with real data from the API when available in ProducerPurposeDetails */}
-              <OrganizationContactPopover
-                email="contact@example.com"
-                knodeId={purpose.consumer.knodeId}
-                name={purpose.consumer.name}
-                notes="—"
-              />
-            </span>
-          </SettingsCard>
+          <OrganizationCard
+            label="Producer"
+            organization={purpose.producer}
+            showContact={false}
+          />
+          <OrganizationCard
+            label="Consumer"
+            organization={purpose.consumer}
+            showContact={true}
+          />
         </div>
 
         <SettingsCard label="Declared API calls per day">
