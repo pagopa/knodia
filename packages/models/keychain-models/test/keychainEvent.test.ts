@@ -80,15 +80,6 @@ describe("KeychainEventV1 codec", () => {
     {
       data: {
         consumerKeychain: consumerKeychainV1,
-        linkedAt: new Date().getTime(),
-        purpose: linkedPurposeV1,
-      },
-      message: ConsumerKeychainPurposeLinkedV1,
-      type: "ConsumerKeychainPurposeLinkedV1" as const,
-    },
-    {
-      data: {
-        consumerKeychain: consumerKeychainV1,
         userId: generateUserId(),
       },
       message: ConsumerKeychainMemberAddedV1,
