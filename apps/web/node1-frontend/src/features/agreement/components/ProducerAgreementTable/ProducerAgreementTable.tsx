@@ -44,10 +44,14 @@ export function ProducerAgreementTable({
   return (
     <Table aria-label="Producer agreements">
       <TableHeader>
-        <Column isRowHeader>E-Service</Column>
-        <Column>Consumer</Column>
-        <Column>Status</Column>
-        <Column />
+        <Column id="eservice" isRowHeader>
+          E-Service
+        </Column>
+        <Column id="consumer">Consumer</Column>
+        <Column id="status">Status</Column>
+        <Column id="actions">
+          <span className="sr-only">Actions</span>
+        </Column>
       </TableHeader>
       <TableBody items={agreements}>
         {(agreement) => (

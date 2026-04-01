@@ -44,12 +44,16 @@ export function ProducerPurposeTable({
   return (
     <Table aria-label="Producer purposes">
       <TableHeader>
-        <Column isRowHeader>Name</Column>
-        <Column>E-Service</Column>
-        <Column>Consumer</Column>
-        <Column>Calls/Day</Column>
-        <Column>Status</Column>
-        <Column />
+        <Column id="name" isRowHeader>
+          Name
+        </Column>
+        <Column id="eservice">E-Service</Column>
+        <Column id="consumer">Consumer</Column>
+        <Column id="dailyCalls">Calls/Day</Column>
+        <Column id="status">Status</Column>
+        <Column id="actions">
+          <span className="sr-only">Actions</span>
+        </Column>
       </TableHeader>
       <TableBody items={purposes}>
         {(purpose) => (
