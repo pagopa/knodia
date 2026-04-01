@@ -59,6 +59,7 @@ const bannerTitle = tv({
 });
 
 interface BannerAction {
+  isDisabled?: boolean;
   label: string;
   onPress?: () => void;
 }
@@ -136,6 +137,7 @@ function BannerActions({
       {action && (
         <Button
           hierarchy="neutral"
+          isDisabled={action.isDisabled}
           kind="outlined"
           onPress={action.onPress}
           size="sm"
@@ -146,6 +148,7 @@ function BannerActions({
       {prominentAction && (
         <Button
           hierarchy="neutral"
+          isDisabled={prominentAction.isDisabled}
           kind="filled"
           onPress={prominentAction.onPress}
           size="sm"

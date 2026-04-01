@@ -4,8 +4,11 @@ import { useAuth } from "@/contexts/auth";
 import { router } from "@/libs/router";
 
 export function RouterWithAuth() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, roles } = useAuth();
   return (
-    <RouterProvider context={{ auth: { isAuthenticated } }} router={router} />
+    <RouterProvider
+      context={{ auth: { isAuthenticated, roles } }}
+      router={router}
+    />
   );
 }
