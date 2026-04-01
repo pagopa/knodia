@@ -4,6 +4,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
+import { useHasRole } from "@/contexts/auth";
 import { ConsumptionEserviceFilters } from "@/features/e-service/components/ConsumptionEserviceFilters";
 import { ConsumptionEserviceList } from "@/features/e-service/components/ConsumptionEserviceList";
 import {
@@ -34,6 +35,7 @@ export const Route = createFileRoute("/_authenticated/consumption/e-services/")(
 );
 
 function RouteComponent() {
+  const canManageAgreements = useHasRole("administrative");
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
 
@@ -54,12 +56,14 @@ function RouteComponent() {
     <>
       <PageHeader
         actions={
-          <ButtonLink
-            hierarchy="brand"
-            href={{ to: "/consumption/e-services/search" }}
-          >
-            Search new E-Services
-          </ButtonLink>
+          canManageAgreements && (
+            <ButtonLink
+              hierarchy="brand"
+              href={{ to: "/consumption/e-services/search" }}
+            >
+              Search new E-Services
+            </ButtonLink>
+          )
         }
         overline="Consumption"
         title="E-Services"
@@ -89,7 +93,11 @@ function RouteComponent() {
         </>
       ) : (
         <Empty
-          description="Search for an E-Service to request an Agreement."
+          description={
+            canManageAgreements
+              ? "Search for an E-Service to request an Agreement."
+              : "Consumed E-Services will appear here."
+          }
           icon={<SelectionPlusIcon />}
           title="You don't consume any E-Service yet."
         />

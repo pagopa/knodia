@@ -589,6 +589,21 @@ export type PurposeSeed = {
     name: LocalizedPurposeName;
 };
 
+export type ProducerPurpose = {
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: CompactEservice;
+    id: string;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+};
+
+export type ProducerPurposes = {
+    pagination: Pagination;
+    results: Array<ProducerPurpose>;
+};
+
 export type ProducerPurposeDetailsEservice = {
     id: string;
     name: LocalizedName;
@@ -1638,6 +1653,56 @@ export type GetProducerAgreementDetailsResponses = {
 };
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
+
+export type GetProducerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: Array<PurposeState>;
+    };
+    url: '/producer/purposes';
+};
+
+export type GetProducerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerPurposesError = GetProducerPurposesErrors[keyof GetProducerPurposesErrors];
+
+export type GetProducerPurposesResponses = {
+    /**
+     * Producer Purposes retrieved successfully
+     */
+    200: ProducerPurposes;
+};
+
+export type GetProducerPurposesResponse = GetProducerPurposesResponses[keyof GetProducerPurposesResponses];
 
 export type GetProducerPurposeDetailsData = {
     body?: never;
