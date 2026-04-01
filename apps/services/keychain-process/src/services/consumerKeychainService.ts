@@ -18,7 +18,7 @@ import type {
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type ConsumerKeychainId,
-  ConsumerKeychainKeyId,
+  type ConsumerKeychainKeyId,
   generateId,
   unsafeBrandUserId,
   type UserId,

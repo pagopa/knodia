@@ -1,4 +1,4 @@
-import crypto, { KeyObject } from "crypto";
+import crypto, { type KeyObject } from "crypto";
 
 import {
   invalidKeyLength,
