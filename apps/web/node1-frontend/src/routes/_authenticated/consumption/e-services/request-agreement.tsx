@@ -4,6 +4,7 @@ import { RequestAgreementModal } from "@/features/agreement/components/RequestAg
 import { requestAgreementSearchSchema } from "@/features/agreement/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
+import { requireRole } from "@/libs/routeGuards";
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/e-services/request-agreement",
@@ -14,10 +15,12 @@ export const Route = createFileRoute(
     knodeId,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({ context: { queryClient }, deps: { eserviceId, knodeId } }) =>
-    await queryClient.ensureQueryData(
+  loader: async ({ context, deps: { eserviceId, knodeId } }) => {
+    requireRole(context, "administrative");
+    return await context.queryClient.ensureQueryData(
       consumerEserviceDetailsQuery(eserviceId, knodeId),
-    ),
+    );
+  },
   validateSearch: requestAgreementSearchSchema,
 });
 
@@ -37,8 +40,8 @@ function RouteComponent() {
   return (
     <RequestAgreementModal
       eservice={eservice}
-      knodeId={knodeId}
       onClose={onClose}
+      producerKnodeId={knodeId}
     />
   );
 }

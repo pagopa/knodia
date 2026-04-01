@@ -99,4 +99,34 @@ describe("ProducerAgreementDetail", () => {
     });
     expect(contactButton).toBeInTheDocument();
   });
+
+  it("hides Suspend button for technical-only users when agreement is active", () => {
+    renderWithProviders(
+      <ProducerAgreementDetail agreement={createAgreementDetails()} />,
+      {
+        roles: ["technical"],
+        routes: [{ path: "/production/e-services/$id" }],
+      },
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Suspend" }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides Reactivate button for technical-only users when agreement is suspended", () => {
+    renderWithProviders(
+      <ProducerAgreementDetail
+        agreement={createAgreementDetails({ state: "Suspended" })}
+      />,
+      {
+        roles: ["technical"],
+        routes: [{ path: "/production/e-services/$id" }],
+      },
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Reactivate" }),
+    ).not.toBeInTheDocument();
+  });
 });

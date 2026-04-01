@@ -1,5 +1,6 @@
+import type { UserRole } from "@knodia/common-models/auth";
+
 import { Empty, Loader } from "@knodia/ui-kit/ui";
-import { BracketsCurlyIcon } from "@phosphor-icons/react";
 import { type QueryClient } from "@tanstack/react-query";
 import {
   createRouter,
@@ -7,6 +8,7 @@ import {
   type ToOptions,
 } from "@tanstack/react-router";
 
+import { NotFound } from "@/components/NotFound";
 import { APP_BASE_PATH } from "@/config/basepath";
 import { queryClient } from "@/libs/tanstack-query";
 import { routeTree } from "@/routeTree.gen";
@@ -14,6 +16,7 @@ import { routeTree } from "@/routeTree.gen";
 export interface RouterContext {
   auth: {
     isAuthenticated: boolean | undefined;
+    roles: readonly UserRole[];
   };
   queryClient: QueryClient;
 }
@@ -23,6 +26,7 @@ export const router = createRouter({
   context: {
     auth: {
       isAuthenticated: undefined,
+      roles: [],
     },
     queryClient,
   },
@@ -34,15 +38,7 @@ export const router = createRouter({
       title="Something went wrong"
     />
   ),
-  defaultNotFoundComponent: () => (
-    <Empty
-      className="mt-10"
-      description="The page you're looking for doesn't exists or has been moved."
-      icon={<BracketsCurlyIcon />}
-      kind="neutral"
-      title="Page not found"
-    />
-  ),
+  defaultNotFoundComponent: NotFound,
   defaultPendingComponent: () => (
     <Loader className="mx-auto mt-20" label="Loading..." />
   ),

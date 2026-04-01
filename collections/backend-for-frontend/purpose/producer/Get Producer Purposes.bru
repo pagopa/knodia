@@ -1,0 +1,21 @@
+meta {
+  name: Get Producer Purposes
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/producer/purposes?limit=50&offset=0
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~eserviceId:
+  ~state: Active
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
