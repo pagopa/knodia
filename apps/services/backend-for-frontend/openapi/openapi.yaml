@@ -1281,7 +1281,7 @@ components:
         - pagination
         - results
       additionalProperties: false
-    ConsumerPurposeDetailsEservice:
+    PurposeDetailsEservice:
       type: object
       properties:
         id:
@@ -1297,7 +1297,7 @@ components:
         - name
         - latestVersionState
       additionalProperties: false
-    ConsumerPurposeDetails:
+    PurposeDetails:
       type: object
       properties:
         agreement:
@@ -1312,66 +1312,7 @@ components:
         description:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
         eservice:
-          $ref: "#/components/schemas/ConsumerPurposeDetailsEservice"
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        maxDailyCallsPerConsumer:
-          format: int32
-          type: integer
-          minimum: -9007199254740991
-          maximum: 9007199254740991
-        name:
-          $ref: "#/components/schemas/LocalizedPurposeName"
-        producer:
-          $ref: "#/components/schemas/CompactOrganization"
-        state:
-          $ref: "#/components/schemas/PurposeState"
-      required:
-        - agreement
-        - consumer
-        - dailyCalls
-        - description
-        - eservice
-        - id
-        - maxDailyCallsPerConsumer
-        - name
-        - producer
-        - state
-      additionalProperties: false
-    ProducerPurposeDetailsEservice:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        name:
-          $ref: "#/components/schemas/LocalizedName"
-        latestVersionState:
-          $ref: "#/components/schemas/EserviceVersionState"
-      required:
-        - id
-        - name
-        - latestVersionState
-      additionalProperties: false
-    ProducerPurposeDetails:
-      type: object
-      properties:
-        agreement:
-          $ref: "#/components/schemas/CompactAgreement"
-        consumer:
-          $ref: "#/components/schemas/CompactOrganization"
-        dailyCalls:
-          format: int32
-          type: integer
-          minimum: 0
-          maximum: 1000000000
-        description:
-          $ref: "#/components/schemas/LocalizedPurposeDescription"
-        eservice:
-          $ref: "#/components/schemas/ProducerPurposeDetailsEservice"
+          $ref: "#/components/schemas/PurposeDetailsEservice"
         id:
           type: string
           format: uuid
@@ -2704,7 +2645,7 @@ paths:
               schema:
                 description: Consumer Purpose details retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ConsumerPurposeDetails"
+                  - $ref: "#/components/schemas/PurposeDetails"
         "400":
           description: Bad Request
           content:
@@ -2947,7 +2888,7 @@ paths:
               schema:
                 description: Producer Purpose details retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/ProducerPurposeDetails"
+                  - $ref: "#/components/schemas/PurposeDetails"
         "400":
           description: Bad Request
           content:

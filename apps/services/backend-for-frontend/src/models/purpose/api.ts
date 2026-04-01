@@ -77,7 +77,7 @@ export const API_ProducerPurposes = z
   .meta({ id: "ProducerPurposes" });
 export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 
-export const API_ConsumerPurposeDetails = z
+export const API_PurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
     consumer: API_CompactOrganization,
@@ -85,34 +85,12 @@ export const API_ConsumerPurposeDetails = z
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice.extend({
       latestVersionState: API_EserviceVersionState,
-    }).meta({ id: "ConsumerPurposeDetailsEservice" }),
+    }).meta({ id: "PurposeDetailsEservice" }),
     id: z.uuid(),
     maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
     name: API_LocalizedPurposeName,
     producer: API_CompactOrganization,
     state: API_PurposeState,
   })
-  .meta({ id: "ConsumerPurposeDetails" });
-export type API_ConsumerPurposeDetails = z.infer<
-  typeof API_ConsumerPurposeDetails
->;
-
-export const API_ProducerPurposeDetails = z
-  .strictObject({
-    agreement: API_CompactAgreement,
-    consumer: API_CompactOrganization,
-    dailyCalls: API_PurposeDailyCalls,
-    description: API_LocalizedPurposeDescription,
-    eservice: API_CompactEservice.extend({
-      latestVersionState: API_EserviceVersionState,
-    }).meta({ id: "ProducerPurposeDetailsEservice" }),
-    id: z.uuid(),
-    maxDailyCallsPerConsumer: z.number().int().meta({ format: "int32" }),
-    name: API_LocalizedPurposeName,
-    producer: API_CompactOrganization,
-    state: API_PurposeState,
-  })
-  .meta({ id: "ProducerPurposeDetails" });
-export type API_ProducerPurposeDetails = z.infer<
-  typeof API_ProducerPurposeDetails
->;
+  .meta({ id: "PurposeDetails" });
+export type API_PurposeDetails = z.infer<typeof API_PurposeDetails>;

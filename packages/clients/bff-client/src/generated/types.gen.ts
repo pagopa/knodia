@@ -604,37 +604,18 @@ export type ProducerPurposes = {
     results: Array<ProducerPurpose>;
 };
 
-export type ConsumerPurposeDetailsEservice = {
+export type PurposeDetailsEservice = {
     id: string;
     name: LocalizedName;
     latestVersionState: EserviceVersionState;
 };
 
-export type ConsumerPurposeDetails = {
+export type PurposeDetails = {
     agreement: CompactAgreement;
     consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
-    eservice: ConsumerPurposeDetailsEservice;
-    id: string;
-    maxDailyCallsPerConsumer: number;
-    name: LocalizedPurposeName;
-    producer: CompactOrganization;
-    state: PurposeState;
-};
-
-export type ProducerPurposeDetailsEservice = {
-    id: string;
-    name: LocalizedName;
-    latestVersionState: EserviceVersionState;
-};
-
-export type ProducerPurposeDetails = {
-    agreement: CompactAgreement;
-    consumer: CompactOrganization;
-    dailyCalls: number;
-    description: LocalizedPurposeDescription;
-    eservice: ProducerPurposeDetailsEservice;
+    eservice: PurposeDetailsEservice;
     id: string;
     maxDailyCallsPerConsumer: number;
     name: LocalizedPurposeName;
@@ -1585,7 +1566,7 @@ export type GetConsumerPurposeDetailsResponses = {
     /**
      * Consumer Purpose details retrieved successfully
      */
-    200: ConsumerPurposeDetails;
+    200: PurposeDetails;
 };
 
 export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
@@ -1755,7 +1736,7 @@ export type GetProducerPurposeDetailsResponses = {
     /**
      * Producer Purpose details retrieved successfully
      */
-    200: ProducerPurposeDetails;
+    200: PurposeDetails;
 };
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];

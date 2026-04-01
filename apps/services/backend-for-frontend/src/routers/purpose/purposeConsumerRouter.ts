@@ -23,8 +23,8 @@ import {
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
-  API_ConsumerPurposeDetails,
   API_GetConsumerPurposeQueryParams,
+  API_PurposeDetails,
   API_PurposeSeed,
 } from "../../models/purpose/api.ts";
 import { toAPI_ConsumerPurposeDetails } from "../../models/purpose/apiConverter.ts";
@@ -218,7 +218,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       params: API_PurposeIdPathParam,
       querystring: API_GetConsumerPurposeQueryParams,
       response: {
-        200: API_ConsumerPurposeDetails.meta({
+        200: API_PurposeDetails.meta({
           description: "Consumer Purpose details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
