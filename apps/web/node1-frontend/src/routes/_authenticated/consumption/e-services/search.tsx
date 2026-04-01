@@ -15,6 +15,7 @@ import { toCatalogSearchResultUI } from "@/features/e-service/services/api-conve
 import { buildCatalogSearchBody } from "@/features/e-service/services/buildCatalogSearchBody";
 import { getConsumerCatalogEservicesQueryOptions } from "@/features/e-service/services/catalogEservicesQuery";
 import { client } from "@/libs/axios";
+import { requireRole } from "@/libs/routeGuards";
 
 const CATALOG_SEARCH_LIMIT = 4;
 
@@ -44,14 +45,15 @@ export const Route = createFileRoute(
     offset,
   }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: ({ context: { queryClient }, deps }) => {
+  loader: ({ context, deps }) => {
+    requireRole(context, "administrative");
     if (!isSearchReady(deps)) return;
     const body = buildCatalogSearchBody({
       category: deps.category,
       keywords: deps.keywords,
       knodeId: deps.knodeId,
     });
-    queryClient.prefetchQuery(catalogQuery(body, deps.offset));
+    context.queryClient.prefetchQuery(catalogQuery(body, deps.offset));
   },
   search: {
     middlewares: [stripSearchParams(consumptionEserviceSearchDefaultValues)],

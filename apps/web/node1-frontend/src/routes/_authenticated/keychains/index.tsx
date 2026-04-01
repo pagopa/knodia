@@ -12,6 +12,7 @@ import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { PageHeader } from "@/components/PageHeader";
+import { useHasRole } from "@/contexts/auth";
 import { CreateKeychainModal } from "@/features/keychain/components/CreateKeychainModal";
 import { KeychainTable } from "@/features/keychain/components/KeychainTable";
 import {
@@ -36,6 +37,7 @@ export const Route = createFileRoute("/_authenticated/keychains/")({
 });
 
 function RouteComponent() {
+  const canCreateKeychain = useHasRole("administrative");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
@@ -55,7 +57,7 @@ function RouteComponent() {
     <>
       <PageHeader
         actions={
-          <>
+          canCreateKeychain && (
             <Button
               hierarchy="brand"
               kind="filled"
@@ -64,7 +66,7 @@ function RouteComponent() {
             >
               Create Keychain
             </Button>
-          </>
+          )
         }
         title="Keychains"
       />
