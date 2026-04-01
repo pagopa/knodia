@@ -10,10 +10,10 @@ import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
-import { AgreementCard } from "@/features/agreement/components/AgreementCard";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
+import { AgreementCard } from "@/features/purpose/components/AgreementCard";
+import { DailyCallsCard } from "@/features/purpose/components/DailyCallsCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
-import { formatNumber } from "@/utils/formatters";
 
 const RouterLink = createLink(Link);
 const RouterButtonLink = createLink(ButtonLink);
@@ -63,12 +63,10 @@ export function ProducerPurposeDetail({
           />
         </div>
 
-        <SettingsCard label="Declared API calls per day">
-          {formatNumber(purpose.dailyCalls)}{" "}
-          <span className="title-md font-normal">
-            (max {formatNumber(purpose.maxDailyCallsPerConsumer)})
-          </span>
-        </SettingsCard>
+        <DailyCallsCard
+          dailyCalls={purpose.dailyCalls}
+          maxDailyCallsPerConsumer={purpose.maxDailyCallsPerConsumer}
+        />
       </div>
 
       <AgreementCard

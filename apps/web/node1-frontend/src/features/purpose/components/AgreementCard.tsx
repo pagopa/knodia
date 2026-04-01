@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { ReactNode } from "react";
 
-import { AgreementStateChip } from "./AgreementStateChip";
+import { AgreementStateChip } from "@/features/agreement/components/AgreementStateChip";
 
 export function AgreementCard({
   action,
