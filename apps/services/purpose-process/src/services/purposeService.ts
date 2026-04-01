@@ -124,7 +124,7 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-    getCurrentFormSchemas({ logger }: AuthorizedContext<AuthData>): {
+    getCurrentPurposeFormSchemas({ logger }: AuthorizedContext<AuthData>): {
       schema: Record<string, unknown>;
       uiSchema: Record<string, unknown>;
       version: PurposeFormSchemaVersion;
