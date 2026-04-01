@@ -1259,6 +1259,50 @@ components:
         - knodeId
         - name
       additionalProperties: false
+    ProducerPurpose:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+      required:
+        - consumer
+        - dailyCalls
+        - description
+        - eservice
+        - id
+        - name
+        - state
+      additionalProperties: false
+    ProducerPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProducerPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     ProducerPurposeDetailsEservice:
       type: object
       properties:
@@ -2585,6 +2629,45 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /session/organization:
+    get:
+      operationId: getSessionOrganization
+      tags:
+        - auth
+      description: Retrieve the Organization of the current session's User
+      responses:
+        "200":
+          description: Session Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Session Organization retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/CompactOrganization"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/agreements:
     get:
       operationId: getProducerAgreements
@@ -2696,6 +2779,81 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/purposes:
+    get:
+      operationId: getProducerPurposes
+      summary: List producer Purposes
+      tags:
+        - purpose
+      description: Retrieve a paginated list of Purposes for the logged-in producer's
+        E-services
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: eserviceId
+          required: false
+          description: Filter by E-service ID
+        - schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/PurposeState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Purpose State
+      responses:
+        "200":
+          description: Producer Purposes retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Purposes retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ProducerPurposes"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /producer/purposes/{purposeId}:

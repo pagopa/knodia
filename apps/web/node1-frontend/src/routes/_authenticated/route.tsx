@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
+import { NotFound } from "@/components/NotFound";
+import { sessionOrganizationQuery } from "@/features/session/services/queries";
 import { AppLayout } from "@/layouts/AppLayout";
 
 export const Route = createFileRoute("/_authenticated")({
@@ -9,6 +11,10 @@ export const Route = createFileRoute("/_authenticated")({
     }
   },
   component: AuthenticatedLayout,
+  loader: async ({ context: { queryClient } }) => {
+    await queryClient.ensureQueryData(sessionOrganizationQuery());
+  },
+  notFoundComponent: NotFound,
 });
 
 function AuthenticatedLayout() {
