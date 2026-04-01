@@ -46,20 +46,20 @@ function RouteComponent() {
     <>
       <PageHeader
         actions={
-          canPublishEservices && (
-            <>
-              <Button hierarchy="neutral" kind="ghost">
-                <ArchiveIcon />
-                Archive
-              </Button>
+          <>
+            <Button hierarchy="neutral" kind="ghost">
+              <ArchiveIcon />
+              Archive
+            </Button>
+            {canPublishEservices && (
               <ButtonLink
                 hierarchy="brand"
                 href={{ to: "/production/e-services/new" }}
               >
                 Create E-Service
               </ButtonLink>
-            </>
-          )
+            )}
+          </>
         }
         overline="Production"
         title="E-Services"

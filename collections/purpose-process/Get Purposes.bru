@@ -1,0 +1,25 @@
+meta {
+  name: Get Purposes
+  type: http
+}
+
+get {
+  url: {{host-purpose-process}}/purposes?limit=50&offset=0
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~consumerId:
+  ~eserviceId:
+  ~producerId:
+  ~agreementId:
+  ~state: Active
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}

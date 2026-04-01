@@ -2,6 +2,8 @@ import { type bffApi } from "@knodia/bff-client";
 import { Empty, Loader } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 
+import { useHasRole } from "@/contexts/auth";
+
 import { ProductionEserviceCard } from "./ProductionEserviceCard";
 
 export function ProductionEserviceList({
@@ -11,6 +13,8 @@ export function ProductionEserviceList({
   eservices: bffApi.ProducerEservice[];
   isLoading: boolean;
 }) {
+  const canPublishEservices = useHasRole("technical");
+
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
   }
@@ -18,9 +22,13 @@ export function ProductionEserviceList({
   if (eservices.length === 0) {
     return (
       <Empty
-        description="Create your first one"
+        description={
+          canPublishEservices
+            ? "Create your first one."
+            : "New E-Services will appear here."
+        }
         icon={<SelectionPlusIcon />}
-        title="You don't have any E-Services yet"
+        title="You don't have any E-Services yet."
       />
     );
   }
