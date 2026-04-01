@@ -21,7 +21,6 @@ export interface ConsumptionEserviceDetail {
   name: string;
   producer: {
     email: string;
-    initials: string;
     knodeId: string;
     name: string;
     notes: string;
