@@ -17,6 +17,7 @@ import type { ConsumptionEserviceDetail } from "@/features/e-service/models/cons
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
+import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
   AccessTokenSettingsSection,
@@ -52,6 +53,7 @@ export const Route = createFileRoute(
 });
 
 function ConsumptionRequirementsSection({
+  canRequestAgreement,
   eserviceId,
   hasAgreement,
   hasRequiredAttributes,
@@ -61,7 +63,12 @@ function ConsumptionRequirementsSection({
 }: Pick<
   ConsumptionEserviceDetail,
   "hasRequiredAttributes" | "identificationRequired" | "requiredAttributes"
-> & { eserviceId: EserviceId; hasAgreement: boolean; knodeId: KnodeId }) {
+> & {
+  canRequestAgreement: boolean;
+  eserviceId: EserviceId;
+  hasAgreement: boolean;
+  knodeId: KnodeId;
+}) {
   return (
     <Section title="Consumption requirements">
       <div className="grid grid-cols-2 gap-10">
@@ -90,20 +97,22 @@ function ConsumptionRequirementsSection({
                   ? "Your organization has the required attributes."
                   : "Your organization does not have the required attributes."}
               </span>
-              {hasRequiredAttributes && !hasAgreement && (
-                <ButtonLink
-                  className="shrink-0"
-                  hierarchy="brand"
-                  href={{
-                    search: { eserviceId, knodeId },
-                    to: "/consumption/e-services/request-agreement",
-                  }}
-                  kind="filled"
-                  size="md"
-                >
-                  Request Agreement
-                </ButtonLink>
-              )}
+              {canRequestAgreement &&
+                hasRequiredAttributes &&
+                !hasAgreement && (
+                  <ButtonLink
+                    className="shrink-0"
+                    hierarchy="brand"
+                    href={{
+                      search: { eserviceId, knodeId },
+                      to: "/consumption/e-services/request-agreement",
+                    }}
+                    kind="filled"
+                    size="md"
+                  >
+                    Request Agreement
+                  </ButtonLink>
+                )}
             </div>
           </Banner>
         </div>
@@ -112,11 +121,11 @@ function ConsumptionRequirementsSection({
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Identification
           </h3>
-          <Banner kind="neutral">
-            {identificationRequired
-              ? "Identification required"
-              : "Identification not required"}
-          </Banner>
+          {identificationRequired ? (
+            <Banner kind="informative">Identification required</Banner>
+          ) : (
+            <Banner kind="neutral">Identification not required</Banner>
+          )}
         </div>
       </div>
     </Section>
@@ -124,6 +133,7 @@ function ConsumptionRequirementsSection({
 }
 
 function RouteComponent() {
+  const canManageAgreements = useHasRole("administrative");
   const bffDetail = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
   const eservice = toConsumptionEserviceDetail(bffDetail);
@@ -202,6 +212,7 @@ function RouteComponent() {
         </>
       )}
       <ConsumptionRequirementsSection
+        canRequestAgreement={canManageAgreements}
         eserviceId={eservice.id}
         hasAgreement={hasAgreement}
         hasRequiredAttributes={eservice.hasRequiredAttributes}
