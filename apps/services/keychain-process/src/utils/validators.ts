@@ -21,7 +21,6 @@ import {
   getOrganizationGroupName,
   TECHNICAL_ROLE_GROUP_NAME,
 } from "../services/userService.ts";
-import { retrieveConsumerKeychainPurpose } from "./readmodelUtils.ts";
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,
@@ -50,11 +49,11 @@ export async function assertPurposeIsNotLinkedToConsumerKeychain(
   purposeId: ExternalId<PurposeId>,
   readmodelService: ReadmodelService,
 ): Promise<void> {
-  const consumerKeychainPurpose = await retrieveConsumerKeychainPurpose(
-    consumerKeychainId,
-    purposeId,
-    readmodelService,
-  );
+  const consumerKeychainPurpose =
+    await readmodelService.getConsumerKeychainPurpose(
+      consumerKeychainId,
+      purposeId,
+    );
 
   if (consumerKeychainPurpose) {
     throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purposeId);

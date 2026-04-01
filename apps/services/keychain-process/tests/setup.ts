@@ -6,10 +6,6 @@ import {
   type KeychainWriterService,
   keychainWriterServiceBuilder,
 } from "@knodia/db-readmodel-keychain/writer";
-import {
-  type PurposeWriterService,
-  purposeWriterServiceBuilder,
-} from "@knodia/db-readmodel-purpose/writer";
 import { setupEventstoreTestDatabase } from "@knodia/test-commons/eventstore";
 import { setupReadmodelTestDatabase } from "@knodia/test-commons/readmodel";
 import { type TestDrizzleDb } from "@knodia/test-commons/types";
@@ -22,7 +18,6 @@ let eventStoreDb: TestDrizzleDb;
 let readmodelDb: TestDrizzleDb;
 let app: FastifyInstance;
 let keychainWriterService: KeychainWriterService;
-let purposeWriterService: PurposeWriterService;
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -52,7 +47,6 @@ beforeAll(async () => {
   });
 
   keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
-  purposeWriterService = purposeWriterServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -63,4 +57,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eventStoreDb, keychainWriterService, purposeWriterService };
+export { app, eventStoreDb, keychainWriterService };

@@ -241,6 +241,7 @@ export function consumerKeychainServiceBuilder(
           query: { knodeId },
         }),
       ]);
+
       assertOrganizationIsKeychainOwner(
         authData.organizationId,
         consumerKeychain.data,
@@ -254,6 +255,7 @@ export function consumerKeychainServiceBuilder(
         purposeId,
         readmodelService,
       );
+
       const linkedAt = new Date();
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainPurposeLinkedV1Event({

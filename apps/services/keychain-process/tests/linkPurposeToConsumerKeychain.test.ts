@@ -1,55 +1,110 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { Purpose } from "@knodia/purpose-models";
+import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
+
 import {
   generateExternalId,
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
-import { generateId } from "@knodia/common-models/ids";
+import { generateId, type KnodeId } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
+  type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   KeychainEventV1,
   toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import {
   getMockConsumerKeychain,
   getMockPurpose,
 } from "@knodia/test-commons/utils";
-import { assert, beforeAll, describe, expect, it } from "vitest";
+import {
+  assert,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 
 import {
   type API_ConsumerKeychainPurpose,
   type API_ConsumerKeychainPurposeLinkSeed,
 } from "../src/models/api.ts";
 import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
-import { purposeWriterService } from "./setup.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
   seedConsumerKeychain,
 } from "./utils.ts";
 
+const getPurposeMock = vi.hoisted(() => vi.fn());
+
+vi.mock("@knodia/remote-resources-manager-client", async (importOriginal) => {
+  const original =
+    await importOriginal<
+      typeof import("@knodia/remote-resources-manager-client")
+    >();
+
+  return {
+    ...original,
+    remoteResourcesManagerApi: {
+      ...original.remoteResourcesManagerApi,
+      getPurpose: getPurposeMock,
+    },
+  };
+});
+
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
 describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToConsumerKeychain)", () => {
-  const consumerKeychain = getMockConsumerKeychain();
-  const purpose = getMockPurpose();
+  const knodeId: KnodeId = "Orion";
+  const consumerKeychain: ConsumerKeychain = {
+    ...getMockConsumerKeychain(),
+    ownerId: TEST_ORGANIZATION_ID,
+  };
+  const purpose: Purpose = {
+    ...getMockPurpose(),
+    consumer: {
+      id: unsafeBrandExternalId(TEST_ORGANIZATION_ID),
+      knodeId,
+    },
+  };
+  const apiPurpose: remoteResourcesManagerApi.Purpose = {
+    consumer: purpose.consumer,
+    dailyCalls: purpose.dailyCalls,
+    description: purpose.description,
+    eserviceId: purpose.eserviceId,
+    id: purpose.id,
+    name: purpose.name,
+    state: purpose.state,
+    updatedAt: purpose.updatedAt.toISOString(),
+  };
   const body: API_ConsumerKeychainPurposeLinkSeed = {
-    knodeId: "Orion",
+    knodeId,
     purposeId: purpose.id,
   };
 
   beforeAll(async () => {
-    await Promise.all([
-      seedConsumerKeychain(consumerKeychain),
-      purposeWriterService.upsertPurpose(purpose, 0),
-    ]);
+    await Promise.all([seedConsumerKeychain(consumerKeychain)]);
+  });
+
+  beforeEach(() => {
+    getPurposeMock.mockReset();
   });
 
   it("should correctly create consumer keychain purpose link event", async () => {
+    getPurposeMock.mockResolvedValue({ data: apiPurpose });
+
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
       .body(body);

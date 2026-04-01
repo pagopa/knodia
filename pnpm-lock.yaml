@@ -845,6 +845,9 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-models
       '@knodia/remote-resources-manager-client':
         specifier: workspace:*
         version: link:../../../packages/clients/remote-resources-manager
@@ -2713,9 +2716,6 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../../eslint-config
-      '@knodia/purpose-models':
-        specifier: workspace:*
-        version: link:../purpose-models
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../../typescript-config
