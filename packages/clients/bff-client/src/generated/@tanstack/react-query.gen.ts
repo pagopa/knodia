@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { addConsumerKeychainMember, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createSession, deleteConsumerKeychain, getConsumerAgreements, getConsumerCatalogEservices, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainMembers, getConsumerKeychains, getConsumerPurposeFormSchema, getConsumerPurposeFormUiSchema, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getStatus, getTechnicalUsers, type Options, refreshSession, removeConsumerKeychainMember, updateConsumerKeychain } from '../sdk.gen.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembersResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeFormSchemaData, GetConsumerPurposeFormSchemaError, GetConsumerPurposeFormSchemaResponse, GetConsumerPurposeFormUiSchemaData, GetConsumerPurposeFormUiSchemaError, GetConsumerPurposeFormUiSchemaResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetStatusData, GetStatusResponse, GetTechnicalUsersData, GetTechnicalUsersError, GetTechnicalUsersResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse } from '../types.gen.ts';
+import { addConsumerKeychainMember, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createSession, deleteConsumerKeychain, getConsumerAgreements, getConsumerCatalogEservices, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainMembers, getConsumerKeychains, getConsumerPurposeDetails, getConsumerPurposeFormSchema, getConsumerPurposeFormUiSchema, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getProducerPurposes, getSessionOrganization, getStatus, getTechnicalUsers, type Options, refreshSession, removeConsumerKeychainMember, updateConsumerKeychain } from '../sdk.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembersResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsError, GetConsumerPurposeDetailsResponse, GetConsumerPurposeFormSchemaData, GetConsumerPurposeFormSchemaError, GetConsumerPurposeFormSchemaResponse, GetConsumerPurposeFormUiSchemaData, GetConsumerPurposeFormUiSchemaError, GetConsumerPurposeFormUiSchemaResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetProducerPurposesData, GetProducerPurposesError, GetProducerPurposesResponse, GetSessionOrganizationData, GetSessionOrganizationError, GetSessionOrganizationResponse, GetStatusData, GetStatusResponse, GetTechnicalUsersData, GetTechnicalUsersError, GetTechnicalUsersResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -609,6 +609,44 @@ export const getConsumerPurposeFormUiSchemaOptions = (options: Options<GetConsum
     queryKey: getConsumerPurposeFormUiSchemaQueryKey(options)
 });
 
+export const getConsumerPurposeDetailsQueryKey = (options: Options<GetConsumerPurposeDetailsData>) => createQueryKey('getConsumerPurposeDetails', options);
+
+/**
+ * Get consumer Purpose details
+ *
+ * Retrieve a Consumer Purpose with details
+ */
+export const getConsumerPurposeDetailsOptions = (options: Options<GetConsumerPurposeDetailsData>) => queryOptions<GetConsumerPurposeDetailsResponse, AxiosError<GetConsumerPurposeDetailsError>, GetConsumerPurposeDetailsResponse, ReturnType<typeof getConsumerPurposeDetailsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getConsumerPurposeDetails({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getConsumerPurposeDetailsQueryKey(options)
+});
+
+export const getSessionOrganizationQueryKey = (options?: Options<GetSessionOrganizationData>) => createQueryKey('getSessionOrganization', options);
+
+/**
+ * Retrieve the Organization of the current session's User
+ */
+export const getSessionOrganizationOptions = (options?: Options<GetSessionOrganizationData>) => queryOptions<GetSessionOrganizationResponse, AxiosError<GetSessionOrganizationError>, GetSessionOrganizationResponse, ReturnType<typeof getSessionOrganizationQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getSessionOrganization({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getSessionOrganizationQueryKey(options)
+});
+
 export const getProducerAgreementsQueryKey = (options: Options<GetProducerAgreementsData>) => createQueryKey('getProducerAgreements', options);
 
 /**
@@ -670,6 +708,55 @@ export const getProducerAgreementDetailsOptions = (options: Options<GetProducerA
         return data;
     },
     queryKey: getProducerAgreementDetailsQueryKey(options)
+});
+
+export const getProducerPurposesQueryKey = (options: Options<GetProducerPurposesData>) => createQueryKey('getProducerPurposes', options);
+
+/**
+ * List producer Purposes
+ *
+ * Retrieve a paginated list of Purposes for the logged-in producer's E-services
+ */
+export const getProducerPurposesOptions = (options: Options<GetProducerPurposesData>) => queryOptions<GetProducerPurposesResponse, AxiosError<GetProducerPurposesError>, GetProducerPurposesResponse, ReturnType<typeof getProducerPurposesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getProducerPurposes({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getProducerPurposesQueryKey(options)
+});
+
+export const getProducerPurposesInfiniteQueryKey = (options: Options<GetProducerPurposesData>): QueryKey<Options<GetProducerPurposesData>> => createQueryKey('getProducerPurposes', options, true);
+
+/**
+ * List producer Purposes
+ *
+ * Retrieve a paginated list of Purposes for the logged-in producer's E-services
+ */
+export const getProducerPurposesInfiniteOptions = (options: Options<GetProducerPurposesData>) => infiniteQueryOptions<GetProducerPurposesResponse, AxiosError<GetProducerPurposesError>, InfiniteData<GetProducerPurposesResponse>, QueryKey<Options<GetProducerPurposesData>>, number | Pick<QueryKey<Options<GetProducerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<GetProducerPurposesData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getProducerPurposes({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getProducerPurposesInfiniteQueryKey(options)
 });
 
 export const getProducerPurposeDetailsQueryKey = (options: Options<GetProducerPurposeDetailsData>) => createQueryKey('getProducerPurposeDetails', options);
