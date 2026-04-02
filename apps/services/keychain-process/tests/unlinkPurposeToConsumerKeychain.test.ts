@@ -12,7 +12,6 @@ import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   KeychainEventV1,
-  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import {
@@ -88,9 +87,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
       consumerKeychain: toExpectConsumerKeychainV1(
         toConsumerKeychainV1(consumerKeychain),
       ),
-      purpose: toConsumerKeychainLinkedPurposeV1(
-        consumerKeychainPurpose.purpose,
-      ),
+      purpose: consumerKeychainPurpose.purpose,
     });
   });
 

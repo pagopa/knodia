@@ -365,7 +365,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
               knodeId: req.body.knodeId,
             },
           },
-          req,
+          headers: getKnodiaServiceHeaders(req, ctx.correlationId),
         },
         ctx,
       );

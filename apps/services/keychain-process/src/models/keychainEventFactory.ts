@@ -136,7 +136,7 @@ export const createConsumerKeychainPurposeUnlinkedV1Event = ({
   event: {
     data: {
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
-      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
+      purpose,
     },
     type: "ConsumerKeychainPurposeUnlinkedV1",
   },
