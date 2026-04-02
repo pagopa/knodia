@@ -833,9 +833,6 @@ importers:
       '@knodia/db-readmodel-keychain':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/keychain
-      '@knodia/db-readmodel-purpose':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/purpose
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons

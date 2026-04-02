@@ -75,10 +75,7 @@ describe("Consumer keychain read model writer tests", async () => {
     ).encode({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date().getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1({
-        id: unsafeBrandExternalId(purpose.id),
-        knodeId: purpose.knodeId,
-      }),
+      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
     });
 
     const metadataVersion = 1;

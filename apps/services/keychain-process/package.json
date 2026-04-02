@@ -34,7 +34,6 @@
     "@knodia/db-event-store-writer": "workspace:*",
     "@knodia/db-readmodel-commons": "workspace:*",
     "@knodia/db-readmodel-keychain": "workspace:*",
-    "@knodia/db-readmodel-purpose": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/purpose-models": "workspace:*",

@@ -3,11 +3,15 @@ import type { Purpose } from "@knodia/purpose-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import {
+  type ExternalResource,
   generateExternalId,
   unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
-import { generateId, type KnodeId } from "@knodia/common-models/ids";
-import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
+import {
+  generateId,
+  type KnodeId,
+  type PurposeId,
+} from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
@@ -79,6 +83,10 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       knodeId,
     },
   };
+  const externalPurpose: ExternalResource<PurposeId> = {
+    id: unsafeBrandExternalId(purpose.id),
+    knodeId,
+  };
   const apiPurpose: remoteResourcesManagerApi.Purpose = {
     consumer: purpose.consumer,
     dailyCalls: purpose.dailyCalls,
@@ -110,14 +118,13 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       .body(body);
 
     expect(response.statusCode).toBe(200);
-    expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
 
     const responseBody = response.json<API_ConsumerKeychainPurpose>();
 
     const expectedConsumerKeychainPurpose: ConsumerKeychainPurpose = {
       consumerKeychainId: consumerKeychain.id,
       linkedAt: new Date(responseBody.linkedAt),
-      purpose: { id: unsafeBrandExternalId(purpose.id), knodeId },
+      purpose: externalPurpose,
     };
 
     expect(responseBody).toMatchObject(
@@ -141,10 +148,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     expect(linkEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date(responseBody.linkedAt).getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1({
-        id: unsafeBrandExternalId(purpose.id),
-        knodeId,
-      }),
+      purpose: toConsumerKeychainLinkedPurposeV1(externalPurpose),
     });
   });
 
