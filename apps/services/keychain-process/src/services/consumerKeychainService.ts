@@ -205,6 +205,22 @@ export function consumerKeychainServiceBuilder(
       );
     },
 
+    async getConsumerKeychainPurposes(
+      consumerKeychainId: ConsumerKeychainId,
+      params: API_GetConsumerKeychainsQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<ConsumerKeychainPurpose>> {
+      logger.info(
+        { params },
+        `Getting Purposes linked to Consumer Keychain ${consumerKeychainId} with params`,
+      );
+
+      return await readmodelService.getConsumerKeychainPurposes(
+        consumerKeychainId,
+        params,
+      );
+    },
+
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,

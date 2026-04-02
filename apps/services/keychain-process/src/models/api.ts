@@ -114,3 +114,19 @@ export const API_ConsumerKeychainPurpose = z
 export type API_ConsumerKeychainPurpose = z.infer<
   typeof API_ConsumerKeychainPurpose
 >;
+
+export const API_ConsumerKeychainPurposes = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerKeychainPurpose),
+  })
+  .meta({ id: "ConsumerKeychainPurposes" });
+export type API_ConsumerKeychainPurposes = z.infer<
+  typeof API_ConsumerKeychainPurposes
+>;
+
+export const API_GetConsumerKeychainPurposesQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerKeychainPurposesQueryParams = z.infer<
+  typeof API_GetConsumerKeychainPurposesQueryParams
+>;
