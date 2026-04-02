@@ -119,14 +119,6 @@ components:
         - knodeId
         - purposeId
       additionalProperties: false
-    ConsumerKeychainPurposeUnlinkSeed:
-      type: object
-      properties:
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - knodeId
-      additionalProperties: false
     ConsumerKeychainLinkedPurpose:
       type: object
       properties:
@@ -155,6 +147,14 @@ components:
         - consumerKeychainId
         - linkedAt
         - purpose
+      additionalProperties: false
+    ConsumerKeychainPurposeUnlinkSeed:
+      type: object
+      properties:
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - knodeId
       additionalProperties: false
     Pagination:
       type: object
@@ -848,7 +848,7 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/purposes/{purposeId}:
-    post:
+    delete:
       operationId: unlinkPurposeFromConsumerKeychain
       tags:
         - consumerKeychain

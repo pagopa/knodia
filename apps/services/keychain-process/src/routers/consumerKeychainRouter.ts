@@ -389,7 +389,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       res.status(204).send();
     },
-    method: "POST",
+    method: "DELETE",
     schema: {
       body: API_ConsumerKeychainPurposeUnlinkSeed,
       description: "Unlink a Purpose from a Consumer Keychain",

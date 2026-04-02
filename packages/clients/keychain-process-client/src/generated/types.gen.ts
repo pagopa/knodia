@@ -62,10 +62,6 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
-export type ConsumerKeychainPurposeUnlinkSeed = {
-    knodeId: KnodeId;
-};
-
 export type ConsumerKeychainLinkedPurpose = {
     id: string;
     knodeId: KnodeId;
@@ -75,6 +71,10 @@ export type ConsumerKeychainPurpose = {
     consumerKeychainId: KeychainId;
     linkedAt: string;
     purpose: ConsumerKeychainLinkedPurpose;
+};
+
+export type ConsumerKeychainPurposeUnlinkSeed = {
+    knodeId: KnodeId;
 };
 
 export type Pagination = {
