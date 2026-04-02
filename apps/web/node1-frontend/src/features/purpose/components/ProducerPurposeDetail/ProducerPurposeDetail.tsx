@@ -9,9 +9,9 @@ import { match } from "ts-pattern";
 import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
-import { AgreementCard } from "@/features/purpose/components/AgreementCard";
-import { DailyCallsCard } from "@/features/purpose/components/DailyCallsCard";
-import { EserviceCard } from "@/features/purpose/components/EserviceCard";
+import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgreementCard";
+import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
+import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 
 const RouterLink = createLink(Link);
@@ -36,7 +36,7 @@ export function ProducerPurposeDetail({
       />
 
       <div className="mt-10 flex flex-col gap-4">
-        <EserviceCard
+        <PurposeEserviceCard
           eservice={purpose.eservice}
           link={
             <RouterLink
@@ -62,13 +62,13 @@ export function ProducerPurposeDetail({
           />
         </div>
 
-        <DailyCallsCard
+        <PurposeDailyCallsCard
           dailyCalls={purpose.dailyCalls}
           maxDailyCallsPerConsumer={purpose.maxDailyCallsPerConsumer}
         />
       </div>
 
-      <AgreementCard
+      <PurposeAgreementCard
         action={
           <RouterButtonLink
             aria-label="Go to agreement"

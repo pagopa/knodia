@@ -1,7 +1,7 @@
 import { SettingsCard } from "@/components/SettingCard";
 import { formatNumber } from "@/utils/formatters";
 
-export function DailyCallsCard({
+export function PurposeDailyCallsCard({
   dailyCalls,
   maxDailyCallsPerConsumer,
 }: {

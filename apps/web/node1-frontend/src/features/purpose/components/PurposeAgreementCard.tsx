@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { AgreementStateChip } from "@/features/agreement/components/AgreementStateChip";
 
-export function AgreementCard({
+export function PurposeAgreementCard({
   action,
   agreement,
 }: {

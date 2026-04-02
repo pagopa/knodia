@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { SettingsCard } from "@/components/SettingCard";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
-export function EserviceCard({
+export function PurposeEserviceCard({
   eservice,
   link,
 }: {
