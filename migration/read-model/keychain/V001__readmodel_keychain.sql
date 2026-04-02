@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS ${NAMESPACE}_keychain."consumer_keychain_purpose" (
 	"metadata_version" bigint NOT NULL,
 	"producer_knode_id" text NOT NULL,
 	"purpose_id" uuid NOT NULL,
-	CONSTRAINT "consumer_keychain_purpose_pk" PRIMARY KEY("purpose_id","metadata_version","consumer_keychain_id")
+	CONSTRAINT "consumer_keychain_purpose_pk" PRIMARY KEY("purpose_id","metadata_version","consumer_keychain_id", "producer_knode_id")
 );
 
 CREATE TABLE IF NOT EXISTS ${NAMESPACE}_keychain."consumer_keychain_key" (

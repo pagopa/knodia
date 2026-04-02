@@ -98,9 +98,10 @@ export const readmodelConsumerKeychainPurpose = keychainSchema.table(
     }),
     primaryKey({
       columns: [
-        table.purposeId,
-        table.metadataVersion,
         table.consumerKeychainId,
+        table.metadataVersion,
+        table.producerKnodeId,
+        table.purposeId,
       ],
       name: "consumer_keychain_purpose_pk",
     }),

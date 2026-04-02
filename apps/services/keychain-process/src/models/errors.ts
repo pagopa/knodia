@@ -1,4 +1,4 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
   PurposeId,
@@ -60,11 +60,11 @@ export function keychainMemberNotFound(
 
 export function purposeAlreadyLinkedToConsumerKeychain(
   consumerKeychainId: ConsumerKeychainId,
-  purposeId: ExternalId<PurposeId>,
+  purpose: ExternalResource<PurposeId>,
 ) {
   return createApiError<ErrorCodes>({
     code: "PURPOSE_ALREADY_LINKED_TO_CONSUMER_KEYCHAIN",
-    detail: `Purpose with id ${purposeId} is already linked to Consumer Keychain with id ${consumerKeychainId}`,
+    detail: `Purpose with id ${purpose.id} owned by Knode ${purpose.knodeId} is already linked to Consumer Keychain with id ${consumerKeychainId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Purpose Already Linked To Consumer Keychain",
   });

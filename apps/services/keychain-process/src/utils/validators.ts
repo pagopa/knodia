@@ -1,4 +1,7 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
+import type {
+  ExternalId,
+  ExternalResource,
+} from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
   OrganizationId,
@@ -46,17 +49,17 @@ export function assertOrganizationIsPurposeConsumer(
 
 export async function assertPurposeIsNotLinkedToConsumerKeychain(
   consumerKeychainId: ConsumerKeychainId,
-  purposeId: ExternalId<PurposeId>,
+  purpose: ExternalResource<PurposeId>,
   readmodelService: ReadmodelService,
 ): Promise<void> {
   const consumerKeychainPurpose =
     await readmodelService.getConsumerKeychainPurpose(
       consumerKeychainId,
-      purposeId,
+      purpose,
     );
 
   if (consumerKeychainPurpose) {
-    throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purposeId);
+    throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purpose);
   }
 }
 

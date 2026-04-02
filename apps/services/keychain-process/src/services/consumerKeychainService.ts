@@ -242,6 +242,10 @@ export function consumerKeychainServiceBuilder(
           query: { knodeId },
         }),
       ]);
+      const externalPurpose: ExternalResource<PurposeId> = {
+        id: purposeId,
+        knodeId,
+      };
 
       assertOrganizationIsKeychainOwner(
         authData.organizationId,
@@ -253,14 +257,10 @@ export function consumerKeychainServiceBuilder(
       );
       await assertPurposeIsNotLinkedToConsumerKeychain(
         consumerKeychainId,
-        purposeId,
+        externalPurpose,
         readmodelService,
       );
 
-      const externalPurpose: ExternalResource<PurposeId> = {
-        id: purposeId,
-        knodeId: purpose.consumer.knodeId,
-      };
       const linkedAt = new Date();
       const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainPurposeLinkedV1Event({

@@ -1,4 +1,4 @@
-import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { ConsumerKeychainId, PurposeId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type { FlatConsumerKeychain } from "@knodia/keychain-models";
@@ -32,7 +32,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     },
     async getConsumerKeychainPurpose(
       consumerKeychainId: ConsumerKeychainId,
-      purposeId: ExternalId<PurposeId>,
+      purpose: ExternalResource<PurposeId>,
     ) {
       return await consumerKeychainReadmodelService.getConsumerKeychainPurposeByFilter(
         and(
@@ -40,7 +40,8 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             readmodelConsumerKeychainPurpose.consumerKeychainId,
             consumerKeychainId,
           ),
-          eq(readmodelConsumerKeychainPurpose.purposeId, purposeId),
+          eq(readmodelConsumerKeychainPurpose.purposeId, purpose.id),
+          eq(readmodelConsumerKeychainPurpose.producerKnodeId, purpose.knodeId),
         ),
       );
     },
