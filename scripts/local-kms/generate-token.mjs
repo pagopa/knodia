@@ -1,4 +1,4 @@
-import { KMSClient, SignCommand } from "@aws-sdk/client-kms";
+import { KMSClient, SignCommand, DescribeKeyCommand } from "@aws-sdk/client-kms";
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
@@ -6,8 +6,6 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const TOKENS_DIR = resolve(__dirname, "../../docker/tokens");
-
-const KMS_ENDPOINT = "http://localhost:4566";
 
 // Hardcoded configuration for local development
 const USER_ID = "00000000-0000-4000-8000-000000000001";
@@ -17,43 +15,57 @@ const INTERNAL_SUB = "local-internal-service";
 
 import { TOKEN_TYPES } from "./token-types.mjs";
 
-// Token type: determines the audience, claims structure, and output filename.
-// All knodia-issued tokens share the "knodia" key regardless of type.
-// Cognito tokens are handled by the local-cognito OIDC provider instead.
-const type = process.argv[2] ?? "ui-session";
+const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
 
-function getClaimsAndEnvVar(type) {
+const type = process.argv[2] ?? "ui-session";
+const targetEnv = process.argv[3] ?? "local";
+
+if (!TOKEN_TYPES.includes(type) || !TARGET_ENVIRONMENTS.includes(targetEnv)) {
+  console.error(`Usage: node generate-token.mjs [${TOKEN_TYPES.join("|")}] [${TARGET_ENVIRONMENTS.join("|")}]`);
+  process.exit(1);
+}
+
+function getClaims(targetEnv, type) {
+  const aud = targetEnv === "local"
+    ? `local.knodia.test/${type}`
+    : `app.${targetEnv.replace("dev-", "")}.dev.knodia.com/${type}`;
+
   switch (type) {
     case "ui-session":
-      return {
-        claims: { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "jane.doe", type },
-        envVarName: "UI_SESSION_JWT",
-      };
+      return { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "jane.doe", type, aud };
     case "internal":
-      return {
-        claims: { sub: INTERNAL_SUB, type },
-        envVarName: "INTERNAL_JWT",
-      };
-    default:
-      console.error(`Usage: node generate-token.mjs [${TOKEN_TYPES.join("|")}]`);
-      process.exit(1);
+      return { sub: INTERNAL_SUB, type, aud };
   }
 }
 
-const { claims, envVarName } = getClaimsAndEnvVar(type);
+function getEnvVarName(targetEnv, type) {
+  const base = type === "ui-session" ? "UI_SESSION_JWT" : "INTERNAL_JWT";
+  if (targetEnv === "local") return base;
+  return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
+}
 
-const KID = "alias/local-knodia-key";
+async function resolveKeyId(kmsClient, targetEnv, type) {
+  if (targetEnv === "local") {
+    return "alias/local-knodia-key";
+  }
+  const keyName = type === "internal" ? "internal" : "bff-session";
+  const alias = `alias/${targetEnv}/app/${keyName}-tokens`;
+  const { KeyMetadata } = await kmsClient.send(new DescribeKeyCommand({ KeyId: alias }));
+  return KeyMetadata.KeyId;
+}
 
-const kmsClient = new KMSClient({
-  endpoint: KMS_ENDPOINT,
-  region: "eu-south-1",
-  credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" },
-});
+const claims = getClaims(targetEnv, type);
+
+const kmsClient = new KMSClient(targetEnv === "local"
+  ? { endpoint: "http://localhost:4566", region: "eu-south-1", credentials: { accessKeyId: "testawskey", secretAccessKey: "testawssecret" } }
+  : { region: "eu-south-1" }
+);
+const kid = await resolveKeyId(kmsClient, targetEnv, type);
 
 const b64url = (data) => Buffer.from(data).toString("base64url");
 
 const header = b64url(
-  JSON.stringify({ alg: "RS256", typ: "JWT", kid: KID })
+  JSON.stringify({ alg: "RS256", typ: "JWT", kid })
 );
 
 const now = Math.floor(Date.now() / 1000);
@@ -61,7 +73,6 @@ const now = Math.floor(Date.now() / 1000);
 const payload = b64url(
   JSON.stringify({
     ...claims,
-    aud: `local.knodia.test/${type}`,
     exp: now + 3600,
     iat: now,
     iss: "local-knodia",
@@ -74,7 +85,7 @@ const digest = createHash("sha256").update(message).digest();
 
 const { Signature } = await kmsClient.send(
   new SignCommand({
-    KeyId: KID,
+    KeyId: kid,
     Message: digest,
     MessageType: "DIGEST",
     SigningAlgorithm: "RSASSA_PKCS1_V1_5_SHA_256",
@@ -84,22 +95,25 @@ const { Signature } = await kmsClient.send(
 const signature = Buffer.from(Signature).toString("base64url");
 const token = `${message}.${signature}`;
 
-console.log(`Generated ${type} token:`);
+console.log(`Generated ${type} token (${targetEnv}):`);
 console.log(token);
 
-mkdirSync(TOKENS_DIR, { recursive: true });
-const tokenPath = resolve(TOKENS_DIR, `${type}.token`);
+const envTokensDir = resolve(TOKENS_DIR, targetEnv);
+mkdirSync(envTokensDir, { recursive: true });
+const tokenPath = resolve(envTokensDir, `${type}.token`);
 writeFileSync(tokenPath, token);
 console.log(`\nToken written to ${tokenPath}`);
 
 const COLLECTIONS_DIR = resolve(__dirname, "../../collections");
 const envPath = resolve(COLLECTIONS_DIR, ".env");
+const envVarName = getEnvVarName(targetEnv, type);
 const envLine = `${envVarName}=${token}`;
 
 let existing = "";
 try { existing = readFileSync(envPath, "utf-8"); } catch { /* new file */ }
 
-const pattern = new RegExp(`^${envVarName}=.*$`, "m");
+const escapedEnvVarName = envVarName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const pattern = new RegExp(`^${escapedEnvVarName}=.*$`, "m");
 const updated = pattern.test(existing)
   ? existing.replace(pattern, envLine)
   : existing.trimEnd() + "\n" + envLine + "\n";

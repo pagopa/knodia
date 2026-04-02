@@ -1,11 +1,11 @@
 import { toastQueue } from "@knodia/ui-kit/ui";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
+import { Section } from "@/components/Section";
 import { SettingsCard } from "@/components/SettingCard";
 import { formatNumber } from "@/utils/formatters";
 
 import { DocumentRecap } from "./DocumentRecap";
-import { Section } from "./Section";
 
 export function AccessTokenSettingsSection({
   audience,
