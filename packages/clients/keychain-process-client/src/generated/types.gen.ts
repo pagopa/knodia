@@ -114,17 +114,6 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
-export type ConsumerKeychainLinkedPurpose = {
-    id: string;
-    knodeId: KnodeId;
-};
-
-export type ConsumerKeychainPurpose = {
-    consumerKeychainId: KeychainId;
-    linkedAt: string;
-    purpose: ConsumerKeychainLinkedPurpose;
-};
-
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -502,7 +491,7 @@ export type LinkPurposeToConsumerKeychainResponses = {
     /**
      * Purpose successfully linked to Consumer Keychain
      */
-    200: ConsumerKeychainPurpose;
+    204: void;
 };
 
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];

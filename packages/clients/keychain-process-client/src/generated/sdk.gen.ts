@@ -112,7 +112,6 @@ export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true
  * Link a Purpose to a Consumer Keychain
  */
 export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<LinkPurposeToConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<LinkPurposeToConsumerKeychainResponses, LinkPurposeToConsumerKeychainErrors, ThrowOnError>({
-    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}/purposes',
     ...options,

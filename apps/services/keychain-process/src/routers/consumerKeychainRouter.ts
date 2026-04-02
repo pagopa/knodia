@@ -21,7 +21,6 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 import {
   API_ConsumerKeychainMemberPathParam,
   API_ConsumerKeychainPatch,
-  API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposeLinkSeed,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
@@ -29,10 +28,7 @@ import {
   API_KeychainMemberSeed,
   API_Keychains,
 } from "../models/api.ts";
-import {
-  toAPI_ConsumerKeychainPurpose,
-  toAPI_Keychain,
-} from "../models/apiConverter.ts";
+import { toAPI_Keychain } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface ConsumerKeychainRouterOptions {
@@ -322,7 +318,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       ]);
 
       const {
-        data: consumerKeychainPurpose,
         metadata: { version },
       } = await consumerKeychainService.linkPurposeToConsumerKeychain(
         {
@@ -336,9 +331,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       setMetadataVersionHeader(res, version);
 
-      res
-        .status(200)
-        .send(toAPI_ConsumerKeychainPurpose(consumerKeychainPurpose));
+      res.status(204).send();
     },
     method: "POST",
     schema: {
@@ -348,9 +341,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "linkPurposeToConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: {
+        204: {
           headers: MetadataVersionHeader,
-          properties: API_ConsumerKeychainPurpose.meta({
+          properties: z.undefined().meta({
             description: "Purpose successfully linked to Consumer Keychain",
           }),
         },

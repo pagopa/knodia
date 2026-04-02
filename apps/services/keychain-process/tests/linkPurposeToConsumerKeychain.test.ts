@@ -32,11 +32,7 @@ import {
 import { AxiosError, type AxiosResponse } from "axios";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-  type API_ConsumerKeychainPurpose,
-  type API_ConsumerKeychainPurposeLinkSeed,
-} from "../src/models/api.ts";
-import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
+import { type API_ConsumerKeychainPurposeLinkSeed } from "../src/models/api.ts";
 import { keychainWriterService } from "./setup.ts";
 import {
   getAllKeychainEvents,
@@ -109,20 +105,8 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
       .body(body);
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(204);
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
-
-    const responseBody = response.json<API_ConsumerKeychainPurpose>();
-
-    const expectedConsumerKeychainPurpose: ConsumerKeychainPurpose = {
-      consumerKeychainId: consumerKeychain.id,
-      linkedAt: new Date(responseBody.linkedAt),
-      purpose: externalPurpose,
-    };
-
-    expect(responseBody).toMatchObject(
-      toAPI_ConsumerKeychainPurpose(expectedConsumerKeychainPurpose),
-    );
 
     const events = await getAllKeychainEvents();
     const linkEvent = events[1];
@@ -140,7 +124,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
 
     expect(linkEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
-      linkedAt: new Date(responseBody.linkedAt).getTime(),
+      linkedAt: expect.any(Number),
       purpose: externalPurpose,
     });
   });
