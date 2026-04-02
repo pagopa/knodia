@@ -1237,6 +1237,44 @@ components:
         - knodeId
         - name
       additionalProperties: false
+    ConsumerPurpose:
+      type: object
+      properties:
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        keychain:
+          type: string
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+      required:
+        - eservice
+        - id
+        - keychain
+        - name
+        - producer
+        - state
+      additionalProperties: false
+    ConsumerPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     ProducerPurpose:
       type: object
       properties:
@@ -2477,6 +2515,70 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/purposes:
+    get:
+      operationId: getConsumerPurposes
+      summary: List consumer Purposes
+      tags:
+        - purpose
+      description: Retrieve a paginated list of Purposes created by the logged-in consumer
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+          description: Knode ID of the producer's Knode
+      responses:
+        "200":
+          description: Consumer Purposes retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Purposes retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerPurposes"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     post:
       operationId: createConsumerPurpose
       summary: Create a consumer Purpose

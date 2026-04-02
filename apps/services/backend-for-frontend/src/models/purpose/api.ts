@@ -49,6 +49,37 @@ export type API_GetConsumerPurposeDetailQueryParams = z.infer<
   typeof API_GetConsumerPurposeDetailQueryParams
 >;
 
+export const API_GetConsumerPurposesQueryParams =
+  API_PaginationQueryParams.extend({
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode",
+    }),
+  });
+export type API_GetConsumerPurposesQueryParams = z.infer<
+  typeof API_GetConsumerPurposesQueryParams
+>;
+
+export const API_ConsumerPurpose = z
+  .strictObject({
+    eservice: API_CompactEservice,
+    id: z.uuid(),
+    // TODO: Replace with actual keychain data when consumer keychains for purposes are implemented
+    keychain: z.string(),
+    name: API_LocalizedPurposeName,
+    producer: API_CompactOrganization,
+    state: API_PurposeState,
+  })
+  .meta({ id: "ConsumerPurpose" });
+export type API_ConsumerPurpose = z.infer<typeof API_ConsumerPurpose>;
+
+export const API_ConsumerPurposes = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_ConsumerPurpose),
+  })
+  .meta({ id: "ConsumerPurposes" });
+export type API_ConsumerPurposes = z.infer<typeof API_ConsumerPurposes>;
+
 export const API_GetProducerPurposesQueryParams =
   API_PaginationQueryParams.extend({
     eserviceId: z
