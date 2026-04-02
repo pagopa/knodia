@@ -1,8 +1,4 @@
-import type {
-  ConsumerKeychainPurpose,
-  FlatConsumerKeychain,
-} from "@knodia/keychain-models";
-import type { API_ConsumerKeychainPurpose } from "@knodia/keychain-models/api";
+import type { FlatConsumerKeychain } from "@knodia/keychain-models";
 
 import type { IdmUser } from "../services/userService.ts";
 import type { API_Keychain, API_User } from "./api.ts";
@@ -22,11 +18,4 @@ export const toAPI_User = (idmUser: IdmUser): API_User => ({
   email: idmUser.email,
   id: idmUser.id,
   username: idmUser.username,
-});
-
-export const toAPI_ConsumerKeychainPurpose = (
-  consumerKeychainPurpose: ConsumerKeychainPurpose,
-): API_ConsumerKeychainPurpose => ({
-  ...consumerKeychainPurpose,
-  linkedAt: consumerKeychainPurpose.linkedAt.toISOString(),
 });

@@ -34,6 +34,16 @@ export type Problem = {
 };
 
 /**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+/**
+ * Unique identifier of the Keychain
+ */
+export type KeychainId = string;
+
+/**
  * Name of the Keychain
  */
 export type KeychainLocalizedName = {
@@ -45,6 +55,11 @@ export type KeychainLocalizedName = {
  */
 export type KeychainLocalizedDescription = {
     en: string;
+};
+
+export type ConsumerKeychainPurposeLinkSeed = {
+    knodeId: KnodeId;
+    purposeId: string;
 };
 
 export type Pagination = {
@@ -62,16 +77,6 @@ export type OrganizationId = string;
  * Unique identifier of the User
  */
 export type UserId = string;
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
-/**
- * Unique identifier of the Keychain
- */
-export type KeychainId = string;
 
 export type Keychain = {
     createdAt: string;
@@ -107,11 +112,6 @@ export type Users = Array<User>;
 
 export type KeychainMemberSeed = {
     userId: UserId;
-};
-
-export type ConsumerKeychainPurposeLinkSeed = {
-    knodeId: KnodeId;
-    purposeId: string;
 };
 
 export type GetStatusData = {

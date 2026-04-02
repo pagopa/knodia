@@ -4,7 +4,6 @@ import {
   API_PaginationQueryParams,
   API_UserId,
 } from "@knodia/common-models/api";
-import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
   API_KeychainId,
@@ -82,14 +81,4 @@ export const API_ConsumerKeychainMemberPathParam = z
   .extend(API_ConsumerKeychainIdPathParam.shape);
 export type API_ConsumerKeychainMemberPathParam = z.infer<
   typeof API_ConsumerKeychainMemberPathParam
->;
-
-export const API_ConsumerKeychainPurposeLinkSeed = z
-  .strictObject({
-    knodeId: API_KnodeId,
-    purposeId: z.uuid(),
-  })
-  .meta({ id: "ConsumerKeychainPurposeLinkSeed" });
-export type API_ConsumerKeychainPurposeLinkSeed = z.infer<
-  typeof API_ConsumerKeychainPurposeLinkSeed
 >;

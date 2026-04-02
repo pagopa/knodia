@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { API_ConsumerKeychainPurposeLinkSeed } from "@knodia/keychain-models/api";
 import type { Purpose } from "@knodia/purpose-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -32,7 +33,6 @@ import {
 import { AxiosError, type AxiosResponse } from "axios";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { type API_ConsumerKeychainPurposeLinkSeed } from "../src/models/api.ts";
 import { keychainWriterService } from "./setup.ts";
 import {
   getAllKeychainEvents,

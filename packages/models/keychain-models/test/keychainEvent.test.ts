@@ -20,10 +20,7 @@ import {
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
-import {
-  toConsumerKeychainLinkedPurposeV1,
-  toConsumerKeychainV1,
-} from "../src/keychainProtobufConverterToV1.ts";
+import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
 
 describe("KeychainEventV1 codec", () => {
   const consumerKeychain: ConsumerKeychain = {

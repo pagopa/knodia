@@ -13,7 +13,6 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_ConsumerKeychainIdPathParam,
-  type API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposeLinkSeed,
 } from "@knodia/keychain-models/api";
 import {
@@ -63,20 +62,15 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     });
 
   const pollConsumerKeychain = (
-    response:
-      | AxiosResponse<API_ConsumerKeychainPurpose>
-      | AxiosResponse<API_CreatedResource>,
+    response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
     headers: KnodiaServiceHeaders,
-  ) => {
-    const getId = (res: typeof response) =>
-      "id" in res.data ? res.data.id : res.data.consumerKeychainId;
-
-    return pollingService.pollResourceWithMetadata(() =>
-      retrieveConsumerKeychainById(getId(response), headers),
+    consumerKeychainId: string,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveConsumerKeychainById(consumerKeychainId, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
-  };
 
   const pollConsumerKeychainUntilDeletion = (
     consumerKeychainId: ConsumerKeychainId,
@@ -103,7 +97,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(201).send({ id: response.data.id });
     },
@@ -143,7 +137,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -186,7 +180,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -231,7 +225,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -449,7 +443,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(
+        response,
+        headers,
+        req.params.consumerKeychainId,
+      );
 
       res.status(204).send();
     },
