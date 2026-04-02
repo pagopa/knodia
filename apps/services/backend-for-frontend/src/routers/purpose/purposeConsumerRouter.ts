@@ -11,9 +11,7 @@ import {
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
 import {
-  API_PurposeFormSchema,
-  API_PurposeFormSchemaVersionPathParam,
-  API_PurposeFormUiSchema,
+  API_ExternalPurposeFormSchemasResponse,
   API_PurposeIdPathParam,
 } from "@knodia/purpose-models/api";
 import {
@@ -90,75 +88,36 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
-        `Getting Purpose form schema version ${req.params.version} from Knode ${req.query.knodeId}`,
+        `Getting current Purpose form schemas from Knode ${req.query.knodeId}`,
       );
 
-      const { data } = await remoteResourcesManagerApi.getPurposeFormSchema({
-        client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { version: req.params.version },
-        query: { knodeId: req.query.knodeId },
-      });
+      const { data } =
+        await remoteResourcesManagerApi.getCurrentPurposeFormSchemas({
+          client: remoteResourcesManagerClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          query: { knodeId: req.query.knodeId },
+        });
 
       res.send(data);
     },
     method: "GET",
     schema: {
       description:
-        "Retrieve the JSON Schema for validating Purpose form answers",
-      operationId: "getConsumerPurposeFormSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
+        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
+      operationId: "getConsumerCurrentPurposeFormSchemas",
       querystring: API_GetConsumerPurposeFormSchemaQueryParams,
       response: {
-        200: API_PurposeFormSchema.meta({
-          description: "Purpose form schema retrieved successfully",
+        200: API_ExternalPurposeFormSchemasResponse.meta({
+          description: "Current Purpose form schemas retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
-      summary: "Get Purpose form schema by version",
+      summary: "Get current Purpose form schemas",
       tags: [apiTags.purpose],
     },
-    url: "/consumer/purposes/formSchemas/:version",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
-
-      logger.info(
-        `Getting Purpose form UI schema version ${req.params.version} from Knode ${req.query.knodeId}`,
-      );
-
-      const { data } = await remoteResourcesManagerApi.getPurposeFormUiSchema({
-        client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { version: req.params.version },
-        query: { knodeId: req.query.knodeId },
-      });
-
-      res.send(data);
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
-      operationId: "getConsumerPurposeFormUiSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
-      querystring: API_GetConsumerPurposeFormSchemaQueryParams,
-      response: {
-        200: API_PurposeFormUiSchema.meta({
-          description: "Purpose form UI schema retrieved successfully",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-      },
-      summary: "Get Purpose form UI schema by version",
-      tags: [apiTags.purpose],
-    },
-    url: "/consumer/purposes/formSchemas/:version/ui",
+    url: "/consumer/purposes/formSchemas/current",
   });
 
   fastify.route({

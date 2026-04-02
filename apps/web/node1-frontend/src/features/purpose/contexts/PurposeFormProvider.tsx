@@ -19,10 +19,16 @@ import {
 interface Props {
   children: React.ReactNode;
   eservice: ConsumptionEserviceDetail;
+  formSchemaVersion: string;
   knodeId: KnodeId;
 }
 
-export function PurposeFormProvider({ children, eservice, knodeId }: Props) {
+export function PurposeFormProvider({
+  children,
+  eservice,
+  formSchemaVersion,
+  knodeId,
+}: Props) {
   const [data, setData] = useState<PurposeFormDraftData>(PURPOSE_FORM_DEFAULTS);
   const [formAnswers, setFormAnswers] = useState<FormValues>({});
 
@@ -40,6 +46,7 @@ export function PurposeFormProvider({ children, eservice, knodeId }: Props) {
       eserviceId: eservice.id,
       eserviceName: eservice.name,
       formAnswers,
+      formSchemaVersion,
       knodeId,
       maxDailyCallsPerConsumer: eservice.maxDailyCalls.perConsumer,
       updateDetailsStep,
@@ -49,6 +56,7 @@ export function PurposeFormProvider({ children, eservice, knodeId }: Props) {
       data,
       eservice,
       formAnswers,
+      formSchemaVersion,
       knodeId,
       updateDetailsStep,
       updateFormAnswers,

@@ -1,0 +1,23 @@
+meta {
+  name: Get Purpose Form Schemas
+  type: http
+}
+
+get {
+  url: {{host-remote-resources-manager}}/purposes/formSchemas/current?knodeId={{other-knode-id}}
+  body: none
+  auth: none
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}
+
+vars:post-response {
+  purposeFormSchemasVersion: res.body.version
+}
