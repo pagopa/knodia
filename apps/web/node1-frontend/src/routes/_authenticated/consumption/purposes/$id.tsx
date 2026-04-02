@@ -2,8 +2,8 @@ import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { purposeDetailSearchSchema } from "@/features/purpose/models/search-params";
 import { ConsumerPurposeDetail } from "@/features/purpose/components/ConsumerPurposeDetail/ConsumerPurposeDetail";
+import { purposeDetailSearchSchema } from "@/features/purpose/models/search-params";
 import { consumerPurposeDetailsQuery } from "@/features/purpose/services/queries";
 
 export const Route = createFileRoute(
