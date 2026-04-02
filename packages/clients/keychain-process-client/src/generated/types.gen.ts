@@ -114,10 +114,15 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
+export type ConsumerKeychainLinkedPurpose = {
+    id: string;
+    knodeId: KnodeId;
+};
+
 export type ConsumerKeychainPurpose = {
     consumerKeychainId: KeychainId;
     linkedAt: string;
-    purposeId: string;
+    purpose: ConsumerKeychainLinkedPurpose;
 };
 
 export type GetStatusData = {
