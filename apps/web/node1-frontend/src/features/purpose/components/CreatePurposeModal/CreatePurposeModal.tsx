@@ -14,7 +14,11 @@ import {
   useStepsContext,
 } from "@/contexts/steps";
 import { PurposeFormProvider } from "@/features/purpose/contexts/PurposeFormProvider";
-import { loadSchema, loadUiSchema } from "@/features/purpose/engine/types";
+import {
+  loadSchema,
+  loadTexts,
+  loadUiSchema,
+} from "@/features/purpose/engine/types";
 import { collectSteps } from "@/features/purpose/engine/uischemaParser";
 import { useLeaveConfirmModal } from "@/hooks/useLeaveConfirmModal";
 import { FullPageModal } from "@/layouts/FullPageModal";
@@ -47,6 +51,11 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     [schemasResponse],
   );
 
+  const texts = useMemo(
+    () => (schemasResponse ? loadTexts(schemasResponse.texts.en) : undefined),
+    [schemasResponse],
+  );
+
   const uiSchema = useMemo(
     () =>
       schemasResponse ? loadUiSchema(schemasResponse.uiSchema) : undefined,
@@ -54,8 +63,8 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   );
 
   const dynamicSteps = useMemo(
-    () => (uiSchema ? collectSteps(uiSchema) : []),
-    [uiSchema],
+    () => (uiSchema && texts ? collectSteps(uiSchema, texts) : []),
+    [uiSchema, texts],
   );
 
   if (isSchemasError) {
@@ -70,7 +79,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     );
   }
 
-  if (!jsonSchema || !uiSchema || !formSchemaVersion) {
+  if (!jsonSchema || !texts || !uiSchema || !formSchemaVersion) {
     return (
       <FullPageModal onClose={onClose} title="Create Purpose">
         <div className="mx-auto flex max-w-160 items-center justify-center p-10">
@@ -97,6 +106,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
           isLastStep={index === dynamicSteps.length - 1}
           jsonSchema={jsonSchema}
           step={step}
+          texts={texts}
           uischema={uiSchema}
         />
       ),

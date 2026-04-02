@@ -672,13 +672,22 @@ components:
       allOf:
         - $ref: "#/components/schemas/CreatedResource"
     PurposeFormSchemasResponse:
-      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
-        version identifier
+      description: Current Purpose form schemas (JSON Schema + UI Schema + Texts) with
+        their version identifier
       type: object
       properties:
         schema:
           type: object
           additionalProperties: {}
+        texts:
+          type: object
+          properties:
+            en:
+              type: object
+              additionalProperties: {}
+          required:
+            - en
+          additionalProperties: false
         uiSchema:
           type: object
           additionalProperties: {}
@@ -686,6 +695,7 @@ components:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:
         - schema
+        - texts
         - uiSchema
         - version
       additionalProperties: false

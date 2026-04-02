@@ -14,6 +14,7 @@ import {
   API_PurposeFormAnswers,
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersion,
+  API_PurposeFormTexts,
   API_PurposeFormUiSchema,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
@@ -85,6 +86,7 @@ export type API_GetPurposesQueryParams = z.infer<
 export const API_CurrentPurposeFormSchemasResponse = z
   .strictObject({
     schema: API_PurposeFormSchema,
+    texts: API_PurposeFormTexts,
     uiSchema: API_PurposeFormUiSchema,
     version: API_PurposeFormSchemaVersion,
   })

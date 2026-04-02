@@ -76,12 +76,15 @@ export const API_CreatedPurposeResource = API_CreatedResource.meta({
 export const API_PurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
+    texts: z.strictObject({
+      en: z.record(z.string(), z.unknown()),
+    }),
     uiSchema: z.record(z.string(), z.unknown()),
     version: API_PurposeFormSchemaVersion,
   })
   .meta({
     description:
-      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+      "Current Purpose form schemas (JSON Schema + UI Schema + Texts) with their version identifier",
     id: "PurposeFormSchemasResponse",
   });
 export type API_PurposeFormSchemasResponse = z.infer<

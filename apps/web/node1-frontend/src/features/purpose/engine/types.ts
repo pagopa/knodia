@@ -1,5 +1,3 @@
-// JSON Schema types (subset we support)
-
 export interface AndCondition {
   conditions: RuleCondition[];
   type: "AND";
@@ -11,6 +9,22 @@ export interface ControlElement {
   rule?: Rule;
   scope: string;
   type: "Control";
+}
+
+// JSON Schema types (subset we support)
+
+// Form texts — extracted from UI Schema into a dedicated texts.json
+export interface FieldTexts {
+  description?: string;
+  errors?: Record<string, string>;
+  label?: string;
+  options?: Record<string, string>;
+}
+
+export interface FormTexts {
+  banners?: Record<string, string>;
+  fields: Record<string, FieldTexts>;
+  groups?: Record<string, { description?: string; label?: string }>;
 }
 
 // Form values
@@ -41,7 +55,8 @@ export interface JsonSchemaProperty {
 export interface LabelElement {
   options?: { variant?: "error" | "info" | "warning" };
   rule?: Rule;
-  text: string;
+  text?: string;
+  textKey?: string;
   type: "Label";
 }
 
@@ -74,6 +89,7 @@ interface GroupElement {
   elements: UISchemaElement[];
   label?: string;
   options?: { description?: string };
+  textKey?: string;
   type: "Group";
 }
 
@@ -112,6 +128,10 @@ interface Rule {
 // engine's internal types so the cast is isolated here.
 export function loadSchema(json: Record<string, unknown>): JsonSchema {
   return json as unknown as JsonSchema;
+}
+
+export function loadTexts(json: Record<string, unknown>): FormTexts {
+  return json as unknown as FormTexts;
 }
 
 export function loadUiSchema(json: Record<string, unknown>): UISchema {

@@ -1,11 +1,18 @@
 import type {
   AndCondition,
   ControlElement,
+  FormTexts,
   LabelElement,
   RuleCondition,
   UISchema,
   UISchemaElement,
 } from "./types";
+
+import {
+  getFieldErrorMessages,
+  getGroupDescription,
+  getGroupLabel,
+} from "./textsResolver";
 
 export interface GroupLayout {
   description?: string | undefined;
@@ -37,16 +44,20 @@ export function collectControls(element: UISchemaElement): ControlElement[] {
   return [];
 }
 
-// Extracts custom error messages (options.errorMessages) from each control,
-// keyed by field name then validation keyword (e.g. "required", "minLength").
+// Extracts custom error messages from texts (keyed by field name),
+// with fallback to inline options.errorMessages in the UI Schema.
 export function collectErrorMessages(
+  texts: FormTexts,
   uischema: UISchema,
 ): Record<string, Record<string, string>> {
   const result: Record<string, Record<string, string>> = {};
   for (const control of collectControls(uischema)) {
-    if (control.options?.errorMessages) {
-      const fieldName = control.scope.replace("#/properties/", "");
-      result[fieldName] = control.options.errorMessages;
+    const fieldName = control.scope.replace("#/properties/", "");
+    const fromTexts = getFieldErrorMessages(texts, fieldName);
+    const fromControl = control.options?.errorMessages ?? {};
+    const merged = { ...fromControl, ...fromTexts };
+    if (Object.keys(merged).length > 0) {
+      result[fieldName] = merged;
     }
   }
   return result;
@@ -54,13 +65,18 @@ export function collectErrorMessages(
 
 // Collects Group elements from the UI Schema for section-based rendering.
 // If the schema has no explicit groups, wraps all elements in a single implicit group.
-export function collectGroups(uischema: UISchema): GroupLayout[] {
+export function collectGroups(
+  uischema: UISchema,
+  texts: FormTexts,
+): GroupLayout[] {
   if (uischema.type === "Group") {
     return [
       {
-        description: uischema.options?.description,
+        description:
+          getGroupDescription(texts, uischema.textKey) ??
+          uischema.options?.description,
         elements: collectGroupElements(uischema),
-        label: uischema.label,
+        label: getGroupLabel(texts, uischema.textKey) ?? uischema.label,
       },
     ];
   }
@@ -70,9 +86,11 @@ export function collectGroups(uischema: UISchema): GroupLayout[] {
   for (const child of uischema.elements) {
     if (child.type === "Group") {
       groups.push({
-        description: child.options?.description,
+        description:
+          getGroupDescription(texts, child.textKey) ??
+          child.options?.description,
         elements: collectGroupElements(child),
-        label: child.label,
+        label: getGroupLabel(texts, child.textKey) ?? child.label,
       });
     }
   }
@@ -87,14 +105,19 @@ export function collectGroups(uischema: UISchema): GroupLayout[] {
 
 // Extracts step layouts from the UI Schema for multi-step form rendering.
 // If no top-level Groups exist, wraps all elements in a single implicit step.
-export function collectSteps(uischema: UISchema): StepLayout[] {
+export function collectSteps(
+  uischema: UISchema,
+  texts: FormTexts,
+): StepLayout[] {
   const steps: StepLayout[] = [];
   for (const child of uischema.elements) {
     if (child.type === "Group") {
       steps.push({
-        description: child.options?.description,
+        description:
+          getGroupDescription(texts, child.textKey) ??
+          child.options?.description,
         elements: child.elements,
-        label: child.label,
+        label: getGroupLabel(texts, child.textKey) ?? child.label,
       });
     }
   }

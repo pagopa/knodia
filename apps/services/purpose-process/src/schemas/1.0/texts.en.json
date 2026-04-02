@@ -1,0 +1,361 @@
+{
+  "banners": {
+    "dpiaReminder": "Remember that the impact assessment is mandatory if the conditions set out in Section 35 of the GDPR exist.",
+    "priorConsultationReminder": "Remember that prior consultation is mandatory if the conditions set out in Section 36 of the GDPR exist."
+  },
+  "fields": {
+    "administrativeActText": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please enter the applicable general administrative act"
+      },
+      "label": "Applicable general administrative act"
+    },
+    "checkedAllDataNeeded": {
+      "description": "NB: If you only need some of the personal data provided by this E-Service, check whether a more limited one already exists. If not, ask a Producer to set one up.",
+      "errors": {
+        "required": "Confirmation required"
+      },
+      "label": "I confirm that I have verified whether all the personal data provided through this E-Service is actually needed.",
+      "options": {
+        "true": "I confirm"
+      }
+    },
+    "checkedExistenceMereCorrectnessInteropCatalogue": {
+      "description": "NB: Before confirming, please check whether another E-Service in the API Catalogue can perform the verification of personal data you need.",
+      "errors": {
+        "required": "Confirmation required"
+      },
+      "label": "I confirm that I have checked whether another E-Service in the API Catalogue can perform this verification without requiring new personal data to be shared.",
+      "options": {
+        "true": "I confirm"
+      }
+    },
+    "confirmPrincipleIntegrityAndDiscretion": {
+      "errors": {
+        "required": "Confirmation required"
+      },
+      "label": "I confirm that — in line with the integrity and confidentiality principle under Article 5(1)(f) of the GDPR — I have adopted all necessary technical and organizational measures to ensure adequate security of the personal data accessed through this E-service, including protection against unauthorized or unlawful processing and against accidental loss, destruction, or damage.",
+      "options": {
+        "true": "I confirm"
+      }
+    },
+    "confirmedDoneDpia": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Has a prior consultation with the Data Protection Authority been carried out?",
+      "options": {
+        "NO": "No",
+        "YES": "Yes"
+      }
+    },
+    "dataDownload": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "options": {
+        "NO": "No",
+        "YES": "Yes"
+      }
+    },
+    "dataProtectionMeasures": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please describe the measures adopted"
+      },
+      "label": "Describe the technical and organizational measures adopted to ensure adequate security of personal data under Articles 25 and 32 of the GDPR"
+    },
+    "dataQuantity": {
+      "errors": {
+        "required": "Please select a range"
+      },
+      "label": "Reference range for the validity period of the voucher issued for this E-Service",
+      "options": {
+        "QUANTITY_0_TO_100": "0-100",
+        "QUANTITY_1001_TO_5000": "1001-5000",
+        "QUANTITY_101_TO_500": "101-500",
+        "QUANTITY_5001_OVER": "5,001 or more",
+        "QUANTITY_500_TO_1000": "501-1000"
+      }
+    },
+    "dataRetentionPeriod": {
+      "description": "E.g. 1 hour, 10 days, 3 months, 2 years",
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please enter the retention period"
+      },
+      "label": "Data retention period identified"
+    },
+    "declarationConfirmGDPR": {
+      "errors": {
+        "required": "Confirmation required"
+      },
+      "label": "I declare that I am aware of the obligations under the GDPR regarding the processing of personal data and that I am able to demonstrate compliance (accountability principle under Article 5(2) of the GDPR)",
+      "options": {
+        "true": "I confirm"
+      }
+    },
+    "deliveryMethod": {
+      "errors": {
+        "required": "Please select a delivery method"
+      },
+      "label": "Delivery method",
+      "options": {
+        "ANONYMOUS": "In anonymized form",
+        "AGGREGATE": "In aggregate form",
+        "CLEARTEXT": "Clear (unencrypted) data",
+        "PSEUDOANONYMOUS": "In pseudonymized form"
+      }
+    },
+    "doneDpia": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Has a Data Protection Impact Assessment (DPIA) been carried out for the personal data processing activities that will be performed through this E-service?",
+      "options": {
+        "NO": "No",
+        "YES": "Yes"
+      }
+    },
+    "knowsDataQuantity": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Do you know the amount of personal data you will obtain through the use of this E-Service?",
+      "options": {
+        "NO": "No",
+        "YES": "Yes"
+      }
+    },
+    "legalBasis": {
+      "errors": {
+        "required": "Please select at least one legal basis"
+      },
+      "label": "Legal basis for accessing of personal data",
+      "options": {
+        "CONSENT": "Data subject's consent to the processing of personal data for one or more specific purposes",
+        "CONTRACT": "Performance of a contract to which the data subject is party or of pre-contractual measures adopted at the request of the data subject",
+        "LEGAL_OBLIGATION": "Compliance with a legal obligation",
+        "PUBLIC_INTEREST": "Performance of a task in the public interest or in the exercise of official authority vested in you",
+        "SAFEGUARD": "Safeguarding the vital interests of a natural person"
+      }
+    },
+    "legalBasisPublicInterest": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Specify the reasons for carrying out a task of public interest or connected to the exercise of public authority with which you are invested",
+      "options": {
+        "ADMINISTRATIVE_ACT": "General administrative act under Section 2-ter(1) of the Italian Privacy Code (for common personal data) and Section 2-sexies(1) (for special categories of data)",
+        "PUBLIC_INTEREST_TASK": "Performance of a public-interest task or exercise of public powers attributed to you under Section 2-ter(1-bis) of the Italian Privacy Code",
+        "RULE_OF_LAW": "Law or regulation under Section 2-ter(1) of the Italian Privacy Code (for common personal data) and Section 2-sexies(1) (for special categories of data)"
+      }
+    },
+    "legalObligationReference": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please specify the legal obligation"
+      },
+      "label": "Specify the legal obligation and, where possible, the relevant legislation"
+    },
+    "otherPersonalDataTypes": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please specify the type of personal data"
+      },
+      "label": "Specify the type of personal data"
+    },
+    "personalDataTypes": {
+      "errors": {
+        "required": "Please select at least one type of personal data"
+      },
+      "label": "Type(s) of personal data",
+      "options": {
+        "GDPR_ART_10": "Criminal-related data under Art. 10 of the GDPR (e.g., final criminal convictions, conditional release, residence bans or obligations, alternatives to detention)",
+        "GDPR_ART_8": "Data relating to minors under Art. 8 of the GDPR (e.g., a minor's name and surname)",
+        "GDPR_ART_9": "Special categories of data under Art. 9 of the GDPR (e.g., racial or ethnic origin, political opinions, religious or philosophical beliefs, trade union membership, genetic data, biometric data used to uniquely identify a person, health data, or data about sex life or sexual orientation)",
+        "OTHER": "Other",
+        "WITH_IDENTIFYING_DATA": "Common personal identification data (e.g. tax code)",
+        "WITH_NON_IDENTIFYING_DATA": "Common non-identifying personal data (e.g. license plate number)"
+      }
+    },
+    "policyProvided": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Has a privacy notice been provided to the data subject regarding the data you intend to access or receive through this E-Service and the related processing activities you will carry out?",
+      "options": {
+        "NO": "No",
+        "YES": "Yes"
+      }
+    },
+    "policyProvidedMedium": {
+      "errors": {
+        "required": "Please select a medium"
+      },
+      "label": "How was the privacy notice provided?",
+      "options": {
+        "ONLINE": "Online",
+        "PRINT": "Print"
+      }
+    },
+    "policyProvidedOnlineLink": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please enter the link to the privacy notice"
+      },
+      "label": "Link to the privacy notice"
+    },
+    "publicInterestReasons": {
+      "errors": {
+        "required": "Please select at least one reason"
+      },
+      "label": "",
+      "options": {
+        "ADMINISTRATIVE_ACT": "General administrative act under Section 2-ter(1) of the Italian Privacy Code (for common personal data) and Section 2-sexies(1) (for special categories of data)",
+        "PUBLIC_INTEREST_TASK": "Performance of a public-interest task or exercise of public powers attributed to you under Section 2-ter(1-bis) of the Italian Privacy Code",
+        "RULE_OF_LAW": "Law or regulation under Section 2-ter(1) of the Italian Privacy Code (for common personal data) and Section 2-sexies(1) (for special categories of data)"
+      }
+    },
+    "publicInterestTaskText": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please enter the task performed or public reference"
+      },
+      "label": "Task performed or public reference"
+    },
+    "purpose": {
+      "errors": {
+        "required": "Please select a purpose"
+      },
+      "label": "Purpose of access data",
+      "options": {
+        "INSTITUTIONAL": "For institutional purposes that do not require additional processing",
+        "OTHER": "Other"
+      }
+    },
+    "purposeDescription": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please describe your purpose"
+      },
+      "label": "Describe your purpose"
+    },
+    "purposePursuit": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Under the data minimization principle (Article 5(1)(c) of the GDPR), to achieve the purpose stated in point 1, please indicate whether:",
+      "options": {
+        "MERE_CORRECTNESS": "It is sufficient for the Provider to verify the mere correctness of a specific piece of information/personal data already in its possession",
+        "NEW_PERSONAL_DATA": "It is necessary to receive a certain personal data again"
+      }
+    },
+    "reasonPolicyNotProvided": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please explain why a privacy notice was not provided"
+      },
+      "label": "Explain why a specific privacy notice was not provided, in accordance with Article 14(5) of the GDPR"
+    },
+    "ruleOfLawText": {
+      "errors": {
+        "maxLength": "Must not exceed 2,000 characters",
+        "required": "Please enter the applicable law or regulation"
+      },
+      "label": "Applicable law or regulation"
+    },
+    "thirdPartiesRequestDataUsage": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Are you accessing data on behalf of an entity referred to in Section 2(2)(a) of the Italian Digital Administration Code (CAD)?",
+      "options": {
+        "PA_ALSO": "Also on behalf of such entity",
+        "PA_ONLY": "Exclusively on behalf of such entity"
+      }
+    },
+    "usesThirdPartyPersonalData": {
+      "errors": {
+        "required": "Please select an option"
+      },
+      "label": "Are you accessing data on behalf of or at the request of third parties?",
+      "options": {
+        "NO": "No",
+        "YES": "Yes"
+      }
+    }
+  },
+  "groups": {
+    "administrativeAct": {
+      "description": "Please enter the applicable general administrative act under Section 2-ter(1) of the Italian Privacy Code (for common personal data) and Section 2-sexies(1) (for special categories of data).",
+      "label": "Enter the reference of the applicable general administrative act"
+    },
+    "amountOfPersonalData": {
+      "label": "Amount of personal data"
+    },
+    "catalogueCheck": {
+      "label": "Catalogue check"
+    },
+    "dataDownload": {
+      "description": "NB: Downloaded data may not be up to date, which conflicts with the data accuracy principle under Article 5(1)(d) of the GDPR. Please limit downloads to cases where they are strictly necessary and justified by the processing purpose.\n\nAlso note that under Article 5(1)(b) and (e) of the GDPR (purpose limitation and storage limitation), data may only be kept for the time strictly necessary to achieve the specific, explicit, and legitimate purposes for which they were collected.",
+      "label": "Does this E-Service allow data downloads?"
+    },
+    "dataMinimization": {
+      "label": "Data minimization principle"
+    },
+    "deliveryMethod": {
+      "description": "NB: Under Article 5(1)(c) of the GDPR (data minimization principle), personal data processing must be proportionate and limited to what is strictly necessary for your stated purpose. Only adequate, relevant, and necessary data may be accessed via the e-service.\n\nTherefore:\n(i) you may select \"clear\" or \"pseudonymized\" data only if aggregated or anonymous data are insufficient for the purposes stated in point 1;\n(ii) you may select \"clear\" data only if pseudonymized data are also insufficient.",
+      "label": "How do you intend to receive the information from the Provider?"
+    },
+    "dpia": {
+      "label": "Data Protection Impact Assessment (DPIA)"
+    },
+    "gdprDeclaration": {
+      "label": "GDPR declaration"
+    },
+    "integrityAndConfidentiality": {
+      "label": "Integrity and confidentiality principle"
+    },
+    "lawfulnessOfProcessing": {
+      "description": "Declare the lawfulness of your request to access this E-Service data.",
+      "label": "Lawfulness of processing"
+    },
+    "legalBasis": {
+      "label": "Under which legal basis (Art. 6 of the GDPR) do you believe you are entitled to access the personal data provided by this E-Service?"
+    },
+    "neededDataCheck": {
+      "label": "Needed data check"
+    },
+    "personalDataTypes": {
+      "description": "NB: Under Art. 4(1) of the GDPR, personal data means any information about an identified or identifiable person — whether directly (e.g., name, tax code, email address) or indirectly (e.g., license plate number, employee ID, or any alphanumeric code assigned by a third party).",
+      "label": "Select the type(s) of personal data you will access through this E-Service, based on the definitions in Art. 4(1), (13), (14) and (15) of the GDPR."
+    },
+    "privacyNotice": {
+      "label": "Privacy notice"
+    },
+    "publicInterestLegalBasis": {
+      "label": "Public interest legal basis"
+    },
+    "publicInterestTask": {
+      "description": "Please provide the reference to the public-interest task or the exercise of public powers attributed to you under Section 2-ter(1-bis) of the Italian Privacy Code.",
+      "label": "Enter the task performed or the public reference of the applicable general administrative act"
+    },
+    "purposeOfAccess": {
+      "description": "NB: Under Art. 5(1)(b) of the GDPR (purpose limitation principle), your purposes must be specific, explicit, and legitimate. Any data obtained may only be processed in ways that are compatible with those stated purposes. If you have more than one purpose, you MUST complete a separate risk assessment for each one.",
+      "label": "What is the purpose of your access to the data provided by this E-service?"
+    },
+    "riskAnalysis": {
+      "description": "Complete the questionnaire to assess the risks associated with accessing this E-Service data.",
+      "label": "Risk analysis"
+    },
+    "ruleOfLaw": {
+      "description": "Please enter the applicable law or regulation under Section 2-ter(1) of the Italian Privacy Code (for common personal data) and Section 2-sexies(1) (for special categories of data).",
+      "label": "Enter applicable law or regulation"
+    },
+    "thirdPartyData": {
+      "label": "Third party data"
+    }
+  }
+}

@@ -130,6 +130,15 @@ components:
     PurposeFormSchema:
       type: object
       additionalProperties: {}
+    PurposeFormTexts:
+      type: object
+      properties:
+        en:
+          type: object
+          additionalProperties: {}
+      required:
+        - en
+      additionalProperties: false
     PurposeFormUiSchema:
       type: object
       additionalProperties: {}
@@ -251,12 +260,15 @@ components:
       properties:
         schema:
           $ref: "#/components/schemas/PurposeFormSchema"
+        texts:
+          $ref: "#/components/schemas/PurposeFormTexts"
         uiSchema:
           $ref: "#/components/schemas/PurposeFormUiSchema"
         version:
           $ref: "#/components/schemas/PurposeFormSchemaVersion"
       required:
         - schema
+        - texts
         - uiSchema
         - version
       additionalProperties: false

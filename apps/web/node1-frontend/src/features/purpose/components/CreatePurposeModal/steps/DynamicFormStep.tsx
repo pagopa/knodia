@@ -2,6 +2,7 @@ import { Banner } from "@knodia/ui-kit/ui";
 import { useCallback, useMemo, useState } from "react";
 
 import type {
+  FormTexts,
   FormValues,
   JsonSchema,
   UISchema,
@@ -18,6 +19,7 @@ import {
   scopeToFieldName,
 } from "@/features/purpose/engine/dependencyResolver";
 import { getDefaultValues } from "@/features/purpose/engine/schemaParser";
+import { getBannerText } from "@/features/purpose/engine/textsResolver";
 import {
   collectErrorMessages,
   collectGroups,
@@ -34,6 +36,7 @@ interface Props {
   isLastStep: boolean;
   jsonSchema: JsonSchema;
   step: StepLayout;
+  texts: FormTexts;
   uischema: UISchema;
 }
 
@@ -41,6 +44,7 @@ export function DynamicFormStep({
   isLastStep,
   jsonSchema,
   step,
+  texts,
   uischema,
 }: Props) {
   const { nextStep, prevStep } = useStepsContext();
@@ -71,8 +75,8 @@ export function DynamicFormStep({
   }, [stepUischema, values, visibleFieldNames]);
 
   const errorMessages = useMemo(
-    () => collectErrorMessages(uischema),
-    [uischema],
+    () => collectErrorMessages(texts, uischema),
+    [texts, uischema],
   );
 
   const validate = useMemo(
@@ -134,7 +138,10 @@ export function DynamicFormStep({
     nextStep,
   ]);
 
-  const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
+  const groups = useMemo(
+    () => collectGroups(stepUischema, texts),
+    [stepUischema, texts],
+  );
 
   const visibleGroups = useMemo(
     () =>
@@ -165,6 +172,7 @@ export function DynamicFormStep({
             jsonSchema={jsonSchema}
             key={group.label ?? groupIndex}
             onChange={handleChange}
+            texts={texts}
             values={values}
             visibleFieldNames={visibleFieldNames}
           />
@@ -194,6 +202,7 @@ function GroupSection({
   isLast,
   jsonSchema,
   onChange,
+  texts,
   values,
   visibleFieldNames,
 }: {
@@ -202,6 +211,7 @@ function GroupSection({
   isLast: boolean;
   jsonSchema: JsonSchema;
   onChange: (fieldName: string, value: string | string[]) => void;
+  texts: FormTexts;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {
@@ -222,10 +232,12 @@ function GroupSection({
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
           if (!isLabelVisible(element, values, visibleFieldNames)) return null;
+          const text =
+            getBannerText(texts, element.textKey) ?? element.text ?? "";
           return (
             <InfoBanner
               key={`label-${i}`}
-              text={element.text}
+              text={text}
               variant={element.options?.variant}
             />
           );
@@ -240,6 +252,7 @@ function GroupSection({
             jsonSchema={jsonSchema}
             key={fieldName}
             onChange={(v) => onChange(fieldName, v)}
+            texts={texts}
             value={
               values[fieldName] ??
               (jsonSchema.properties[fieldName]?.type === "array" ? [] : "")

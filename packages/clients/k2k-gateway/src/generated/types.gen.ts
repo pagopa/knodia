@@ -410,11 +410,16 @@ export type PurposeSeed = {
 export type CreatedPurposeResource = CreatedResource;
 
 /**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ * Current Purpose form schemas (JSON Schema + UI Schema + Texts) with their version identifier
  */
 export type PurposeFormSchemasResponse = {
     schema: {
         [key: string]: unknown;
+    };
+    texts: {
+        en: {
+            [key: string]: unknown;
+        };
     };
     uiSchema: {
         [key: string]: unknown;

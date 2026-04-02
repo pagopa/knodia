@@ -73,6 +73,7 @@ export function purposeServiceBuilder(
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<{
       schema: Record<string, unknown>;
+      texts: { en: Record<string, unknown> };
       uiSchema: Record<string, unknown>;
       version: string;
     }> {

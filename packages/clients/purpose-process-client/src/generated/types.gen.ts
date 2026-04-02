@@ -69,6 +69,12 @@ export type PurposeFormSchema = {
     [key: string]: unknown;
 };
 
+export type PurposeFormTexts = {
+    en: {
+        [key: string]: unknown;
+    };
+};
+
 export type PurposeFormUiSchema = {
     [key: string]: unknown;
 };
@@ -113,6 +119,7 @@ export type Purposes = {
 
 export type CurrentPurposeFormSchemasResponse = {
     schema: PurposeFormSchema;
+    texts: PurposeFormTexts;
     uiSchema: PurposeFormUiSchema;
     version: PurposeFormSchemaVersion;
 };

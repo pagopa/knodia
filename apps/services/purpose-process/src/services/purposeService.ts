@@ -33,6 +33,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   CURRENT_FORM_SCHEMA_VERSION,
   getFormSchema,
+  getFormTexts,
   getFormUiSchema,
 } from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
@@ -126,12 +127,14 @@ export function purposeServiceBuilder(
     },
     getCurrentPurposeFormSchemas({ logger }: AuthorizedContext<AuthData>): {
       schema: Record<string, unknown>;
+      texts: { en: Record<string, unknown> };
       uiSchema: Record<string, unknown>;
       version: PurposeFormSchemaVersion;
     } {
       logger.info("Getting current Purpose form schemas");
       return {
         schema: getFormSchema(CURRENT_FORM_SCHEMA_VERSION),
+        texts: getFormTexts(CURRENT_FORM_SCHEMA_VERSION),
         uiSchema: getFormUiSchema(CURRENT_FORM_SCHEMA_VERSION),
         version: CURRENT_FORM_SCHEMA_VERSION,
       };

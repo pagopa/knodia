@@ -21,6 +21,23 @@ export const handlers = [
         required: ["purpose", "purposeDescription"],
         type: "object",
       },
+      texts: {
+        en: {
+          fields: {
+            purpose: {
+              errors: { required: "Please select a purpose" },
+              label: "Purpose of access data",
+              options: {
+                INSTITUTIONAL: "For institutional purposes",
+                OTHER: "Other",
+              },
+            },
+          },
+          groups: {
+            test: { label: "Test" },
+          },
+        },
+      },
       uiSchema: {
         elements: [
           {
@@ -31,7 +48,7 @@ export const handlers = [
                 type: "Control",
               },
             ],
-            label: "Test",
+            textKey: "test",
             type: "Group",
           },
         ],
