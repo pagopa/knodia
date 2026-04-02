@@ -82,21 +82,6 @@ export function consumerKeychainReadmodelServiceBuilder(
         ? toConsumerKeychainPurpose(consumerKeychainPurpose)
         : undefined;
     },
-    async getConsumerKeychainPurposesByKeychainId(
-      consumerKeychainId: ConsumerKeychainId,
-    ): Promise<WithMetadata<ConsumerKeychainPurpose>[]> {
-      const queryRes = await readmodelDb
-        .select()
-        .from(readmodelConsumerKeychainPurpose)
-        .where(
-          eq(
-            readmodelConsumerKeychainPurpose.consumerKeychainId,
-            consumerKeychainId,
-          ),
-        );
-
-      return queryRes.map(toConsumerKeychainPurpose);
-    },
     async getFlatConsumerKeychainById(
       consumerKeychainId: ConsumerKeychainId,
     ): Promise<undefined | WithMetadata<FlatConsumerKeychain>> {

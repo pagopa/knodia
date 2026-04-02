@@ -1,9 +1,5 @@
 import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
 import {
-  type ConsumerKeychainReadmodelService,
-  consumerKeychainReadmodelServiceBuilder,
-} from "@knodia/db-readmodel-keychain/services";
-import {
   type KeychainWriterService,
   keychainWriterServiceBuilder,
 } from "@knodia/db-readmodel-keychain/writer";
@@ -27,7 +23,6 @@ let producer: TestProducer;
 let consumer: TestConsumer;
 let topicName: string;
 let keychainWriterService: KeychainWriterService;
-let consumerKeychainReadmodelService: ConsumerKeychainReadmodelService;
 
 beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(
@@ -42,8 +37,6 @@ beforeAll(async () => {
   ));
 
   keychainWriterService = keychainWriterServiceBuilder(readmodelDb);
-  consumerKeychainReadmodelService =
-    consumerKeychainReadmodelServiceBuilder(readmodelDb);
 });
 
 afterEach(async () => {
@@ -58,11 +51,4 @@ afterAll(async () => {
   ]);
 });
 
-export {
-  consumer,
-  consumerKeychainReadmodelService,
-  keychainWriterService,
-  producer,
-  readmodelDb,
-  topicName,
-};
+export { consumer, keychainWriterService, producer, readmodelDb, topicName };
