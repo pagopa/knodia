@@ -3,7 +3,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  getKnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import {
   API_PurposeFormSchema,
   API_PurposeFormSchemaVersionPathParam,
@@ -20,7 +23,6 @@ import {
   API_PurposeSeed,
 } from "../../models/purpose/api.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface PurposeConsumerRouterOptions {
   remoteResourcesManagerClient: RemoteResourcesManagerClient;

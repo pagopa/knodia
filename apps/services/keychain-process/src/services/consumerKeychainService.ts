@@ -23,6 +23,7 @@ import {
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
+import { getKnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
@@ -52,7 +53,6 @@ import {
   createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
-import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
   assertOrganizationIsKeychainOwner,

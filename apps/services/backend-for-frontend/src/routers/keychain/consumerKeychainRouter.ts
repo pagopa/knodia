@@ -8,6 +8,7 @@ import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
+  getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
@@ -35,7 +36,6 @@ import {
   toAPI_Keychain,
   toAPI_KeychainDetails,
 } from "../../models/keychain/apiConverter.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
