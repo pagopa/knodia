@@ -114,6 +114,22 @@ export type KeychainMemberSeed = {
     userId: UserId;
 };
 
+export type ConsumerKeychainLinkedPurpose = {
+    id: string;
+    knodeId: KnodeId;
+};
+
+export type ConsumerKeychainPurpose = {
+    consumerKeychainId: KeychainId;
+    linkedAt: string;
+    purpose: ConsumerKeychainLinkedPurpose;
+};
+
+export type ConsumerKeychainPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerKeychainPurpose>;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -491,6 +507,56 @@ export type RemoveConsumerKeychainMemberResponses = {
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
+export type GetConsumerKeychainPurposesData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/purposes';
+};
+
+export type GetConsumerKeychainPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerKeychainPurposesError = GetConsumerKeychainPurposesErrors[keyof GetConsumerKeychainPurposesErrors];
+
+export type GetConsumerKeychainPurposesResponses = {
+    /**
+     * Purposes linked to the Consumer Keychain retrieved successfully
+     */
+    200: ConsumerKeychainPurposes;
+};
+
+export type GetConsumerKeychainPurposesResponse = GetConsumerKeychainPurposesResponses[keyof GetConsumerKeychainPurposesResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;

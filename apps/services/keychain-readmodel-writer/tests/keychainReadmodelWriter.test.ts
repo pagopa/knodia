@@ -11,7 +11,6 @@ import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   keychainEvents,
-  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import { sendTestEvent } from "@knodia/test-commons/kafka";

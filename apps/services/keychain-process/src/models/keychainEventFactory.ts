@@ -8,7 +8,6 @@ import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/k
 
 import {
   type ConsumerKeychain,
-  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 

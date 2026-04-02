@@ -84,16 +84,6 @@ export type API_ConsumerKeychainMemberPathParam = z.infer<
   typeof API_ConsumerKeychainMemberPathParam
 >;
 
-export const API_ConsumerKeychainPurposeLinkSeed = z
-  .strictObject({
-    knodeId: API_KnodeId,
-    purposeId: z.uuid(),
-  })
-  .meta({ id: "ConsumerKeychainPurposeLinkSeed" });
-export type API_ConsumerKeychainPurposeLinkSeed = z.infer<
-  typeof API_ConsumerKeychainPurposeLinkSeed
->;
-
 const API_ConsumerKeychainLinkedPurpose = z
   .strictObject({
     id: z.uuid(),
