@@ -14,6 +14,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_ConsumerKeychainIdPathParam,
+  API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposeLinkSeed,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
@@ -23,7 +24,6 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 import {
   API_ConsumerKeychainMemberPathParam,
   API_ConsumerKeychainPatch,
-  API_ConsumerKeychainPurpose,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,

@@ -10,6 +10,10 @@ import {
   minNameLength,
 } from "./keychain.ts";
 
+export const API_KeychainId = z
+  .uuid()
+  .meta({ description: "Unique identifier of the Keychain", id: "KeychainId" });
+
 export const API_ConsumerKeychainIdPathParam = z.strictObject({
   consumerKeychainId: ConsumerKeychainId,
 });
@@ -48,4 +52,22 @@ export const API_ConsumerKeychainPurposeLinkSeed = z
   .meta({ id: "ConsumerKeychainPurposeLinkSeed" });
 export type API_ConsumerKeychainPurposeLinkSeed = z.infer<
   typeof API_ConsumerKeychainPurposeLinkSeed
+>;
+
+const API_ConsumerKeychainLinkedPurpose = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({ id: "ConsumerKeychainLinkedPurpose" });
+
+export const API_ConsumerKeychainPurpose = z
+  .strictObject({
+    consumerKeychainId: API_KeychainId,
+    linkedAt: z.iso.datetime(),
+    purpose: API_ConsumerKeychainLinkedPurpose,
+  })
+  .meta({ id: "ConsumerKeychainPurpose" });
+export type API_ConsumerKeychainPurpose = z.infer<
+  typeof API_ConsumerKeychainPurpose
 >;

@@ -73,6 +73,17 @@ components:
         - status
         - title
       additionalProperties: false
+    KnodeId:
+      description: Unique Knode identifier
+      type: string
+      enum:
+        - Orion
+        - Lynx
+    KeychainId:
+      description: Unique identifier of the Keychain
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     KeychainLocalizedName:
       description: Name of the Keychain
       type: object
@@ -94,6 +105,48 @@ components:
           maxLength: 250
       required:
         - en
+      additionalProperties: false
+    ConsumerKeychainPurposeLinkSeed:
+      type: object
+      properties:
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        purposeId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - knodeId
+        - purposeId
+      additionalProperties: false
+    ConsumerKeychainLinkedPurpose:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
+    ConsumerKeychainPurpose:
+      type: object
+      properties:
+        consumerKeychainId:
+          $ref: "#/components/schemas/KeychainId"
+        linkedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        purpose:
+          $ref: "#/components/schemas/ConsumerKeychainLinkedPurpose"
+      required:
+        - consumerKeychainId
+        - linkedAt
+        - purpose
       additionalProperties: false
     Pagination:
       type: object
@@ -126,17 +179,6 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
-    KnodeId:
-      description: Unique Knode identifier
-      type: string
-      enum:
-        - Orion
-        - Lynx
-    KeychainId:
-      description: Unique identifier of the Keychain
-      type: string
-      format: uuid
-      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     Keychain:
       type: object
       properties:
@@ -224,48 +266,6 @@ components:
           $ref: "#/components/schemas/UserId"
       required:
         - userId
-      additionalProperties: false
-    ConsumerKeychainPurposeLinkSeed:
-      type: object
-      properties:
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-        purposeId:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-      required:
-        - knodeId
-        - purposeId
-      additionalProperties: false
-    ConsumerKeychainLinkedPurpose:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - id
-        - knodeId
-      additionalProperties: false
-    ConsumerKeychainPurpose:
-      type: object
-      properties:
-        consumerKeychainId:
-          $ref: "#/components/schemas/KeychainId"
-        linkedAt:
-          type: string
-          format: date-time
-          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
-        purpose:
-          $ref: "#/components/schemas/ConsumerKeychainLinkedPurpose"
-      required:
-        - consumerKeychainId
-        - linkedAt
-        - purpose
       additionalProperties: false
 paths:
   /status:
