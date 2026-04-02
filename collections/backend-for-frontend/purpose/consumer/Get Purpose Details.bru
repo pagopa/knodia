@@ -1,0 +1,21 @@
+meta {
+  name: Get Purpose Details
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/purposes/:purposeId?knodeId={{knodeId}}
+  body: none
+}
+
+params:query {
+  knodeId: {{knodeId}}
+}
+
+params:path {
+  purposeId: {{purposeId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
