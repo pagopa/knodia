@@ -9,9 +9,9 @@ import { zocker } from "zocker";
 import {
   API_CatalogEserviceSearchResult,
   type API_CatalogEserviceSearchResult as API_CatalogEserviceSearchResultType,
-} from "../src/models/eservice/api.ts";
-import { toK2KMode, toK2KVersionState } from "./k2kConverters.ts";
-import { injectAppRequest } from "./utils.ts";
+} from "../../src/models/eservice/api.ts";
+import { toK2KMode, toK2KVersionState } from "../k2kConverters.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const getCatalogEservicesMock = vi.hoisted(() => vi.fn());
 const getOrganizationsMock = vi.hoisted(() => vi.fn());

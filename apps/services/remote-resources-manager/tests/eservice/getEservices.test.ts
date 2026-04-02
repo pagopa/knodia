@@ -20,18 +20,18 @@ import {
 } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { API_Eservice } from "../src/models/eservice/api.ts";
+import type { API_Eservice } from "../../src/models/eservice/api.ts";
 
-import { toK2KAPI_AgreementState } from "../src/models/agreement/apiConverter.ts";
-import { toAPI_Eservice } from "../src/models/eservice/apiConverter.ts";
+import { toK2KAPI_AgreementState } from "../../src/models/agreement/apiConverter.ts";
+import { toAPI_Eservice } from "../../src/models/eservice/apiConverter.ts";
 import {
   toK2KAgreement,
   toK2KEservice,
   toK2KEserviceVersion,
   toK2KOrganization,
-} from "./k2kConverters.ts";
-import { remoteResourceDbService } from "./setup.ts";
-import { injectAppRequest } from "./utils.ts";
+} from "../k2kConverters.ts";
+import { remoteResourceDbService } from "../setup.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const getAgreementsMock = vi.hoisted(() => vi.fn());
 const getEservicesMock = vi.hoisted(() => vi.fn());

@@ -6,9 +6,9 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockOrganization } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { toAPI_Organization } from "../src/models/organization/apiConverter.ts";
-import { toK2KOrganization } from "./k2kConverters.ts";
-import { injectAppRequest } from "./utils.ts";
+import { toAPI_Organization } from "../../src/models/organization/apiConverter.ts";
+import { toK2KOrganization } from "../k2kConverters.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
