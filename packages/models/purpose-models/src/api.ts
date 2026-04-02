@@ -61,13 +61,6 @@ export type API_PurposeFormSchemaVersion = z.infer<
   typeof API_PurposeFormSchemaVersion
 >;
 
-export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
-  version: API_PurposeFormSchemaVersion,
-});
-export type API_PurposeFormSchemaVersionPathParam = z.infer<
-  typeof API_PurposeFormSchemaVersionPathParam
->;
-
 export const API_PurposeFormSchema = z
   .record(z.string(), z.unknown())
   .meta({ id: "PurposeFormSchema" });
@@ -82,3 +75,29 @@ export const API_PurposeIdPathParam = z.strictObject({
   purposeId: PurposeId,
 });
 export type API_PurposeIdPathParam = z.infer<typeof API_PurposeIdPathParam>;
+
+// External API types — used by services BFF/RRM where the
+// form schema version is an opaque string received from the target Knode,
+// rather than the internal enum used by the purpose-process.
+export const API_ExternalPurposeFormSchemaVersion = z.string().meta({
+  description:
+    "Version identifier for the Purpose form schema provided by the target Knode",
+});
+export type API_ExternalPurposeFormSchemaVersion = z.infer<
+  typeof API_ExternalPurposeFormSchemaVersion
+>;
+
+export const API_ExternalPurposeFormSchemasResponse = z
+  .strictObject({
+    schema: z.record(z.string(), z.unknown()),
+    uiSchema: z.record(z.string(), z.unknown()),
+    version: API_ExternalPurposeFormSchemaVersion,
+  })
+  .meta({
+    description:
+      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+    id: "PurposeFormSchemasResponse",
+  });
+export type API_ExternalPurposeFormSchemasResponse = z.infer<
+  typeof API_ExternalPurposeFormSchemasResponse
+>;

@@ -22,9 +22,9 @@ const API_PurposeId = z.uuid().meta({
   id: "PurposeId",
 });
 
-const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
+const API_PurposeFormSchemaVersion = z.string().meta({
   description:
-    "Version identifier for the Purpose form schema provided by this Knode",
+    'Version identifier for the Purpose form schema provided by this Knode (e.g., "1.0")',
   id: "PurposeFormSchemaVersion",
 });
 
@@ -126,26 +126,20 @@ export const API_Purpose = z
   });
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
-export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
-  version: API_PurposeFormSchemaVersion,
-});
-export type API_PurposeFormSchemaVersionPathParam = z.infer<
-  typeof API_PurposeFormSchemaVersionPathParam
+export const API_PurposeFormSchemasResponse = z
+  .strictObject({
+    schema: z.record(z.string(), z.unknown()),
+    uiSchema: z.record(z.string(), z.unknown()),
+    version: API_PurposeFormSchemaVersion,
+  })
+  .meta({
+    description:
+      "Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier",
+    id: "PurposeFormSchemasResponse",
+  });
+export type API_PurposeFormSchemasResponse = z.infer<
+  typeof API_PurposeFormSchemasResponse
 >;
-
-export const API_PurposeFormSchema = z.record(z.string(), z.unknown()).meta({
-  description:
-    "JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers",
-  id: "PurposeFormSchema",
-});
-export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
-
-export const API_PurposeFormUiSchema = z.record(z.string(), z.unknown()).meta({
-  description:
-    "UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)",
-  id: "PurposeFormUiSchema",
-});
-export type API_PurposeFormUiSchema = z.infer<typeof API_PurposeFormUiSchema>;
 
 export const API_Purposes = z
   .strictObject({

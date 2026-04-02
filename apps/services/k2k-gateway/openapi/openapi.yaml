@@ -607,10 +607,9 @@ components:
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     PurposeFormSchemaVersion:
-      description: Version identifier for the Purpose form schema provided by this Knode
+      description: Version identifier for the Purpose form schema provided by this
+        Knode (e.g., "1.0")
       type: string
-      enum:
-        - "1.0"
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -732,16 +731,24 @@ components:
         - state
         - updatedAt
       additionalProperties: false
-    PurposeFormSchema:
-      description: JSON Schema (Draft-07) that defines the structure and validation
-        rules for the Purpose form answers
+    PurposeFormSchemasResponse:
+      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
+        version identifier
       type: object
-      additionalProperties: {}
-    PurposeFormUiSchema:
-      description: UI Schema that defines how to render the Purpose form (layout,
-        widgets, visibility rules)
-      type: object
-      additionalProperties: {}
+      properties:
+        schema:
+          type: object
+          additionalProperties: {}
+        uiSchema:
+          type: object
+          additionalProperties: {}
+        version:
+          $ref: "#/components/schemas/PurposeFormSchemaVersion"
+      required:
+        - schema
+        - uiSchema
+        - version
+      additionalProperties: false
     Purposes:
       type: object
       properties:
@@ -1332,68 +1339,24 @@ paths:
                 description: Bad Request
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/{version}:
+  /purposes/formSchemas/current:
     get:
-      operationId: getPurposeFormSchema
-      summary: Get Purpose form schema by version
+      operationId: getCurrentPurposeFormSchemas
+      summary: Get current Purpose form schemas
       tags:
         - resource
         - purpose
-      description: Retrieve the JSON Schema for validating Purpose form answers
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
+      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
+        with their version
       responses:
         "200":
-          description: Purpose form schema retrieved successfully
+          description: Current Purpose form schemas retrieved successfully
           content:
             application/json:
               schema:
-                description: Purpose form schema retrieved successfully
+                description: Current Purpose form schemas retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchema"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/{version}/ui:
-    get:
-      operationId: getPurposeFormUiSchema
-      summary: Get Purpose form UI schema by version
-      tags:
-        - resource
-        - purpose
-      description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
-      responses:
-        "200":
-          description: Purpose form UI schema retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Purpose form UI schema retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/PurposeFormUiSchema"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/PurposeFormSchemasResponse"
   /purposes/{purposeId}:
     get:
       operationId: getPurpose
