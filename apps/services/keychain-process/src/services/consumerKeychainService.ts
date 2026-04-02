@@ -53,11 +53,7 @@ import {
   createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
-import {
-  retrieveConsumerKeychain,
-  retrieveConsumerKeychainPurpose,
-  retrievePurpose,
-} from "../utils/readmodelUtils.ts";
+import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
@@ -205,27 +201,6 @@ export function consumerKeychainServiceBuilder(
 
       return await retrieveConsumerKeychain(
         consumerKeychainId,
-        readmodelService,
-      );
-    },
-
-    async getConsumerKeychainPurpose(
-      consumerKeychainId: ConsumerKeychainId,
-      purposeId: PurposeId,
-      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
-    ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
-      logger.info(
-        `Getting Purpose ${purposeId} linked to Consumer Keychain ${consumerKeychainId}`,
-      );
-
-      await Promise.all([
-        retrieveConsumerKeychain(consumerKeychainId, readmodelService),
-        retrievePurpose(purposeId, readmodelService),
-      ]);
-
-      return await retrieveConsumerKeychainPurpose(
-        consumerKeychainId,
-        purposeId,
         readmodelService,
       );
     },

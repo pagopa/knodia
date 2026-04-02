@@ -14,7 +14,6 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_ConsumerKeychainIdPathParam,
-  API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposeLinkSeed,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
@@ -24,7 +23,7 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 import {
   API_ConsumerKeychainMemberPathParam,
   API_ConsumerKeychainPatch,
-  API_ConsumerKeychainPurposeIdsPathParam,
+  API_ConsumerKeychainPurpose,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
@@ -364,49 +363,5 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
-      ]);
-
-      const {
-        data: consumerKeychainPurpose,
-        metadata: { version },
-      } = await consumerKeychainService.getConsumerKeychainPurpose(
-        req.params.consumerKeychainId,
-        req.params.purposeId,
-        ctx,
-      );
-
-      setMetadataVersionHeader(res, version);
-
-      res
-        .status(200)
-        .send(toAPI_ConsumerKeychainPurpose(consumerKeychainPurpose));
-    },
-    method: "GET",
-    schema: {
-      description: "Get a Purpose linked to a Consumer Keychain",
-      headers: KnodiaServiceHeaders,
-      operationId: "getConsumerKeychainPurpose",
-      params: API_ConsumerKeychainPurposeIdsPathParam,
-      response: {
-        200: {
-          headers: MetadataVersionHeader,
-          properties: API_ConsumerKeychainPurpose.meta({
-            description: "Purpose successfully linked to Consumer Keychain",
-          }),
-        },
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Not Found" }),
-      },
-      tags: [apiTags.consumerKeychain],
-    },
-    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };
