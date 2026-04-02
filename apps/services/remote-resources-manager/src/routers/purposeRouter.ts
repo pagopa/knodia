@@ -184,7 +184,6 @@ export const purposeRouter: FastifyPluginAsyncZod<
       description: "Retrieve a list of Purposes",
       operationId: "getPurposes",
       querystring: API_GetPurposesQueryParams,
-      summary: "Get Purposes",
       response: {
         200: API_Purposes.meta({
           description: "Purposes retrieved successfully",
@@ -193,6 +192,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      summary: "Get Purposes",
       tags: [apiTags.purpose],
     },
     url: "/purposes",
