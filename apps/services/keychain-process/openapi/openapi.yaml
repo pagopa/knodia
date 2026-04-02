@@ -267,6 +267,19 @@ components:
         - linkedAt
         - purpose
       additionalProperties: false
+    ConsumerKeychainPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerKeychainPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -837,6 +850,76 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getConsumerKeychainPurposes
+      tags:
+        - consumerKeychain
+      description: Retrieve a list of Purposes linked to a Consumer Keychain
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Purposes linked to the Consumer Keychain retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purposes linked to the Consumer Keychain retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainPurposes"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /users/technical:
