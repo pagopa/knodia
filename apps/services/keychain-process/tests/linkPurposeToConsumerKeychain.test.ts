@@ -10,6 +10,7 @@ import {
 import {
   generateId,
   type KnodeId,
+  type OrganizationId,
   type PurposeId,
 } from "@knodia/common-models/ids";
 import {
@@ -36,6 +37,7 @@ import {
   type API_ConsumerKeychainPurposeLinkSeed,
 } from "../src/models/api.ts";
 import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
+import { keychainWriterService } from "./setup.ts";
 import {
   getAllKeychainEvents,
   injectAppRequest,
@@ -195,5 +197,50 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     expect(response.statusCode).toBe(404);
   });
 
-  // TODO: add tests for asserts
+  it("should return 409 if the purpose is already linked to the consumer keychain", async () => {
+    const consumerKeychainPurpose: ConsumerKeychainPurpose = {
+      consumerKeychainId: consumerKeychain.id,
+      linkedAt: new Date(),
+      purpose: externalPurpose,
+    };
+    await keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurpose,
+      1,
+    );
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
+      .body(body);
+    expect(response.statusCode).toBe(409);
+  });
+
+  it("should return 403 if the requester is not the consumer keychain owner", async () => {
+    getPurposeMock.mockResolvedValue({ data: apiPurpose });
+
+    const response = await injectAppRequest({
+      organizationId: generateId<OrganizationId>(),
+      roles: ["administrative"],
+      type: "ui-session",
+    })
+      .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
+      .body(body);
+    expect(response.statusCode).toBe(403);
+  });
+
+  it("should return 403 if the requester is not the purpose consumer", async () => {
+    getPurposeMock.mockResolvedValue({
+      data: {
+        ...apiPurpose,
+        consumer: {
+          id: generateExternalId(),
+          knodeId,
+        },
+      } satisfies remoteResourcesManagerApi.Purpose,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
+      .body(body);
+    expect(response.statusCode).toBe(403);
+  });
 });
