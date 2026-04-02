@@ -196,11 +196,11 @@ export const purposeRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const { data } = await purposeProcessApi.getPurpose({
-        client: purposeProcessClient,
+      const { data } = await retrievePurpose(
+        purposeProcessClient,
+        req.params.purposeId,
         headers,
-        path: { purposeId: req.params.purposeId },
-      });
+      );
 
       res.send(toAPI_Purpose(data));
     },
