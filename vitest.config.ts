@@ -31,5 +31,6 @@ export default defineConfig({
       "packages/models/*",
     ],
     env: loadEnvFile(".env.test"),
+    pool: "threads"
   },
 });

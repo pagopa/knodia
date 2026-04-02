@@ -51,6 +51,4 @@ jobs:
 
   test:
     name: Test
-    uses: ./.github/workflows/pnpm-job.yml
-    with:
-      command: test
+    uses: ./.github/workflows/test-job.yml
