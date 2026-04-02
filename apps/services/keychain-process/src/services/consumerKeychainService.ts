@@ -233,19 +233,25 @@ export function consumerKeychainServiceBuilder(
         `Linking Purpose ${purposeId} to Consumer Keychain ${consumerKeychainId}`,
       );
 
-      const [consumerKeychain, { data: purpose }] = await Promise.all([
-        retrieveConsumerKeychain(consumerKeychainId, readmodelService),
-        remoteResourcesManagerApi.getPurpose({
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          path: { purposeId },
-          query: { knodeId },
-        }),
-      ]);
       const externalPurpose: ExternalResource<PurposeId> = {
         id: purposeId,
         knodeId,
       };
+      const [consumerKeychain] = await Promise.all([
+        retrieveConsumerKeychain(consumerKeychainId, readmodelService),
+        assertPurposeIsNotLinkedToConsumerKeychain(
+          consumerKeychainId,
+          externalPurpose,
+          readmodelService,
+        ),
+      ]);
+
+      const { data: purpose } = await remoteResourcesManagerApi.getPurpose({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { purposeId },
+        query: { knodeId },
+      });
 
       assertOrganizationIsKeychainOwner(
         authData.organizationId,
@@ -254,11 +260,6 @@ export function consumerKeychainServiceBuilder(
       assertOrganizationIsPurposeConsumer(
         unsafeBrandExternalId(authData.organizationId),
         purpose,
-      );
-      await assertPurposeIsNotLinkedToConsumerKeychain(
-        consumerKeychainId,
-        externalPurpose,
-        readmodelService,
       );
 
       const linkedAt = new Date();

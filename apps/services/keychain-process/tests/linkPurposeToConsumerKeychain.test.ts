@@ -28,15 +28,8 @@ import {
   getMockConsumerKeychain,
   getMockPurpose,
 } from "@knodia/test-commons/utils";
-import {
-  assert,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { AxiosError, type AxiosResponse } from "axios";
+import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   type API_ConsumerKeychainPurpose,
@@ -102,11 +95,8 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     purposeId: purpose.id,
   };
 
-  beforeAll(async () => {
-    await Promise.all([seedConsumerKeychain(consumerKeychain)]);
-  });
-
-  beforeEach(() => {
+  beforeEach(async () => {
+    await seedConsumerKeychain(consumerKeychain);
     getPurposeMock.mockReset();
   });
 
@@ -178,6 +168,17 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
   );
 
   it("should return 404 if the purpose does not exist", async () => {
+    const getPurposeMockMessage = "Purpose Not Found";
+    getPurposeMock.mockRejectedValue(
+      new AxiosError(getPurposeMockMessage, "404", undefined, undefined, {
+        data: {
+          correlationId: generateId(),
+          status: 404,
+          title: getPurposeMockMessage,
+        },
+      } as AxiosResponse),
+    );
+
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
       .body({
@@ -193,4 +194,6 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       .body(body);
     expect(response.statusCode).toBe(404);
   });
+
+  // TODO: add tests for asserts
 });
