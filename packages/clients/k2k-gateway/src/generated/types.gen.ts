@@ -362,9 +362,9 @@ export type Organizations = {
 export type PurposeId = string;
 
 /**
- * Version identifier for the Purpose form schema provided by this Knode
+ * Version identifier for the Purpose form schema provided by this Knode (e.g., "1.0")
  */
-export type PurposeFormSchemaVersion = '1.0';
+export type PurposeFormSchemaVersion = string;
 
 /**
  * Name of the Purpose
@@ -445,17 +445,21 @@ export type Purpose = {
 };
 
 /**
- * JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers
+ * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
  */
-export type PurposeFormSchema = {
-    [key: string]: unknown;
+export type PurposeFormSchemasResponse = {
+    schema: {
+        [key: string]: unknown;
+    };
+    uiSchema: {
+        [key: string]: unknown;
+    };
+    version: PurposeFormSchemaVersion;
 };
 
-/**
- * UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)
- */
-export type PurposeFormUiSchema = {
-    [key: string]: unknown;
+export type Purposes = {
+    pagination: Pagination;
+    results: Array<Purpose>;
 };
 
 export type GetStatusData = {
@@ -818,6 +822,48 @@ export type GetOrganizationsResponses = {
 
 export type GetOrganizationsResponse = GetOrganizationsResponses[keyof GetOrganizationsResponses];
 
+export type GetPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: OrganizationId;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: EserviceId;
+    };
+    url: '/purposes';
+};
+
+export type GetPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetPurposesError = GetPurposesErrors[keyof GetPurposesErrors];
+
+export type GetPurposesResponses = {
+    /**
+     * Purposes retrieved successfully
+     */
+    200: Purposes;
+};
+
+export type GetPurposesResponse = GetPurposesResponses[keyof GetPurposesResponses];
+
 export type CreatePurposeData = {
     body: PurposeSeed;
     path?: never;
@@ -851,59 +897,21 @@ export type CreatePurposeResponses = {
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
 
-export type GetPurposeFormSchemaData = {
+export type GetCurrentPurposeFormSchemasData = {
     body?: never;
-    path: {
-        version: PurposeFormSchemaVersion;
-    };
+    path?: never;
     query?: never;
-    url: '/purposes/formSchemas/{version}';
+    url: '/purposes/formSchemas/current';
 };
 
-export type GetPurposeFormSchemaErrors = {
+export type GetCurrentPurposeFormSchemasResponses = {
     /**
-     * Bad Request
+     * Current Purpose form schemas retrieved successfully
      */
-    400: Problem;
+    200: PurposeFormSchemasResponse;
 };
 
-export type GetPurposeFormSchemaError = GetPurposeFormSchemaErrors[keyof GetPurposeFormSchemaErrors];
-
-export type GetPurposeFormSchemaResponses = {
-    /**
-     * Purpose form schema retrieved successfully
-     */
-    200: PurposeFormSchema;
-};
-
-export type GetPurposeFormSchemaResponse = GetPurposeFormSchemaResponses[keyof GetPurposeFormSchemaResponses];
-
-export type GetPurposeFormUiSchemaData = {
-    body?: never;
-    path: {
-        version: PurposeFormSchemaVersion;
-    };
-    query?: never;
-    url: '/purposes/formSchemas/{version}/ui';
-};
-
-export type GetPurposeFormUiSchemaErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-};
-
-export type GetPurposeFormUiSchemaError = GetPurposeFormUiSchemaErrors[keyof GetPurposeFormUiSchemaErrors];
-
-export type GetPurposeFormUiSchemaResponses = {
-    /**
-     * Purpose form UI schema retrieved successfully
-     */
-    200: PurposeFormUiSchema;
-};
-
-export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
+export type GetCurrentPurposeFormSchemasResponse = GetCurrentPurposeFormSchemasResponses[keyof GetCurrentPurposeFormSchemasResponses];
 
 export type GetPurposeData = {
     body?: never;

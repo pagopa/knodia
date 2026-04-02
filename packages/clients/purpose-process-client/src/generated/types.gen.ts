@@ -111,6 +111,12 @@ export type Purposes = {
     results: Array<Purpose>;
 };
 
+export type CurrentPurposeFormSchemasResponse = {
+    schema: PurposeFormSchema;
+    uiSchema: PurposeFormUiSchema;
+    version: PurposeFormSchemaVersion;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -291,7 +297,7 @@ export type GetPurposeResponses = {
 
 export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
 
-export type GetPurposeFormSchemaData = {
+export type GetCurrentPurposeFormSchemasData = {
     body?: never;
     headers: {
         /**
@@ -299,18 +305,12 @@ export type GetPurposeFormSchemaData = {
          */
         'x-correlation-id': CorrelationId;
     };
-    path: {
-        version: PurposeFormSchemaVersion;
-    };
+    path?: never;
     query?: never;
-    url: '/purposes/formSchemas/{version}';
+    url: '/purposes/formSchemas/current';
 };
 
-export type GetPurposeFormSchemaErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
+export type GetCurrentPurposeFormSchemasErrors = {
     /**
      * Unauthorized
      */
@@ -321,54 +321,13 @@ export type GetPurposeFormSchemaErrors = {
     403: Problem;
 };
 
-export type GetPurposeFormSchemaError = GetPurposeFormSchemaErrors[keyof GetPurposeFormSchemaErrors];
+export type GetCurrentPurposeFormSchemasError = GetCurrentPurposeFormSchemasErrors[keyof GetCurrentPurposeFormSchemasErrors];
 
-export type GetPurposeFormSchemaResponses = {
+export type GetCurrentPurposeFormSchemasResponses = {
     /**
-     * Purpose form schema retrieved successfully
+     * Current Purpose form schemas retrieved successfully
      */
-    200: PurposeFormSchema;
+    200: CurrentPurposeFormSchemasResponse;
 };
 
-export type GetPurposeFormSchemaResponse = GetPurposeFormSchemaResponses[keyof GetPurposeFormSchemaResponses];
-
-export type GetPurposeFormUiSchemaData = {
-    body?: never;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
-    path: {
-        version: PurposeFormSchemaVersion;
-    };
-    query?: never;
-    url: '/purposes/formSchemas/{version}/ui';
-};
-
-export type GetPurposeFormUiSchemaErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetPurposeFormUiSchemaError = GetPurposeFormUiSchemaErrors[keyof GetPurposeFormUiSchemaErrors];
-
-export type GetPurposeFormUiSchemaResponses = {
-    /**
-     * Purpose form UI schema retrieved successfully
-     */
-    200: PurposeFormUiSchema;
-};
-
-export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
+export type GetCurrentPurposeFormSchemasResponse = GetCurrentPurposeFormSchemasResponses[keyof GetCurrentPurposeFormSchemasResponses];

@@ -114,7 +114,7 @@ export const createConsumerKeychainPurposeLinkedV1Event = ({
     data: {
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: linkedAt.getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
+      purpose,
     },
     type: "ConsumerKeychainPurposeLinkedV1",
   },
