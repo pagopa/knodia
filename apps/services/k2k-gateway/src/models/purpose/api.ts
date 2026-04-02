@@ -1,6 +1,8 @@
 import {
   API_CreatedResource,
   API_OrganizationId,
+  API_Pagination,
+  API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import {
   maxDailyCalls,
@@ -137,4 +139,24 @@ export const API_PurposeFormSchemasResponse = z
   });
 export type API_PurposeFormSchemasResponse = z.infer<
   typeof API_PurposeFormSchemasResponse
+>;
+
+export const API_Purposes = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_Purpose),
+  })
+  .meta({ id: "Purposes" });
+export type API_Purposes = z.infer<typeof API_Purposes>;
+
+export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
+  consumerId: API_OrganizationId.optional().meta({
+    description: "Filter by Consumer ID",
+  }),
+  eserviceId: API_EserviceId.optional().meta({
+    description: "Filter by E-service ID",
+  }),
+});
+export type API_GetPurposesQueryParams = z.infer<
+  typeof API_GetPurposesQueryParams
 >;

@@ -457,6 +457,11 @@ export type PurposeFormSchemasResponse = {
     version: PurposeFormSchemaVersion;
 };
 
+export type Purposes = {
+    pagination: Pagination;
+    results: Array<Purpose>;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -816,6 +821,48 @@ export type GetOrganizationsResponses = {
 };
 
 export type GetOrganizationsResponse = GetOrganizationsResponses[keyof GetOrganizationsResponses];
+
+export type GetPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: OrganizationId;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: EserviceId;
+    };
+    url: '/purposes';
+};
+
+export type GetPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetPurposesError = GetPurposesErrors[keyof GetPurposesErrors];
+
+export type GetPurposesResponses = {
+    /**
+     * Purposes retrieved successfully
+     */
+    200: Purposes;
+};
+
+export type GetPurposesResponse = GetPurposesResponses[keyof GetPurposesResponses];
 
 export type CreatePurposeData = {
     body: PurposeSeed;

@@ -344,6 +344,11 @@ export type Purpose = {
     updatedAt: string;
 };
 
+export type Purposes = {
+    pagination: Pagination;
+    results: Array<Purpose>;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -662,6 +667,56 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type GetPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by Consumer ID
+         */
+        consumerId?: string;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+    };
+    url: '/purposes';
+};
+
+export type GetPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPurposesError = GetPurposesErrors[keyof GetPurposesErrors];
+
+export type GetPurposesResponses = {
+    /**
+     * Purposes retrieved successfully
+     */
+    200: Purposes;
+};
+
+export type GetPurposesResponse = GetPurposesResponses[keyof GetPurposesResponses];
 
 export type CreatePurposeData = {
     body: PurposeSeed;

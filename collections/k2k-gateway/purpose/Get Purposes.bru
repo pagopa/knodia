@@ -1,0 +1,26 @@
+meta {
+  name: Get Purposes
+  type: http
+}
+
+get {
+  url: {{host-k2k-gateway}}/purposes?limit=50&offset=0
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~consumerId: {{organizationId}}
+  ~eserviceId: {{eserviceId}}
+}
+
+headers {
+  ~Authorization:
+}
+
+vars:post-response {
+  total: res.body.pagination.total
+  purposes: res.body.results
+}
