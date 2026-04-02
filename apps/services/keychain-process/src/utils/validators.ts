@@ -1,7 +1,4 @@
-import type {
-  ExternalId,
-  ExternalResource,
-} from "@knodia/common-models/externalResource";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
   OrganizationId,
@@ -37,7 +34,7 @@ export function assertOrganizationIsKeychainOwner(
 }
 
 export function assertOrganizationIsPurposeConsumer(
-  organizationId: ExternalId<OrganizationId>,
+  organizationId: OrganizationId,
   purpose: Pick<remoteResourcesManagerApi.Purpose, "consumer">,
 ): void {
   if (purpose.consumer.id !== organizationId) {

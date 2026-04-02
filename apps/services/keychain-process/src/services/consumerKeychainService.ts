@@ -257,10 +257,7 @@ export function consumerKeychainServiceBuilder(
         authData.organizationId,
         consumerKeychain.data,
       );
-      assertOrganizationIsPurposeConsumer(
-        unsafeBrandExternalId(authData.organizationId),
-        purpose,
-      );
+      assertOrganizationIsPurposeConsumer(authData.organizationId, purpose);
 
       const linkedAt = new Date();
       const { newVersion } = await eventStoreWriter.insertEvent(
