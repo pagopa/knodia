@@ -13,7 +13,9 @@ export interface ControlElement {
 
 // JSON Schema types (subset we support)
 
-// Form texts — extracted from UI Schema into a dedicated texts.json
+// Form texts — all human-readable strings extracted from UI Schema into a
+// dedicated locale-keyed texts file. Controls are linked via field name
+// (derived from scope), groups/banners via textKey.
 export interface FieldTexts {
   description?: string;
   errors?: Record<string, string>;

@@ -64,7 +64,7 @@ export function collectErrorMessages(
 }
 
 // Collects Group elements from the UI Schema for section-based rendering.
-// If the schema has no explicit groups, wraps all elements in a single implicit group.
+// Resolves group label/description from texts via textKey, with inline fallback.
 export function collectGroups(
   uischema: UISchema,
   texts: FormTexts,
@@ -104,7 +104,7 @@ export function collectGroups(
 }
 
 // Extracts step layouts from the UI Schema for multi-step form rendering.
-// If no top-level Groups exist, wraps all elements in a single implicit step.
+// Resolves step label/description from texts via textKey, with inline fallback.
 export function collectSteps(
   uischema: UISchema,
   texts: FormTexts,
