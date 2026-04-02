@@ -4,7 +4,6 @@ import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import {
   type ExternalResource,
   generateExternalId,
-  unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
@@ -17,6 +16,7 @@ import {
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockConsumerKeychain,
+  getMockConsumerKeychainPurpose,
   toExpectConsumerKeychain,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -106,11 +106,81 @@ describe("Consumer keychain read model writer tests", async () => {
       data: {
         consumerKeychainId: consumerKeychain.id,
         linkedAt: expect.any(Date),
-        purpose: {
-          id: unsafeBrandExternalId(purpose.id),
-          knodeId: purpose.knodeId,
-        },
+        purpose,
       },
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ConsumerKeychainPurpose>);
+  });
+
+  it("ConsumerKeychainPurposeUnlinkedV1", async () => {
+    const oldMetadataVersion = 2;
+    const consumerKeychain = getMockConsumerKeychain();
+    await keychainWriterService.upsertConsumerKeychain(
+      consumerKeychain,
+      oldMetadataVersion,
+    );
+
+    const purpose1: ExternalResource<PurposeId> = {
+      id: generateExternalId(),
+      knodeId: "Orion",
+    };
+    const consumerKeychainPurpose1: ConsumerKeychainPurpose = {
+      ...getMockConsumerKeychainPurpose(),
+      consumerKeychainId: consumerKeychain.id,
+      purpose: purpose1,
+    };
+    await keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurpose1,
+      oldMetadataVersion,
+    );
+
+    const purpose2: ExternalResource<PurposeId> = {
+      id: generateExternalId(),
+      knodeId: "Orion",
+    };
+    const consumerKeychainPurpose2: ConsumerKeychainPurpose = {
+      ...getMockConsumerKeychainPurpose(),
+      consumerKeychainId: consumerKeychain.id,
+      purpose: purpose2,
+    };
+    await keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurpose2,
+      oldMetadataVersion,
+    );
+
+    const eventData = protobufBinaryCodec(
+      keychainEvents.ConsumerKeychainPurposeUnlinkedV1,
+    ).encode({
+      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+      purpose: toConsumerKeychainLinkedPurposeV1(purpose1),
+    });
+
+    const metadataVersion = oldMetadataVersion + 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "ConsumerKeychainPurposeUnlinkedV1",
+      metadataVersion,
+      producer,
+      streamId: consumerKeychain.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedKeychains = await getAllConsumerKeychains(readmodelDb);
+    expect(retrievedKeychains.length).toBe(1);
+    expect(retrievedKeychains[0]).toEqual({
+      data: toExpectConsumerKeychain(consumerKeychain),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<ConsumerKeychain>);
+
+    const retrievedConsumerKeychainPurposes =
+      await consumerKeychainReadmodelService.getConsumerKeychainPurposesByKeychainId(
+        consumerKeychain.id,
+      );
+    expect(retrievedConsumerKeychainPurposes.length).toBe(1);
+    expect(retrievedConsumerKeychainPurposes[0]).toEqual({
+      data: consumerKeychainPurpose2,
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ConsumerKeychainPurpose>);
   });

@@ -43,6 +43,44 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
           ),
         );
     },
+    async deleteConsumerKeychainPurpose(
+      consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
+      metadataVersion: number,
+    ): Promise<void> {
+      return db.transaction(async (tx) => {
+        await tx
+          .delete(readmodelConsumerKeychainPurpose)
+          .where(
+            and(
+              eq(
+                readmodelConsumerKeychainPurpose.consumerKeychainId,
+                consumerKeychainPurpose.consumerKeychainId,
+              ),
+              eq(
+                readmodelConsumerKeychainPurpose.purposeId,
+                consumerKeychainPurpose.purpose.id,
+              ),
+              eq(
+                readmodelConsumerKeychainPurpose.producerKnodeId,
+                consumerKeychainPurpose.purpose.knodeId,
+              ),
+            ),
+          );
+
+        await updateMetadataVersionInTables({
+          db: tx,
+          getIdColumn: (table) => {
+            if ("consumerKeychainId" in table) {
+              return table.consumerKeychainId;
+            }
+            return table.id;
+          },
+          id: consumerKeychainPurpose.consumerKeychainId,
+          newMetadataVersion: metadataVersion,
+          tables: consumerKeychainTables,
+        });
+      });
+    },
     async upsertConsumerKeychain(
       consumerKeychain: ConsumerKeychain,
       metadataVersion: number,
