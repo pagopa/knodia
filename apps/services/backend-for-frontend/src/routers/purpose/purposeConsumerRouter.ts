@@ -23,7 +23,8 @@ import {
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
-  API_GetConsumerPurposeQueryParams,
+  API_GetConsumerPurposeDetailQueryParams,
+  API_GetConsumerPurposeFormSchemaQueryParams,
   API_PurposeDetails,
   API_PurposeSeed,
 } from "../../models/purpose/api.ts";
@@ -107,7 +108,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         "Retrieve the JSON Schema for validating Purpose form answers",
       operationId: "getConsumerPurposeFormSchema",
       params: API_PurposeFormSchemaVersionPathParam,
-      querystring: API_GetConsumerPurposeQueryParams,
+      querystring: API_GetConsumerPurposeFormSchemaQueryParams,
       response: {
         200: API_PurposeFormSchema.meta({
           description: "Purpose form schema retrieved successfully",
@@ -145,7 +146,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
       operationId: "getConsumerPurposeFormUiSchema",
       params: API_PurposeFormSchemaVersionPathParam,
-      querystring: API_GetConsumerPurposeQueryParams,
+      querystring: API_GetConsumerPurposeFormSchemaQueryParams,
       response: {
         200: API_PurposeFormUiSchema.meta({
           description: "Purpose form UI schema retrieved successfully",
@@ -216,7 +217,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       description: "Retrieve a Consumer Purpose with details",
       operationId: "getConsumerPurposeDetails",
       params: API_PurposeIdPathParam,
-      querystring: API_GetConsumerPurposeQueryParams,
+      querystring: API_GetConsumerPurposeDetailQueryParams,
       response: {
         200: API_PurposeDetails.meta({
           description: "Consumer Purpose details retrieved successfully",
