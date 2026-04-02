@@ -97,7 +97,7 @@ export type API_ConsumerKeychainPurposeLinkSeed = z.infer<
   typeof API_ConsumerKeychainPurposeLinkSeed
 >;
 
-const ConsumerKeychainLinkedPurpose = z
+const API_ConsumerKeychainLinkedPurpose = z
   .strictObject({
     id: z.uuid(),
     knodeId: API_KnodeId,
@@ -108,7 +108,7 @@ export const API_ConsumerKeychainPurpose = z
   .strictObject({
     consumerKeychainId: API_KeychainId,
     linkedAt: z.iso.datetime(),
-    purpose: ConsumerKeychainLinkedPurpose,
+    purpose: API_ConsumerKeychainLinkedPurpose,
   })
   .meta({ id: "ConsumerKeychainPurpose" });
 export type API_ConsumerKeychainPurpose = z.infer<
