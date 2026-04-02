@@ -106,6 +106,7 @@ describe("GET /purposes (getPurposes)", () => {
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
     { ...defaultQuery, consumerId: "InvalidConsumerId" },
+    { ...defaultQuery, eserviceId: "InvalidEserviceId" },
     {
       ...defaultQuery,
       invalidParam: "invalid",
