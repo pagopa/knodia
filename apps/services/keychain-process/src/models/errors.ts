@@ -4,6 +4,7 @@ import type {
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { ConsumerKeychainPurpose } from "@knodia/keychain-models";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -19,6 +20,7 @@ const errorCodes = {
   INVALID_USER_ROLE: "0004",
   KEYCHAIN_MEMBER_NOT_FOUND: "0005",
   PURPOSE_ALREADY_LINKED_TO_CONSUMER_KEYCHAIN: "0006",
+  CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND: "0007",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -34,6 +36,18 @@ export function consumerKeychainNotFound(id: ConsumerKeychainId) {
     detail: `Consumer keychain with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Consumer Keychain Not Found",
+  });
+}
+
+export function consumerKeychainPurposeNotFound({
+  consumerKeychainId,
+  purpose,
+}: Omit<ConsumerKeychainPurpose, "linkedAt">) {
+  return createApiError<ErrorCodes>({
+    code: "CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND",
+    detail: `Purpose with id ${purpose.id} owned by Knode ${purpose.knodeId} is not linked to Consumer Keychain with id ${consumerKeychainId}`,
+    status: HTTP_STATUS_NOT_FOUND,
+    title: "Consumer Keychain Purpose Not Found",
   });
 }
 

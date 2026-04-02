@@ -16,6 +16,8 @@ import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposeLinkSeed,
+  API_ConsumerKeychainPurposeUnlinkSeed,
+  API_UnlinkConsumerKeychainIdPathParam,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -327,9 +329,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         metadata: { version },
       } = await consumerKeychainService.linkPurposeToConsumerKeychain(
         {
-          consumerKeychainId: req.params.consumerKeychainId,
-          knodeId: req.body.knodeId,
-          purposeId: unsafeBrandExternalId(req.body.purposeId),
+          consumerKeychainPurpose: {
+            consumerKeychainId: req.params.consumerKeychainId,
+            purpose: {
+              id: unsafeBrandExternalId(req.body.purposeId),
+              knodeId: req.body.knodeId,
+            },
+          },
           req,
         },
         ctx,
@@ -364,5 +370,43 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      await consumerKeychainService.unlinkPurposeToConsumerKeychain(
+        {
+          consumerKeychainId: req.params.consumerKeychainId,
+          knodeId: req.body.knodeId,
+          purposeId: req.params.purposeId,
+        },
+        ctx,
+      );
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_ConsumerKeychainPurposeUnlinkSeed,
+      description: "Unlink a Purpose from a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "unlinkPurposeFromConsumerKeychain",
+      params: API_UnlinkConsumerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Purpose successfully unlinked from Consumer Keychain",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };

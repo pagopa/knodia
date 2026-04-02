@@ -1,4 +1,5 @@
-import { ConsumerKeychainId } from "@knodia/common-models/ids";
+import { ExternalId } from "@knodia/common-models/externalResource";
+import { ConsumerKeychainId, type PurposeId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import { LocalizedText } from "@knodia/common-models/localization";
 import z from "zod";
@@ -70,4 +71,21 @@ export const API_ConsumerKeychainPurpose = z
   .meta({ id: "ConsumerKeychainPurpose" });
 export type API_ConsumerKeychainPurpose = z.infer<
   typeof API_ConsumerKeychainPurpose
+>;
+
+export const API_ConsumerKeychainPurposeUnlinkSeed = z
+  .strictObject({
+    knodeId: API_KnodeId,
+  })
+  .meta({ id: "ConsumerKeychainPurposeUnlinkSeed" });
+export type API_ConsumerKeychainPurposeUnlinkSeed = z.infer<
+  typeof API_ConsumerKeychainPurposeUnlinkSeed
+>;
+
+export const API_UnlinkConsumerKeychainIdPathParam =
+  API_ConsumerKeychainIdPathParam.extend({
+    purposeId: ExternalId<PurposeId>(),
+  });
+export type API_UnlinkConsumerKeychainIdPathParam = z.infer<
+  typeof API_UnlinkConsumerKeychainIdPathParam
 >;

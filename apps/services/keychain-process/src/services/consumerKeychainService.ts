@@ -51,9 +51,13 @@ import {
   createConsumerKeychainMemberAddedV1Event,
   createConsumerKeychainMemberRemovedV1Event,
   createConsumerKeychainPurposeLinkedV1Event,
+  createConsumerKeychainPurposeUnlinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
-import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
+import {
+  retrieveConsumerKeychain,
+  retrieveConsumerKeychainPurpose,
+} from "../utils/readmodelUtils.ts";
 import {
   assertOrganizationIsKeychainOwner,
   assertOrganizationIsPurposeConsumer,
@@ -216,26 +220,20 @@ export function consumerKeychainServiceBuilder(
 
     async linkPurposeToConsumerKeychain(
       {
-        consumerKeychainId,
-        knodeId,
-        purposeId,
+        consumerKeychainPurpose,
         req,
       }: {
-        consumerKeychainId: ConsumerKeychainId;
-        knodeId: KnodeId;
-        purposeId: ExternalId<PurposeId>;
+        consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">;
         req: FastifyRequest;
       },
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
+      const { consumerKeychainId, purpose: externalPurpose } =
+        consumerKeychainPurpose;
       logger.info(
-        `Linking Purpose ${purposeId} owned by Knode ${knodeId} to Consumer Keychain ${consumerKeychainId}`,
+        `Linking Purpose ${externalPurpose.id} owned by Knode ${externalPurpose.knodeId} to Consumer Keychain ${consumerKeychainId}`,
       );
 
-      const externalPurpose: ExternalResource<PurposeId> = {
-        id: purposeId,
-        knodeId,
-      };
       const [consumerKeychain] = await Promise.all([
         retrieveConsumerKeychain(consumerKeychainId, readmodelService),
         assertPurposeIsNotLinkedToConsumerKeychain(
@@ -252,8 +250,8 @@ export function consumerKeychainServiceBuilder(
       const { data: purpose } = await remoteResourcesManagerApi.getPurpose({
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { purposeId },
-        query: { knodeId },
+        path: { purposeId: externalPurpose.id },
+        query: { knodeId: externalPurpose.knodeId },
       });
 
       assertOrganizationIsPurposeConsumer(authData.organizationId, purpose);
@@ -325,6 +323,51 @@ export function consumerKeychainServiceBuilder(
         data: updatedConsumerKeychain,
         metadata: { version: newVersion },
       };
+    },
+
+    async unlinkPurposeToConsumerKeychain(
+      {
+        consumerKeychainId,
+        knodeId,
+        purposeId,
+      }: {
+        consumerKeychainId: ConsumerKeychainId;
+        knodeId: KnodeId;
+        purposeId: ExternalId<PurposeId>;
+      },
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<void> {
+      logger.info(
+        `Unlinking Purpose ${purposeId} owned by Knode ${knodeId} from Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const externalPurpose: ExternalResource<PurposeId> = {
+        id: purposeId,
+        knodeId,
+      };
+      const [consumerKeychain] = await Promise.all([
+        retrieveConsumerKeychain(consumerKeychainId, readmodelService),
+        retrieveConsumerKeychainPurpose(
+          {
+            consumerKeychainId,
+            purpose: externalPurpose,
+          },
+          readmodelService,
+        ),
+      ]);
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      await eventStoreWriter.insertEvent(
+        createConsumerKeychainPurposeUnlinkedV1Event({
+          consumerKeychain: consumerKeychain.data,
+          correlationId,
+          currentMetadataVersion: consumerKeychain.metadata.version,
+          purpose: externalPurpose,
+        }),
+      );
     },
 
     async updateConsumerKeychain(

@@ -1,7 +1,9 @@
-import type { ExternalResource } from "@knodia/common-models/externalResource";
-import type { ConsumerKeychainId, PurposeId } from "@knodia/common-models/ids";
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
-import type { FlatConsumerKeychain } from "@knodia/keychain-models";
+import type {
+  ConsumerKeychainPurpose,
+  FlatConsumerKeychain,
+} from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
@@ -31,17 +33,22 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
       );
     },
     async getConsumerKeychainPurpose(
-      consumerKeychainId: ConsumerKeychainId,
-      purpose: ExternalResource<PurposeId>,
+      consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
     ) {
       return await consumerKeychainReadmodelService.getConsumerKeychainPurposeByFilter(
         and(
           eq(
             readmodelConsumerKeychainPurpose.consumerKeychainId,
-            consumerKeychainId,
+            consumerKeychainPurpose.consumerKeychainId,
           ),
-          eq(readmodelConsumerKeychainPurpose.purposeId, purpose.id),
-          eq(readmodelConsumerKeychainPurpose.producerKnodeId, purpose.knodeId),
+          eq(
+            readmodelConsumerKeychainPurpose.purposeId,
+            consumerKeychainPurpose.purpose.id,
+          ),
+          eq(
+            readmodelConsumerKeychainPurpose.producerKnodeId,
+            consumerKeychainPurpose.purpose.knodeId,
+          ),
         ),
       );
     },

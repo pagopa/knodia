@@ -62,6 +62,10 @@ export type ConsumerKeychainPurposeLinkSeed = {
     purposeId: string;
 };
 
+export type ConsumerKeychainPurposeUnlinkSeed = {
+    knodeId: KnodeId;
+};
+
 export type ConsumerKeychainLinkedPurpose = {
     id: string;
     knodeId: KnodeId;
@@ -506,6 +510,52 @@ export type LinkPurposeToConsumerKeychainResponses = {
 };
 
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
+
+export type UnlinkPurposeFromConsumerKeychainData = {
+    body: ConsumerKeychainPurposeUnlinkSeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+        purposeId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}';
+};
+
+export type UnlinkPurposeFromConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type UnlinkPurposeFromConsumerKeychainError = UnlinkPurposeFromConsumerKeychainErrors[keyof UnlinkPurposeFromConsumerKeychainErrors];
+
+export type UnlinkPurposeFromConsumerKeychainResponses = {
+    /**
+     * Purpose successfully unlinked from Consumer Keychain
+     */
+    204: void;
+};
+
+export type UnlinkPurposeFromConsumerKeychainResponse = UnlinkPurposeFromConsumerKeychainResponses[keyof UnlinkPurposeFromConsumerKeychainResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;

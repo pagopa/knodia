@@ -120,3 +120,26 @@ export const createConsumerKeychainPurposeLinkedV1Event = ({
   },
   streamId: consumerKeychain.id,
 });
+
+export const createConsumerKeychainPurposeUnlinkedV1Event = ({
+  consumerKeychain,
+  correlationId,
+  currentMetadataVersion,
+  purpose,
+}: {
+  consumerKeychain: ConsumerKeychain;
+  correlationId: CorrelationId;
+  currentMetadataVersion: number;
+  purpose: ExternalResource<PurposeId>;
+}): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      consumerKeychain: toConsumerKeychainV1(consumerKeychain),
+      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
+    },
+    type: "ConsumerKeychainPurposeUnlinkedV1",
+  },
+  streamId: consumerKeychain.id,
+});
