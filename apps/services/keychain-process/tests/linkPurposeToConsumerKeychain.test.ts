@@ -13,6 +13,7 @@ import {
   type OrganizationId,
   type PurposeId,
 } from "@knodia/common-models/ids";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
@@ -110,6 +111,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       .body(body);
 
     expect(response.statusCode).toBe(200);
+    expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
 
     const responseBody = response.json<API_ConsumerKeychainPurpose>();
 
