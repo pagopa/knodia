@@ -18,7 +18,6 @@ import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   KeychainEventV1,
-  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import {
@@ -142,7 +141,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     expect(linkEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date(responseBody.linkedAt).getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(externalPurpose),
+      purpose: externalPurpose,
     });
   });
 

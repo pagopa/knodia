@@ -11,7 +11,6 @@ import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   keychainEvents,
-  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
@@ -75,7 +74,7 @@ describe("Consumer keychain read model writer tests", async () => {
     ).encode({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date().getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
+      purpose,
     });
 
     const metadataVersion = 1;
