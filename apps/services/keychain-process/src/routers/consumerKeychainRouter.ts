@@ -13,7 +13,10 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
+import {
+  API_ConsumerKeychainIdPathParam,
+  API_ConsumerKeychainPurposeLinkSeed,
+} from "@knodia/keychain-models/api";
 import { z } from "zod";
 
 import type { ConsumerKeychainService } from "../services/consumerKeychainService.ts";
@@ -21,7 +24,6 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 import {
   API_ConsumerKeychainMemberPathParam,
   API_ConsumerKeychainPatch,
-  API_ConsumerKeychainPurposeLinkSeed,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
