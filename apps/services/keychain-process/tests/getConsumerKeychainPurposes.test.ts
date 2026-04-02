@@ -69,7 +69,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes (getConsumerKeycha
     testCase: string;
     totalCount: number;
   }[])(
-    "should return consumer keychains with correct shape and pagination: $testCase (seed #%#)",
+    "should return consumer keychain purposes with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
       await seedConsumerKeychains();
 
