@@ -26,10 +26,6 @@ import {
 } from "../converters/aggregators.ts";
 import { toConsumerKeychainPurpose } from "../converters/converters.ts";
 
-export type ConsumerKeychainReadmodelService = ReturnType<
-  typeof consumerKeychainReadmodelServiceBuilder
->;
-
 export function consumerKeychainReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
 ) {
