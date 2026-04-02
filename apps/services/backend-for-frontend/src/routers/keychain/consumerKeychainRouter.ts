@@ -71,7 +71,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
-  };
 
   const pollConsumerKeychainUntilDeletion = (
     consumerKeychainId: ConsumerKeychainId,
