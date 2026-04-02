@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import {
   generateId,
@@ -18,6 +19,7 @@ import type { ConsumerKeychain } from "../src/keychain.ts";
 import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
+  ConsumerKeychainKeyAddedV1,
   ConsumerKeychainMemberAddedV1,
   ConsumerKeychainMemberRemovedV1,
   ConsumerKeychainPurposeLinkedV1,
@@ -115,6 +117,14 @@ describe("KeychainEventV1 codec", () => {
       message: ConsumerKeychainMemberRemovedV1,
       type: "ConsumerKeychainMemberRemovedV1" as const,
     },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        kid: Buffer.from(crypto.randomUUID(), "utf-8").toString("base64"),
+      },
+      message: ConsumerKeychainKeyAddedV1,
+      type: "ConsumerKeychainKeyAddedV1" as const,
+    },
   ] as const;
 
   it.each(cases)(
@@ -143,6 +153,9 @@ describe("KeychainEventV1 codec", () => {
           testFullCodec({ data, type }),
         )
         .with({ type: "ConsumerKeychainMemberRemovedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
         .exhaustive();
@@ -176,6 +189,9 @@ describe("KeychainEventV1 codec", () => {
         .with(
           { type: "ConsumerKeychainMemberRemovedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
+        )
+        .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, message }) =>
+          testProtobufCodec(message, data),
         )
         .exhaustive();
     },

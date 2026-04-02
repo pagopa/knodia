@@ -4,13 +4,12 @@ import {
   invalidKeyLength,
   invalidPublicKey,
   jwkDecodingError,
-  notAllowedCertificate,
   notAllowedMultipleKeys,
   notAllowedPrivateKey,
   notAnRSAKey,
 } from "../models/errors.ts";
 
-const decodeBase64ToPem = (base64String: string): string => {
+export const decodeEncodedBase64KeyToPem = (base64String: string): string => {
   try {
     const cleanedBase64 = base64String.trim();
     const decodedBytes = Buffer.from(cleanedBase64, "base64");
@@ -20,12 +19,8 @@ const decodeBase64ToPem = (base64String: string): string => {
   }
 };
 
-export const createJWK = ({
-  pemKeyBase64,
-}: {
-  pemKeyBase64: string;
-}): JsonWebKey =>
-  createPublicKey({ key: pemKeyBase64 }).export({ format: "jwk" });
+export const createJWK = ({ pemKey }: { pemKey: string }): JsonWebKey =>
+  createPublicKey({ pemKey }).export({ format: "jwk" });
 
 export const calculateKid = (jwk: JsonWebKey): string => {
   const sortedJwk = sortJWK(jwk);
@@ -33,13 +28,13 @@ export const calculateKid = (jwk: JsonWebKey): string => {
   return crypto.createHash("sha256").update(jwkString).digest("base64url");
 };
 
-function assertNotCertificate(key: string): void {
+export function isX509Certificate(pemKey: string): boolean {
   try {
-    new crypto.X509Certificate(key);
+    new crypto.X509Certificate(pemKey);
   } catch {
-    return;
+    return false;
   }
-  throw notAllowedCertificate();
+  return true;
 }
 
 function assertNotPrivateKey(key: string): void {
@@ -72,12 +67,10 @@ function assertValidRSAKeyLength(key: KeyObject, minLength = 2048): void {
   }
 }
 
-function createPublicKey({ key }: { key: string }): KeyObject {
-  const pemKey = decodeBase64ToPem(key);
+function createPublicKey({ pemKey }: { pemKey: string }): KeyObject {
   assertSingleKey(pemKey);
 
   assertNotPrivateKey(pemKey);
-  assertNotCertificate(pemKey);
   const publicKey = tryToCreatePublicKey(pemKey);
 
   assertValidRSAKey(publicKey);

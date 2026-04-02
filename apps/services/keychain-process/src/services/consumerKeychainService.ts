@@ -35,11 +35,7 @@ import type {
 import type { ReadmodelService } from "./readmodelService.ts";
 import type { IdmUser, UserService } from "./userService.ts";
 
-import {
-  keyAlreadyExists,
-  userAlreadyMember,
-  userNotFound,
-} from "../models/errors.ts";
+import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
   createConsumerKeychainCreatedV1Event,
   createConsumerKeychainDeletedV1Event,
@@ -48,10 +44,16 @@ import {
   createConsumerKeychainMemberRemovedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
-import { calculateKid, createJWK } from "../utils/crypto.ts";
+import {
+  calculateKid,
+  createJWK,
+  decodeEncodedBase64KeyToPem,
+} from "../utils/crypto.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
+  assertKeyIsUnique,
+  assertNotX509Certificate,
   assertOrganizationIsKeychainOwner,
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
@@ -365,16 +367,18 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.keys.length + 1,
       );
 
-      const jwk = createJWK({ pemKeyBase64: keySeed.encodedPem });
+      const pemKey = decodeEncodedBase64KeyToPem(keySeed.encodedPem);
+
+      assertNotX509Certificate(pemKey);
+
+      const jwk = createJWK({ pemKey });
       const kid = unsafeBrandKeyId(calculateKid(jwk));
 
-      const alreadyExists =
-        consumerKeychain.data.keys.some((key) => key.kid === kid) ||
-        (await readmodelService.checkConsumerKeychainKeyExists(kid));
-
-      if (alreadyExists) {
-        throw keyAlreadyExists(kid);
-      }
+      await assertKeyIsUnique(
+        kid,
+        consumerKeychain.data.keys,
+        readmodelService,
+      );
 
       const newKey: ConsumerKeychainKey = {
         algorithm: "RS256",

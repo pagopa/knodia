@@ -7,8 +7,8 @@ import { constants } from "http2";
 const {
   HTTP_STATUS_BAD_REQUEST,
   HTTP_STATUS_CONFLICT,
+  HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_NOT_FOUND,
-  HTTP_STATUS_UNAUTHORIZED,
 } = constants;
 
 /* eslint-disable perfectionist/sort-objects */
@@ -114,7 +114,7 @@ export function keychainMemberNotFound(
 export function notAllowedCertificate() {
   return createApiError<ErrorCodes>({
     code: "NOT_ALLOWED_CERTIFICATE",
-    detail: "The received key is a certificate",
+    detail: "The received key is a x509 certificate",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Not allowed certificate",
   });
@@ -175,7 +175,7 @@ export function userNotAllowed(userId: UserId, keychainId: ConsumerKeychainId) {
   return createApiError<ErrorCodes>({
     code: "USER_NOT_ALLOWED",
     detail: `User ${userId} is not allowed to perform this action on keychain ${keychainId}`,
-    status: HTTP_STATUS_UNAUTHORIZED,
+    status: HTTP_STATUS_FORBIDDEN,
     title: "User Not Allowed",
   });
 }

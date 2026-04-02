@@ -15,7 +15,6 @@ import {
 } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
-import crypto from "crypto";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
@@ -25,12 +24,20 @@ import type {
 } from "../src/models/api.ts";
 
 import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
-import { calculateKid, createJWK } from "../src/utils/crypto.ts";
+import {
+  calculateKid,
+  createJWK,
+  decodeEncodedBase64KeyToPem,
+} from "../src/utils/crypto.ts";
 import { mockMaxKeysPerKeychain } from "./setup.ts";
 import {
+  createEcKeyPair,
+  createRsaKeyPair,
   getAllKeychainEvents,
   injectAppRequest,
+  rsaX509CertificatePem,
   seedConsumerKeychain,
+  toBase64,
 } from "./utils.ts";
 
 const callerUserId = "10000000-1000-1000-8000-000000000001";
@@ -38,21 +45,26 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-const createRsaPublicKeyBase64 = () => {
-  const { publicKey } = crypto.generateKeyPairSync("rsa", {
-    modulusLength: 2048,
-    privateKeyEncoding: {
-      format: "pem",
-      type: "pkcs8",
-    },
-    publicKeyEncoding: {
-      format: "pem",
-      type: "spki",
-    },
-  });
+const createRsaPublicKeyBase64 = () =>
+  toBase64(createRsaKeyPair(2048).publicKey);
 
-  return Buffer.from(publicKey, "utf-8").toString("base64");
-};
+const createRsaPrivateKeyBase64 = () =>
+  toBase64(createRsaKeyPair(2048).privateKey);
+
+const createEcPublicKeyBase64 = () => toBase64(createEcKeyPair().publicKey);
+
+const createShortRsaPublicKeyBase64 = () =>
+  toBase64(createRsaKeyPair(1024).publicKey);
+
+const createMultiplePublicKeysBase64 = () =>
+  toBase64(
+    [
+      decodeEncodedBase64KeyToPem(createRsaPublicKeyBase64()).trim(),
+      decodeEncodedBase64KeyToPem(createRsaPublicKeyBase64()).trim(),
+    ].join("\n"),
+  );
+
+const createX509CertificateBase64 = () => toBase64(rsaX509CertificatePem);
 
 const mockSeed: API_KeychainKeySeed = {
   encodedPem: createRsaPublicKeyBase64(),
@@ -69,7 +81,11 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     await seedConsumerKeychain(consumerKeychain);
 
     const expectedKid = unsafeBrandKeyId(
-      calculateKid(createJWK({ pemKeyBase64: mockSeed.encodedPem })),
+      calculateKid(
+        createJWK({
+          pemKey: decodeEncodedBase64KeyToPem(mockSeed.encodedPem),
+        }),
+      ),
     );
 
     const response = await injectAppRequest({
@@ -169,6 +185,58 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     expect(response.statusCode).toBe(400);
   });
 
+  it("should return 400 with certificate-specific error if the uploaded key is an X.509 certificate", async () => {
+    const consumerKeychain: ConsumerKeychain = {
+      ...getMockConsumerKeychain(),
+      users: [unsafeBrandUserId(callerUserId)],
+    };
+
+    await seedConsumerKeychain(consumerKeychain);
+
+    const response = await injectAppRequest({
+      ...allowedTestTokens[0]!,
+      organizationId: consumerKeychain.ownerId,
+      type: "ui-session",
+    })
+      .post(`/consumerKeychains/${consumerKeychain.id}/keys`)
+      .body({
+        encodedPem: createX509CertificateBase64(),
+        name: { en: "Valid key name" },
+      });
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it.each([
+    ["private key", createRsaPrivateKeyBase64()],
+    ["EC public key", createEcPublicKeyBase64()],
+    ["RSA key shorter than 2048 bits", createShortRsaPublicKeyBase64()],
+    ["multiple public keys", createMultiplePublicKeysBase64()],
+  ])(
+    "should return 400 if the uploaded key is not allowed - %s",
+    async (_label, encodedPem) => {
+      const consumerKeychain: ConsumerKeychain = {
+        ...getMockConsumerKeychain(),
+        users: [unsafeBrandUserId(callerUserId)],
+      };
+
+      await seedConsumerKeychain(consumerKeychain);
+
+      const response = await injectAppRequest({
+        ...allowedTestTokens[0]!,
+        organizationId: consumerKeychain.ownerId,
+        type: "ui-session",
+      })
+        .post(`/consumerKeychains/${consumerKeychain.id}/keys`)
+        .body({
+          encodedPem,
+          name: { en: "Valid key name" },
+        });
+
+      expect(response.statusCode).toBe(400);
+    },
+  );
+
   it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
@@ -212,7 +280,11 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   it("should return 409 if the key already exists in the consumer keychain", async () => {
     const encodedPem = createRsaPublicKeyBase64();
     const kid = unsafeBrandKeyId(
-      calculateKid(createJWK({ pemKeyBase64: encodedPem })),
+      calculateKid(
+        createJWK({
+          pemKey: decodeEncodedBase64KeyToPem(encodedPem),
+        }),
+      ),
     );
 
     const existingKey: ConsumerKeychainKey = {

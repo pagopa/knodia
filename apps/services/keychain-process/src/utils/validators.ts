@@ -1,14 +1,19 @@
 import type {
   ConsumerKeychainId,
+  KeyId,
   OrganizationId,
   UserId,
 } from "@knodia/common-models/ids";
 
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
+import type { ReadmodelService } from "../services/readmodelService.ts";
+
 import {
   invalidUserRole,
+  keyAlreadyExists,
   keychainMemberNotFound,
+  notAllowedCertificate,
   tooManyKeysPerKeychain,
   userNotAllowed,
   userNotFound,
@@ -17,6 +22,7 @@ import {
   getOrganizationGroupName,
   TECHNICAL_ROLE_GROUP_NAME,
 } from "../services/userService.ts";
+import { isX509Certificate } from "./crypto.ts";
 
 export function assertOrganizationIsKeychainOwner(
   organizationId: OrganizationId,
@@ -80,3 +86,23 @@ export const assertKeychainKeysCountIsBelowThreshold = (
     throw tooManyKeysPerKeychain(keychainId, size);
   }
 };
+
+export async function assertKeyIsUnique(
+  kid: KeyId,
+  keychainKeys: { kid: KeyId }[],
+  readmodelService: ReadmodelService,
+) {
+  const alreadyExists =
+    keychainKeys.some((key) => key.kid === kid) ||
+    (await readmodelService.checkConsumerKeychainKeyExists(kid));
+
+  if (alreadyExists) {
+    throw keyAlreadyExists(kid);
+  }
+}
+
+export function assertNotX509Certificate(key: string): void {
+  if (isX509Certificate(key)) {
+    throw notAllowedCertificate();
+  }
+}
