@@ -60,7 +60,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         "Getting Consumer Purposes with query parameters",
       );
 
-      const { knodeId: queryKnodeId, limit, offset } = req.query;
+      const { limit, offset } = req.query;
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const { data } = await remoteResourcesManagerApi.getPurposes({
@@ -89,7 +89,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
               client: remoteResourcesManagerClient,
               headers,
               path: { eserviceId },
-              query: { knodeId: queryKnodeId },
+              query: { knodeId: req.query.knodeId },
             });
           return [eserviceId, details] as const;
         }),
@@ -97,15 +97,15 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
 
       const eserviceDetailsMap = new Map(eserviceDetailsEntries);
 
-      const results = data.results.map((purpose) => {
-        const eserviceDetails = eserviceDetailsMap.get(purpose.eserviceId);
-        if (!eserviceDetails) {
-          throw new Error(
+      const results = data.results.map((purpose) =>
+        toAPI_ConsumerPurpose({
+          eserviceDetails: assertEntityExists(
+            eserviceDetailsMap.get(purpose.eserviceId),
             `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
-          );
-        }
-        return toAPI_ConsumerPurpose({ eserviceDetails, purpose });
-      });
+          ),
+          purpose,
+        }),
+      );
 
       res.send({
         pagination: data.pagination,
