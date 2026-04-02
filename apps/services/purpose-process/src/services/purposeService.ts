@@ -1,9 +1,13 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
-import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type {
   AuthData,
   InternalAuthData,
+  UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
@@ -23,9 +27,14 @@ import {
   PurposeState,
 } from "@knodia/purpose-models";
 
+import type { API_GetPurposesQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
+import {
+  CURRENT_FORM_SCHEMA_VERSION,
+  getFormSchema,
+  getFormUiSchema,
+} from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
 import { assertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import {
@@ -115,19 +124,17 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
-    getFormSchema(
-      version: PurposeFormSchemaVersion,
-      { logger }: AuthorizedContext<AuthData>,
-    ): Record<string, unknown> {
-      logger.info(`Getting Purpose form schema version ${version}`);
-      return getFormSchema(version);
-    },
-    getFormUiSchema(
-      version: PurposeFormSchemaVersion,
-      { logger }: AuthorizedContext<AuthData>,
-    ): Record<string, unknown> {
-      logger.info(`Getting Purpose form UI schema version ${version}`);
-      return getFormUiSchema(version);
+    getCurrentPurposeFormSchemas({ logger }: AuthorizedContext<AuthData>): {
+      schema: Record<string, unknown>;
+      uiSchema: Record<string, unknown>;
+      version: PurposeFormSchemaVersion;
+    } {
+      logger.info("Getting current Purpose form schemas");
+      return {
+        schema: getFormSchema(CURRENT_FORM_SCHEMA_VERSION),
+        uiSchema: getFormUiSchema(CURRENT_FORM_SCHEMA_VERSION),
+        version: CURRENT_FORM_SCHEMA_VERSION,
+      };
     },
     async getPurpose(
       purposeId: PurposeId,
@@ -136,6 +143,13 @@ export function purposeServiceBuilder(
       logger.info(`Getting Purpose with ID ${purposeId}`);
 
       return await retrievePurpose(purposeId, readmodelService);
+    },
+    async getPurposes(
+      requestQuery: API_GetPurposesQueryParams,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<ListResult<Purpose>> {
+      logger.info({ requestQuery }, "Getting Purposes with query params");
+      return await readmodelService.getPurposes(requestQuery);
     },
   };
 }

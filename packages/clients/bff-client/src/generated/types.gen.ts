@@ -566,14 +566,20 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
-export type PurposeFormSchemaVersion = '1.0';
-
-export type PurposeFormSchema = {
-    [key: string]: unknown;
-};
-
-export type PurposeFormUiSchema = {
-    [key: string]: unknown;
+/**
+ * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ */
+export type PurposeFormSchemasResponse = {
+    schema: {
+        [key: string]: unknown;
+    };
+    uiSchema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
 };
 
 /**
@@ -584,28 +590,56 @@ export type PurposeSeed = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
-    formSchemaVersion: PurposeFormSchemaVersion;
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
 };
 
-export type ProducerPurposeDetailsEservice = {
+export type ProducerPurpose = {
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: CompactEservice;
+    id: string;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+};
+
+export type ProducerPurposes = {
+    pagination: Pagination;
+    results: Array<ProducerPurpose>;
+};
+
+export type PurposeDetailsEservice = {
     id: string;
     name: LocalizedName;
     latestVersionState: EserviceVersionState;
 };
 
-export type ProducerPurposeDetails = {
+export type PurposeDetails = {
     agreement: CompactAgreement;
     consumer: CompactOrganization;
     dailyCalls: number;
     description: LocalizedPurposeDescription;
-    eservice: ProducerPurposeDetailsEservice;
+    eservice: PurposeDetailsEservice;
     id: string;
     maxDailyCallsPerConsumer: number;
     name: LocalizedPurposeName;
     producer: CompactOrganization;
     state: PurposeState;
+};
+
+/**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
 };
 
 export type GetStatusData = {
@@ -1441,18 +1475,16 @@ export type CreateConsumerPurposeResponses = {
 
 export type CreateConsumerPurposeResponse = CreateConsumerPurposeResponses[keyof CreateConsumerPurposeResponses];
 
-export type GetConsumerPurposeFormSchemaData = {
+export type GetConsumerCurrentPurposeFormSchemasData = {
     body?: never;
-    path: {
-        version: PurposeFormSchemaVersion;
-    };
+    path?: never;
     query: {
         knodeId: KnodeId;
     };
-    url: '/consumer/purposes/formSchemas/{version}';
+    url: '/consumer/purposes/formSchemas/current';
 };
 
-export type GetConsumerPurposeFormSchemaErrors = {
+export type GetConsumerCurrentPurposeFormSchemasErrors = {
     /**
      * Bad Request
      */
@@ -1467,29 +1499,66 @@ export type GetConsumerPurposeFormSchemaErrors = {
     403: Problem;
 };
 
-export type GetConsumerPurposeFormSchemaError = GetConsumerPurposeFormSchemaErrors[keyof GetConsumerPurposeFormSchemaErrors];
+export type GetConsumerCurrentPurposeFormSchemasError = GetConsumerCurrentPurposeFormSchemasErrors[keyof GetConsumerCurrentPurposeFormSchemasErrors];
 
-export type GetConsumerPurposeFormSchemaResponses = {
+export type GetConsumerCurrentPurposeFormSchemasResponses = {
     /**
-     * Purpose form schema retrieved successfully
+     * Current Purpose form schemas retrieved successfully
      */
-    200: PurposeFormSchema;
+    200: PurposeFormSchemasResponse;
 };
 
-export type GetConsumerPurposeFormSchemaResponse = GetConsumerPurposeFormSchemaResponses[keyof GetConsumerPurposeFormSchemaResponses];
+export type GetConsumerCurrentPurposeFormSchemasResponse = GetConsumerCurrentPurposeFormSchemasResponses[keyof GetConsumerCurrentPurposeFormSchemasResponses];
 
-export type GetConsumerPurposeFormUiSchemaData = {
+export type GetConsumerPurposeDetailsData = {
     body?: never;
     path: {
-        version: PurposeFormSchemaVersion;
+        purposeId: string;
     };
     query: {
         knodeId: KnodeId;
     };
-    url: '/consumer/purposes/formSchemas/{version}/ui';
+    url: '/consumer/purposes/{purposeId}';
 };
 
-export type GetConsumerPurposeFormUiSchemaErrors = {
+export type GetConsumerPurposeDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerPurposeDetailsError = GetConsumerPurposeDetailsErrors[keyof GetConsumerPurposeDetailsErrors];
+
+export type GetConsumerPurposeDetailsResponses = {
+    /**
+     * Consumer Purpose details retrieved successfully
+     */
+    200: PurposeDetails;
+};
+
+export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
+
+export type GetSessionOrganizationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/session/organization';
+};
+
+export type GetSessionOrganizationErrors = {
     /**
      * Bad Request
      */
@@ -1504,16 +1573,16 @@ export type GetConsumerPurposeFormUiSchemaErrors = {
     403: Problem;
 };
 
-export type GetConsumerPurposeFormUiSchemaError = GetConsumerPurposeFormUiSchemaErrors[keyof GetConsumerPurposeFormUiSchemaErrors];
+export type GetSessionOrganizationError = GetSessionOrganizationErrors[keyof GetSessionOrganizationErrors];
 
-export type GetConsumerPurposeFormUiSchemaResponses = {
+export type GetSessionOrganizationResponses = {
     /**
-     * Purpose form UI schema retrieved successfully
+     * Session Organization retrieved successfully
      */
-    200: PurposeFormUiSchema;
+    200: SessionOrganization;
 };
 
-export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];
+export type GetSessionOrganizationResponse = GetSessionOrganizationResponses[keyof GetSessionOrganizationResponses];
 
 export type GetProducerAgreementsData = {
     body?: never;
@@ -1596,6 +1665,56 @@ export type GetProducerAgreementDetailsResponses = {
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
 
+export type GetProducerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: Array<PurposeState>;
+    };
+    url: '/producer/purposes';
+};
+
+export type GetProducerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerPurposesError = GetProducerPurposesErrors[keyof GetProducerPurposesErrors];
+
+export type GetProducerPurposesResponses = {
+    /**
+     * Producer Purposes retrieved successfully
+     */
+    200: ProducerPurposes;
+};
+
+export type GetProducerPurposesResponse = GetProducerPurposesResponses[keyof GetProducerPurposesResponses];
+
 export type GetProducerPurposeDetailsData = {
     body?: never;
     path: {
@@ -1630,7 +1749,7 @@ export type GetProducerPurposeDetailsResponses = {
     /**
      * Producer Purpose details retrieved successfully
      */
-    200: ProducerPurposeDetails;
+    200: PurposeDetails;
 };
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];

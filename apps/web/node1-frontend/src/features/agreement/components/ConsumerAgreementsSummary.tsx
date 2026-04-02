@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
+import { useHasRole } from "@/contexts/auth";
 import { formatNumber } from "@/utils/formatters";
 
 export function ConsumerAgreementsSummary({
@@ -19,6 +20,7 @@ export function ConsumerAgreementsSummary({
 }) {
   const navigate = useNavigate();
 
+  const canManageAgreements = useHasRole("administrative");
   const { activeAgreements, archivedAgreements, suspendedAgreements } =
     counters;
   const hasAgreements =
@@ -27,14 +29,23 @@ export function ConsumerAgreementsSummary({
   if (!hasAgreements) {
     return (
       <Empty
-        action={{
-          as: "button",
-          hierarchy: "brand",
-          kind: "filled",
-          label: "Search new E-Services",
-          onClick: () => navigate({ to: "/consumption/e-services/search" }),
-        }}
-        description="Search for an E-Service to request an Agreement."
+        action={
+          canManageAgreements
+            ? {
+                as: "button",
+                hierarchy: "brand",
+                kind: "filled",
+                label: "Search new E-Services",
+                onClick: () =>
+                  navigate({ to: "/consumption/e-services/search" }),
+              }
+            : undefined
+        }
+        description={
+          canManageAgreements
+            ? "Search for an E-Service to request an Agreement."
+            : undefined
+        }
         icon={<SelectionPlusIcon />}
         title="You don't have any Agreements yet."
       />

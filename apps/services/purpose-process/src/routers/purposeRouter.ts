@@ -11,16 +11,17 @@ import {
   MetadataVersionHeader,
   setMetadataVersionHeader,
 } from "@knodia/fastify-zod-api-commons/models";
-import {
-  API_PurposeFormSchema,
-  API_PurposeFormSchemaVersionPathParam,
-  API_PurposeFormUiSchema,
-  API_PurposeIdPathParam,
-} from "@knodia/purpose-models/api";
+import { API_PurposeIdPathParam } from "@knodia/purpose-models/api";
 
 import type { PurposeService } from "../services/purposeService.ts";
 
-import { API_Purpose, API_PurposeSeed } from "../models/api.ts";
+import {
+  API_CurrentPurposeFormSchemasResponse,
+  API_GetPurposesQueryParams,
+  API_Purpose,
+  API_Purposes,
+  API_PurposeSeed,
+} from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -88,6 +89,47 @@ export const purposeRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "internal" },
+      ]);
+
+      const { results, totalCount } = await purposeService.getPurposes(
+        req.query,
+        ctx,
+      );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_Purpose),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Purposes",
+      headers: KnodiaServiceHeaders,
+      operationId: "getPurposes",
+      querystring: API_GetPurposesQueryParams,
+      response: {
+        200: API_Purposes.meta({
+          description: "Purposes retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      summary: "List Purposes",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
         {
           tokenType: "ui-session",
@@ -128,64 +170,29 @@ export const purposeRouter: FastifyPluginAsyncZod<
   });
 
   fastify.route({
-    handler: async (req, res) => {
+    handler: async (_req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
       ]);
 
-      res
-        .status(200)
-        .send(purposeService.getFormSchema(req.params.version, ctx));
+      res.status(200).send(purposeService.getCurrentPurposeFormSchemas(ctx));
     },
     method: "GET",
     schema: {
       description:
-        "Retrieve the JSON Schema for validating Purpose form answers",
+        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
       headers: KnodiaServiceHeaders,
-      operationId: "getPurposeFormSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
+      operationId: "getCurrentPurposeFormSchemas",
       response: {
-        200: API_PurposeFormSchema.meta({
-          description: "Purpose form schema retrieved successfully",
+        200: API_CurrentPurposeFormSchemasResponse.meta({
+          description: "Current Purpose form schemas retrieved successfully",
         }),
-        400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
-      summary: "Get Purpose form schema by version",
+      summary: "Get current Purpose form schemas",
       tags: [apiTags.purpose],
     },
-    url: "/purposes/formSchemas/:version",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
-      ]);
-
-      res
-        .status(200)
-        .send(purposeService.getFormUiSchema(req.params.version, ctx));
-    },
-    method: "GET",
-    schema: {
-      description:
-        "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
-      headers: KnodiaServiceHeaders,
-      operationId: "getPurposeFormUiSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
-      response: {
-        200: API_PurposeFormUiSchema.meta({
-          description: "Purpose form UI schema retrieved successfully",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-      },
-      summary: "Get Purpose form UI schema by version",
-      tags: [apiTags.purpose],
-    },
-    url: "/purposes/formSchemas/:version/ui",
+    url: "/purposes/formSchemas/current",
   });
 };

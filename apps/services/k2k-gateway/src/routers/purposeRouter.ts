@@ -22,12 +22,15 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CreatedPurposeResource,
-  API_PurposeFormSchema,
-  API_PurposeFormSchemaVersionPathParam,
-  API_PurposeFormUiSchema,
+  API_Purpose,
+  API_PurposeFormSchemasResponse,
+  API_PurposeIdPathParam,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
-import { toProcessAPI_PurposeSeed } from "../models/purpose/apiConverter.ts";
+import {
+  toAPI_Purpose,
+  toProcessAPI_PurposeSeed,
+} from "../models/purpose/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface PurposeRouterOptions {
@@ -105,16 +108,15 @@ export const purposeRouter: FastifyPluginAsyncZod<
   });
 
   fastify.route({
-    handler: async (req, res) => {
+    handler: async (_req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
-      logger.info(`Getting Purpose form schema version ${req.params.version}`);
+      logger.info("Getting current Purpose form schemas");
 
       const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getPurposeFormSchema({
+      const { data } = await purposeProcessApi.getCurrentPurposeFormSchemas({
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(correlationId, token),
-        path: { version: req.params.version },
       });
 
       res.send(data);
@@ -122,53 +124,51 @@ export const purposeRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the JSON Schema for validating Purpose form answers",
-      operationId: "getPurposeFormSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
+        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
+      operationId: "getCurrentPurposeFormSchemas",
       response: {
-        200: API_PurposeFormSchema.meta({
-          description: "Purpose form schema retrieved successfully",
+        200: API_PurposeFormSchemasResponse.meta({
+          description: "Current Purpose form schemas retrieved successfully",
         }),
-        400: API_Problem.meta({ description: "Bad Request" }),
       },
-      summary: "Get Purpose form schema by version",
+      summary: "Get current Purpose form schemas",
       tags: [apiTags.resource, apiTags.purpose],
     },
-    url: "/purposes/formSchemas/:version",
+    url: "/purposes/formSchemas/current",
   });
 
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
-      logger.info(
-        `Getting Purpose form UI schema version ${req.params.version}`,
-      );
+      logger.info(`Getting Purpose with ID ${req.params.purposeId}`);
 
       const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getPurposeFormUiSchema({
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await purposeProcessApi.getPurpose({
         client: purposeProcessClient,
-        headers: getKnodiaServiceHeaders(correlationId, token),
-        path: { version: req.params.version },
+        headers,
+        path: { purposeId: req.params.purposeId },
       });
 
-      res.send(data);
+      res.send(toAPI_Purpose(data));
     },
     method: "GET",
     schema: {
-      description:
-        "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
-      operationId: "getPurposeFormUiSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
+      description: "Retrieve a Purpose",
+      operationId: "getPurpose",
+      params: API_PurposeIdPathParam,
       response: {
-        200: API_PurposeFormUiSchema.meta({
-          description: "Purpose form UI schema retrieved successfully",
+        200: API_Purpose.meta({
+          description: "Purpose retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Purpose not found" }),
       },
-      summary: "Get Purpose form UI schema by version",
-      tags: [apiTags.resource, apiTags.purpose],
+      summary: "Get Purpose",
+      tags: [apiTags.purpose, apiTags.resource],
     },
-    url: "/purposes/formSchemas/:version/ui",
+    url: "/purposes/:purposeId",
   });
 };
