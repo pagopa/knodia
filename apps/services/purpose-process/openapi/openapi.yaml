@@ -246,6 +246,20 @@ components:
         - pagination
         - results
       additionalProperties: false
+    CurrentPurposeFormSchemasResponse:
+      type: object
+      properties:
+        schema:
+          $ref: "#/components/schemas/PurposeFormSchema"
+        uiSchema:
+          $ref: "#/components/schemas/PurposeFormUiSchema"
+        version:
+          $ref: "#/components/schemas/PurposeFormSchemaVersion"
+      required:
+        - schema
+        - uiSchema
+        - version
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -517,19 +531,15 @@ paths:
                 description: Purpose not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/{version}:
+  /purposes/formSchemas/current:
     get:
-      operationId: getPurposeFormSchema
-      summary: Get Purpose form schema by version
+      operationId: getCurrentPurposeFormSchemas
+      summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the JSON Schema for validating Purpose form answers
+      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
+        with their version
       parameters:
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
         - schema:
             allOf:
               - $ref: "#/components/schemas/CorrelationId"
@@ -539,74 +549,13 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Purpose form schema retrieved successfully
+          description: Current Purpose form schemas retrieved successfully
           content:
             application/json:
               schema:
-                description: Purpose form schema retrieved successfully
+                description: Current Purpose form schemas retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchema"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /purposes/formSchemas/{version}/ui:
-    get:
-      operationId: getPurposeFormUiSchema
-      summary: Get Purpose form UI schema by version
-      tags:
-        - purpose
-      description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "200":
-          description: Purpose form UI schema retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Purpose form UI schema retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/PurposeFormUiSchema"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/CurrentPurposeFormSchemasResponse"
         "401":
           description: Unauthorized
           content:

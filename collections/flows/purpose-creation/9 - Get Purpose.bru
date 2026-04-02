@@ -1,16 +1,17 @@
 meta {
-  name: 2 - Get Eservice
+  name: 9 - Get Purpose
   type: http
+  seq: 9
 }
 
 get {
-  url: {{host-eservice-process}}/eservices/:eserviceId
+  url: {{host-purpose-process}}/purposes/:purposeId
   body: none
   auth: none
 }
 
 params:path {
-  eserviceId: {{eserviceId}}
+  purposeId: {{purposeId}}
 }
 
 headers {
