@@ -10,6 +10,7 @@ import {
   API_ExternalPurposeFormSchemaVersion,
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
+  API_PurposeConsumer,
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeState,
@@ -49,13 +50,19 @@ export type API_GetConsumerPurposeDetailQueryParams = z.infer<
   typeof API_GetConsumerPurposeDetailQueryParams
 >;
 
-export const API_GetConsumerPurposesQueryParams = API_PaginationQueryParams;
+export const API_GetConsumerPurposesQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z.uuid().meta({ description: "Filter by E-service ID" }),
+  });
 export type API_GetConsumerPurposesQueryParams = z.infer<
   typeof API_GetConsumerPurposesQueryParams
 >;
 
 export const API_ConsumerPurpose = z
   .strictObject({
+    consumer: API_PurposeConsumer,
+    dailyCalls: API_PurposeDailyCalls,
+    description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
     id: z.uuid(),
     // TODO: Replace with actual keychain data when consumer keychains for purposes are implemented
@@ -110,7 +117,7 @@ export const API_ProducerPurposes = z
   .meta({ id: "ProducerPurposes" });
 export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 
-export const API_PurposeDetails = z
+export const API_ProducerPurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
     consumer: API_CompactOrganization,
@@ -126,4 +133,6 @@ export const API_PurposeDetails = z
     state: API_PurposeState,
   })
   .meta({ id: "PurposeDetails" });
-export type API_PurposeDetails = z.infer<typeof API_PurposeDetails>;
+export type API_ProducerPurposeDetails = z.infer<
+  typeof API_ProducerPurposeDetails
+>;

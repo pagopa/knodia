@@ -28,7 +28,7 @@ import {
   API_GetConsumerPurposeDetailQueryParams,
   API_GetConsumerPurposeFormSchemaQueryParams,
   API_GetConsumerPurposesQueryParams,
-  API_PurposeDetails,
+  API_ProducerPurposeDetails,
   API_PurposeSeed,
 } from "../../models/purpose/api.ts";
 import {
@@ -70,6 +70,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         headers,
         query: {
           consumerId,
+          eserviceId: req.query.eserviceId,
           limit,
           offset,
         },
@@ -275,7 +276,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       params: API_PurposeIdPathParam,
       querystring: API_GetConsumerPurposeDetailQueryParams,
       response: {
-        200: API_PurposeDetails.meta({
+        200: API_ProducerPurposeDetails.meta({
           description: "Consumer Purpose details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

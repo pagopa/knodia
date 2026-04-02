@@ -7,7 +7,7 @@ import type { OrganizationWithKnode } from "../organization/types.ts";
 import type {
   API_ConsumerPurpose,
   API_ProducerPurpose,
-  API_PurposeDetails,
+  API_ProducerPurposeDetails,
 } from "./api.ts";
 
 export const toAPI_ConsumerPurpose = ({
@@ -17,6 +17,12 @@ export const toAPI_ConsumerPurpose = ({
   eserviceDetails: remoteResourcesManagerApi.EserviceDetails;
   purpose: remoteResourcesManagerApi.Purpose;
 }): API_ConsumerPurpose => ({
+  consumer: {
+    id: purpose.consumer.id,
+    knodeId: purpose.consumer.knodeId,
+  },
+  dailyCalls: purpose.dailyCalls,
+  description: purpose.description,
   eservice: {
     id: eserviceDetails.id,
     name: eserviceDetails.name,
@@ -68,7 +74,7 @@ export const toAPI_ConsumerPurposeDetails = ({
   consumer: OrganizationWithKnode;
   eserviceDetails: remoteResourcesManagerApi.EserviceDetails;
   purpose: remoteResourcesManagerApi.Purpose;
-}): API_PurposeDetails => ({
+}): API_ProducerPurposeDetails => ({
   agreement: {
     id: agreement.id,
     state: agreement.state,
@@ -113,7 +119,7 @@ export const toAPI_ProducerPurposeDetails = ({
   maxDailyCallsPerConsumer: number;
   producer: OrganizationWithKnode;
   purpose: purposeProcessApi.Purpose;
-}): API_PurposeDetails => ({
+}): API_ProducerPurposeDetails => ({
   agreement: {
     id: agreement.id,
     state: agreement.state,

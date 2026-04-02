@@ -549,6 +549,11 @@ export type Users = Array<User>;
 
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
+export type PurposeConsumer = {
+    id: string;
+    knodeId: KnodeId;
+};
+
 /**
  * Name of the Purpose
  */
@@ -600,6 +605,9 @@ export type PurposeSeed = {
 };
 
 export type ConsumerPurpose = {
+    consumer: PurposeConsumer;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
     eservice: CompactEservice;
     id: string;
     keychain: string;
@@ -1543,6 +1551,10 @@ export type GetConsumerPurposesData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId: string;
     };
     url: '/consumer/purposes';
 };
