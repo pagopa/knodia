@@ -7,14 +7,11 @@ import {
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
+  API_KeychainId,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
-
-const API_KeychainId = z
-  .uuid()
-  .meta({ description: "Unique identifier of the Keychain", id: "KeychainId" });
 
 export const API_Keychain = z
   .strictObject({

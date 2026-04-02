@@ -34,6 +34,16 @@ export type Problem = {
 };
 
 /**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'Orion' | 'Lynx';
+
+/**
+ * Unique identifier of the Keychain
+ */
+export type KeychainId = string;
+
+/**
  * Name of the Keychain
  */
 export type KeychainLocalizedName = {
@@ -45,6 +55,11 @@ export type KeychainLocalizedName = {
  */
 export type KeychainLocalizedDescription = {
     en: string;
+};
+
+export type ConsumerKeychainPurposeLinkSeed = {
+    knodeId: KnodeId;
+    purposeId: string;
 };
 
 export type Pagination = {
@@ -62,16 +77,6 @@ export type OrganizationId = string;
  * Unique identifier of the User
  */
 export type UserId = string;
-
-/**
- * Unique Knode identifier
- */
-export type KnodeId = 'Orion' | 'Lynx';
-
-/**
- * Unique identifier of the Keychain
- */
-export type KeychainId = string;
 
 export type Keychain = {
     createdAt: string;
@@ -107,27 +112,6 @@ export type Users = Array<User>;
 
 export type KeychainMemberSeed = {
     userId: UserId;
-};
-
-export type ConsumerKeychainPurposeLinkSeed = {
-    knodeId: KnodeId;
-    purposeId: string;
-};
-
-export type ConsumerKeychainLinkedPurpose = {
-    id: string;
-    knodeId: KnodeId;
-};
-
-export type ConsumerKeychainPurpose = {
-    consumerKeychainId: KeychainId;
-    linkedAt: string;
-    purpose: ConsumerKeychainLinkedPurpose;
-};
-
-export type ConsumerKeychainPurposes = {
-    pagination: Pagination;
-    results: Array<ConsumerKeychainPurpose>;
 };
 
 export type GetStatusData = {
@@ -368,6 +352,51 @@ export type UpdateConsumerKeychainResponses = {
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
 
+export type GetConsumerKeychainMembersData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members';
+};
+
+export type GetConsumerKeychainMembersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainMembersError = GetConsumerKeychainMembersErrors[keyof GetConsumerKeychainMembersErrors];
+
+export type GetConsumerKeychainMembersResponses = {
+    /**
+     * Consumer Keychain members retrieved successfully
+     */
+    200: Users;
+};
+
+export type GetConsumerKeychainMembersResponse = GetConsumerKeychainMembersResponses[keyof GetConsumerKeychainMembersResponses];
+
 export type AddConsumerKeychainMemberData = {
     body: KeychainMemberSeed;
     headers: {
@@ -463,56 +492,6 @@ export type RemoveConsumerKeychainMemberResponses = {
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
 
-export type GetConsumerKeychainPurposesData = {
-    body?: never;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
-    path: {
-        consumerKeychainId: string;
-    };
-    query: {
-        /**
-         * Maximum number of items returned
-         */
-        limit: number;
-        /**
-         * Pagination starting position
-         */
-        offset: number;
-    };
-    url: '/consumerKeychains/{consumerKeychainId}/purposes';
-};
-
-export type GetConsumerKeychainPurposesErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-};
-
-export type GetConsumerKeychainPurposesError = GetConsumerKeychainPurposesErrors[keyof GetConsumerKeychainPurposesErrors];
-
-export type GetConsumerKeychainPurposesResponses = {
-    /**
-     * Purposes linked to the Consumer Keychain retrieved successfully
-     */
-    200: ConsumerKeychainPurposes;
-};
-
-export type GetConsumerKeychainPurposesResponse = GetConsumerKeychainPurposesResponses[keyof GetConsumerKeychainPurposesResponses];
-
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;
     headers: {
@@ -557,7 +536,7 @@ export type LinkPurposeToConsumerKeychainResponses = {
     /**
      * Purpose successfully linked to Consumer Keychain
      */
-    200: ConsumerKeychainPurpose;
+    204: void;
 };
 
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];

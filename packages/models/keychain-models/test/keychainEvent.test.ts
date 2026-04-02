@@ -8,6 +8,7 @@ import {
 import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
 
+import type { ConsumerKeychainLinkedPurposeV1 } from "../src/generated/v1/keychain.ts";
 import type { ConsumerKeychain } from "../src/keychain.ts";
 
 import {
@@ -19,10 +20,7 @@ import {
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
-import {
-  toConsumerKeychainLinkedPurposeV1,
-  toConsumerKeychainV1,
-} from "../src/keychainProtobufConverterToV1.ts";
+import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
 
 describe("KeychainEventV1 codec", () => {
   const consumerKeychain: ConsumerKeychain = {
@@ -46,10 +44,10 @@ describe("KeychainEventV1 codec", () => {
     users: [generateUserId()],
   };
 
-  const linkedPurposeV1 = toConsumerKeychainLinkedPurposeV1({
+  const linkedPurposeV1: ConsumerKeychainLinkedPurposeV1 = {
     id: generateExternalId(),
     knodeId: "Orion",
-  });
+  };
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
   const defaultData = { consumerKeychain: consumerKeychainV1 };
   const cases = [
