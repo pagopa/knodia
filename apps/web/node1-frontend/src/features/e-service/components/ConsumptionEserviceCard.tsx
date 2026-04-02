@@ -1,10 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Avatar } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
-import { getInitials } from "@/utils/getInitials";
+import { KnodeAvatar } from "@/components/KnodeAvatar";
 
 import { CategoryChip } from "./CategoryChip";
 import {
@@ -35,9 +34,9 @@ export function ConsumptionEserviceCard({
         mode={eservice.mode}
         state={eservice.state}
         trailing={
-          <Avatar
+          <KnodeAvatar
             className="bg-brand-dark text-white"
-            fallback={getInitials(eservice.producer.name)}
+            knodeId={eservice.producer.knodeId}
             name={eservice.producer.name}
             size="sm"
           />

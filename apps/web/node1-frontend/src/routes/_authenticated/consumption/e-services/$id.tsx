@@ -2,7 +2,6 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { bffApi } from "@knodia/bff-client";
 import {
-  Avatar,
   Banner,
   Breadcrumb,
   Breadcrumbs,
@@ -15,8 +14,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
+import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
+import { Section } from "@/components/Section";
 import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import {
@@ -28,7 +29,6 @@ import {
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { OrgConsumptionStatusSection } from "@/features/e-service/components/OrgConsumptionStatusSection";
-import { Section } from "@/features/e-service/components/Section";
 import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
 import { toConsumptionEserviceDetail } from "@/features/e-service/services/api-converters";
 import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
@@ -169,9 +169,9 @@ function RouteComponent() {
         title={eservice.name}
       >
         <div className="flex items-center gap-3 mt-3">
-          <Avatar
+          <KnodeAvatar
             className="bg-brand-dark text-white"
-            fallback={eservice.producer.initials}
+            knodeId={eservice.producer.knodeId}
             name={eservice.producer.name}
             size="sm"
           />

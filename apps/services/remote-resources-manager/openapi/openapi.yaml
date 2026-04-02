@@ -724,8 +724,8 @@ components:
       type: object
       properties:
         dailyCalls:
-          description: Expected number of daily API calls for this Purpose
           format: int32
+          description: Expected number of daily API calls for this Purpose
           type: integer
           minimum: 0
           maximum: 1000000000

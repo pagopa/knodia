@@ -4,11 +4,11 @@ import {
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
-import { maxDailyCalls, minDailyCalls } from "@knodia/purpose-models";
 import {
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
   API_PurposeConsumer,
+  API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeFormSchemaVersion,
   API_PurposeState,
@@ -17,7 +17,7 @@ import { z } from "zod";
 
 export const API_PurposeSeed = z
   .strictObject({
-    dailyCalls: z.number().int().min(minDailyCalls).max(maxDailyCalls).meta({
+    dailyCalls: API_PurposeDailyCalls.meta({
       description: "Expected number of daily API calls for this Purpose",
       format: "int32",
     }),
@@ -63,12 +63,7 @@ export const API_Purpose = z
     // formAnswersJson and formSchemaVersion are intentionally excluded —
     // they can be retrieved via separate routes
     consumer: API_PurposeConsumer,
-    dailyCalls: z
-      .number()
-      .int()
-      .min(minDailyCalls)
-      .max(maxDailyCalls)
-      .meta({ format: "int32" }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     id: z.uuid(),
