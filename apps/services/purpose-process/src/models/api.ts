@@ -12,7 +12,9 @@ import {
   API_PurposeConsumer,
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
+  API_PurposeFormSchema,
   API_PurposeFormSchemaVersion,
+  API_PurposeFormUiSchema,
   API_PurposeState,
 } from "@knodia/purpose-models/api";
 import z from "zod";
@@ -79,3 +81,11 @@ export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
 export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams
 >;
+
+export const API_CurrentPurposeFormSchemasResponse = z
+  .strictObject({
+    schema: API_PurposeFormSchema,
+    uiSchema: API_PurposeFormUiSchema,
+    version: API_PurposeFormSchemaVersion,
+  })
+  .meta({ id: "CurrentPurposeFormSchemasResponse" });

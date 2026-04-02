@@ -1,7 +1,6 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { createConsumerPurposeMutation } from "@knodia/bff-client/tanstack-query";
-import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -15,7 +14,7 @@ interface CreatePurposeInput {
 
 export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
   const navigate = useNavigate();
-  const { data } = usePurposeWizardContext();
+  const { data, formSchemaVersion } = usePurposeWizardContext();
 
   const { isError, isPending, mutate } = useMutation({
     ...createConsumerPurposeMutation({ client }),
@@ -36,7 +35,7 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
         description: { en: data.description },
         eserviceId,
         formAnswersJson,
-        formSchemaVersion: PurposeFormSchemaVersion.enum["1.0"],
+        formSchemaVersion,
         knodeId,
         name: { en: data.name },
       },

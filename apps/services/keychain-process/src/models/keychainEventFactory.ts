@@ -8,7 +8,6 @@ import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/k
 
 import {
   type ConsumerKeychain,
-  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 
@@ -114,7 +113,7 @@ export const createConsumerKeychainPurposeLinkedV1Event = ({
     data: {
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: linkedAt.getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
+      purpose,
     },
     type: "ConsumerKeychainPurposeLinkedV1",
   },
