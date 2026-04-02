@@ -244,6 +244,10 @@ export function consumerKeychainServiceBuilder(
           readmodelService,
         ),
       ]);
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
 
       const { data: purpose } = await remoteResourcesManagerApi.getPurpose({
         client: remoteResourcesManagerClient,
@@ -252,10 +256,6 @@ export function consumerKeychainServiceBuilder(
         query: { knodeId },
       });
 
-      assertOrganizationIsKeychainOwner(
-        authData.organizationId,
-        consumerKeychain.data,
-      );
       assertOrganizationIsPurposeConsumer(authData.organizationId, purpose);
 
       const linkedAt = new Date();
