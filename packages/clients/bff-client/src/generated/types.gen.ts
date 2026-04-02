@@ -598,6 +598,20 @@ export type PurposeSeed = {
     name: LocalizedPurposeName;
 };
 
+export type ConsumerPurpose = {
+    eservice: CompactEservice;
+    id: string;
+    keychain: string;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
+export type ConsumerPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerPurpose>;
+};
+
 export type ProducerPurpose = {
     consumer: CompactOrganization;
     dailyCalls: number;
@@ -1472,6 +1486,52 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type GetConsumerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Knode ID of the producer's Knode
+         */
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes';
+};
+
+export type GetConsumerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];
+
+export type GetConsumerPurposesResponses = {
+    /**
+     * Consumer Purposes retrieved successfully
+     */
+    200: ConsumerPurposes;
+};
+
+export type GetConsumerPurposesResponse = GetConsumerPurposesResponses[keyof GetConsumerPurposesResponses];
 
 export type CreateConsumerPurposeData = {
     body: PurposeSeed;
