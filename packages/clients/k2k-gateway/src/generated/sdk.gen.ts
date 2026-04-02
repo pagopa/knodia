@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeFormSchemaData, GetPurposeFormSchemaErrors, GetPurposeFormSchemaResponses, GetPurposeFormUiSchemaData, GetPurposeFormUiSchemaErrors, GetPurposeFormUiSchemaResponses, GetPurposeResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -138,6 +138,15 @@ export const getOrganizations = <ThrowOnError extends boolean = true>(options: O
 });
 
 /**
+ * Retrieve a list of Purposes
+ */
+export const getPurposes = <ThrowOnError extends boolean = true>(options: Options<GetPurposesData, ThrowOnError>) => (options.client ?? client).get<GetPurposesResponses, GetPurposesErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/purposes',
+    ...options
+});
+
+/**
  * Create a new Purpose
  *
  * Create a new Purpose for a Consumer to declare the intended use of a Producer's E-service
@@ -153,24 +162,13 @@ export const createPurpose = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
- * Get Purpose form schema by version
+ * Get current Purpose form schemas
  *
- * Retrieve the JSON Schema for validating Purpose form answers
+ * Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version
  */
-export const getPurposeFormSchema = <ThrowOnError extends boolean = true>(options: Options<GetPurposeFormSchemaData, ThrowOnError>) => (options.client ?? client).get<GetPurposeFormSchemaResponses, GetPurposeFormSchemaErrors, ThrowOnError>({
+export const getCurrentPurposeFormSchemas = <ThrowOnError extends boolean = true>(options?: Options<GetCurrentPurposeFormSchemasData, ThrowOnError>) => (options?.client ?? client).get<GetCurrentPurposeFormSchemasResponses, unknown, ThrowOnError>({
     responseType: 'json',
-    url: '/purposes/formSchemas/{version}',
-    ...options
-});
-
-/**
- * Get Purpose form UI schema by version
- *
- * Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
- */
-export const getPurposeFormUiSchema = <ThrowOnError extends boolean = true>(options: Options<GetPurposeFormUiSchemaData, ThrowOnError>) => (options.client ?? client).get<GetPurposeFormUiSchemaResponses, GetPurposeFormUiSchemaErrors, ThrowOnError>({
-    responseType: 'json',
-    url: '/purposes/formSchemas/{version}/ui',
+    url: '/purposes/formSchemas/current',
     ...options
 });
 

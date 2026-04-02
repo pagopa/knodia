@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type {
-  API_ConsumerKeychainPurpose,
-  API_ConsumerKeychainPurposeLinkSeed,
-} from "@knodia/keychain-models/api";
+import type { API_ConsumerKeychainPurposeLinkSeed } from "@knodia/keychain-models/api";
 import type { Purpose } from "@knodia/purpose-models";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
@@ -22,7 +19,6 @@ import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
   KeychainEventV1,
-  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import {
@@ -37,7 +33,6 @@ import {
 import { AxiosError, type AxiosResponse } from "axios";
 import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { toAPI_ConsumerKeychainPurpose } from "../src/models/apiConverter.ts";
 import { keychainWriterService } from "./setup.ts";
 import {
   getAllKeychainEvents,
@@ -110,20 +105,8 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
       .post(`/consumerKeychains/${consumerKeychain.id}/purposes`)
       .body(body);
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(204);
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
-
-    const responseBody = response.json<API_ConsumerKeychainPurpose>();
-
-    const expectedConsumerKeychainPurpose: ConsumerKeychainPurpose = {
-      consumerKeychainId: consumerKeychain.id,
-      linkedAt: new Date(responseBody.linkedAt),
-      purpose: externalPurpose,
-    };
-
-    expect(responseBody).toMatchObject(
-      toAPI_ConsumerKeychainPurpose(expectedConsumerKeychainPurpose),
-    );
 
     const events = await getAllKeychainEvents();
     const linkEvent = events[1];
@@ -141,8 +124,8 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
 
     expect(linkEventData).toMatchObject({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
-      linkedAt: new Date(responseBody.linkedAt).getTime(),
-      purpose: toConsumerKeychainLinkedPurposeV1(externalPurpose),
+      linkedAt: expect.any(Number),
+      purpose: externalPurpose,
     });
   });
 

@@ -13,7 +13,6 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   API_ConsumerKeychainIdPathParam,
-  type API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposeLinkSeed,
 } from "@knodia/keychain-models/api";
 import {
@@ -32,13 +31,16 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
+  type API_Keychain,
   API_KeychainDetails,
   API_KeychainMemberSeed,
   API_Keychains,
+  API_Users,
 } from "../../models/keychain/api.ts";
 import {
   toAPI_Keychain,
   toAPI_KeychainDetails,
+  toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 
 interface ConsumerKeychainRouterOptions {
@@ -60,20 +62,15 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     });
 
   const pollConsumerKeychain = (
-    response:
-      | AxiosResponse<API_ConsumerKeychainPurpose>
-      | AxiosResponse<API_CreatedResource>,
+    response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
     headers: KnodiaServiceHeaders,
-  ) => {
-    const getId = (res: typeof response) =>
-      "id" in res.data ? res.data.id : res.data.consumerKeychainId;
-
-    return pollingService.pollResourceWithMetadata(() =>
-      retrieveConsumerKeychainById(getId(response), headers),
+    consumerKeychainId: string,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveConsumerKeychainById(consumerKeychainId, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
-  };
 
   const pollConsumerKeychainUntilDeletion = (
     consumerKeychainId: ConsumerKeychainId,
@@ -100,7 +97,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(201).send({ id: response.data.id });
     },
@@ -140,7 +137,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -183,7 +180,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -228,7 +225,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -336,26 +333,76 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
+        { requestParams: req.params },
+        `Getting Consumer Keychain members with ID ${req.params.consumerKeychainId}`,
+      );
+
+      const { data: users } =
+        await keychainProcessApi.getConsumerKeychainMembers({
+          client: keychainProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { consumerKeychainId: req.params.consumerKeychainId },
+        });
+
+      res.send(users.map(toAPI_User));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve members of a Consumer Keychain",
+      operationId: "getConsumerKeychainMembers",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        200: API_Users.meta({
+          description: "Consumer Keychain members retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
         { requestQuery: req.query },
         "Getting Consumer Keychains with query parameters",
       );
 
       const { limit, offset } = req.query;
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const { data } = await keychainProcessApi.getConsumerKeychains({
         client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: { limit, offset },
       });
 
+      async function enhanceKeychainWithCounts(
+        keychain: keychainProcessApi.Keychain,
+      ): Promise<API_Keychain> {
+        const { data: members } =
+          await keychainProcessApi.getConsumerKeychainMembers({
+            client: keychainProcessClient,
+            headers,
+            path: { consumerKeychainId: keychain.id },
+          });
+
+        return toAPI_Keychain(keychain, {
+          keysCount: 0, // TODO: retrieve keysCount when available
+          membersCount: members.length,
+        });
+      }
+
       res.send({
         pagination: data.pagination,
-        results: data.results.map((keychain) =>
-          toAPI_Keychain(keychain, {
-            // TODO: retrieve real keysCount and membersCount from keychainProcessApi when available
-            keysCount: 0,
-            membersCount: 0,
-          }),
+        results: await Promise.all(
+          data.results.map((keychain) => enhanceKeychainWithCounts(keychain)),
         ),
       });
     },
@@ -396,7 +443,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(
+        response,
+        headers,
+        req.params.consumerKeychainId,
+      );
 
       res.status(204).send();
     },

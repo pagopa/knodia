@@ -36,7 +36,10 @@ export function toProcessAPI_PurposeSeed(
     description: purposeSeed.description,
     eserviceId: purposeSeed.eserviceId,
     formAnswersJson: purposeSeed.formAnswersJson,
-    formSchemaVersion: purposeSeed.formSchemaVersion,
+    // Cast to the enum type — the purpose-process validates this and
+    // returns 400 if the version is not supported
+    formSchemaVersion:
+      purposeSeed.formSchemaVersion as purposeProcessApi.PurposeFormSchemaVersion,
     name: purposeSeed.name,
   };
 }
