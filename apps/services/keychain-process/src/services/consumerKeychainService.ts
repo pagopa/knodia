@@ -10,6 +10,7 @@ import type {
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import { genericInternalError } from "@knodia/common-models/errors";
 import {
   type ExternalId,
   type ExternalResource,
@@ -41,7 +42,7 @@ import type {
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
-import type { UserService } from "./userService.ts";
+import type { IdmUser, UserService } from "./userService.ts";
 
 import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
@@ -202,6 +203,42 @@ export function consumerKeychainServiceBuilder(
         consumerKeychainId,
         readmodelService,
       );
+    },
+
+    async getConsumerKeychainMembers(
+      consumerKeychainId: ConsumerKeychainId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<IdmUser[]> {
+      logger.info(
+        `Getting members of Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      async function retrieveUser(userId: UserId): Promise<IdmUser> {
+        const user = await userService.getUserById(userId);
+        if (!user) {
+          /**
+           * This should not happen as users are validated when added as members.
+           * If it does happen, it means there's a data inconsistency that should be investigated.
+           * Hence, we throw a generic internal error.
+           */
+          throw genericInternalError(
+            `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
+          );
+        }
+        return user;
+      }
+
+      return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
     },
 
     async getConsumerKeychains(

@@ -1,10 +1,6 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
-import {
-  getConsumerPurposeFormSchemaOptions,
-  getConsumerPurposeFormUiSchemaOptions,
-} from "@knodia/bff-client/tanstack-query";
-import { PurposeFormSchemaVersion } from "@knodia/purpose-models";
+import { getConsumerCurrentPurposeFormSchemasOptions } from "@knodia/bff-client/tanstack-query";
 import { Banner, Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useRef } from "react";
@@ -33,36 +29,28 @@ interface Props {
   onClose: () => void;
 }
 
-const FORM_SCHEMA_VERSION = PurposeFormSchemaVersion.enum["1.0"];
-
 export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
   const { modal: leaveConfirmModal, onModalShow: handleShowLeaveConfirm } =
     useLeaveConfirmModal(onClose);
 
-  const { data: jsonSchemaData, isError: isSchemaError } = useQuery(
-    getConsumerPurposeFormSchemaOptions({
+  const { data: schemasResponse, isError: isSchemasError } = useQuery(
+    getConsumerCurrentPurposeFormSchemasOptions({
       client,
-      path: { version: FORM_SCHEMA_VERSION },
       query: { knodeId },
     }),
   );
 
-  const { data: uiSchemaData, isError: isUiSchemaError } = useQuery(
-    getConsumerPurposeFormUiSchemaOptions({
-      client,
-      path: { version: FORM_SCHEMA_VERSION },
-      query: { knodeId },
-    }),
-  );
+  const formSchemaVersion = schemasResponse?.version;
 
   const jsonSchema = useMemo(
-    () => (jsonSchemaData ? loadSchema(jsonSchemaData) : undefined),
-    [jsonSchemaData],
+    () => (schemasResponse ? loadSchema(schemasResponse.schema) : undefined),
+    [schemasResponse],
   );
 
   const uiSchema = useMemo(
-    () => (uiSchemaData ? loadUiSchema(uiSchemaData) : undefined),
-    [uiSchemaData],
+    () =>
+      schemasResponse ? loadUiSchema(schemasResponse.uiSchema) : undefined,
+    [schemasResponse],
   );
 
   const dynamicSteps = useMemo(
@@ -70,7 +58,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     [uiSchema],
   );
 
-  if (isSchemaError || isUiSchemaError) {
+  if (isSchemasError) {
     return (
       <FullPageModal onClose={onClose} title="Create Purpose">
         <div className="mx-auto flex max-w-160 flex-col items-center gap-6 p-10">
@@ -82,7 +70,7 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     );
   }
 
-  if (!jsonSchema || !uiSchema) {
+  if (!jsonSchema || !uiSchema || !formSchemaVersion) {
     return (
       <FullPageModal onClose={onClose} title="Create Purpose">
         <div className="mx-auto flex max-w-160 items-center justify-center p-10">
@@ -120,7 +108,11 @@ export function CreatePurposeModal({ eservice, knodeId, onClose }: Props) {
     <>
       <FullPageModal onClose={handleShowLeaveConfirm} title="Create Purpose">
         <StepsProvider stepConfig={steps}>
-          <PurposeFormProvider eservice={eservice} knodeId={knodeId}>
+          <PurposeFormProvider
+            eservice={eservice}
+            formSchemaVersion={formSchemaVersion}
+            knodeId={knodeId}
+          >
             <ModalContent />
           </PurposeFormProvider>
         </StepsProvider>

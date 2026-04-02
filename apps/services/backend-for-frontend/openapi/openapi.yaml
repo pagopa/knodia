@@ -1195,16 +1195,26 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
-    PurposeFormSchemaVersion:
-      type: string
-      enum:
-        - "1.0"
-    PurposeFormSchema:
+    PurposeFormSchemasResponse:
+      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
+        version identifier
       type: object
-      additionalProperties: {}
-    PurposeFormUiSchema:
-      type: object
-      additionalProperties: {}
+      properties:
+        schema:
+          type: object
+          additionalProperties: {}
+        uiSchema:
+          type: object
+          additionalProperties: {}
+        version:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+      required:
+        - schema
+        - uiSchema
+        - version
+      additionalProperties: false
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -1223,7 +1233,9 @@ components:
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
         formSchemaVersion:
-          $ref: "#/components/schemas/PurposeFormSchemaVersion"
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
         knodeId:
           $ref: "#/components/schemas/KnodeId"
         name:
@@ -2035,6 +2047,60 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+    get:
+      operationId: getConsumerKeychainMembers
+      tags:
+        - consumerKeychain
+      description: Retrieve members of a Consumer Keychain
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "200":
+          description: Consumer Keychain members retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain members retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/Users"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members/{userId}:
     delete:
       operationId: removeConsumerKeychainMember
@@ -2538,84 +2604,29 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumer/purposes/formSchemas/{version}:
+  /consumer/purposes/formSchemas/current:
     get:
-      operationId: getConsumerPurposeFormSchema
-      summary: Get Purpose form schema by version
+      operationId: getConsumerCurrentPurposeFormSchemas
+      summary: Get current Purpose form schemas
       tags:
         - purpose
-      description: Retrieve the JSON Schema for validating Purpose form answers
+      description: Retrieve the current Purpose form schemas (JSON Schema + UI Schema)
+        with their version
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
           in: query
           name: knodeId
           required: true
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
       responses:
         "200":
-          description: Purpose form schema retrieved successfully
+          description: Current Purpose form schemas retrieved successfully
           content:
             application/json:
               schema:
-                description: Purpose form schema retrieved successfully
+                description: Current Purpose form schemas retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/PurposeFormSchema"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /consumer/purposes/formSchemas/{version}/ui:
-    get:
-      operationId: getConsumerPurposeFormUiSchema
-      summary: Get Purpose form UI schema by version
-      tags:
-        - purpose
-      description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/KnodeId"
-          in: query
-          name: knodeId
-          required: true
-        - schema:
-            $ref: "#/components/schemas/PurposeFormSchemaVersion"
-          in: path
-          name: version
-          required: true
-      responses:
-        "200":
-          description: Purpose form UI schema retrieved successfully
-          content:
-            application/json:
-              schema:
-                description: Purpose form UI schema retrieved successfully
-                allOf:
-                  - $ref: "#/components/schemas/PurposeFormUiSchema"
+                  - $ref: "#/components/schemas/PurposeFormSchemasResponse"
         "400":
           description: Bad Request
           content:
