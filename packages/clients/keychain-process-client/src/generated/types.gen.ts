@@ -545,6 +545,10 @@ export type LinkPurposeToConsumerKeychainErrors = {
      * Not Found
      */
     404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
 };
 
 export type LinkPurposeToConsumerKeychainError = LinkPurposeToConsumerKeychainErrors[keyof LinkPurposeToConsumerKeychainErrors];
