@@ -2,7 +2,7 @@ import { type PurposeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Breadcrumb, Breadcrumbs } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { eserviceDetailSearchSchema } from "@/features/e-service/models/search-params";
+import { purposeDetailSearchSchema } from "@/features/purpose/models/search-params";
 import { ConsumerPurposeDetail } from "@/features/purpose/components/ConsumerPurposeDetail/ConsumerPurposeDetail";
 import { consumerPurposeDetailsQuery } from "@/features/purpose/services/queries";
 
@@ -20,7 +20,7 @@ export const Route = createFileRoute(
     await queryClient.ensureQueryData(
       consumerPurposeDetailsQuery(unsafeBrandId<PurposeId>(id), knodeId),
     ),
-  validateSearch: eserviceDetailSearchSchema,
+  validateSearch: purposeDetailSearchSchema,
 });
 
 function RouteComponent() {
