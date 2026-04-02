@@ -128,7 +128,9 @@ export const toK2KPurpose = (purpose: Purpose): k2kGatewayApi.Purpose => ({
   updatedAt: purpose.updatedAt.toISOString(),
 });
 
-const toK2KPurposeState = (state: PurposeState): k2kGatewayApi.PurposeState =>
+export const toK2KPurposeState = (
+  state: PurposeState,
+): k2kGatewayApi.PurposeState =>
   match(state)
     .with("Active", () => "ACTIVE" as const)
     .with("Suspended", () => "SUSPENDED" as const)

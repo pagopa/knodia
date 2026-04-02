@@ -1086,6 +1086,45 @@ export type UpdateConsumerKeychainResponses = {
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
 
+export type GetConsumerKeychainMembersData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members';
+};
+
+export type GetConsumerKeychainMembersErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainMembersError = GetConsumerKeychainMembersErrors[keyof GetConsumerKeychainMembersErrors];
+
+export type GetConsumerKeychainMembersResponses = {
+    /**
+     * Consumer Keychain members retrieved successfully
+     */
+    200: Users;
+};
+
+export type GetConsumerKeychainMembersResponse = GetConsumerKeychainMembersResponses[keyof GetConsumerKeychainMembersResponses];
+
 export type AddConsumerKeychainMemberData = {
     body: KeychainMemberSeed;
     path: {
