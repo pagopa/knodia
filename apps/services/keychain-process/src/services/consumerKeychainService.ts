@@ -14,7 +14,6 @@ import type { FastifyRequest } from "fastify";
 import {
   type ExternalId,
   type ExternalResource,
-  unsafeBrandExternalId,
 } from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychainId,
