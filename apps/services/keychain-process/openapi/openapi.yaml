@@ -793,6 +793,12 @@ paths:
                 description: Purpose successfully linked to Consumer Keychain
                 allOf:
                   - $ref: "#/components/schemas/ConsumerKeychainPurpose"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
         "400":
           description: Bad Request
           content:

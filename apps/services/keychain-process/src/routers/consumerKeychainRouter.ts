@@ -323,16 +323,20 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      const { data: consumerKeychainPurpose } =
-        await consumerKeychainService.linkPurposeToConsumerKeychain(
-          {
-            consumerKeychainId: req.params.consumerKeychainId,
-            knodeId: req.body.knodeId,
-            purposeId: unsafeBrandExternalId(req.body.purposeId),
-            req,
-          },
-          ctx,
-        );
+      const {
+        data: consumerKeychainPurpose,
+        metadata: { version },
+      } = await consumerKeychainService.linkPurposeToConsumerKeychain(
+        {
+          consumerKeychainId: req.params.consumerKeychainId,
+          knodeId: req.body.knodeId,
+          purposeId: unsafeBrandExternalId(req.body.purposeId),
+          req,
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
 
       res
         .status(200)
@@ -346,9 +350,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       operationId: "linkPurposeToConsumerKeychain",
       params: API_ConsumerKeychainIdPathParam,
       response: {
-        200: API_ConsumerKeychainPurpose.meta({
-          description: "Purpose successfully linked to Consumer Keychain",
-        }),
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_ConsumerKeychainPurpose.meta({
+            description: "Purpose successfully linked to Consumer Keychain",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
