@@ -8,6 +8,7 @@ import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
+  getKnodiaServiceHeaders,
   KnodiaServiceHeaders,
   MetadataVersionHeader,
   setMetadataVersionHeader,
@@ -326,9 +327,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       } = await consumerKeychainService.linkPurposeToConsumerKeychain(
         {
           consumerKeychainId: req.params.consumerKeychainId,
+          headers: getKnodiaServiceHeaders(req, ctx.correlationId),
           knodeId: req.body.knodeId,
           purposeId: unsafeBrandExternalId(req.body.purposeId),
-          req,
         },
         ctx,
       );

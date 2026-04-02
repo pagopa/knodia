@@ -9,7 +9,6 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type { FastifyRequest } from "fastify";
 
 import {
   type ExternalId,
@@ -23,7 +22,7 @@ import {
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
-import { getKnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
+import { type KnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
@@ -217,14 +216,14 @@ export function consumerKeychainServiceBuilder(
     async linkPurposeToConsumerKeychain(
       {
         consumerKeychainId,
+        headers,
         knodeId,
         purposeId,
-        req,
       }: {
         consumerKeychainId: ConsumerKeychainId;
+        headers: KnodiaServiceHeaders;
         knodeId: KnodeId;
         purposeId: ExternalId<PurposeId>;
-        req: FastifyRequest;
       },
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
@@ -251,7 +250,7 @@ export function consumerKeychainServiceBuilder(
 
       const { data: purpose } = await remoteResourcesManagerApi.getPurpose({
         client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         path: { purposeId },
         query: { knodeId },
       });
