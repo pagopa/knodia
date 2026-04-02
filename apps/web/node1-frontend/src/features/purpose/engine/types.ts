@@ -57,8 +57,7 @@ export interface JsonSchemaProperty {
 export interface LabelElement {
   options?: { variant?: "error" | "info" | "warning" };
   rule?: Rule;
-  text?: string;
-  textKey?: string;
+  textKey: string;
   type: "Label";
 }
 
@@ -89,9 +88,7 @@ interface ControlOptions {
 
 interface GroupElement {
   elements: UISchemaElement[];
-  label?: string;
-  options?: { description?: string };
-  textKey?: string;
+  textKey: string;
   type: "Group";
 }
 

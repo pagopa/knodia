@@ -44,8 +44,7 @@ export function collectControls(element: UISchemaElement): ControlElement[] {
   return [];
 }
 
-// Extracts custom error messages from texts (keyed by field name),
-// with fallback to inline options.errorMessages in the UI Schema.
+// Extracts custom error messages from texts, keyed by field name.
 export function collectErrorMessages(
   texts: FormTexts,
   uischema: UISchema,
@@ -53,18 +52,17 @@ export function collectErrorMessages(
   const result: Record<string, Record<string, string>> = {};
   for (const control of collectControls(uischema)) {
     const fieldName = control.scope.replace("#/properties/", "");
-    const fromTexts = getFieldErrorMessages(texts, fieldName);
-    const fromControl = control.options?.errorMessages ?? {};
-    const merged = { ...fromControl, ...fromTexts };
-    if (Object.keys(merged).length > 0) {
-      result[fieldName] = merged;
+    const errors = getFieldErrorMessages(texts, fieldName);
+    if (Object.keys(errors).length > 0) {
+      result[fieldName] = errors;
     }
   }
   return result;
 }
 
 // Collects Group elements from the UI Schema for section-based rendering.
-// Resolves group label/description from texts via textKey, with inline fallback.
+// Resolves group label/description from texts via textKey; falls back to the
+// textKey itself if the text is missing (like i18next missing key behavior).
 export function collectGroups(
   uischema: UISchema,
   texts: FormTexts,
@@ -72,11 +70,9 @@ export function collectGroups(
   if (uischema.type === "Group") {
     return [
       {
-        description:
-          getGroupDescription(texts, uischema.textKey) ??
-          uischema.options?.description,
+        description: getGroupDescription(texts, uischema.textKey),
         elements: collectGroupElements(uischema),
-        label: getGroupLabel(texts, uischema.textKey) ?? uischema.label,
+        label: getGroupLabel(texts, uischema.textKey) ?? uischema.textKey,
       },
     ];
   }
@@ -86,11 +82,9 @@ export function collectGroups(
   for (const child of uischema.elements) {
     if (child.type === "Group") {
       groups.push({
-        description:
-          getGroupDescription(texts, child.textKey) ??
-          child.options?.description,
+        description: getGroupDescription(texts, child.textKey),
         elements: collectGroupElements(child),
-        label: getGroupLabel(texts, child.textKey) ?? child.label,
+        label: getGroupLabel(texts, child.textKey) ?? child.textKey,
       });
     }
   }
@@ -104,7 +98,8 @@ export function collectGroups(
 }
 
 // Extracts step layouts from the UI Schema for multi-step form rendering.
-// Resolves step label/description from texts via textKey, with inline fallback.
+// Resolves step label/description from texts via textKey; falls back to the
+// textKey itself if the text is missing.
 export function collectSteps(
   uischema: UISchema,
   texts: FormTexts,
@@ -113,11 +108,9 @@ export function collectSteps(
   for (const child of uischema.elements) {
     if (child.type === "Group") {
       steps.push({
-        description:
-          getGroupDescription(texts, child.textKey) ??
-          child.options?.description,
+        description: getGroupDescription(texts, child.textKey),
         elements: child.elements,
-        label: getGroupLabel(texts, child.textKey) ?? child.label,
+        label: getGroupLabel(texts, child.textKey) ?? child.textKey,
       });
     }
   }

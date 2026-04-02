@@ -233,7 +233,7 @@ function GroupSection({
         if (element.type === "Label") {
           if (!isLabelVisible(element, values, visibleFieldNames)) return null;
           const text =
-            getBannerText(texts, element.textKey) ?? element.text ?? "";
+            getBannerText(texts, element.textKey) ?? element.textKey ?? "";
           return (
             <InfoBanner
               key={`label-${i}`}

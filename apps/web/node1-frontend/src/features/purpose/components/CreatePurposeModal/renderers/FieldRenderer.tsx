@@ -45,16 +45,15 @@ export function FieldRenderer({
   const fieldName = scopeToFieldName(control.scope);
   const maxLength = jsonSchema.properties[fieldName]?.maxLength;
 
-  const label = getFieldLabel(texts, fieldName) ?? control.label;
-  const description =
-    getFieldDescription(texts, fieldName) ?? control.options?.infoLabel;
+  const label = getFieldLabel(texts, fieldName) ?? fieldName;
+  const description = getFieldDescription(texts, fieldName);
+
+  const optionLabels = useMemo(
+    () => getFieldOptionLabels(texts, fieldName),
+    [texts, fieldName],
+  );
 
   const options = useMemo(() => {
-    const textsOptionLabels = getFieldOptionLabels(texts, fieldName);
-    const optionLabels =
-      Object.keys(textsOptionLabels).length > 0
-        ? textsOptionLabels
-        : (control.options?.optionLabels ?? {});
     const allOptions = Object.entries(optionLabels).map(([val, lbl]) => ({
       label: lbl,
       value: val,
@@ -64,12 +63,7 @@ export function FieldRenderer({
     if (!hiddenValues) return allOptions;
 
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
-  }, [control, allValues, texts, fieldName]);
-
-  const textsOptionLabels = useMemo(
-    () => getFieldOptionLabels(texts, fieldName),
-    [texts, fieldName],
-  );
+  }, [control, allValues, optionLabels]);
 
   const resolvedControl: ControlElement = useMemo(
     () => ({
@@ -78,18 +72,13 @@ export function FieldRenderer({
       options: control.options
         ? {
             ...control.options,
-            description:
-              getFieldDescription(texts, fieldName) ??
-              control.options.description,
+            description,
             infoLabel: description,
-            optionLabels:
-              Object.keys(textsOptionLabels).length > 0
-                ? textsOptionLabels
-                : control.options.optionLabels,
+            optionLabels,
           }
         : undefined,
     }),
-    [control, label, description, texts, fieldName, textsOptionLabels],
+    [control, label, description, optionLabels],
   );
 
   return match(widget)
