@@ -229,7 +229,7 @@ export function consumerKeychainServiceBuilder(
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
       logger.info(
-        `Linking Purpose ${purposeId} to Consumer Keychain ${consumerKeychainId}`,
+        `Linking Purpose ${purposeId} owned by Knode ${knodeId} to Consumer Keychain ${consumerKeychainId}`,
       );
 
       const externalPurpose: ExternalResource<PurposeId> = {

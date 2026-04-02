@@ -381,9 +381,10 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
+      const { knodeId, purposeId } = req.body;
 
       logger.info(
-        `Linking Purpose ${req.body.purposeId} to Consumer Keychain ${req.params.consumerKeychainId}`,
+        `Linking Purpose ${purposeId} owned by Knode ${knodeId} to Consumer Keychain ${req.params.consumerKeychainId}`,
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
