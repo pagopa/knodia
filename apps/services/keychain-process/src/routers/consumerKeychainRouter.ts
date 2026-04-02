@@ -381,8 +381,10 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       await consumerKeychainService.unlinkPurposeToConsumerKeychain(
         {
           consumerKeychainId: req.params.consumerKeychainId,
-          knodeId: req.query.knodeId,
-          purposeId: req.params.purposeId,
+          purpose: {
+            id: req.params.purposeId,
+            knodeId: req.query.knodeId,
+          },
         },
         ctx,
       );

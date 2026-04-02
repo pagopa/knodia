@@ -12,14 +12,8 @@ import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context"
 import type { FastifyRequest } from "fastify";
 
 import {
-  type ExternalId,
-  type ExternalResource,
-} from "@knodia/common-models/externalResource";
-import {
   type ConsumerKeychainId,
   generateId,
-  type KnodeId,
-  type PurposeId,
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
@@ -326,31 +320,20 @@ export function consumerKeychainServiceBuilder(
     },
 
     async unlinkPurposeToConsumerKeychain(
-      {
-        consumerKeychainId,
-        knodeId,
-        purposeId,
-      }: {
-        consumerKeychainId: ConsumerKeychainId;
-        knodeId: KnodeId;
-        purposeId: ExternalId<PurposeId>;
-      },
+      consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<void> {
+      const { consumerKeychainId, purpose } = consumerKeychainPurpose;
       logger.info(
-        `Unlinking Purpose ${purposeId} owned by Knode ${knodeId} from Consumer Keychain ${consumerKeychainId}`,
+        `Unlinking Purpose ${purpose.id} owned by Knode ${purpose.knodeId} from Consumer Keychain ${consumerKeychainId}`,
       );
 
-      const externalPurpose: ExternalResource<PurposeId> = {
-        id: purposeId,
-        knodeId,
-      };
       const [consumerKeychain] = await Promise.all([
         retrieveConsumerKeychain(consumerKeychainId, readmodelService),
         retrieveConsumerKeychainPurpose(
           {
             consumerKeychainId,
-            purpose: externalPurpose,
+            purpose,
           },
           readmodelService,
         ),
@@ -365,7 +348,7 @@ export function consumerKeychainServiceBuilder(
           consumerKeychain: consumerKeychain.data,
           correlationId,
           currentMetadataVersion: consumerKeychain.metadata.version,
-          purpose: externalPurpose,
+          purpose,
         }),
       );
     },
