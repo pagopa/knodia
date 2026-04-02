@@ -27,6 +27,7 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
+  type API_Keychain,
   API_KeychainDetails,
   API_KeychainMemberSeed,
   API_Keychains,
@@ -370,21 +371,34 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       );
 
       const { limit, offset } = req.query;
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const { data } = await keychainProcessApi.getConsumerKeychains({
         client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: { limit, offset },
       });
 
+      async function enhanceKeychainWithCounts(
+        keychain: keychainProcessApi.Keychain,
+      ): Promise<API_Keychain> {
+        const { data: members } =
+          await keychainProcessApi.getConsumerKeychainMembers({
+            client: keychainProcessClient,
+            headers,
+            path: { consumerKeychainId: keychain.id },
+          });
+
+        return toAPI_Keychain(keychain, {
+          keysCount: 0, // TODO: retrieve keysCount when available
+          membersCount: members.length,
+        });
+      }
+
       res.send({
         pagination: data.pagination,
-        results: data.results.map((keychain) =>
-          toAPI_Keychain(keychain, {
-            // TODO: retrieve real keysCount and membersCount from keychainProcessApi when available
-            keysCount: 0,
-            membersCount: 0,
-          }),
+        results: await Promise.all(
+          data.results.map((keychain) => enhanceKeychainWithCounts(keychain)),
         ),
       });
     },
