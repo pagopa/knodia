@@ -128,11 +128,7 @@ export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = tru
 export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UnlinkPurposeFromConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<UnlinkPurposeFromConsumerKeychainResponses, UnlinkPurposeFromConsumerKeychainErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
+    ...options
 });
 
 /**

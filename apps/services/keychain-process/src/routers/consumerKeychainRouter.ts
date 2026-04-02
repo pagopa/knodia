@@ -16,8 +16,8 @@ import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurpose,
   API_ConsumerKeychainPurposeLinkSeed,
-  API_ConsumerKeychainPurposeUnlinkSeed,
   API_UnlinkConsumerKeychainIdPathParam,
+  API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -381,7 +381,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       await consumerKeychainService.unlinkPurposeToConsumerKeychain(
         {
           consumerKeychainId: req.params.consumerKeychainId,
-          knodeId: req.body.knodeId,
+          knodeId: req.query.knodeId,
           purposeId: req.params.purposeId,
         },
         ctx,
@@ -391,11 +391,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "DELETE",
     schema: {
-      body: API_ConsumerKeychainPurposeUnlinkSeed,
       description: "Unlink a Purpose from a Consumer Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "unlinkPurposeFromConsumerKeychain",
       params: API_UnlinkConsumerKeychainIdPathParam,
+      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
       response: {
         204: z.undefined().meta({
           description: "Purpose successfully unlinked from Consumer Keychain",

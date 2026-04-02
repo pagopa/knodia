@@ -73,13 +73,11 @@ export type API_ConsumerKeychainPurpose = z.infer<
   typeof API_ConsumerKeychainPurpose
 >;
 
-export const API_ConsumerKeychainPurposeUnlinkSeed = z
-  .strictObject({
-    knodeId: API_KnodeId,
-  })
-  .meta({ id: "ConsumerKeychainPurposeUnlinkSeed" });
-export type API_ConsumerKeychainPurposeUnlinkSeed = z.infer<
-  typeof API_ConsumerKeychainPurposeUnlinkSeed
+export const API_UnlinkConsumerKeychainPurposeQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_UnlinkConsumerKeychainPurposeQueryParams = z.infer<
+  typeof API_UnlinkConsumerKeychainPurposeQueryParams
 >;
 
 export const API_UnlinkConsumerKeychainIdPathParam =

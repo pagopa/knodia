@@ -148,14 +148,6 @@ components:
         - linkedAt
         - purpose
       additionalProperties: false
-    ConsumerKeychainPurposeUnlinkSeed:
-      type: object
-      properties:
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
-      required:
-        - knodeId
-      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -853,13 +845,12 @@ paths:
       tags:
         - consumerKeychain
       description: Unlink a Purpose from a Consumer Keychain
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ConsumerKeychainPurposeUnlinkSeed"
       parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
         - schema:
             type: string
             format: uuid

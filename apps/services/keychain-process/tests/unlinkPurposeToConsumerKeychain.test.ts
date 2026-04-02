@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import type { API_ConsumerKeychainPurposeUnlinkSeed } from "@knodia/keychain-models/api";
+import type { API_UnlinkConsumerKeychainPurposeQueryParams } from "@knodia/keychain-models/api";
 
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
@@ -51,7 +51,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
     },
   };
 
-  const body: API_ConsumerKeychainPurposeUnlinkSeed = {
+  const query: API_UnlinkConsumerKeychainPurposeQueryParams = {
     knodeId,
   };
 
@@ -66,7 +66,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
   it("should correctly create consumer keychain purpose unlink event", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .delete(`/consumerKeychains/${consumerKeychain.id}/purposes/${purposeId}`)
-      .body(body);
+      .query(query);
 
     expect(response.statusCode).toBe(204);
 
@@ -95,17 +95,17 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
   });
 
   it.each([
-    ["invalid property", { ...body, wrongProperty: "wrong" }],
-    ["invalid knode id", { ...body, knodeId: "InvalidKnodeId" }],
-    ["empty body", {}],
+    ["invalid property", { ...query, wrongProperty: "wrong" }],
+    ["invalid knode id", { ...query, knodeId: "InvalidKnodeId" }],
+    ["empty query", {}],
   ])(
-    "should return 400 if the body is not correctly formatted - %s",
-    async (_label, requestBody) => {
+    "should return 400 if the query is not correctly formatted - %s",
+    async (_label, requestQuery) => {
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .delete(
           `/consumerKeychains/${consumerKeychain.id}/purposes/${purposeId}`,
         )
-        .body(requestBody as never);
+        .query(requestQuery as never);
       expect(response.statusCode).toBe(400);
     },
   );
@@ -117,7 +117,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
         .delete(
           `/consumerKeychains/${consumerKeychain.id}/purposes/${purposeId}`,
         )
-        .body(body);
+        .query(query);
       expect(response.statusCode).toBe(403);
     },
   );
@@ -125,7 +125,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
   it("should return 404 if the consumer keychain does not exist", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .delete(`/consumerKeychains/${generateId()}/purposes/${purposeId}`)
-      .body(body);
+      .query(query);
     expect(response.statusCode).toBe(404);
   });
 
@@ -134,7 +134,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
       .delete(
         `/consumerKeychains/${consumerKeychain.id}/purposes/${generateId()}`,
       )
-      .body(body);
+      .query(query);
     expect(response.statusCode).toBe(404);
   });
 
@@ -145,7 +145,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
       type: "ui-session",
     })
       .delete(`/consumerKeychains/${consumerKeychain.id}/purposes/${purposeId}`)
-      .body(body);
+      .query(query);
     expect(response.statusCode).toBe(403);
   });
 });

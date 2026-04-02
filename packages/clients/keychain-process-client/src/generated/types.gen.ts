@@ -73,10 +73,6 @@ export type ConsumerKeychainPurpose = {
     purpose: ConsumerKeychainLinkedPurpose;
 };
 
-export type ConsumerKeychainPurposeUnlinkSeed = {
-    knodeId: KnodeId;
-};
-
 export type Pagination = {
     limit: number;
     offset: number;
@@ -512,7 +508,7 @@ export type LinkPurposeToConsumerKeychainResponses = {
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
 
 export type UnlinkPurposeFromConsumerKeychainData = {
-    body: ConsumerKeychainPurposeUnlinkSeed;
+    body?: never;
     headers: {
         /**
          * Unique identifier of the request
@@ -523,7 +519,9 @@ export type UnlinkPurposeFromConsumerKeychainData = {
         consumerKeychainId: string;
         purposeId: string;
     };
-    query?: never;
+    query: {
+        knodeId: KnodeId;
+    };
     url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}';
 };
 
