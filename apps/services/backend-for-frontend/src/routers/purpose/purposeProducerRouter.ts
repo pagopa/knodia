@@ -34,8 +34,8 @@ import {
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_GetProducerPurposesQueryParams,
-  API_ProducerPurposeDetails,
   API_ProducerPurposes,
+  API_PurposeDetails,
 } from "../../models/purpose/api.ts";
 import {
   toAPI_ProducerPurpose,
@@ -267,7 +267,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       operationId: "getProducerPurposeDetails",
       params: API_PurposeIdPathParam,
       response: {
-        200: API_ProducerPurposeDetails.meta({
+        200: API_PurposeDetails.meta({
           description: "Producer Purpose details retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
