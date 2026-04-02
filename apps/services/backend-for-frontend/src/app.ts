@@ -25,6 +25,7 @@ import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRoute
 import { userRouter } from "./routers/keychain/userRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
+import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
@@ -120,7 +121,13 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(sessionRouter, {
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
     });
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,

@@ -3,10 +3,11 @@
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { injectAppRequest } from "./utils.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
 ];
 
 const downloadEserviceLatestVersionInterfaceMock = vi.hoisted(() => vi.fn());

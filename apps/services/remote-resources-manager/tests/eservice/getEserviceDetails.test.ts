@@ -14,17 +14,18 @@ import {
 } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { toAPI_EserviceDetails } from "../src/models/eservice/apiConverter.ts";
+import { toAPI_EserviceDetails } from "../../src/models/eservice/apiConverter.ts";
 import {
   toK2KEservice,
   toK2KEserviceVersion,
   toK2KKnodeId,
   toK2KOrganization,
-} from "./k2kConverters.ts";
-import { injectAppRequest } from "./utils.ts";
+} from "../k2kConverters.ts";
+import { injectAppRequest } from "../utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
+  { roles: ["technical"], type: "ui-session" },
 ];
 
 const getEserviceMock = vi.hoisted(() => vi.fn());

@@ -4,10 +4,11 @@ import type {
 } from "@knodia/agreement-models/api";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { type API_KnodeId } from "@knodia/common-models/internalApi";
 import { match } from "ts-pattern";
 
 import type { API_Agreement } from "./api.ts";
+
+import { toAPI_KnodeId } from "../knode/apiConverter.ts";
 
 export function toAPI_Agreement(
   agreement: k2kGatewayApi.Agreement,
@@ -51,11 +52,4 @@ function toAPI_AgreementConsumer(
     id: consumer.id,
     knodeId: toAPI_KnodeId(consumer.knodeId),
   };
-}
-
-function toAPI_KnodeId(knodeId: k2kGatewayApi.KnodeId): API_KnodeId {
-  return match(knodeId)
-    .with("ORION", () => "Orion" as const)
-    .with("LYNX", () => "Lynx" as const)
-    .exhaustive();
 }

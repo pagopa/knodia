@@ -1,7 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  Avatar,
   ButtonLink,
   Cell,
   Column,
@@ -15,7 +14,7 @@ import {
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 
-import { getInitials } from "@/utils/getInitials";
+import { KnodeAvatar } from "@/components/KnodeAvatar";
 
 import { AgreementStateChip } from "../AgreementStateChip";
 
@@ -45,19 +44,23 @@ export function ProducerAgreementTable({
   return (
     <Table aria-label="Producer agreements">
       <TableHeader>
-        <Column isRowHeader>E-Service</Column>
-        <Column>Consumer</Column>
-        <Column>Status</Column>
-        <Column />
+        <Column id="eservice" isRowHeader>
+          E-Service
+        </Column>
+        <Column id="consumer">Consumer</Column>
+        <Column id="status">Status</Column>
+        <Column id="actions">
+          <span className="sr-only">Actions</span>
+        </Column>
       </TableHeader>
       <TableBody items={agreements}>
         {(agreement) => (
           <Row id={agreement.id}>
             <Cell className="body-md">{agreement.eservice.name.en}</Cell>
             <Cell>
-              <Avatar
+              <KnodeAvatar
                 className="bg-brand-dark text-white"
-                fallback={getInitials(agreement.consumer.name)}
+                knodeId={agreement.consumer.knodeId}
                 name={agreement.consumer.name}
                 size="sm"
               />
