@@ -1,4 +1,4 @@
-import type { ConsumerKeychainId, PurposeId } from "@knodia/common-models/ids";
+import type { ConsumerKeychainId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 import type {
   ConsumerKeychain,
@@ -8,10 +8,11 @@ import type {
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import {
+  assertSQLFiltersAreDefined,
   getTablePKString,
   throwIfMultiple,
 } from "@knodia/db-readmodel-commons/utils";
-import { and, eq } from "drizzle-orm";
+import { eq, type SQL } from "drizzle-orm";
 
 import {
   readmodelConsumerKeychain,
@@ -61,22 +62,15 @@ export function consumerKeychainReadmodelServiceBuilder(
 
       return aggregateConsumerKeychain(queryRes);
     },
-    async getConsumerKeychainPurposeByKeychainId(
-      consumerKeychainId: ConsumerKeychainId,
-      purposeId: PurposeId,
+    async getConsumerKeychainPurposeByFilter(
+      filters: SQL | undefined,
     ): Promise<undefined | WithMetadata<ConsumerKeychainPurpose>> {
+      assertSQLFiltersAreDefined(filters);
+
       const queryRes = await readmodelDb
         .select()
         .from(readmodelConsumerKeychainPurpose)
-        .where(
-          and(
-            eq(
-              readmodelConsumerKeychainPurpose.consumerKeychainId,
-              consumerKeychainId,
-            ),
-            eq(readmodelConsumerKeychainPurpose.purposeId, purposeId),
-          ),
-        );
+        .where(filters);
 
       const consumerKeychainPurpose = throwIfMultiple(
         queryRes,

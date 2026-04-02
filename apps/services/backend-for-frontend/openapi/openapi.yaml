@@ -881,6 +881,20 @@ components:
         - pagination
         - results
       additionalProperties: false
+    CompactAgreement:
+      description: Agreement with only id and state
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        state:
+          $ref: "#/components/schemas/AgreementState"
+      required:
+        - id
+        - state
+      additionalProperties: false
     AgreementSeed:
       description: Seed data to create a new Agreement
       type: object
@@ -1124,6 +1138,14 @@ components:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
       additionalProperties: false
+    KeychainMemberSeed:
+      type: object
+      properties:
+        userId:
+          $ref: "#/components/schemas/UserId"
+      required:
+        - userId
+      additionalProperties: false
     User:
       type: object
       properties:
@@ -1142,6 +1164,12 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/User"
+    PurposeState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
     LocalizedPurposeName:
       description: Name of the Purpose
       type: object
@@ -1167,6 +1195,16 @@ components:
     PurposeFormAnswers:
       type: object
       additionalProperties: {}
+    PurposeFormSchemaVersion:
+      type: string
+      enum:
+        - "1.0"
+    PurposeFormSchema:
+      type: object
+      additionalProperties: {}
+    PurposeFormUiSchema:
+      type: object
+      additionalProperties: {}
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
@@ -1184,6 +1222,8 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
         formAnswersJson:
           $ref: "#/components/schemas/PurposeFormAnswers"
+        formSchemaVersion:
+          $ref: "#/components/schemas/PurposeFormSchemaVersion"
         knodeId:
           $ref: "#/components/schemas/KnodeId"
         name:
@@ -1193,6 +1233,133 @@ components:
         - description
         - eserviceId
         - formAnswersJson
+        - formSchemaVersion
+        - knodeId
+        - name
+      additionalProperties: false
+    ProducerPurpose:
+      type: object
+      properties:
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+      required:
+        - consumer
+        - dailyCalls
+        - description
+        - eservice
+        - id
+        - name
+        - state
+      additionalProperties: false
+    ProducerPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProducerPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
+    PurposeDetailsEservice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/LocalizedName"
+        latestVersionState:
+          $ref: "#/components/schemas/EserviceVersionState"
+      required:
+        - id
+        - name
+        - latestVersionState
+      additionalProperties: false
+    PurposeDetails:
+      type: object
+      properties:
+        agreement:
+          $ref: "#/components/schemas/CompactAgreement"
+        consumer:
+          $ref: "#/components/schemas/CompactOrganization"
+        dailyCalls:
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 1000000000
+        description:
+          $ref: "#/components/schemas/LocalizedPurposeDescription"
+        eservice:
+          $ref: "#/components/schemas/PurposeDetailsEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        maxDailyCallsPerConsumer:
+          format: int32
+          type: integer
+          minimum: -9007199254740991
+          maximum: 9007199254740991
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+      required:
+        - agreement
+        - consumer
+        - dailyCalls
+        - description
+        - eservice
+        - id
+        - maxDailyCallsPerConsumer
+        - name
+        - producer
+        - state
+      additionalProperties: false
+    SessionOrganization:
+      description: Organization details for the current session, including attributes
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+        name:
+          type: string
+          minLength: 1
+      required:
+        - attributes
+        - id
         - knodeId
         - name
       additionalProperties: false
@@ -1805,6 +1972,123 @@ paths:
                 description: Consumer keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/members:
+    post:
+      operationId: addConsumerKeychainMember
+      tags:
+        - consumerKeychain
+      description: Add a member to a Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainMemberSeed"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "204":
+          description: Consumer Keychain member added successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/members/{userId}:
+    delete:
+      operationId: removeConsumerKeychainMember
+      tags:
+        - consumerKeychain
+      description: Remove a member from a Consumer Keychain
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/UserId"
+          in: path
+          name: userId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "204":
+          description: Consumer Keychain member removed successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /users/technical:
     get:
       operationId: getTechnicalUsers
@@ -2254,6 +2538,208 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumer/purposes/formSchemas/{version}:
+    get:
+      operationId: getConsumerPurposeFormSchema
+      summary: Get Purpose form schema by version
+      tags:
+        - purpose
+      description: Retrieve the JSON Schema for validating Purpose form answers
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/PurposeFormSchemaVersion"
+          in: path
+          name: version
+          required: true
+      responses:
+        "200":
+          description: Purpose form schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose form schema retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/purposes/formSchemas/{version}/ui:
+    get:
+      operationId: getConsumerPurposeFormUiSchema
+      summary: Get Purpose form UI schema by version
+      tags:
+        - purpose
+      description: Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            $ref: "#/components/schemas/PurposeFormSchemaVersion"
+          in: path
+          name: version
+          required: true
+      responses:
+        "200":
+          description: Purpose form UI schema retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Purpose form UI schema retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeFormUiSchema"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumer/purposes/{purposeId}:
+    get:
+      operationId: getConsumerPurposeDetails
+      summary: Get consumer Purpose details
+      tags:
+        - purpose
+      description: Retrieve a Consumer Purpose with details
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/KnodeId"
+          in: query
+          name: knodeId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "200":
+          description: Consumer Purpose details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Purpose details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /session/organization:
+    get:
+      operationId: getSessionOrganization
+      tags:
+        - auth
+      description: Retrieve the Organization of the current session's User
+      responses:
+        "200":
+          description: Session Organization retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Session Organization retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/SessionOrganization"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/agreements:
     get:
       operationId: getProducerAgreements
@@ -2335,6 +2821,136 @@ paths:
                 description: Producer Agreement details retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/ProducerAgreementDetails"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/purposes:
+    get:
+      operationId: getProducerPurposes
+      summary: List producer Purposes
+      tags:
+        - purpose
+      description: Retrieve a paginated list of Purposes for the logged-in producer's
+        E-services
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: eserviceId
+          required: false
+          description: Filter by E-service ID
+        - schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/PurposeState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Purpose State
+      responses:
+        "200":
+          description: Producer Purposes retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Purposes retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ProducerPurposes"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /producer/purposes/{purposeId}:
+    get:
+      operationId: getProducerPurposeDetails
+      tags:
+        - purpose
+      description: Retrieve a Producer Purpose with details
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: purposeId
+          required: true
+      responses:
+        "200":
+          description: Producer Purpose details retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Producer Purpose details retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/PurposeDetails"
         "400":
           description: Bad Request
           content:

@@ -423,6 +423,14 @@ export type ConsumerEservices = {
 };
 
 /**
+ * Agreement with only id and state
+ */
+export type CompactAgreement = {
+    id: string;
+    state: AgreementState;
+};
+
+/**
  * Seed data to create a new Agreement
  */
 export type AgreementSeed = {
@@ -526,6 +534,10 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type KeychainMemberSeed = {
+    userId: UserId;
+};
+
 export type User = {
     email: string;
     id: UserId;
@@ -533,6 +545,8 @@ export type User = {
 };
 
 export type Users = Array<User>;
+
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
 /**
  * Name of the Purpose
@@ -552,6 +566,16 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormSchemaVersion = '1.0';
+
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
+};
+
 /**
  * Seed data to create a new Purpose
  */
@@ -560,8 +584,53 @@ export type PurposeSeed = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+};
+
+export type ProducerPurpose = {
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: CompactEservice;
+    id: string;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+};
+
+export type ProducerPurposes = {
+    pagination: Pagination;
+    results: Array<ProducerPurpose>;
+};
+
+export type PurposeDetailsEservice = {
+    id: string;
+    name: LocalizedName;
+    latestVersionState: EserviceVersionState;
+};
+
+export type PurposeDetails = {
+    agreement: CompactAgreement;
+    consumer: CompactOrganization;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eservice: PurposeDetailsEservice;
+    id: string;
+    maxDailyCallsPerConsumer: number;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
+/**
+ * Organization details for the current session, including attributes
+ */
+export type SessionOrganization = {
+    attributes: Array<Attribute>;
+    id: string;
+    knodeId: KnodeId;
+    name: string;
 };
 
 export type GetStatusData = {
@@ -1003,6 +1072,89 @@ export type UpdateConsumerKeychainResponses = {
 
 export type UpdateConsumerKeychainResponse = UpdateConsumerKeychainResponses[keyof UpdateConsumerKeychainResponses];
 
+export type AddConsumerKeychainMemberData = {
+    body: KeychainMemberSeed;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members';
+};
+
+export type AddConsumerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type AddConsumerKeychainMemberError = AddConsumerKeychainMemberErrors[keyof AddConsumerKeychainMemberErrors];
+
+export type AddConsumerKeychainMemberResponses = {
+    /**
+     * Consumer Keychain member added successfully
+     */
+    204: void;
+};
+
+export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
+
+export type RemoveConsumerKeychainMemberData = {
+    body?: never;
+    path: {
+        userId: UserId;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members/{userId}';
+};
+
+export type RemoveConsumerKeychainMemberErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type RemoveConsumerKeychainMemberError = RemoveConsumerKeychainMemberErrors[keyof RemoveConsumerKeychainMemberErrors];
+
+export type RemoveConsumerKeychainMemberResponses = {
+    /**
+     * Consumer Keychain member removed successfully
+     */
+    204: void;
+};
+
+export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
 export type GetTechnicalUsersData = {
     body?: never;
     path?: never;
@@ -1314,6 +1466,154 @@ export type CreateConsumerPurposeResponses = {
 
 export type CreateConsumerPurposeResponse = CreateConsumerPurposeResponses[keyof CreateConsumerPurposeResponses];
 
+export type GetConsumerPurposeFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/formSchemas/{version}';
+};
+
+export type GetConsumerPurposeFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerPurposeFormSchemaError = GetConsumerPurposeFormSchemaErrors[keyof GetConsumerPurposeFormSchemaErrors];
+
+export type GetConsumerPurposeFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetConsumerPurposeFormSchemaResponse = GetConsumerPurposeFormSchemaResponses[keyof GetConsumerPurposeFormSchemaResponses];
+
+export type GetConsumerPurposeFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/formSchemas/{version}/ui';
+};
+
+export type GetConsumerPurposeFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerPurposeFormUiSchemaError = GetConsumerPurposeFormUiSchemaErrors[keyof GetConsumerPurposeFormUiSchemaErrors];
+
+export type GetConsumerPurposeFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormUiSchema;
+};
+
+export type GetConsumerPurposeFormUiSchemaResponse = GetConsumerPurposeFormUiSchemaResponses[keyof GetConsumerPurposeFormUiSchemaResponses];
+
+export type GetConsumerPurposeDetailsData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumer/purposes/{purposeId}';
+};
+
+export type GetConsumerPurposeDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerPurposeDetailsError = GetConsumerPurposeDetailsErrors[keyof GetConsumerPurposeDetailsErrors];
+
+export type GetConsumerPurposeDetailsResponses = {
+    /**
+     * Consumer Purpose details retrieved successfully
+     */
+    200: PurposeDetails;
+};
+
+export type GetConsumerPurposeDetailsResponse = GetConsumerPurposeDetailsResponses[keyof GetConsumerPurposeDetailsResponses];
+
+export type GetSessionOrganizationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/session/organization';
+};
+
+export type GetSessionOrganizationErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetSessionOrganizationError = GetSessionOrganizationErrors[keyof GetSessionOrganizationErrors];
+
+export type GetSessionOrganizationResponses = {
+    /**
+     * Session Organization retrieved successfully
+     */
+    200: SessionOrganization;
+};
+
+export type GetSessionOrganizationResponse = GetSessionOrganizationResponses[keyof GetSessionOrganizationResponses];
+
 export type GetProducerAgreementsData = {
     body?: never;
     path?: never;
@@ -1394,3 +1694,92 @@ export type GetProducerAgreementDetailsResponses = {
 };
 
 export type GetProducerAgreementDetailsResponse = GetProducerAgreementDetailsResponses[keyof GetProducerAgreementDetailsResponses];
+
+export type GetProducerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: Array<PurposeState>;
+    };
+    url: '/producer/purposes';
+};
+
+export type GetProducerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetProducerPurposesError = GetProducerPurposesErrors[keyof GetProducerPurposesErrors];
+
+export type GetProducerPurposesResponses = {
+    /**
+     * Producer Purposes retrieved successfully
+     */
+    200: ProducerPurposes;
+};
+
+export type GetProducerPurposesResponse = GetProducerPurposesResponses[keyof GetProducerPurposesResponses];
+
+export type GetProducerPurposeDetailsData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query?: never;
+    url: '/producer/purposes/{purposeId}';
+};
+
+export type GetProducerPurposeDetailsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetProducerPurposeDetailsError = GetProducerPurposeDetailsErrors[keyof GetProducerPurposeDetailsErrors];
+
+export type GetProducerPurposeDetailsResponses = {
+    /**
+     * Producer Purpose details retrieved successfully
+     */
+    200: PurposeDetails;
+};
+
+export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];

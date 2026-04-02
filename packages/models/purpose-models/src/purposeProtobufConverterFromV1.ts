@@ -12,12 +12,14 @@ import { match } from "ts-pattern";
 
 import {
   type PurposeConsumerV1,
+  PurposeFormSchemaVersionV1,
   PurposeStateV1,
   type PurposeV1,
 } from "./generated/v1/purpose.ts";
 import {
   type Purpose,
   PurposeFormAnswers,
+  type PurposeFormSchemaVersion,
   type PurposeState,
 } from "./purpose.ts";
 
@@ -35,6 +37,7 @@ export const fromPurposeV1 = (input: PurposeV1): Purpose => {
     formAnswersJson: PurposeFormAnswers.parse(
       JSON.parse(input.formAnswersJson),
     ),
+    formSchemaVersion: fromPurposeFormSchemaVersionV1(input.formSchemaVersion),
     id: unsafeBrandId(input.id),
     name: input.name,
     state: fromPurposeStateV1(input.state),
@@ -49,6 +52,16 @@ const fromPurposeStateV1 = (input: PurposeStateV1): PurposeState =>
     .with(PurposeStateV1.ARCHIVED, () => "Archived" as const)
     .with(PurposeStateV1.UNRECOGNIZED, () => {
       throw new Error("Unrecognized PurposeStateV1 value");
+    })
+    .exhaustive();
+
+const fromPurposeFormSchemaVersionV1 = (
+  input: PurposeFormSchemaVersionV1,
+): PurposeFormSchemaVersion =>
+  match(input)
+    .with(PurposeFormSchemaVersionV1.V1_0, () => "1.0" as const)
+    .with(PurposeFormSchemaVersionV1.UNRECOGNIZED, () => {
+      throw new Error("Unrecognized PurposeFormSchemaVersionV1 value");
     })
     .exhaustive();
 

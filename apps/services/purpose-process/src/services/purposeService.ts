@@ -1,9 +1,13 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { PurposeEventStoreWriter } from "@knodia/db-event-store-writer/purpose";
-import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
+import type {
+  ListResult,
+  WithMetadata,
+} from "@knodia/db-readmodel-commons/models";
 import type {
   AuthData,
   InternalAuthData,
+  UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
@@ -19,12 +23,16 @@ import {
   type LocalizedPurposeName,
   type Purpose,
   type PurposeFormAnswers,
+  type PurposeFormSchemaVersion,
   PurposeState,
 } from "@knodia/purpose-models";
 
+import type { API_GetPurposesQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
+import { getFormSchema, getFormUiSchema } from "../models/formSchemas.ts";
 import { createPurposeActivatedV1Event } from "../models/purposeEventFactory.ts";
+import { assertFormAnswersAreValid } from "../utils/formAnswersValidator.ts";
 import {
   retrieveAgreements,
   retrieveEservice,
@@ -50,6 +58,7 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         formAnswersJson,
+        formSchemaVersion,
         name,
       }: {
         consumer: ExternalResource<OrganizationId>;
@@ -57,6 +66,7 @@ export function purposeServiceBuilder(
         description: LocalizedPurposeDescription;
         eserviceId: EserviceId;
         formAnswersJson: PurposeFormAnswers;
+        formSchemaVersion: PurposeFormSchemaVersion;
         name: LocalizedPurposeName;
       },
       { correlationId, logger }: AuthorizedContext<InternalAuthData>,
@@ -84,7 +94,7 @@ export function purposeServiceBuilder(
         eserviceId,
       });
 
-      // TODO form answers validation against the Knode purpose form JSON schema
+      assertFormAnswersAreValid(formAnswersJson, formSchemaVersion);
 
       const now = new Date();
       const purpose: Purpose = {
@@ -94,6 +104,7 @@ export function purposeServiceBuilder(
         description,
         eserviceId,
         formAnswersJson,
+        formSchemaVersion,
         id: purposeId,
         name,
         state: PurposeState.enum.Active,
@@ -109,6 +120,20 @@ export function purposeServiceBuilder(
         metadata: { version: newVersion },
       };
     },
+    getFormSchema(
+      version: PurposeFormSchemaVersion,
+      { logger }: AuthorizedContext<AuthData>,
+    ): Record<string, unknown> {
+      logger.info(`Getting Purpose form schema version ${version}`);
+      return getFormSchema(version);
+    },
+    getFormUiSchema(
+      version: PurposeFormSchemaVersion,
+      { logger }: AuthorizedContext<AuthData>,
+    ): Record<string, unknown> {
+      logger.info(`Getting Purpose form UI schema version ${version}`);
+      return getFormUiSchema(version);
+    },
     async getPurpose(
       purposeId: PurposeId,
       { logger }: AuthorizedContext<AuthData>,
@@ -116,6 +141,13 @@ export function purposeServiceBuilder(
       logger.info(`Getting Purpose with ID ${purposeId}`);
 
       return await retrievePurpose(purposeId, readmodelService);
+    },
+    async getPurposes(
+      requestQuery: API_GetPurposesQueryParams,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<ListResult<Purpose>> {
+      logger.info({ requestQuery }, "Getting Purposes with query params");
+      return await readmodelService.getPurposes(requestQuery);
     },
   };
 }

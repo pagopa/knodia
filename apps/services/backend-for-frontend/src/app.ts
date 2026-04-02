@@ -24,6 +24,8 @@ import { eserviceProducerRouter } from "./routers/eservice/eserviceProducerRoute
 import { consumerKeychainRouter } from "./routers/keychain/consumerKeychainRouter.ts";
 import { userRouter } from "./routers/keychain/userRouter.ts";
 import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.ts";
+import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
+import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 
 export function buildAppFromConfig(config: BffProcessConfig) {
@@ -36,6 +38,7 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     eserviceProcessUrl: config.eserviceProcessUrl,
     keychainProcessUrl: config.keychainProcessUrl,
     organizationProcessUrl: config.organizationProcessUrl,
+    purposeProcessUrl: config.purposeProcessUrl,
     remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
@@ -118,13 +121,27 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(sessionRouter, {
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
     });
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,
       knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
+      remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(purposeProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
+      eserviceProcessClient: clients.eserviceProcessClient,
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
+      purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
   });

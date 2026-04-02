@@ -86,11 +86,13 @@ export function getMockOrganization(seed = 0): Organization {
 }
 
 export const MOCK_PURPOSE_FORM_ANSWERS = {
-  checked: true,
-  count: 42,
-  nested: { deep: "value" },
-  options: ["a", "b", "c"],
-  question1: "answer1",
+  confirmPrincipleIntegrityAndDiscretion: "true",
+  declarationConfirmGDPR: "true",
+  legalBasis: ["CONSENT"],
+  personalDataTypes: ["WITH_IDENTIFYING_DATA"],
+  purpose: "INSTITUTIONAL",
+  purposeDescription: "Test purpose for local development",
+  usesThirdPartyPersonalData: "NO",
 };
 
 export function getMockPurpose(seed = 0): Purpose {

@@ -13,6 +13,7 @@ import {
   fromPurposeV1,
   type Purpose,
   PurposeEventV1,
+  PurposeFormSchemaVersion,
 } from "@knodia/purpose-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
@@ -49,6 +50,7 @@ const body: API_PurposeSeed = {
   description: { en: "A test purpose description" },
   eserviceId: eservice.id,
   formAnswersJson: MOCK_PURPOSE_FORM_ANSWERS,
+  formSchemaVersion: PurposeFormSchemaVersion.enum["1.0"],
   name: { en: "Test Purpose" },
 };
 
@@ -88,6 +90,7 @@ describe("POST /purposes (createPurpose)", () => {
         description: body.description,
         eserviceId: eservice.id,
         formAnswersJson: body.formAnswersJson,
+        formSchemaVersion: PurposeFormSchemaVersion.enum["1.0"],
         id: expect.any(String),
         name: body.name,
         state: "Active",
@@ -346,6 +349,51 @@ describe("POST /purposes (createPurpose)", () => {
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return 400 if form answers are missing required fields", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {},
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if form answers have invalid field values", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {
+          ...MOCK_PURPOSE_FORM_ANSWERS,
+          purpose: "INVALID_VALUE",
+        },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 400 if form answers fail conditional validation", async () => {
+    await setupEserviceAndAgreement();
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/purposes")
+      .body({
+        ...body,
+        formAnswersJson: {
+          legalBasis: ["PUBLIC_INTEREST"],
+          // Missing publicInterestReasons and legalBasisPublicInterest
+          personalDataTypes: ["WITH_IDENTIFYING_DATA"],
+          purpose: "INSTITUTIONAL",
+          usesThirdPartyPersonalData: "NO",
+        },
+      } satisfies API_PurposeSeed);
+    expect(response.statusCode).toBe(400);
+  });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",

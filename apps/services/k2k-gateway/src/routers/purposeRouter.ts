@@ -22,9 +22,17 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CreatedPurposeResource,
+  API_Purpose,
+  API_PurposeFormSchema,
+  API_PurposeFormSchemaVersionPathParam,
+  API_PurposeFormUiSchema,
+  API_PurposeIdPathParam,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
-import { toProcessAPI_PurposeSeed } from "../models/purpose/apiConverter.ts";
+import {
+  toAPI_Purpose,
+  toProcessAPI_PurposeSeed,
+} from "../models/purpose/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface PurposeRouterOptions {
@@ -99,5 +107,108 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.resource, apiTags.purpose],
     },
     url: "/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Getting Purpose form schema version ${req.params.version}`);
+
+      const token = await tokenProvider.get();
+      const { data } = await purposeProcessApi.getPurposeFormSchema({
+        client: purposeProcessClient,
+        headers: getKnodiaServiceHeaders(correlationId, token),
+        path: { version: req.params.version },
+      });
+
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the JSON Schema for validating Purpose form answers",
+      operationId: "getPurposeFormSchema",
+      params: API_PurposeFormSchemaVersionPathParam,
+      response: {
+        200: API_PurposeFormSchema.meta({
+          description: "Purpose form schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      summary: "Get Purpose form schema by version",
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes/formSchemas/:version",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        `Getting Purpose form UI schema version ${req.params.version}`,
+      );
+
+      const token = await tokenProvider.get();
+      const { data } = await purposeProcessApi.getPurposeFormUiSchema({
+        client: purposeProcessClient,
+        headers: getKnodiaServiceHeaders(correlationId, token),
+        path: { version: req.params.version },
+      });
+
+      res.send(data);
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
+      operationId: "getPurposeFormUiSchema",
+      params: API_PurposeFormSchemaVersionPathParam,
+      response: {
+        200: API_PurposeFormUiSchema.meta({
+          description: "Purpose form UI schema retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+      },
+      summary: "Get Purpose form UI schema by version",
+      tags: [apiTags.resource, apiTags.purpose],
+    },
+    url: "/purposes/formSchemas/:version/ui",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Getting Purpose with ID ${req.params.purposeId}`);
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await purposeProcessApi.getPurpose({
+        client: purposeProcessClient,
+        headers,
+        path: { purposeId: req.params.purposeId },
+      });
+
+      res.send(toAPI_Purpose(data));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Purpose",
+      operationId: "getPurpose",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Purpose not found" }),
+      },
+      summary: "Get Purpose",
+      tags: [apiTags.purpose, apiTags.resource],
+    },
+    url: "/purposes/:purposeId",
   });
 };

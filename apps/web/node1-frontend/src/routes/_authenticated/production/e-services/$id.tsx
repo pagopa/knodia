@@ -2,8 +2,8 @@ import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
-import { CopyableValueField } from "@/components/CopyableValueField";
 import { PageHeader } from "@/components/PageHeader";
+import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
@@ -22,7 +22,7 @@ function EServiceActions() {
   return (
     <>
       <DialogTrigger>
-        <Button hierarchy="danger" kind="tonal" size="md">
+        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
           Suspend
         </Button>
         <Modal
@@ -34,7 +34,7 @@ function EServiceActions() {
         />
       </DialogTrigger>
       <DialogTrigger>
-        <Button hierarchy="brand" kind="filled" size="md">
+        <Button hierarchy="brand" isDisabled kind="filled" size="md">
           Edit
         </Button>
         <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
@@ -46,6 +46,7 @@ function EServiceActions() {
 }
 
 function RouteComponent() {
+  const canManageEserviceState = useHasRole("administrative");
   const eservice = Route.useLoaderData();
 
   return (
@@ -59,17 +60,14 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader
-        actions={<EServiceActions />}
+        actions={canManageEserviceState && <EServiceActions />}
+        copyableId={eservice.id}
+        description={eservice.description.en}
         resourceStatusChip={
           <EserviceStateChip state={eservice.version.state} />
         }
         title={eservice.name.en}
-      >
-        <CopyableValueField className="mt-3" label="ID" value={eservice.id} />
-        <p className="mt-6 body-md text-primary-light-low-contrast max-w-160">
-          {eservice.description.en}
-        </p>
-      </PageHeader>
+      />
 
       <div className="mt-10 flex gap-2">
         <EserviceModeChip mode={eservice.mode} />

@@ -36,3 +36,8 @@ message LocalizedTextV1 {
   // TODO find a way to share this in common models and make proto gen work
   string en = 1;
 }
+
+message ConsumerKeychainLinkedPurposeV1 {
+  string id = 1;
+  string knodeId = 2;
+}

@@ -107,7 +107,9 @@ function AccessTokenSection({ form }: { form: TechnicalStepForm }) {
             value={field.state.value}
           >
             <Radio value="Bearer">Bearer</Radio>
-            <Radio value="DPoP">DPoP</Radio>
+            <Radio isDisabled value="DPoP">
+              DPoP
+            </Radio>
           </RadioGroup>
         )}
       </form.Field>
@@ -130,7 +132,9 @@ function DataModeSection({ form }: { form: TechnicalStepForm }) {
             value={field.state.value}
           >
             <Radio value="ProvideData">Provide data</Radio>
-            <Radio value="ReceiveData">Receive data</Radio>
+            <Radio isDisabled value="ReceiveData">
+              Receive data
+            </Radio>
           </RadioGroup>
         )}
       </form.Field>
@@ -212,8 +216,9 @@ function SignalHubSection({ form }: { form: TechnicalStepForm }) {
       <form.Field name="isSignalHubEnabled">
         {(field) => (
           <Checkbox
+            // TODO: make isRequired again when Signal Hub is re-enabled
+            isDisabled
             isInvalid={field.state.meta.isTouched && !field.state.meta.isValid}
-            isRequired
             isSelected={field.state.value}
             name={field.name}
             onBlur={field.handleBlur}

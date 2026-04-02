@@ -1,11 +1,11 @@
 import { toastQueue } from "@knodia/ui-kit/ui";
 
 import { CopyableValueField } from "@/components/CopyableValueField";
+import { Section } from "@/components/Section";
 import { SettingsCard } from "@/components/SettingCard";
 import { formatNumber } from "@/utils/formatters";
 
 import { DocumentRecap } from "./DocumentRecap";
-import { Section } from "./Section";
 
 export function AccessTokenSettingsSection({
   audience,
@@ -87,7 +87,7 @@ export function SignalHubSection({
   isSignalHubEnabled: boolean;
 }) {
   return (
-    <Section className="mb-6" title="Signal hub">
+    <Section className="mb-6" title="Signal Hub">
       <p className="body-lg text-primary-dark">
         {isSignalHubEnabled
           ? "This E-Service is available on Signal Hub."

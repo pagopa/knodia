@@ -4,7 +4,7 @@ import {
   API_PaginationQueryParams,
   API_UserId,
 } from "@knodia/common-models/api";
-import { PurposeId } from "@knodia/common-models/ids";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
   API_KeychainId,
@@ -68,10 +68,46 @@ export type API_User = z.infer<typeof API_User>;
 export const API_Users = z.array(API_User).meta({ id: "Users" });
 export type API_Users = z.infer<typeof API_Users>;
 
-export const API_ConsumerKeychainPurposeIdsPathParam =
-  API_ConsumerKeychainIdPathParam.extend({
-    purposeId: PurposeId,
-  });
-export type API_ConsumerKeychainPurposeIdsPathParam = z.infer<
-  typeof API_ConsumerKeychainPurposeIdsPathParam
+export const API_KeychainMemberSeed = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .meta({ id: "KeychainMemberSeed" });
+export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
+
+export const API_ConsumerKeychainMemberPathParam = z
+  .strictObject({
+    userId: API_UserId,
+  })
+  .extend(API_ConsumerKeychainIdPathParam.shape);
+export type API_ConsumerKeychainMemberPathParam = z.infer<
+  typeof API_ConsumerKeychainMemberPathParam
+>;
+
+export const API_ConsumerKeychainPurposeLinkSeed = z
+  .strictObject({
+    knodeId: API_KnodeId,
+    purposeId: z.uuid(),
+  })
+  .meta({ id: "ConsumerKeychainPurposeLinkSeed" });
+export type API_ConsumerKeychainPurposeLinkSeed = z.infer<
+  typeof API_ConsumerKeychainPurposeLinkSeed
+>;
+
+const API_ConsumerKeychainLinkedPurpose = z
+  .strictObject({
+    id: z.uuid(),
+    knodeId: API_KnodeId,
+  })
+  .meta({ id: "ConsumerKeychainLinkedPurpose" });
+
+export const API_ConsumerKeychainPurpose = z
+  .strictObject({
+    consumerKeychainId: API_KeychainId,
+    linkedAt: z.iso.datetime(),
+    purpose: API_ConsumerKeychainLinkedPurpose,
+  })
+  .meta({ id: "ConsumerKeychainPurpose" });
+export type API_ConsumerKeychainPurpose = z.infer<
+  typeof API_ConsumerKeychainPurpose
 >;

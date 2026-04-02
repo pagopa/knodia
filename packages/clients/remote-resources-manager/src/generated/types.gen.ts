@@ -265,6 +265,13 @@ export type Organizations = {
     results: Array<Organization>;
 };
 
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+export type PurposeConsumer = {
+    id: string;
+    knodeId: KnodeId;
+};
+
 /**
  * Name of the Purpose
  */
@@ -283,6 +290,16 @@ export type PurposeFormAnswers = {
     [key: string]: unknown;
 };
 
+export type PurposeFormSchemaVersion = '1.0';
+
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
+};
+
 /**
  * Seed data to create a new Purpose
  */
@@ -297,6 +314,7 @@ export type PurposeSeed = {
      */
     eserviceId: string;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
 };
@@ -305,6 +323,17 @@ export type PurposeSeed = {
  * Unique identifier of the created Purpose resource
  */
 export type CreatedPurposeResource = CreatedResource;
+
+export type Purpose = {
+    consumer: PurposeConsumer;
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: string;
+    id: string;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+    updatedAt: string;
+};
 
 export type GetStatusData = {
     body?: never;
@@ -665,6 +694,121 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type GetPurposeFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/formSchemas/{version}';
+};
+
+export type GetPurposeFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPurposeFormSchemaError = GetPurposeFormSchemaErrors[keyof GetPurposeFormSchemaErrors];
+
+export type GetPurposeFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetPurposeFormSchemaResponse = GetPurposeFormSchemaResponses[keyof GetPurposeFormSchemaResponses];
+
+export type GetPurposeFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/formSchemas/{version}/ui';
+};
+
+export type GetPurposeFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPurposeFormUiSchemaError = GetPurposeFormUiSchemaErrors[keyof GetPurposeFormUiSchemaErrors];
+
+export type GetPurposeFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormUiSchema;
+};
+
+export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
+
+export type GetPurposeData = {
+    body?: never;
+    path: {
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/purposes/{purposeId}';
+};
+
+export type GetPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeError = GetPurposeErrors[keyof GetPurposeErrors];
+
+export type GetPurposeResponses = {
+    /**
+     * Purpose retrieved successfully
+     */
+    200: Purpose;
+};
+
+export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];
 
 export type GetOrganizationData = {
     body?: never;

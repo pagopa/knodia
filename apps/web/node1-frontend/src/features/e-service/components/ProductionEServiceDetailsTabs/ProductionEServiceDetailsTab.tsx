@@ -2,6 +2,7 @@ import { bffApi } from "@knodia/bff-client";
 import { Banner, Divider } from "@knodia/ui-kit/ui";
 
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
+import { Section } from "@/components/Section";
 import { client } from "@/libs/axios";
 import { downloadResponseAsFile } from "@/utils/downloadFile";
 
@@ -12,7 +13,6 @@ import {
   MaxAPICallsPerDaySection,
   SignalHubSection,
 } from "../EserviceDetailSections";
-import { Section } from "../Section";
 
 export function ProductionEServiceDetailsTab() {
   return (
@@ -46,6 +46,7 @@ function AccessTokenSettingsSectionAdapter() {
 
 function ConsumptionRequirementsSection() {
   const {
+    isConsumerOperatorIdentificationRequired,
     version: { requiredAttributes },
   } = useProductionEserviceDetailsContext();
 
@@ -68,8 +69,11 @@ function ConsumptionRequirementsSection() {
           <h3 className="title-sm-em text-primary-light-low-contrast mb-4">
             Identification
           </h3>
-          {/** It depends on the Knode, this could be set with a env flag? */}
-          <Banner kind="informative">Identification required</Banner>
+          {isConsumerOperatorIdentificationRequired ? (
+            <Banner kind="informative">Identification required</Banner>
+          ) : (
+            <Banner kind="neutral">Identification not required</Banner>
+          )}
         </div>
       </div>
     </Section>

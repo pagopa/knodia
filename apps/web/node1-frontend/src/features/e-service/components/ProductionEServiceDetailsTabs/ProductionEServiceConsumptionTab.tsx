@@ -3,9 +3,9 @@ import { QuestionIcon, SelectionIcon } from "@phosphor-icons/react";
 import { TooltipTrigger } from "react-aria-components";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
+import { Section } from "@/components/Section";
 
 import { useProductionEserviceDetailsContext } from "../../contexts/useProductionEserviceDetailsContext";
-import { Section } from "../Section";
 
 export function ProductionEServiceConsumptionTab() {
   return (

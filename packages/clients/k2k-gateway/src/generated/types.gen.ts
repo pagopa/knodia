@@ -57,11 +57,6 @@ export type CreatedResource = {
 };
 
 /**
- * Unique Knode identifier
- */
-export type KnodeId = 'ORION' | 'LYNX';
-
-/**
  * Identifies an Attribute standardized within Knodia
  */
 export type Attribute = {
@@ -279,6 +274,11 @@ export type Eservices = {
 };
 
 /**
+ * Unique Knode identifier
+ */
+export type KnodeId = 'ORION' | 'LYNX';
+
+/**
  * Unique identifier of the Agreement
  */
 export type AgreementId = string;
@@ -357,6 +357,16 @@ export type Organizations = {
 };
 
 /**
+ * Unique identifier of the Purpose
+ */
+export type PurposeId = string;
+
+/**
+ * Version identifier for the Purpose form schema provided by this Knode
+ */
+export type PurposeFormSchemaVersion = '1.0';
+
+/**
  * Name of the Purpose
  */
 export type LocalizedPurposeName = {
@@ -395,6 +405,7 @@ export type PurposeSeed = {
      */
     eserviceId: EserviceId;
     formAnswersJson: PurposeFormAnswers;
+    formSchemaVersion: PurposeFormSchemaVersion;
     name: LocalizedPurposeName;
 };
 
@@ -402,6 +413,50 @@ export type PurposeSeed = {
  * Unique identifier of the created Purpose resource
  */
 export type CreatedPurposeResource = CreatedResource;
+
+/**
+ * Consumer Organization of the Purpose
+ */
+export type PurposeConsumer = {
+    id: OrganizationId;
+    knodeId: KnodeId;
+};
+
+/**
+ * Describes the states a Purpose can be in
+ */
+export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+
+/**
+ * A Consumer's Purpose to access an E-service
+ */
+export type Purpose = {
+    consumer: PurposeConsumer;
+    /**
+     * Expected number of daily API calls for this Purpose
+     */
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
+    eserviceId: EserviceId;
+    id: PurposeId;
+    name: LocalizedPurposeName;
+    state: PurposeState;
+    updatedAt: string;
+};
+
+/**
+ * JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers
+ */
+export type PurposeFormSchema = {
+    [key: string]: unknown;
+};
+
+/**
+ * UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)
+ */
+export type PurposeFormUiSchema = {
+    [key: string]: unknown;
+};
 
 export type GetStatusData = {
     body?: never;
@@ -795,3 +850,88 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type GetPurposeFormSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}';
+};
+
+export type GetPurposeFormSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetPurposeFormSchemaError = GetPurposeFormSchemaErrors[keyof GetPurposeFormSchemaErrors];
+
+export type GetPurposeFormSchemaResponses = {
+    /**
+     * Purpose form schema retrieved successfully
+     */
+    200: PurposeFormSchema;
+};
+
+export type GetPurposeFormSchemaResponse = GetPurposeFormSchemaResponses[keyof GetPurposeFormSchemaResponses];
+
+export type GetPurposeFormUiSchemaData = {
+    body?: never;
+    path: {
+        version: PurposeFormSchemaVersion;
+    };
+    query?: never;
+    url: '/purposes/formSchemas/{version}/ui';
+};
+
+export type GetPurposeFormUiSchemaErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+};
+
+export type GetPurposeFormUiSchemaError = GetPurposeFormUiSchemaErrors[keyof GetPurposeFormUiSchemaErrors];
+
+export type GetPurposeFormUiSchemaResponses = {
+    /**
+     * Purpose form UI schema retrieved successfully
+     */
+    200: PurposeFormUiSchema;
+};
+
+export type GetPurposeFormUiSchemaResponse = GetPurposeFormUiSchemaResponses[keyof GetPurposeFormUiSchemaResponses];
+
+export type GetPurposeData = {
+    body?: never;
+    path: {
+        purposeId: PurposeId;
+    };
+    query?: never;
+    url: '/purposes/{purposeId}';
+};
+
+export type GetPurposeErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Purpose not found
+     */
+    404: Problem;
+};
+
+export type GetPurposeError = GetPurposeErrors[keyof GetPurposeErrors];
+
+export type GetPurposeResponses = {
+    /**
+     * Purpose retrieved successfully
+     */
+    200: Purpose;
+};
+
+export type GetPurposeResponse = GetPurposeResponses[keyof GetPurposeResponses];

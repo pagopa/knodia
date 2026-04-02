@@ -1,3 +1,6 @@
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type { PurposeId } from "@knodia/common-models/ids";
+
 import { match } from "ts-pattern";
 
 import type {
@@ -9,6 +12,7 @@ import type {
 
 import {
   type ConsumerKeychainKeyV1,
+  type ConsumerKeychainLinkedPurposeV1,
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
@@ -43,4 +47,11 @@ export const toConsumerKeychainV1 = (
   createdAt: consumerKeychain.createdAt.getTime(),
   keys: consumerKeychain.keys.map(toConsumerKeychainKeyV1),
   updatedAt: consumerKeychain.updatedAt.getTime(),
+});
+
+export const toConsumerKeychainLinkedPurposeV1 = (
+  purpose: ExternalResource<PurposeId>,
+): ConsumerKeychainLinkedPurposeV1 => ({
+  id: purpose.id,
+  knodeId: purpose.knodeId,
 });

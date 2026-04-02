@@ -1,11 +1,16 @@
-import type { CorrelationId } from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type {
+  CorrelationId,
+  PurposeId,
+  UserId,
+} from "@knodia/common-models/ids";
 import type { NewEventStoreKeychainEvent } from "@knodia/db-event-store-writer/keychain";
 
 import {
   type ConsumerKeychain,
+  toConsumerKeychainLinkedPurposeV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
-import { type Purpose, toPurposeV1 } from "@knodia/purpose-models";
 
 export const createConsumerKeychainCreatedV1Event = (
   keychain: ConsumerKeychain,
@@ -54,10 +59,9 @@ export const createConsumerKeychainUpdatedV1Event = (
   streamId: keychain.id,
 });
 
-export const createConsumerKeychainPurposeLinkedV1Event = (
-  consumerKeychain: ConsumerKeychain,
-  purpose: Purpose,
-  linkedAt: Date,
+export const createConsumerKeychainMemberAddedV1Event = (
+  keychain: ConsumerKeychain,
+  userId: UserId,
   correlationId: CorrelationId,
   currentMetadataVersion: number,
 ): NewEventStoreKeychainEvent => ({
@@ -65,9 +69,52 @@ export const createConsumerKeychainPurposeLinkedV1Event = (
   currentMetadataVersion,
   event: {
     data: {
+      consumerKeychain: toConsumerKeychainV1(keychain),
+      userId,
+    },
+    type: "ConsumerKeychainMemberAddedV1",
+  },
+  streamId: keychain.id,
+});
+
+export const createConsumerKeychainMemberRemovedV1Event = (
+  keychain: ConsumerKeychain,
+  userId: UserId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      consumerKeychain: toConsumerKeychainV1(keychain),
+      userId,
+    },
+    type: "ConsumerKeychainMemberRemovedV1",
+  },
+  streamId: keychain.id,
+});
+
+export const createConsumerKeychainPurposeLinkedV1Event = ({
+  consumerKeychain,
+  correlationId,
+  currentMetadataVersion,
+  linkedAt,
+  purpose,
+}: {
+  consumerKeychain: ConsumerKeychain;
+  correlationId: CorrelationId;
+  currentMetadataVersion: number;
+  linkedAt: Date;
+  purpose: ExternalResource<PurposeId>;
+}): NewEventStoreKeychainEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: linkedAt.getTime(),
-      purpose: toPurposeV1(purpose),
+      purpose: toConsumerKeychainLinkedPurposeV1(purpose),
     },
     type: "ConsumerKeychainPurposeLinkedV1",
   },

@@ -13,6 +13,18 @@ import {
 import { z } from "zod";
 
 import { API_EserviceId } from "../eservice/api.ts";
+import { API_KnodeId } from "../knode/api.ts";
+
+const API_PurposeId = z.uuid().meta({
+  description: "Unique identifier of the Purpose",
+  id: "PurposeId",
+});
+
+const API_PurposeFormSchemaVersion = z.enum(["1.0"]).meta({
+  description:
+    "Version identifier for the Purpose form schema provided by this Knode",
+  id: "PurposeFormSchemaVersion",
+});
 
 const API_LocalizedPurposeName = z
   .strictObject({
@@ -38,21 +50,28 @@ const API_PurposeFormAnswers = z.record(z.string(), z.unknown()).meta({
   id: "PurposeFormAnswers",
 });
 
+const API_PurposeDailyCalls = z
+  .int()
+  .min(minDailyCalls)
+  .max(maxDailyCalls)
+  .meta({
+    description: "Expected number of daily API calls for this Purpose",
+    format: "int32",
+  });
+
 export const API_PurposeSeed = z
   .strictObject({
     consumerId: API_OrganizationId.meta({
       description:
         "Identifier of the Consumer Organization creating the Purpose",
     }),
-    dailyCalls: z.number().int().min(minDailyCalls).max(maxDailyCalls).meta({
-      description: "Expected number of daily API calls for this Purpose",
-      format: "int32",
-    }),
+    dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eserviceId: API_EserviceId.meta({
       description: "Identifier of the E-service this Purpose refers to",
     }),
     formAnswersJson: API_PurposeFormAnswers,
+    formSchemaVersion: API_PurposeFormSchemaVersion,
     name: API_LocalizedPurposeName,
   })
   .meta({
@@ -65,3 +84,63 @@ export const API_CreatedPurposeResource = API_CreatedResource.meta({
   description: "Unique identifier of the created Purpose resource",
   id: "CreatedPurposeResource",
 });
+
+export const API_PurposeIdPathParam = z.strictObject({
+  purposeId: API_PurposeId,
+});
+
+const API_PurposeConsumer = z
+  .strictObject({
+    id: API_OrganizationId,
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description: "Consumer Organization of the Purpose",
+    id: "PurposeConsumer",
+  });
+
+const API_PurposeState = z.enum(["ACTIVE", "SUSPENDED", "ARCHIVED"]).meta({
+  description: "Describes the states a Purpose can be in",
+  id: "PurposeState",
+});
+export type API_PurposeState = z.infer<typeof API_PurposeState>;
+
+export const API_Purpose = z
+  .strictObject({
+    // formAnswersJson and formSchemaVersion are intentionally excluded —
+    // they can be retrieved via separate routes
+    consumer: API_PurposeConsumer,
+    dailyCalls: API_PurposeDailyCalls,
+    description: API_LocalizedPurposeDescription,
+    eserviceId: API_EserviceId,
+    id: API_PurposeId,
+    name: API_LocalizedPurposeName,
+    state: API_PurposeState,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({
+    description: "A Consumer's Purpose to access an E-service",
+    id: "Purpose",
+  });
+export type API_Purpose = z.infer<typeof API_Purpose>;
+
+export const API_PurposeFormSchemaVersionPathParam = z.strictObject({
+  version: API_PurposeFormSchemaVersion,
+});
+export type API_PurposeFormSchemaVersionPathParam = z.infer<
+  typeof API_PurposeFormSchemaVersionPathParam
+>;
+
+export const API_PurposeFormSchema = z.record(z.string(), z.unknown()).meta({
+  description:
+    "JSON Schema (Draft-07) that defines the structure and validation rules for the Purpose form answers",
+  id: "PurposeFormSchema",
+});
+export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
+
+export const API_PurposeFormUiSchema = z.record(z.string(), z.unknown()).meta({
+  description:
+    "UI Schema that defines how to render the Purpose form (layout, widgets, visibility rules)",
+  id: "PurposeFormUiSchema",
+});
+export type API_PurposeFormUiSchema = z.infer<typeof API_PurposeFormUiSchema>;

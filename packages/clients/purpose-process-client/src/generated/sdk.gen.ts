@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, GetPurposeData, GetPurposeErrors, GetPurposeFormSchemaData, GetPurposeFormSchemaErrors, GetPurposeFormSchemaResponses, GetPurposeFormUiSchemaData, GetPurposeFormUiSchemaErrors, GetPurposeFormUiSchemaResponses, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -28,7 +28,21 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
- * Create a new Purpose
+ * List Purposes
+ *
+ * Retrieve a list of Purposes
+ */
+export const getPurposes = <ThrowOnError extends boolean = true>(options: Options<GetPurposesData, ThrowOnError>) => (options.client ?? client).get<GetPurposesResponses, GetPurposesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes',
+    ...options
+});
+
+/**
+ * Create Purpose
+ *
+ * Create a new Purpose for an E-service on behalf of a consumer
  */
 export const createPurpose = <ThrowOnError extends boolean = true>(options: Options<CreatePurposeData, ThrowOnError>) => (options.client ?? client).post<CreatePurposeResponses, CreatePurposeErrors, ThrowOnError>({
     responseType: 'json',
@@ -42,11 +56,37 @@ export const createPurpose = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
+ * Get Purpose
+ *
  * Retrieve a Purpose by its ID
  */
 export const getPurpose = <ThrowOnError extends boolean = true>(options: Options<GetPurposeData, ThrowOnError>) => (options.client ?? client).get<GetPurposeResponses, GetPurposeErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/purposes/{purposeId}',
+    ...options
+});
+
+/**
+ * Get Purpose form schema by version
+ *
+ * Retrieve the JSON Schema for validating Purpose form answers
+ */
+export const getPurposeFormSchema = <ThrowOnError extends boolean = true>(options: Options<GetPurposeFormSchemaData, ThrowOnError>) => (options.client ?? client).get<GetPurposeFormSchemaResponses, GetPurposeFormSchemaErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/formSchemas/{version}',
+    ...options
+});
+
+/**
+ * Get Purpose form UI schema by version
+ *
+ * Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)
+ */
+export const getPurposeFormUiSchema = <ThrowOnError extends boolean = true>(options: Options<GetPurposeFormUiSchemaData, ThrowOnError>) => (options.client ?? client).get<GetPurposeFormUiSchemaResponses, GetPurposeFormUiSchemaErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/purposes/formSchemas/{version}/ui',
     ...options
 });

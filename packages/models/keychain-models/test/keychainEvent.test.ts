@@ -1,24 +1,28 @@
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
+import { generateExternalId } from "@knodia/common-models/externalResource";
 import { generateId, generateUserId } from "@knodia/common-models/ids";
 import {
   protobufBinaryCodec,
   type ProtobufCodec,
 } from "@knodia/common-models/protobuf";
-import { Purpose, toPurposeV1 } from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
-import { zocker } from "zocker";
 
 import type { ConsumerKeychain } from "../src/keychain.ts";
 
 import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
+  ConsumerKeychainMemberAddedV1,
+  ConsumerKeychainMemberRemovedV1,
   ConsumerKeychainPurposeLinkedV1,
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
-import { toConsumerKeychainV1 } from "../src/keychainProtobufConverterToV1.ts";
+import {
+  toConsumerKeychainLinkedPurposeV1,
+  toConsumerKeychainV1,
+} from "../src/keychainProtobufConverterToV1.ts";
 
 describe("KeychainEventV1 codec", () => {
   const consumerKeychain: ConsumerKeychain = {
@@ -42,19 +46,10 @@ describe("KeychainEventV1 codec", () => {
     users: [generateUserId()],
   };
 
-  const purpose: Purpose = {
-    ...zocker(Purpose).generate(),
-    // zocker generates non-JSON-serializable values for Record<string, unknown>;
-    // override with a realistic JSON-safe object
-    formAnswersJson: {
-      checked: true,
-      count: 42,
-      nested: { deep: "value" },
-      options: ["a", "b", "c"],
-      question1: "answer1",
-    },
-  };
-  const purposeV1 = toPurposeV1(purpose);
+  const linkedPurposeV1 = toConsumerKeychainLinkedPurposeV1({
+    id: generateExternalId(),
+    knodeId: "Orion",
+  });
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
   const defaultData = { consumerKeychain: consumerKeychainV1 };
   const cases = [
@@ -77,12 +72,28 @@ describe("KeychainEventV1 codec", () => {
       data: {
         consumerKeychain: consumerKeychainV1,
         linkedAt: new Date().getTime(),
-        purpose: purposeV1,
+        purpose: linkedPurposeV1,
       },
       message: ConsumerKeychainPurposeLinkedV1,
       type: "ConsumerKeychainPurposeLinkedV1" as const,
     },
-  ];
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        userId: generateUserId(),
+      },
+      message: ConsumerKeychainMemberAddedV1,
+      type: "ConsumerKeychainMemberAddedV1" as const,
+    },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        userId: generateUserId(),
+      },
+      message: ConsumerKeychainMemberRemovedV1,
+      type: "ConsumerKeychainMemberRemovedV1" as const,
+    },
+  ] as const;
 
   it.each(cases)(
     "encodes and decodes a $type payload (KeychainEventV1 full codec)",
@@ -104,6 +115,12 @@ describe("KeychainEventV1 codec", () => {
           ({ data, type }) => testFullCodec({ data, type }),
         )
         .with({ type: "ConsumerKeychainPurposeLinkedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainMemberRemovedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
         .exhaustive();
@@ -129,6 +146,13 @@ describe("KeychainEventV1 codec", () => {
         )
         .with(
           { type: "ConsumerKeychainPurposeLinkedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
+        )
+        .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, message }) =>
+          testProtobufCodec(message, data),
+        )
+        .with(
+          { type: "ConsumerKeychainMemberRemovedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
         )
         .exhaustive();

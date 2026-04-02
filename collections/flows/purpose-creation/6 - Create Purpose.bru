@@ -26,12 +26,15 @@ body:json {
     },
     "eserviceId": "{{eserviceId}}",
     "formAnswersJson": {
-      "checked": true,
-      "count": 42,
-      "nested": { "deep": "value" },
-      "options": ["a", "b", "c"],
-      "question1": "answer1"
+      "confirmPrincipleIntegrityAndDiscretion": "true",
+      "declarationConfirmGDPR": "true",
+      "legalBasis": ["CONSENT"],
+      "personalDataTypes": ["WITH_IDENTIFYING_DATA"],
+      "purpose": "INSTITUTIONAL",
+      "purposeDescription": "Test purpose for local development",
+      "usesThirdPartyPersonalData": "NO"
     },
+    "formSchemaVersion": "1.0",
     "name": {
       "en": "My Test Purpose"
     }
@@ -45,4 +48,3 @@ vars:post-response {
 script:post-response {
   await new Promise(r => setTimeout(r, 1000))
 }
-

@@ -3,6 +3,45 @@ import { http, HttpResponse } from "msw";
 const BASE_URL = import.meta.env["BFF_URL"];
 
 export const handlers = [
+  http.get(`${BASE_URL}/session/organization`, () =>
+    HttpResponse.json({
+      attributes: [{ code: "nuts3", scheme: "vc_territorial_units" }],
+      id: "20000000-2000-1000-8000-000000000002",
+      knodeId: "Orion",
+      name: "Test Organization",
+    }),
+  ),
+
+  http.get(`${BASE_URL}/consumer/purposes/formSchemas/:version`, () =>
+    HttpResponse.json({
+      properties: {
+        purpose: { enum: ["INSTITUTIONAL", "OTHER"], type: "string" },
+        purposeDescription: { type: "string" },
+      },
+      required: ["purpose", "purposeDescription"],
+      type: "object",
+    }),
+  ),
+
+  http.get(`${BASE_URL}/consumer/purposes/formSchemas/:version/ui`, () =>
+    HttpResponse.json({
+      elements: [
+        {
+          elements: [
+            {
+              options: { widget: "radio" },
+              scope: "#/properties/purpose",
+              type: "Control",
+            },
+          ],
+          label: "Test",
+          type: "Group",
+        },
+      ],
+      type: "VerticalLayout",
+    }),
+  ),
+
   http.get(`${BASE_URL}/producer/eservices`, ({ request }) => {
     const url = new URL(request.url);
     const limit = Number(url.searchParams.get("limit") ?? 10);

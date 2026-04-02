@@ -27,6 +27,7 @@ export const readmodelPurpose = purposeSchema.table(
     description: jsonb().notNull(),
     eserviceId: uuid("eservice_id").notNull(),
     formAnswersJson: jsonb("form_answers_json").notNull(),
+    formSchemaVersion: text("form_schema_version").notNull(),
     id: uuid().primaryKey().notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     name: jsonb().notNull(),
