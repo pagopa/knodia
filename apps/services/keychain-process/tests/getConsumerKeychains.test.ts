@@ -25,12 +25,10 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
     limit: "4",
     offset: "0",
   };
-  const sortedMockConsumerKeychains = [...mockConsumerKeychains].sort(
-    (a, b) => {
-      const updatedAtDiff = b.updatedAt.getTime() - a.updatedAt.getTime();
-      return updatedAtDiff !== 0 ? updatedAtDiff : a.id.localeCompare(b.id);
-    },
-  );
+  const sortedMockConsumerKeychains = mockConsumerKeychains.sort((a, b) => {
+    const updatedAtDiff = b.updatedAt.getTime() - a.updatedAt.getTime();
+    return updatedAtDiff !== 0 ? updatedAtDiff : a.id.localeCompare(b.id);
+  });
 
   it.each([
     {
