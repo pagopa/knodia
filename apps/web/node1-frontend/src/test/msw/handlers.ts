@@ -5,6 +5,7 @@ const BASE_URL = import.meta.env["BFF_URL"];
 export const handlers = [
   http.get(`${BASE_URL}/session/organization`, () =>
     HttpResponse.json({
+      attributes: [{ code: "nuts3", scheme: "vc_territorial_units" }],
       id: "20000000-2000-1000-8000-000000000002",
       knodeId: "Orion",
       name: "Test Organization",

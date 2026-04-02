@@ -1,7 +1,9 @@
-import { Avatar, Banner } from "@knodia/ui-kit/ui";
+import { Banner } from "@knodia/ui-kit/ui";
 import { SealCheckIcon, WarningDiamondIcon } from "@phosphor-icons/react";
 
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
+
+import { KnodeAvatar } from "@/components/KnodeAvatar";
 
 import { CategoryChip } from "../CategoryChip";
 import {
@@ -35,9 +37,9 @@ export function SearchResultCard({
         mode={eservice.mode}
         state={eservice.state}
         trailing={
-          <Avatar
+          <KnodeAvatar
             className="bg-brand-dark text-white"
-            fallback={eservice.organization.initials}
+            knodeId={eservice.organization.knodeId}
             name={eservice.organization.name}
             size="sm"
           />
