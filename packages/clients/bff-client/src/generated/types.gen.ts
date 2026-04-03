@@ -504,6 +504,11 @@ export type KeychainLocalizedDescription = {
     en: string;
 };
 
+export type ConsumerKeychainPurposeLinkSeed = {
+    knodeId: KnodeId;
+    purposeId: string;
+};
+
 export type ConsumerKeychainSeed = {
     description?: KeychainLocalizedDescription;
     name: KeychainLocalizedName;
@@ -1207,6 +1212,49 @@ export type RemoveConsumerKeychainMemberResponses = {
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
+export type LinkPurposeToConsumerKeychainData = {
+    body: ConsumerKeychainPurposeLinkSeed;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/purposes';
+};
+
+export type LinkPurposeToConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type LinkPurposeToConsumerKeychainError = LinkPurposeToConsumerKeychainErrors[keyof LinkPurposeToConsumerKeychainErrors];
+
+export type LinkPurposeToConsumerKeychainResponses = {
+    /**
+     * Purpose successfully linked to Consumer Keychain
+     */
+    204: void;
+};
+
+export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;

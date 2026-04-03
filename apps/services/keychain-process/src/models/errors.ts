@@ -1,4 +1,9 @@
-import type { ConsumerKeychainId, UserId } from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type {
+  ConsumerKeychainId,
+  PurposeId,
+  UserId,
+} from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -13,6 +18,7 @@ const errorCodes = {
   USER_NOT_FOUND: "0003",
   INVALID_USER_ROLE: "0004",
   KEYCHAIN_MEMBER_NOT_FOUND: "0005",
+  PURPOSE_ALREADY_LINKED_TO_CONSUMER_KEYCHAIN: "0006",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -49,6 +55,18 @@ export function keychainMemberNotFound(
     detail: `User ${userId} is not a member of consumer keychain ${consumerKeychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Keychain Member Not Found",
+  });
+}
+
+export function purposeAlreadyLinkedToConsumerKeychain(
+  consumerKeychainId: ConsumerKeychainId,
+  purpose: ExternalResource<PurposeId>,
+) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_ALREADY_LINKED_TO_CONSUMER_KEYCHAIN",
+    detail: `Purpose with id ${purpose.id} owned by Knode ${purpose.knodeId} is already linked to Consumer Keychain with id ${consumerKeychainId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Purpose Already Linked To Consumer Keychain",
   });
 }
 

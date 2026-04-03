@@ -7,7 +7,12 @@ import type {
 } from "@knodia/keychain-models";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
-import { eq } from "drizzle-orm";
+import {
+  assertSQLFiltersAreDefined,
+  getTablePKString,
+  throwIfMultiple,
+} from "@knodia/db-readmodel-commons/utils";
+import { eq, type SQL } from "drizzle-orm";
 
 import {
   readmodelConsumerKeychain,
@@ -56,6 +61,26 @@ export function consumerKeychainReadmodelServiceBuilder(
         .where(eq(readmodelConsumerKeychain.id, consumerKeychainId));
 
       return aggregateConsumerKeychain(queryRes);
+    },
+    async getConsumerKeychainPurposeByFilter(
+      filters: SQL | undefined,
+    ): Promise<undefined | WithMetadata<ConsumerKeychainPurpose>> {
+      assertSQLFiltersAreDefined(filters);
+
+      const queryRes = await readmodelDb
+        .select()
+        .from(readmodelConsumerKeychainPurpose)
+        .where(filters);
+
+      const consumerKeychainPurpose = throwIfMultiple(
+        queryRes,
+        "consumer keychain purpose",
+        (ckp) => getTablePKString(ckp, readmodelConsumerKeychainPurpose),
+      );
+
+      return consumerKeychainPurpose
+        ? toConsumerKeychainPurpose(consumerKeychainPurpose)
+        : undefined;
     },
     async getConsumerKeychainPurposesByKeychainId(
       consumerKeychainId: ConsumerKeychainId,

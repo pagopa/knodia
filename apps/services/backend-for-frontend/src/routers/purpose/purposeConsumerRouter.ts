@@ -4,7 +4,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  getKnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
 import {
   organizationProcessApi,
@@ -28,7 +31,6 @@ import {
 } from "../../models/purpose/api.ts";
 import { toAPI_ConsumerPurposeDetails } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface PurposeConsumerRouterOptions {
   knodeId: KnodeId;

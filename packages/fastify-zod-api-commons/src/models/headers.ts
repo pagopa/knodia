@@ -1,4 +1,5 @@
-import type { FastifyReply } from "fastify";
+import type { CorrelationId } from "@knodia/common-models/ids";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import z from "zod";
 
@@ -30,3 +31,11 @@ export function setMetadataVersionHeader(
 ): void {
   res.header(METADATA_VERSION_HEADER, version.toString());
 }
+
+export const getKnodiaServiceHeaders = (
+  req: FastifyRequest,
+  correlationId: CorrelationId,
+) => ({
+  [AUTHORIZATION_HEADER]: req.headers.authorization,
+  [CORRELATION_ID_HEADER]: correlationId,
+});

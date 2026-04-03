@@ -6,7 +6,10 @@ import { API_FileDownload } from "@knodia/common-models/api";
 import { API_EserviceIdPathParam } from "@knodia/eservice-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { parseContentDispositionFileName } from "@knodia/fastify-zod-api-commons/http";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  getKnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -34,7 +37,6 @@ import {
   toAPI_ConsumerEserviceDetails,
 } from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceConsumerRouterOptions {
   config: BffProcessConfig;
