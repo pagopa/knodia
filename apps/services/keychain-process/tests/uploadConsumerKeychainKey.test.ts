@@ -14,9 +14,11 @@ import {
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
-import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
+import {
+  getMockConsumerKeychain,
+  getMockConsumerKeychainKey,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
-import { zocker } from "zocker";
 
 import type {
   API_KeychainKey,
@@ -322,7 +324,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
       keys: Array.from({ length: mockMaxKeysPerKeychain }, (_, i) =>
-        zocker(ConsumerKeychainKey).setSeed(i).generate(),
+        getMockConsumerKeychainKey(i),
       ),
       users: [unsafeBrandUserId(callerUserId)],
     };
