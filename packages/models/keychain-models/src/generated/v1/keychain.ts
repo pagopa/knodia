@@ -103,6 +103,11 @@ export interface LocalizedTextV1 {
   en: string;
 }
 
+export interface ConsumerKeychainLinkedPurposeV1 {
+  id: string;
+  knodeId: string;
+}
+
 function createBaseConsumerKeychainV1(): ConsumerKeychainV1 {
   return {
     id: "",
@@ -502,6 +507,84 @@ export const LocalizedTextV1: MessageFns<LocalizedTextV1> = {
   fromPartial<I extends Exact<DeepPartial<LocalizedTextV1>, I>>(object: I): LocalizedTextV1 {
     const message = createBaseLocalizedTextV1();
     message.en = object.en ?? "";
+    return message;
+  },
+};
+
+function createBaseConsumerKeychainLinkedPurposeV1(): ConsumerKeychainLinkedPurposeV1 {
+  return { id: "", knodeId: "" };
+}
+
+export const ConsumerKeychainLinkedPurposeV1: MessageFns<ConsumerKeychainLinkedPurposeV1> = {
+  encode(message: ConsumerKeychainLinkedPurposeV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.knodeId !== "") {
+      writer.uint32(18).string(message.knodeId);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ConsumerKeychainLinkedPurposeV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConsumerKeychainLinkedPurposeV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.knodeId = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConsumerKeychainLinkedPurposeV1 {
+    return {
+      id: isSet(object.id) ? globalThis.String(object.id) : "",
+      knodeId: isSet(object.knodeId) ? globalThis.String(object.knodeId) : "",
+    };
+  },
+
+  toJSON(message: ConsumerKeychainLinkedPurposeV1): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.knodeId !== "") {
+      obj.knodeId = message.knodeId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ConsumerKeychainLinkedPurposeV1>, I>>(base?: I): ConsumerKeychainLinkedPurposeV1 {
+    return ConsumerKeychainLinkedPurposeV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ConsumerKeychainLinkedPurposeV1>, I>>(
+    object: I,
+  ): ConsumerKeychainLinkedPurposeV1 {
+    const message = createBaseConsumerKeychainLinkedPurposeV1();
+    message.id = object.id ?? "";
+    message.knodeId = object.knodeId ?? "";
     return message;
   },
 };

@@ -1,6 +1,7 @@
 import type { KeychainWriterService } from "@knodia/db-readmodel-keychain/writer";
 
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import { assertDataExistsInEvent } from "@knodia/kafka-commons/utils";
 import {
   fromConsumerKeychainV1,
@@ -50,7 +51,10 @@ export async function handleKeychainEvent(
         {
           consumerKeychainId: unsafeBrandId(consumerKeychain.id),
           linkedAt: new Date(msg.data.linkedAt),
-          purposeId: unsafeBrandId(purpose.id),
+          purpose: {
+            id: unsafeBrandExternalId(purpose.id),
+            knodeId: KnodeId.parse(purpose.knodeId),
+          },
         },
         message.version,
       );
