@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type z from "zod";
 
+import { generateId } from "@knodia/common-models/ids";
 import { type ConsumerKeychainPurpose } from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
@@ -75,7 +76,6 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes (getConsumerKeycha
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get(`/consumerKeychains/${consumerKeychain1.id}/purposes`)
-
         .query(query);
 
       expect(response.statusCode).toBe(200);
@@ -93,6 +93,8 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes (getConsumerKeycha
   it.each(allowedTestTokens)(
     "should return 200 for authorized token ($type, $roles)",
     async (token) => {
+      await seedConsumerKeychains();
+
       const response = await injectAppRequest(token)
         .get(`/consumerKeychains/${consumerKeychain1.id}/purposes`)
         .query(defaultQuery);
@@ -130,4 +132,12 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes (getConsumerKeycha
       expect(response.statusCode).toBe(400);
     },
   );
+
+  it("should return 404 for non-existent consumer keychain id", async () => {
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get(`/consumerKeychains/${generateId()}/purposes`)
+      .query(defaultQuery);
+
+    expect(response.statusCode).toBe(404);
+  });
 });

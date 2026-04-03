@@ -251,6 +251,8 @@ export function consumerKeychainServiceBuilder(
         `Getting Purposes linked to Consumer Keychain ${consumerKeychainId} with params`,
       );
 
+      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+
       return await readmodelService.getConsumerKeychainPurposes(
         consumerKeychainId,
         params,

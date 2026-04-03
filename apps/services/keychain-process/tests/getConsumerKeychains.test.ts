@@ -58,7 +58,6 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/consumerKeychains")
-
         .query(query);
 
       expect(response.statusCode).toBe(200);

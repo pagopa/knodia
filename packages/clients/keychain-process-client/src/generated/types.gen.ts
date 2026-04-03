@@ -545,6 +545,10 @@ export type GetConsumerKeychainPurposesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Consumer Keychain Not Found
+     */
+    404: Problem;
 };
 
 export type GetConsumerKeychainPurposesError = GetConsumerKeychainPurposesErrors[keyof GetConsumerKeychainPurposesErrors];
