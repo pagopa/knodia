@@ -23,12 +23,13 @@ export function purposeWriterServiceBuilder(db: NodePgDatabase) {
       );
 
       await db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion(
-          tx,
-          readmodelPurpose,
+        const shouldUpsert = await checkMetadataVersion({
+          id: purpose.id,
           metadataVersion,
-          purpose.id,
-        );
+          table: readmodelPurpose,
+          tableIdColumn: readmodelPurpose.id,
+          tx,
+        });
 
         if (!shouldUpsert) {
           return;
