@@ -78,18 +78,20 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         return;
       }
 
-      const uniqueEserviceIds = [
-        ...new Set(data.results.map((p) => p.eserviceId)),
+      const uniqueEservices = [
+        ...new Map(
+          data.results.map((p) => [p.eserviceId, p.knodeId]),
+        ).entries(),
       ];
 
       const eserviceDetailsEntries = await Promise.all(
-        uniqueEserviceIds.map(async (eserviceId) => {
+        uniqueEservices.map(async ([eserviceId, knodeId]) => {
           const { data: details } =
             await remoteResourcesManagerApi.getEserviceDetails({
               client: remoteResourcesManagerClient,
               headers,
               path: { eserviceId },
-              query: { knodeId: req.query.knodeId },
+              query: { knodeId },
             });
           return [eserviceId, details] as const;
         }),

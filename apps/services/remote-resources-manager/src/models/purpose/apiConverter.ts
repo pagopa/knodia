@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { API_PurposeState } from "@knodia/purpose-models/api";
 
@@ -7,7 +8,10 @@ import type { API_Purpose } from "./api.ts";
 
 import { toAPI_KnodeId } from "../knode/apiConverter.ts";
 
-export function toAPI_Purpose(purpose: k2kGatewayApi.Purpose): API_Purpose {
+export function toAPI_Purpose(
+  purpose: k2kGatewayApi.Purpose,
+  knodeId: KnodeId,
+): API_Purpose {
   return {
     consumer: {
       id: purpose.consumer.id,
@@ -17,6 +21,7 @@ export function toAPI_Purpose(purpose: k2kGatewayApi.Purpose): API_Purpose {
     description: purpose.description,
     eserviceId: purpose.eserviceId,
     id: purpose.id,
+    knodeId,
     name: purpose.name,
     state: toAPI_PurposeState(purpose.state),
     updatedAt: purpose.updatedAt,
