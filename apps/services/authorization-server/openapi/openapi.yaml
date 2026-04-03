@@ -3,7 +3,7 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: API for issuing authorization tokens
+  description: API for issuing access tokens to consume E-services exposed by a Knode
   title: Knodia Authorization Server API
   version: 1.0.0
 components:
@@ -69,31 +69,18 @@ components:
     TokenRequest:
       type: object
       properties:
-        client_id:
+        mockClientAssertion:
           type: string
-        grant_type:
-          type: string
-        scope:
-          type: string
+      required:
+        - mockClientAssertion
       additionalProperties: false
     TokenResponse:
       type: object
       properties:
-        access_token:
+        mockAccessToken:
           type: string
-        expires_in:
-          format: int32
-          type: integer
-          exclusiveMinimum: true
-          maximum: 9007199254740991
-        token_type:
-          type: string
-          enum:
-            - Bearer
       required:
-        - access_token
-        - expires_in
-        - token_type
+        - mockAccessToken
       additionalProperties: false
 paths:
   /status:

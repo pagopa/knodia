@@ -1,19 +1,17 @@
 import z from "zod";
 
+// TODO remove this mocked response model when the real token flow is implemented.
 export const API_TokenRequest = z
   .strictObject({
-    client_id: z.string().optional(),
-    grant_type: z.string().optional(),
-    scope: z.string().optional(),
+    mockClientAssertion: z.string(),
   })
   .meta({ id: "TokenRequest" });
 
 export type API_TokenRequest = z.infer<typeof API_TokenRequest>;
 
+// TODO remove this mocked response model when the real token flow is implemented.
 export const API_TokenResponse = z
   .strictObject({
-    access_token: z.string(),
-    expires_in: z.number().int().positive().meta({ format: "int32" }),
-    token_type: z.literal("Bearer"),
+    mockAccessToken: z.string(),
   })
   .meta({ id: "TokenResponse" });

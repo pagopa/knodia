@@ -3,7 +3,7 @@ info:
   contact:
     url: https://github.com/pagopa/knodia/issues
   termsOfService: https://knodia.org/
-  description: API for communicating with other Knodes
+  description: API for communicating with a Knode
   title: Knode to Knode API
   version: 1.0.0
 components:
