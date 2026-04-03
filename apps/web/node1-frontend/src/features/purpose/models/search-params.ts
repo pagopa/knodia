@@ -1,4 +1,9 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import { z } from "zod";
+
+export const purposeDetailSearchSchema = z.object({
+  knodeId: KnodeId,
+});
 
 export const producerPurposeSearchDefaultValues = {
   offset: 0,
