@@ -1,9 +1,12 @@
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   ConsumerKeychainId,
   KeyId,
   OrganizationId,
+  PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
@@ -14,6 +17,7 @@ import {
   keyAlreadyExists,
   keychainMemberNotFound,
   notAllowedCertificate,
+  purposeAlreadyLinkedToConsumerKeychain,
   tooManyKeysPerKeychain,
   userNotAllowed,
   userNotFound,
@@ -32,6 +36,33 @@ export function assertOrganizationIsKeychainOwner(
     throw forbiddenError(
       `Caller organization ${organizationId} is not the owner of the keychain`,
     );
+  }
+}
+
+export function assertOrganizationIsPurposeConsumer(
+  organizationId: OrganizationId,
+  purpose: Pick<remoteResourcesManagerApi.Purpose, "consumer">,
+): void {
+  if (purpose.consumer.id !== organizationId) {
+    throw forbiddenError(
+      `Caller organization ${organizationId} is not the Consumer of the Purpose`,
+    );
+  }
+}
+
+export async function assertPurposeIsNotLinkedToConsumerKeychain(
+  consumerKeychainId: ConsumerKeychainId,
+  purpose: ExternalResource<PurposeId>,
+  readmodelService: ReadmodelService,
+): Promise<void> {
+  const consumerKeychainPurpose =
+    await readmodelService.getConsumerKeychainPurpose(
+      consumerKeychainId,
+      purpose,
+    );
+
+  if (consumerKeychainPurpose) {
+    throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purpose);
   }
 }
 

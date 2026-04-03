@@ -8,9 +8,13 @@ import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
+  getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_ConsumerKeychainIdPathParam } from "@knodia/keychain-models/api";
+import {
+  API_ConsumerKeychainIdPathParam,
+  API_ConsumerKeychainPurposeLinkSeed,
+} from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
@@ -40,7 +44,6 @@ import {
   toAPI_KeychainDetails,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -61,11 +64,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     });
 
   const pollConsumerKeychain = (
-    response: AxiosResponse<API_CreatedResource>,
+    response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
     headers: KnodiaServiceHeaders,
+    consumerKeychainId: string,
   ) =>
     pollingService.pollResourceWithMetadata(() =>
-      retrieveConsumerKeychainById(response.data.id, headers),
+      retrieveConsumerKeychainById(consumerKeychainId, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
@@ -106,7 +110,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(201).send({ id: response.data.id });
     },
@@ -146,7 +150,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -189,7 +193,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId: req.params.consumerKeychainId },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -278,7 +282,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         },
       });
 
-      await pollConsumerKeychain(response, headers);
+      await pollConsumerKeychain(response, headers, response.data.id);
 
       res.status(204).send();
     },
@@ -476,5 +480,52 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { knodeId, purposeId } = req.body;
+
+      logger.info(
+        `Linking Purpose ${purposeId} owned by Knode ${knodeId} to Consumer Keychain ${req.params.consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.linkPurposeToConsumerKeychain({
+        body: req.body,
+        client: keychainProcessClient,
+        headers,
+        path: { consumerKeychainId: req.params.consumerKeychainId },
+      });
+
+      await pollConsumerKeychain(
+        response,
+        headers,
+        req.params.consumerKeychainId,
+      );
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_ConsumerKeychainPurposeLinkSeed,
+      description: "Link a Purpose to a Consumer Keychain",
+      operationId: "linkPurposeToConsumerKeychain",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Purpose successfully linked to Consumer Keychain",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes",
   });
 };

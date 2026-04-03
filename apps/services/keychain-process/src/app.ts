@@ -21,6 +21,7 @@ import {
 
 import type { KeychainProcessConfig } from "./config/config.ts";
 
+import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
@@ -33,13 +34,19 @@ export function buildApp({
   config,
   eventStoreDb,
   readmodelDb,
+  remoteResourcesManagerUrl,
 }: {
   config: AuthConfig &
     LoggerConfig &
     Pick<KeychainProcessConfig, "cognitoUserPoolId" | "maxKeysPerKeychain">;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
+  remoteResourcesManagerUrl: string;
 }) {
+  const clients = getKnodiaClients({
+    remoteResourcesManagerUrl,
+  });
+
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -87,6 +94,7 @@ export function buildApp({
         keychainEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
         userService,
+        clients.remoteResourcesManagerClient,
         config,
       ),
     });
@@ -106,6 +114,7 @@ export function buildAppFromConfig(config: KeychainProcessConfig) {
     config,
     eventStoreDb,
     readmodelDb,
+    remoteResourcesManagerUrl: config.remoteResourcesManagerUrl,
   });
 
   app.addHook("onClose", async () => {

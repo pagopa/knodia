@@ -1,4 +1,9 @@
-import type { ConsumerKeychainId, UserId } from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type {
+  ConsumerKeychainId,
+  PurposeId,
+  UserId,
+} from "@knodia/common-models/ids";
 
 import { createApiError } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
@@ -18,16 +23,17 @@ const errorCodes = {
   USER_NOT_FOUND: "0003",
   INVALID_USER_ROLE: "0004",
   KEYCHAIN_MEMBER_NOT_FOUND: "0005",
-  INVALID_KEY_LENGTH: "0006",
-  INVALID_PUBLIC_KEY: "0007",
-  JWK_DECODING_ERROR: "0008",
-  NOT_ALLOWED_CERTIFICATE: "0009",
-  NOT_ALLOWED_MULTIPLE_KEYS: "0010",
-  NOT_ALLOWED_PRIVATE_KEY: "0011",
-  NOT_AN_RSA_KEY: "0012",
-  KEY_ALREADY_EXISTS: "0013",
-  TOO_MANY_KEYS_PER_KEYCHAIN: "0014",
-  USER_NOT_ALLOWED: "0015",
+  PURPOSE_ALREADY_LINKED_TO_CONSUMER_KEYCHAIN: "0006",
+  INVALID_KEY_LENGTH: "0007",
+  INVALID_PUBLIC_KEY: "0008",
+  JWK_DECODING_ERROR: "0009",
+  NOT_ALLOWED_CERTIFICATE: "0010",
+  NOT_ALLOWED_MULTIPLE_KEYS: "0011",
+  NOT_ALLOWED_PRIVATE_KEY: "0012",
+  NOT_AN_RSA_KEY: "0013",
+  KEY_ALREADY_EXISTS: "0014",
+  TOO_MANY_KEYS_PER_KEYCHAIN: "0015",
+  USER_NOT_ALLOWED: "0016",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -144,6 +150,18 @@ export function notAnRSAKey() {
     detail: "Provided key is not an RSA key",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Not an RSA key",
+  });
+}
+
+export function purposeAlreadyLinkedToConsumerKeychain(
+  consumerKeychainId: ConsumerKeychainId,
+  purpose: ExternalResource<PurposeId>,
+) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_ALREADY_LINKED_TO_CONSUMER_KEYCHAIN",
+    detail: `Purpose with id ${purpose.id} owned by Knode ${purpose.knodeId} is already linked to Consumer Keychain with id ${consumerKeychainId}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Purpose Already Linked To Consumer Keychain",
   });
 }
 

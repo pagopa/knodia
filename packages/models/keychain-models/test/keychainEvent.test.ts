@@ -1,5 +1,5 @@
-/* eslint-disable max-lines-per-function */
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
+import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
   generateId,
   generateUserId,
@@ -9,11 +9,10 @@ import {
   protobufBinaryCodec,
   type ProtobufCodec,
 } from "@knodia/common-models/protobuf";
-import { Purpose, toPurposeV1 } from "@knodia/purpose-models";
 import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
-import { zocker } from "zocker";
 
+import type { ConsumerKeychainLinkedPurposeV1 } from "../src/generated/v1/keychain.ts";
 import type { ConsumerKeychain } from "../src/keychain.ts";
 
 import {
@@ -52,19 +51,10 @@ describe("KeychainEventV1 codec", () => {
     users: [generateUserId()],
   };
 
-  const purpose: Purpose = {
-    ...zocker(Purpose).generate(),
-    // zocker generates non-JSON-serializable values for Record<string, unknown>;
-    // override with a realistic JSON-safe object
-    formAnswersJson: {
-      checked: true,
-      count: 42,
-      nested: { deep: "value" },
-      options: ["a", "b", "c"],
-      question1: "answer1",
-    },
+  const linkedPurposeV1: ConsumerKeychainLinkedPurposeV1 = {
+    id: generateExternalId(),
+    knodeId: "Orion",
   };
-  const purposeV1 = toPurposeV1(purpose);
   const consumerKeychainV1 = toConsumerKeychainV1(consumerKeychain);
   const defaultData = { consumerKeychain: consumerKeychainV1 };
   const cases = [
@@ -87,16 +77,7 @@ describe("KeychainEventV1 codec", () => {
       data: {
         consumerKeychain: consumerKeychainV1,
         linkedAt: new Date().getTime(),
-        purpose: purposeV1,
-      },
-      message: ConsumerKeychainPurposeLinkedV1,
-      type: "ConsumerKeychainPurposeLinkedV1" as const,
-    },
-    {
-      data: {
-        consumerKeychain: consumerKeychainV1,
-        linkedAt: new Date().getTime(),
-        purpose: purposeV1,
+        purpose: linkedPurposeV1,
       },
       message: ConsumerKeychainPurposeLinkedV1,
       type: "ConsumerKeychainPurposeLinkedV1" as const,
