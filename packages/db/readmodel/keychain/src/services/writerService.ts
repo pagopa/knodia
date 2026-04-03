@@ -48,6 +48,18 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
       metadataVersion: number,
     ): Promise<void> {
       return db.transaction(async (tx) => {
+        const shouldDelete = await checkMetadataVersion({
+          id: consumerKeychainPurpose.consumerKeychainId,
+          metadataVersion,
+          table: readmodelConsumerKeychainPurpose,
+          tableIdColumn: readmodelConsumerKeychainPurpose.consumerKeychainId,
+          tx,
+        });
+
+        if (!shouldDelete) {
+          return;
+        }
+
         await tx
           .delete(readmodelConsumerKeychainPurpose)
           .where(
@@ -63,6 +75,10 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
               eq(
                 readmodelConsumerKeychainPurpose.producerKnodeId,
                 consumerKeychainPurpose.purpose.knodeId,
+              ),
+              lte(
+                readmodelConsumerKeychainPurpose.metadataVersion,
+                metadataVersion,
               ),
             ),
           );
@@ -86,12 +102,13 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
       metadataVersion: number,
     ): Promise<void> {
       return db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion(
-          tx,
-          readmodelConsumerKeychain,
+        const shouldUpsert = await checkMetadataVersion({
+          id: consumerKeychain.id,
           metadataVersion,
-          consumerKeychain.id,
-        );
+          table: readmodelConsumerKeychain,
+          tableIdColumn: readmodelConsumerKeychain.id,
+          tx,
+        });
 
         if (!shouldUpsert) {
           return;
@@ -148,12 +165,13 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
       metadataVersion: number,
     ): Promise<void> {
       return db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion(
-          tx,
-          readmodelConsumerKeychain,
+        const shouldUpsert = await checkMetadataVersion({
+          id: consumerKeychainPurpose.consumerKeychainId,
           metadataVersion,
-          consumerKeychainPurpose.consumerKeychainId,
-        );
+          table: readmodelConsumerKeychain,
+          tableIdColumn: readmodelConsumerKeychain.id,
+          tx,
+        });
 
         if (!shouldUpsert) {
           return;
