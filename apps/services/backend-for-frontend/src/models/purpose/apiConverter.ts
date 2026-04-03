@@ -22,7 +22,7 @@ export const toAPI_ConsumerPurpose = ({
     name: eserviceDetails.name,
   },
   id: purpose.id,
-  // TODO: Replace with actual keychain data when consumer keychains for purposes are implemented
+  // TODO: https://pagopa.atlassian.net/browse/KN-406 Replace with actual keychain data when consumer keychains for purposes are implemented
   keychain: "TODO",
   name: purpose.name,
   producer: {
