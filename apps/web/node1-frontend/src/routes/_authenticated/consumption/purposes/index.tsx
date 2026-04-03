@@ -30,9 +30,6 @@ export const Route = createFileRoute("/_authenticated/consumption/purposes/")({
   validateSearch: consumerPurposeSearchSchema,
 });
 
-// TODO: When purposes page is implemented, for Technical-only users:
-// - Show different empty state description, no "Search new E-Services" button
-// - Hide activate, suspend, reactivate, link/unlink buttons
 function RouteComponent() {
   const { offset } = Route.useSearch();
   const navigate = Route.useNavigate();

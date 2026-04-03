@@ -3,6 +3,7 @@ import { SelectionPlusIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
+import { useHasRole } from "@/contexts/auth";
 
 export const Route = createFileRoute(
   "/_authenticated/consumption/purposes/archive",
@@ -11,6 +12,8 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
+  const canManagePurposes = useHasRole("administrative");
+
   return (
     <>
       <Breadcrumbs className="mb-10">
@@ -24,7 +27,11 @@ function RouteComponent() {
       <Empty
         description="Archived Purposes will be displayed here."
         icon={<SelectionPlusIcon />}
-        title="You haven't archived any Purpose yet."
+        title={
+          canManagePurposes
+            ? "You haven't archived any Purpose yet."
+            : "There are no archived Purposes."
+        }
       />
     </>
   );
