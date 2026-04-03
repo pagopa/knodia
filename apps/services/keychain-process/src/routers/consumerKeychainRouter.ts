@@ -26,14 +26,20 @@ import type { ConsumerKeychainService } from "../services/consumerKeychainServic
 import {
   API_ConsumerKeychainMemberPathParam,
   API_ConsumerKeychainPatch,
+  API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
+  API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
   API_KeychainMemberSeed,
   API_Keychains,
   API_Users,
 } from "../models/api.ts";
-import { toAPI_Keychain, toAPI_User } from "../models/apiConverter.ts";
+import {
+  toAPI_ConsumerKeychainPurpose,
+  toAPI_Keychain,
+  toAPI_User,
+} from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 
 interface ConsumerKeychainRouterOptions {
@@ -393,6 +399,50 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const { results, totalCount } =
+        await consumerKeychainService.getConsumerKeychainPurposes(
+          req.params.consumerKeychainId,
+          req.query,
+          ctx,
+        );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_ConsumerKeychainPurpose),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a list of Purposes linked to a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "getConsumerKeychainPurposes",
+      params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainPurposesQueryParams,
+      response: {
+        200: API_ConsumerKeychainPurposes.meta({
+          description:
+            "Purposes linked to the Consumer Keychain retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain Not Found" }),
       },
       tags: [apiTags.consumerKeychain],
     },
