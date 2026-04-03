@@ -405,7 +405,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
-      await consumerKeychainService.unlinkPurposeToConsumerKeychain(
+      const {
+        metadata: { version },
+      } = await consumerKeychainService.unlinkPurposeToConsumerKeychain(
         {
           consumerKeychainId: req.params.consumerKeychainId,
           purpose: {
@@ -415,6 +417,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         },
         ctx,
       );
+
+      setMetadataVersionHeader(res, version);
 
       res.status(204).send();
     },
@@ -426,9 +430,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       params: API_UnlinkConsumerKeychainIdPathParam,
       querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
       response: {
-        204: z.undefined().meta({
-          description: "Purpose successfully unlinked from Consumer Keychain",
-        }),
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description: "Purpose successfully unlinked from Consumer Keychain",
+          }),
+        },
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),

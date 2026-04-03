@@ -8,6 +8,7 @@ import {
   type OrganizationId,
   type PurposeId,
 } from "@knodia/common-models/ids";
+import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
@@ -68,6 +69,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unl
       .query(query);
 
     expect(response.statusCode).toBe(204);
+    expect(response.headers[METADATA_VERSION_HEADER]).toEqual("2");
 
     const events = await getAllKeychainEvents();
     const unlinkEvent = events[2];

@@ -26,13 +26,12 @@ export const retrieveConsumerKeychainPurpose = async (
   consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
   readmodelService: ReadmodelService,
 ) => {
-  const consumerKeychain = await readmodelService.getConsumerKeychainPurpose(
-    consumerKeychainPurpose,
-  );
+  const consumerKeychainPurposeResult =
+    await readmodelService.getConsumerKeychainPurpose(consumerKeychainPurpose);
 
-  if (!consumerKeychain) {
+  if (!consumerKeychainPurposeResult) {
     throw consumerKeychainPurposeNotFound(consumerKeychainPurpose);
   }
 
-  return consumerKeychain;
+  return consumerKeychainPurposeResult;
 };

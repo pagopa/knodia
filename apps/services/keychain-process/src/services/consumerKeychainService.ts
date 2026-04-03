@@ -356,15 +356,15 @@ export function consumerKeychainServiceBuilder(
     },
 
     async unlinkPurposeToConsumerKeychain(
-      consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
+      requestParams: Omit<ConsumerKeychainPurpose, "linkedAt">,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<void> {
-      const { consumerKeychainId, purpose } = consumerKeychainPurpose;
+    ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
+      const { consumerKeychainId, purpose } = requestParams;
       logger.info(
         `Unlinking Purpose ${purpose.id} owned by Knode ${purpose.knodeId} from Consumer Keychain ${consumerKeychainId}`,
       );
 
-      const [consumerKeychain] = await Promise.all([
+      const [consumerKeychain, consumerKeychainPurpose] = await Promise.all([
         retrieveConsumerKeychain(consumerKeychainId, readmodelService),
         retrieveConsumerKeychainPurpose(
           {
@@ -379,7 +379,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data,
       );
 
-      await eventStoreWriter.insertEvent(
+      const { newVersion } = await eventStoreWriter.insertEvent(
         createConsumerKeychainPurposeUnlinkedV1Event({
           consumerKeychain: consumerKeychain.data,
           correlationId,
@@ -387,6 +387,10 @@ export function consumerKeychainServiceBuilder(
           purpose,
         }),
       );
+      return {
+        data: consumerKeychainPurpose.data,
+        metadata: { version: newVersion },
+      };
     },
 
     async updateConsumerKeychain(

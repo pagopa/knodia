@@ -901,6 +901,12 @@ paths:
       responses:
         "204":
           description: Purpose successfully unlinked from Consumer Keychain
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
         "400":
           description: Bad Request
           content:
