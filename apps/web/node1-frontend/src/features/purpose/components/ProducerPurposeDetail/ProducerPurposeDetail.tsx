@@ -19,7 +19,7 @@ const RouterLink = createLink(Link);
 export function ProducerPurposeDetail({
   purpose,
 }: {
-  purpose: bffApi.ProducerPurposeDetails;
+  purpose: bffApi.PurposeDetails;
 }) {
   const canManagePurposeState = useHasRole("administrative");
 
