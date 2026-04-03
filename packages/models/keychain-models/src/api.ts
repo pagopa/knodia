@@ -62,10 +62,10 @@ export type API_UnlinkConsumerKeychainPurposeQueryParams = z.infer<
   typeof API_UnlinkConsumerKeychainPurposeQueryParams
 >;
 
-export const API_UnlinkConsumerKeychainIdPathParam =
+export const API_UnlinkConsumerKeychainIdPathParams =
   API_ConsumerKeychainIdPathParam.extend({
     purposeId: ExternalId<PurposeId>(),
   });
-export type API_UnlinkConsumerKeychainIdPathParam = z.infer<
-  typeof API_UnlinkConsumerKeychainIdPathParam
+export type API_UnlinkConsumerKeychainIdPathParams = z.infer<
+  typeof API_UnlinkConsumerKeychainIdPathParams
 >;
