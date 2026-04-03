@@ -35,7 +35,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unlinkPurposeToConsumerKeychain)", () => {
+describe("DELETE /consumerKeychains/:consumerKeychainId/purposes/:purposeId (unlinkPurposeFromConsumerKeychain)", () => {
   const knodeId: KnodeId = "Orion";
   const consumerKeychain: ConsumerKeychain = {
     ...getMockConsumerKeychain(),

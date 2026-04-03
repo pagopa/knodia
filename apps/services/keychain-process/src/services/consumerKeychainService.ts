@@ -355,7 +355,7 @@ export function consumerKeychainServiceBuilder(
       };
     },
 
-    async unlinkPurposeToConsumerKeychain(
+    async unlinkPurposeFromConsumerKeychain(
       requestParams: Omit<ConsumerKeychainPurpose, "linkedAt">,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {

@@ -407,7 +407,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       const {
         metadata: { version },
-      } = await consumerKeychainService.unlinkPurposeToConsumerKeychain(
+      } = await consumerKeychainService.unlinkPurposeFromConsumerKeychain(
         {
           consumerKeychainId: req.params.consumerKeychainId,
           purpose: {
