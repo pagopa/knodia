@@ -71,9 +71,6 @@ export const API_EserviceSeed = z
     interfaceDocument: API_InterfaceDocumentSeed.meta({
       description: "Interface document for the E-service",
     }),
-    isConsumerOperatorIdentificationRequired: z.boolean().optional().meta({
-      description: "Whether consumer operator identification is required",
-    }),
     isSignalHubEnabled: z
       .boolean()
       .optional()
