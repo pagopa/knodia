@@ -104,8 +104,8 @@ export function responseSerializationError(
   const errorGroups = new Map<string, string[]>();
   for (const issue of error.cause.issues) {
     const groupKey = toPath(issue.path.slice(0, 2));
-    const fieldPath = toPath(issue.path);
-    const detail = `${issue.message} at ${fieldPath}`;
+    const fieldPath = toPath(issue.path.slice(2));
+    const detail = `${issue.message}${fieldPath ? ` at ${fieldPath}` : ""}`;
     const existingErrorGroup = errorGroups.get(groupKey);
     if (existingErrorGroup) {
       existingErrorGroup.push(detail);
