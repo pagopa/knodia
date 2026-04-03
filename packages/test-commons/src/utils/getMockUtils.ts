@@ -5,7 +5,10 @@ import {
   EserviceVersion,
   type EserviceVersionState,
 } from "@knodia/eservice-models";
-import { ConsumerKeychain } from "@knodia/keychain-models";
+import {
+  ConsumerKeychain,
+  ConsumerKeychainPurpose,
+} from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
 import { Purpose } from "@knodia/purpose-models";
 import { zocker } from "zocker";
@@ -94,6 +97,12 @@ export const MOCK_PURPOSE_FORM_ANSWERS = {
   purposeDescription: "Test purpose for local development",
   usesThirdPartyPersonalData: "NO",
 };
+
+export function getMockConsumerKeychainPurpose(
+  seed = 0,
+): ConsumerKeychainPurpose {
+  return zocker(ConsumerKeychainPurpose).setSeed(seed).generate();
+}
 
 export function getMockPurpose(seed = 0): Purpose {
   return {
