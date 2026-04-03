@@ -16,9 +16,7 @@ const EserviceProcessConfig = LoggerConfig.and(HTTPServerConfig)
   .and(
     z
       .object({
-        IS_CONSUMER_OPERATOR_IDENTIFICATION_REQUIRED: z
-          .stringbool()
-          .default(false),
+        IS_CONSUMER_OPERATOR_IDENTIFICATION_REQUIRED: z.stringbool(),
       })
       .transform((c) => ({
         isConsumerOperatorIdentificationRequired:
