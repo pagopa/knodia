@@ -1,0 +1,24 @@
+meta {
+  name: Get Consumer Keychain Purposes
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/purposes?limit=50&offset=0
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

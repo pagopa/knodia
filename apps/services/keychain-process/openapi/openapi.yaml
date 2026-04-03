@@ -238,6 +238,48 @@ components:
       required:
         - userId
       additionalProperties: false
+    ConsumerKeychainLinkedPurpose:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
+    ConsumerKeychainPurpose:
+      type: object
+      properties:
+        consumerKeychainId:
+          $ref: "#/components/schemas/KeychainId"
+        linkedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        purpose:
+          $ref: "#/components/schemas/ConsumerKeychainLinkedPurpose"
+      required:
+        - consumerKeychainId
+        - linkedAt
+        - purpose
+      additionalProperties: false
+    ConsumerKeychainPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerKeychainPurpose"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -865,31 +907,35 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{consumerKeychainId}/purposes/{purposeId}:
-    delete:
-      operationId: unlinkPurposeFromConsumerKeychain
+    get:
+      operationId: getConsumerKeychainPurposes
       tags:
         - consumerKeychain
-      description: Unlink a Purpose from a Consumer Keychain
+      description: Retrieve a list of Purposes linked to a Consumer Keychain
       parameters:
         - schema:
-            $ref: "#/components/schemas/KnodeId"
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
           in: query
-          name: knodeId
+          name: limit
           required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
         - schema:
             type: string
             format: uuid
             pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
           in: path
           name: consumerKeychainId
-          required: true
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: purposeId
           required: true
         - schema:
             allOf:
@@ -899,14 +945,14 @@ paths:
           required: true
           description: Unique identifier of the request
       responses:
-        "204":
-          description: Purpose successfully unlinked from Consumer Keychain
-          headers:
-            metadata-version:
-              required: true
+        "200":
+          description: Purposes linked to the Consumer Keychain retrieved successfully
+          content:
+            application/json:
               schema:
-                type: string
-              description: Metadata version of the resource
+                description: Purposes linked to the Consumer Keychain retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainPurposes"
         "400":
           description: Bad Request
           content:
@@ -932,11 +978,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Not Found
+          description: Consumer Keychain Not Found
           content:
             application/problem+json:
               schema:
-                description: Not Found
+                description: Consumer Keychain Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /users/technical:

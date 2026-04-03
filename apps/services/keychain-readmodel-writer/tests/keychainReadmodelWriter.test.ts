@@ -22,13 +22,15 @@ import { describe, expect, it } from "vitest";
 
 import {
   consumer,
-  consumerKeychainReadmodelService,
   keychainWriterService,
   producer,
   readmodelDb,
   topicName,
 } from "./setup.ts";
-import { getAllConsumerKeychains } from "./utils.ts";
+import {
+  getAllConsumerKeychains,
+  getConsumerKeychainPurposesByKeychainId,
+} from "./utils.ts";
 
 describe("Consumer keychain read model writer tests", async () => {
   it("ConsumerKeychainCreatedV1", async () => {
@@ -97,8 +99,9 @@ describe("Consumer keychain read model writer tests", async () => {
     } satisfies WithMetadata<ConsumerKeychain>);
 
     const retrievedConsumerKeychainPurposes =
-      await consumerKeychainReadmodelService.getConsumerKeychainPurposesByKeychainId(
+      await getConsumerKeychainPurposesByKeychainId(
         consumerKeychain.id,
+        readmodelDb,
       );
     expect(retrievedConsumerKeychainPurposes.length).toBe(1);
     expect(retrievedConsumerKeychainPurposes[0]).toEqual({

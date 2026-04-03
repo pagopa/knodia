@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainErrors, UnlinkPurposeFromConsumerKeychainResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -119,6 +119,16 @@ export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
+ * Retrieve a list of Purposes linked to a Consumer Keychain
+ */
+export const getConsumerKeychainPurposes = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposesData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposesResponses, GetConsumerKeychainPurposesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains/{consumerKeychainId}/purposes',
+    ...options
+});
+
+/**
  * Link a Purpose to a Consumer Keychain
  */
 export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<LinkPurposeToConsumerKeychainData, ThrowOnError>) => (options.client ?? client).post<LinkPurposeToConsumerKeychainResponses, LinkPurposeToConsumerKeychainErrors, ThrowOnError>({
@@ -129,15 +139,6 @@ export const linkPurposeToConsumerKeychain = <ThrowOnError extends boolean = tru
         'Content-Type': 'application/json',
         ...options.headers
     }
-});
-
-/**
- * Unlink a Purpose from a Consumer Keychain
- */
-export const unlinkPurposeFromConsumerKeychain = <ThrowOnError extends boolean = true>(options: Options<UnlinkPurposeFromConsumerKeychainData, ThrowOnError>) => (options.client ?? client).delete<UnlinkPurposeFromConsumerKeychainResponses, UnlinkPurposeFromConsumerKeychainErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}',
-    ...options
 });
 
 /**
