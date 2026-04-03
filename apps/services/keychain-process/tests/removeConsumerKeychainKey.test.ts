@@ -4,7 +4,6 @@ import {
   generateId,
   generateUserId,
   type OrganizationId,
-  UserId,
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
