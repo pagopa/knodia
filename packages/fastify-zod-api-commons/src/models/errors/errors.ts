@@ -90,9 +90,37 @@ export function missingResponseHeader(
 export function responseSerializationError(
   error: ResponseSerializationError,
 ): ApiError<CommonErrorCodes> {
+  const toPath = (segments: PropertyKey[]): string =>
+    segments
+      .map((segment, i) =>
+        typeof segment === "number"
+          ? `[${segment}]`
+          : i === 0
+            ? segment
+            : `.${segment.toString()}`,
+      )
+      .join("");
+
+  const errorGroups = new Map<string, string[]>();
+  for (const issue of error.cause.issues) {
+    const groupKey = toPath(issue.path.slice(0, 2));
+    const fieldPath = toPath(issue.path);
+    const detail = `${issue.message} at ${fieldPath}`;
+    const existingErrorGroup = errorGroups.get(groupKey);
+    if (existingErrorGroup) {
+      existingErrorGroup.push(detail);
+    } else {
+      errorGroups.set(groupKey, [detail]);
+    }
+  }
+
+  const errors = Array.from(errorGroups.entries()).map(
+    ([groupKey, details]) => new Error(`${groupKey}: ${details.join("; ")}`),
+  );
+
   return createApiErrorFromErrorsList({
     code: "RESPONSE_SERIALIZATION_ERROR",
-    errors: error.cause.issues,
+    errors,
     status: error.statusCode || HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Response Serialization Error",
   });
