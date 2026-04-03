@@ -14,7 +14,7 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
-  API_UnlinkConsumerKeychainIdPathParam,
+  API_UnlinkConsumerKeychainIdPathParams,
   API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import {
@@ -509,7 +509,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Unlink a Purpose from a Consumer Keychain",
       operationId: "unlinkPurposeFromConsumerKeychain",
-      params: API_UnlinkConsumerKeychainIdPathParam,
+      params: API_UnlinkConsumerKeychainIdPathParams,
       querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
       response: {
         204: z.undefined().meta({
