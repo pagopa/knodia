@@ -76,6 +76,10 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
                 readmodelConsumerKeychainPurpose.producerKnodeId,
                 consumerKeychainPurpose.purpose.knodeId,
               ),
+              lte(
+                readmodelConsumerKeychainPurpose.metadataVersion,
+                metadataVersion,
+              ),
             ),
           );
 
