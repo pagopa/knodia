@@ -96,7 +96,7 @@ export function responseSerializationError(
         typeof segment === "number"
           ? `[${segment}]`
           : i === 0
-            ? segment
+            ? segment.toString()
             : `.${segment.toString()}`,
       )
       .join("");
