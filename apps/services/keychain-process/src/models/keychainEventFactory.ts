@@ -141,7 +141,7 @@ export const createConsumerKeychainKeyAddedV1Event = (
 
 export const createConsumerKeychainKeyRemovedV1Event = (
   keychain: ConsumerKeychain,
-  kid: ConsumerKeychainKeyId,
+  kid: KeyId,
   correlationId: CorrelationId,
   currentMetadataVersion: number,
 ): NewEventStoreKeychainEvent => ({

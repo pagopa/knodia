@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import {
-  type ConsumerKeychainKeyId,
   generateId,
   type OrganizationId,
   unsafeBrandUserId,
@@ -18,7 +17,10 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
-import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
+import {
+  getMockConsumerKeychain,
+  getMockConsumerKeychainKey,
+} from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -31,17 +33,12 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-const keyId = "20000000-1000-1000-8000-000000000001" as ConsumerKeychainKeyId;
-
 const existingKey: ConsumerKeychainKey = {
-  algorithm: "RS256",
-  createdAt: new Date(),
-  encodedPem: "encoded-pem",
-  format: "PublicKey",
-  kid: keyId,
-  name: { en: "Existing key name" },
+  ...getMockConsumerKeychainKey(0),
   userId: unsafeBrandUserId(TEST_ORGANIZATION_ID),
 };
+
+const keyId = existingKey.kid;
 
 describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsumerKeychainKey)", () => {
   it("should correctly create consumer keychain key removal event", async () => {
