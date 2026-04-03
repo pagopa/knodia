@@ -49,6 +49,7 @@ export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
+  config: { isConsumerOperatorIdentificationRequired: boolean },
 ) {
   return {
     async createEservice(
@@ -98,7 +99,7 @@ export function eserviceServiceBuilder(
         description: seed.description,
         id: eserviceId,
         isConsumerOperatorIdentificationRequired:
-          seed.isConsumerOperatorIdentificationRequired ?? false,
+          config.isConsumerOperatorIdentificationRequired,
         isSignalHubEnabled: seed.isSignalHubEnabled ?? false,
         mode: seed.mode ?? "ProvideData",
         name: seed.name,
