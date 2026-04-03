@@ -543,7 +543,7 @@ export type UploadConsumerKeychainKeyResponses = {
 export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
 
 export type RemoveConsumerKeychainKeyData = {
-    body: KeychainKeySeed;
+    body?: never;
     headers: {
         /**
          * Unique identifier of the request

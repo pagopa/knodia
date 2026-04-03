@@ -276,7 +276,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const response = await keychainProcessApi.removeConsumerKeychainKey({
-        body: req.body,
         client: keychainProcessClient,
         headers,
         path: { consumerKeychainId, keyId },
@@ -288,7 +287,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "DELETE",
     schema: {
-      body: API_KeychainKeySeed,
       description: "Remove a key from a Consumer Keychain",
       operationId: "removeConsumerKeychainKey",
       params: API_ConsumerKeychainKeyPathParam,

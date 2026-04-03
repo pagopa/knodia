@@ -2257,12 +2257,6 @@ paths:
       tags:
         - consumerKeychain
       description: Remove a key from a Consumer Keychain
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/KeychainKeySeed"
       parameters:
         - schema:
             type: string

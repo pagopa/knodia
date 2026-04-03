@@ -1241,7 +1241,7 @@ export type UploadConsumerKeychainKeyResponses = {
 export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
 
 export type RemoveConsumerKeychainKeyData = {
-    body: KeychainKeySeed;
+    body?: never;
     path: {
         keyId: string;
         consumerKeychainId: string;

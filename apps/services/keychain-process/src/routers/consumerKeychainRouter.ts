@@ -348,7 +348,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "DELETE",
     schema: {
-      body: API_KeychainKeySeed,
       description: "Remove a key from a Consumer Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "removeConsumerKeychainKey",

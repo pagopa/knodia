@@ -24,7 +24,7 @@ import {
 import {
   type ConsumerKeychainId,
   generateId,
-  KeyId,
+  type KeyId,
   type KnodeId,
   type PurposeId,
   unsafeBrandKeyId,
