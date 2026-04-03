@@ -21,6 +21,7 @@ export interface PurposeWizardContextValue {
   eserviceId: EserviceId;
   eserviceName: string;
   formAnswers: FormValues;
+  formSchemaVersion: string;
   knodeId: KnodeId;
   maxDailyCallsPerConsumer: number;
   updateDetailsStep: (data: DetailsStepData) => void;

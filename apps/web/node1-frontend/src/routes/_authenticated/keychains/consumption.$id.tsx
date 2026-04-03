@@ -1,4 +1,7 @@
-import { getConsumerKeychainDetailsOptions } from "@knodia/bff-client/tanstack-query";
+import {
+  getConsumerKeychainDetailsOptions,
+  getConsumerKeychainMembersOptions,
+} from "@knodia/bff-client/tanstack-query";
 import {
   Banner,
   Breadcrumb,
@@ -12,13 +15,15 @@ import {
   Tabs,
 } from "@knodia/ui-kit/ui";
 import { SelectionIcon, SelectionPlusIcon } from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
+import { AddKeychainMemberAction } from "@/features/keychain/components/AddKeychainMemberAction";
 import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDeleteAction";
 import { KeychainEditAction } from "@/features/keychain/components/KeychainEditAction";
+import { KeychainMembersTable } from "@/features/keychain/components/KeychainMembersTable";
 import { client } from "@/libs/axios";
 
 const consumerKeychainQuery = (consumerKeychainId: string) =>
@@ -34,6 +39,38 @@ export const Route = createFileRoute(
   loader: async ({ context: { queryClient }, params: { id } }) =>
     queryClient.ensureQueryData(consumerKeychainQuery(id)),
 });
+
+function MembersTab() {
+  const consumerKeychainId = Route.useParams().id;
+
+  const { data: members = [], isLoading } = useQuery(
+    getConsumerKeychainMembersOptions({
+      client,
+      path: { consumerKeychainId },
+    }),
+  );
+
+  return (
+    <Section
+      actions={
+        <AddKeychainMemberAction
+          alreadyKeychainMembersIds={members.map((member) => member.id)}
+          keychainId={consumerKeychainId}
+          keychainType="consumption"
+        />
+      }
+      description="Only the Keychain members can upload public keys."
+      title="Members"
+    >
+      <KeychainMembersTable
+        isLoading={isLoading}
+        keychainId={consumerKeychainId}
+        members={members}
+        type="consumption"
+      />
+    </Section>
+  );
+}
 
 function RouteComponent() {
   const { id } = Route.useParams();
@@ -106,19 +143,7 @@ function RouteComponent() {
             </Section>
           </TabPanel>
           <TabPanel id="members" key="members">
-            <Section
-              actions={
-                <Button hierarchy="brand" isDisabled kind="filled" size="md">
-                  Add member
-                </Button>
-              }
-              description="Only the Keychain members can upload public keys."
-              title="Members"
-            >
-              <Banner icon={<SelectionPlusIcon />} kind="neutral">
-                There are no members in this Keychain. Add the first one.
-              </Banner>
-            </Section>
+            <MembersTab />
           </TabPanel>
         </TabPanels>
       </Tabs>

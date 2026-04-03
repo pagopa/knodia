@@ -9,17 +9,30 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type {
-  ConsumerKeychain,
-  FlatConsumerKeychain,
-} from "@knodia/keychain-models";
 
+import { genericInternalError } from "@knodia/common-models/errors";
+import {
+  type ExternalId,
+  type ExternalResource,
+} from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychainId,
   generateId,
+  type KnodeId,
+  type PurposeId,
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
+import { type KnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
+import {
+  type ConsumerKeychain,
+  type ConsumerKeychainPurpose,
+  type FlatConsumerKeychain,
+} from "@knodia/keychain-models";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 import { match, P } from "ts-pattern";
 
 import type {
@@ -29,7 +42,7 @@ import type {
   API_KeychainMemberSeed,
 } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
-import type { UserService } from "./userService.ts";
+import type { IdmUser, UserService } from "./userService.ts";
 
 import { userAlreadyMember, userNotFound } from "../models/errors.ts";
 import {
@@ -37,11 +50,14 @@ import {
   createConsumerKeychainDeletedV1Event,
   createConsumerKeychainMemberAddedV1Event,
   createConsumerKeychainMemberRemovedV1Event,
+  createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
   assertOrganizationIsKeychainOwner,
+  assertOrganizationIsPurposeConsumer,
+  assertPurposeIsNotLinkedToConsumerKeychain,
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsMemberOfKeychain,
@@ -55,6 +71,7 @@ export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
   userService: UserService,
+  remoteResourcesManagerClient: RemoteResourcesManagerClient,
 ) {
   return {
     async addConsumerKeychainMember(
@@ -188,6 +205,42 @@ export function consumerKeychainServiceBuilder(
       );
     },
 
+    async getConsumerKeychainMembers(
+      consumerKeychainId: ConsumerKeychainId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<IdmUser[]> {
+      logger.info(
+        `Getting members of Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      async function retrieveUser(userId: UserId): Promise<IdmUser> {
+        const user = await userService.getUserById(userId);
+        if (!user) {
+          /**
+           * This should not happen as users are validated when added as members.
+           * If it does happen, it means there's a data inconsistency that should be investigated.
+           * Hence, we throw a generic internal error.
+           */
+          throw genericInternalError(
+            `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
+          );
+        }
+        return user;
+      }
+
+      return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
+    },
+
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
@@ -195,6 +248,71 @@ export function consumerKeychainServiceBuilder(
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);
+    },
+
+    async linkPurposeToConsumerKeychain(
+      {
+        consumerKeychainId,
+        headers,
+        knodeId,
+        purposeId,
+      }: {
+        consumerKeychainId: ConsumerKeychainId;
+        headers: KnodiaServiceHeaders;
+        knodeId: KnodeId;
+        purposeId: ExternalId<PurposeId>;
+      },
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
+      logger.info(
+        `Linking Purpose ${purposeId} owned by Knode ${knodeId} to Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const externalPurpose: ExternalResource<PurposeId> = {
+        id: purposeId,
+        knodeId,
+      };
+      const [consumerKeychain] = await Promise.all([
+        retrieveConsumerKeychain(consumerKeychainId, readmodelService),
+        assertPurposeIsNotLinkedToConsumerKeychain(
+          consumerKeychainId,
+          externalPurpose,
+          readmodelService,
+        ),
+      ]);
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      const { data: purpose } = await remoteResourcesManagerApi.getPurpose({
+        client: remoteResourcesManagerClient,
+        headers,
+        path: { purposeId },
+        query: { knodeId },
+      });
+
+      assertOrganizationIsPurposeConsumer(authData.organizationId, purpose);
+
+      const linkedAt = new Date();
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainPurposeLinkedV1Event({
+          consumerKeychain: consumerKeychain.data,
+          correlationId,
+          currentMetadataVersion: consumerKeychain.metadata.version,
+          linkedAt,
+          purpose: externalPurpose,
+        }),
+      );
+
+      return {
+        data: {
+          consumerKeychainId,
+          linkedAt,
+          purpose: externalPurpose,
+        },
+        metadata: { version: newVersion },
+      };
     },
 
     async removeConsumerKeychainMember(

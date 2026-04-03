@@ -2,7 +2,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  getKnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import {
   keychainProcessApi,
   type KeychainProcessClient,
@@ -11,7 +14,6 @@ import {
 import { apiTags } from "../../models/apiTags.ts";
 import { API_Users } from "../../models/keychain/api.ts";
 import { toAPI_User } from "../../models/keychain/apiConverter.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface UserRouterOptions {
   keychainProcessClient: KeychainProcessClient;

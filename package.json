@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "typecheck": "turbo run typecheck",
+    "dev:services": "turbo run dev --concurrency=15 --filter='./apps/**/*'",
     "dev:process": "turbo dev --filter @knodia/*-process",
     "dev:rmw": "turbo dev --filter @knodia/*-readmodel-writer",
     "generate-api-client": "turbo run generate-api-client",
