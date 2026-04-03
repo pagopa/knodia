@@ -9,7 +9,7 @@ import {
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
-  ConsumerKeychainKey,
+  type ConsumerKeychainKey,
   KeychainEventV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
