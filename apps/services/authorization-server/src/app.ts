@@ -18,7 +18,8 @@ export function buildApp({ config }: { config: LoggerConfig }) {
     fastifyOptions: {
       openapi: {
         info: {
-          description: "API for issuing authorization tokens",
+          description:
+            "API for issuing access tokens to consume E-services exposed by a Knode",
           title: "Knodia Authorization Server API",
           version: "1.0.0",
         },
