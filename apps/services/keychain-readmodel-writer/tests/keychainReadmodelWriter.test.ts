@@ -1,11 +1,5 @@
-import type { PurposeId } from "@knodia/common-models/ids";
 import type { WithMetadata } from "@knodia/db-readmodel-commons/models";
 
-import {
-  type ExternalResource,
-  generateExternalId,
-  unsafeBrandExternalId,
-} from "@knodia/common-models/externalResource";
 import { protobufBinaryCodec } from "@knodia/common-models/protobuf";
 import {
   type ConsumerKeychain,
@@ -13,9 +7,11 @@ import {
   keychainEvents,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
+import { toPurposeV1 } from "@knodia/purpose-models";
 import { sendTestEvent } from "@knodia/test-commons/kafka";
 import {
   getMockConsumerKeychain,
+  getMockPurpose,
   toExpectConsumerKeychain,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
@@ -62,10 +58,7 @@ describe("Consumer keychain read model writer tests", async () => {
 
   it("ConsumerKeychainPurposeLinkedV1", async () => {
     const consumerKeychain = getMockConsumerKeychain();
-    const purpose: ExternalResource<PurposeId> = {
-      id: generateExternalId(),
-      knodeId: "Orion",
-    };
+    const purpose = getMockPurpose();
 
     await keychainWriterService.upsertConsumerKeychain(consumerKeychain, 0);
 
@@ -74,7 +67,7 @@ describe("Consumer keychain read model writer tests", async () => {
     ).encode({
       consumerKeychain: toConsumerKeychainV1(consumerKeychain),
       linkedAt: new Date().getTime(),
-      purpose,
+      purpose: toPurposeV1(purpose),
     });
 
     const metadataVersion = 1;
@@ -105,10 +98,7 @@ describe("Consumer keychain read model writer tests", async () => {
       data: {
         consumerKeychainId: consumerKeychain.id,
         linkedAt: expect.any(Date),
-        purpose: {
-          id: unsafeBrandExternalId(purpose.id),
-          knodeId: purpose.knodeId,
-        },
+        purposeId: purpose.id,
       },
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<ConsumerKeychainPurpose>);

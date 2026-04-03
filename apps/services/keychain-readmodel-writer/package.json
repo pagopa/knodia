@@ -27,6 +27,7 @@
     "@knodia/kafka-commons": "workspace:*",
     "@knodia/keychain-models": "workspace:*",
     "@knodia/logger": "workspace:*",
+    "@knodia/purpose-models": "workspace:*",
     "drizzle-orm": "catalog:",
     "pino": "catalog:",
     "pino-pretty": "catalog:",
