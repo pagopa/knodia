@@ -1,5 +1,6 @@
 import type { RequestContextData } from "@fastify/request-context";
 import type { HTTPServiceName } from "@knodia/common-models/services";
+import type { ZodIssue } from "zod-validation-error";
 
 import createError from "@fastify/error";
 import { type CorrelationId, generateId } from "@knodia/common-models/ids";
@@ -181,7 +182,15 @@ describe("makeApiProblemBuilder", () => {
       const testStatusCode = 418;
 
       const error = makeApiProblem({
-        cause: { issues: [{}] },
+        cause: {
+          issues: [
+            {
+              code: "custom",
+              message: "test serialization error",
+              path: [],
+            } satisfies ZodIssue,
+          ],
+        },
         statusCode: testStatusCode,
       });
 
