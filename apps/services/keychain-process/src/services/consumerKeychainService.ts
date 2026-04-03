@@ -38,6 +38,7 @@ import { match, P } from "ts-pattern";
 import type {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
+  API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainMemberSeed,
 } from "../models/api.ts";
@@ -243,7 +244,7 @@ export function consumerKeychainServiceBuilder(
 
     async getConsumerKeychainPurposes(
       consumerKeychainId: ConsumerKeychainId,
-      params: API_GetConsumerKeychainsQueryParams,
+      params: API_GetConsumerKeychainPurposesQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<ListResult<ConsumerKeychainPurpose>> {
       logger.info(
