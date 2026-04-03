@@ -177,8 +177,9 @@ describe("Consumer keychain read model writer tests", async () => {
     } satisfies WithMetadata<ConsumerKeychain>);
 
     const retrievedConsumerKeychainPurposes =
-      await consumerKeychainReadmodelService.getConsumerKeychainPurposesByKeychainId(
+      await getConsumerKeychainPurposesByKeychainId(
         consumerKeychain.id,
+        readmodelDb,
       );
     expect(retrievedConsumerKeychainPurposes.length).toBe(1);
     expect(retrievedConsumerKeychainPurposes[0]).toEqual({
