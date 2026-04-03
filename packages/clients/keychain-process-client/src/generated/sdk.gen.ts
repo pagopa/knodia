@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainPurposesData, GetConsumerKeychainPurposesErrors, GetConsumerKeychainPurposesResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses } from './types.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerKeychainData, GetConsumerKeychainErrors, GetConsumerKeychainKeysData, GetConsumerKeychainKeysErrors, GetConsumerKeychainKeysResponses, GetConsumerKeychainMembersData, GetConsumerKeychainMembersErrors, GetConsumerKeychainMembersResponses, GetConsumerKeychainResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainErrors, LinkPurposeToConsumerKeychainResponses, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyErrors, RemoveConsumerKeychainKeyResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyErrors, UploadConsumerKeychainKeyResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -85,6 +85,16 @@ export const updateConsumerKeychain = <ThrowOnError extends boolean = true>(opti
 });
 
 /**
+ * Retrieve keys of a Consumer Keychain
+ */
+export const getConsumerKeychainKeys = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainKeysData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainKeysResponses, GetConsumerKeychainKeysErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains/{consumerKeychainId}/keys',
+    ...options
+});
+
+/**
  * Retrieve members of a Consumer Keychain
  */
 export const getConsumerKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMembersResponses, GetConsumerKeychainMembersErrors, ThrowOnError>({
@@ -138,16 +148,6 @@ export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}/members/{userId}',
-    ...options
-});
-
-/**
- * Retrieve a list of Purposes linked to a Consumer Keychain
- */
-export const getConsumerKeychainPurposes = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainPurposesData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainPurposesResponses, GetConsumerKeychainPurposesErrors, ThrowOnError>({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/consumerKeychains/{consumerKeychainId}/purposes',
     ...options
 });
 

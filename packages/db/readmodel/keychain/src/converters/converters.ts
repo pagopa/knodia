@@ -38,7 +38,7 @@ export const buildConsumerKeychain = ({
         ? undefined
         : LocalizedDescription.parse(consumerKeychainSQL.description),
     id: unsafeBrandId(consumerKeychainSQL.id),
-    keys: consumerKeychainKeysSQL.map(buildConsumerKeychainKey),
+    keys: consumerKeychainKeysSQL.map(toConsumerKeychainKey),
     name: LocalizedName.parse(consumerKeychainSQL.name),
     ownerId: unsafeBrandId<OrganizationId>(consumerKeychainSQL.ownerId),
     updatedAt: consumerKeychainSQL.updatedAt,
@@ -74,6 +74,20 @@ export const buildFlatConsumerKeychain = ({
   };
 };
 
+export function toConsumerKeychainKey(
+  keySQL: ConsumerKeychainKeySQL,
+): ConsumerKeychainKey {
+  return {
+    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
+    createdAt: keySQL.createdAt,
+    encodedPem: keySQL.encodedPem,
+    format: KeyFormat.parse(keySQL.format),
+    kid: unsafeBrandKeyId(keySQL.kid),
+    name: LocalizedName.parse(keySQL.name),
+    userId: unsafeBrandUserId(keySQL.userId),
+  };
+}
+
 export function toConsumerKeychainPurpose(
   consumerKeychainPurposeSQL: ConsumerKeychainPurposeSQL,
 ): WithMetadata<ConsumerKeychainPurpose> {
@@ -89,19 +103,5 @@ export function toConsumerKeychainPurpose(
       },
     },
     metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
-  };
-}
-
-function buildConsumerKeychainKey(
-  keySQL: ConsumerKeychainKeySQL,
-): ConsumerKeychainKey {
-  return {
-    algorithm: KeyAlgorithm.parse(keySQL.algorithm),
-    createdAt: keySQL.createdAt,
-    encodedPem: keySQL.encodedPem,
-    format: KeyFormat.parse(keySQL.format),
-    kid: unsafeBrandKeyId(keySQL.kid),
-    name: LocalizedName.parse(keySQL.name),
-    userId: unsafeBrandUserId(keySQL.userId),
   };
 }
