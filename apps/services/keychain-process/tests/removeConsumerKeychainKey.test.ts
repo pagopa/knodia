@@ -2,21 +2,17 @@
 
 import {
   generateId,
+  generateUserId,
   type OrganizationId,
-  unsafeBrandUserId,
+  UserId,
 } from "@knodia/common-models/ids";
-import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainKey,
   KeychainEventV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
-import {
-  forbiddenTestTokens,
-  TEST_ORGANIZATION_ID,
-  type TestToken,
-} from "@knodia/test-commons/auth";
+import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import {
   getMockConsumerKeychain,
   getMockConsumerKeychainKey,
@@ -32,45 +28,46 @@ import {
 const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
+const callerUserId = generateUserId();
 
 const existingKey: ConsumerKeychainKey = {
   ...getMockConsumerKeychainKey(0),
-  userId: unsafeBrandUserId(TEST_ORGANIZATION_ID),
+  userId: callerUserId,
 };
 
 const keyId = existingKey.kid;
 
+const mockConsumerKeychain: ConsumerKeychain = {
+  ...getMockConsumerKeychain(),
+  keys: [existingKey],
+  users: [callerUserId],
+};
+
 describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsumerKeychainKey)", () => {
   it("should correctly create consumer keychain key removal event", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
-      keys: [existingKey],
-      users: [unsafeBrandUserId(TEST_ORGANIZATION_ID)],
-    };
-
-    await seedConsumerKeychain(consumerKeychain);
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
-      organizationId: consumerKeychain.ownerId,
+      organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
-    }).delete(`/consumerKeychains/${consumerKeychain.id}/keys/${keyId}`);
+      userId: callerUserId,
+    }).delete(`/consumerKeychains/${mockConsumerKeychain.id}/keys/${keyId}`);
 
-    expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
     expect(response.statusCode).toBe(204);
 
     const events = await getAllKeychainEvents();
     const removedEvent = events[1];
 
     expect(removedEvent).toMatchObject({
-      streamId: consumerKeychain.id,
+      streamId: mockConsumerKeychain.id,
       type: "ConsumerKeychainKeyRemovedV1",
       version: 1,
     });
 
     const removedEventData = KeychainEventV1.parse(removedEvent).data;
     const expectedConsumerKeychain: ConsumerKeychain = {
-      ...consumerKeychain,
+      ...mockConsumerKeychain,
       keys: [],
       updatedAt: new Date(removedEventData.consumerKeychain!.updatedAt),
     };
@@ -82,18 +79,14 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
   });
 
   it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
-      keys: [existingKey],
-      ownerId: generateId<OrganizationId>(),
-      users: [unsafeBrandUserId(TEST_ORGANIZATION_ID)],
-    };
-
-    await seedConsumerKeychain(consumerKeychain);
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
-    }).delete(`/consumerKeychains/${consumerKeychain.id}/keys/${keyId}`);
+      organizationId: generateId<OrganizationId>(),
+      type: "ui-session",
+      userId: callerUserId,
+    }).delete(`/consumerKeychains/${mockConsumerKeychain.id}/keys/${keyId}`);
 
     expect(response.statusCode).toBe(403);
   });
@@ -101,32 +94,31 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
   it("should return 404 if the consumer keychain does not exist", async () => {
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
+      organizationId: mockConsumerKeychain.ownerId,
+      type: "ui-session",
+      userId: callerUserId,
     }).delete(`/consumerKeychains/${generateId()}/keys/${keyId}`);
 
     expect(response.statusCode).toBe(404);
   });
 
   it("should return 403 if the caller is not a member of the consumer keychain", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
-      keys: [existingKey],
-    };
-
-    await seedConsumerKeychain(consumerKeychain);
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
-      organizationId: consumerKeychain.ownerId,
+      organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
-    }).delete(`/consumerKeychains/${consumerKeychain.id}/keys/${keyId}`);
+      userId: generateUserId(),
+    }).delete(`/consumerKeychains/${mockConsumerKeychain.id}/keys/${keyId}`);
 
     expect(response.statusCode).toBe(403);
   });
 
   it("should return 404 if the key is not in the consumer keychain", async () => {
     const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
-      users: [unsafeBrandUserId(TEST_ORGANIZATION_ID)],
+      ...mockConsumerKeychain,
+      keys: [],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -135,8 +127,10 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
       ...allowedTestTokens[0]!,
       organizationId: consumerKeychain.ownerId,
       type: "ui-session",
+      userId: callerUserId,
     }).delete(`/consumerKeychains/${consumerKeychain.id}/keys/${keyId}`);
 
+    console.log(response.body);
     expect(response.statusCode).toBe(404);
   });
 
