@@ -6,6 +6,9 @@ import {
 } from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { API_Users } from "../src/models/api.ts";
+import { injectAppRequest, makeCognitoUser } from "./utils.ts";
+
 const sendMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@aws-sdk/client-cognito-identity-provider", () => {
@@ -26,9 +29,6 @@ vi.mock("@aws-sdk/client-cognito-identity-provider", () => {
     ListUsersInGroupCommand,
   };
 });
-
-import { API_Users } from "../src/models/api.ts";
-import { injectAppRequest, makeCognitoUser } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
