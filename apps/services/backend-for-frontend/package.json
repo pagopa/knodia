@@ -49,7 +49,7 @@
     "fastify-type-provider-zod": "catalog:",
     "jose": "catalog:",
     "pino-pretty": "catalog:",
-    "redis": "catalog:",
+    "@aws-sdk/client-dynamodb": "catalog:",
     "zod": "catalog:"
   }
 }

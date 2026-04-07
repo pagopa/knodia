@@ -308,20 +308,39 @@ services:
     volumes:
       - jwks-data:/usr/share/nginx/html:ro
 
-  redis:
+  dynamodb-local:
     security_opt:
       - no-new-privileges:true
-    image: redis:8.6.1-alpine@sha256:2afba59292f25f5d1af200496db41bea2c6c816b059f57ae74703a50a03a27d0
-    container_name: knodia-redis
+    image: amazon/dynamodb-local:3.3.0
+    container_name: knodia-dynamodb-local
     ports:
-      - 6379:6379
-    volumes:
-      - redis-data:/data
+      - 8085:8000
+    command: -jar DynamoDBLocal.jar -inMemory -sharedDb
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+        ["CMD-SHELL", "curl -s -o /dev/null http://localhost:8000 || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  dynamodb-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: amazon/aws-cli:2.34.25
+    container_name: knodia-dynamodb-setup
+    depends_on:
+      dynamodb-local:
+        condition: service_healthy
+    volumes:
+      - ../scripts/dynamo:/dynamo-scripts:ro
+      - ../dynamo-tables:/dynamo-tables:ro
+    environment:
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_DEFAULT_REGION: eu-south-1
+      DYNAMODB_CONNECTION_STRING: http://dynamodb-local:8000
+      TABLES_DIR: /dynamo-tables
+    entrypoint: ["/bin/bash", "/dynamo-scripts/setup-tables.sh"]
 
   local-cognito:
     security_opt:
@@ -342,4 +361,3 @@ volumes:
   pgadmin-data:
   local-kms-data:
   jwks-data:
-  redis-data:

@@ -1,43 +1,36 @@
-import "@knodia/test-commons/redis";
-import Fastify from "fastify";
-import { createClient } from "redis";
-import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
+import { GetItemCommand } from "@aws-sdk/client-dynamodb";
+import "@knodia/test-commons/dynamodb";
+import { describe, expect, it } from "vitest";
 
 import {
-  createRefreshTokenStore,
-  type RefreshTokenStore,
-} from "../src/services/refreshTokenStore.ts";
-
-const logger = Fastify({ logger: false }).log;
+  dynamoClient,
+  refreshTokenStore as store,
+  refreshTokenTableName as tableName,
+} from "./setup.ts";
 
 describe("refreshTokenStore", () => {
-  let store: RefreshTokenStore;
-  let redisClient: ReturnType<typeof createClient>;
-
-  beforeAll(async () => {
-    const redisUrl = inject("REDIS_CONNECTION_STRING");
-    store = createRefreshTokenStore(redisUrl, logger);
-
-    redisClient = createClient({ url: redisUrl });
-    await redisClient.connect();
-  });
-
-  afterAll(async () => {
-    redisClient.destroy();
-  });
+  async function getItem(jti: string) {
+    const result = await dynamoClient.send(
+      new GetItemCommand({
+        Key: { jti: { S: jti } },
+        TableName: tableName,
+      }),
+    );
+    return result.Item;
+  }
 
   function futureExpiry(): number {
     return Math.floor(Date.now() / 1000) + 60;
   }
 
   describe("consume", () => {
-    it("marks the JTI as used in Redis on first use", async () => {
+    it("marks the JTI as used in DynamoDB on first use", async () => {
       const jti = crypto.randomUUID();
 
       const firstUse = await store.consume(jti, futureExpiry());
 
       expect(firstUse).toBe(true);
-      expect(await redisClient.exists(`refresh:${jti}`)).toBe(1);
+      expect(await getItem(jti)).toBeDefined();
     });
 
     it("rejects a replayed JTI (already used)", async () => {
@@ -50,15 +43,16 @@ describe("refreshTokenStore", () => {
       expect(firstUse).toBe(false);
     });
 
-    it("sets a TTL matching the token expiry so entries auto-cleanup", async () => {
+    it("stores a TTL matching the token expiry for auto-cleanup", async () => {
       const jti = crypto.randomUUID();
       const exp = futureExpiry();
 
       await store.consume(jti, exp);
 
-      const ttl = await redisClient.ttl(`refresh:${jti}`);
-      expect(ttl).toBeGreaterThan(0);
-      expect(ttl).toBeLessThanOrEqual(60);
+      const item = await getItem(jti);
+      const ttlValue = item?.["ttl"]?.N;
+      expect(ttlValue).toBeDefined();
+      expect(Number(ttlValue)).toBe(exp);
     });
 
     it("treats distinct JTIs independently", async () => {
@@ -79,7 +73,7 @@ describe("refreshTokenStore", () => {
 
       await store.revoke(jti, exp);
 
-      expect(await redisClient.exists(`refresh:${jti}`)).toBe(1);
+      expect(await getItem(jti)).toBeDefined();
       expect(await store.consume(jti, exp)).toBe(false);
     });
 

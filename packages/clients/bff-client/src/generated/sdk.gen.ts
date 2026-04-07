@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetConsumerPurposeFormSchemaData, GetConsumerPurposeFormSchemaErrors, GetConsumerPurposeFormSchemaResponses, GetConsumerPurposeFormUiSchemaData, GetConsumerPurposeFormUiSchemaErrors, GetConsumerPurposeFormUiSchemaResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberErrors, AddConsumerKeychainMemberResponses, CreateConsumerAgreementData, CreateConsumerAgreementErrors, CreateConsumerAgreementResponses, CreateConsumerKeychainData, CreateConsumerKeychainErrors, CreateConsumerKeychainResponses, CreateConsumerPurposeData, CreateConsumerPurposeErrors, CreateConsumerPurposeResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, CreateSessionData, CreateSessionErrors, CreateSessionResponses, DeleteConsumerKeychainData, DeleteConsumerKeychainErrors, DeleteConsumerKeychainResponses, GetConsumerAgreementsData, GetConsumerAgreementsErrors, GetConsumerAgreementsResponses, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesErrors, GetConsumerCatalogEservicesResponses, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsErrors, GetConsumerEserviceDetailsResponses, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceErrors, GetConsumerEserviceLatestVersionInterfaceResponses, GetConsumerEservicesData, GetConsumerEservicesErrors, GetConsumerEservicesResponses, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsErrors, GetConsumerKeychainDetailsResponses, GetConsumerKeychainsData, GetConsumerKeychainsErrors, GetConsumerKeychainsResponses, GetConsumerPurposeFormSchemaData, GetConsumerPurposeFormSchemaErrors, GetConsumerPurposeFormSchemaResponses, GetConsumerPurposeFormUiSchemaData, GetConsumerPurposeFormUiSchemaErrors, GetConsumerPurposeFormUiSchemaResponses, GetProducerAgreementDetailsData, GetProducerAgreementDetailsErrors, GetProducerAgreementDetailsResponses, GetProducerAgreementsData, GetProducerAgreementsErrors, GetProducerAgreementsResponses, GetProducerEserviceDetailsData, GetProducerEserviceDetailsErrors, GetProducerEserviceDetailsResponses, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceErrors, GetProducerEserviceLatestVersionInterfaceResponses, GetProducerEservicesData, GetProducerEservicesErrors, GetProducerEservicesResponses, GetProducerPurposeDetailsData, GetProducerPurposeDetailsErrors, GetProducerPurposeDetailsResponses, GetProducerPurposesData, GetProducerPurposesErrors, GetProducerPurposesResponses, GetSessionOrganizationData, GetSessionOrganizationErrors, GetSessionOrganizationResponses, GetStatusData, GetStatusResponses, GetTechnicalUsersData, GetTechnicalUsersErrors, GetTechnicalUsersResponses, LogoutData, LogoutResponses, RefreshSessionData, RefreshSessionErrors, RefreshSessionResponses, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberErrors, RemoveConsumerKeychainMemberResponses, UpdateConsumerKeychainData, UpdateConsumerKeychainErrors, UpdateConsumerKeychainResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -28,7 +28,7 @@ export const getStatus = <ThrowOnError extends boolean = true>(options?: Options
 });
 
 /**
- * Validate a Cognito token and generate a session token
+ * Validate a Cognito token and generate a session token. Sets a HttpOnly refresh token cookie.
  */
 export const createSession = <ThrowOnError extends boolean = true>(options: Options<CreateSessionData, ThrowOnError>) => (options.client ?? client).post<CreateSessionResponses, CreateSessionErrors, ThrowOnError>({
     responseType: 'json',
@@ -41,17 +41,18 @@ export const createSession = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
- * Refresh an expired UI session token using a refresh token
+ * Refresh an expired UI session token using the refresh token cookie
  */
 export const refreshSession = <ThrowOnError extends boolean = true>(options: Options<RefreshSessionData, ThrowOnError>) => (options.client ?? client).post<RefreshSessionResponses, RefreshSessionErrors, ThrowOnError>({
     responseType: 'json',
     url: '/auth/ui-session/refresh',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
+    ...options
 });
+
+/**
+ * Clear the refresh token cookie
+ */
+export const logout = <ThrowOnError extends boolean = true>(options?: Options<LogoutData, ThrowOnError>) => (options?.client ?? client).post<LogoutResponses, unknown, ThrowOnError>({ url: '/auth/logout', ...options });
 
 /**
  * Retrieve a paginated list of E-services produced by the logged-in user's organization

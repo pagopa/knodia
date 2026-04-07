@@ -1,3 +1,4 @@
+import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import cookie from "@fastify/cookie";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
@@ -31,7 +32,10 @@ import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
 import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
-export function buildAppFromConfig(config: BffProcessConfig) {
+export function buildAppFromConfig(
+  config: BffProcessConfig,
+  dynamoClient?: DynamoDBClient,
+) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
@@ -90,7 +94,10 @@ export function buildAppFromConfig(config: BffProcessConfig) {
   });
 
   const pollingService = pollingServiceBuilder(config);
-  const refreshTokenStore = createRefreshTokenStore(config.redisUrl, app.log);
+  const refreshTokenStore = createRefreshTokenStore(
+    config.dynamoDbRefreshTokensTable,
+    dynamoClient,
+  );
   const authService = authServiceBuilder(
     config,
     tokenGenerator,

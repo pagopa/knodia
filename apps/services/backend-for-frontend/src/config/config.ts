@@ -18,6 +18,9 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         COGNITO_JWKS_URL: z.url(),
         COOKIE_DOMAIN: z.string().optional(),
         COOKIE_SECURE: z.coerce.boolean().default(true),
+        DYNAMODB_REFRESH_TOKENS_TABLE: z
+          .string()
+          .default("knodia-bff-refresh-tokens"),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
         KEYCHAIN_PROCESS_URL: z.url(),
@@ -25,7 +28,6 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         ORGANIZATION_PROCESS_URL: z.url(),
         PURPOSE_PROCESS_URL: z.url(),
         RECENT_ESERVICE_UPDATE_DAYS: z.coerce.number().positive().default(3),
-        REDIS_URL: z.url(),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -49,6 +51,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
           domain: c.COOKIE_DOMAIN,
           secure: c.COOKIE_SECURE,
         },
+        dynamoDbRefreshTokensTable: c.DYNAMODB_REFRESH_TOKENS_TABLE,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
@@ -56,7 +59,6 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
         purposeProcessUrl: c.PURPOSE_PROCESS_URL,
         recentEserviceUpdateDays: c.RECENT_ESERVICE_UPDATE_DAYS,
-        redisUrl: c.REDIS_URL,
         refreshJwt: {
           secondsDuration: c.REFRESH_JWT_SECONDS_DURATION,
         },

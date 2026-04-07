@@ -539,7 +539,8 @@ services:
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
-      REDIS_URL: "redis://redis:6379"
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
       COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-orion:
@@ -550,8 +551,8 @@ services:
         condition: service_healthy
       local-kms-setup:
         condition: service_completed_successfully
-      redis:
-        condition: service_healthy
+      dynamodb-setup:
+        condition: service_completed_successfully
 
   eservice-readmodel-writer-orion:
     security_opt:
@@ -1049,7 +1050,8 @@ services:
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
-      REDIS_URL: "redis://redis:6379"
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
       COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-lynx:
@@ -1060,8 +1062,8 @@ services:
         condition: service_healthy
       local-kms-setup:
         condition: service_completed_successfully
-      redis:
-        condition: service_healthy
+      dynamodb-setup:
+        condition: service_completed_successfully
 
   eservice-readmodel-writer-lynx:
     security_opt:
@@ -1394,23 +1396,42 @@ services:
         condition: service_started
 
   # ============================================================
-  # Redis
+  # DynamoDB Local
   # ============================================================
 
-  redis:
+  dynamodb-local:
     security_opt:
       - no-new-privileges:true
-    image: redis:8.6.1-alpine@sha256:2afba59292f25f5d1af200496db41bea2c6c816b059f57ae74703a50a03a27d0
-    container_name: knodia-multinode-redis
+    image: amazon/dynamodb-local:3.3.0
+    container_name: knodia-multinode-dynamodb-local
     ports:
-      - 6379:6379
-    volumes:
-      - multinode-redis-data:/data
+      - 8085:8000
+    command: -jar DynamoDBLocal.jar -inMemory -sharedDb
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test:
+        ["CMD-SHELL", "curl -s -o /dev/null http://localhost:8000 || exit 1"]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  dynamodb-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: amazon/aws-cli:2.34.25
+    container_name: knodia-multinode-dynamodb-setup
+    depends_on:
+      dynamodb-local:
+        condition: service_healthy
+    volumes:
+      - ../scripts/dynamo:/dynamo-scripts:ro
+      - ../dynamo-tables:/dynamo-tables:ro
+    environment:
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_DEFAULT_REGION: eu-south-1
+      DYNAMODB_CONNECTION_STRING: http://dynamodb-local:8000
+      TABLES_DIR: /dynamo-tables
+    entrypoint: ["/bin/bash", "/dynamo-scripts/setup-tables.sh"]
 
   # ============================================================
   # Local KMS & JWKS (authentication)
@@ -1490,4 +1511,3 @@ volumes:
   multinode-pgadmin-data:
   multinode-local-kms-data:
   multinode-jwks-data:
-  multinode-redis-data:

@@ -541,7 +541,7 @@ describe("auth integration", () => {
       expect(refreshCookie!["path"]).toBe("/auth");
     });
 
-    it("revokes the refresh token JTI in Redis", async () => {
+    it("revokes the refresh token JTI in the token store", async () => {
       const jti = `revoke-test-${crypto.randomUUID()}`;
       mockDecodeJwt.mockReturnValue(makeRefreshPayload({ jti }));
 
