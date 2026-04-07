@@ -96,7 +96,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
 
       const [eservicesMap, consumerKeychainsMap] = await Promise.all([
         getExternalEntitiesMap({
-          fetchFn: ({ entityIds }) =>
+          fetchFn: ({ entityIds, knodeId }) =>
             Promise.all(
               entityIds.map((eserviceId) =>
                 remoteResourcesManagerApi.getEserviceDetails({
