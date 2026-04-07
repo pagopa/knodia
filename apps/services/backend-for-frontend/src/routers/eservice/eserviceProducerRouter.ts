@@ -3,6 +3,7 @@ import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_AgreementState } from "@knodia/agreement-models/api";
 import {
   agreementProcessApi,
   type AgreementProcessClient,
@@ -30,6 +31,7 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import { API_PurposeState } from "@knodia/purpose-models/api";
 import {
   purposeProcessApi,
   type PurposeProcessClient,
@@ -175,9 +177,11 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       // 2. Process-side: get counts in eservice-process and handle sorting.
       //    Breaks unified data model principle (process would include cross-domain data).
 
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
       const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: {
           limit,
           mode,
@@ -192,8 +196,6 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       const results = await Promise.all(
         data.results.map(async (eservice) => {
-          const headers = getKnodiaServiceHeaders(req, correlationId);
-
           const [
             { data: latestEserviceVersion },
             { data: agreements },
@@ -211,7 +213,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
                 eserviceId: eservice.id,
                 limit: 1,
                 offset: 0,
-                state: ["Active"],
+                state: [API_AgreementState.enum.Active],
               },
             }),
             purposeProcessApi.getPurposes({
@@ -221,7 +223,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
                 eserviceId: eservice.id,
                 limit: 1,
                 offset: 0,
-                state: ["Active"],
+                state: [API_PurposeState.enum.Active],
               },
             }),
           ]);
