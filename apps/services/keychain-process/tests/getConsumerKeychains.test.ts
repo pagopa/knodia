@@ -28,22 +28,44 @@ const seedConsumerKeychains = async () => {
 };
 
 const knodeId: KnodeId = "Orion";
-const purpose = getMockPurpose();
+const otherKnodeId: KnodeId = "Lynx";
+const purpose1 = getMockPurpose(1);
+const purpose2 = getMockPurpose(2);
 const consumerKeychainPurposes: ConsumerKeychainPurpose[] = [
   {
     consumerKeychainId: mockConsumerKeychains[0]!.id,
     linkedAt: new Date(),
-    purpose: { id: unsafeBrandExternalId(purpose.id), knodeId },
+    purpose: { id: unsafeBrandExternalId(purpose1.id), knodeId },
   },
   {
     consumerKeychainId: mockConsumerKeychains[4]!.id,
     linkedAt: new Date(),
-    purpose: { id: unsafeBrandExternalId(purpose.id), knodeId },
+    purpose: { id: unsafeBrandExternalId(purpose1.id), knodeId },
+  },
+  {
+    consumerKeychainId: mockConsumerKeychains[4]!.id,
+    linkedAt: new Date(),
+    purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId },
+  },
+  {
+    consumerKeychainId: mockConsumerKeychains[2]!.id,
+    linkedAt: new Date(),
+    purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId: otherKnodeId },
+  },
+  {
+    consumerKeychainId: mockConsumerKeychains[3]!.id,
+    linkedAt: new Date(),
+    purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId: otherKnodeId },
   },
 ];
-const consumerKeychainIdsWithLinkedPurposes = new Set(
-  consumerKeychainPurposes.map((p) => p.consumerKeychainId),
-);
+const consumerKeychainIdsWithLinkedPurpose1 = new Set([
+  consumerKeychainPurposes[0]!.consumerKeychainId,
+  consumerKeychainPurposes[1]!.consumerKeychainId,
+]);
+const consumerKeychainIdsWithLinkedPurposeOwnedByOtherKnode = new Set([
+  consumerKeychainPurposes[3]!.consumerKeychainId,
+  consumerKeychainPurposes[4]!.consumerKeychainId,
+]);
 const seedConsumerKeychainPurpose = async () => {
   await Promise.all([
     keychainWriterService.upsertConsumerKeychainPurpose(
@@ -52,6 +74,18 @@ const seedConsumerKeychainPurpose = async () => {
     ),
     keychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurposes[1]!,
+      0,
+    ),
+    keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurposes[2]!,
+      0,
+    ),
+    keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurposes[3]!,
+      0,
+    ),
+    keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurposes[4]!,
       0,
     ),
   ]);
@@ -85,13 +119,24 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
     },
     {
       expectedResult: sortedMockConsumerKeychains.filter((ck) =>
-        consumerKeychainIdsWithLinkedPurposes.has(ck.id),
+        consumerKeychainIdsWithLinkedPurpose1.has(ck.id),
       ),
       query: {
         ...defaultQuery,
-        purposeId: purpose.id,
+        purposeId: purpose1.id,
       },
       testCase: "filter by purposeId, sort by updatedAt desc by default",
+      totalCount: 2,
+    },
+    {
+      expectedResult: sortedMockConsumerKeychains.filter((ck) =>
+        consumerKeychainIdsWithLinkedPurposeOwnedByOtherKnode.has(ck.id),
+      ),
+      query: {
+        ...defaultQuery,
+        knodeId: otherKnodeId,
+      },
+      testCase: "filter by knodeId, sort by updatedAt desc by default",
       totalCount: 2,
     },
   ] satisfies {

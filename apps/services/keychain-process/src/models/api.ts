@@ -36,6 +36,9 @@ export type API_Keychains = z.infer<typeof API_Keychains>;
 
 export const API_GetConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
+    knodeId: API_KnodeId.optional().meta({
+      description: "Filter by Knode ID",
+    }),
     purposeId: PurposeId.optional().meta({
       description: "Filter by Purpose ID",
     }),

@@ -100,7 +100,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
     ): Promise<ListResult<FlatConsumerKeychain>> {
-      const { limit, offset, purposeId } = params;
+      const { knodeId, limit, offset, purposeId } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -114,25 +114,46 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .select({ keychainId: readmodelConsumerKeychain.id })
             .from(readmodelConsumerKeychain)
             .where(
-              purposeId
-                ? exists(
-                    tx
-                      .select()
-                      .from(readmodelConsumerKeychainPurpose)
-                      .where(
-                        and(
-                          eq(
-                            readmodelConsumerKeychainPurpose.consumerKeychainId,
-                            readmodelConsumerKeychain.id,
-                          ),
-                          eq(
-                            readmodelConsumerKeychainPurpose.purposeId,
-                            purposeId,
+              and(
+                knodeId
+                  ? exists(
+                      tx
+                        .select()
+                        .from(readmodelConsumerKeychainPurpose)
+                        .where(
+                          and(
+                            eq(
+                              readmodelConsumerKeychainPurpose.consumerKeychainId,
+                              readmodelConsumerKeychain.id,
+                            ),
+                            eq(
+                              readmodelConsumerKeychainPurpose.producerKnodeId,
+                              knodeId,
+                            ),
                           ),
                         ),
-                      ),
-                  )
-                : undefined,
+                    )
+                  : undefined,
+                purposeId
+                  ? exists(
+                      tx
+                        .select()
+                        .from(readmodelConsumerKeychainPurpose)
+                        .where(
+                          and(
+                            eq(
+                              readmodelConsumerKeychainPurpose.consumerKeychainId,
+                              readmodelConsumerKeychain.id,
+                            ),
+                            eq(
+                              readmodelConsumerKeychainPurpose.purposeId,
+                              purposeId,
+                            ),
+                          ),
+                        ),
+                    )
+                  : undefined,
+              ),
             )
             .groupBy(readmodelConsumerKeychain.id)
             .$dynamic();

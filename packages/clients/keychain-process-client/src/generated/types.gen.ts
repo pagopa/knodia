@@ -165,6 +165,10 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
+         * Filter by Knode ID
+         */
+        knodeId?: KnodeId;
+        /**
          * Filter by Purpose ID
          */
         purposeId?: string;
