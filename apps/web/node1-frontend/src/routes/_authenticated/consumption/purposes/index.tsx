@@ -6,8 +6,8 @@ import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { PageHeader } from "@/components/PageHeader";
 import { ConsumerPurposeTable } from "@/features/purpose/components/ConsumerPurposeTable/ConsumerPurposeTable";
 import {
-  consumerPurposeSearchDefaultValues,
-  consumerPurposeSearchSchema,
+  purposeListSearchDefaultValues,
+  purposeListSearchSchema,
 } from "@/features/purpose/models/search-params";
 import { consumerPurposesQuery } from "@/features/purpose/services/queries";
 
@@ -19,9 +19,9 @@ export const Route = createFileRoute("/_authenticated/consumption/purposes/")({
     queryClient.prefetchQuery(consumerPurposesQuery(offset));
   },
   search: {
-    middlewares: [stripSearchParams(consumerPurposeSearchDefaultValues)],
+    middlewares: [stripSearchParams(purposeListSearchDefaultValues)],
   },
-  validateSearch: consumerPurposeSearchSchema,
+  validateSearch: purposeListSearchSchema,
 });
 
 function RouteComponent() {
