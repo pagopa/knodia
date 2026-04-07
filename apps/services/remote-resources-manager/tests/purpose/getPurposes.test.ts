@@ -6,7 +6,7 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import { API_Purpose } from "../../src/models/purpose/api.ts";
@@ -66,17 +66,14 @@ describe("GET /purposes (getPurposes)", () => {
     results: [k2kResult],
   };
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    getPurposesMock.mockReset();
     await remoteResourceDbService.insertPurpose({
       consumerId: TEST_ORGANIZATION_ID,
       eserviceId: expectedApiResult.eserviceId,
       knodeId: expectedApiResult.knodeId,
       purposeId: expectedApiResult.id,
     });
-  });
-
-  beforeEach(() => {
-    getPurposesMock.mockReset();
   });
 
   it("should return 200 with converted results on success", async () => {
