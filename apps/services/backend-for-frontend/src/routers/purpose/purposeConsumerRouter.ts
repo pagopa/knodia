@@ -1,14 +1,22 @@
-import type { KnodeId } from "@knodia/common-models/ids";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
-import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
+import {
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons/utils";
+import {
+  keychainProcessApi,
+  type KeychainProcessClient,
+} from "@knodia/keychain-process-client";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -38,6 +46,7 @@ import {
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface PurposeConsumerRouterOptions {
+  keychainProcessClient: KeychainProcessClient;
   knodeId: KnodeId;
   organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
@@ -48,7 +57,12 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
   // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
-  { knodeId, organizationProcessClient, remoteResourcesManagerClient },
+  {
+    keychainProcessClient,
+    knodeId,
+    organizationProcessClient,
+    remoteResourcesManagerClient,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -80,33 +94,73 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         return;
       }
 
-      const uniqueEservices = [
-        ...new Map(
-          data.results.map((p) => [p.eserviceId, p.knodeId]),
-        ).entries(),
-      ];
-
-      // TODO: https://pagopa.atlassian.net/browse/KN-325 — batch fetch eservice details
-      // using listing endpoint with eserviceId filter instead of N individual calls
-      const eserviceDetailsEntries = await Promise.all(
-        uniqueEservices.map(async ([eserviceId, knodeId]) => {
-          const { data: details } =
-            await remoteResourcesManagerApi.getEserviceDetails({
-              client: remoteResourcesManagerClient,
-              headers,
-              path: { eserviceId },
-              query: { knodeId },
-            });
-          return [eserviceId, details] as const;
+      const [eservicesMap, consumerKeychainsMap] = await Promise.all([
+        getExternalEntitiesMap({
+          fetchFn: ({ entityIds }) =>
+            Promise.all(
+              entityIds.map((eserviceId) =>
+                remoteResourcesManagerApi.getEserviceDetails({
+                  client: remoteResourcesManagerClient,
+                  headers,
+                  path: { eserviceId },
+                  query: { knodeId },
+                }),
+              ),
+            ).then((responses) => responses.map((res) => res.data)),
+          getEntityId: (purpose) => purpose.eserviceId,
+          getKnodeId: (purpose) => KnodeId.parse(purpose.knodeId),
+          items: data.results,
         }),
-      );
+        Promise.all(
+          data.results.map((purpose) =>
+            keychainProcessApi.getConsumerKeychains({
+              client: keychainProcessClient,
+              headers,
+              query: {
+                limit: 1,
+                offset: 0,
+                purposeId: purpose.id,
+              },
+            }),
+          ),
+        ).then((responses) => {
+          const consumerKeychainsMap = new Map<
+            KnodeId,
+            Map<string, keychainProcessApi.Keychains>
+          >();
 
-      const eserviceDetailsMap = new Map(eserviceDetailsEntries);
+          data.results.forEach((purpose, index) => {
+            const consumerKeychainPurposesMap =
+              consumerKeychainsMap.get(purpose.knodeId) ??
+              new Map<string, keychainProcessApi.Keychains>();
+            if (!consumerKeychainsMap.has(purpose.knodeId)) {
+              consumerKeychainsMap.set(
+                purpose.knodeId,
+                consumerKeychainPurposesMap,
+              );
+            }
+            consumerKeychainPurposesMap.set(
+              purpose.id,
+              assertEntityExists(
+                responses[index],
+                `Consumer keychains not found for Purpose ${purpose.id}`,
+              ).data,
+            );
+          });
+          return consumerKeychainsMap;
+        }),
+      ]);
 
       const results = data.results.map((purpose) =>
         toAPI_ConsumerPurpose({
+          consumerKeychainsCount: assertEntityExists(
+            consumerKeychainsMap.get(purpose.knodeId)?.get(purpose.id),
+            `Consumer keychains not found for Purpose ${purpose.id}`,
+          ).pagination.total,
           eserviceDetails: assertEntityExists(
-            eserviceDetailsMap.get(purpose.eserviceId),
+            eservicesMap
+              .get(purpose.knodeId)
+              ?.get(unsafeBrandExternalId(purpose.eserviceId)),
             `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
           ),
           purpose,
