@@ -4,6 +4,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import {
+  agreementProcessApi,
+  type AgreementProcessClient,
+} from "@knodia/agreement-process-client";
+import {
   API_CreatedResource,
   API_FileDownload,
 } from "@knodia/common-models/api";
@@ -26,6 +30,10 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import {
+  purposeProcessApi,
+  type PurposeProcessClient,
+} from "@knodia/purpose-process-client";
 
 import { config } from "../../config/config.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -42,16 +50,27 @@ import {
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceProducerRouterOptions {
+  agreementProcessClient: AgreementProcessClient;
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
   pollingService: PollingService;
+  purposeProcessClient: PurposeProcessClient;
 }
 
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceProducerRouter: FastifyPluginAsyncZod<
   EserviceProducerRouterOptions
   // eslint-disable-next-line max-lines-per-function
-> = async (fastify, { eserviceProcessClient, fileManager, pollingService }) => {
+> = async (
+  fastify,
+  {
+    agreementProcessClient,
+    eserviceProcessClient,
+    fileManager,
+    pollingService,
+    purposeProcessClient,
+  },
+) => {
   const retrieveEservice = async (
     eserviceId: string,
     headers: KnodiaServiceHeaders,
@@ -171,19 +190,45 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         },
       });
 
-      // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
       const results = await Promise.all(
-        data.results.map(async (eservice, idx) => {
-          const { data: latestEserviceVersion } =
-            await eserviceProcessApi.getEserviceLatestVersion({
+        data.results.map(async (eservice) => {
+          const headers = getKnodiaServiceHeaders(req, correlationId);
+
+          const [
+            { data: latestEserviceVersion },
+            { data: agreements },
+            { data: purposes },
+          ] = await Promise.all([
+            eserviceProcessApi.getEserviceLatestVersion({
               client: eserviceProcessClient,
-              headers: getKnodiaServiceHeaders(req, correlationId),
+              headers,
               path: { eserviceId: eservice.id },
-            });
+            }),
+            agreementProcessApi.getAgreements({
+              client: agreementProcessClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 1,
+                offset: 0,
+                state: ["Active"],
+              },
+            }),
+            purposeProcessApi.getPurposes({
+              client: purposeProcessClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 1,
+                offset: 0,
+                state: ["Active"],
+              },
+            }),
+          ]);
 
           return toAPI_ProducerEservice({
-            activeAgreements: idx + 5,
-            activePurposes: idx + 1,
+            activeAgreements: agreements.pagination.total,
+            activePurposes: purposes.pagination.total,
             eservice,
             state: latestEserviceVersion.state,
           });

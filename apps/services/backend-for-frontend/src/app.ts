@@ -101,9 +101,11 @@ function buildApp({ config }: { config: BffProcessConfig }) {
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(eserviceProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
       pollingService,
+      purposeProcessClient: clients.purposeProcessClient,
     });
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
