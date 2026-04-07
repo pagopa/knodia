@@ -272,9 +272,6 @@ components:
           description: Interface document for the E-service
           allOf:
             - $ref: "#/components/schemas/InterfaceDocumentSeed"
-        isConsumerOperatorIdentificationRequired:
-          description: Whether consumer operator identification is required
-          type: boolean
         isSignalHubEnabled:
           description: Whether SignalHub is enabled for the E-service
           type: boolean

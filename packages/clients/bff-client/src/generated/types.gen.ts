@@ -152,10 +152,6 @@ export type EserviceSeed = {
      */
     interfaceDocument: InterfaceDocumentSeed;
     /**
-     * Whether consumer operator identification is required
-     */
-    isConsumerOperatorIdentificationRequired?: boolean;
-    /**
      * Whether SignalHub is enabled for the E-service
      */
     isSignalHubEnabled?: boolean;
