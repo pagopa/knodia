@@ -16,9 +16,7 @@ export const Route = createFileRoute("/_authenticated/consumption/purposes/")({
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps: { offset } }) => {
-    queryClient.prefetchQuery(
-      consumerPurposesQuery(offset),
-    );
+    queryClient.prefetchQuery(consumerPurposesQuery(offset));
   },
   search: {
     middlewares: [stripSearchParams(consumerPurposeSearchDefaultValues)],
