@@ -1,14 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type z from "zod";
 
-import { type ConsumerKeychain } from "@knodia/keychain-models";
+import {
+  type ConsumerKeychain,
+  type ConsumerKeychainPurpose,
+} from "@knodia/keychain-models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import { getMockPurpose } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import type { API_GetConsumerKeychainsQueryParams } from "../src/models/api.ts";
 
 import { toAPI_Keychain } from "../src/models/apiConverter.ts";
 import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
+import { keychainWriterService } from "./setup.ts";
 import { injectAppRequest, seedConsumerKeychain } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
@@ -18,6 +23,35 @@ const allowedTestTokens: TestToken[] = [
 
 const seedConsumerKeychains = async () => {
   await Promise.all(mockConsumerKeychains.map(seedConsumerKeychain));
+};
+
+const purpose = getMockPurpose();
+const consumerKeychainPurposes: ConsumerKeychainPurpose[] = [
+  {
+    consumerKeychainId: mockConsumerKeychains[0]!.id,
+    linkedAt: new Date(),
+    purposeId: purpose.id,
+  },
+  {
+    consumerKeychainId: mockConsumerKeychains[4]!.id,
+    linkedAt: new Date(),
+    purposeId: purpose.id,
+  },
+];
+const consumerKeychainPurposeIds = new Set(
+  consumerKeychainPurposes.map((p) => p.consumerKeychainId),
+);
+const seedConsumerKeychainPurpose = async () => {
+  await Promise.all([
+    keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurposes[0]!,
+      0,
+    ),
+    keychainWriterService.upsertConsumerKeychainPurpose(
+      consumerKeychainPurposes[1]!,
+      0,
+    ),
+  ]);
 };
 
 describe("GET /consumerKeychains (getConsumerKeychains)", () => {
@@ -35,7 +69,7 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
   it.each([
     {
       expectedResult: sortedMockConsumerKeychains.slice(0, 4),
-      query: { ...defaultQuery },
+      query: defaultQuery,
       testCase: "pagination only (1st page), sort by updatedAt desc by default",
       totalCount: mockConsumerKeychains.length,
     },
@@ -48,6 +82,17 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
       testCase: "pagination only (2nd page), sort by updatedAt desc by default",
       totalCount: mockConsumerKeychains.length,
     },
+    {
+      expectedResult: sortedMockConsumerKeychains.filter((ck) =>
+        consumerKeychainPurposeIds.has(ck.id),
+      ),
+      query: {
+        ...defaultQuery,
+        purposeId: purpose.id,
+      },
+      testCase: "filter by purposeId, sort by updatedAt desc by default",
+      totalCount: 2,
+    },
   ] satisfies {
     expectedResult: ConsumerKeychain[];
     query: z.input<typeof API_GetConsumerKeychainsQueryParams>;
@@ -57,6 +102,7 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
     "should return consumer keychains with correct shape and pagination: $testCase (seed #%#)",
     async ({ expectedResult, query, totalCount }) => {
       await seedConsumerKeychains();
+      await seedConsumerKeychainPurpose();
 
       const response = await injectAppRequest(allowedTestTokens[0]!)
         .get("/consumerKeychains")

@@ -138,6 +138,10 @@ export type GetConsumerKeychainsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Purpose ID
+         */
+        purposeId?: string;
     };
     url: '/consumerKeychains';
 };

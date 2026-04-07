@@ -7,10 +7,13 @@ import {
   createOrderByFilters,
   getTableTotalCount,
 } from "@knodia/db-readmodel-commons/utils";
-import { readmodelConsumerKeychain } from "@knodia/db-readmodel-keychain";
+import {
+  readmodelConsumerKeychain,
+  readmodelConsumerKeychainPurpose,
+} from "@knodia/db-readmodel-keychain";
 import { aggregateFlatConsumerKeychains } from "@knodia/db-readmodel-keychain/converters";
 import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
-import { eq } from "drizzle-orm";
+import { and, eq, exists } from "drizzle-orm";
 
 import type { API_GetConsumerKeychainsQueryParams } from "../models/api.ts";
 
@@ -29,7 +32,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
     ): Promise<ListResult<FlatConsumerKeychain>> {
-      const { limit, offset } = params;
+      const { limit, offset, purposeId } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -42,6 +45,27 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           tx
             .select({ keychainId: readmodelConsumerKeychain.id })
             .from(readmodelConsumerKeychain)
+            .where(
+              purposeId
+                ? exists(
+                    tx
+                      .select()
+                      .from(readmodelConsumerKeychainPurpose)
+                      .where(
+                        and(
+                          eq(
+                            readmodelConsumerKeychainPurpose.consumerKeychainId,
+                            readmodelConsumerKeychain.id,
+                          ),
+                          eq(
+                            readmodelConsumerKeychainPurpose.purposeId,
+                            purposeId,
+                          ),
+                        ),
+                      ),
+                  )
+                : undefined,
+            )
             .groupBy(readmodelConsumerKeychain.id)
             .$dynamic();
 
