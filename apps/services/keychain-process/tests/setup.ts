@@ -43,6 +43,7 @@ beforeAll(async () => {
     },
     eventStoreDb,
     readmodelDb,
+    remoteResourcesManagerUrl: "http://test-remote-resources-manager",
   });
 
   keychainWriterService = keychainWriterServiceBuilder(readmodelDb);

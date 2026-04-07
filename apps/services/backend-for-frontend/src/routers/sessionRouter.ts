@@ -6,6 +6,7 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   forbiddenError,
+  getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
   organizationProcessApi,
@@ -17,7 +18,6 @@ import { apiTags } from "../models/apiTags.ts";
 import { API_SessionOrganization } from "../models/organization/api.ts";
 import { toAPI_SessionOrganization } from "../models/organization/apiConverter.ts";
 import { getUISessionAuthData } from "../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface SessionRouterOptions {
   knodeId: KnodeId;

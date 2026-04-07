@@ -13,7 +13,10 @@ import {
   type EserviceProcessClient,
 } from "@knodia/eservice-process-client";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  getKnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import {
   assertEntityExists,
   getExternalEntitiesMap,
@@ -38,7 +41,6 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface AgreementProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;

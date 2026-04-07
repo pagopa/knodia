@@ -4,7 +4,10 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
-import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
+import {
+  API_Problem,
+  getKnodiaServiceHeaders,
+} from "@knodia/fastify-zod-api-commons/models";
 import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
 import {
   organizationProcessApi,
@@ -33,7 +36,6 @@ import {
   toAPI_ConsumerPurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface PurposeConsumerRouterOptions {
   knodeId: KnodeId;
@@ -56,8 +58,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       const { organizationId: consumerId } = getUISessionAuthData(authData);
 
       logger.info(
-        { requestQuery: req.query },
-        "Getting Consumer Purposes with query parameters",
+        { consumerId, requestQuery: req.query },
+        `Getting Consumer Purposes with query parameters for consumer ${consumerId}`,
       );
 
       const { limit, offset } = req.query;
@@ -84,6 +86,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         ).entries(),
       ];
 
+      // TODO: https://pagopa.atlassian.net/browse/KN-325 — batch fetch eservice details
+      // using listing endpoint with eserviceId filter instead of N individual calls
       const eserviceDetailsEntries = await Promise.all(
         uniqueEservices.map(async ([eserviceId, knodeId]) => {
           const { data: details } =
@@ -127,6 +131,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
       },
       summary: "List consumer Purposes",
       tags: [apiTags.purpose],
