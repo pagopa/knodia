@@ -97,6 +97,9 @@ export const toConsumerKeychainPurposeSQL = (
   consumerKeychainPurpose: ConsumerKeychainPurpose,
   metadataVersion: number,
 ): ConsumerKeychainPurposeSQL => ({
-  ...consumerKeychainPurpose,
+  consumerKeychainId: consumerKeychainPurpose.consumerKeychainId,
+  linkedAt: consumerKeychainPurpose.linkedAt,
   metadataVersion,
+  producerKnodeId: consumerKeychainPurpose.purpose.knodeId,
+  purposeId: consumerKeychainPurpose.purpose.id,
 });

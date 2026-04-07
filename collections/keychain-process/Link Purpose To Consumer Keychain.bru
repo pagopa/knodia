@@ -1,0 +1,25 @@
+meta {
+  name: Link Purpose To Consumer Keychain
+  type: http
+}
+
+post {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/purposes
+  body: json
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+body:json {
+  {
+    "knodeId": "{{other-knode-id}}",
+    "purposeId": "{{purposeId}}"
+  }
+}

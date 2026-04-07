@@ -1,20 +1,21 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Link, Modal } from "@knodia/ui-kit/ui";
+import { Button, ButtonLink, Link, Modal } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { createLink } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
-import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
+import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
-import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
-import { AgreementCard } from "@/features/agreement/components/AgreementCard";
-import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
+import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgreementCard";
+import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
+import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
-import { formatNumber } from "@/utils/formatters";
 
 const RouterLink = createLink(Link);
+const RouterButtonLink = createLink(ButtonLink);
 
 export function ProducerPurposeDetail({
   purpose,
@@ -35,8 +36,9 @@ export function ProducerPurposeDetail({
       />
 
       <div className="mt-10 flex flex-col gap-4">
-        <SettingsCard label="E-Service">
-          <span className="flex items-center gap-6">
+        <PurposeEserviceCard
+          eservice={purpose.eservice}
+          link={
             <RouterLink
               params={{ id: purpose.eservice.id }}
               to="/production/e-services/$id"
@@ -44,37 +46,43 @@ export function ProducerPurposeDetail({
             >
               {purpose.eservice.name.en}
             </RouterLink>
-            <EserviceStateChip state={purpose.eservice.latestVersionState} />
-          </span>
-        </SettingsCard>
+          }
+        />
 
         <div className="grid grid-cols-2 gap-4">
-          <SettingsCard label="Producer">
-            {purpose.producer.name} - {purpose.producer.knodeId} Knode
-          </SettingsCard>
-          <SettingsCard label="Consumer">
-            <span className="flex items-center gap-2">
-              {purpose.consumer.name} - {purpose.consumer.knodeId} Knode
-              {/* TODO: Replace mocked contact info with real data from the API when available in ProducerPurposeDetails */}
-              <OrganizationContactPopover
-                email="contact@example.com"
-                knodeId={purpose.consumer.knodeId}
-                name={purpose.consumer.name}
-                notes="—"
-              />
-            </span>
-          </SettingsCard>
+          <OrganizationCard
+            label="Producer"
+            organization={purpose.producer}
+            showContact={false}
+          />
+          <OrganizationCard
+            label="Consumer"
+            organization={purpose.consumer}
+            showContact={true}
+          />
         </div>
 
-        <SettingsCard label="Declared API calls per day">
-          {formatNumber(purpose.dailyCalls)}{" "}
-          <span className="title-md font-normal">
-            (max {formatNumber(purpose.maxDailyCallsPerConsumer)})
-          </span>
-        </SettingsCard>
+        <PurposeDailyCallsCard
+          dailyCalls={purpose.dailyCalls}
+          maxDailyCallsPerConsumer={purpose.maxDailyCallsPerConsumer}
+        />
       </div>
 
-      <AgreementCard agreement={purpose.agreement} className="mt-10" />
+      <PurposeAgreementCard
+        action={
+          <RouterButtonLink
+            aria-label="Go to agreement"
+            hierarchy="neutral"
+            kind="tonal"
+            params={{ id: purpose.agreement.id }}
+            size="icon-md"
+            to="/production/agreements/$id"
+          >
+            <ArrowRightIcon />
+          </RouterButtonLink>
+        }
+        agreement={purpose.agreement}
+      />
     </>
   );
 }
