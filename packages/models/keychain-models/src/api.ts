@@ -52,7 +52,7 @@ export type API_KeychainLocalizedDescription = z.infer<
 >;
 
 export const API_KeyFormat = z
-  .enum(["PublicKey", "x509Certificate"])
+  .enum(["PublicKey", "X509Certificate"])
   .meta({ id: "KeyFormat" });
 export type API_KeyFormat = z.infer<typeof API_KeyFormat>;
 

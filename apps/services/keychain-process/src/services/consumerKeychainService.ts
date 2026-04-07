@@ -57,11 +57,7 @@ import {
   createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
-import {
-  calculateKid,
-  createJWK,
-  decodeEncodedBase64KeyToPem,
-} from "../utils/crypto.ts";
+import { calculateKid, createJWK, decodeBase64Pem } from "../utils/crypto.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
@@ -448,7 +444,7 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data.keys.length + 1,
       );
 
-      const pemKey = decodeEncodedBase64KeyToPem(keySeed.encodedPem);
+      const pemKey = decodeBase64Pem(keySeed.encodedPem);
 
       assertNotX509Certificate(pemKey);
 

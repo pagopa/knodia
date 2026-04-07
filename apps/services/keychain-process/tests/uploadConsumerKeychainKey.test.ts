@@ -29,7 +29,7 @@ import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
 import {
   calculateKid,
   createJWK,
-  decodeEncodedBase64KeyToPem,
+  decodeBase64Pem,
 } from "../src/utils/crypto.ts";
 import { mockMaxKeysPerKeychain } from "./setup.ts";
 import {
@@ -61,8 +61,8 @@ const createShortRsaPublicKeyBase64 = () =>
 const createMultiplePublicKeysBase64 = () =>
   toBase64(
     [
-      decodeEncodedBase64KeyToPem(createRsaPublicKeyBase64()).trim(),
-      decodeEncodedBase64KeyToPem(createRsaPublicKeyBase64()).trim(),
+      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
+      decodeBase64Pem(createRsaPublicKeyBase64()).trim(),
     ].join("\n"),
   );
 
@@ -85,7 +85,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     const expectedKid = unsafeBrandKeyId(
       calculateKid(
         createJWK({
-          pemKey: decodeEncodedBase64KeyToPem(mockSeed.encodedPem),
+          pemKey: decodeBase64Pem(mockSeed.encodedPem),
         }),
       ),
     );
@@ -284,7 +284,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     const kid = unsafeBrandKeyId(
       calculateKid(
         createJWK({
-          pemKey: decodeEncodedBase64KeyToPem(encodedPem),
+          pemKey: decodeBase64Pem(encodedPem),
         }),
       ),
     );

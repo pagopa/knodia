@@ -9,13 +9,13 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export const protobufPackage = "keychain.v1";
 
-export const KeyFormatV1 = { PublicKey: 0, x509Certificate: 1, UNRECOGNIZED: -1 } as const;
+export const KeyFormatV1 = { PublicKey: 0, X509Certificate: 1, UNRECOGNIZED: -1 } as const;
 
 export type KeyFormatV1 = typeof KeyFormatV1[keyof typeof KeyFormatV1];
 
 export namespace KeyFormatV1 {
   export type PublicKey = typeof KeyFormatV1.PublicKey;
-  export type x509Certificate = typeof KeyFormatV1.x509Certificate;
+  export type X509Certificate = typeof KeyFormatV1.X509Certificate;
   export type UNRECOGNIZED = typeof KeyFormatV1.UNRECOGNIZED;
 }
 
@@ -25,8 +25,8 @@ export function keyFormatV1FromJSON(object: any): KeyFormatV1 {
     case "PublicKey":
       return KeyFormatV1.PublicKey;
     case 1:
-    case "x509Certificate":
-      return KeyFormatV1.x509Certificate;
+    case "X509Certificate":
+      return KeyFormatV1.X509Certificate;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -38,8 +38,8 @@ export function keyFormatV1ToJSON(object: KeyFormatV1): string {
   switch (object) {
     case KeyFormatV1.PublicKey:
       return "PublicKey";
-    case KeyFormatV1.x509Certificate:
-      return "x509Certificate";
+    case KeyFormatV1.X509Certificate:
+      return "X509Certificate";
     case KeyFormatV1.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

@@ -17,7 +17,7 @@ import {
 const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
   match(format)
     .with("PublicKey", () => KeyFormatV1.PublicKey)
-    .with("x509Certificate", () => KeyFormatV1.x509Certificate)
+    .with("X509Certificate", () => KeyFormatV1.X509Certificate)
     .exhaustive();
 
 const toConsumerKeychainKeyV1 = (

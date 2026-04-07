@@ -121,7 +121,7 @@ components:
       type: string
       enum:
         - PublicKey
-        - x509Certificate
+        - X509Certificate
     KeyAlgorithm:
       type: string
       enum:

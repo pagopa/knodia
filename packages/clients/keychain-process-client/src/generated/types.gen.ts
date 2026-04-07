@@ -64,7 +64,7 @@ export type KeychainLocalizedDescription = {
     en: string;
 };
 
-export type KeyFormat = 'PublicKey' | 'x509Certificate';
+export type KeyFormat = 'PublicKey' | 'X509Certificate';
 
 export type KeyAlgorithm = 'RS256';
 

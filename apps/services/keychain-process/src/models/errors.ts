@@ -82,20 +82,6 @@ export function invalidUserRole(userId: UserId, requiredRole: string) {
   });
 }
 
-export function jwkDecodingError(error: unknown) {
-  const detail =
-    error instanceof Error
-      ? `Unexpected error on JWK base64 decoding: ${error.message}`
-      : `Unexpected error on JWK base64 decoding: ${JSON.stringify(error)}`;
-
-  return createApiError<ErrorCodes>({
-    code: "JWK_DECODING_ERROR",
-    detail,
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "JWK decoding error",
-  });
-}
-
 export function keyAlreadyExists(kid: string) {
   return createApiError<ErrorCodes>({
     code: "KEY_ALREADY_EXISTS",

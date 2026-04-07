@@ -25,7 +25,7 @@ message ConsumerKeychainKeyV1 {
 
 enum KeyFormatV1 {
   PublicKey = 0;
-  x509Certificate = 1;
+  X509Certificate = 1;
 }
 
 enum KeyAlgorithmV1 {

@@ -10,7 +10,7 @@ import {
 import {
   calculateKid,
   createJWK,
-  decodeEncodedBase64KeyToPem,
+  decodeBase64Pem,
   isX509Certificate,
 } from "../src/utils/crypto.ts";
 import {
@@ -25,11 +25,11 @@ const rsa1024KeyPair = createRsaKeyPair(1024);
 const anotherRsa2048KeyPair = createRsaKeyPair(2048);
 const ecKeyPair = createEcKeyPair();
 
-describe("decodeEncodedBase64KeyToPem", () => {
+describe("decodeBase64Pem", () => {
   it("should decode a PEM encoded in base64", () => {
-    expect(
-      decodeEncodedBase64KeyToPem(toBase64(rsa2048KeyPair.publicKey)),
-    ).toBe(rsa2048KeyPair.publicKey);
+    expect(decodeBase64Pem(toBase64(rsa2048KeyPair.publicKey))).toBe(
+      rsa2048KeyPair.publicKey,
+    );
   });
 });
 
@@ -129,7 +129,7 @@ describe("calculateKid", () => {
     const expetedKid = "23j6WZbSbFiX_By98MBDgjnL3ZPkJJU83euQxrZxVsA";
     const kid = calculateKid(
       createJWK({
-        pemKey: decodeEncodedBase64KeyToPem(
+        pemKey: decodeBase64Pem(
           `LS0tLS1CRUdJTiBSU0EgUFVCTElDIEtFWS0tLS0tCk1JSUJDZ0tDQVFFQTZzMTBhR0pNTE9QS0xqSkFsUm9seTRqY0J4NTJYMzByMTU2WlJ3dEc3bU5qU0lRTWNsTHkKQnJ4Y1ovT1hDa3dTbndiZ3AzSXE3aElMcHBnT0E5MVRJNTdHSHpCSlpnNEgvTGFhcTZJMCtjRTNSMXZQbU9wegovNVlzRFB0Q3hydk1zaGFFaU5hSlprL0JjdEpNdGxhck5NWlZTRVVuaS9yNUlyeU1WZG1nQ01pUGhmZkdWQnZwCkphVTVOTkFDZFV0N0tsdUdubWxqT2QxNWdMc1FibkhXWUVGVEx1UlU1VDJiQS9Hb0JLUkVpejhjc29kRno4TTQKRDU5dDB6TjlQZHk1aEF6eXRuUnNQcnBwcHZyUzFFck9QTGluTWFya0tTZGdtSldsdENxeVhWeCtiZ1FmbGN0cQpjS01NbU1vem9LMzJ1VHNjZDh5NGFETGlvdk9zaVlxM1l3SURBUUFCCi0tLS0tRU5EIFJTQSBQVUJMSUMgS0VZLS0tLS0=`,
         ),
       }),

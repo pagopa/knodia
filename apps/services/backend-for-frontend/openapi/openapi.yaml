@@ -224,8 +224,8 @@ components:
         content:
           description: Base64-encoded file content
           type: string
-          format: base64url
-          pattern: ^[A-Za-z0-9_-]*$
+          format: base64
+          pattern: ^$|^(?:[0-9a-zA-Z+/]{4})*(?:(?:[0-9a-zA-Z+/]{2}==)|(?:[0-9a-zA-Z+/]{3}=))?$
         contentType:
           description: MIME type of the uploaded E-service interface document
           type: string

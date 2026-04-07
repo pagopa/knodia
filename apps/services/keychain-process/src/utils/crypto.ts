@@ -3,20 +3,15 @@ import crypto, { type KeyObject } from "crypto";
 import {
   invalidKeyLength,
   invalidPublicKey,
-  jwkDecodingError,
   notAllowedMultipleKeys,
   notAllowedPrivateKey,
   notAnRSAKey,
 } from "../models/errors.ts";
 
-export const decodeEncodedBase64KeyToPem = (base64String: string): string => {
-  try {
-    const cleanedBase64 = base64String.trim();
-    const decodedBytes = Buffer.from(cleanedBase64, "base64");
-    return decodedBytes.toString("utf-8");
-  } catch (error) {
-    throw jwkDecodingError(error);
-  }
+export const decodeBase64Pem = (base64String: string): string => {
+  const cleanedBase64 = base64String.trim();
+  const decodedBytes = Buffer.from(cleanedBase64, "base64");
+  return decodedBytes.toString("utf-8");
 };
 
 export const createJWK = ({ pemKey }: { pemKey: string }): JsonWebKey =>
