@@ -11,8 +11,11 @@ import { config } from "@/config/config";
  */
 const AUTH_TOKEN_KEY = "knodia_auth_token";
 
+const listeners = new Set<() => void>();
+
 export function clearAuthToken(): void {
   localStorage.removeItem(AUTH_TOKEN_KEY);
+  notifyAuthTokenChanged();
 }
 
 export function getAuthToken(): null | string {
@@ -28,4 +31,23 @@ export function redirectToLogout(): void {
 
 export function setAuthToken(token: string): void {
   localStorage.setItem(AUTH_TOKEN_KEY, token);
+  notifyAuthTokenChanged();
+}
+
+/**
+ * Designed for `useSyncExternalStore`: subscribes to auth token changes from
+ * both the current tab (via setAuthToken / clearAuthToken) and other tabs
+ * (via the native `storage` event).
+ */
+export function subscribeToAuthToken(listener: () => void): () => void {
+  listeners.add(listener);
+  window.addEventListener("storage", listener);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", listener);
+  };
+}
+
+function notifyAuthTokenChanged() {
+  listeners.forEach((listener) => listener());
 }

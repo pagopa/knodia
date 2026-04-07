@@ -10,7 +10,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 import {
   AuthProvider as OidcProvider,
@@ -23,6 +23,7 @@ import {
   getAuthToken,
   redirectToLogout,
   setAuthToken,
+  subscribeToAuthToken,
 } from "@/libs/auth";
 import { client } from "@/libs/axios";
 import { router } from "@/libs/router";
@@ -48,7 +49,13 @@ export function OidcAuthProvider({ children }: { children: ReactNode }) {
 }
 
 function AuthStateProvider({ children }: { children: ReactNode }) {
-  const [uiSessionToken, setUiSessionToken] = useState<null | string>(
+  // Single source of truth: the auth token store in `libs/auth`. Subscribing
+  // via useSyncExternalStore means any in-tab change (login, transparent
+  // refresh from the axios interceptor, logout) or cross-tab `storage` event
+  // re-renders the provider with the current value.
+  const uiSessionToken = useSyncExternalStore(
+    subscribeToAuthToken,
+    getAuthToken,
     getAuthToken,
   );
 
@@ -71,7 +78,6 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
-      setUiSessionToken(data.uiSessionToken);
       void router.navigate({ replace: true, to: "/" });
     },
   });
@@ -113,7 +119,6 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
       await removeUser();
     } finally {
       clearAuthToken();
-      setUiSessionToken(null);
       redirectToLogout();
     }
   }, [bffLogout, removeUser]);
