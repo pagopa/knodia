@@ -603,7 +603,7 @@ export type ConsumerPurpose = {
     eservice: CompactEservice;
     id: string;
     /**
-     * Number of Consumer Keychains with this purpose
+     * Number of Consumer Keychains associated with this purpose
      */
     keychains: number;
     name: LocalizedPurposeName;

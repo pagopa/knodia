@@ -59,7 +59,7 @@ export const API_ConsumerPurpose = z
     eservice: API_CompactEservice,
     id: z.uuid(),
     keychains: z.int().min(0).meta({
-      description: "Number of Consumer Keychains with this purpose",
+      description: "Number of Consumer Keychains associated with this purpose",
       format: "int32",
     }),
     name: API_LocalizedPurposeName,
