@@ -56,8 +56,8 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
       const { organizationId: consumerId } = getUISessionAuthData(authData);
 
       logger.info(
-        { requestQuery: req.query },
-        "Getting Consumer Purposes with query parameters",
+        { consumerId, requestQuery: req.query },
+        `Getting Consumer Purposes with query parameters for consumer ${consumerId}`,
       );
 
       const { limit, offset } = req.query;
