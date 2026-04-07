@@ -1,0 +1,154 @@
+import type { bffApi } from "@knodia/bff-client";
+
+import {
+  getConsumerKeychainKeysOptions,
+  removeConsumerKeychainKeyMutation,
+} from "@knodia/bff-client/tanstack-query";
+import {
+  Banner,
+  Button,
+  Cell,
+  Column,
+  CopyButton,
+  Loader,
+  Modal,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+} from "@knodia/ui-kit/ui";
+import { SelectionPlusIcon, TrashIcon } from "@phosphor-icons/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DialogTrigger } from "react-aria-components";
+import { match } from "ts-pattern";
+
+import { client } from "@/libs/axios";
+import { formatShortDate } from "@/utils/formatters";
+
+import type { KeychainType } from "../models/commons";
+
+interface KeychainPublicKeysTableProps {
+  isLoading: boolean;
+  keychainId: string;
+  keys: bffApi.KeychainKey[];
+  type: KeychainType;
+}
+
+export function KeychainPublicKeysTable({
+  isLoading,
+  keychainId,
+  keys,
+  type,
+}: KeychainPublicKeysTableProps) {
+  if (isLoading) {
+    return <Loader className="mx-auto mt-20" label="Loading..." />;
+  }
+
+  if (keys.length === 0) {
+    return (
+      <Banner icon={<SelectionPlusIcon />} kind="neutral">
+        You don&apos;t have a public key yet. Upload your first one.
+      </Banner>
+    );
+  }
+
+  return (
+    <Table aria-label="Keychains table">
+      <TableHeader>
+        <Column id="name" isRowHeader>
+          Name
+        </Column>
+        <Column id="owner">Owner</Column>
+        <Column id="creation-date">Creation date</Column>
+        <Column id="kid">ID (kid)</Column>
+        <Column id="actions">
+          <span className="sr-only">Actions</span>
+        </Column>
+      </TableHeader>
+      <TableBody items={keys}>
+        {(key) => (
+          <Row id={key.kid}>
+            <Cell>
+              <span className="body-md-em">{key.name.en}</span>
+            </Cell>
+            <Cell>TODO</Cell>
+            <Cell>{formatShortDate(key.createdAt)}</Cell>
+            <Cell>
+              {key.kid} <CopyButton textToCopy={key.kid} />
+            </Cell>
+            <Cell>
+              <div className="flex justify-end">
+                <RemoveFromKeychainAction
+                  keychainId={keychainId}
+                  keyId={key.kid}
+                  type={type}
+                />
+              </div>
+            </Cell>
+          </Row>
+        )}
+      </TableBody>
+    </Table>
+  );
+}
+
+function RemoveFromKeychainAction({
+  keychainId,
+  keyId,
+  type,
+}: {
+  keychainId: string;
+  keyId: string;
+  type: KeychainType;
+}) {
+  const queryClient = useQueryClient();
+  const { isPending, mutate: deleteConsumerKeychainKey } = useMutation({
+    ...removeConsumerKeychainKeyMutation({ client }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(
+        getConsumerKeychainKeysOptions({
+          client,
+          path: { consumerKeychainId: keychainId },
+          query: { limit: 10, offset: 0 }, //TODO
+        }),
+      );
+    },
+  });
+
+  function handleDelete() {
+    match(type)
+      .with("consumption", () => {
+        deleteConsumerKeychainKey({
+          path: {
+            consumerKeychainId: keychainId,
+            keyId,
+          },
+        });
+      })
+      .with("production", () => {
+        throw new Error("Producer keychains are not supported yet.");
+      })
+      .with("api", () => {
+        throw new Error("API keychains are not supported yet.");
+      })
+      .exhaustive();
+  }
+
+  return (
+    <DialogTrigger>
+      <Button hierarchy="danger" kind="outlined" size="icon-sm">
+        <TrashIcon />
+        <span className="sr-only">Delete public key</span>
+      </Button>
+      <Modal
+        actionLabel="Delete anyway"
+        confirmButtonProps={{ isPending }}
+        description="Are you sure you want to delete this public key? This action cannot be undone. If you are unsure, download the key before deleting it."
+        isDismissable
+        kind="destructive"
+        onConfirm={handleDelete}
+        title="Delete public key"
+      />
+    </DialogTrigger>
+  );
+}

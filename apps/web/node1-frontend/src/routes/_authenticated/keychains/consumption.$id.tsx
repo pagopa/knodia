@@ -1,5 +1,6 @@
 import {
   getConsumerKeychainDetailsOptions,
+  getConsumerKeychainKeysOptions,
   getConsumerKeychainMembersOptions,
 } from "@knodia/bff-client/tanstack-query";
 import {
@@ -24,6 +25,7 @@ import { AddKeychainMemberAction } from "@/features/keychain/components/AddKeych
 import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDeleteAction";
 import { KeychainEditAction } from "@/features/keychain/components/KeychainEditAction";
 import { KeychainMembersTable } from "@/features/keychain/components/KeychainMembersTable";
+import { KeychainPublicKeysTable } from "@/features/keychain/components/KeychainPublicKeysTable";
 import { client } from "@/libs/axios";
 
 const consumerKeychainQuery = (consumerKeychainId: string) =>
@@ -66,6 +68,31 @@ function MembersTab() {
         isLoading={isLoading}
         keychainId={consumerKeychainId}
         members={members}
+        type="consumption"
+      />
+    </Section>
+  );
+}
+
+function PublicKeysTab() {
+  const consumerKeychainId = Route.useParams().id;
+
+  const { data: keys = [], isLoading } = useQuery(
+    getConsumerKeychainKeysOptions({
+      client,
+      path: { consumerKeychainId },
+      query: { limit: 10, offset: 0 },
+    }),
+  );
+
+  console.log({ keys });
+
+  return (
+    <Section actions={<></>} title="Public Keys">
+      <KeychainPublicKeysTable
+        isLoading={isLoading}
+        keychainId={consumerKeychainId}
+        keys={keys.results}
         type="consumption"
       />
     </Section>
@@ -119,6 +146,9 @@ function RouteComponent() {
         </TabList>
         <TabPanels>
           <TabPanel id="public-keys" key="public-keys">
+            <PublicKeysTab />
+          </TabPanel>
+          <TabPanel id="purposes" key="purposes">
             <Section
               actions={
                 <Button hierarchy="brand" isDisabled kind="filled" size="md">
