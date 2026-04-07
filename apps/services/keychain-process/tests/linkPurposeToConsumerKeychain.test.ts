@@ -84,6 +84,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     description: purpose.description,
     eserviceId: purpose.eserviceId,
     id: purpose.id,
+    knodeId,
     name: purpose.name,
     state: purpose.state,
     updatedAt: purpose.updatedAt.toISOString(),
