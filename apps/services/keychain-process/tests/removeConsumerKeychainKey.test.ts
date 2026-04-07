@@ -25,6 +25,7 @@ import {
 } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
+  { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
 ];
 const callerUserId = generateUserId();
@@ -43,11 +44,11 @@ const mockConsumerKeychain: ConsumerKeychain = {
 };
 
 describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsumerKeychainKey)", () => {
-  it("should correctly create consumer keychain key removal event", async () => {
+  it("should correctly create consumer keychain key removal event for a technical member", async () => {
     await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
-      ...allowedTestTokens[0]!,
+      ...allowedTestTokens[1]!,
       organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
       userId: callerUserId,
@@ -77,11 +78,33 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
     });
   });
 
-  it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
+  it("should allow an administrative user to remove a key even if not a keychain member", async () => {
     await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
+      organizationId: mockConsumerKeychain.ownerId,
+      type: "ui-session",
+      userId: generateUserId(),
+    }).delete(`/consumerKeychains/${mockConsumerKeychain.id}/keys/${keyId}`);
+
+    expect(response.statusCode).toBe(204);
+
+    const events = await getAllKeychainEvents();
+    const removedEvent = events[1];
+
+    expect(removedEvent).toMatchObject({
+      streamId: mockConsumerKeychain.id,
+      type: "ConsumerKeychainKeyRemovedV1",
+      version: 1,
+    });
+  });
+
+  it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
+    await seedConsumerKeychain(mockConsumerKeychain);
+
+    const response = await injectAppRequest({
+      ...allowedTestTokens[1]!,
       organizationId: generateId<OrganizationId>(),
       type: "ui-session",
       userId: callerUserId,
@@ -92,7 +115,7 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
 
   it("should return 404 if the consumer keychain does not exist", async () => {
     const response = await injectAppRequest({
-      ...allowedTestTokens[0]!,
+      ...allowedTestTokens[1]!,
       organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
       userId: callerUserId,
@@ -101,11 +124,11 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 403 if the caller is not a member of the consumer keychain", async () => {
+  it("should return 403 if a technical caller is not a member of the consumer keychain", async () => {
     await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
-      ...allowedTestTokens[0]!,
+      ...allowedTestTokens[1]!,
       organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
       userId: generateUserId(),
@@ -123,13 +146,12 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsu
     await seedConsumerKeychain(consumerKeychain);
 
     const response = await injectAppRequest({
-      ...allowedTestTokens[0]!,
+      ...allowedTestTokens[1]!,
       organizationId: consumerKeychain.ownerId,
       type: "ui-session",
       userId: callerUserId,
     }).delete(`/consumerKeychains/${consumerKeychain.id}/keys/${keyId}`);
 
-    console.log(response.body);
     expect(response.statusCode).toBe(404);
   });
 

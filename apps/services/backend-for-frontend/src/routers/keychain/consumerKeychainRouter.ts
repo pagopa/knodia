@@ -27,8 +27,8 @@ import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
-  API_ConsumerKeychainKeyPathParam,
-  API_ConsumerKeychainMemberPathParam,
+  API_ConsumerKeychainKeyPathParams,
+  API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
@@ -269,7 +269,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { consumerKeychainId, keyId } = req.params;
 
       logger.info(
-        { requestBody: req.body, requestParams: req.params },
+        { requestParams: req.params },
         `Removing key ${keyId} from Consumer Keychain with ID ${consumerKeychainId}`,
       );
 
@@ -289,7 +289,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Remove a key from a Consumer Keychain",
       operationId: "removeConsumerKeychainKey",
-      params: API_ConsumerKeychainKeyPathParam,
+      params: API_ConsumerKeychainKeyPathParams,
       response: {
         204: z.undefined().meta({
           description: "Consumer Keychain key removed successfully",
@@ -333,7 +333,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Remove a member from a Consumer Keychain",
       operationId: "removeConsumerKeychainMember",
-      params: API_ConsumerKeychainMemberPathParam,
+      params: API_ConsumerKeychainMemberPathParams,
       response: {
         204: z.undefined().meta({
           description: "Consumer Keychain member removed successfully",

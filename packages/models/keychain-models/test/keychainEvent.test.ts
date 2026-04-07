@@ -19,6 +19,7 @@ import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
   ConsumerKeychainKeyAddedV1,
+  ConsumerKeychainKeyRemovedV1,
   ConsumerKeychainMemberAddedV1,
   ConsumerKeychainMemberRemovedV1,
   ConsumerKeychainPurposeLinkedV1,
@@ -115,6 +116,14 @@ describe("KeychainEventV1 codec", () => {
       message: ConsumerKeychainKeyAddedV1,
       type: "ConsumerKeychainKeyAddedV1" as const,
     },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        kid: Buffer.from(crypto.randomUUID(), "utf-8").toString("base64"),
+      },
+      message: ConsumerKeychainKeyRemovedV1,
+      type: "ConsumerKeychainKeyRemovedV1" as const,
+    },
   ] as const;
 
   it.each(cases)(
@@ -149,6 +158,9 @@ describe("KeychainEventV1 codec", () => {
           testFullCodec({ data, type }),
         )
         .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
         .exhaustive();
@@ -188,6 +200,9 @@ describe("KeychainEventV1 codec", () => {
           ({ data, message }) => testProtobufCodec(message, data),
         )
         .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, message }) =>
+          testProtobufCodec(message, data),
+        )
+        .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, message }) =>
           testProtobufCodec(message, data),
         )
         .exhaustive();

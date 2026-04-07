@@ -9,7 +9,7 @@ import {
   type OrganizationId,
   unsafeBrandId,
   unsafeBrandUserId,
-  UserId,
+  type UserId,
 } from "@knodia/common-models/ids";
 import { UnsecuredJWT } from "jose";
 import { match } from "ts-pattern";

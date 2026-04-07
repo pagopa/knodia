@@ -76,6 +76,7 @@ import {
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsAllowedToPerformKeychainOperation,
+  assertUserIsAllowedToRemoveKey,
   assertUserIsMemberOfKeychain,
 } from "../utils/validators.ts";
 
@@ -354,7 +355,7 @@ export function consumerKeychainServiceBuilder(
       consumerKeychainId: ConsumerKeychainId,
       kid: KeyId,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<null>> {
+    ): Promise<WithMetadata<ConsumerKeychain>> {
       logger.info(
         `Removing key ${kid} from Consumer Keychain ${consumerKeychainId}`,
       );
@@ -369,8 +370,8 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data,
       );
 
-      assertUserIsAllowedToPerformKeychainOperation(
-        authData.userId,
+      assertUserIsAllowedToRemoveKey(
+        authData,
         consumerKeychainId,
         consumerKeychain.data.users,
       );
@@ -399,7 +400,7 @@ export function consumerKeychainServiceBuilder(
       );
 
       return {
-        data: null,
+        data: updatedConsumerKeychain,
         metadata: { version: newVersion },
       };
     },

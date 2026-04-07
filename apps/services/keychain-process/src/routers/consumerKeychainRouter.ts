@@ -26,8 +26,8 @@ import { z } from "zod";
 import type { ConsumerKeychainService } from "../services/consumerKeychainService.ts";
 
 import {
-  API_ConsumerKeychainKeyPathParam,
-  API_ConsumerKeychainMemberPathParam,
+  API_ConsumerKeychainKeyPathParams,
+  API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
@@ -332,7 +332,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["technical"] },
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
       ]);
 
       const {
@@ -351,7 +351,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       description: "Remove a key from a Consumer Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "removeConsumerKeychainKey",
-      params: API_ConsumerKeychainKeyPathParam,
+      params: API_ConsumerKeychainKeyPathParams,
       response: {
         204: {
           headers: MetadataVersionHeader,
@@ -426,7 +426,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       description: "Remove a member from a Consumer Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "removeConsumerKeychainMember",
-      params: API_ConsumerKeychainMemberPathParam,
+      params: API_ConsumerKeychainMemberPathParams,
       response: {
         200: {
           headers: MetadataVersionHeader,
