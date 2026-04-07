@@ -26,10 +26,6 @@ import {
 } from "../converters/aggregators.ts";
 import { toConsumerKeychainPurpose } from "../converters/converters.ts";
 
-export type ConsumerKeychainReadmodelService = ReturnType<
-  typeof consumerKeychainReadmodelServiceBuilder
->;
-
 export function consumerKeychainReadmodelServiceBuilder(
   readmodelDb: NodePgDatabase,
 ) {
@@ -81,21 +77,6 @@ export function consumerKeychainReadmodelServiceBuilder(
       return consumerKeychainPurpose
         ? toConsumerKeychainPurpose(consumerKeychainPurpose)
         : undefined;
-    },
-    async getConsumerKeychainPurposesByKeychainId(
-      consumerKeychainId: ConsumerKeychainId,
-    ): Promise<WithMetadata<ConsumerKeychainPurpose>[]> {
-      const queryRes = await readmodelDb
-        .select()
-        .from(readmodelConsumerKeychainPurpose)
-        .where(
-          eq(
-            readmodelConsumerKeychainPurpose.consumerKeychainId,
-            consumerKeychainId,
-          ),
-        );
-
-      return queryRes.map(toConsumerKeychainPurpose);
     },
     async getFlatConsumerKeychainById(
       consumerKeychainId: ConsumerKeychainId,
