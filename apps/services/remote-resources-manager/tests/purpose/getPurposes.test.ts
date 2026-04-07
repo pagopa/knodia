@@ -93,6 +93,8 @@ describe("GET /purposes (getPurposes)", () => {
     expect(getPurposesMock).toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.objectContaining({
+          consumerId: undefined,
+          eserviceId: undefined,
           limit: parsedDefaultQuery.limit,
           offset: parsedDefaultQuery.offset,
         }),
