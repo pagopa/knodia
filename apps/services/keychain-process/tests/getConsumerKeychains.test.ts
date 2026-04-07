@@ -41,7 +41,7 @@ const consumerKeychainPurposes: ConsumerKeychainPurpose[] = [
     purpose: { id: unsafeBrandExternalId(purpose.id), knodeId },
   },
 ];
-const consumerKeychainPurposeIds = new Set(
+const consumerKeychainIdsWithLinkedPurposes = new Set(
   consumerKeychainPurposes.map((p) => p.consumerKeychainId),
 );
 const seedConsumerKeychainPurpose = async () => {
@@ -85,7 +85,7 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
     },
     {
       expectedResult: sortedMockConsumerKeychains.filter((ck) =>
-        consumerKeychainPurposeIds.has(ck.id),
+        consumerKeychainIdsWithLinkedPurposes.has(ck.id),
       ),
       query: {
         ...defaultQuery,
