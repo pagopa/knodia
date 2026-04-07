@@ -95,6 +95,20 @@ export const getConsumerKeychainKeys = <ThrowOnError extends boolean = true>(opt
 });
 
 /**
+ * Upload a key to a Consumer Keychain
+ */
+export const uploadConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadConsumerKeychainKeyResponses, UploadConsumerKeychainKeyErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/consumerKeychains/{consumerKeychainId}/keys',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
  * Retrieve members of a Consumer Keychain
  */
 export const getConsumerKeychainMembers = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMembersData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMembersResponses, GetConsumerKeychainMembersErrors, ThrowOnError>({
@@ -111,20 +125,6 @@ export const addConsumerKeychainMember = <ThrowOnError extends boolean = true>(o
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/consumerKeychains/{consumerKeychainId}/members',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * Upload a key to a Consumer Keychain
- */
-export const uploadConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<UploadConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).post<UploadConsumerKeychainKeyResponses, UploadConsumerKeychainKeyErrors, ThrowOnError>({
-    responseType: 'json',
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/consumerKeychains/{consumerKeychainId}/keys',
     ...options,
     headers: {
         'Content-Type': 'application/json',
