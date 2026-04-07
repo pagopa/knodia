@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { KnodeId } from "@knodia/common-models/ids";
 import type z from "zod";
 
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainPurpose,
@@ -25,17 +27,18 @@ const seedConsumerKeychains = async () => {
   await Promise.all(mockConsumerKeychains.map(seedConsumerKeychain));
 };
 
+const knodeId: KnodeId = "Orion";
 const purpose = getMockPurpose();
 const consumerKeychainPurposes: ConsumerKeychainPurpose[] = [
   {
     consumerKeychainId: mockConsumerKeychains[0]!.id,
     linkedAt: new Date(),
-    purposeId: purpose.id,
+    purpose: { id: unsafeBrandExternalId(purpose.id), knodeId },
   },
   {
     consumerKeychainId: mockConsumerKeychains[4]!.id,
     linkedAt: new Date(),
-    purposeId: purpose.id,
+    purpose: { id: unsafeBrandExternalId(purpose.id), knodeId },
   },
 ];
 const consumerKeychainPurposeIds = new Set(
