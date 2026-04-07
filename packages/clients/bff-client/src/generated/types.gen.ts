@@ -1564,6 +1564,10 @@ export type GetConsumerPurposesErrors = {
      * Forbidden
      */
     403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
 };
 
 export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];
