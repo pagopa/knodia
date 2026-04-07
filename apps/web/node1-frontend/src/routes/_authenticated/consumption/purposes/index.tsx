@@ -1,4 +1,3 @@
-import { KnodeId } from "@knodia/common-models/ids";
 import { ButtonLink, Pagination } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -12,16 +11,13 @@ import {
 } from "@/features/purpose/models/search-params";
 import { consumerPurposesQuery } from "@/features/purpose/services/queries";
 
-// TODO: Remove hardcoded knodeId when the BFF no longer requires it for GET /consumer/purposes
-const TEMPORARY_KNODE_ID: KnodeId = KnodeId.enum.Lynx;
-
 export const Route = createFileRoute("/_authenticated/consumption/purposes/")({
   component: RouteComponent,
   loaderDeps: ({ search: { offset } }) => ({ offset }),
   // eslint-disable-next-line perfectionist/sort-objects
   loader: ({ context: { queryClient }, deps: { offset } }) => {
     queryClient.prefetchQuery(
-      consumerPurposesQuery(offset, TEMPORARY_KNODE_ID),
+      consumerPurposesQuery(offset),
     );
   },
   search: {
@@ -35,7 +31,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate();
 
   const { data, isLoading } = useQuery({
-    ...consumerPurposesQuery(offset, TEMPORARY_KNODE_ID),
+    ...consumerPurposesQuery(offset),
     placeholderData: keepPreviousData,
   });
 

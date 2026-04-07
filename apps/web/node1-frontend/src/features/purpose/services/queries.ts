@@ -24,10 +24,10 @@ export const consumerPurposeDetailsQuery = (
 export const producerPurposeDetailsQuery = (purposeId: PurposeId) =>
   getProducerPurposeDetailsOptions({ client, path: { purposeId } });
 
-export const consumerPurposesQuery = (offset: number, knodeId: KnodeId) =>
+export const consumerPurposesQuery = (offset: number) =>
   getConsumerPurposesOptions({
     client,
-    query: { knodeId, limit: PURPOSES_PAGE_LIMIT, offset },
+    query: { limit: PURPOSES_PAGE_LIMIT, offset },
   });
 
 export const producerPurposesQuery = (offset: number) =>
