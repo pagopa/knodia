@@ -1547,10 +1547,6 @@ export type GetConsumerPurposesData = {
          * Pagination starting position
          */
         offset: number;
-        /**
-         * Knode ID of the producer's Knode
-         */
-        knodeId: KnodeId;
     };
     url: '/consumer/purposes';
 };

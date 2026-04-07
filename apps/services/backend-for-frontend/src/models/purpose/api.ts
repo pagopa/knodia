@@ -49,12 +49,7 @@ export type API_GetConsumerPurposeDetailQueryParams = z.infer<
   typeof API_GetConsumerPurposeDetailQueryParams
 >;
 
-export const API_GetConsumerPurposesQueryParams =
-  API_PaginationQueryParams.extend({
-    knodeId: API_KnodeId.meta({
-      description: "Knode ID of the producer's Knode",
-    }),
-  });
+export const API_GetConsumerPurposesQueryParams = API_PaginationQueryParams;
 export type API_GetConsumerPurposesQueryParams = z.infer<
   typeof API_GetConsumerPurposesQueryParams
 >;

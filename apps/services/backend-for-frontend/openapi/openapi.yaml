@@ -2681,13 +2681,6 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/KnodeId"
-          in: query
-          name: knodeId
-          required: true
-          description: Knode ID of the producer's Knode
       responses:
         "200":
           description: Consumer Purposes retrieved successfully
