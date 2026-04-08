@@ -1,14 +1,18 @@
-import type { KnodeId } from "@knodia/common-models/ids";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { API_CreatedResource } from "@knodia/common-models/api";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import { KnodeId } from "@knodia/common-models/ids";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
-import { assertEntityExists } from "@knodia/fastify-zod-api-commons/utils";
+import {
+  assertEntityExists,
+  getExternalEntitiesMap,
+} from "@knodia/fastify-zod-api-commons/utils";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -81,33 +85,33 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         return;
       }
 
-      const uniqueEservices = [
-        ...new Map(
-          data.results.map((p) => [p.eserviceId, p.knodeId]),
-        ).entries(),
-      ];
-
       // TODO: https://pagopa.atlassian.net/browse/KN-325 — batch fetch eservice details
       // using listing endpoint with eserviceId filter instead of N individual calls
-      const eserviceDetailsEntries = await Promise.all(
-        uniqueEservices.map(async ([eserviceId, knodeId]) => {
-          const { data: details } =
-            await remoteResourcesManagerApi.getEserviceDetails({
-              client: remoteResourcesManagerClient,
-              headers,
-              path: { eserviceId },
-              query: { knodeId },
-            });
-          return [eserviceId, details] as const;
-        }),
-      );
-
-      const eserviceDetailsMap = new Map(eserviceDetailsEntries);
+      const eserviceDetailsMap = await getExternalEntitiesMap({
+        fetchFn: ({ entityIds, knodeId }) =>
+          Promise.all(
+            entityIds.map((eserviceId) =>
+              remoteResourcesManagerApi
+                .getEserviceDetails({
+                  client: remoteResourcesManagerClient,
+                  headers,
+                  path: { eserviceId },
+                  query: { knodeId },
+                })
+                .then((res) => res.data),
+            ),
+          ),
+        getEntityId: (purpose) => purpose.eserviceId,
+        getKnodeId: (purpose) => KnodeId.parse(purpose.knodeId),
+        items: data.results,
+      });
 
       const results = data.results.map((purpose) =>
         toAPI_ConsumerPurpose({
           eserviceDetails: assertEntityExists(
-            eserviceDetailsMap.get(purpose.eserviceId),
+            eserviceDetailsMap
+              .get(purpose.knodeId)
+              ?.get(unsafeBrandExternalId(purpose.eserviceId)),
             `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
           ),
           purpose,

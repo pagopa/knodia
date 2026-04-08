@@ -22,8 +22,12 @@ export function ProductionEserviceCard({
         to="/production/e-services/$id"
       />
       <EserviceCardInfoGrid>
-        <GenericInfoCard label="Active Agreements">-</GenericInfoCard>
-        <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
+        <GenericInfoCard label="Active Agreements">
+          {eservice.activeAgreements}
+        </GenericInfoCard>
+        <GenericInfoCard label="Active Purposes">
+          {eservice.activePurposes}
+        </GenericInfoCard>
       </EserviceCardInfoGrid>
       <EserviceCardFooter mode="ProvideData" state="Active">
         {eservice.categories.map((category) => (

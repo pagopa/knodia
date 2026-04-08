@@ -148,9 +148,8 @@ describe("toConsumptionEserviceDetail", () => {
       perKnode: 10000,
     });
     expect(result.mode).toBe("ProvideData");
-    expect(result.producer.email).toBe("info@ursa.com");
     expect(result.producer.knodeId).toBe("Lynx");
-    expect(result.producer.notes).toBe("Open Mon-Fri");
+    expect(result.producer.name).toBe("Ursa Major");
     expect(result.requiredAttributes).toEqual([
       [{ code: "NUTS3", possessed: true, scheme: "eu" }],
     ]);
