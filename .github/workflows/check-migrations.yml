@@ -1,0 +1,104 @@
+name: Check migrations
+
+on:
+  pull_request:
+    paths:
+      - "migration/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: check-migrations
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U root"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      NAMESPACE: ci
+      PGHOST: localhost
+      PGUSER: root
+      PGPASSWORD: root
+      PGDATABASE: postgres
+    steps:
+      - name: Checkout (merge commit)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Resolve Flyway image
+        id: flyway-image
+        run: |
+          IMAGE=$(awk '/^FROM /{img=$2} END{print img}' apps/infra/migrations/Dockerfile)
+          echo "ref=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Create databases and roles
+        run: |
+          psql -f docker/init-databases.sql
+          sed "s/\${NAMESPACE}/$NAMESPACE/g" scripts/flyway/roles/R__roles.sql | psql
+
+      - name: Run Flyway migrations
+        run: |
+          declare -A DB_MAP=(
+            [event-store]=event_store
+            [read-model]=readmodel
+            [remote-resource]=remote_resource
+          )
+
+          run_flyway() {
+            local sql_dir="$1" db_name="$2" schema="$3"
+
+            sql_count=$(find "$sql_dir" -maxdepth 1 -name "*.sql" -type f 2>/dev/null | wc -l)
+            if [ "$sql_count" -eq 0 ]; then
+              echo "No migrations in $sql_dir, skipping"
+              return
+            fi
+
+            echo "Migrating $db_name / $schema from $sql_dir"
+            docker run --rm \
+              --add-host=host.docker.internal:host-gateway \
+              -v "$(pwd)/${sql_dir}:/flyway/sql:ro" \
+              "${{ steps.flyway-image.outputs.ref }}" \
+              -url="jdbc:postgresql://host.docker.internal:5432/${db_name}" \
+              -user="${PGUSER}" -password="${PGPASSWORD}" \
+              -locations="filesystem:/flyway/sql" \
+              -schemas="${schema}" \
+              -defaultSchema="${schema}" \
+              -baselineOnMigrate=true \
+              -placeholders.NAMESPACE="${NAMESPACE}" \
+              migrate
+          }
+
+          for dir_name in "${!DB_MAP[@]}"; do
+            db_name="${DB_MAP[$dir_name]}"
+            base_path="migration/${dir_name}"
+
+            if [ ! -d "$base_path" ]; then
+              echo "::error::Expected migration directory not found: $base_path"
+              exit 1
+            fi
+
+            subdirs=$(find "$base_path" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
+
+            if [ -n "$subdirs" ]; then
+              for schema_dir in "$base_path"/*/; do
+                run_flyway "$schema_dir" "$db_name" "${NAMESPACE}_$(basename "$schema_dir")"
+              done
+            else
+              run_flyway "$base_path" "$db_name" "public"
+            fi
+          done
