@@ -1,12 +1,12 @@
 import type { ServiceName } from "@knodia/common-models/services";
 
-import { type Logger, type LoggerOptions, multistream, pino } from "pino";
+import { type Logger, type LoggerOptions, pino } from "pino";
 
 import type { LoggerConfig } from "./config.ts";
 import type { LoggerMetadata } from "./models/models.ts";
 
 const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
-
+const TRANSPORT_TARGET = new URL("transport.mts", import.meta.url).pathname;
 /**
  * Builds logger options based on the environment
  *
@@ -16,9 +16,24 @@ const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
 const buildLoggerEnvOptions = (
   isProduction: boolean,
 ): Partial<LoggerOptions> =>
-  isProduction
+  !isProduction
     ? {
         timestamp: false,
+        transport: {
+          dedupe: true,
+          targets: [
+            {
+              level: "trace",
+              options: { stream: "stdout" },
+              target: TRANSPORT_TARGET,
+            },
+            {
+              level: "error",
+              options: { stream: "stderr" },
+              target: TRANSPORT_TARGET,
+            },
+          ],
+        },
       }
     : {
         transport: {
@@ -36,26 +51,6 @@ export const createLoggerOptions = (
 ): LoggerOptions => ({
   formatters: {
     bindings: () => ({}), // Removes pid, hostname and name from logs
-    level: (label) => ({
-      level: label.toUpperCase(),
-    }),
-  },
-  hooks: {
-    streamWrite: (s) => {
-      try {
-        const trimmed = s.trimEnd();
-
-        // Parsing Pino log to remove duplicate keys and keep the latest value
-        const obj = JSON.parse(trimmed);
-
-        const { msg, ...rest } = obj;
-        const ordered = msg !== undefined ? { msg, ...rest } : rest;
-
-        return JSON.stringify(ordered) + "\n";
-      } catch {
-        return s;
-      }
-    },
   },
   level: config.logLevel,
   name: serviceName,
@@ -71,14 +66,5 @@ export const createLogger = ({
   config: LoggerConfig;
   loggerMetadata?: LoggerMetadata;
   serviceName: ServiceName;
-}): Logger => {
-  const streams = [
-    { level: "trace", stream: process.stdout },
-    { level: "error", stream: process.stderr },
-  ];
-
-  return pino(
-    createLoggerOptions(config, serviceName),
-    multistream(streams, { dedupe: true }),
-  ).child(loggerMetadata ?? {});
-};
+}): Logger =>
+  pino(createLoggerOptions(config, serviceName)).child(loggerMetadata ?? {});
