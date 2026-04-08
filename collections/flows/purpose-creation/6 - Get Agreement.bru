@@ -1,0 +1,19 @@
+meta {
+  name: 6 - Get Agreement
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{host-agreement-process}}/agreements/:agreementId
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

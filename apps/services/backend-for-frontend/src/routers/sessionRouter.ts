@@ -6,8 +6,8 @@ import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
   forbiddenError,
+  getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
-import { API_CompactOrganization } from "@knodia/organization-models/api";
 import {
   organizationProcessApi,
   type OrganizationProcessClient,
@@ -15,8 +15,9 @@ import {
 import { isAxiosError } from "axios";
 
 import { apiTags } from "../models/apiTags.ts";
+import { API_SessionOrganization } from "../models/organization/api.ts";
+import { toAPI_SessionOrganization } from "../models/organization/apiConverter.ts";
 import { getUISessionAuthData } from "../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface SessionRouterOptions {
   knodeId: KnodeId;
@@ -41,11 +42,7 @@ export const sessionRouter: FastifyPluginAsyncZod<
           path: { organizationId },
         });
 
-        res.send({
-          id: data.id,
-          knodeId,
-          name: data.name,
-        });
+        res.send(toAPI_SessionOrganization(data, knodeId));
       } catch (error) {
         if (isAxiosError(error) && error.response?.status === 404) {
           throw forbiddenError(`Organization ${organizationId} not found`);
@@ -58,7 +55,7 @@ export const sessionRouter: FastifyPluginAsyncZod<
       description: "Retrieve the Organization of the current session's User",
       operationId: "getSessionOrganization",
       response: {
-        200: API_CompactOrganization.meta({
+        200: API_SessionOrganization.meta({
           description: "Session Organization retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

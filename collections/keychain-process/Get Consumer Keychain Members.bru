@@ -1,0 +1,19 @@
+meta {
+  name: Get Consumer Keychain Members
+  type: http
+}
+
+get {
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/members
+  body: none
+  auth: none
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+}

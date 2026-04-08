@@ -137,6 +137,8 @@ export function buildAppFromConfig(
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
+      knodeId: config.knodeId,
+      organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(sessionRouter, {

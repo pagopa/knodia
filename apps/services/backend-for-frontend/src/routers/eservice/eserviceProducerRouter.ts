@@ -19,6 +19,7 @@ import {
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
+  getKnodiaServiceHeaders,
   type KnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -40,7 +41,6 @@ import {
   toAPI_ProducerEserviceDetails,
 } from "../../models/eservice/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-import { getKnodiaServiceHeaders } from "../../utils/headers.ts";
 
 interface EserviceProducerRouterOptions {
   config: BffProcessConfig;

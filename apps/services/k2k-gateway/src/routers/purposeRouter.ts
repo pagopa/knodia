@@ -22,12 +22,17 @@ import {
 import { apiTags } from "../models/apiTags.ts";
 import {
   API_CreatedPurposeResource,
-  API_PurposeFormSchema,
-  API_PurposeFormSchemaVersionPathParam,
-  API_PurposeFormUiSchema,
+  API_GetPurposesQueryParams,
+  API_Purpose,
+  API_PurposeFormSchemasResponse,
+  API_PurposeIdPathParam,
+  API_Purposes,
   API_PurposeSeed,
 } from "../models/purpose/api.ts";
-import { toProcessAPI_PurposeSeed } from "../models/purpose/apiConverter.ts";
+import {
+  toAPI_Purpose,
+  toProcessAPI_PurposeSeed,
+} from "../models/purpose/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
 interface PurposeRouterOptions {
@@ -37,32 +42,35 @@ interface PurposeRouterOptions {
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
+const retrievePurpose = async (
+  purposeProcessClient: PurposeProcessClient,
+  purposeId: string,
+  headers: KnodiaServiceHeaders,
+) =>
+  await purposeProcessApi.getPurpose({
+    client: purposeProcessClient,
+    headers,
+    path: { purposeId },
+  });
+
+const pollPurpose = (
+  pollingService: PollingService,
+  purposeProcessClient: PurposeProcessClient,
+  response: AxiosResponse<API_CreatedResource>,
+  headers: KnodiaServiceHeaders,
+) =>
+  pollingService.pollResourceWithMetadata(() =>
+    retrievePurpose(purposeProcessClient, response.data.id, headers),
+  )({
+    condition: isPolledVersionAtLeastResponseVersion(response),
+  });
+
 export const purposeRouter: FastifyPluginAsyncZod<
   PurposeRouterOptions
 > = async (
   fastify,
   { callerKnodeId, pollingService, purposeProcessClient, tokenProvider },
 ) => {
-  const retrievePurpose = async (
-    purposeId: string,
-    headers: KnodiaServiceHeaders,
-  ) =>
-    await purposeProcessApi.getPurpose({
-      client: purposeProcessClient,
-      headers,
-      path: { purposeId },
-    });
-
-  const pollPurpose = (
-    response: AxiosResponse<API_CreatedResource>,
-    headers: KnodiaServiceHeaders,
-  ) =>
-    pollingService.pollResourceWithMetadata(() =>
-      retrievePurpose(response.data.id, headers),
-    )({
-      condition: isPolledVersionAtLeastResponseVersion(response),
-    });
-
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -78,7 +86,12 @@ export const purposeRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollPurpose(response, headers);
+      await pollPurpose(
+        pollingService,
+        purposeProcessClient,
+        response,
+        headers,
+      );
 
       res.status(201).send({
         id: response.data.id,
@@ -105,16 +118,15 @@ export const purposeRouter: FastifyPluginAsyncZod<
   });
 
   fastify.route({
-    handler: async (req, res) => {
+    handler: async (_req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
-      logger.info(`Getting Purpose form schema version ${req.params.version}`);
+      logger.info("Getting current Purpose form schemas");
 
       const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getPurposeFormSchema({
+      const { data } = await purposeProcessApi.getCurrentPurposeFormSchemas({
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(correlationId, token),
-        path: { version: req.params.version },
       });
 
       res.send(data);
@@ -122,19 +134,52 @@ export const purposeRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve the JSON Schema for validating Purpose form answers",
-      operationId: "getPurposeFormSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
+        "Retrieve the current Purpose form schemas (JSON Schema + UI Schema) with their version",
+      operationId: "getCurrentPurposeFormSchemas",
       response: {
-        200: API_PurposeFormSchema.meta({
-          description: "Purpose form schema retrieved successfully",
+        200: API_PurposeFormSchemasResponse.meta({
+          description: "Current Purpose form schemas retrieved successfully",
         }),
-        400: API_Problem.meta({ description: "Bad Request" }),
       },
-      summary: "Get Purpose form schema by version",
+      summary: "Get current Purpose form schemas",
       tags: [apiTags.resource, apiTags.purpose],
     },
-    url: "/purposes/formSchemas/:version",
+    url: "/purposes/formSchemas/current",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Getting Purpose with ID ${req.params.purposeId}`);
+
+      const token = await tokenProvider.get();
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { data } = await retrievePurpose(
+        purposeProcessClient,
+        req.params.purposeId,
+        headers,
+      );
+
+      res.send(toAPI_Purpose(data));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Purpose",
+      operationId: "getPurpose",
+      params: API_PurposeIdPathParam,
+      response: {
+        200: API_Purpose.meta({
+          description: "Purpose retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Purpose not found" }),
+      },
+      summary: "Get Purpose",
+      tags: [apiTags.purpose, apiTags.resource],
+    },
+    url: "/purposes/:purposeId",
   });
 
   fastify.route({
@@ -142,33 +187,45 @@ export const purposeRouter: FastifyPluginAsyncZod<
       const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
-        `Getting Purpose form UI schema version ${req.params.version}`,
+        { requestQuery: req.query },
+        "Getting Purposes with query params",
       );
 
       const token = await tokenProvider.get();
-      const { data } = await purposeProcessApi.getPurposeFormUiSchema({
+      const headers = getKnodiaServiceHeaders(correlationId, token);
+
+      const { consumerId, eserviceId, limit, offset } = req.query;
+
+      const { data } = await purposeProcessApi.getPurposes({
         client: purposeProcessClient,
-        headers: getKnodiaServiceHeaders(correlationId, token),
-        path: { version: req.params.version },
+        headers,
+        query: {
+          consumerId,
+          consumerKnodeId: callerKnodeId,
+          eserviceId,
+          limit,
+          offset,
+        },
       });
 
-      res.send(data);
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map(toAPI_Purpose),
+      });
     },
     method: "GET",
     schema: {
-      description:
-        "Retrieve the UI Schema for rendering the Purpose form (JSON Forms format)",
-      operationId: "getPurposeFormUiSchema",
-      params: API_PurposeFormSchemaVersionPathParam,
+      description: "Retrieve a list of Purposes",
+      operationId: "getPurposes",
+      querystring: API_GetPurposesQueryParams,
       response: {
-        200: API_PurposeFormUiSchema.meta({
-          description: "Purpose form UI schema retrieved successfully",
+        200: API_Purposes.meta({
+          description: "Purposes retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
-      summary: "Get Purpose form UI schema by version",
       tags: [apiTags.resource, apiTags.purpose],
     },
-    url: "/purposes/formSchemas/:version/ui",
+    url: "/purposes",
   });
 };

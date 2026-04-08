@@ -131,7 +131,11 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
               ),
               eq(
                 readmodelConsumerKeychainPurpose.purposeId,
-                consumerKeychainPurpose.purposeId,
+                consumerKeychainPurpose.purpose.id,
+              ),
+              eq(
+                readmodelConsumerKeychainPurpose.producerKnodeId,
+                consumerKeychainPurpose.purpose.knodeId,
               ),
             ),
           );

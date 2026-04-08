@@ -8,6 +8,7 @@ import type {
 } from "@knodia/eservice-models/api";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Organization } from "@knodia/organization-models";
+import type { Purpose, PurposeState } from "@knodia/purpose-models";
 
 import { match } from "ts-pattern";
 
@@ -108,3 +109,30 @@ export const toK2KOrganization = (
   id: organization.id,
   name: organization.name,
 });
+
+export const toK2KPurpose = (purpose: Purpose): k2kGatewayApi.Purpose => ({
+  consumer: {
+    id: purpose.consumer.id,
+    knodeId: toK2KKnodeId(purpose.consumer.knodeId),
+  },
+  dailyCalls: purpose.dailyCalls,
+  description: {
+    en: purpose.description.en,
+  },
+  eserviceId: purpose.eserviceId,
+  id: purpose.id,
+  name: {
+    en: purpose.name.en,
+  },
+  state: toK2KPurposeState(purpose.state),
+  updatedAt: purpose.updatedAt.toISOString(),
+});
+
+export const toK2KPurposeState = (
+  state: PurposeState,
+): k2kGatewayApi.PurposeState =>
+  match(state)
+    .with("Active", () => "ACTIVE" as const)
+    .with("Suspended", () => "SUSPENDED" as const)
+    .with("Archived", () => "ARCHIVED" as const)
+    .exhaustive();

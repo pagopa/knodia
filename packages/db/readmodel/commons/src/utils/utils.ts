@@ -115,26 +115,32 @@ const getTablePKColumns = (table: AnyPgTable): Map<string, PgColumn> => {
   return pkColumns;
 };
 
-export const throwIfMultipleOrEmpty = <T>(
+export const throwIfMultiple = <T>(
   items: T[],
   entityName: string,
   getId: (item: T) => string,
-): T => {
-  if (items.length === 0) {
-    throw genericInternalError(
-      `No ${entityName} found for the given unique filter`,
-    );
-  }
-
+): T | undefined => {
   if (items.length > 1) {
     const ids = items.map(getId).join(", ");
     throw genericInternalError(
       `Found more than one ${entityName} for a unique filter: ${ids}`,
     );
   }
+  return items[0];
+};
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  return items[0]!;
+export const throwIfMultipleOrEmpty = <T>(
+  items: T[],
+  entityName: string,
+  getId: (item: T) => string,
+): T => {
+  const result = throwIfMultiple(items, entityName, getId);
+  if (result === undefined) {
+    throw genericInternalError(
+      `No ${entityName} found for the given unique filter`,
+    );
+  }
+  return result;
 };
 
 export function aggregateByPKString<
@@ -155,7 +161,7 @@ export function aggregateByPKString<
   }
 }
 
-function getTablePKString<T extends Record<string, unknown>>(
+export function getTablePKString<T extends Record<string, unknown>>(
   modelSQL: T,
   table: AnyPgTable,
 ): string {

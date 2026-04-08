@@ -1,0 +1,25 @@
+meta {
+  name: 1 - Get Organizations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{host-organization-process}}/organizations?offset=0&limit=50
+  body: none
+  auth: none
+}
+
+params:query {
+  offset: 0
+  limit: 50
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
+
+vars:post-response {
+  organizationId: res.body.results[0].id
+}

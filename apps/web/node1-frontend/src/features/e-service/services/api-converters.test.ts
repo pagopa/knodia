@@ -112,10 +112,10 @@ describe("toConsumptionEserviceDetail", () => {
     expect(result.accessToken.type).toBe("DPoP");
   });
 
-  it("derives producer initials from name", () => {
+  it("maps producer knodeId and name", () => {
     const result = toConsumptionEserviceDetail(createBffDetail());
 
-    expect(result.producer.initials).toBe("UM");
+    expect(result.producer.knodeId).toBe("Lynx");
     expect(result.producer.name).toBe("Ursa Major");
   });
 
