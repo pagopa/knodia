@@ -67,6 +67,15 @@ export function remoteResourceDbServiceBuilder(db: NodePgDatabase) {
         .limit(1);
       return result;
     },
+    async getPurposesDistinctKnodes(consumerId: OrganizationId) {
+      const queryResult = await db
+        .selectDistinctOn([remoteResourcePurpose.knodeId])
+        .from(remoteResourcePurpose)
+        .where(eq(remoteResourcePurpose.consumerId, consumerId))
+        .orderBy(remoteResourcePurpose.knodeId);
+
+      return queryResult.map((r) => KnodeId.parse(r.knodeId));
+    },
     async insertAgreement(
       remoteAgreement: NewRemoteResourceAgreement,
     ): Promise<void> {
