@@ -63,7 +63,6 @@ export type API_GetConsumerPurposesQueryParams = z.infer<
 export const API_ConsumerPurpose = z
   .strictObject({
     dailyCalls: API_PurposeDailyCalls,
-    description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
     id: z.uuid(),
     // TODO: Replace with actual keychain data when consumer keychains for purposes are implemented

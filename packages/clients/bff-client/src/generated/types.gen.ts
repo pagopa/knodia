@@ -601,7 +601,6 @@ export type PurposeSeed = {
 
 export type ConsumerPurpose = {
     dailyCalls: number;
-    description: LocalizedPurposeDescription;
     eservice: CompactEservice;
     id: string;
     keychain: string;

@@ -1267,8 +1267,6 @@ components:
           type: integer
           minimum: 0
           maximum: 1000000000
-        description:
-          $ref: "#/components/schemas/LocalizedPurposeDescription"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         id:
@@ -1285,7 +1283,6 @@ components:
           $ref: "#/components/schemas/PurposeState"
       required:
         - dailyCalls
-        - description
         - eservice
         - id
         - keychain
