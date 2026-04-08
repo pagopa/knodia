@@ -1,5 +1,9 @@
 import type { ExternalResource } from "@knodia/common-models/externalResource";
-import type { ConsumerKeychainId, PurposeId } from "@knodia/common-models/ids";
+import type {
+  ConsumerKeychainId,
+  KeyId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
   ConsumerKeychainPurpose,
@@ -13,6 +17,7 @@ import {
 } from "@knodia/db-readmodel-commons/utils";
 import {
   readmodelConsumerKeychain,
+  readmodelConsumerKeychainKey,
   readmodelConsumerKeychainPurpose,
 } from "@knodia/db-readmodel-keychain";
 import {
@@ -34,6 +39,15 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     consumerKeychainReadmodelServiceBuilder(readmodelDb);
 
   return {
+    async checkConsumerKeychainKeyExists(kid: KeyId) {
+      const queryResult = await readmodelDb
+        .select({ kid: readmodelConsumerKeychainKey.kid })
+        .from(readmodelConsumerKeychainKey)
+        .where(eq(readmodelConsumerKeychainKey.kid, kid))
+        .limit(1);
+
+      return queryResult.length > 0;
+    },
     async getConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
       return await consumerKeychainReadmodelService.getConsumerKeychainById(
         consumerKeychainId,

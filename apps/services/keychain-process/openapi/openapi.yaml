@@ -95,6 +95,17 @@ components:
       required:
         - en
       additionalProperties: false
+    KeychainKeyLocalizedName:
+      description: Name of the Keychain Key
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
     KeychainLocalizedDescription:
       description: Description of the Keychain
       type: object
@@ -106,6 +117,15 @@ components:
       required:
         - en
       additionalProperties: false
+    KeyFormat:
+      type: string
+      enum:
+        - PublicKey
+        - X509Certificate
+    KeyAlgorithm:
+      type: string
+      enum:
+        - RS256
     ConsumerKeychainPurposeLinkSeed:
       type: object
       properties:
@@ -150,6 +170,11 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$
+    KeyId:
+      description: Unique identifier of the Key
+      type: string
+      format: base64url
+      pattern: ^[A-Za-z0-9_-]*$
     Keychain:
       type: object
       properties:
@@ -211,6 +236,45 @@ components:
         name:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
+      additionalProperties: false
+    KeychainKeySeed:
+      type: object
+      properties:
+        encodedPem:
+          type: string
+        name:
+          $ref: "#/components/schemas/KeychainKeyLocalizedName"
+      required:
+        - encodedPem
+        - name
+      additionalProperties: false
+    KeychainKey:
+      type: object
+      properties:
+        algorithm:
+          $ref: "#/components/schemas/KeyAlgorithm"
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        encodedPem:
+          type: string
+        format:
+          $ref: "#/components/schemas/KeyFormat"
+        kid:
+          $ref: "#/components/schemas/KeyId"
+        name:
+          $ref: "#/components/schemas/KeychainKeyLocalizedName"
+        userId:
+          $ref: "#/components/schemas/UserId"
+      required:
+        - algorithm
+        - createdAt
+        - encodedPem
+        - format
+        - kid
+        - name
+        - userId
       additionalProperties: false
     User:
       type: object
@@ -756,6 +820,88 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/keys:
+    post:
+      operationId: uploadConsumerKeychainKey
+      tags:
+        - consumerKeychain
+      description: Upload a key to a Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainKeySeed"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "201":
+          description: Consumer Keychain key uploaded successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain key uploaded successfully
+                allOf:
+                  - $ref: "#/components/schemas/KeychainKey"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members/{userId}:

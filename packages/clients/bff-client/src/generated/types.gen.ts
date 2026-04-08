@@ -530,6 +530,13 @@ export type KeychainLocalizedName = {
 };
 
 /**
+ * Name of the Keychain Key
+ */
+export type KeychainKeyLocalizedName = {
+    en: string;
+};
+
+/**
  * Description of the Keychain
  */
 export type KeychainLocalizedDescription = {
@@ -571,6 +578,11 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type KeychainKeySeed = {
+    encodedPem: string;
+    name: KeychainKeyLocalizedName;
+};
+
 export type KeychainMemberSeed = {
     userId: UserId;
 };
@@ -582,6 +594,13 @@ export type User = {
 };
 
 export type Users = Array<User>;
+
+/**
+ * Unique JWK identifier (kid) of the created key
+ */
+export type CreatedKeyResource = {
+    kid: string;
+};
 
 /**
  * Seed data to create a new Purpose
@@ -1177,6 +1196,49 @@ export type AddConsumerKeychainMemberResponses = {
 };
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
+
+export type UploadConsumerKeychainKeyData = {
+    body: KeychainKeySeed;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys';
+};
+
+export type UploadConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[keyof UploadConsumerKeychainKeyErrors];
+
+export type UploadConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain key uploaded successfully
+     */
+    201: CreatedKeyResource;
+};
+
+export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
 
 export type RemoveConsumerKeychainMemberData = {
     body?: never;

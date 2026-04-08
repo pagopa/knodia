@@ -25,6 +25,7 @@ export async function handleKeychainEvent(
           "ConsumerKeychainUpdatedV1",
           "ConsumerKeychainMemberAddedV1",
           "ConsumerKeychainMemberRemovedV1",
+          "ConsumerKeychainKeyAddedV1",
         ),
       },
       async (msg) => {

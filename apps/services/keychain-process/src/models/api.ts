@@ -1,4 +1,5 @@
 import {
+  API_KeyId,
   API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
@@ -7,9 +8,12 @@ import {
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
+  API_KeyAlgorithm,
   API_KeychainId,
+  API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
+  API_KeyFormat,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -55,6 +59,27 @@ export const API_ConsumerKeychainPatch = z
 export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
 >;
+
+export const API_KeychainKeySeed = z
+  .strictObject({
+    encodedPem: z.string(),
+    name: API_KeychainKeyLocalizedName,
+  })
+  .meta({ id: "KeychainKeySeed" });
+export type API_KeychainKeySeed = z.infer<typeof API_KeychainKeySeed>;
+
+export const API_KeychainKey = z
+  .strictObject({
+    algorithm: API_KeyAlgorithm,
+    createdAt: z.iso.datetime(),
+    encodedPem: z.string(),
+    format: API_KeyFormat,
+    kid: API_KeyId,
+    name: API_KeychainKeyLocalizedName,
+    userId: API_UserId,
+  })
+  .meta({ id: "KeychainKey" });
+export type API_KeychainKey = z.infer<typeof API_KeychainKey>;
 
 export const API_User = z
   .strictObject({
