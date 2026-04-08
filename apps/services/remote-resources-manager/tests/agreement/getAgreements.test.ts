@@ -1,13 +1,20 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import type { KnodeId } from "@knodia/common-models/ids";
+import type { RemoteResourceAgreementSQL } from "@knodia/db-remote-resource";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import { API_Agreement } from "../../src/models/agreement/api.ts";
 import { toK2KAPI_AgreementState } from "../../src/models/agreement/apiConverter.ts";
 import { toK2KKnodeId } from "../k2kConverters.ts";
+import { remoteResourceDbService } from "../setup.ts";
 import { injectAppRequest } from "../utils.ts";
 
 const getAgreementsMock = vi.hoisted(() => vi.fn());
@@ -62,6 +69,16 @@ describe("GET /agreements (getAgreements)", () => {
     results: [k2kResult],
   };
 
+  const knodeId: KnodeId = "Orion";
+  const remoteAgreement: RemoteResourceAgreementSQL = {
+    agreementId: expectedApiResult.id,
+    consumerId: TEST_ORGANIZATION_ID,
+    eserviceId: expectedApiResult.eserviceId,
+    eserviceVersionId: expectedApiResult.eserviceVersionId,
+    knodeId,
+    producerId: expectedApiResult.producerId,
+  };
+
   beforeEach(() => {
     getAgreementsMock.mockReset();
   });
@@ -71,15 +88,21 @@ describe("GET /agreements (getAgreements)", () => {
       data: mockK2KResponse,
     });
 
+    await remoteResourceDbService.insertAgreement(remoteAgreement);
+
     const response = await injectAppRequest(allowedTestTokens[0]!)
       .get("/agreements")
-      .query(defaultQuery);
+      .query({ ...defaultQuery, state: expectedApiResult.state });
 
     expect(response.statusCode).toBe(200);
 
     expect(getAgreementsMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        query: parsedDefaultQuery,
+        query: {
+          ...parsedDefaultQuery,
+          consumerId: TEST_ORGANIZATION_ID,
+          state: toK2KAPI_AgreementState(expectedApiResult.state),
+        },
       }),
     );
 
@@ -110,7 +133,6 @@ describe("GET /agreements (getAgreements)", () => {
       ...defaultQuery,
       state: "InvalidState",
     },
-    { ...defaultQuery, consumerId: "InvalidConsumerId" },
     {
       ...defaultQuery,
       invalidParam: "invalid",
