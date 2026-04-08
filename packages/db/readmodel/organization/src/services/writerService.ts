@@ -24,13 +24,12 @@ export function organizationWriterServiceBuilder(db: NodePgDatabase) {
         splitOrganizationIntoObjectsSQL(organization, metadataVersion);
 
       await db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion({
-          id: organization.id,
-          metadataVersion,
-          table: readmodelOrganization,
-          tableIdColumn: readmodelOrganization.id,
+        const shouldUpsert = await checkMetadataVersion(
           tx,
-        });
+          readmodelOrganization,
+          metadataVersion,
+          organization.id,
+        );
 
         if (!shouldUpsert) {
           return;

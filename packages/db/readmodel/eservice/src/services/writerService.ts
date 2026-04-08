@@ -23,13 +23,12 @@ export function eserviceWriterServiceBuilder(db: NodePgDatabase) {
       metadataVersion: number,
     ): Promise<void> {
       return db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion({
-          id: eservice.id,
-          metadataVersion,
-          table: readmodelEservice,
-          tableIdColumn: readmodelEservice.id,
+        const shouldUpsert = await checkMetadataVersion(
           tx,
-        });
+          readmodelEservice,
+          metadataVersion,
+          eservice.id,
+        );
 
         if (!shouldUpsert) {
           return;
