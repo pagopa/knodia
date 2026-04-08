@@ -27,7 +27,8 @@ import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
-  API_ConsumerKeychainMemberPathParam,
+  API_ConsumerKeychainKeyPathParams,
+  API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
@@ -265,6 +266,48 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId, keyId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Removing key ${keyId} from Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.removeConsumerKeychainKey({
+        client: keychainProcessClient,
+        headers,
+        path: { consumerKeychainId, keyId },
+      });
+
+      await pollConsumerKeychainById(consumerKeychainId, response, headers);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a key from a Consumer Keychain",
+      operationId: "removeConsumerKeychainKey",
+      params: API_ConsumerKeychainKeyPathParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Consumer Keychain key removed successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
         { requestParams: req.params },
@@ -290,7 +333,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Remove a member from a Consumer Keychain",
       operationId: "removeConsumerKeychainMember",
-      params: API_ConsumerKeychainMemberPathParam,
+      params: API_ConsumerKeychainMemberPathParams,
       response: {
         204: z.undefined().meta({
           description: "Consumer Keychain member removed successfully",

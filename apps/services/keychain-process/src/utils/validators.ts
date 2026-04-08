@@ -6,8 +6,10 @@ import type {
   PurposeId,
   UserId,
 } from "@knodia/common-models/ids";
+import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
+import { UserRole } from "@knodia/common-models/auth";
 import { forbiddenError } from "@knodia/fastify-zod-api-commons/models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
@@ -95,6 +97,20 @@ export function assertUserIsAllowedToPerformKeychainOperation(
   if (!isMember) {
     throw userNotAllowed(userId, keychainId);
   }
+}
+
+export function assertUserIsAllowedToRemoveKey(
+  authData: UISessionAuthData,
+  keychainId: ConsumerKeychainId,
+  members: UserId[],
+): void {
+  const { userId, userRoles } = authData;
+
+  if (userRoles.includes(UserRole.enum.administrative)) {
+    return;
+  }
+
+  assertUserIsAllowedToPerformKeychainOperation(userId, keychainId, members);
 }
 
 export function assertUserIsMemberOfKeychain(
