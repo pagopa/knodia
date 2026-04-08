@@ -9,23 +9,36 @@ import type {
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
-import type {
-  ConsumerKeychain,
-  FlatConsumerKeychain,
-} from "@knodia/keychain-models";
 
 import { genericInternalError } from "@knodia/common-models/errors";
 import {
+  type ExternalId,
+  type ExternalResource,
+} from "@knodia/common-models/externalResource";
+import {
   type ConsumerKeychainId,
   generateId,
+  type KnodeId,
+  type PurposeId,
   unsafeBrandUserId,
   type UserId,
 } from "@knodia/common-models/ids";
+import { type KnodiaServiceHeaders } from "@knodia/fastify-zod-api-commons/models";
+import {
+  type ConsumerKeychain,
+  type ConsumerKeychainPurpose,
+  type FlatConsumerKeychain,
+} from "@knodia/keychain-models";
+import {
+  remoteResourcesManagerApi,
+  type RemoteResourcesManagerClient,
+} from "@knodia/remote-resources-manager-client";
 import { match, P } from "ts-pattern";
 
 import type {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
+  API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainMemberSeed,
 } from "../models/api.ts";
@@ -38,11 +51,14 @@ import {
   createConsumerKeychainDeletedV1Event,
   createConsumerKeychainMemberAddedV1Event,
   createConsumerKeychainMemberRemovedV1Event,
+  createConsumerKeychainPurposeLinkedV1Event,
   createConsumerKeychainUpdatedV1Event,
 } from "../models/keychainEventFactory.ts";
 import { retrieveConsumerKeychain } from "../utils/readmodelUtils.ts";
 import {
   assertOrganizationIsKeychainOwner,
+  assertOrganizationIsPurposeConsumer,
+  assertPurposeIsNotLinkedToConsumerKeychain,
   assertUserBelongsToOrganization,
   assertUserHasTechnicalRole,
   assertUserIsMemberOfKeychain,
@@ -56,6 +72,7 @@ export function consumerKeychainServiceBuilder(
   eventStoreWriter: KeychainEventStoreWriter,
   readmodelService: ReadmodelService,
   userService: UserService,
+  remoteResourcesManagerClient: RemoteResourcesManagerClient,
 ) {
   return {
     async addConsumerKeychainMember(
@@ -225,6 +242,24 @@ export function consumerKeychainServiceBuilder(
       return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
     },
 
+    async getConsumerKeychainPurposes(
+      consumerKeychainId: ConsumerKeychainId,
+      params: API_GetConsumerKeychainPurposesQueryParams,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<ConsumerKeychainPurpose>> {
+      logger.info(
+        { params },
+        `Getting Purposes linked to Consumer Keychain ${consumerKeychainId} with params`,
+      );
+
+      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+
+      return await readmodelService.getConsumerKeychainPurposes(
+        consumerKeychainId,
+        params,
+      );
+    },
+
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
       { logger }: AuthorizedContext<UISessionAuthData>,
@@ -232,6 +267,71 @@ export function consumerKeychainServiceBuilder(
       logger.info({ params }, "Getting Consumer keychains with params");
 
       return await readmodelService.getConsumerKeychains(params);
+    },
+
+    async linkPurposeToConsumerKeychain(
+      {
+        consumerKeychainId,
+        headers,
+        knodeId,
+        purposeId,
+      }: {
+        consumerKeychainId: ConsumerKeychainId;
+        headers: KnodiaServiceHeaders;
+        knodeId: KnodeId;
+        purposeId: ExternalId<PurposeId>;
+      },
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
+      logger.info(
+        `Linking Purpose ${purposeId} owned by Knode ${knodeId} to Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const externalPurpose: ExternalResource<PurposeId> = {
+        id: purposeId,
+        knodeId,
+      };
+      const [consumerKeychain] = await Promise.all([
+        retrieveConsumerKeychain(consumerKeychainId, readmodelService),
+        assertPurposeIsNotLinkedToConsumerKeychain(
+          consumerKeychainId,
+          externalPurpose,
+          readmodelService,
+        ),
+      ]);
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      const { data: purpose } = await remoteResourcesManagerApi.getPurpose({
+        client: remoteResourcesManagerClient,
+        headers,
+        path: { purposeId },
+        query: { knodeId },
+      });
+
+      assertOrganizationIsPurposeConsumer(authData.organizationId, purpose);
+
+      const linkedAt = new Date();
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createConsumerKeychainPurposeLinkedV1Event({
+          consumerKeychain: consumerKeychain.data,
+          correlationId,
+          currentMetadataVersion: consumerKeychain.metadata.version,
+          linkedAt,
+          purpose: externalPurpose,
+        }),
+      );
+
+      return {
+        data: {
+          consumerKeychainId,
+          linkedAt,
+          purpose: externalPurpose,
+        },
+        metadata: { version: newVersion },
+      };
     },
 
     async removeConsumerKeychainMember(

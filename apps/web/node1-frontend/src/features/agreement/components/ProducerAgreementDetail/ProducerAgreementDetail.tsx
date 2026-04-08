@@ -4,7 +4,7 @@ import { Button, Link } from "@knodia/ui-kit/ui";
 import { createLink } from "@tanstack/react-router";
 import { match } from "ts-pattern";
 
-import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
+import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
 import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
@@ -50,21 +50,16 @@ export function ProducerAgreementDetail({
         </SettingsCard>
 
         <div className="grid grid-cols-2 gap-4">
-          <SettingsCard label="Producer">
-            {agreement.producer.name} - {agreement.producer.knodeId} Knode
-          </SettingsCard>
-          <SettingsCard label="Consumer">
-            <span className="flex items-center gap-2">
-              {agreement.consumer.name} - {agreement.consumer.knodeId} Knode
-              {/* TODO: Replace mocked contact info with real data from the API when available in ProducerAgreementDetails */}
-              <OrganizationContactPopover
-                email="contact@example.com"
-                knodeId={agreement.consumer.knodeId}
-                name={agreement.consumer.name}
-                notes="—"
-              />
-            </span>
-          </SettingsCard>
+          <OrganizationCard
+            label="Producer"
+            organization={agreement.producer}
+            showContact={false}
+          />
+          <OrganizationCard
+            label="Consumer"
+            organization={agreement.consumer}
+            showContact={true}
+          />
         </div>
       </div>
 
