@@ -75,14 +75,11 @@ function evaluateIfCondition(
     const value = values[field];
     if (value === undefined) continue;
 
+    if (constraint.type === "array" && !Array.isArray(value)) return false;
+    if (constraint.type === "string" && typeof value !== "string") return false;
+
     if ("const" in constraint && constraint.const !== undefined) {
-      if (
-        Array.isArray(value)
-          ? !value.includes(constraint.const)
-          : value !== constraint.const
-      ) {
-        return false;
-      }
+      if (value !== constraint.const) return false;
     }
 
     if ("contains" in constraint && constraint.contains !== undefined) {

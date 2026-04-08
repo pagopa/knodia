@@ -225,4 +225,52 @@ describe("getRequiredFields", () => {
       new Set(["fallbackField"]),
     );
   });
+
+  it("does not match `const` against an array element (const is strict equality, not array containment)", () => {
+    const constSchema: JsonSchema = {
+      allOf: [
+        {
+          if: {
+            properties: { foo: { const: "YES", type: "string" } },
+            required: ["foo"],
+          },
+          then: { required: ["bazField"] },
+        },
+      ],
+      properties: {
+        bazField: { type: "string" },
+        foo: { items: { type: "string" }, type: "array" },
+      },
+      type: "object",
+    };
+
+    // ["YES"] !== "YES" — the if must NOT match, then must NOT fire.
+    // (The previous implementation incorrectly treated this as a match by
+    // falling back to includes() when the value was an array.)
+    expect(getRequiredFields(constSchema, { foo: ["YES"] })).toEqual(new Set());
+  });
+
+  it("fails the `if` when the value type does not match `if.properties[*].type`", () => {
+    const typedSchema: JsonSchema = {
+      allOf: [
+        {
+          if: {
+            properties: {
+              foo: { contains: { const: "BAR" }, type: "array" },
+            },
+            required: ["foo"],
+          },
+          then: { required: ["bazField"] },
+        },
+      ],
+      properties: {
+        bazField: { type: "string" },
+        foo: { type: "string" },
+      },
+      type: "object",
+    };
+
+    // Value is a string, but the if-clause declares type: "array" — must fail.
+    expect(getRequiredFields(typedSchema, { foo: "BAR" })).toEqual(new Set());
+  });
 });
