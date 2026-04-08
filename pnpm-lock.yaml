@@ -290,6 +290,9 @@ importers:
       '@aws-sdk/client-kms':
         specifier: 'catalog:'
         version: 3.992.0
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
