@@ -175,12 +175,7 @@ function RouteComponent() {
             name={eservice.producer.name}
             size="sm"
           />
-          <OrganizationContactPopover
-            email={eservice.producer.email}
-            knodeId={eservice.producer.knodeId}
-            name={eservice.producer.name}
-            notes={eservice.producer.notes}
-          />
+          <OrganizationContactPopover organization={eservice.producer} />
         </div>
         <p className="mt-6 body-md text-primary-light-low-contrast max-w-200">
           {eservice.description}
