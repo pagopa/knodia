@@ -4,7 +4,6 @@ import {
   generateId,
   type OrganizationId,
   unsafeBrandKeyId,
-  unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
@@ -13,7 +12,11 @@ import {
   KeychainEventV1,
   toConsumerKeychainV1,
 } from "@knodia/keychain-models";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_USER_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import {
   getMockConsumerKeychain,
   getMockConsumerKeychainKey,
@@ -42,7 +45,6 @@ import {
   toBase64,
 } from "./utils.ts";
 
-const callerUserId = "10000000-1000-1000-8000-000000000001";
 const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
@@ -77,7 +79,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   it("should correctly create consumer keychain key added event", async () => {
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
-      users: [unsafeBrandUserId(callerUserId)],
+      users: [TEST_USER_ID],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -109,7 +111,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       format: "PublicKey",
       kid: expectedKid,
       name: mockSeed.name,
-      userId: unsafeBrandUserId(callerUserId),
+      userId: TEST_USER_ID,
     };
 
     expect(responseBody).toEqual(toAPI_KeychainKey(expectedKey));
@@ -148,10 +150,8 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     async (_label, body) => {
       const consumerKeychain: ConsumerKeychain = {
         ...getMockConsumerKeychain(),
-        users: [unsafeBrandUserId(callerUserId)],
+        users: [TEST_USER_ID],
       };
-
-      await seedConsumerKeychain(consumerKeychain);
 
       const response = await injectAppRequest({
         ...allowedTestTokens[0]!,
@@ -168,7 +168,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   it("should return 400 if the uploaded key is invalid", async () => {
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
-      users: [unsafeBrandUserId(callerUserId)],
+      users: [TEST_USER_ID],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -190,7 +190,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   it("should return 400 with certificate-specific error if the uploaded key is an X.509 certificate", async () => {
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
-      users: [unsafeBrandUserId(callerUserId)],
+      users: [TEST_USER_ID],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -219,7 +219,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     async (_label, encodedPem) => {
       const consumerKeychain: ConsumerKeychain = {
         ...getMockConsumerKeychain(),
-        users: [unsafeBrandUserId(callerUserId)],
+        users: [TEST_USER_ID],
       };
 
       await seedConsumerKeychain(consumerKeychain);
@@ -243,7 +243,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
       ownerId: generateId<OrganizationId>(),
-      users: [unsafeBrandUserId(callerUserId)],
+      users: [TEST_USER_ID],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -296,12 +296,12 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       format: "PublicKey",
       kid,
       name: { en: "Existing key name" },
-      userId: unsafeBrandUserId(callerUserId),
+      userId: TEST_USER_ID,
     };
     const consumerKeychain: ConsumerKeychain = {
       ...getMockConsumerKeychain(),
       keys: [existingKey],
-      users: [unsafeBrandUserId(callerUserId)],
+      users: [TEST_USER_ID],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -326,7 +326,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       keys: Array.from({ length: mockMaxKeysPerKeychain }, (_, i) =>
         getMockConsumerKeychainKey(i),
       ),
-      users: [unsafeBrandUserId(callerUserId)],
+      users: [TEST_USER_ID],
     };
 
     await seedConsumerKeychain(consumerKeychain);

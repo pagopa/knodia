@@ -126,7 +126,7 @@ describe("createJWK", () => {
 
 describe("calculateKid", () => {
   it("should calculate the kid", async () => {
-    const expetedKid = "23j6WZbSbFiX_By98MBDgjnL3ZPkJJU83euQxrZxVsA";
+    const expectedKid = "23j6WZbSbFiX_By98MBDgjnL3ZPkJJU83euQxrZxVsA";
     const kid = calculateKid(
       createJWK({
         pemKey: decodeBase64Pem(
@@ -134,7 +134,7 @@ describe("calculateKid", () => {
         ),
       }),
     );
-    expect(kid).toEqual(expetedKid);
+    expect(kid).toEqual(expectedKid);
   });
 
   it("should calculate a stable kid for the same JWK regardless of property order", () => {
