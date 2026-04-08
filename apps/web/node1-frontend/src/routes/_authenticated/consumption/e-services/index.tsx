@@ -53,7 +53,7 @@ function RouteComponent() {
   const showContent = isLoading || hasFilters || eservices.length > 0;
 
   return (
-    <>
+    <div className="flex min-h-full flex-col">
       <PageHeader
         actions={
           canManageAgreements && (
@@ -84,7 +84,7 @@ function RouteComponent() {
           />
 
           <Pagination
-            className="mx-auto mt-6"
+            className="mx-auto mt-auto pt-6"
             limit={data?.pagination.limit ?? 0}
             offset={search.offset}
             onOffsetChange={(offset) => handleSearchChange({ offset })}
@@ -102,6 +102,6 @@ function RouteComponent() {
           title="You don't consume any E-Service yet."
         />
       )}
-    </>
+    </div>
   );
 }

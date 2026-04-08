@@ -43,7 +43,7 @@ function RouteComponent() {
   }
 
   return (
-    <>
+    <div className="flex min-h-full flex-col">
       <PageHeader
         actions={
           <>
@@ -82,12 +82,12 @@ function RouteComponent() {
       />
 
       <Pagination
-        className="mx-auto mt-6"
+        className="mx-auto mt-auto pt-6"
         limit={data?.pagination.limit ?? 0}
         offset={offset}
         onOffsetChange={(offset) => handleSearchChange({ offset })}
         totalItems={data?.pagination.total ?? 0}
       />
-    </>
+    </div>
   );
 }
