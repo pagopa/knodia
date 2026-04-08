@@ -4,6 +4,8 @@ import { Button, Popover } from "@knodia/ui-kit/ui";
 import { AddressBookIcon } from "@phosphor-icons/react";
 import { DialogTrigger } from "react-aria-components";
 
+import { KnodeAvatar } from "@/components/KnodeAvatar";
+
 // TODO: Replace mocked contact info (email and notes) with real data from the API when available
 export function OrganizationContactPopover({
   organization,
@@ -27,8 +29,14 @@ export function OrganizationContactPopover({
       <Popover
         className="max-w-md"
         placement="bottom start"
-        title={`${organization.name} – ${organization.knodeId} Knode`}
+        title={organization.name}
       >
+        <KnodeAvatar
+          className="bg-brand-dark text-white"
+          knodeId={organization.knodeId}
+          name={`${organization.knodeId} Knode`}
+          size="sm"
+        />
         <dl className="body-sm flex flex-col gap-1">
           <div className="flex gap-2">
             <dt>E-mail address:</dt>
