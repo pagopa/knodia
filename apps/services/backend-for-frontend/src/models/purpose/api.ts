@@ -120,7 +120,7 @@ export const API_ProducerPurposes = z
   .meta({ id: "ProducerPurposes" });
 export type API_ProducerPurposes = z.infer<typeof API_ProducerPurposes>;
 
-export const API_ProducerPurposeDetails = z
+export const API_PurposeDetails = z
   .strictObject({
     agreement: API_CompactAgreement,
     consumer: API_CompactOrganization,
@@ -136,6 +136,4 @@ export const API_ProducerPurposeDetails = z
     state: API_PurposeState,
   })
   .meta({ id: "PurposeDetails" });
-export type API_ProducerPurposeDetails = z.infer<
-  typeof API_ProducerPurposeDetails
->;
+export type API_PurposeDetails = z.infer<typeof API_PurposeDetails>;

@@ -1554,7 +1554,7 @@ export type GetConsumerPurposesData = {
         /**
          * Filter by E-service ID
          */
-        eserviceId: string;
+        eserviceId?: string;
     };
     url: '/consumer/purposes';
 };
