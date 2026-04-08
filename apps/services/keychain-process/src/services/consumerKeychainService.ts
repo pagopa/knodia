@@ -35,6 +35,7 @@ import { match, P } from "ts-pattern";
 import type {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
+  API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainKeySeed,
@@ -44,6 +45,7 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import type { IdmUser, UserService } from "./userService.ts";
 
 import {
+  consumerKeychainNotFound,
   keyNotFoundInKeychain,
   userAlreadyMember,
   userNotFound,
@@ -218,6 +220,34 @@ export function consumerKeychainServiceBuilder(
       return await retrieveConsumerKeychain(
         consumerKeychainId,
         readmodelService,
+      );
+    },
+
+    async getConsumerKeychainKeys(
+      consumerKeychainId: ConsumerKeychainId,
+      params: API_GetConsumerKeychainKeysQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<ConsumerKeychainKey>> {
+      logger.info(
+        { params },
+        `Getting keys of Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain =
+        await readmodelService.getFlatConsumerKeychainById(consumerKeychainId);
+
+      if (!consumerKeychain) {
+        throw consumerKeychainNotFound(consumerKeychainId);
+      }
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      return await readmodelService.getConsumerKeychainKeys(
+        consumerKeychainId,
+        params,
       );
     },
 
