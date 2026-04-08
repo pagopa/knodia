@@ -100,13 +100,13 @@ export const API_KeychainMemberSeed = z
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
 
-export const API_ConsumerKeychainMemberPathParam = z
+export const API_ConsumerKeychainMemberPathParams = z
   .strictObject({
     userId: API_UserId,
   })
   .extend(API_ConsumerKeychainIdPathParam.shape);
-export type API_ConsumerKeychainMemberPathParam = z.infer<
-  typeof API_ConsumerKeychainMemberPathParam
+export type API_ConsumerKeychainMemberPathParams = z.infer<
+  typeof API_ConsumerKeychainMemberPathParams
 >;
 
 const API_ConsumerKeychainLinkedPurpose = z
@@ -141,4 +141,14 @@ export const API_GetConsumerKeychainPurposesQueryParams =
   API_PaginationQueryParams;
 export type API_GetConsumerKeychainPurposesQueryParams = z.infer<
   typeof API_GetConsumerKeychainPurposesQueryParams
+>;
+
+export const API_ConsumerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ConsumerKeychainIdPathParam.shape);
+
+export type API_ConsumerKeychainKeyPathParams = z.infer<
+  typeof API_ConsumerKeychainKeyPathParams
 >;
