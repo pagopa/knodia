@@ -19,12 +19,7 @@ export interface ConsumptionEserviceDetail {
   maxDailyCalls: bffApi.ConsumerEserviceDetailsMaxDailyCalls;
   mode: bffApi.EserviceMode;
   name: string;
-  producer: {
-    email: string;
-    knodeId: string;
-    name: string;
-    notes: string;
-  };
+  producer: bffApi.CompactOrganization;
   // Each inner array is a group of alternatives (OR): the consumer needs at least one.
   // All groups must be satisfied (AND) to meet the requirements.
   requiredAttributes: bffApi.ConsumerRequiredAttribute[][];
