@@ -4,33 +4,33 @@ import type { ControlElement } from "./types";
 
 import { getFilteredOptionValues } from "./optionFilter";
 
+const radioControl: ControlElement = {
+  options: { widget: "radio" },
+  scope: "#/properties/someField",
+  type: "Control",
+};
+
+const controlWithHideOptions: ControlElement = {
+  options: {
+    hideOptions: {
+      PUBLIC_INTEREST_TASK: {
+        schema: { contains: { const: "GDPR_ART_9" } },
+        scope: "#/properties/personalDataTypes",
+      },
+    },
+    widget: "radio",
+  },
+  scope: "#/properties/legalBasisPublicInterest",
+  type: "Control",
+};
+
 describe("getFilteredOptionValues", () => {
   it("returns null when no hideOptions", () => {
-    const control: ControlElement = {
-      options: { widget: "radio" },
-      scope: "#/properties/someField",
-      type: "Control",
-    };
-
-    expect(getFilteredOptionValues(control, {})).toBeNull();
+    expect(getFilteredOptionValues(radioControl, {})).toBeNull();
   });
 
   it("hides option when condition is met", () => {
-    const control: ControlElement = {
-      options: {
-        hideOptions: {
-          PUBLIC_INTEREST_TASK: {
-            schema: { contains: { const: "GDPR_ART_9" } },
-            scope: "#/properties/personalDataTypes",
-          },
-        },
-        widget: "radio",
-      },
-      scope: "#/properties/legalBasisPublicInterest",
-      type: "Control",
-    };
-
-    const hidden = getFilteredOptionValues(control, {
+    const hidden = getFilteredOptionValues(controlWithHideOptions, {
       personalDataTypes: ["GDPR_ART_9", "OTHER"],
     });
 
@@ -39,21 +39,7 @@ describe("getFilteredOptionValues", () => {
   });
 
   it("does not hide option when condition is not met", () => {
-    const control: ControlElement = {
-      options: {
-        hideOptions: {
-          PUBLIC_INTEREST_TASK: {
-            schema: { contains: { const: "GDPR_ART_9" } },
-            scope: "#/properties/personalDataTypes",
-          },
-        },
-        widget: "radio",
-      },
-      scope: "#/properties/legalBasisPublicInterest",
-      type: "Control",
-    };
-
-    const hidden = getFilteredOptionValues(control, {
+    const hidden = getFilteredOptionValues(controlWithHideOptions, {
       personalDataTypes: ["OTHER"],
     });
 
