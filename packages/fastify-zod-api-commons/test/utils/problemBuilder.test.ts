@@ -7,6 +7,7 @@ import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import * as zodFastify from "fastify-type-provider-zod";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ZodError } from "zod";
+import { toDotPath } from "zod/v4/core";
 
 import * as contextModule from "../../src/context/context.ts";
 import { serviceErrorCode } from "../../src/models/errors/services.ts";
@@ -181,13 +182,16 @@ describe("makeApiProblemBuilder", () => {
 
       const testStatusCode = 418;
 
+      const issueMessage = "test serialization error";
+      const issuePath = ["results", 0, "createdAt"];
       const error = makeApiProblem({
         cause: {
           issues: [
             {
-              code: "custom",
-              message: "test serialization error",
-              path: [],
+              code: "invalid_type",
+              expected: "string",
+              message: issueMessage,
+              path: issuePath,
             } satisfies ZodIssue,
           ],
         },
@@ -200,6 +204,7 @@ describe("makeApiProblemBuilder", () => {
             code: expect.stringContaining(
               commonErrorCodes.RESPONSE_SERIALIZATION_ERROR,
             ),
+            detail: `${issueMessage} at response.${toDotPath(issuePath)}`,
           },
         ],
         status: testStatusCode,
