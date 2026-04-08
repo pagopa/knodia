@@ -46,8 +46,8 @@ describe("ProducerAgreementDetail", () => {
 
     expect(screen.getByText("Agreement request")).toBeInTheDocument();
     expect(screen.getByText("Birth Certificate API")).toBeInTheDocument();
-    expect(screen.getByText("Rigel Corp - Orion Knode")).toBeInTheDocument();
-    expect(screen.getByText("Ursa Major - Lynx Knode")).toBeInTheDocument();
+    expect(screen.getByText("Rigel Corp")).toBeInTheDocument();
+    expect(screen.getByText("Ursa Major")).toBeInTheDocument();
     expect(screen.getByText("Active")).toBeInTheDocument();
   });
 

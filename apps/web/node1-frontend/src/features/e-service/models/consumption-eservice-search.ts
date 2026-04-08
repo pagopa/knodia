@@ -8,9 +8,6 @@ export interface ConsumptionEserviceSearchResult {
   id: EserviceId;
   mode: bffApi.EserviceMode;
   name: string;
-  organization: {
-    knodeId: string;
-    name: string;
-  };
+  organization: bffApi.CompactOrganization;
   state: bffApi.EserviceVersionState;
 }

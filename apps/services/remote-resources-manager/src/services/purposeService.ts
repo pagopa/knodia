@@ -1,9 +1,14 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
-import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import {
+  type KnodeId,
+  type OrganizationId,
+  type PurposeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -114,28 +119,63 @@ export function purposeServiceBuilder(
         path: { purposeId },
       });
 
-      return toAPI_Purpose(data);
+      return toAPI_Purpose(data, knodeId);
     },
 
     async getPurposes(
       requestQuery: API_GetPurposesQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Purposes> {
       logger.info({ requestQuery }, "Getting Purposes with query params");
 
-      const { data } = await k2kGatewayApi.getPurposes({
-        client: k2kGatewayClient,
-        query: {
-          consumerId: requestQuery.consumerId,
-          eserviceId: requestQuery.eserviceId,
-          limit: requestQuery.limit,
-          offset: requestQuery.offset,
-        },
-      });
+      const { consumerId, eserviceId, limit, offset } = requestQuery;
+
+      const effectiveConsumerId: OrganizationId = consumerId
+        ? unsafeBrandId<OrganizationId>(consumerId)
+        : authData.organizationId;
+      const knodesWithPurposes =
+        await remoteResourceDbService.getPurposesDistinctKnodes(
+          effectiveConsumerId,
+        );
+
+      let totalCount = 0;
+      let dynamicLimit = limit;
+      let dynamicOffset = offset;
+      let results: API_Purpose[] = [];
+
+      for (const knodeId of knodesWithPurposes) {
+        logger.info(
+          `Getting Purposes from Knode ${knodeId} for consumer ${effectiveConsumerId}`,
+        );
+
+        const { data } = await k2kGatewayApi.getPurposes({
+          client: k2kGatewayClient,
+          query: {
+            consumerId,
+            eserviceId,
+            limit: dynamicLimit,
+            offset: dynamicOffset,
+          },
+        });
+
+        if (results.length < limit) {
+          results = results.concat(
+            data.results.map((purpose) => toAPI_Purpose(purpose, knodeId)),
+          );
+          dynamicLimit = limit - results.length;
+          dynamicOffset = 0;
+        }
+
+        totalCount += data.pagination.total;
+      }
 
       return {
-        pagination: data.pagination,
-        results: data.results.map(toAPI_Purpose),
+        pagination: {
+          limit,
+          offset,
+          total: totalCount,
+        },
+        results,
       };
     },
   };

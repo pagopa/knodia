@@ -40,6 +40,11 @@ export const API_UserId = z.guid().toLowerCase().meta({
   id: "UserId",
 });
 
+export const API_KeyId = z.base64url().meta({
+  description: "Unique identifier of the Key",
+  id: "KeyId",
+});
+
 export const API_CreatedResource = z
   .strictObject({
     id: z.uuid(),
