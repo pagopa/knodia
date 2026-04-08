@@ -5,8 +5,8 @@ import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { ProducerPurposeTable } from "@/features/purpose/components/ProducerPurposeTable/ProducerPurposeTable";
 import {
-  producerPurposeSearchDefaultValues,
-  producerPurposeSearchSchema,
+  purposeListSearchDefaultValues,
+  purposeListSearchSchema,
 } from "@/features/purpose/models/search-params";
 import { producerPurposesQuery } from "@/features/purpose/services/queries";
 
@@ -18,9 +18,9 @@ export const Route = createFileRoute("/_authenticated/production/purposes/")({
     queryClient.prefetchQuery(producerPurposesQuery(offset));
   },
   search: {
-    middlewares: [stripSearchParams(producerPurposeSearchDefaultValues)],
+    middlewares: [stripSearchParams(purposeListSearchDefaultValues)],
   },
-  validateSearch: producerPurposeSearchSchema,
+  validateSearch: purposeListSearchSchema,
 });
 
 function RouteComponent() {

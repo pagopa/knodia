@@ -339,6 +339,10 @@ export type Purpose = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
     name: LocalizedPurposeName;
     state: PurposeState;
     updatedAt: string;
