@@ -38,22 +38,17 @@ export const createFastifyApp = ({
     // requireCorrelationIdHeaderPlugin, which overrides the generated value.
     genReqId: () => generateId(),
     logger: createLoggerOptions(loggerConfig, serviceName),
+    requestIdLogLabel: "correlationId",
   });
 
   // openapiPlugin must be registered before any routes to ensure proper route discovery
   app.register(openapiZodPlugin, fastifyOptions);
 
   app.register(fastifyRequestContext, {
-    defaultStoreValues: (req) => {
-      const correlationId = unsafeBrandId<CorrelationId>(req.id);
-      const logger = req.log.child({ correlationId });
-      req.log = logger;
-
-      return {
-        correlationId,
-        logger,
-      };
-    },
+    defaultStoreValues: (req) => ({
+      correlationId: unsafeBrandId<CorrelationId>(req.id),
+      logger: req.log,
+    }),
   });
 
   app.addContentTypeParser(
