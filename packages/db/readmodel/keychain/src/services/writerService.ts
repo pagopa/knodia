@@ -48,13 +48,12 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
       metadataVersion: number,
     ): Promise<void> {
       return db.transaction(async (tx) => {
-        const shouldDelete = await checkMetadataVersion({
-          id: consumerKeychainPurpose.consumerKeychainId,
-          metadataVersion,
-          table: readmodelConsumerKeychainPurpose,
-          tableIdColumn: readmodelConsumerKeychainPurpose.consumerKeychainId,
+        const shouldDelete = await checkMetadataVersion(
           tx,
-        });
+          readmodelConsumerKeychain,
+          metadataVersion,
+          consumerKeychainPurpose.consumerKeychainId,
+        );
 
         if (!shouldDelete) {
           return;
