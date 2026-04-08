@@ -82,6 +82,27 @@ export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams
 >;
 
+export const API_GetTotalDailyCallsQueryParams = z.strictObject({
+  eserviceId: z.uuid().meta({ description: "Filter by E-service ID" }),
+  state: arrayQueryParam(API_PurposeState)
+    .optional()
+    .meta({ description: "Filter by Purpose State" }),
+});
+export type API_GetTotalDailyCallsQueryParams = z.infer<
+  typeof API_GetTotalDailyCallsQueryParams
+>;
+
+export const API_TotalDailyCalls = z
+  .strictObject({
+    totalDailyCalls: z.number().int().min(0).meta({
+      description:
+        "Sum of daily API calls declared by Purposes matching the filters",
+      format: "int32",
+    }),
+  })
+  .meta({ id: "TotalDailyCalls" });
+export type API_TotalDailyCalls = z.infer<typeof API_TotalDailyCalls>;
+
 export const API_CurrentPurposeFormSchemasResponse = z
   .strictObject({
     schema: API_PurposeFormSchema,
