@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateExternalId } from "@knodia/common-models/externalResource";
 import {
