@@ -40,6 +40,7 @@ beforeAll(async () => {
   app = buildApp({
     config: {
       acceptedAudiences: ["test-audience"],
+      isConsumerOperatorIdentificationRequired: false,
       isProduction: false,
       logLevel: "silent",
       nodeEnv: "test",
@@ -71,4 +72,4 @@ afterAll(async () => {
   await Promise.all([eventStoreDb.$client.end(), readmodelDb.$client.end()]);
 });
 
-export { app, eserviceWriterService, eventStoreDb };
+export { app, eserviceWriterService, eventStoreDb, readmodelDb };

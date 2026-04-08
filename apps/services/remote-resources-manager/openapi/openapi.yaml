@@ -789,6 +789,10 @@ components:
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          description: Knode ID of the producer's Knode that owns this Purpose
+          allOf:
+            - $ref: "#/components/schemas/KnodeId"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
         state:
@@ -803,6 +807,7 @@ components:
         - description
         - eserviceId
         - id
+        - knodeId
         - name
         - state
         - updatedAt
@@ -1181,14 +1186,6 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: query
-          name: consumerId
-          required: false
-          description: Filter by Consumer ID
         - schema:
             allOf:
               - $ref: "#/components/schemas/AgreementState"

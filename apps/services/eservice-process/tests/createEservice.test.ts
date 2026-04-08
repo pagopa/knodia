@@ -15,13 +15,15 @@ import {
   TEST_ORGANIZATION_ID,
   type TestToken,
 } from "@knodia/test-commons/auth";
+import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
+import { buildApp } from "../src/app.ts";
 import { type API_Eservice, API_EserviceSeed } from "../src/models/api.ts";
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import { mockEservices } from "./mockEservices.ts";
-import { eserviceWriterService } from "./setup.ts";
+import { eserviceWriterService, eventStoreDb, readmodelDb } from "./setup.ts";
 import { getAllEserviceEvents, injectAppRequest } from "./utils.ts";
 
 const validAttribute = { code: "nuts1", scheme: "vc_territorial_units" };
@@ -58,8 +60,7 @@ describe("POST /eservices (createEservice)", () => {
       createdAt: new Date(responseBody.createdAt),
       description: body.description,
       id: responseBody.id as EserviceId,
-      isConsumerOperatorIdentificationRequired:
-        body.isConsumerOperatorIdentificationRequired ?? false,
+      isConsumerOperatorIdentificationRequired: false,
       isSignalHubEnabled: body.isSignalHubEnabled ?? false,
       mode: body.mode ?? "ProvideData",
       name: body.name,
@@ -199,5 +200,33 @@ describe("POST /eservices (createEservice)", () => {
       .post("/eservices")
       .body(body);
     expect(response.statusCode).toBe(403);
+  });
+
+  it("should set isConsumerOperatorIdentificationRequired from config", async () => {
+    const appWithIdentificationRequired = buildApp({
+      config: {
+        acceptedAudiences: ["test-audience"],
+        isConsumerOperatorIdentificationRequired: true,
+        isProduction: false,
+        logLevel: "silent",
+        nodeEnv: "test",
+        wellKnownUrls: ["https://test.example.com/.well-known/jwks.json"],
+      },
+      eventStoreDb,
+      readmodelDb,
+    });
+
+    const injectRequest = createInjectAppRequest(
+      () => appWithIdentificationRequired,
+    );
+
+    const response = await injectRequest(allowedTestTokens[0]!)
+      .post("/eservices")
+      .body(body);
+
+    expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Eservice>();
+    expect(responseBody.isConsumerOperatorIdentificationRequired).toBe(true);
   });
 });
