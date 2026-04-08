@@ -4,7 +4,6 @@ import {
   API_PaginationQueryParams,
   API_UserId,
 } from "@knodia/common-models/api";
-import { PurposeId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
@@ -34,13 +33,24 @@ export const API_Keychains = z
   .meta({ id: "Keychains" });
 export type API_Keychains = z.infer<typeof API_Keychains>;
 
+const API_GetConsumerKeychainsQueryPurposeFilter = z
+  .string()
+  .transform((v) => {
+    const [knodeId, id] = v.split(":");
+    return { id, knodeId };
+  })
+  .pipe(
+    z.object({
+      id: z.uuid(),
+      knodeId: API_KnodeId,
+    }),
+  );
+
 export const API_GetConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
-    knodeId: API_KnodeId.optional().meta({
-      description: "Filter by Knode ID",
-    }),
-    purposeId: PurposeId.optional().meta({
-      description: "Filter by Purpose ID",
+    purpose: API_GetConsumerKeychainsQueryPurposeFilter.optional().meta({
+      description:
+        "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
     }),
   });
 export type API_GetConsumerKeychainsQueryParams = z.infer<

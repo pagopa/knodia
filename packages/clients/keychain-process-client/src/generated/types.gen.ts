@@ -165,13 +165,9 @@ export type GetConsumerKeychainsData = {
          */
         offset: number;
         /**
-         * Filter by Knode ID
+         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)
          */
-        knodeId?: KnodeId;
-        /**
-         * Filter by Purpose ID
-         */
-        purposeId?: string;
+        purpose?: string;
     };
     url: '/consumerKeychains';
 };

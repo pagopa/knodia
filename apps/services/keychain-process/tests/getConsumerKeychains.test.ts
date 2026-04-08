@@ -52,19 +52,10 @@ const consumerKeychainPurposes: ConsumerKeychainPurpose[] = [
     linkedAt: new Date(),
     purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId: otherKnodeId },
   },
-  {
-    consumerKeychainId: mockConsumerKeychains[3]!.id,
-    linkedAt: new Date(),
-    purpose: { id: unsafeBrandExternalId(purpose2.id), knodeId: otherKnodeId },
-  },
 ];
 const consumerKeychainIdsWithLinkedPurpose1 = new Set([
   consumerKeychainPurposes[0]!.consumerKeychainId,
   consumerKeychainPurposes[1]!.consumerKeychainId,
-]);
-const consumerKeychainIdsWithLinkedPurposeOwnedByOtherKnode = new Set([
-  consumerKeychainPurposes[3]!.consumerKeychainId,
-  consumerKeychainPurposes[4]!.consumerKeychainId,
 ]);
 const seedConsumerKeychainPurpose = async () => {
   await Promise.all([
@@ -82,10 +73,6 @@ const seedConsumerKeychainPurpose = async () => {
     ),
     keychainWriterService.upsertConsumerKeychainPurpose(
       consumerKeychainPurposes[3]!,
-      0,
-    ),
-    keychainWriterService.upsertConsumerKeychainPurpose(
-      consumerKeychainPurposes[4]!,
       0,
     ),
   ]);
@@ -123,20 +110,10 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
       ),
       query: {
         ...defaultQuery,
-        purposeId: purpose1.id,
+        purpose: `${knodeId}:${purpose1.id}`,
       },
-      testCase: "filter by purposeId, sort by updatedAt desc by default",
-      totalCount: 2,
-    },
-    {
-      expectedResult: sortedMockConsumerKeychains.filter((ck) =>
-        consumerKeychainIdsWithLinkedPurposeOwnedByOtherKnode.has(ck.id),
-      ),
-      query: {
-        ...defaultQuery,
-        knodeId: otherKnodeId,
-      },
-      testCase: "filter by knodeId, sort by updatedAt desc by default",
+      testCase:
+        "filter by purpose producer (purposeId, knodeId), sort by updatedAt desc by default",
       totalCount: 2,
     },
   ] satisfies {
