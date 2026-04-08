@@ -1,10 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import type { FormValues, RuleCondition, UISchema } from "./types";
+import type {
+  FormValues,
+  LabelElement,
+  RuleCondition,
+  UISchema,
+} from "./types";
 
 import {
   evaluateCondition,
   getVisibleFields,
+  isLabelVisible,
   scopeToFieldName,
 } from "./dependencyResolver";
 
@@ -172,5 +178,154 @@ describe("getVisibleFields", () => {
     const values: FormValues = { usesPersonalData: "YES" };
     const visible = getVisibleFields(uischema, values);
     expect(visible.has("personalDataTypes")).toBe(true);
+  });
+});
+
+describe("isLabelVisible", () => {
+  const labelWithoutRule: LabelElement = {
+    text: "Static label",
+    type: "Label",
+  };
+
+  const labelShownWhenPurposeIsOther: LabelElement = {
+    rule: {
+      condition: {
+        schema: { const: "OTHER" },
+        scope: "#/properties/purpose",
+      },
+      effect: "SHOW",
+    },
+    text: "Shown when purpose is OTHER",
+    type: "Label",
+  };
+
+  const labelHiddenWhenPurposeIsOther: LabelElement = {
+    rule: {
+      condition: {
+        schema: { const: "OTHER" },
+        scope: "#/properties/purpose",
+      },
+      effect: "HIDE",
+    },
+    text: "Hidden when purpose is OTHER",
+    type: "Label",
+  };
+
+  it("is always visible when the label has no rule", () => {
+    expect(isLabelVisible(labelWithoutRule, {}, new Set())).toBe(true);
+  });
+
+  it("is visible when SHOW condition is met and dependent fields are visible", () => {
+    expect(
+      isLabelVisible(
+        labelShownWhenPurposeIsOther,
+        { purpose: "OTHER" },
+        new Set(["purpose"]),
+      ),
+    ).toBe(true);
+  });
+
+  it("is hidden when SHOW condition is not met", () => {
+    expect(
+      isLabelVisible(
+        labelShownWhenPurposeIsOther,
+        { purpose: "INSTITUTIONAL" },
+        new Set(["purpose"]),
+      ),
+    ).toBe(false);
+  });
+
+  it("is hidden when HIDE condition is met", () => {
+    expect(
+      isLabelVisible(
+        labelHiddenWhenPurposeIsOther,
+        { purpose: "OTHER" },
+        new Set(["purpose"]),
+      ),
+    ).toBe(false);
+  });
+
+  it("is visible when HIDE condition is not met", () => {
+    expect(
+      isLabelVisible(
+        labelHiddenWhenPurposeIsOther,
+        { purpose: "INSTITUTIONAL" },
+        new Set(["purpose"]),
+      ),
+    ).toBe(true);
+  });
+
+  it("is hidden when a field referenced by the condition is not visible (cascading)", () => {
+    // Even if the condition would be met by the value, the label must hide
+    // because the referenced field itself is not visible.
+    expect(
+      isLabelVisible(
+        labelShownWhenPurposeIsOther,
+        { purpose: "OTHER" },
+        new Set(),
+      ),
+    ).toBe(false);
+  });
+
+  it("is hidden when any scope of an AND condition references a hidden field", () => {
+    const label: LabelElement = {
+      rule: {
+        condition: {
+          conditions: [
+            {
+              schema: { const: "YES" },
+              scope: "#/properties/usesPersonalData",
+            },
+            {
+              schema: { contains: { const: "PUBLIC_INTEREST" } },
+              scope: "#/properties/legalBasis",
+            },
+          ],
+          type: "AND",
+        },
+        effect: "SHOW",
+      },
+      text: "Shown when both conditions are met",
+      type: "Label",
+    };
+
+    expect(
+      isLabelVisible(
+        label,
+        { legalBasis: ["PUBLIC_INTEREST"], usesPersonalData: "YES" },
+        new Set(["usesPersonalData"]),
+      ),
+    ).toBe(false);
+  });
+
+  it("is visible when an AND condition is fully met and all referenced fields are visible", () => {
+    const label: LabelElement = {
+      rule: {
+        condition: {
+          conditions: [
+            {
+              schema: { const: "YES" },
+              scope: "#/properties/usesPersonalData",
+            },
+            {
+              schema: { contains: { const: "PUBLIC_INTEREST" } },
+              scope: "#/properties/legalBasis",
+            },
+          ],
+          type: "AND",
+        },
+        effect: "SHOW",
+      },
+      text: "Shown when both conditions are met",
+      type: "Label",
+    };
+
+    expect(
+      isLabelVisible(
+        label,
+        { legalBasis: ["PUBLIC_INTEREST"], usesPersonalData: "YES" },
+        new Set(["legalBasis", "usesPersonalData"]),
+      ),
+    ).toBe(true);
   });
 });
