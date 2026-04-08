@@ -2,7 +2,6 @@ import type { HTTPServiceName } from "@knodia/common-models/services";
 
 /* eslint-disable perfectionist/sort-objects */
 export const serviceErrorCode: Record<HTTPServiceName, string> = {
-  "authorization-server": "009",
   "backend-for-frontend": "001",
   "eservice-process": "002",
   "k2k-gateway": "003",
@@ -11,5 +10,6 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "keychain-process": "006",
   "organization-process": "007",
   "purpose-process": "008",
+  "authorization-server": "009",
 };
 /* eslint-enable perfectionist/sort-objects */
