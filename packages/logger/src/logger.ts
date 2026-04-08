@@ -8,14 +8,18 @@ import type { LoggerMetadata } from "./models/models.ts";
 const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
 
 /**
- * Resolves pretty print configuration for logs based on environment
+ * Builds logger options based on the environment
  *
  * @param isProduction - Indicates if the environment is production
- * @returns Partial LoggerOptions with pretty print settings
+ * @returns Partial LoggerOptions with appropriate settings for the environment
  */
-const resolvePrettyConfig = (isProduction: boolean): Partial<LoggerOptions> =>
+const buildLoggerEnvOptions = (
+  isProduction: boolean,
+): Partial<LoggerOptions> =>
   isProduction
-    ? {}
+    ? {
+        timestamp: false,
+      }
     : {
         transport: {
           options: {
@@ -56,8 +60,7 @@ export const createLoggerOptions = (
   level: config.logLevel,
   name: serviceName,
   redact: DEFAULT_REDACT_PATHS,
-  timestamp: false,
-  ...resolvePrettyConfig(config.isProduction),
+  ...buildLoggerEnvOptions(config.isProduction),
 });
 
 export const createLogger = ({
