@@ -6,6 +6,7 @@ import type {
 
 import { STATUS_CODES } from "http";
 import { constants } from "http2";
+import { toDotPath } from "zod/v4/core";
 
 import {
   type ApiError,
@@ -90,33 +91,12 @@ export function missingResponseHeader(
 export function responseSerializationError(
   error: ResponseSerializationError,
 ): ApiError<CommonErrorCodes> {
-  const toPath = (segments: PropertyKey[]): string =>
-    segments
-      .map((segment, i) =>
-        typeof segment === "number"
-          ? `[${segment}]`
-          : i === 0
-            ? segment.toString()
-            : `.${segment.toString()}`,
-      )
-      .join("");
-
-  const errorGroups = new Map<string, string[]>();
-  for (const issue of error.cause.issues) {
-    const groupKey = toPath(issue.path.slice(0, 2));
-    const fieldPath = toPath(issue.path.slice(2));
-    const detail = `${issue.message}${fieldPath ? ` at ${fieldPath}` : ""}`;
-    const existingErrorGroup = errorGroups.get(groupKey);
-    if (existingErrorGroup) {
-      existingErrorGroup.push(detail);
-    } else {
-      errorGroups.set(groupKey, [detail]);
-    }
-  }
-
-  const errors = Array.from(errorGroups.entries()).map(
-    ([groupKey, details]) => new Error(`${groupKey}: ${details.join("; ")}`),
-  );
+  const context = "response";
+  const errors = error.cause.issues.map((issue) => {
+    const path = toDotPath(issue.path);
+    const fullPath = path ? `${context}.${path}` : context;
+    return new Error(`${issue.message} at ${fullPath}`);
+  });
 
   return createApiErrorFromErrorsList({
     code: "RESPONSE_SERIALIZATION_ERROR",
