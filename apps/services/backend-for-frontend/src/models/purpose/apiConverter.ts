@@ -4,7 +4,34 @@ import type { purposeProcessApi } from "@knodia/purpose-process-client";
 import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type { OrganizationWithKnode } from "../organization/types.ts";
-import type { API_ProducerPurpose, API_PurposeDetails } from "./api.ts";
+import type {
+  API_ConsumerPurpose,
+  API_ProducerPurpose,
+  API_PurposeDetails,
+} from "./api.ts";
+
+export const toAPI_ConsumerPurpose = ({
+  eserviceDetails,
+  purpose,
+}: {
+  eserviceDetails: remoteResourcesManagerApi.EserviceDetails;
+  purpose: remoteResourcesManagerApi.Purpose;
+}): API_ConsumerPurpose => ({
+  eservice: {
+    id: eserviceDetails.id,
+    name: eserviceDetails.name,
+  },
+  id: purpose.id,
+  // TODO: https://pagopa.atlassian.net/browse/KN-406 Replace with actual keychain data when consumer keychains for purposes are implemented
+  keychain: "TODO",
+  name: purpose.name,
+  producer: {
+    id: eserviceDetails.producer.id,
+    knodeId: eserviceDetails.producer.knodeId,
+    name: eserviceDetails.producer.name,
+  },
+  state: purpose.state,
+});
 
 export const toAPI_ProducerPurpose = ({
   consumer,

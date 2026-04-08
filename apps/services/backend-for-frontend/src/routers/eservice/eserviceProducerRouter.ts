@@ -3,6 +3,11 @@ import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_AgreementState } from "@knodia/agreement-models/api";
+import {
+  agreementProcessApi,
+  type AgreementProcessClient,
+} from "@knodia/agreement-process-client";
 import {
   API_CreatedResource,
   API_FileDownload,
@@ -26,6 +31,11 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import { API_PurposeState } from "@knodia/purpose-models/api";
+import {
+  purposeProcessApi,
+  type PurposeProcessClient,
+} from "@knodia/purpose-process-client";
 
 import { config } from "../../config/config.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -42,16 +52,27 @@ import {
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceProducerRouterOptions {
+  agreementProcessClient: AgreementProcessClient;
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
   pollingService: PollingService;
+  purposeProcessClient: PurposeProcessClient;
 }
 
 // TODO: consider adding an eserviceService layer between the bff and the eservice process API, like in PDND.
 export const eserviceProducerRouter: FastifyPluginAsyncZod<
   EserviceProducerRouterOptions
   // eslint-disable-next-line max-lines-per-function
-> = async (fastify, { eserviceProcessClient, fileManager, pollingService }) => {
+> = async (
+  fastify,
+  {
+    agreementProcessClient,
+    eserviceProcessClient,
+    fileManager,
+    pollingService,
+    purposeProcessClient,
+  },
+) => {
   const retrieveEservice = async (
     eserviceId: string,
     headers: KnodiaServiceHeaders,
@@ -156,9 +177,11 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       // 2. Process-side: get counts in eservice-process and handle sorting.
       //    Breaks unified data model principle (process would include cross-domain data).
 
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
       const { data } = await eserviceProcessApi.getEservices({
         client: eserviceProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: {
           limit,
           mode,
@@ -171,19 +194,43 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         },
       });
 
-      // TODO: fetch real counts from agreement-process and purpose-process (maybe batch endpoint)
       const results = await Promise.all(
-        data.results.map(async (eservice, idx) => {
-          const { data: latestEserviceVersion } =
-            await eserviceProcessApi.getEserviceLatestVersion({
+        data.results.map(async (eservice) => {
+          const [
+            { data: latestEserviceVersion },
+            { data: agreements },
+            { data: purposes },
+          ] = await Promise.all([
+            eserviceProcessApi.getEserviceLatestVersion({
               client: eserviceProcessClient,
-              headers: getKnodiaServiceHeaders(req, correlationId),
+              headers,
               path: { eserviceId: eservice.id },
-            });
+            }),
+            agreementProcessApi.getAgreements({
+              client: agreementProcessClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 1,
+                offset: 0,
+                state: [API_AgreementState.enum.Active],
+              },
+            }),
+            purposeProcessApi.getPurposes({
+              client: purposeProcessClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 1,
+                offset: 0,
+                state: [API_PurposeState.enum.Active],
+              },
+            }),
+          ]);
 
           return toAPI_ProducerEservice({
-            activeAgreements: idx + 5,
-            activePurposes: idx + 1,
+            activeAgreements: agreements.pagination.total,
+            activePurposes: purposes.pagination.total,
             eservice,
             state: latestEserviceVersion.state,
           });
