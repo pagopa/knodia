@@ -20,6 +20,8 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
+  API_UnlinkConsumerKeychainIdPathParams,
+  API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -498,10 +500,14 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         metadata: { version },
       } = await consumerKeychainService.linkPurposeToConsumerKeychain(
         {
-          consumerKeychainId: req.params.consumerKeychainId,
+          consumerKeychainPurpose: {
+            consumerKeychainId: req.params.consumerKeychainId,
+            purpose: {
+              id: unsafeBrandExternalId(req.body.purposeId),
+              knodeId: req.body.knodeId,
+            },
+          },
           headers: getKnodiaServiceHeaders(req, ctx.correlationId),
-          knodeId: req.body.knodeId,
-          purposeId: unsafeBrandExternalId(req.body.purposeId),
         },
         ctx,
       );
@@ -577,5 +583,52 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        metadata: { version },
+      } = await consumerKeychainService.unlinkPurposeFromConsumerKeychain(
+        {
+          consumerKeychainId: req.params.consumerKeychainId,
+          purpose: {
+            id: req.params.purposeId,
+            knodeId: req.query.knodeId,
+          },
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Unlink a Purpose from a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "unlinkPurposeFromConsumerKeychain",
+      params: API_UnlinkConsumerKeychainIdPathParams,
+      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
+      response: {
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description: "Purpose successfully unlinked from Consumer Keychain",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };
