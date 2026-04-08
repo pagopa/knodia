@@ -126,6 +126,8 @@ export function purposeServiceBuilder(
       const { eserviceId, limit, offset } = requestQuery;
       const consumerId = authData.organizationId;
 
+      // TODO: when eserviceId is provided, query only the knode that produces
+      // that e-service instead of iterating over all knodes
       const knodesWithPurposes =
         await remoteResourceDbService.getPurposesDistinctKnodes(consumerId);
 
