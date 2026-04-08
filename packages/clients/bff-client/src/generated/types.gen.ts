@@ -1431,6 +1431,48 @@ export type LinkPurposeToConsumerKeychainResponses = {
 
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
 
+export type UnlinkPurposeFromConsumerKeychainData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}';
+};
+
+export type UnlinkPurposeFromConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type UnlinkPurposeFromConsumerKeychainError = UnlinkPurposeFromConsumerKeychainErrors[keyof UnlinkPurposeFromConsumerKeychainErrors];
+
+export type UnlinkPurposeFromConsumerKeychainResponses = {
+    /**
+     * Purpose successfully unlinked from Consumer Keychain
+     */
+    204: void;
+};
+
+export type UnlinkPurposeFromConsumerKeychainResponse = UnlinkPurposeFromConsumerKeychainResponses[keyof UnlinkPurposeFromConsumerKeychainResponses];
+
 export type GetTechnicalUsersData = {
     body?: never;
     path?: never;

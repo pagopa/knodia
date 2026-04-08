@@ -14,6 +14,8 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
+  API_UnlinkConsumerKeychainIdPathParams,
+  API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
@@ -622,5 +624,56 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId, purposeId } = req.params;
+      logger.info(
+        {
+          request: {
+            params: req.params,
+            query: req.query,
+          },
+        },
+        `Unlinking Purpose ${purposeId} owned by Knode ${req.query.knodeId} from Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response =
+        await keychainProcessApi.unlinkPurposeFromConsumerKeychain({
+          client: keychainProcessClient,
+          headers,
+          path: {
+            consumerKeychainId,
+            purposeId,
+          },
+          query: { knodeId: req.query.knodeId },
+        });
+
+      await pollConsumerKeychain(response, headers, consumerKeychainId);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Unlink a Purpose from a Consumer Keychain",
+      operationId: "unlinkPurposeFromConsumerKeychain",
+      params: API_UnlinkConsumerKeychainIdPathParams,
+      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Purpose successfully unlinked from Consumer Keychain",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };
