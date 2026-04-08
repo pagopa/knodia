@@ -10,7 +10,6 @@ import {
   API_ExternalPurposeFormSchemaVersion,
   API_LocalizedPurposeDescription,
   API_LocalizedPurposeName,
-  API_PurposeConsumer,
   API_PurposeDailyCalls,
   API_PurposeFormAnswers,
   API_PurposeState,
@@ -63,7 +62,6 @@ export type API_GetConsumerPurposesQueryParams = z.infer<
 
 export const API_ConsumerPurpose = z
   .strictObject({
-    consumer: API_PurposeConsumer,
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
