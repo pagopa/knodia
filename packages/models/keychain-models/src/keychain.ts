@@ -1,6 +1,7 @@
 import { ExternalResource } from "@knodia/common-models/externalResource";
 import {
   ConsumerKeychainId,
+  KeyId,
   OrganizationId,
   type PurposeId,
   UserId,
@@ -23,7 +24,7 @@ export const LocalizedDescription = LocalizedText(
 );
 export type LocalizedDescription = z.infer<typeof LocalizedDescription>;
 
-export const KeyFormat = z.enum(["jwk", "x509"]);
+export const KeyFormat = z.enum(["PublicKey", "X509Certificate"]);
 export type KeyFormat = z.infer<typeof KeyFormat>;
 
 export const KeyAlgorithm = z.enum(["RS256"]);
@@ -34,7 +35,7 @@ export const ConsumerKeychainKey = z.strictObject({
   createdAt: z.coerce.date(),
   encodedPem: z.string(),
   format: KeyFormat,
-  kid: z.string(),
+  kid: KeyId,
   name: LocalizedName,
   userId: UserId,
 });

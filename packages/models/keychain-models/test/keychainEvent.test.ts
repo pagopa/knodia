@@ -1,6 +1,11 @@
+/* eslint-disable max-lines-per-function */
 import { KafkaMessageEnvelope } from "@knodia/common-models/event";
 import { generateExternalId } from "@knodia/common-models/externalResource";
-import { generateId, generateUserId } from "@knodia/common-models/ids";
+import {
+  generateId,
+  generateUserId,
+  unsafeBrandKeyId,
+} from "@knodia/common-models/ids";
 import {
   protobufBinaryCodec,
   type ProtobufCodec,
@@ -14,6 +19,8 @@ import type { ConsumerKeychain } from "../src/keychain.ts";
 import {
   ConsumerKeychainCreatedV1,
   ConsumerKeychainDeletedV1,
+  ConsumerKeychainKeyAddedV1,
+  ConsumerKeychainKeyRemovedV1,
   ConsumerKeychainMemberAddedV1,
   ConsumerKeychainMemberRemovedV1,
   ConsumerKeychainPurposeLinkedV1,
@@ -33,8 +40,10 @@ describe("KeychainEventV1 codec", () => {
         algorithm: "RS256",
         createdAt: new Date(1),
         encodedPem: "-----BEGIN CERTIFICATE-----xyz",
-        format: "jwk",
-        kid: "kid-1",
+        format: "PublicKey",
+        kid: unsafeBrandKeyId(
+          Buffer.from(crypto.randomUUID()).toString("base64"),
+        ),
         name: { en: "Primary key" },
         userId: generateUserId(),
       },
@@ -100,6 +109,22 @@ describe("KeychainEventV1 codec", () => {
       message: ConsumerKeychainMemberRemovedV1,
       type: "ConsumerKeychainMemberRemovedV1" as const,
     },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        kid: Buffer.from(crypto.randomUUID(), "utf-8").toString("base64"),
+      },
+      message: ConsumerKeychainKeyAddedV1,
+      type: "ConsumerKeychainKeyAddedV1" as const,
+    },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
+        kid: Buffer.from(crypto.randomUUID(), "utf-8").toString("base64"),
+      },
+      message: ConsumerKeychainKeyRemovedV1,
+      type: "ConsumerKeychainKeyRemovedV1" as const,
+    },
   ] as const;
 
   it.each(cases)(
@@ -131,6 +156,12 @@ describe("KeychainEventV1 codec", () => {
           testFullCodec({ data, type }),
         )
         .with({ type: "ConsumerKeychainMemberRemovedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
+        .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
         .exhaustive();
@@ -168,6 +199,12 @@ describe("KeychainEventV1 codec", () => {
         .with(
           { type: "ConsumerKeychainMemberRemovedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
+        )
+        .with({ type: "ConsumerKeychainKeyAddedV1" }, ({ data, message }) =>
+          testProtobufCodec(message, data),
+        )
+        .with({ type: "ConsumerKeychainKeyRemovedV1" }, ({ data, message }) =>
+          testProtobufCodec(message, data),
         )
         .exhaustive();
     },
