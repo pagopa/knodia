@@ -5,6 +5,7 @@ import {
 } from "@knodia/common-models/api";
 import {
   API_ConsumerKeychainIdPathParam,
+  API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
 } from "@knodia/keychain-models/api";
@@ -63,6 +64,14 @@ export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
 >;
 
+export const API_KeychainKeySeed = z
+  .strictObject({
+    encodedPem: z.string(),
+    name: API_KeychainKeyLocalizedName,
+  })
+  .meta({ id: "KeychainKeySeed" });
+export type API_KeychainKeySeed = z.infer<typeof API_KeychainKeySeed>;
+
 export const API_KeychainMemberSeed = z
   .strictObject({
     userId: API_UserId,
@@ -70,14 +79,24 @@ export const API_KeychainMemberSeed = z
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
 
-export const API_ConsumerKeychainMemberPathParam = z
+export const API_ConsumerKeychainMemberPathParams = z
   .strictObject({
     userId: API_UserId,
   })
   .extend(API_ConsumerKeychainIdPathParam.shape);
 
-export type API_ConsumerKeychainMemberPathParam = z.infer<
-  typeof API_ConsumerKeychainMemberPathParam
+export type API_ConsumerKeychainMemberPathParams = z.infer<
+  typeof API_ConsumerKeychainMemberPathParams
+>;
+
+export const API_ConsumerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ConsumerKeychainIdPathParam.shape);
+
+export type API_ConsumerKeychainKeyPathParams = z.infer<
+  typeof API_ConsumerKeychainKeyPathParams
 >;
 
 export const API_User = z
@@ -91,3 +110,14 @@ export type API_User = z.infer<typeof API_User>;
 
 export const API_Users = z.array(API_User).meta({ id: "Users" });
 export type API_Users = z.infer<typeof API_Users>;
+
+export const API_CreatedKeyResource = z
+  .strictObject({
+    kid: z.base64url(),
+  })
+  .meta({
+    description: "Unique JWK identifier (kid) of the created key",
+    id: "CreatedKeyResource",
+  });
+
+export type API_CreatedKeyResource = z.infer<typeof API_CreatedKeyResource>;

@@ -2,6 +2,7 @@ import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 
 import {
   getConsumerPurposeDetailsOptions,
+  getConsumerPurposesOptions,
   getProducerPurposeDetailsOptions,
   getProducerPurposesOptions,
 } from "@knodia/bff-client/tanstack-query";
@@ -22,6 +23,12 @@ export const consumerPurposeDetailsQuery = (
 
 export const producerPurposeDetailsQuery = (purposeId: PurposeId) =>
   getProducerPurposeDetailsOptions({ client, path: { purposeId } });
+
+export const consumerPurposesQuery = (offset: number) =>
+  getConsumerPurposesOptions({
+    client,
+    query: { limit: PURPOSES_PAGE_LIMIT, offset },
+  });
 
 export const producerPurposesQuery = (offset: number) =>
   getProducerPurposesOptions({

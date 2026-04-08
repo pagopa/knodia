@@ -1027,8 +1027,70 @@ components:
       required:
         - refreshToken
       additionalProperties: false
+    PurposeState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
+    LocalizedPurposeName:
+      description: Name of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedPurposeDescription:
+      description: Description of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormAnswers:
+      type: object
+      additionalProperties: {}
+    PurposeFormSchemasResponse:
+      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
+        version identifier
+      type: object
+      properties:
+        schema:
+          type: object
+          additionalProperties: {}
+        uiSchema:
+          type: object
+          additionalProperties: {}
+        version:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+      required:
+        - schema
+        - uiSchema
+        - version
+      additionalProperties: false
     KeychainLocalizedName:
       description: Name of the Keychain
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    KeychainKeyLocalizedName:
+      description: Name of the Keychain Key
       type: object
       properties:
         en:
@@ -1148,6 +1210,17 @@ components:
           allOf:
             - $ref: "#/components/schemas/KeychainLocalizedName"
       additionalProperties: false
+    KeychainKeySeed:
+      type: object
+      properties:
+        encodedPem:
+          type: string
+        name:
+          $ref: "#/components/schemas/KeychainKeyLocalizedName"
+      required:
+        - encodedPem
+        - name
+      additionalProperties: false
     KeychainMemberSeed:
       type: object
       properties:
@@ -1174,56 +1247,16 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/User"
-    PurposeState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
-    LocalizedPurposeName:
-      description: Name of the Purpose
+    CreatedKeyResource:
+      description: Unique JWK identifier (kid) of the created key
       type: object
       properties:
-        en:
+        kid:
           type: string
-          minLength: 5
-          maxLength: 60
+          format: base64url
+          pattern: ^[A-Za-z0-9_-]*$
       required:
-        - en
-      additionalProperties: false
-    LocalizedPurposeDescription:
-      description: Description of the Purpose
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
-      additionalProperties: false
-    PurposeFormAnswers:
-      type: object
-      additionalProperties: {}
-    PurposeFormSchemasResponse:
-      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
-        version identifier
-      type: object
-      properties:
-        schema:
-          type: object
-          additionalProperties: {}
-        uiSchema:
-          type: object
-          additionalProperties: {}
-        version:
-          description: Version identifier for the Purpose form schema provided by the
-            target Knode
-          type: string
-      required:
-        - schema
-        - uiSchema
-        - version
+        - kid
       additionalProperties: false
     PurposeSeed:
       description: Seed data to create a new Purpose
@@ -1258,6 +1291,44 @@ components:
         - formSchemaVersion
         - knodeId
         - name
+      additionalProperties: false
+    ConsumerPurpose:
+      type: object
+      properties:
+        eservice:
+          $ref: "#/components/schemas/CompactEservice"
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        keychain:
+          type: string
+        name:
+          $ref: "#/components/schemas/LocalizedPurposeName"
+        producer:
+          $ref: "#/components/schemas/CompactOrganization"
+        state:
+          $ref: "#/components/schemas/PurposeState"
+      required:
+        - eservice
+        - id
+        - keychain
+        - name
+        - producer
+        - state
+      additionalProperties: false
+    ConsumerPurposes:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerPurpose"
+      required:
+        - pagination
+        - results
       additionalProperties: false
     ProducerPurpose:
       type: object
@@ -2111,6 +2182,137 @@ paths:
                 description: Consumer keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/keys:
+    post:
+      operationId: uploadConsumerKeychainKey
+      tags:
+        - consumerKeychain
+      description: Upload a key to a Consumer Keychain
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/KeychainKeySeed"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "201":
+          description: Consumer Keychain key uploaded successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain key uploaded successfully
+                allOf:
+                  - $ref: "#/components/schemas/CreatedKeyResource"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/keys/{keyId}:
+    delete:
+      operationId: removeConsumerKeychainKey
+      tags:
+        - consumerKeychain
+      description: Remove a key from a Consumer Keychain
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: keyId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "204":
+          description: Consumer Keychain key removed successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members/{userId}:
     delete:
       operationId: removeConsumerKeychainMember
@@ -2616,6 +2818,71 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumer/purposes:
+    get:
+      operationId: getConsumerPurposes
+      summary: List consumer Purposes
+      tags:
+        - purpose
+      description: Retrieve a paginated list of Purposes created by the logged-in consumer
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+      responses:
+        "200":
+          description: Consumer Purposes retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Purposes retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerPurposes"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
     post:
       operationId: createConsumerPurpose
       summary: Create a consumer Purpose

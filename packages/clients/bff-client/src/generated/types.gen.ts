@@ -486,10 +486,53 @@ export type RefreshRequest = {
     refreshToken: string;
 };
 
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ */
+export type PurposeFormSchemasResponse = {
+    schema: {
+        [key: string]: unknown;
+    };
+    uiSchema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
+};
+
 /**
  * Name of the Keychain
  */
 export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Name of the Keychain Key
+ */
+export type KeychainKeyLocalizedName = {
     en: string;
 };
 
@@ -535,6 +578,11 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type KeychainKeySeed = {
+    encodedPem: string;
+    name: KeychainKeyLocalizedName;
+};
+
 export type KeychainMemberSeed = {
     userId: UserId;
 };
@@ -547,40 +595,11 @@ export type User = {
 
 export type Users = Array<User>;
 
-export type PurposeState = 'Active' | 'Suspended' | 'Archived';
-
 /**
- * Name of the Purpose
+ * Unique JWK identifier (kid) of the created key
  */
-export type LocalizedPurposeName = {
-    en: string;
-};
-
-/**
- * Description of the Purpose
- */
-export type LocalizedPurposeDescription = {
-    en: string;
-};
-
-export type PurposeFormAnswers = {
-    [key: string]: unknown;
-};
-
-/**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
- */
-export type PurposeFormSchemasResponse = {
-    schema: {
-        [key: string]: unknown;
-    };
-    uiSchema: {
-        [key: string]: unknown;
-    };
-    /**
-     * Version identifier for the Purpose form schema provided by the target Knode
-     */
-    version: string;
+export type CreatedKeyResource = {
+    kid: string;
 };
 
 /**
@@ -597,6 +616,20 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+};
+
+export type ConsumerPurpose = {
+    eservice: CompactEservice;
+    id: string;
+    keychain: string;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
+export type ConsumerPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerPurpose>;
 };
 
 export type ProducerPurpose = {
@@ -1164,6 +1197,93 @@ export type AddConsumerKeychainMemberResponses = {
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
 
+export type UploadConsumerKeychainKeyData = {
+    body: KeychainKeySeed;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys';
+};
+
+export type UploadConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[keyof UploadConsumerKeychainKeyErrors];
+
+export type UploadConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain key uploaded successfully
+     */
+    201: CreatedKeyResource;
+};
+
+export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
+
+export type RemoveConsumerKeychainKeyData = {
+    body?: never;
+    path: {
+        keyId: string;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
+};
+
+export type RemoveConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
+
+export type RemoveConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyResponses[keyof RemoveConsumerKeychainKeyResponses];
+
 export type RemoveConsumerKeychainMemberData = {
     body?: never;
     path: {
@@ -1516,6 +1636,52 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type GetConsumerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumer/purposes';
+};
+
+export type GetConsumerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];
+
+export type GetConsumerPurposesResponses = {
+    /**
+     * Consumer Purposes retrieved successfully
+     */
+    200: ConsumerPurposes;
+};
+
+export type GetConsumerPurposesResponse = GetConsumerPurposesResponses[keyof GetConsumerPurposesResponses];
 
 export type CreateConsumerPurposeData = {
     body: PurposeSeed;
