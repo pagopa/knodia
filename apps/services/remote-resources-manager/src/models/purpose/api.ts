@@ -67,6 +67,9 @@ export const API_Purpose = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Purpose",
+    }),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
     updatedAt: z.iso.datetime(),
