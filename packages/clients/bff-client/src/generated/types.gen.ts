@@ -637,7 +637,10 @@ export type PurposeSeed = {
 export type ConsumerPurpose = {
     eservice: CompactEservice;
     id: string;
-    keychain: string;
+    /**
+     * Number of Consumer Keychains associated with this purpose
+     */
+    keychains: number;
     name: LocalizedPurposeName;
     producer: CompactOrganization;
     state: PurposeState;
