@@ -117,10 +117,9 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
               client: keychainProcessClient,
               headers,
               query: {
-                knodeId: purpose.knodeId,
                 limit: 1,
                 offset: 0,
-                purposeId: purpose.id,
+                purpose: `${purpose.knodeId}:${purpose.id}`,
               },
             }),
           ),
