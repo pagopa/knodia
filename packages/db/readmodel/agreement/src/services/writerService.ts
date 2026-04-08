@@ -26,13 +26,12 @@ export function agreementWriterServiceBuilder(db: NodePgDatabase) {
       );
 
       await db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion({
-          id: agreement.id,
-          metadataVersion,
-          table: readmodelAgreement,
-          tableIdColumn: readmodelAgreement.id,
+        const shouldUpsert = await checkMetadataVersion(
           tx,
-        });
+          readmodelAgreement,
+          metadataVersion,
+          agreement.id,
+        );
 
         if (!shouldUpsert) {
           return;

@@ -101,13 +101,12 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
       metadataVersion: number,
     ): Promise<void> {
       return db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion({
-          id: consumerKeychain.id,
-          metadataVersion,
-          table: readmodelConsumerKeychain,
-          tableIdColumn: readmodelConsumerKeychain.id,
+        const shouldUpsert = await checkMetadataVersion(
           tx,
-        });
+          readmodelConsumerKeychain,
+          metadataVersion,
+          consumerKeychain.id,
+        );
 
         if (!shouldUpsert) {
           return;
@@ -164,13 +163,12 @@ export function keychainWriterServiceBuilder(db: NodePgDatabase) {
       metadataVersion: number,
     ): Promise<void> {
       return db.transaction(async (tx) => {
-        const shouldUpsert = await checkMetadataVersion({
-          id: consumerKeychainPurpose.consumerKeychainId,
-          metadataVersion,
-          table: readmodelConsumerKeychain,
-          tableIdColumn: readmodelConsumerKeychain.id,
+        const shouldUpsert = await checkMetadataVersion(
           tx,
-        });
+          readmodelConsumerKeychain,
+          metadataVersion,
+          consumerKeychainPurpose.consumerKeychainId,
+        );
 
         if (!shouldUpsert) {
           return;

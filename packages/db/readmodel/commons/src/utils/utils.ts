@@ -46,35 +46,21 @@ export const makeReadmodelDrizzleConnection = (
   return { db: drizzle(pool), pool };
 };
 
-export const checkMetadataVersion = async ({
-  id,
-  metadataVersion,
-  table,
-  tableIdColumn,
-  tx,
-}: {
-  id: string;
-  metadataVersion: number;
+export const checkMetadataVersion = async (
+  tx: NodePgDatabase,
   table: AnyPgTable & {
+    id: AnyPgColumn;
     metadataVersion: AnyPgColumn<{ data: number }>;
-  };
-  tableIdColumn: AnyPgColumn;
-  tx: NodePgDatabase;
-}): Promise<boolean> => {
-  const columns = Object.values(getTableColumns(table));
-  if (!columns.includes(tableIdColumn)) {
-    throw genericInternalError(
-      `tableIdColumn ${tableIdColumn.name} does not belong to the provided table ${getTableConfig(table).name}`,
-    );
-  }
-
-  return await checkMetadataVersionByFilter(
+  },
+  metadataVersion: number,
+  id: string,
+): Promise<boolean> =>
+  await checkMetadataVersionByFilter(
     tx,
     table,
     metadataVersion,
-    eq(tableIdColumn, id),
+    eq(table.id, id),
   );
-};
 
 const checkMetadataVersionByFilter = async (
   tx: NodePgDatabase,
