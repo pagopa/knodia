@@ -3,6 +3,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { SearchContent } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchContent";
 import { SearchFilters } from "@/features/e-service/components/ConsumptionEserviceSearch/SearchFilters";
@@ -87,7 +88,14 @@ function RouteComponent() {
   };
 
   return (
-    <div className="flex min-h-full flex-col">
+    <ListPageLayout
+      pagination={{
+        limit: results?.pagination.limit ?? 0,
+        offset: results?.pagination.offset ?? 0,
+        onOffsetChange: handleOffsetChange,
+        totalItems: results?.pagination.total ?? 0,
+      }}
+    >
       <Breadcrumbs className="mb-10">
         <Breadcrumb isDisabled>Consumption</Breadcrumb>
         <Breadcrumb href={{ to: "/consumption/e-services" }}>
@@ -112,9 +120,8 @@ function RouteComponent() {
         hasValidationError={hasValidationError}
         isLoading={isLoading}
         knodeId={search.knodeId}
-        onOffsetChange={handleOffsetChange}
-        results={results ?? null}
+        results={results ? { items: results.items } : null}
       />
-    </div>
+    </ListPageLayout>
   );
 }

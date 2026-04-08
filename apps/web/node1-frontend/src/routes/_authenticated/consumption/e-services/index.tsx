@@ -1,8 +1,9 @@
-import { ButtonLink, Empty, Pagination } from "@knodia/ui-kit/ui";
+import { ButtonLink, Empty } from "@knodia/ui-kit/ui";
 import { SelectionPlusIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
+import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
 import { ConsumptionEserviceFilters } from "@/features/e-service/components/ConsumptionEserviceFilters";
@@ -53,7 +54,14 @@ function RouteComponent() {
   const showContent = isLoading || hasFilters || eservices.length > 0;
 
   return (
-    <div className="flex min-h-full flex-col">
+    <ListPageLayout
+      pagination={{
+        limit: data?.pagination.limit ?? 0,
+        offset: search.offset,
+        onOffsetChange: (offset) => handleSearchChange({ offset }),
+        totalItems: data?.pagination.total ?? 0,
+      }}
+    >
       <PageHeader
         actions={
           canManageAgreements && (
@@ -84,14 +92,6 @@ function RouteComponent() {
             eservices={eservices}
             isLoading={isLoading}
           />
-
-          <Pagination
-            className="mx-auto mt-auto pt-6"
-            limit={data?.pagination.limit ?? 0}
-            offset={search.offset}
-            onOffsetChange={(offset) => handleSearchChange({ offset })}
-            totalItems={data?.pagination.total ?? 0}
-          />
         </>
       ) : (
         <Empty
@@ -104,6 +104,6 @@ function RouteComponent() {
           title="You don't consume any E-Service yet."
         />
       )}
-    </div>
+    </ListPageLayout>
   );
 }
