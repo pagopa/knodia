@@ -32,6 +32,7 @@ const NON_EXISTENT_CONSUMER_KEYCHAIN_ID = generateId<ConsumerKeychainId>();
 
 const allowedTestTokens: Extract<TestToken, { type: "ui-session" }>[] = [
   { roles: ["technical"], type: "ui-session" },
+  { roles: ["administrative"], type: "ui-session" },
 ];
 
 const getConsumerKeychainKeys = (
