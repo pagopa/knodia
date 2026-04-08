@@ -486,6 +486,42 @@ export type RefreshRequest = {
     refreshToken: string;
 };
 
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ */
+export type PurposeFormSchemasResponse = {
+    schema: {
+        [key: string]: unknown;
+    };
+    uiSchema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
+};
+
 /**
  * Name of the Keychain
  */
@@ -546,42 +582,6 @@ export type User = {
 };
 
 export type Users = Array<User>;
-
-export type PurposeState = 'Active' | 'Suspended' | 'Archived';
-
-/**
- * Name of the Purpose
- */
-export type LocalizedPurposeName = {
-    en: string;
-};
-
-/**
- * Description of the Purpose
- */
-export type LocalizedPurposeDescription = {
-    en: string;
-};
-
-export type PurposeFormAnswers = {
-    [key: string]: unknown;
-};
-
-/**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
- */
-export type PurposeFormSchemasResponse = {
-    schema: {
-        [key: string]: unknown;
-    };
-    uiSchema: {
-        [key: string]: unknown;
-    };
-    /**
-     * Version identifier for the Purpose form schema provided by the target Knode
-     */
-    version: string;
-};
 
 /**
  * Seed data to create a new Purpose
