@@ -59,5 +59,21 @@ export async function handleKeychainEvent(
         message.version,
       );
     })
+    .with({ type: "ConsumerKeychainPurposeUnlinkedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "consumerKeychain");
+      assertDataExistsInEvent(msg, "purpose");
+
+      const { consumerKeychain, purpose } = msg.data;
+      await keychainWriterService.deleteConsumerKeychainPurpose(
+        {
+          consumerKeychainId: unsafeBrandId(consumerKeychain.id),
+          purpose: {
+            id: unsafeBrandExternalId(purpose.id),
+            knodeId: KnodeId.parse(purpose.knodeId),
+          },
+        },
+        message.version,
+      );
+    })
     .exhaustive();
 }

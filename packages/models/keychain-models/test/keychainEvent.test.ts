@@ -17,6 +17,7 @@ import {
   ConsumerKeychainMemberAddedV1,
   ConsumerKeychainMemberRemovedV1,
   ConsumerKeychainPurposeLinkedV1,
+  ConsumerKeychainPurposeUnlinkedV1,
   ConsumerKeychainUpdatedV1,
 } from "../src/generated/v1/keychainEvents.ts";
 import { KeychainEventV1 } from "../src/keychainEvent.ts";
@@ -78,6 +79,14 @@ describe("KeychainEventV1 codec", () => {
     {
       data: {
         consumerKeychain: consumerKeychainV1,
+        purpose: linkedPurposeV1,
+      },
+      message: ConsumerKeychainPurposeUnlinkedV1,
+      type: "ConsumerKeychainPurposeUnlinkedV1" as const,
+    },
+    {
+      data: {
+        consumerKeychain: consumerKeychainV1,
         userId: generateUserId(),
       },
       message: ConsumerKeychainMemberAddedV1,
@@ -115,6 +124,9 @@ describe("KeychainEventV1 codec", () => {
         .with({ type: "ConsumerKeychainPurposeLinkedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
+        .with({ type: "ConsumerKeychainPurposeUnlinkedV1" }, ({ data, type }) =>
+          testFullCodec({ data, type }),
+        )
         .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, type }) =>
           testFullCodec({ data, type }),
         )
@@ -144,6 +156,10 @@ describe("KeychainEventV1 codec", () => {
         )
         .with(
           { type: "ConsumerKeychainPurposeLinkedV1" },
+          ({ data, message }) => testProtobufCodec(message, data),
+        )
+        .with(
+          { type: "ConsumerKeychainPurposeUnlinkedV1" },
           ({ data, message }) => testProtobufCodec(message, data),
         )
         .with({ type: "ConsumerKeychainMemberAddedV1" }, ({ data, message }) =>
