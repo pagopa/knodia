@@ -25,6 +25,7 @@ export async function handleKeychainEvent(
           "ConsumerKeychainUpdatedV1",
           "ConsumerKeychainMemberAddedV1",
           "ConsumerKeychainMemberRemovedV1",
+          "ConsumerKeychainKeyAddedV1",
         ),
       },
       async (msg) => {
@@ -51,6 +52,22 @@ export async function handleKeychainEvent(
         {
           consumerKeychainId: unsafeBrandId(consumerKeychain.id),
           linkedAt: new Date(msg.data.linkedAt),
+          purpose: {
+            id: unsafeBrandExternalId(purpose.id),
+            knodeId: KnodeId.parse(purpose.knodeId),
+          },
+        },
+        message.version,
+      );
+    })
+    .with({ type: "ConsumerKeychainPurposeUnlinkedV1" }, async (msg) => {
+      assertDataExistsInEvent(msg, "consumerKeychain");
+      assertDataExistsInEvent(msg, "purpose");
+
+      const { consumerKeychain, purpose } = msg.data;
+      await keychainWriterService.deleteConsumerKeychainPurpose(
+        {
+          consumerKeychainId: unsafeBrandId(consumerKeychain.id),
           purpose: {
             id: unsafeBrandExternalId(purpose.id),
             knodeId: KnodeId.parse(purpose.knodeId),

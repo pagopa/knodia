@@ -28,6 +28,11 @@ export interface ConsumerKeychainPurposeLinkedV1 {
   linkedAt: number;
 }
 
+export interface ConsumerKeychainPurposeUnlinkedV1 {
+  consumerKeychain: ConsumerKeychainV1 | undefined;
+  purpose: ConsumerKeychainLinkedPurposeV1 | undefined;
+}
+
 export interface ConsumerKeychainMemberAddedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
   userId: string;
@@ -36,6 +41,11 @@ export interface ConsumerKeychainMemberAddedV1 {
 export interface ConsumerKeychainMemberRemovedV1 {
   consumerKeychain: ConsumerKeychainV1 | undefined;
   userId: string;
+}
+
+export interface ConsumerKeychainKeyAddedV1 {
+  consumerKeychain: ConsumerKeychainV1 | undefined;
+  kid: string;
 }
 
 function createBaseConsumerKeychainCreatedV1(): ConsumerKeychainCreatedV1 {
@@ -330,6 +340,92 @@ export const ConsumerKeychainPurposeLinkedV1: MessageFns<ConsumerKeychainPurpose
   },
 };
 
+function createBaseConsumerKeychainPurposeUnlinkedV1(): ConsumerKeychainPurposeUnlinkedV1 {
+  return { consumerKeychain: undefined, purpose: undefined };
+}
+
+export const ConsumerKeychainPurposeUnlinkedV1: MessageFns<ConsumerKeychainPurposeUnlinkedV1> = {
+  encode(message: ConsumerKeychainPurposeUnlinkedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.consumerKeychain !== undefined) {
+      ConsumerKeychainV1.encode(message.consumerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.purpose !== undefined) {
+      ConsumerKeychainLinkedPurposeV1.encode(message.purpose, writer.uint32(18).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ConsumerKeychainPurposeUnlinkedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConsumerKeychainPurposeUnlinkedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.consumerKeychain = ConsumerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.purpose = ConsumerKeychainLinkedPurposeV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConsumerKeychainPurposeUnlinkedV1 {
+    return {
+      consumerKeychain: isSet(object.consumerKeychain)
+        ? ConsumerKeychainV1.fromJSON(object.consumerKeychain)
+        : undefined,
+      purpose: isSet(object.purpose) ? ConsumerKeychainLinkedPurposeV1.fromJSON(object.purpose) : undefined,
+    };
+  },
+
+  toJSON(message: ConsumerKeychainPurposeUnlinkedV1): unknown {
+    const obj: any = {};
+    if (message.consumerKeychain !== undefined) {
+      obj.consumerKeychain = ConsumerKeychainV1.toJSON(message.consumerKeychain);
+    }
+    if (message.purpose !== undefined) {
+      obj.purpose = ConsumerKeychainLinkedPurposeV1.toJSON(message.purpose);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ConsumerKeychainPurposeUnlinkedV1>, I>>(
+    base?: I,
+  ): ConsumerKeychainPurposeUnlinkedV1 {
+    return ConsumerKeychainPurposeUnlinkedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ConsumerKeychainPurposeUnlinkedV1>, I>>(
+    object: I,
+  ): ConsumerKeychainPurposeUnlinkedV1 {
+    const message = createBaseConsumerKeychainPurposeUnlinkedV1();
+    message.consumerKeychain = (object.consumerKeychain !== undefined && object.consumerKeychain !== null)
+      ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
+      : undefined;
+    message.purpose = (object.purpose !== undefined && object.purpose !== null)
+      ? ConsumerKeychainLinkedPurposeV1.fromPartial(object.purpose)
+      : undefined;
+    return message;
+  },
+};
+
 function createBaseConsumerKeychainMemberAddedV1(): ConsumerKeychainMemberAddedV1 {
   return { consumerKeychain: undefined, userId: "" };
 }
@@ -490,6 +586,86 @@ export const ConsumerKeychainMemberRemovedV1: MessageFns<ConsumerKeychainMemberR
       ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
       : undefined;
     message.userId = object.userId ?? "";
+    return message;
+  },
+};
+
+function createBaseConsumerKeychainKeyAddedV1(): ConsumerKeychainKeyAddedV1 {
+  return { consumerKeychain: undefined, kid: "" };
+}
+
+export const ConsumerKeychainKeyAddedV1: MessageFns<ConsumerKeychainKeyAddedV1> = {
+  encode(message: ConsumerKeychainKeyAddedV1, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.consumerKeychain !== undefined) {
+      ConsumerKeychainV1.encode(message.consumerKeychain, writer.uint32(10).fork()).join();
+    }
+    if (message.kid !== "") {
+      writer.uint32(18).string(message.kid);
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): ConsumerKeychainKeyAddedV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConsumerKeychainKeyAddedV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.consumerKeychain = ConsumerKeychainV1.decode(reader, reader.uint32());
+          continue;
+        }
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.kid = reader.string();
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConsumerKeychainKeyAddedV1 {
+    return {
+      consumerKeychain: isSet(object.consumerKeychain)
+        ? ConsumerKeychainV1.fromJSON(object.consumerKeychain)
+        : undefined,
+      kid: isSet(object.kid) ? globalThis.String(object.kid) : "",
+    };
+  },
+
+  toJSON(message: ConsumerKeychainKeyAddedV1): unknown {
+    const obj: any = {};
+    if (message.consumerKeychain !== undefined) {
+      obj.consumerKeychain = ConsumerKeychainV1.toJSON(message.consumerKeychain);
+    }
+    if (message.kid !== "") {
+      obj.kid = message.kid;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ConsumerKeychainKeyAddedV1>, I>>(base?: I): ConsumerKeychainKeyAddedV1 {
+    return ConsumerKeychainKeyAddedV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ConsumerKeychainKeyAddedV1>, I>>(object: I): ConsumerKeychainKeyAddedV1 {
+    const message = createBaseConsumerKeychainKeyAddedV1();
+    message.consumerKeychain = (object.consumerKeychain !== undefined && object.consumerKeychain !== null)
+      ? ConsumerKeychainV1.fromPartial(object.consumerKeychain)
+      : undefined;
+    message.kid = object.kid ?? "";
     return message;
   },
 };

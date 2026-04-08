@@ -31,8 +31,10 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
+  API_CreatedKeyResource,
   type API_Keychain,
   API_KeychainDetails,
+  API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_Keychains,
   API_Users,
@@ -65,6 +67,17 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     response: AxiosResponse<API_CreatedResource> | AxiosResponse<void>,
     headers: KnodiaServiceHeaders,
     consumerKeychainId: string,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveConsumerKeychainById(consumerKeychainId, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
+  const pollConsumerKeychainById = (
+    consumerKeychainId: ConsumerKeychainId,
+    response: AxiosResponse<unknown>,
+    headers: KnodiaServiceHeaders,
   ) =>
     pollingService.pollResourceWithMetadata(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
@@ -203,6 +216,50 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId } = req.params;
+
+      logger.info(
+        { requestBody: req.body, requestParams: req.params },
+        `Uploading key to Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.uploadConsumerKeychainKey({
+        body: req.body,
+        client: keychainProcessClient,
+        headers,
+        path: { consumerKeychainId },
+      });
+
+      await pollConsumerKeychainById(consumerKeychainId, response, headers);
+
+      res.status(201).send({ kid: response.data.kid });
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainKeySeed,
+      description: "Upload a key to a Consumer Keychain",
+      operationId: "uploadConsumerKeychainKey",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        201: API_CreatedKeyResource.meta({
+          description: "Consumer Keychain key uploaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys",
   });
 
   fastify.route({

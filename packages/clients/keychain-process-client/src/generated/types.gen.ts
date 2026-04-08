@@ -51,11 +51,22 @@ export type KeychainLocalizedName = {
 };
 
 /**
+ * Name of the Keychain Key
+ */
+export type KeychainKeyLocalizedName = {
+    en: string;
+};
+
+/**
  * Description of the Keychain
  */
 export type KeychainLocalizedDescription = {
     en: string;
 };
+
+export type KeyFormat = 'PublicKey' | 'X509Certificate';
+
+export type KeyAlgorithm = 'RS256';
 
 export type ConsumerKeychainPurposeLinkSeed = {
     knodeId: KnodeId;
@@ -77,6 +88,11 @@ export type OrganizationId = string;
  * Unique identifier of the User
  */
 export type UserId = string;
+
+/**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
 
 export type Keychain = {
     createdAt: string;
@@ -100,6 +116,21 @@ export type ConsumerKeychainSeed = {
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
+};
+
+export type KeychainKeySeed = {
+    encodedPem: string;
+    name: KeychainKeyLocalizedName;
+};
+
+export type KeychainKey = {
+    algorithm: KeyAlgorithm;
+    createdAt: string;
+    encodedPem: string;
+    format: KeyFormat;
+    kid: KeyId;
+    name: KeychainKeyLocalizedName;
+    userId: UserId;
 };
 
 export type User = {
@@ -461,6 +492,55 @@ export type AddConsumerKeychainMemberResponses = {
 };
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
+
+export type UploadConsumerKeychainKeyData = {
+    body: KeychainKeySeed;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys';
+};
+
+export type UploadConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[keyof UploadConsumerKeychainKeyErrors];
+
+export type UploadConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain key uploaded successfully
+     */
+    201: KeychainKey;
+};
+
+export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
 
 export type RemoveConsumerKeychainMemberData = {
     body?: never;

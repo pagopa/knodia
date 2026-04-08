@@ -29,6 +29,8 @@ import {
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
+  API_KeychainKey,
+  API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_Keychains,
   API_Users,
@@ -36,6 +38,7 @@ import {
 import {
   toAPI_ConsumerKeychainPurpose,
   toAPI_Keychain,
+  toAPI_KeychainKey,
   toAPI_User,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -276,6 +279,49 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
+
+      const {
+        data: key,
+        metadata: { version },
+      } = await consumerKeychainService.uploadConsumerKeychainKey(
+        req.params.consumerKeychainId,
+        req.body,
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(201).send(toAPI_KeychainKey(key));
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainKeySeed,
+      description: "Upload a key to a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "uploadConsumerKeychainKey",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_KeychainKey.meta({
+            description: "Consumer Keychain key uploaded successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys",
   });
 
   fastify.route({
