@@ -8,7 +8,7 @@ import type { ConsumptionEserviceDetail } from "@/features/e-service/models/cons
 
 import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { ModalFooter } from "@/components/ModalFooter";
-import { SettingsCard } from "@/components/SettingCard";
+import { OrganizationCard } from "@/components/OrganizationCard";
 import { useCreateAgreement } from "@/features/agreement/hooks/useCreateAgreement";
 import { sessionOrganizationQuery } from "@/features/session/services/queries";
 import { FullPageModal } from "@/layouts/FullPageModal";
@@ -88,13 +88,18 @@ function FormContent({
       </h2>
 
       <div className="grid grid-cols-2 gap-6">
-        <SettingsCard label="Producer">
-          {eservice.producer.name} - {eservice.producer.knodeId} Knode
-        </SettingsCard>
-        <SettingsCard label="Consumer">
-          {sessionOrganization?.name ?? ""} -{" "}
-          {sessionOrganization?.knodeId ?? ""} Knode
-        </SettingsCard>
+        <OrganizationCard
+          label="Producer"
+          organization={eservice.producer}
+          showContact={false}
+        />
+        {sessionOrganization && (
+          <OrganizationCard
+            label="Consumer"
+            organization={sessionOrganization}
+            showContact={false}
+          />
+        )}
       </div>
 
       <div>
