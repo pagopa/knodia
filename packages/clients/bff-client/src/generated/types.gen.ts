@@ -152,10 +152,6 @@ export type EserviceSeed = {
      */
     interfaceDocument: InterfaceDocumentSeed;
     /**
-     * Whether consumer operator identification is required
-     */
-    isConsumerOperatorIdentificationRequired?: boolean;
-    /**
      * Whether SignalHub is enabled for the E-service
      */
     isSignalHubEnabled?: boolean;
@@ -490,6 +486,42 @@ export type RefreshRequest = {
     refreshToken: string;
 };
 
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
+ */
+export type PurposeFormSchemasResponse = {
+    schema: {
+        [key: string]: unknown;
+    };
+    uiSchema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
+};
+
 /**
  * Name of the Keychain
  */
@@ -570,42 +602,6 @@ export type CreatedKeyResource = {
     kid: string;
 };
 
-export type PurposeState = 'Active' | 'Suspended' | 'Archived';
-
-/**
- * Name of the Purpose
- */
-export type LocalizedPurposeName = {
-    en: string;
-};
-
-/**
- * Description of the Purpose
- */
-export type LocalizedPurposeDescription = {
-    en: string;
-};
-
-export type PurposeFormAnswers = {
-    [key: string]: unknown;
-};
-
-/**
- * Current Purpose form schemas (JSON Schema + UI Schema) with their version identifier
- */
-export type PurposeFormSchemasResponse = {
-    schema: {
-        [key: string]: unknown;
-    };
-    uiSchema: {
-        [key: string]: unknown;
-    };
-    /**
-     * Version identifier for the Purpose form schema provided by the target Knode
-     */
-    version: string;
-};
-
 /**
  * Seed data to create a new Purpose
  */
@@ -620,6 +616,20 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+};
+
+export type ConsumerPurpose = {
+    eservice: CompactEservice;
+    id: string;
+    keychain: string;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
+export type ConsumerPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerPurpose>;
 };
 
 export type ProducerPurpose = {
@@ -1582,6 +1592,52 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type GetConsumerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumer/purposes';
+};
+
+export type GetConsumerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];
+
+export type GetConsumerPurposesResponses = {
+    /**
+     * Consumer Purposes retrieved successfully
+     */
+    200: ConsumerPurposes;
+};
+
+export type GetConsumerPurposesResponse = GetConsumerPurposesResponses[keyof GetConsumerPurposesResponses];
 
 export type CreateConsumerPurposeData = {
     body: PurposeSeed;
