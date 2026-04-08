@@ -16,7 +16,7 @@ const TRANSPORT_TARGET = new URL("transport.mts", import.meta.url).pathname;
 const buildLoggerEnvOptions = (
   isProduction: boolean,
 ): Partial<LoggerOptions> =>
-  !isProduction
+  isProduction
     ? {
         timestamp: false,
         transport: {
