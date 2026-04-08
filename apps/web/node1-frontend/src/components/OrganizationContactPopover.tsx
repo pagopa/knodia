@@ -1,17 +1,16 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { Button, Popover } from "@knodia/ui-kit/ui";
 import { AddressBookIcon } from "@phosphor-icons/react";
 import { DialogTrigger } from "react-aria-components";
 
+import { KnodeAvatar } from "@/components/KnodeAvatar";
+
+// TODO: Replace mocked contact info (email and notes) with real data from the API when available
 export function OrganizationContactPopover({
-  email,
-  knodeId,
-  name,
-  notes,
+  organization,
 }: {
-  email: string;
-  knodeId: string;
-  name: string;
-  notes: string;
+  organization: bffApi.CompactOrganization;
 }) {
   return (
     <DialogTrigger>
@@ -30,16 +29,22 @@ export function OrganizationContactPopover({
       <Popover
         className="max-w-md"
         placement="bottom start"
-        title={`${name} – ${knodeId} Knode`}
+        title={organization.name}
       >
+        <KnodeAvatar
+          className="bg-brand-dark text-white"
+          knodeId={organization.knodeId}
+          name={`${organization.knodeId} Knode`}
+          size="sm"
+        />
         <dl className="body-sm flex flex-col gap-1">
           <div className="flex gap-2">
             <dt>E-mail address:</dt>
-            <dd className="body-sm-em">{email}</dd>
+            <dd className="body-sm-em">contact@example.com</dd>
           </div>
           <div className="flex gap-2">
             <dt>Notes:</dt>
-            <dd className="body-sm-em">{notes}</dd>
+            <dd className="body-sm-em">—</dd>
           </div>
         </dl>
       </Popover>
