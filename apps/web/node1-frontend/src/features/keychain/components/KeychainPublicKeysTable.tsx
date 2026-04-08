@@ -17,7 +17,11 @@ import {
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { SelectionPlusIcon, TrashIcon } from "@phosphor-icons/react";
+import {
+  DownloadSimpleIcon,
+  SelectionPlusIcon,
+  TrashIcon,
+} from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
@@ -74,10 +78,22 @@ export function KeychainPublicKeysTable({
             <Cell>TODO</Cell>
             <Cell>{formatShortDate(key.createdAt)}</Cell>
             <Cell>
-              {key.kid} <CopyButton textToCopy={key.kid} />
+              <div className="flex items-center">
+                {key.kid} <CopyButton className="ml-2" textToCopy={key.kid} />
+              </div>
             </Cell>
             <Cell>
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
+                <Button
+                  hierarchy="neutral"
+                  isDisabled
+                  kind="outlined"
+                  size="icon-sm"
+                >
+                  <DownloadSimpleIcon />
+                  <span className="sr-only">Download public key</span>
+                </Button>
+
                 <RemoveFromKeychainAction
                   keychainId={keychainId}
                   keyId={key.kid}
@@ -109,7 +125,8 @@ function RemoveFromKeychainAction({
         getConsumerKeychainKeysOptions({
           client,
           path: { consumerKeychainId: keychainId },
-          query: { limit: 10, offset: 0 }, //TODO
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
         }),
       );
     },

@@ -10,6 +10,7 @@ import { useState } from "react";
 import { match } from "ts-pattern";
 import z from "zod";
 
+import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
@@ -27,6 +28,9 @@ export function AddKeychainMemberAction({
   keychainType,
 }: AddKeychainMemberActionProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const isAdmin = useHasRole("administrative");
+
+  if (!isAdmin) return null;
 
   return (
     <>
@@ -78,12 +82,10 @@ function AddKeychainMemberModal({
 
   const { data = [] } = useQuery(getTechnicalUsersOptions({ client }));
 
-  const technicalUsersOptions = data
-    .filter((user) => !alreadyKeychainMembersIds.includes(user.id))
-    .map((user) => ({
-      id: user.id,
-      label: user.username,
-    }));
+  const technicalUsersOptions = data.map((user) => ({
+    id: user.id,
+    label: user.username,
+  }));
 
   const handleAddKeychainMember = (userId: string) => {
     match(keychainType)
@@ -160,7 +162,11 @@ function AddKeychainMemberModal({
               value={field.state.value}
             >
               {technicalUsersOptions.map((option) => (
-                <SelectItem id={option.id} key={option.id}>
+                <SelectItem
+                  id={option.id}
+                  isDisabled={alreadyKeychainMembersIds.includes(option.id)}
+                  key={option.id}
+                >
                   {option.label}
                 </SelectItem>
               ))}

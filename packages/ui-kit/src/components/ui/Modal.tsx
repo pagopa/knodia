@@ -38,12 +38,12 @@ const modal = tv({
 });
 
 interface ModalProps extends AriaModalOverlayProps {
-  actionLabel: string;
+  actionLabel?: string;
   cancelLabel?: string;
   children?: React.ReactNode;
   confirmButtonProps?: Pick<ButtonProps, "isDisabled" | "isPending">;
   description?: string;
-  kind: "default" | "destructive";
+  kind?: "default" | "destructive";
   onClose?: (e: PressEvent) => void;
   onConfirm?: (e: PressEvent) => void;
   onDismiss?: () => void;
@@ -54,7 +54,7 @@ interface ModalProps extends AriaModalOverlayProps {
 
 export function Modal({
   actionLabel,
-  cancelLabel = "Cancel",
+  cancelLabel,
   children,
   className,
   description,
@@ -70,6 +70,7 @@ export function Modal({
 }: ModalProps) {
   const titleId = useId();
   const descriptionId = useId();
+  const hasFooter = Boolean(actionLabel || cancelLabel || showDontShowAgain);
 
   return (
     <AriaModalOverlay
@@ -110,38 +111,46 @@ export function Modal({
 
           {children}
 
-          <div className="flex justify-between gap-6 items-center">
-            {showDontShowAgain ? (
-              <Checkbox
-                {...(onDontShowAgainChange && {
-                  onChange: onDontShowAgainChange,
-                })}
-              >
-                Don&apos;t show this again
-              </Checkbox>
-            ) : (
-              <div />
-            )}
-            <div className="flex gap-3">
-              <Button
-                hierarchy="neutral"
-                kind="tonal"
-                size="md"
-                slot="close"
-                {...(onClose && { onPress: onClose })}
-              >
-                {cancelLabel}
-              </Button>
-              <Button
-                hierarchy={kind === "destructive" ? "danger" : "brand"}
-                size="md"
-                {...(onConfirm && { onPress: onConfirm })}
-                {...confirmButtonProps}
-              >
-                {actionLabel}
-              </Button>
+          {hasFooter && (
+            <div className="flex justify-between gap-6 items-center">
+              {showDontShowAgain ? (
+                <Checkbox
+                  {...(onDontShowAgainChange && {
+                    onChange: onDontShowAgainChange,
+                  })}
+                >
+                  Don&apos;t show this again
+                </Checkbox>
+              ) : (
+                <div />
+              )}
+              <div className="flex gap-3">
+                {cancelLabel && (
+                  <Button
+                    hierarchy="neutral"
+                    kind="tonal"
+                    size="md"
+                    slot="close"
+                    {...(onClose && { onPress: onClose })}
+                  >
+                    {cancelLabel ?? "Cancel"}
+                  </Button>
+                )}
+                {actionLabel && (
+                  <Button
+                    hierarchy={
+                      (kind ?? "default") === "destructive" ? "danger" : "brand"
+                    }
+                    size="md"
+                    {...(onConfirm && { onPress: onConfirm })}
+                    {...confirmButtonProps}
+                  >
+                    {actionLabel}
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </AriaDialog>
       </AriaModal>
     </AriaModalOverlay>

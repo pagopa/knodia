@@ -21,6 +21,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
+import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 
 import type { KeychainType } from "../models/commons";
@@ -38,6 +39,8 @@ export function KeychainMembersTable({
   members,
   type,
 }: KeychainMembersTableProps) {
+  const isAdmin = useHasRole("administrative");
+
   if (isLoading) {
     return <Loader className="mx-auto mt-20" label="Loading..." />;
   }
@@ -57,9 +60,11 @@ export function KeychainMembersTable({
           Name
         </Column>
         <Column id="email">Email</Column>
-        <Column id="actions">
-          <span className="sr-only">Actions</span>
-        </Column>
+        {isAdmin && (
+          <Column id="actions">
+            <span className="sr-only">Actions</span>
+          </Column>
+        )}
       </TableHeader>
       <TableBody items={members}>
         {(member) => (
@@ -68,15 +73,17 @@ export function KeychainMembersTable({
               <span className="body-md-em">{member.username}</span>
             </Cell>
             <Cell>{member.email}</Cell>
-            <Cell>
-              <div className="flex justify-end">
-                <RemoveFromKeychainAction
-                  keychainId={keychainId}
-                  type={type}
-                  userId={member.id}
-                />
-              </div>
-            </Cell>
+            {isAdmin && (
+              <Cell>
+                <div className="flex justify-end">
+                  <RemoveFromKeychainAction
+                    keychainId={keychainId}
+                    type={type}
+                    userId={member.id}
+                  />
+                </div>
+              </Cell>
+            )}
           </Row>
         )}
       </TableBody>
