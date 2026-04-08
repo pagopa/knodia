@@ -44,6 +44,7 @@ describe("GET /purposes/formSchemas/current (getCurrentPurposeFormSchemas)", () 
     async (token) => {
       const mockResponse = {
         schema: { properties: {}, type: "object" },
+        texts: { en: {} },
         uiSchema: { elements: [], type: "VerticalLayout" },
         version: "1.0",
       };
