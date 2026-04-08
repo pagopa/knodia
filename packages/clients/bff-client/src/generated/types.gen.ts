@@ -600,6 +600,8 @@ export type PurposeSeed = {
 };
 
 export type ConsumerPurpose = {
+    dailyCalls: number;
+    description: LocalizedPurposeDescription;
     eservice: CompactEservice;
     id: string;
     keychain: string;
@@ -1543,6 +1545,10 @@ export type GetConsumerPurposesData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
     };
     url: '/consumer/purposes';
 };

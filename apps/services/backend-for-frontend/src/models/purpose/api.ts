@@ -49,13 +49,21 @@ export type API_GetConsumerPurposeDetailQueryParams = z.infer<
   typeof API_GetConsumerPurposeDetailQueryParams
 >;
 
-export const API_GetConsumerPurposesQueryParams = API_PaginationQueryParams;
+export const API_GetConsumerPurposesQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by E-service ID" }),
+  });
 export type API_GetConsumerPurposesQueryParams = z.infer<
   typeof API_GetConsumerPurposesQueryParams
 >;
 
 export const API_ConsumerPurpose = z
   .strictObject({
+    dailyCalls: API_PurposeDailyCalls,
+    description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
     id: z.uuid(),
     // TODO: Replace with actual keychain data when consumer keychains for purposes are implemented

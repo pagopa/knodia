@@ -42,7 +42,7 @@ import {
 } from "../../models/purpose/api.ts";
 import {
   toAPI_ProducerPurpose,
-  toAPI_ProducerPurposeDetails,
+  toAPI_PurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
@@ -249,7 +249,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       );
 
       res.status(200).send(
-        toAPI_ProducerPurposeDetails({
+        toAPI_PurposeDetails({
           agreement,
           consumer,
           eservice,
