@@ -10,5 +10,6 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "keychain-process": "006",
   "organization-process": "007",
   "purpose-process": "008",
+  "authorization-server": "009",
 };
 /* eslint-enable perfectionist/sort-objects */

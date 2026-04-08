@@ -1,8 +1,12 @@
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
+import type { ConsumerKeychainPurpose } from "@knodia/keychain-models";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
-import { consumerKeychainNotFound } from "../models/errors.ts";
+import {
+  consumerKeychainNotFound,
+  consumerKeychainPurposeNotFound,
+} from "../models/errors.ts";
 
 export const retrieveConsumerKeychain = async (
   consumerKeychainId: ConsumerKeychainId,
@@ -16,4 +20,18 @@ export const retrieveConsumerKeychain = async (
   }
 
   return consumerKeychain;
+};
+
+export const retrieveConsumerKeychainPurpose = async (
+  consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
+  readmodelService: ReadmodelService,
+) => {
+  const consumerKeychainPurposeResult =
+    await readmodelService.getConsumerKeychainPurpose(consumerKeychainPurpose);
+
+  if (!consumerKeychainPurposeResult) {
+    throw consumerKeychainPurposeNotFound(consumerKeychainPurpose);
+  }
+
+  return consumerKeychainPurposeResult;
 };

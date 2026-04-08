@@ -553,10 +553,6 @@ export type GetAgreementsData = {
          */
         offset: number;
         /**
-         * Filter by Consumer ID
-         */
-        consumerId?: string;
-        /**
          * Filter by Agreement State
          */
         state?: AgreementState;
