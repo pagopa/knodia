@@ -34,10 +34,9 @@ function createEservice(
     mode: "ProvideData",
     name: "Test E-Service",
     producer: {
-      email: "info@ursa.com",
+      id: crypto.randomUUID(),
       knodeId: "Lynx",
       name: "Ursa Major",
-      notes: "Open Mon-Fri",
     },
     requiredAttributes: [[{ code: "NUTS3", possessed: true, scheme: "eu" }]],
     state: "Active",
@@ -81,11 +80,9 @@ describe("RequestAgreementModal", () => {
 
     expect(screen.getByText("Request Agreement")).toBeInTheDocument();
     expect(screen.getByText("Test E-Service")).toBeInTheDocument();
-    expect(screen.getByText(/Ursa Major - Lynx Knode/)).toBeInTheDocument();
+    expect(screen.getByText("Ursa Major")).toBeInTheDocument();
     await waitFor(() => {
-      expect(
-        screen.getByText(/Test Organization - Orion Knode/),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Test Organization")).toBeInTheDocument();
     });
     expect(
       screen.getByText("Your organization has the required attributes."),
