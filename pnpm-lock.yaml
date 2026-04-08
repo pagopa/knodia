@@ -2880,9 +2880,6 @@ importers:
 
   packages/test-commons:
     devDependencies:
-      '@aws-sdk/client-dynamodb':
-        specifier: 'catalog:'
-        version: 3.1023.0
       '@aws-sdk/client-s3':
         specifier: 'catalog:'
         version: 3.1023.0
