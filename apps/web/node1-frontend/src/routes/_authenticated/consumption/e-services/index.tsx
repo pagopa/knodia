@@ -73,9 +73,11 @@ function RouteComponent() {
         <>
           <ConsumptionEserviceFilters
             agreementState={search.agreementState}
-            onAgreementStateChange={(state) =>
-              handleSearchChange({ agreementState: state, offset: 0 })
-            }
+            onAgreementStateChange={(state) => {
+              if (state !== search.agreementState) {
+                handleSearchChange({ agreementState: state, offset: 0 });
+              }
+            }}
           />
 
           <ConsumptionEserviceList
