@@ -7,7 +7,6 @@ import {
   CaretUpIcon,
   SelectionIcon,
 } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 import {
   Button,
@@ -19,9 +18,8 @@ import {
 import { match } from "ts-pattern";
 
 import { useHasRole } from "@/contexts/auth";
-import { consumerPurposesByEserviceQuery } from "@/features/purpose/services/queries";
 
-import { EservicePurposeTable } from "./EservicePurposeTable";
+import { EservicePurposeSection } from "./EservicePurposeSection";
 
 export function OrgConsumptionStatusSection({
   agreement,
@@ -33,9 +31,6 @@ export function OrgConsumptionStatusSection({
   knodeId: KnodeId;
 }) {
   const canManageConsumption = useHasRole("administrative");
-  const { data, isLoading } = useQuery(
-    consumerPurposesByEserviceQuery(eserviceId),
-  );
 
   return (
     <Disclosure
@@ -50,20 +45,9 @@ export function OrgConsumptionStatusSection({
           state={agreement.state}
         />
 
-        <div className="flex flex-col gap-4">
-          <h3 className="title-md-em text-primary-light-low-contrast">
-            Purposes
-          </h3>
-          <EservicePurposeTable
-            canManageConsumption={canManageConsumption}
-            eserviceId={eserviceId}
-            isLoading={isLoading}
-            knodeId={knodeId}
-            purposes={data?.results ?? []}
-          />
-        </div>
+        <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
 
-        <div className="flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4">
           <h3 className="title-md-em text-primary-light-low-contrast">
             Keychains
           </h3>

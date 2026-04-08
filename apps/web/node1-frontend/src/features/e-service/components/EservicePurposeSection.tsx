@@ -13,13 +13,59 @@ import {
   TableHeader,
 } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
 import { createLink, useNavigate } from "@tanstack/react-router";
 
+import { useHasRole } from "@/contexts/auth";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
+import { consumerPurposesByEserviceQuery } from "@/features/purpose/services/queries";
 
 const ButtonLinkWithPreload = createLink(ButtonLink);
 
-export function EservicePurposeTable({
+export function EservicePurposeSection({
+  eserviceId,
+  knodeId,
+}: {
+  eserviceId: EserviceId;
+  knodeId: KnodeId;
+}) {
+  const canManageConsumption = useHasRole("administrative");
+  const { data, isLoading } = useQuery(
+    consumerPurposesByEserviceQuery(eserviceId),
+  );
+  const purposes = data?.results ?? [];
+
+  return (
+    <div className={`mt-4 flex flex-col gap-6`}>
+      <div className="flex items-center justify-between">
+        <h3 className="title-md-em text-primary-light-low-contrast">
+          Purposes
+        </h3>
+        {canManageConsumption && purposes.length > 0 && (
+          <ButtonLinkWithPreload
+            hierarchy="neutral"
+            kind="tonal"
+            params={{ id: eserviceId }}
+            search={{ knodeId }}
+            size="sm"
+            to="/consumption/e-services/$id/purposes/new"
+          >
+            Create Purpose
+          </ButtonLinkWithPreload>
+        )}
+      </div>
+      <EservicePurposeTable
+        canManageConsumption={canManageConsumption}
+        eserviceId={eserviceId}
+        isLoading={isLoading}
+        knodeId={knodeId}
+        purposes={purposes}
+      />
+    </div>
+  );
+}
+
+function EservicePurposeTable({
   canManageConsumption,
   eserviceId,
   isLoading,
