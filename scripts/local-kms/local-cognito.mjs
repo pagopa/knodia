@@ -34,6 +34,22 @@ const MOCK_USERS = [
   },
   {
     Attributes: [
+      { Name: "sub", Value: "00000000-0000-4000-8000-000000000002" },
+      { Name: "email", Value: "tecnico.roma@example.com" },
+      { Name: "email_verified", Value: "true" },
+      { Name: "given_name", Value: "Tecnico" },
+      { Name: "family_name", Value: "Roma" },
+      { Name: "custom:organizationId", Value: ORG_ID },
+    ],
+    Enabled: true,
+    Groups: ["role:technical", `org:${ORG_ID}`],
+    UserCreateDate: NOW_IN_SECONDS - 64_800,
+    UserLastModifiedDate: NOW_IN_SECONDS - 2_700,
+    UserStatus: "CONFIRMED",
+    Username: "Tecnico Roma",
+  },
+  {
+    Attributes: [
       { Name: "sub", Value: "00000000-0000-4000-8000-000000000003" },
       { Name: "email", Value: "giulia.bianchi@example.com" },
       { Name: "email_verified", Value: "true" },

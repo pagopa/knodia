@@ -43,10 +43,6 @@ export type API_GetAgreementQueryParams = z.infer<
 >;
 
 export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
   state: API_AgreementState.optional().meta({
     description: "Filter by Agreement State",
   }),

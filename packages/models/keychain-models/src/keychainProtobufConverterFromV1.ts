@@ -1,4 +1,8 @@
-import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
+import {
+  unsafeBrandId,
+  unsafeBrandKeyId,
+  unsafeBrandUserId,
+} from "@knodia/common-models/ids";
 import { assertRequired } from "@knodia/common-models/utils";
 import { match } from "ts-pattern";
 
@@ -42,6 +46,7 @@ const fromConsumerKeychainKeyV1 = (
     algorithm: fromKeyAlgorithmV1(input.algorithm),
     createdAt: new Date(input.createdAt),
     format: fromKeyFormatV1(input.format),
+    kid: unsafeBrandKeyId(input.kid),
     name: input.name,
     userId: unsafeBrandUserId(input.userId),
   };
@@ -57,8 +62,8 @@ const fromKeyAlgorithmV1 = (input: KeyAlgorithmV1): KeyAlgorithm =>
 
 const fromKeyFormatV1 = (input: KeyFormatV1): KeyFormat =>
   match(input)
-    .with(KeyFormatV1.JWK, () => KeyFormat.enum.jwk)
-    .with(KeyFormatV1.X509, () => KeyFormat.enum.x509)
+    .with(KeyFormatV1.PublicKey, () => KeyFormat.enum.PublicKey)
+    .with(KeyFormatV1.X509Certificate, () => KeyFormat.enum.X509Certificate)
     .with(KeyFormatV1.UNRECOGNIZED, () => {
       throw new Error("Unrecognized KeyFormatV1 value");
     })
