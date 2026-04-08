@@ -1,6 +1,7 @@
 import z from "zod";
 
 export const HTTPServiceName = z.enum([
+  "authorization-server",
   "backend-for-frontend",
   "eservice-process",
   "k2k-gateway",
