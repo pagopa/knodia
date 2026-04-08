@@ -73,7 +73,6 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
         client: remoteResourcesManagerClient,
         headers,
         query: {
-          consumerId,
           eserviceId: req.query.eserviceId,
           limit,
           offset,
