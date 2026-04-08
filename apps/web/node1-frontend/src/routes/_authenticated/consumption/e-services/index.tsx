@@ -1,12 +1,10 @@
-import { ButtonLink, Empty } from "@knodia/ui-kit/ui";
-import { SelectionPlusIcon } from "@phosphor-icons/react";
+import { ButtonLink } from "@knodia/ui-kit/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
-import { ConsumptionEserviceFilters } from "@/features/e-service/components/ConsumptionEserviceFilters";
 import { ConsumptionEserviceList } from "@/features/e-service/components/ConsumptionEserviceList";
 import {
   consumptionEserviceListDefaultValues,
@@ -49,10 +47,6 @@ function RouteComponent() {
     navigate({ replace: true, search: (s) => ({ ...s, ...values }) });
   }
 
-  const eservices = data?.results ?? [];
-  const hasFilters = search.agreementState !== undefined;
-  const showContent = isLoading || hasFilters || eservices.length > 0;
-
   return (
     <ListPageLayout
       pagination={{
@@ -77,33 +71,16 @@ function RouteComponent() {
         title="E-Services"
       />
 
-      {showContent ? (
-        <>
-          <ConsumptionEserviceFilters
-            agreementState={search.agreementState}
-            onAgreementStateChange={(state) => {
-              if (state !== search.agreementState) {
-                handleSearchChange({ agreementState: state, offset: 0 });
-              }
-            }}
-          />
-
-          <ConsumptionEserviceList
-            eservices={eservices}
-            isLoading={isLoading}
-          />
-        </>
-      ) : (
-        <Empty
-          description={
-            canManageAgreements
-              ? "Search for an E-Service to request an Agreement."
-              : "Consumed E-Services will appear here."
+      <ConsumptionEserviceList
+        agreementState={search.agreementState}
+        eservices={data?.results ?? []}
+        isLoading={isLoading}
+        onAgreementStateChange={(state) => {
+          if (state !== search.agreementState) {
+            handleSearchChange({ agreementState: state, offset: 0 });
           }
-          icon={<SelectionPlusIcon />}
-          title="You don't consume any E-Service yet."
-        />
-      )}
+        }}
+      />
     </ListPageLayout>
   );
 }
