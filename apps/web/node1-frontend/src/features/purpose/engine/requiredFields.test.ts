@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-sets */
 import { describe, expect, it } from "vitest";
 
 import type { JsonSchema } from "./types";
@@ -11,6 +12,7 @@ const schema: JsonSchema = {
         properties: {
           personalDataTypes: {
             contains: { const: "OTHER" },
+            type: "array",
           },
         },
       },
@@ -21,6 +23,7 @@ const schema: JsonSchema = {
         properties: {
           legalBasis: {
             contains: { const: "PUBLIC_INTEREST" },
+            type: "array",
           },
         },
       },
@@ -33,6 +36,7 @@ const schema: JsonSchema = {
         properties: {
           knowsDataQuantity: { const: "YES" },
         },
+        required: ["knowsDataQuantity"],
       },
       then: { required: ["dataQuantity"] },
     },
@@ -41,6 +45,7 @@ const schema: JsonSchema = {
         properties: {
           policyProvided: { const: "NO" },
         },
+        required: ["policyProvided"],
       },
       then: { required: ["reasonPolicyNotProvided"] },
     },
@@ -49,6 +54,7 @@ const schema: JsonSchema = {
         properties: {
           policyProvided: { const: "YES" },
         },
+        required: ["policyProvided"],
       },
       then: { required: ["policyProvidedMedium"] },
     },
@@ -58,6 +64,7 @@ const schema: JsonSchema = {
         properties: {
           someTrigger: { const: "TRIGGER" },
         },
+        required: ["someTrigger"],
       },
       then: { required: ["triggerField"] },
     },
@@ -87,15 +94,23 @@ const schema: JsonSchema = {
 };
 
 describe("getRequiredFields", () => {
-  it("returns static required fields when no conditions match", () => {
+  it("on empty values, returns top-level required plus every conditional branch that fires", () => {
     const required = getRequiredFields(schema, {});
     expect(required).toEqual(
       new Set([
-        "fallbackField",
-        "legalBasis",
-        "personalDataTypes",
+        // top-level required
         "purpose",
         "purposeDescription",
+        "personalDataTypes",
+        "legalBasis",
+        // then-branches whose `if` has no `required`: with {} the if matches
+        // and the then fires
+        "otherPersonalDataTypes",
+        "publicInterestReasons",
+        "legalBasisPublicInterest",
+        // else-branch whose `if` has `required: ["someTrigger"]`: with {} the
+        // if fails and the else fires
+        "fallbackField",
       ]),
     );
   });
@@ -164,5 +179,50 @@ describe("getRequiredFields", () => {
     };
     const required = getRequiredFields(simpleSchema, {});
     expect(required).toEqual(new Set(["name"]));
+  });
+
+  it("matches the then branch when the field checked by `if` is missing and `if.required` is absent", () => {
+    const looseSchema: JsonSchema = {
+      allOf: [
+        {
+          else: { required: ["fallbackField"] },
+          if: { properties: { foo: { const: "BAR" } } },
+          then: { required: ["bazField"] },
+        },
+      ],
+      properties: {
+        bazField: { type: "string" },
+        fallbackField: { type: "string" },
+        foo: { type: "string" },
+      },
+      type: "object",
+    };
+
+    expect(getRequiredFields(looseSchema, {})).toEqual(new Set(["bazField"]));
+  });
+
+  it("matches the else branch when the field checked by `if` is missing and `if.required` lists it", () => {
+    const strictSchema: JsonSchema = {
+      allOf: [
+        {
+          else: { required: ["fallbackField"] },
+          if: {
+            properties: { foo: { const: "BAR" } },
+            required: ["foo"],
+          },
+          then: { required: ["bazField"] },
+        },
+      ],
+      properties: {
+        bazField: { type: "string" },
+        fallbackField: { type: "string" },
+        foo: { type: "string" },
+      },
+      type: "object",
+    };
+
+    expect(getRequiredFields(strictSchema, {})).toEqual(
+      new Set(["fallbackField"]),
+    );
   });
 });
