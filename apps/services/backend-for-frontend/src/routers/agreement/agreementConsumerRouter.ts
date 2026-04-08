@@ -76,7 +76,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         getContextValues(requestContext);
       const { organizationId: consumerId } = getUISessionAuthData(authData);
 
-      logger.info(`Getting Consumer Agreements for consumer ID ${consumerId}`);
+      logger.info(`Getting Consumer Agreements for Consumer ID ${consumerId}`);
 
       const [
         { data: activeAgreements },
@@ -87,7 +87,6 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           client: remoteResourcesManagerClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           query: {
-            consumerId,
             limit: 1,
             offset: 0,
             state: "Active",
@@ -97,7 +96,6 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           client: remoteResourcesManagerClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           query: {
-            consumerId,
             limit: 1,
             offset: 0,
             state: "Suspended",
@@ -107,7 +105,6 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
           client: remoteResourcesManagerClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           query: {
-            consumerId,
             limit: 1,
             offset: 0,
             state: "Archived",

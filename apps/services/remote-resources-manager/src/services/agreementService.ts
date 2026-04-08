@@ -98,25 +98,51 @@ export function agreementServiceBuilder(
 
     async getAgreements(
       requestQuery: API_GetAgreementsQueryParams,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<API_Agreements> {
-      logger.info({ requestQuery }, "Getting Agreements with query params");
+      const { limit, offset, state } = requestQuery;
 
-      const { data } = await k2kGatewayApi.getAgreements({
-        client: k2kGatewayClient,
-        query: {
-          consumerId: requestQuery.consumerId,
-          limit: requestQuery.limit,
-          offset: requestQuery.offset,
-          state: requestQuery.state
-            ? toK2KAPI_AgreementState(requestQuery.state)
-            : undefined,
-        },
-      });
+      let totalCount = 0;
+      let dynamicLimit = limit;
+      let dynamicOffset = offset;
+      let results: API_Agreement[] = [];
+      const knodesWithAgreements =
+        await remoteResourceDbService.getAgreementsDistinctKnodes(
+          authData.organizationId,
+        );
+      for (const knodeId of knodesWithAgreements) {
+        logger.info(
+          { requestQuery },
+          `Getting Agreements from Knode ${knodeId} with query params`,
+        );
+
+        const { data } = await k2kGatewayApi.getAgreements({
+          client: k2kGatewayClient,
+          query: {
+            consumerId: authData.organizationId,
+            limit: dynamicLimit,
+            offset: dynamicOffset,
+            state: state ? toK2KAPI_AgreementState(state) : undefined,
+          },
+        });
+
+        if (results.length < limit) {
+          results = results.concat(data.results.map(toAPI_Agreement));
+
+          dynamicLimit = limit - results.length;
+          dynamicOffset = 0;
+        }
+
+        totalCount += data.pagination.total;
+      }
 
       return {
-        pagination: data.pagination,
-        results: data.results.map(toAPI_Agreement),
+        pagination: {
+          limit,
+          offset,
+          total: totalCount,
+        },
+        results,
       };
     },
   };

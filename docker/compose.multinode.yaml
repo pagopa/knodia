@@ -652,6 +652,7 @@ services:
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
+      REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-orion:3000"
     depends_on:
       flyway-orion:
         condition: service_completed_successfully
@@ -1159,6 +1160,7 @@ services:
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_ENDPOINT_URL_COGNITO_IDENTITY_PROVIDER: http://local-cognito:3000
+      REMOTE_RESOURCES_MANAGER_URL: "http://remote-resources-manager-lynx:3000"
     depends_on:
       flyway-lynx:
         condition: service_completed_successfully

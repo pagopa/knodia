@@ -12,6 +12,11 @@ get {
 params:query {
   limit: 50
   offset: 0
+  ~consumerId: {{organizationId}}
+  ~consumerKnodeId: {{other-knode-id}}
+  ~eserviceId: {{eserviceId}}
+  ~producerId: {{organizationId}}
+  ~state: Active
 }
 
 headers {

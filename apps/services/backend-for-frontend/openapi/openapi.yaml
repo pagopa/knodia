@@ -1027,6 +1027,57 @@ components:
       required:
         - refreshToken
       additionalProperties: false
+    PurposeState:
+      type: string
+      enum:
+        - Active
+        - Suspended
+        - Archived
+    LocalizedPurposeName:
+      description: Name of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 5
+          maxLength: 60
+      required:
+        - en
+      additionalProperties: false
+    LocalizedPurposeDescription:
+      description: Description of the Purpose
+      type: object
+      properties:
+        en:
+          type: string
+          minLength: 10
+          maxLength: 250
+      required:
+        - en
+      additionalProperties: false
+    PurposeFormAnswers:
+      type: object
+      additionalProperties: {}
+    PurposeFormSchemasResponse:
+      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
+        version identifier
+      type: object
+      properties:
+        schema:
+          type: object
+          additionalProperties: {}
+        uiSchema:
+          type: object
+          additionalProperties: {}
+        version:
+          description: Version identifier for the Purpose form schema provided by the
+            target Knode
+          type: string
+      required:
+        - schema
+        - uiSchema
+        - version
+      additionalProperties: false
     KeychainLocalizedName:
       description: Name of the Keychain
       type: object
@@ -1174,57 +1225,6 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/User"
-    PurposeState:
-      type: string
-      enum:
-        - Active
-        - Suspended
-        - Archived
-    LocalizedPurposeName:
-      description: Name of the Purpose
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 5
-          maxLength: 60
-      required:
-        - en
-      additionalProperties: false
-    LocalizedPurposeDescription:
-      description: Description of the Purpose
-      type: object
-      properties:
-        en:
-          type: string
-          minLength: 10
-          maxLength: 250
-      required:
-        - en
-      additionalProperties: false
-    PurposeFormAnswers:
-      type: object
-      additionalProperties: {}
-    PurposeFormSchemasResponse:
-      description: Current Purpose form schemas (JSON Schema + UI Schema) with their
-        version identifier
-      type: object
-      properties:
-        schema:
-          type: object
-          additionalProperties: {}
-        uiSchema:
-          type: object
-          additionalProperties: {}
-        version:
-          description: Version identifier for the Purpose form schema provided by the
-            target Knode
-          type: string
-      required:
-        - schema
-        - uiSchema
-        - version
-      additionalProperties: false
     PurposeSeed:
       description: Seed data to create a new Purpose
       type: object
