@@ -99,14 +99,16 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
           fetchFn: ({ entityIds, knodeId }) =>
             Promise.all(
               entityIds.map((eserviceId) =>
-                remoteResourcesManagerApi.getEserviceDetails({
-                  client: remoteResourcesManagerClient,
-                  headers,
-                  path: { eserviceId },
-                  query: { knodeId },
-                }),
+                remoteResourcesManagerApi
+                  .getEserviceDetails({
+                    client: remoteResourcesManagerClient,
+                    headers,
+                    path: { eserviceId },
+                    query: { knodeId },
+                  })
+                  .then((res) => res.data),
               ),
-            ).then((responses) => responses.map((res) => res.data)),
+            ),
           getEntityId: (purpose) => purpose.eserviceId,
           getKnodeId: (purpose) => KnodeId.parse(purpose.knodeId),
           items: data.results,
