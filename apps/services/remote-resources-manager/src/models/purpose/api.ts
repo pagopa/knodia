@@ -78,10 +78,6 @@ export const API_Purpose = z
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
 export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
   eserviceId: z
     .uuid()
     .optional()
