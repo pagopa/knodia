@@ -20,8 +20,8 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
 
   const { isError, isPending, mutate } = useMutation({
     ...createConsumerPurposeMutation({ client }),
-    onSuccess: async () => {
-      await queryClient.refetchQueries(
+    onSuccess: () => {
+      queryClient.invalidateQueries(
         consumerPurposesByEserviceQuery(eserviceId),
       );
 
