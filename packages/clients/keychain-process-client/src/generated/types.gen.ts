@@ -561,7 +561,7 @@ export type RemoveConsumerKeychainKeyResponses = {
 
 export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyResponses[keyof RemoveConsumerKeychainKeyResponses];
 
-export type GetConsumerKeychainKeyByKeyIdData = {
+export type GetConsumerKeychainKeyData = {
     body?: never;
     headers: {
         /**
@@ -577,7 +577,7 @@ export type GetConsumerKeychainKeyByKeyIdData = {
     url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
 };
 
-export type GetConsumerKeychainKeyByKeyIdErrors = {
+export type GetConsumerKeychainKeyErrors = {
     /**
      * Bad Request
      */
@@ -596,16 +596,16 @@ export type GetConsumerKeychainKeyByKeyIdErrors = {
     404: Problem;
 };
 
-export type GetConsumerKeychainKeyByKeyIdError = GetConsumerKeychainKeyByKeyIdErrors[keyof GetConsumerKeychainKeyByKeyIdErrors];
+export type GetConsumerKeychainKeyError = GetConsumerKeychainKeyErrors[keyof GetConsumerKeychainKeyErrors];
 
-export type GetConsumerKeychainKeyByKeyIdResponses = {
+export type GetConsumerKeychainKeyResponses = {
     /**
      * Consumer Keychain key retrieved successfully
      */
     200: KeychainKey;
 };
 
-export type GetConsumerKeychainKeyByKeyIdResponse = GetConsumerKeychainKeyByKeyIdResponses[keyof GetConsumerKeychainKeyByKeyIdResponses];
+export type GetConsumerKeychainKeyResponse = GetConsumerKeychainKeyResponses[keyof GetConsumerKeychainKeyResponses];
 
 export type GetConsumerKeychainMembersData = {
     body?: never;

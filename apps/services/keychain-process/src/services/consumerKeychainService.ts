@@ -223,7 +223,7 @@ export function consumerKeychainServiceBuilder(
       );
     },
 
-    async getConsumerKeychainKeyByKeyId(
+    async getConsumerKeychainKey(
       consumerKeychainId: ConsumerKeychainId,
       kid: KeyId,
       { logger }: AuthorizedContext<UISessionAuthData>,

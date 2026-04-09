@@ -861,7 +861,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/keys/{keyId}:
     get:
-      operationId: getConsumerKeychainKeyByKeyId
+      operationId: getConsumerKeychainKey
       tags:
         - consumerKeychain
       description: Retrieve a Consumer Keychain key by kid

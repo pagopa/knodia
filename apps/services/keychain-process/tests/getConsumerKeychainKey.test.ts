@@ -35,7 +35,7 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["technical"], type: "ui-session" },
 ];
 
-const getConsumerKeychainKeyByKeyId = (
+const getConsumerKeychainKey = (
   consumerKeychainId: string,
   keyId: string,
   token: TestToken = allowedTestTokens[0]!,
@@ -44,13 +44,13 @@ const getConsumerKeychainKeyByKeyId = (
     `/consumerKeychains/${consumerKeychainId}/keys/${keyId}`,
   );
 
-describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKeychainKeyByKeyId)", () => {
+describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKeychainKey)", () => {
   it.each(allowedTestTokens)(
     "should return the consumer keychain key with correct shape ($type, $roles)",
     async (token) => {
       await seedConsumerKeychain(consumerKeychain);
 
-      const response = await getConsumerKeychainKeyByKeyId(
+      const response = await getConsumerKeychainKey(
         VALID_CONSUMER_KEYCHAIN_ID,
         VALID_KEY_ID,
         token,
@@ -81,7 +81,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
       (key) => key.kid === VALID_KEY_ID,
     );
 
-    const response = await getConsumerKeychainKeyByKeyId(
+    const response = await getConsumerKeychainKey(
       VALID_CONSUMER_KEYCHAIN_ID,
       VALID_KEY_ID,
     );
@@ -93,7 +93,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type)",
     async (token) => {
-      const response = await getConsumerKeychainKeyByKeyId(
+      const response = await getConsumerKeychainKey(
         VALID_CONSUMER_KEYCHAIN_ID,
         VALID_KEY_ID,
         token,
@@ -106,7 +106,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
   it("should return 404 for non-existent consumer keychain id", async () => {
     await seedConsumerKeychain(consumerKeychain);
 
-    const response = await getConsumerKeychainKeyByKeyId(
+    const response = await getConsumerKeychainKey(
       NON_EXISTENT_CONSUMER_KEYCHAIN_ID,
       VALID_KEY_ID,
     );
@@ -117,7 +117,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
   it("should return 404 for non-existent key id", async () => {
     await seedConsumerKeychain(consumerKeychain);
 
-    const response = await getConsumerKeychainKeyByKeyId(
+    const response = await getConsumerKeychainKey(
       VALID_CONSUMER_KEYCHAIN_ID,
       NON_EXISTENT_KEY_ID,
     );
@@ -126,10 +126,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
   });
 
   it("should return 400 for invalid consumer keychain id format", async () => {
-    const response = await getConsumerKeychainKeyByKeyId(
-      "not-a-uuid",
-      VALID_KEY_ID,
-    );
+    const response = await getConsumerKeychainKey("not-a-uuid", VALID_KEY_ID);
 
     expect(response.statusCode).toBe(400);
   });
