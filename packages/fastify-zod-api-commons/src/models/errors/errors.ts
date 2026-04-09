@@ -6,6 +6,7 @@ import type {
 
 import { STATUS_CODES } from "http";
 import { constants } from "http2";
+import { toDotPath } from "zod/v4/core";
 
 import {
   type ApiError,
@@ -90,9 +91,16 @@ export function missingResponseHeader(
 export function responseSerializationError(
   error: ResponseSerializationError,
 ): ApiError<CommonErrorCodes> {
+  const context = "response";
+  const errors = error.cause.issues.map((issue) => {
+    const path = toDotPath(issue.path);
+    const fullPath = path ? `${context}.${path}` : context;
+    return new Error(`${issue.message} at ${fullPath}`);
+  });
+
   return createApiErrorFromErrorsList({
     code: "RESPONSE_SERIALIZATION_ERROR",
-    errors: error.cause.issues,
+    errors,
     status: error.statusCode || HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Response Serialization Error",
   });
