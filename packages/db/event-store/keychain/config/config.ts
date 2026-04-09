@@ -5,7 +5,7 @@ import { z } from "zod";
 export const EventStoreKeychainConfig = EventStoreConfig.and(
   z
     .object({
-      EVENTSTORE_DB_KEYCHAIN_SCHEMA: z.string().default("keychain"),
+      EVENTSTORE_DB_KEYCHAIN_SCHEMA: z.string(),
     })
     .transform((c) => ({
       eventStoreDbKeychainSchema: c.EVENTSTORE_DB_KEYCHAIN_SCHEMA,
