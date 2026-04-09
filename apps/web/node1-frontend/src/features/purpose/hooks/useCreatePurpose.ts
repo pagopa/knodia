@@ -4,10 +4,10 @@ import { createConsumerPurposeMutation } from "@knodia/bff-client/tanstack-query
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
-import { consumerEserviceDetailsQuery } from "@/features/e-service/services/queries";
 import { client } from "@/libs/axios";
 
 import { usePurposeWizardContext } from "../contexts/usePurposeFormContext";
+import { consumerPurposesByEserviceQuery } from "../services/queries";
 
 interface CreatePurposeInput {
   formAnswersJson: Record<string, unknown>;
@@ -22,7 +22,7 @@ export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
     ...createConsumerPurposeMutation({ client }),
     onSuccess: async () => {
       await queryClient.refetchQueries(
-        consumerEserviceDetailsQuery(eserviceId, knodeId),
+        consumerPurposesByEserviceQuery(eserviceId),
       );
 
       navigate({
