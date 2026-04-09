@@ -99,10 +99,10 @@ export function DynamicFormStep({
 
   const { visibleFieldNames } = useVisibleFields(uischema, values);
 
-  const stepVisibleFields = (() => {
-    const stepVisible = getVisibleFields(stepUischema, values);
-    return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
-  })();
+  const stepVisible = getVisibleFields(stepUischema, values);
+  const stepVisibleFields = new Set(
+    [...stepVisible].filter((f) => visibleFieldNames.has(f)),
+  );
 
   const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
 
