@@ -25,6 +25,11 @@ const defaultAgreement: bffApi.EserviceAgreementDetail = {
   suspendedByProducerAt: null,
 };
 
+const routes = [
+  { path: "/consumption/e-services/$id/purposes/new" },
+  { path: "/consumption/e-services/$id" },
+];
+
 function renderSection({
   agreement = defaultAgreement,
   hasRecentlyBeenUpdated = false,
@@ -41,7 +46,7 @@ function renderSection({
       hasRecentlyBeenUpdated={hasRecentlyBeenUpdated}
       knodeId={KNODE_ID}
     />,
-    { roles },
+    { roles, routes },
   );
 }
 
@@ -64,6 +69,41 @@ describe("OrgConsumptionStatusSection", () => {
     renderSection({ hasRecentlyBeenUpdated: false });
 
     expect(screen.queryByText("Recent update")).not.toBeInTheDocument();
+  });
+
+  it("shows 'Action needed' banner for PendingConsumerOperatorIdentification state", () => {
+    renderSection({
+      agreement: {
+        id: crypto.randomUUID(),
+        state: "PendingConsumerOperatorIdentification",
+      },
+    });
+
+    expect(screen.getByText("Action needed")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "To activate the Agreement, you must log in to the Producer Knode.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("hides Purposes and Keychains sections for PendingConsumerOperatorIdentification state", () => {
+    renderSection({
+      agreement: {
+        id: crypto.randomUUID(),
+        state: "PendingConsumerOperatorIdentification",
+      },
+    });
+
+    expect(screen.queryByText("Purposes")).not.toBeInTheDocument();
+    expect(screen.queryByText("Keychains")).not.toBeInTheDocument();
+  });
+
+  it("shows Purposes and Keychains sections for Active state", () => {
+    renderSection();
+
+    expect(screen.getByText("Purposes")).toBeInTheDocument();
+    expect(screen.getByText("Keychains")).toBeInTheDocument();
   });
 });
 
