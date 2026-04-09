@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -17,6 +18,8 @@ import z from "zod";
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
+  API_GetPendingConsumerAgreementsQueryParams,
+  API_PendingConsumerAgreements,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
@@ -138,6 +141,61 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: consumerId } = getUISessionAuthData(authData);
+
+      logger.info(
+        { requestQuery: req.query },
+        `Getting pending Consumer Agreements for Consumer ID ${consumerId}`,
+      );
+
+      const { data } = await remoteResourcesManagerApi.getEservices({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        query: {
+          agreementState: "PendingConsumerOperatorIdentification",
+          limit: req.query.limit,
+          offset: req.query.offset,
+        },
+      });
+
+      res.status(200).send({
+        pagination: data.pagination,
+        results: data.results.map((eservice) => ({
+          eservice: {
+            categories: eservice.categories,
+            id: eservice.id,
+            mode: eservice.mode,
+            name: eservice.name,
+            state: eservice.version.state,
+          },
+          id: eservice.agreement.id,
+          producer: eservice.producer,
+        })),
+      });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Retrieve a paginated list of Consumer Agreements pending action",
+      operationId: "getPendingConsumerAgreements",
+      querystring: API_GetPendingConsumerAgreementsQueryParams,
+      response: {
+        200: API_PendingConsumerAgreements.meta({
+          description: "Pending Consumer Agreements retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/pending",
   });
 
   fastify.route({

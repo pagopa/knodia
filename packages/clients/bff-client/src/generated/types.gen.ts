@@ -507,6 +507,23 @@ export type ConsumerAgreements = {
     };
 };
 
+export type PendingConsumerAgreement = {
+    eservice: {
+        categories: Array<EserviceCategory>;
+        id: string;
+        mode: EserviceMode;
+        name: LocalizedName;
+        state: EserviceVersionState;
+    };
+    id: string;
+    producer: CompactOrganization;
+};
+
+export type PendingConsumerAgreements = {
+    pagination: Pagination;
+    results: Array<PendingConsumerAgreement>;
+};
+
 export type SessionRequest = {
     oidcToken: string;
 };
@@ -2391,6 +2408,48 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type GetPendingConsumerAgreementsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumer/agreements/pending';
+};
+
+export type GetPendingConsumerAgreementsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPendingConsumerAgreementsError = GetPendingConsumerAgreementsErrors[keyof GetPendingConsumerAgreementsErrors];
+
+export type GetPendingConsumerAgreementsResponses = {
+    /**
+     * Pending Consumer Agreements retrieved successfully
+     */
+    200: PendingConsumerAgreements;
+};
+
+export type GetPendingConsumerAgreementsResponse = GetPendingConsumerAgreementsResponses[keyof GetPendingConsumerAgreementsResponses];
 
 export type ReactivateConsumerAgreementData = {
     body?: never;
