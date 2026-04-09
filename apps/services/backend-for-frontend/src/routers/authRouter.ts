@@ -14,6 +14,7 @@ interface AuthRouterOptions {
   authService: ReturnType<typeof authServiceBuilder>;
   cookieConfig: {
     domain?: string;
+    pathPrefix: string;
     secure: boolean;
   };
 }
@@ -45,11 +46,13 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
   fastify,
   { authService, cookieConfig },
 ) => {
+  const refreshCookiePath = `${cookieConfig.pathPrefix}${REFRESH_COOKIE_PATH}`;
+
   function setRefreshCookie(res: FastifyReply, refreshToken: string): void {
     void res.setCookie(REFRESH_COOKIE_NAME, refreshToken, {
       domain: cookieConfig.domain,
       httpOnly: true,
-      path: REFRESH_COOKIE_PATH,
+      path: refreshCookiePath,
       sameSite: "strict",
       secure: cookieConfig.secure,
     });
@@ -63,7 +66,7 @@ export const authRouter: FastifyPluginAsyncZod<AuthRouterOptions> = async (
     void res.clearCookie(REFRESH_COOKIE_NAME, {
       domain: cookieConfig.domain,
       httpOnly: true,
-      path: REFRESH_COOKIE_PATH,
+      path: refreshCookiePath,
       sameSite: "strict",
       secure: cookieConfig.secure,
     });

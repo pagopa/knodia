@@ -542,6 +542,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
+      COOKIE_PATH_PREFIX: /bff
       COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-orion:
@@ -1054,6 +1055,7 @@ services:
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
       AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
       DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
+      COOKIE_PATH_PREFIX: /bff
       COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-lynx:

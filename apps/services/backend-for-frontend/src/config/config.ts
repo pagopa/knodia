@@ -17,6 +17,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
         COOKIE_DOMAIN: z.string().optional(),
+        COOKIE_PATH_PREFIX: z.string(),
         COOKIE_SECURE: z.coerce.boolean().default(true),
         DYNAMODB_REFRESH_TOKENS_TABLE: z
           .string()
@@ -49,6 +50,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
         cookie: {
           domain: c.COOKIE_DOMAIN,
+          pathPrefix: c.COOKIE_PATH_PREFIX,
           secure: c.COOKIE_SECURE,
         },
         dynamoDbRefreshTokensTable: c.DYNAMODB_REFRESH_TOKENS_TABLE,

@@ -35,6 +35,7 @@ beforeAll(async () => {
         "https://cognito-idp.eu-west-1.amazonaws.com/pool-id/.well-known/jwks.json",
       cookie: {
         domain: undefined,
+        pathPrefix: "",
         secure: false,
       },
       defaultPollingMaxRetries: 5,
