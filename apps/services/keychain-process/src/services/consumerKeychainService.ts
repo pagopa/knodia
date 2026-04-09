@@ -36,6 +36,7 @@ import type {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainKeysQueryParams,
+  API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainKeySeed,
@@ -275,20 +276,22 @@ export function consumerKeychainServiceBuilder(
 
     async getConsumerKeychainMembers(
       consumerKeychainId: ConsumerKeychainId,
+      params: API_GetConsumerKeychainMembersQueryParams,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<IdmUser[]> {
+    ): Promise<ListResult<IdmUser>> {
       logger.info(
-        `Getting members of Consumer Keychain with ID ${consumerKeychainId}`,
+        { params },
+        `Getting members of Consumer Keychain with id ${consumerKeychainId}, with params`,
       );
 
-      const consumerKeychain = await retrieveConsumerKeychain(
+      const { data: consumerKeychain } = await retrieveConsumerKeychain(
         consumerKeychainId,
         readmodelService,
       );
 
       assertOrganizationIsKeychainOwner(
         authData.organizationId,
-        consumerKeychain.data,
+        consumerKeychain,
       );
 
       async function retrieveUser(userId: UserId): Promise<IdmUser> {
@@ -306,7 +309,17 @@ export function consumerKeychainServiceBuilder(
         return user;
       }
 
-      return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
+      const paginatedUserIds = consumerKeychain.users.slice(
+        params.offset,
+        params.offset + params.limit,
+      );
+
+      return {
+        results: await Promise.all(
+          paginatedUserIds.map((userId) => retrieveUser(userId)),
+        ),
+        totalCount: consumerKeychain.users.length,
+      };
     },
 
     async getConsumerKeychainPurposes(

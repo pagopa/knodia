@@ -467,6 +467,33 @@ export const getConsumerKeychainMembersOptions = (options: Options<GetConsumerKe
     queryKey: getConsumerKeychainMembersQueryKey(options)
 });
 
+export const getConsumerKeychainMembersInfiniteQueryKey = (options: Options<GetConsumerKeychainMembersData>): QueryKey<Options<GetConsumerKeychainMembersData>> => createQueryKey('getConsumerKeychainMembers', options, true);
+
+/**
+ * Retrieve members of a Consumer Keychain
+ */
+export const getConsumerKeychainMembersInfiniteOptions = (options: Options<GetConsumerKeychainMembersData>) => infiniteQueryOptions<GetConsumerKeychainMembersResponse, AxiosError<GetConsumerKeychainMembersError>, InfiniteData<GetConsumerKeychainMembersResponse>, QueryKey<Options<GetConsumerKeychainMembersData>>, number | Pick<QueryKey<Options<GetConsumerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<GetConsumerKeychainMembersData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getConsumerKeychainMembers({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getConsumerKeychainMembersInfiniteQueryKey(options)
+});
+
 /**
  * Add a member to a Consumer Keychain
  */

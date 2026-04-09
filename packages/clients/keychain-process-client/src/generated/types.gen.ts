@@ -166,6 +166,11 @@ export type ConsumerKeychainPurposes = {
     results: Array<ConsumerKeychainPurpose>;
 };
 
+export type KeychainMembers = {
+    pagination: Pagination;
+    results: Array<User>;
+};
+
 export type GetStatusData = {
     body?: never;
     path?: never;
@@ -618,7 +623,16 @@ export type GetConsumerKeychainMembersData = {
     path: {
         consumerKeychainId: string;
     };
-    query?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
     url: '/consumerKeychains/{consumerKeychainId}/members';
 };
 
@@ -647,7 +661,7 @@ export type GetConsumerKeychainMembersResponses = {
     /**
      * Consumer Keychain members retrieved successfully
      */
-    200: Users;
+    200: KeychainMembers;
 };
 
 export type GetConsumerKeychainMembersResponse = GetConsumerKeychainMembersResponses[keyof GetConsumerKeychainMembersResponses];

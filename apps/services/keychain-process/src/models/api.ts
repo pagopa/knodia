@@ -184,3 +184,17 @@ export const API_ConsumerKeychainKeyPathParams = z
 export type API_ConsumerKeychainKeyPathParams = z.infer<
   typeof API_ConsumerKeychainKeyPathParams
 >;
+
+export const API_GetConsumerKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerKeychainMembersQueryParams = z.infer<
+  typeof API_GetConsumerKeychainMembersQueryParams
+>;
+
+export const API_KeychainMembers = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_User),
+  })
+  .meta({ id: "KeychainMembers" });
+export type API_KeychainMembers = z.infer<typeof API_KeychainMembers>;

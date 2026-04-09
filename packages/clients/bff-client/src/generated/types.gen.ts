@@ -607,6 +607,11 @@ export type User = {
 
 export type Users = Array<User>;
 
+export type KeychainMembers = {
+    pagination: Pagination;
+    results: Array<User>;
+};
+
 /**
  * Unique JWK identifier (kid) of the created key
  */
@@ -1323,7 +1328,16 @@ export type GetConsumerKeychainMembersData = {
     path: {
         consumerKeychainId: string;
     };
-    query?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
     url: '/consumerKeychains/{consumerKeychainId}/members';
 };
 
@@ -1352,7 +1366,7 @@ export type GetConsumerKeychainMembersResponses = {
     /**
      * Consumer Keychain members retrieved successfully
      */
-    200: Users;
+    200: KeychainMembers;
 };
 
 export type GetConsumerKeychainMembersResponse = GetConsumerKeychainMembersResponses[keyof GetConsumerKeychainMembersResponses];
