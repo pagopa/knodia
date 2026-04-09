@@ -124,8 +124,9 @@ function EservicePurposeTable({
             <Cell className="body-md-em text-primary-light-mid-contrast">
               {purpose.name.en}
             </Cell>
-            {/* TODO(KN-406): replace with actual keychain count */}
-            <Cell className="body-md text-primary-light-mid-contrast">-</Cell>
+            <Cell className="body-md text-primary-light-mid-contrast">
+              {purpose.keychains}
+            </Cell>
             <Cell>
               <PurposeStateChip state={purpose.state} type="bright" />
             </Cell>
