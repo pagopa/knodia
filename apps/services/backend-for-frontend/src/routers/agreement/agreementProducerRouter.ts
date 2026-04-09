@@ -1,7 +1,10 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
+import {
+  API_AgreementIdPathParam,
+  API_AgreementState,
+} from "@knodia/agreement-models/api";
 import {
   agreementProcessApi,
   type AgreementProcessClient,
@@ -41,6 +44,11 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+
+const producerVisibleStates: API_AgreementState[] = [
+  API_AgreementState.enum.Active,
+  API_AgreementState.enum.Suspended,
+];
 
 interface AgreementProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
@@ -82,6 +90,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           limit,
           offset,
           producerId,
+          state: producerVisibleStates,
         },
       });
 
