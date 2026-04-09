@@ -107,7 +107,7 @@ function PublicKeysTab() {
   );
 
   const hasReachedMaxKeys = data
-    ? data.results.length >= config.maxKeysPerKeychain
+    ? data.pagination.total >= config.maxKeysPerKeychain
     : false;
   const isKeychainMember = useIsKeychainMember();
 
