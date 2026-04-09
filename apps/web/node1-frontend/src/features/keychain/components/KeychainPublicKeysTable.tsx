@@ -1,5 +1,4 @@
-import type { bffApi } from "@knodia/bff-client";
-
+import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerKeychainKeysQueryKey,
   removeConsumerKeychainKeyMutation,
@@ -16,6 +15,7 @@ import {
   Table,
   TableBody,
   TableHeader,
+  toastQueue,
 } from "@knodia/ui-kit/ui";
 import {
   DownloadSimpleIcon,
@@ -27,6 +27,7 @@ import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
+import { downloadResponseAsFile } from "@/utils/downloadFile";
 import { formatShortDate } from "@/utils/formatters";
 
 import type { KeychainType } from "../models/commons";
@@ -84,16 +85,11 @@ export function KeychainPublicKeysTable({
             </Cell>
             <Cell>
               <div className="flex justify-end gap-2">
-                <Button
-                  hierarchy="neutral"
-                  isDisabled
-                  kind="outlined"
-                  size="icon-sm"
-                >
-                  <DownloadSimpleIcon />
-                  <span className="sr-only">Download public key</span>
-                </Button>
-
+                <DownloadPublicKeyAction
+                  keychainId={keychainId}
+                  keyId={key.kid}
+                  type={type}
+                />
                 <RemoveFromKeychainAction
                   keychainId={keychainId}
                   keyId={key.kid}
@@ -105,6 +101,62 @@ export function KeychainPublicKeysTable({
         )}
       </TableBody>
     </Table>
+  );
+}
+
+function DownloadPublicKeyAction({
+  keychainId,
+  keyId,
+  type,
+}: {
+  keychainId: string;
+  keyId: string;
+  type: KeychainType;
+}) {
+  async function handleDownloadPublicKey() {
+    try {
+      const response = await match(type)
+        .with("consumption", () =>
+          bffApi.downloadConsumerKeychainKey({
+            client,
+            path: {
+              consumerKeychainId: keychainId,
+              keyId,
+            },
+          }),
+        )
+        .with("production", () => {
+          throw new Error("Producer keychains are not supported yet.");
+        })
+        .with("api", () => {
+          throw new Error("API keychains are not supported yet.");
+        })
+        .exhaustive();
+
+      downloadResponseAsFile(
+        response.data,
+        `public_key_${keyId}.pem`,
+        response.headers["content-type"],
+      );
+    } catch {
+      toastQueue.add({
+        description: "Retry later",
+        kind: "error",
+        title: "Download failed",
+      });
+    }
+  }
+
+  return (
+    <Button
+      hierarchy="neutral"
+      kind="outlined"
+      onPress={handleDownloadPublicKey}
+      size="icon-sm"
+    >
+      <DownloadSimpleIcon />
+      <span className="sr-only">Download public key</span>
+    </Button>
   );
 }
 
