@@ -5,12 +5,6 @@ import { renderWithProviders, screen } from "@/test/utils";
 
 import { ConsumerAgreementsSummary } from "./ConsumerAgreementsSummary";
 
-const emptyCounters = {
-  activeAgreements: 0,
-  archivedAgreements: 0,
-  suspendedAgreements: 0,
-} as const;
-
 function getCardByLabel(label: string) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return within(screen.getByText(label).closest("div[class*='bg-']")!);
@@ -25,13 +19,10 @@ describe("ConsumerAgreementsSummary", () => {
           archivedAgreements: 3,
           suspendedAgreements: 2,
         }}
-        isLoadingPending={false}
-        pendingAgreements={[]}
       />,
       {
         routes: [
           { path: "/consumption/e-services" },
-          { path: "/consumption/e-services/search" },
           { path: "/consumption/agreements/archive" },
         ],
       },
@@ -40,104 +31,5 @@ describe("ConsumerAgreementsSummary", () => {
     expect(getCardByLabel("Active").getByText("10")).toBeInTheDocument();
     expect(getCardByLabel("Suspended").getByText("2")).toBeInTheDocument();
     expect(getCardByLabel("Archived").getByText("3")).toBeInTheDocument();
-  });
-
-  it("renders the empty state when all counters are zero and no pending agreements", () => {
-    renderWithProviders(
-      <ConsumerAgreementsSummary
-        counters={emptyCounters}
-        isLoadingPending={false}
-        pendingAgreements={[]}
-      />,
-      {
-        routes: [{ path: "/consumption/e-services/search" }],
-      },
-    );
-
-    expect(
-      screen.getByText("You don't have any Agreements yet."),
-    ).toBeInTheDocument();
-  });
-
-  it("shows counters (not empty state) when only pending agreements exist", () => {
-    renderWithProviders(
-      <ConsumerAgreementsSummary
-        counters={emptyCounters}
-        isLoadingPending={false}
-        pendingAgreements={[
-          {
-            eservice: {
-              categories: [],
-              id: crypto.randomUUID(),
-              mode: "ProvideData",
-              name: { en: "Test E-Service" },
-              state: "Active",
-            },
-            id: crypto.randomUUID(),
-            producer: {
-              id: crypto.randomUUID(),
-              knodeId: "Orion",
-              name: "Producer",
-            },
-          },
-        ]}
-      />,
-      {
-        routes: [
-          { path: "/consumption/e-services" },
-          { path: "/consumption/e-services/search" },
-          { path: "/consumption/agreements/archive" },
-          { path: "/consumption/e-services/$id" },
-        ],
-      },
-    );
-
-    expect(
-      screen.queryByText("You don't have any Agreements yet."),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText("Active")).toBeInTheDocument();
-    expect(screen.getByText("Action needed")).toBeInTheDocument();
-  });
-
-  it("shows search button and description in empty state for administrative users", () => {
-    renderWithProviders(
-      <ConsumerAgreementsSummary
-        counters={emptyCounters}
-        isLoadingPending={false}
-        pendingAgreements={[]}
-      />,
-      {
-        roles: ["administrative"],
-        routes: [{ path: "/consumption/e-services/search" }],
-      },
-    );
-
-    expect(
-      screen.getByRole("button", { name: "Search new E-Services" }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText("Search for an E-Service to request an Agreement."),
-    ).toBeInTheDocument();
-  });
-
-  it("hides search button and description in empty state for technical-only users", () => {
-    renderWithProviders(
-      <ConsumerAgreementsSummary
-        counters={emptyCounters}
-        isLoadingPending={false}
-        pendingAgreements={[]}
-      />,
-      {
-        roles: ["technical"],
-        routes: [{ path: "/consumption/e-services/search" }],
-      },
-    );
-
-    expect(
-      screen.queryByRole("button", { name: "Search new E-Services" }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Search for an E-Service to request an Agreement."),
-    ).not.toBeInTheDocument();
   });
 });
