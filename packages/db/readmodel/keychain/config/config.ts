@@ -5,7 +5,7 @@ import { z } from "zod";
 export const ReadmodelKeychainConfig = ReadmodelConfig.and(
   z
     .object({
-      READMODEL_DB_KEYCHAIN_SCHEMA: z.string().default("keychain"),
+      READMODEL_DB_KEYCHAIN_SCHEMA: z.string(),
     })
     .transform((c) => ({
       readmodelDbKeychainSchema: c.READMODEL_DB_KEYCHAIN_SCHEMA,
