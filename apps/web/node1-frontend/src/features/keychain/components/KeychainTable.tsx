@@ -1,7 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  ButtonLink,
   Cell,
   Column,
   Empty,
@@ -14,6 +13,7 @@ import {
 import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 
 import type { KeychainType } from "../models/commons";
@@ -72,17 +72,15 @@ export function KeychainTable({
             <Cell>{keychain.membersCount}</Cell>
             <Cell>
               <div className="flex justify-end">
-                <ButtonLink
+                <ButtonLinkWithPreload
                   hierarchy="neutral"
-                  href={{
-                    params: { id: keychain.id },
-                    to: getKeychainDetailsHref(type),
-                  }}
                   kind="outlined"
+                  params={{ id: keychain.id }}
                   size="icon-sm"
+                  to={getKeychainDetailsHref(type)}
                 >
                   <ArrowRightIcon />
-                </ButtonLink>
+                </ButtonLinkWithPreload>
               </div>
             </Cell>
           </Row>
