@@ -1,6 +1,5 @@
-import { ConsumerKeychain } from "@knodia/keychain-models";
-import { zocker } from "zocker";
+import { getMockConsumerKeychain } from "@knodia/test-commons/utils";
 
-export const mockConsumerKeychains = zocker(ConsumerKeychain)
-  .setSeed(0)
-  .generateMany(10);
+export const mockConsumerKeychains = Array.from({ length: 10 }, (_, index) =>
+  getMockConsumerKeychain(index),
+);
