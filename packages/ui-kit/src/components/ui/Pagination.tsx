@@ -11,19 +11,19 @@ const pagination = tv({
   base: "flex items-center gap-2 w-fit",
 });
 
-interface PaginationButtonProps extends Omit<
-  ButtonProps,
-  "hierarchy" | "kind" | "size"
-> {
-  isCurrent?: boolean;
-}
-
-interface PaginationProps {
+export interface PaginationProps {
   className?: string;
   limit: number;
   offset: number;
   onOffsetChange?: (offset: number) => void;
   totalItems: number;
+}
+
+interface PaginationButtonProps extends Omit<
+  ButtonProps,
+  "hierarchy" | "kind" | "size"
+> {
+  isCurrent?: boolean;
 }
 
 export function Pagination(props: PaginationProps) {
