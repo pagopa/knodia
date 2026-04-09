@@ -72,8 +72,8 @@ export function OrgConsumptionStatusSection({
               </h3>
               <Banner icon={<SelectionIcon />} kind="neutral">
                 To request an access token for this E-Service, associate a
-                Keychain to a Purpose from the Purpose page. Associated Keychain
-                will appear here.
+                Keychain to a Purpose from the Purpose page. Associated
+                Keychains will appear here.
               </Banner>
             </div>
           </>
