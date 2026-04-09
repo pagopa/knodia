@@ -36,7 +36,7 @@ export function EservicePurposeSection({
   const purposes = data?.results ?? [];
 
   return (
-    <div className={`mt-4 flex flex-col gap-6`}>
+    <div className="mt-4 flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h3 className="title-md-em text-primary-light-low-contrast">
           Purposes
