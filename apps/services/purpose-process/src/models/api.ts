@@ -97,7 +97,7 @@ export const API_TotalDailyCalls = z
     totalDailyCalls: z.number().int().min(0).meta({
       description:
         "Sum of daily API calls declared by Purposes matching the filters",
-      format: "int32",
+      format: "int64",
     }),
   })
   .meta({ id: "TotalDailyCalls" });
