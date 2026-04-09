@@ -75,7 +75,7 @@ export const consumptionEserviceListDefaultValues = {
 
 export const consumptionEserviceListSchema = z.object({
   agreementState: z
-    .enum(["Active", "Suspended"])
+    .enum(["Active", "Suspended", "PendingConsumerOperatorIdentification"])
     .optional()
     .catch(consumptionEserviceListDefaultValues.agreementState),
   offset: z

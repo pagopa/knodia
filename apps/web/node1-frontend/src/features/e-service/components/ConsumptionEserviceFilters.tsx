@@ -10,6 +10,7 @@ const agreementStateOptions: {
 }[] = [
   { id: "Active", label: "Active" },
   { id: "Suspended", label: "Suspended" },
+  { id: "PendingConsumerOperatorIdentification", label: "Action needed" },
 ];
 
 export function ConsumptionEserviceFilters({
