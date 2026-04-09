@@ -1,6 +1,5 @@
 import {
   Button,
-  Pagination,
   Tab,
   TabList,
   TabPanel,
@@ -11,6 +10,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
 import { CreateKeychainModal } from "@/features/keychain/components/CreateKeychainModal";
@@ -54,7 +54,14 @@ function RouteComponent() {
   }
 
   return (
-    <>
+    <ListPageLayout
+      pagination={{
+        limit: data?.pagination.limit ?? 0,
+        offset,
+        onOffsetChange: (offset) => handleSearchChange({ offset }),
+        totalItems: data?.pagination.total ?? 0,
+      }}
+    >
       <PageHeader
         actions={
           canCreateKeychain && (
@@ -100,18 +107,10 @@ function RouteComponent() {
         </TabPanels>
       </Tabs>
 
-      <Pagination
-        className="mx-auto mt-6"
-        limit={data?.pagination.limit ?? 0}
-        offset={offset}
-        onOffsetChange={(offset) => handleSearchChange({ offset })}
-        totalItems={data?.pagination.total ?? 0}
-      />
-
       <CreateKeychainModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
       />
-    </>
+    </ListPageLayout>
   );
 }
