@@ -49,6 +49,7 @@ describe("assertFormAnswersAreValid", () => {
     expect(() =>
       assertFormAnswersAreValid(
         {
+          checkedExistenceMereCorrectnessInteropCatalogue: "true",
           confirmPrincipleIntegrityAndDiscretion: "true",
           declarationConfirmGDPR: "true",
           legalBasis: ["CONSENT"],

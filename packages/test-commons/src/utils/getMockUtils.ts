@@ -107,6 +107,7 @@ export function getMockOrganization(seed = 0): Organization {
 }
 
 export const MOCK_PURPOSE_FORM_ANSWERS = {
+  checkedExistenceMereCorrectnessInteropCatalogue: "true",
   confirmPrincipleIntegrityAndDiscretion: "true",
   declarationConfirmGDPR: "true",
   legalBasis: ["CONSENT"],
