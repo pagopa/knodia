@@ -34,6 +34,7 @@ run_flyway() {
     -defaultSchema="${schema}" \
     -baselineOnMigrate=true \
     -placeholders.NAMESPACE="${NAMESPACE}" \
+    -skipCheckForUpdate \
     "$command"
 }
 
