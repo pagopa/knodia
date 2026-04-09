@@ -1,14 +1,9 @@
 import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { KnodeId, PurposeId } from "@knodia/common-models/ids";
 import type { RemoteResourceDbService } from "@knodia/db-remote-resource/services";
 import type { UISessionAuthData } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import {
-  type KnodeId,
-  type OrganizationId,
-  type PurposeId,
-  unsafeBrandId,
-} from "@knodia/common-models/ids";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -128,15 +123,13 @@ export function purposeServiceBuilder(
     ): Promise<API_Purposes> {
       logger.info({ requestQuery }, "Getting Purposes with query params");
 
-      const { consumerId, eserviceId, limit, offset } = requestQuery;
+      const { eserviceId, limit, offset } = requestQuery;
+      const consumerId = authData.organizationId;
 
-      const effectiveConsumerId: OrganizationId = consumerId
-        ? unsafeBrandId<OrganizationId>(consumerId)
-        : authData.organizationId;
+      // TODO: when eserviceId is provided, query only the knode that produces
+      // that e-service instead of iterating over all knodes
       const knodesWithPurposes =
-        await remoteResourceDbService.getPurposesDistinctKnodes(
-          effectiveConsumerId,
-        );
+        await remoteResourceDbService.getPurposesDistinctKnodes(consumerId);
 
       let totalCount = 0;
       let dynamicLimit = limit;
@@ -145,7 +138,7 @@ export function purposeServiceBuilder(
 
       for (const knodeId of knodesWithPurposes) {
         logger.info(
-          `Getting Purposes from Knode ${knodeId} for consumer ${effectiveConsumerId}`,
+          `Getting Purposes from Knode ${knodeId} for consumer ${consumerId}`,
         );
 
         const { data } = await k2kGatewayApi.getPurposes({

@@ -6,9 +6,7 @@ import {
   CaretDownIcon,
   CaretUpIcon,
   SelectionIcon,
-  SelectionPlusIcon,
 } from "@phosphor-icons/react";
-import { useNavigate } from "@tanstack/react-router";
 import { useContext } from "react";
 import {
   Button,
@@ -21,6 +19,8 @@ import { match } from "ts-pattern";
 
 import { useHasRole } from "@/contexts/auth";
 
+import { EservicePurposeSection } from "./EservicePurposeSection";
+
 export function OrgConsumptionStatusSection({
   agreement,
   eserviceId,
@@ -31,7 +31,6 @@ export function OrgConsumptionStatusSection({
   knodeId: KnodeId;
 }) {
   const canManageConsumption = useHasRole("administrative");
-  const navigate = useNavigate();
 
   return (
     <Disclosure
@@ -46,32 +45,9 @@ export function OrgConsumptionStatusSection({
           state={agreement.state}
         />
 
-        <div className="flex flex-col gap-4">
-          <h3 className="title-md-em text-primary-light-low-contrast">
-            Purposes
-          </h3>
-          <Banner
-            action={
-              canManageConsumption
-                ? {
-                    label: "Create Purpose",
-                    onPress: () =>
-                      navigate({
-                        params: { id: eserviceId },
-                        search: { knodeId },
-                        to: "/consumption/e-services/$id/purposes/new",
-                      }),
-                  }
-                : undefined
-            }
-            icon={<SelectionPlusIcon />}
-            kind="neutral"
-          >
-            You don&apos;t have any Purpose for this E-Service.
-          </Banner>
-        </div>
+        <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
 
-        <div className="flex flex-col gap-4">
+        <div className="mt-4 flex flex-col gap-4">
           <h3 className="title-md-em text-primary-light-low-contrast">
             Keychains
           </h3>
