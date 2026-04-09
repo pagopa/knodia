@@ -38,20 +38,16 @@ export function UploadPublicKeyModal({
   type,
 }: Props) {
   const queryClient = useQueryClient();
+
+  function handleClose() {
+    form.reset();
+    onClose();
+  }
+
   const { isPending, mutate: uploadConsumerKeychainKey } = useMutation({
     ...uploadConsumerKeychainKeyMutation({
       client,
     }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getConsumerKeychainKeysQueryKey({
-          client,
-          path: { consumerKeychainId: keychainId },
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          query: undefined!,
-        }),
-      });
-    },
   });
 
   function handleUploadKey(seed: PublicKeyUploadFormValues) {
@@ -62,10 +58,25 @@ export function UploadPublicKeyModal({
 
     match(type)
       .with("consumption", () =>
-        uploadConsumerKeychainKey({
-          body,
-          path: { consumerKeychainId: keychainId },
-        }),
+        uploadConsumerKeychainKey(
+          {
+            body,
+            path: { consumerKeychainId: keychainId },
+          },
+          {
+            onSuccess() {
+              queryClient.invalidateQueries({
+                queryKey: getConsumerKeychainKeysQueryKey({
+                  client,
+                  path: { consumerKeychainId: keychainId },
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  query: undefined!,
+                }),
+              });
+              handleClose();
+            },
+          },
+        ),
       )
       .with("production", () => {
         throw new Error("Producer keychains are not supported yet.");
@@ -96,7 +107,7 @@ export function UploadPublicKeyModal({
       <Modal
         description={modalDescription}
         isOpen={isOpen}
-        onOpenChange={onClose}
+        onOpenChange={handleClose}
         title={modalTitle}
       >
         <Banner
@@ -115,7 +126,7 @@ export function UploadPublicKeyModal({
       <Modal
         description={modalDescription}
         isOpen={isOpen}
-        onOpenChange={onClose}
+        onOpenChange={handleClose}
         title={modalTitle}
       >
         <Banner kind="warning" size="md" title="Maximum number of keys reached">
@@ -136,8 +147,7 @@ export function UploadPublicKeyModal({
       onConfirm={() => void form.handleSubmit()}
       onOpenChange={(open) => {
         if (!open) {
-          form.reset();
-          onClose();
+          handleClose();
         }
       }}
       title={modalTitle}
