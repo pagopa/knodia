@@ -38,7 +38,7 @@ const toRemoteResourcePurpose = (
 ): RemoteResourcePurposeSQL => ({
   consumerId: apiDetail.consumer.id,
   eserviceId: apiDetail.eserviceId,
-  knodeId: apiDetail.consumer.knodeId,
+  knodeId: apiDetail.knodeId,
   purposeId: apiDetail.id,
 });
 
@@ -51,7 +51,7 @@ const getPurpose = (
 describe("GET /purposes/:purposeId (getPurpose)", () => {
   const purpose = getMockPurpose();
   const k2kPurpose = toK2KPurpose(purpose);
-  const expectedApiDetail = toAPI_Purpose(k2kPurpose);
+  const expectedApiDetail = toAPI_Purpose(k2kPurpose, purpose.consumer.knodeId);
   const remoteResourcePurpose = toRemoteResourcePurpose(expectedApiDetail);
   const knodeId = expectedApiDetail.consumer.knodeId;
 

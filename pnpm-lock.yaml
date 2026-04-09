@@ -169,8 +169,8 @@ catalogs:
       specifier: 0.31.8
       version: 0.31.8
     drizzle-orm:
-      specifier: 0.45.1
-      version: 0.45.1
+      specifier: 0.45.2
+      version: 0.45.2
     eslint:
       specifier: 9.39.2
       version: 9.39.2
@@ -290,6 +290,9 @@ importers:
       '@aws-sdk/client-kms':
         specifier: 'catalog:'
         version: 3.992.0
+      '@dotenvx/dotenvx':
+        specifier: 'catalog:'
+        version: 1.51.4
       '@types/node':
         specifier: 'catalog:'
         version: 25.0.0
@@ -346,7 +349,7 @@ importers:
         version: link:../../../packages/logger
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.3
@@ -419,7 +422,7 @@ importers:
         version: link:../../../packages/logger
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pino:
         specifier: 'catalog:'
         version: 10.2.1
@@ -659,7 +662,7 @@ importers:
         version: link:../../../packages/logger
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.3
@@ -735,7 +738,7 @@ importers:
         version: link:../../../packages/logger
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pino:
         specifier: 'catalog:'
         version: 10.2.1
@@ -902,7 +905,7 @@ importers:
         version: link:../../../packages/clients/remote-resources-manager
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.3
@@ -955,9 +958,6 @@ importers:
       vitest:
         specifier: 'catalog:'
         version: 4.0.17(@types/node@25.0.0)(jiti@2.6.1)(jsdom@28.0.0(@noble/hashes@1.8.0))(lightningcss@1.31.1)(msw@2.12.10(@types/node@25.0.0)(typescript@5.9.3))(tsx@4.21.0)(yaml@2.8.2)
-      zocker:
-        specifier: 'catalog:'
-        version: 3.0.0(zod@4.2.0)
 
   apps/services/keychain-readmodel-writer:
     dependencies:
@@ -984,7 +984,7 @@ importers:
         version: link:../../../packages/logger
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pino:
         specifier: 'catalog:'
         version: 10.2.1
@@ -1060,7 +1060,7 @@ importers:
         version: link:../../../packages/models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1130,7 +1130,7 @@ importers:
         version: link:../../../packages/models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pino:
         specifier: 'catalog:'
         version: 10.2.1
@@ -1218,7 +1218,7 @@ importers:
         version: 8.18.0
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1300,7 +1300,7 @@ importers:
         version: link:../../../packages/models/purpose-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pino:
         specifier: 'catalog:'
         version: 10.2.1
@@ -1388,7 +1388,7 @@ importers:
         version: link:../../../packages/models/purpose-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       fastify:
         specifier: 'catalog:'
         version: 5.8.3
@@ -1776,7 +1776,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1810,7 +1810,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -1835,7 +1835,7 @@ importers:
     dependencies:
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1866,7 +1866,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1900,7 +1900,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1934,7 +1934,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -1968,7 +1968,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -2032,7 +2032,7 @@ importers:
         version: link:../../../models/purpose-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       zod:
         specifier: 'catalog:'
         version: 4.2.0
@@ -2069,7 +2069,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -2118,7 +2118,7 @@ importers:
         version: link:../config
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -2186,7 +2186,7 @@ importers:
         version: link:../../../models/eservice-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -2238,7 +2238,7 @@ importers:
         version: link:../../../models/keychain-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -2290,7 +2290,7 @@ importers:
         version: link:../../../models/organization-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -2339,7 +2339,7 @@ importers:
         version: link:../../../models/purpose-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -2382,7 +2382,7 @@ importers:
         version: link:../../models/common-models
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       pg:
         specifier: 'catalog:'
         version: 8.16.3
@@ -2967,7 +2967,7 @@ importers:
         version: 8.16.0
       drizzle-orm:
         specifier: 'catalog:'
-        version: 0.45.1(@types/pg@8.16.0)(pg@8.16.3)
+        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
       eslint:
         specifier: 'catalog:'
         version: 9.39.2(jiti@2.6.1)
@@ -7531,8 +7531,8 @@ packages:
     resolution: {integrity: sha512-O9EC/miwdnRDY10qRxM8P3Pg8hXe3LyU4ZipReKOgTwn4OqANmftj8XJz1UPUAS6NMHf0E2htjsbQujUTkncCg==}
     hasBin: true
 
-  drizzle-orm@0.45.1:
-    resolution: {integrity: sha512-Te0FOdKIistGNPMq2jscdqngBRfBpC8uMFVwqjf6gtTVJHIQ/dosgV/CLBU2N4ZJBsXL5savCba9b0YJskKdcA==}
+  drizzle-orm@0.45.2:
+    resolution: {integrity: sha512-kY0BSaTNYWnoDMVoyY8uxmyHjpJW1geOmBMdSSicKo9CIIWkSxMIj2rkeSR51b8KAPB7m+qysjuHme5nKP+E5Q==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -16342,7 +16342,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.45.1(@types/pg@8.16.0)(pg@8.16.3):
+  drizzle-orm@0.45.2(@types/pg@8.16.0)(pg@8.16.3):
     optionalDependencies:
       '@types/pg': 8.16.0
       pg: 8.16.3

@@ -84,6 +84,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
     description: purpose.description,
     eserviceId: purpose.eserviceId,
     id: purpose.id,
+    knodeId,
     name: purpose.name,
     state: purpose.state,
     updatedAt: purpose.updatedAt.toISOString(),
@@ -131,7 +132,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],
-    ["invalid property", { ...body, knodeId: "InvalidKnodeId" }],
+    ["invalid knode id", { ...body, knodeId: "InvalidKnodeId" }],
     ["purposeId is invalid", { purposeId: "not-a-valid-uuid" }],
     ["empty body", {}],
   ])(
