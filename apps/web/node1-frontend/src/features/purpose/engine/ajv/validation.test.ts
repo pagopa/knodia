@@ -184,8 +184,8 @@ describe("createAjvValidator", () => {
       ),
     ).not.toHaveProperty("dependentField");
 
-    // trigger is missing (empty string from form init) → if.required fails
-    // because the field exists but doesn't match "GO" → no error
+    // trigger is "" (form init default): if.required passes (field exists),
+    // but const: "GO" fails ("" !== "GO") → if doesn't match → no error
     expect(
       validateWithRequired(
         { trigger: "" },
