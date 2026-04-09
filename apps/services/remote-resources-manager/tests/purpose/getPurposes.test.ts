@@ -90,7 +90,7 @@ describe("GET /purposes (getPurposes)", () => {
     expect(getPurposesMock).toHaveBeenCalledWith(
       expect.objectContaining({
         query: expect.objectContaining({
-          consumerId: undefined,
+          consumerId: TEST_ORGANIZATION_ID,
           eserviceId: undefined,
           limit: parsedDefaultQuery.limit,
           offset: parsedDefaultQuery.offset,
@@ -121,7 +121,6 @@ describe("GET /purposes (getPurposes)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    { ...defaultQuery, consumerId: "InvalidConsumerId" },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
     {
       ...defaultQuery,

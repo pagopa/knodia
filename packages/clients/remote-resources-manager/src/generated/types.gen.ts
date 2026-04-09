@@ -681,10 +681,6 @@ export type GetPurposesData = {
          */
         offset: number;
         /**
-         * Filter by Consumer ID
-         */
-        consumerId?: string;
-        /**
          * Filter by E-service ID
          */
         eserviceId?: string;
