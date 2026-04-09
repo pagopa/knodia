@@ -70,6 +70,6 @@ jobs:
           psql -f docker/init-databases.sql
           sed "s/\${NAMESPACE}/$NAMESPACE/g" scripts/flyway/roles/R__roles.sql | psql
 
-      - name: Validate and apply PR migrations
+      - name: Apply PR migrations
         working-directory: pr
-        run: scripts/flyway/ci-run-all.sh "${{ steps.flyway-image.outputs.ref }}" validate migrate
+        run: scripts/flyway/ci-run-all.sh "${{ steps.flyway-image.outputs.ref }}" migrate

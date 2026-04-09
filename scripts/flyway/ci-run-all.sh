@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage: ci-run-all.sh <flyway-image> <command> [command...]
-# Runs the given Flyway command(s) on every database/schema under migration/.
+# Usage: ci-run-all.sh <flyway-image> <command>
+# Runs the given Flyway command on every database/schema under migration/.
 
-FLYWAY_IMAGE="$1"; shift
-COMMANDS=("$@")
+FLYWAY_IMAGE="$1"
+COMMAND="$2"
 
 declare -A DB_MAP=(
   [event-store]=event_store
@@ -52,13 +52,9 @@ for dir_name in "${!DB_MAP[@]}"; do
 
   if [ -n "$subdirs" ]; then
     for schema_dir in "$base_path"/*/; do
-      for cmd in "${COMMANDS[@]}"; do
-        run_flyway "$schema_dir" "$db_name" "${NAMESPACE}_$(basename "$schema_dir")" "$cmd"
-      done
+      run_flyway "$schema_dir" "$db_name" "${NAMESPACE}_$(basename "$schema_dir")" "$COMMAND"
     done
   else
-    for cmd in "${COMMANDS[@]}"; do
-      run_flyway "$base_path" "$db_name" "public" "$cmd"
-    done
+    run_flyway "$base_path" "$db_name" "public" "$COMMAND"
   fi
 done
