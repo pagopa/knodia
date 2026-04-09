@@ -24,6 +24,12 @@ export function AgreementStateChip({
         console.warn("Unhandled agreement state: Archived");
         return null;
       })
+      .with("PendingConsumerOperatorIdentification", () => {
+        console.warn(
+          "Unhandled agreement state: PendingConsumerOperatorIdentification",
+        );
+        return null;
+      })
       .exhaustive()
   );
 }
