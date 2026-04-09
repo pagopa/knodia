@@ -25,7 +25,8 @@ describe("ConsumerAgreementsSummary", () => {
           archivedAgreements: 3,
           suspendedAgreements: 2,
         }}
-        hasPendingAgreements={false}
+        isLoadingPending={false}
+        pendingAgreements={[]}
       />,
       {
         routes: [
@@ -41,11 +42,12 @@ describe("ConsumerAgreementsSummary", () => {
     expect(getCardByLabel("Archived").getByText("3")).toBeInTheDocument();
   });
 
-  it("renders the empty state when all counters are zero", () => {
+  it("renders the empty state when all counters are zero and no pending agreements", () => {
     renderWithProviders(
       <ConsumerAgreementsSummary
         counters={emptyCounters}
-        hasPendingAgreements={false}
+        isLoadingPending={false}
+        pendingAgreements={[]}
       />,
       {
         routes: [{ path: "/consumption/e-services/search" }],
@@ -57,11 +59,52 @@ describe("ConsumerAgreementsSummary", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows counters (not empty state) when only pending agreements exist", () => {
+    renderWithProviders(
+      <ConsumerAgreementsSummary
+        counters={emptyCounters}
+        isLoadingPending={false}
+        pendingAgreements={[
+          {
+            eservice: {
+              categories: [],
+              id: crypto.randomUUID(),
+              mode: "ProvideData",
+              name: { en: "Test E-Service" },
+              state: "Active",
+            },
+            id: crypto.randomUUID(),
+            producer: {
+              id: crypto.randomUUID(),
+              knodeId: "Orion",
+              name: "Producer",
+            },
+          },
+        ]}
+      />,
+      {
+        routes: [
+          { path: "/consumption/e-services" },
+          { path: "/consumption/e-services/search" },
+          { path: "/consumption/agreements/archive" },
+          { path: "/consumption/e-services/$id" },
+        ],
+      },
+    );
+
+    expect(
+      screen.queryByText("You don't have any Agreements yet."),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("Action needed")).toBeInTheDocument();
+  });
+
   it("shows search button and description in empty state for administrative users", () => {
     renderWithProviders(
       <ConsumerAgreementsSummary
         counters={emptyCounters}
-        hasPendingAgreements={false}
+        isLoadingPending={false}
+        pendingAgreements={[]}
       />,
       {
         roles: ["administrative"],
@@ -77,34 +120,12 @@ describe("ConsumerAgreementsSummary", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows counters (not empty state) when only pending agreements exist", () => {
-    renderWithProviders(
-      <ConsumerAgreementsSummary
-        counters={emptyCounters}
-        hasPendingAgreements
-      />,
-      {
-        routes: [
-          { path: "/consumption/e-services" },
-          { path: "/consumption/e-services/search" },
-          { path: "/consumption/agreements/archive" },
-        ],
-      },
-    );
-
-    expect(
-      screen.queryByText("You don't have any Agreements yet."),
-    ).not.toBeInTheDocument();
-    expect(screen.getByText("Active")).toBeInTheDocument();
-    expect(screen.getByText("Suspended")).toBeInTheDocument();
-    expect(screen.getByText("Archived")).toBeInTheDocument();
-  });
-
   it("hides search button and description in empty state for technical-only users", () => {
     renderWithProviders(
       <ConsumerAgreementsSummary
         counters={emptyCounters}
-        hasPendingAgreements={false}
+        isLoadingPending={false}
+        pendingAgreements={[]}
       />,
       {
         roles: ["technical"],

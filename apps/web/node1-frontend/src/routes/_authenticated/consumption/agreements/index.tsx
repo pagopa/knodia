@@ -1,5 +1,4 @@
 import { getConsumerAgreementsOptions } from "@knodia/bff-client/tanstack-query";
-import { Pagination } from "@knodia/ui-kit/ui";
 import {
   keepPreviousData,
   useQuery,
@@ -8,9 +7,9 @@ import {
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { z } from "zod";
 
+import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { ConsumerAgreementsSummary } from "@/features/agreement/components/ConsumerAgreementsSummary";
-import { PendingAgreementList } from "@/features/agreement/components/PendingAgreementList/PendingAgreementList";
 import { pendingConsumerAgreementsQuery } from "@/features/agreement/services/queries";
 import { client } from "@/libs/axios";
 
@@ -24,15 +23,15 @@ export const Route = createFileRoute("/_authenticated/consumption/agreements/")(
     loaderDeps: ({ search: { offset } }) => ({ offset }),
     // eslint-disable-next-line perfectionist/sort-objects
     loader: async ({ context: { queryClient }, deps: { offset } }) => {
-      await Promise.all([
-        queryClient.ensureQueryData(getConsumerAgreementsOptions({ client })),
-        queryClient.ensureQueryData(pendingConsumerAgreementsQuery(offset)),
-      ]);
+      await queryClient.ensureQueryData(
+        getConsumerAgreementsOptions({ client }),
+      );
+      queryClient.prefetchQuery(pendingConsumerAgreementsQuery(offset));
     },
     search: {
       middlewares: [stripSearchParams({ offset: 0 })],
-      validators: [searchSchema],
     },
+    validateSearch: searchSchema,
   },
 );
 
@@ -49,37 +48,23 @@ function RouteComponent() {
     placeholderData: keepPreviousData,
   });
 
-  const hasPendingAgreements = (pendingData?.pagination.total ?? 0) > 0;
-
   return (
-    <div className="flex min-h-full flex-col">
+    <ListPageLayout
+      pagination={{
+        limit: pendingData?.pagination.limit ?? 0,
+        offset,
+        onOffsetChange: (offset) =>
+          navigate({ replace: true, search: (s) => ({ ...s, offset }) }),
+        totalItems: pendingData?.pagination.total ?? 0,
+      }}
+    >
       <PageHeader overline="Consumption" title="Agreements" />
 
       <ConsumerAgreementsSummary
         counters={countersData.counters}
-        hasPendingAgreements={hasPendingAgreements}
+        isLoadingPending={isLoading}
+        pendingAgreements={pendingData?.results ?? []}
       />
-
-      <h2 className="title-lg-em text-primary-light-high-contrast mt-10 mb-6">
-        Action needed
-      </h2>
-
-      <PendingAgreementList
-        agreements={pendingData?.results ?? []}
-        isLoading={isLoading}
-      />
-
-      {hasPendingAgreements && (
-        <Pagination
-          className="mx-auto mt-auto pt-6"
-          limit={pendingData?.pagination.limit ?? 0}
-          offset={offset}
-          onOffsetChange={(offset) =>
-            navigate({ replace: true, search: (s) => ({ ...s, offset }) })
-          }
-          totalItems={pendingData?.pagination.total ?? 0}
-        />
-      )}
-    </div>
+    </ListPageLayout>
   );
 }

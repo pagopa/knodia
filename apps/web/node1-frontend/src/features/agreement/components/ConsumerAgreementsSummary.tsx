@@ -13,21 +13,27 @@ import { match } from "ts-pattern";
 import { useHasRole } from "@/contexts/auth";
 import { formatNumber } from "@/utils/formatters";
 
+import { PendingAgreementList } from "./PendingAgreementList/PendingAgreementList";
+
 export function ConsumerAgreementsSummary({
   counters,
-  hasPendingAgreements,
+  isLoadingPending,
+  pendingAgreements,
 }: {
   counters: bffApi.ConsumerAgreements["counters"];
-  hasPendingAgreements: boolean;
+  isLoadingPending: boolean;
+  pendingAgreements: bffApi.PendingConsumerAgreement[];
 }) {
   const navigate = useNavigate();
 
   const canManageAgreements = useHasRole("administrative");
   const { activeAgreements, archivedAgreements, suspendedAgreements } =
     counters;
+  const hasPendingAgreements = pendingAgreements.length > 0;
   const hasAgreements =
     activeAgreements + suspendedAgreements + archivedAgreements > 0 ||
-    hasPendingAgreements;
+    hasPendingAgreements ||
+    isLoadingPending;
 
   if (!hasAgreements) {
     return (
@@ -90,6 +96,15 @@ export function ConsumerAgreementsSummary({
           onViewAll={() => navigate({ to: "/consumption/agreements/archive" })}
         />
       </div>
+
+      <h2 className="title-lg-em text-primary-light-high-contrast mt-10 mb-6">
+        Action needed
+      </h2>
+
+      <PendingAgreementList
+        agreements={pendingAgreements}
+        isLoading={isLoadingPending}
+      />
     </>
   );
 }
