@@ -40,6 +40,12 @@ for db_dir in /flyway/databases/*/; do
 
   # Check for flat layout: .sql files directly in db_dir
   flat_sql_count=$(find "$db_dir" -maxdepth 1 -name "*.sql" -type f 2>/dev/null | wc -l)
+  subdirs=$(find "$db_dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l)
+
+  if [ "$flat_sql_count" -gt 0 ] && [ "$subdirs" -gt 0 ]; then
+    echo "ERROR: $db_name has both SQL files and subdirectories — ambiguous layout"
+    exit 1
+  fi
 
   if [ "$flat_sql_count" -gt 0 ]; then
     # Flat layout: run flyway once, SQL files create their own schemas (used in remote resources database)
