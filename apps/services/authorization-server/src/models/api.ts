@@ -1,12 +1,22 @@
 import z from "zod";
 
-// TODO remove this mocked response model when the real token flow is implemented.
+import {
+  EXPECTED_CLIENT_ASSERTION_TYPE,
+  EXPECTED_GRANT_TYPE,
+} from "./constants.ts";
+
 export const API_TokenRequest = z
   .strictObject({
-    mockClientAssertion: z.string(),
+    client_assertion: z.jwt(),
+    client_assertion_type: z
+      .string()
+      .meta({ description: `Must be '${EXPECTED_CLIENT_ASSERTION_TYPE}'` }),
+    consumer_keychain_id: z.uuid(),
+    grant_type: z
+      .string()
+      .meta({ description: `Must be '${EXPECTED_GRANT_TYPE}'` }),
   })
   .meta({ id: "TokenRequest" });
-
 export type API_TokenRequest = z.infer<typeof API_TokenRequest>;
 
 // TODO remove this mocked response model when the real token flow is implemented.

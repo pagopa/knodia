@@ -1,3 +1,5 @@
+import type { API_TokenRequest } from "../models/api.ts";
+
 import {
   EXPECTED_CLIENT_ASSERTION_TYPE,
   EXPECTED_GRANT_TYPE,
@@ -7,16 +9,15 @@ import {
   invalidGrantType,
 } from "../models/errors.ts";
 import {
-  type AuthorizationServerRequest,
   failedValidation,
   successfulValidation,
   type ValidationResult,
 } from "../models/validation.ts";
 
 export const validateRequestParameters = (
-  request: AuthorizationServerRequest,
-): ValidationResult<AuthorizationServerRequest> => {
-  const assertionTypeError =
+  request: API_TokenRequest,
+): ValidationResult<API_TokenRequest> => {
+  const clientAssertionTypeError =
     request.client_assertion_type !== EXPECTED_CLIENT_ASSERTION_TYPE
       ? invalidClientAssertionType(request.client_assertion_type)
       : undefined;
@@ -26,9 +27,9 @@ export const validateRequestParameters = (
       ? invalidGrantType(request.grant_type)
       : undefined;
 
-  if (!assertionTypeError && !grantTypeError) {
+  if (!clientAssertionTypeError && !grantTypeError) {
     return successfulValidation(request);
   }
 
-  return failedValidation([assertionTypeError, grantTypeError]);
+  return failedValidation([clientAssertionTypeError, grantTypeError]);
 };

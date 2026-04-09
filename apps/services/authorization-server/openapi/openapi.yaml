@@ -69,10 +69,24 @@ components:
     TokenRequest:
       type: object
       properties:
-        mockClientAssertion:
+        client_assertion:
+          type: string
+          format: jwt
+        client_assertion_type:
+          description: Must be 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer'
+          type: string
+        consumer_keychain_id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        grant_type:
+          description: Must be 'client_credentials'
           type: string
       required:
-        - mockClientAssertion
+        - client_assertion
+        - client_assertion_type
+        - consumer_keychain_id
+        - grant_type
       additionalProperties: false
     TokenResponse:
       type: object

@@ -1,4 +1,7 @@
-import { createApiError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  type ApiError,
+  createApiError,
+} from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
 
@@ -12,6 +15,7 @@ const { HTTP_STATUS_BAD_REQUEST } = constants;
 const errorCodes = {
   INVALID_CLIENT_ASSERTION_TYPE: "0001",
   INVALID_GRANT_TYPE: "0002",
+  TOKEN_REQUEST_VALIDATION_ERROR: "0003",
 };
 
 export type ErrorCodes = keyof typeof errorCodes;
@@ -36,5 +40,17 @@ export function invalidGrantType(grantType: string) {
     detail: `Request grant_type ${grantType} does not match expected ${EXPECTED_GRANT_TYPE}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Invalid grant_type",
+  });
+}
+
+export function tokenRequestValidationError(
+  consumerKeychainId: string | undefined,
+  validationErrors: ApiError<ErrorCodes>[],
+) {
+  return createApiError<ErrorCodes>({
+    code: "TOKEN_REQUEST_VALIDATION_ERROR",
+    detail: `Token request validation failed for consumer keychain ${consumerKeychainId}: ${validationErrors}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Token request validation error",
   });
 }
