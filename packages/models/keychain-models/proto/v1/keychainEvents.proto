@@ -22,6 +22,11 @@ message ConsumerKeychainPurposeLinkedV1 {
   int64 linkedAt = 3;
 }
 
+message ConsumerKeychainPurposeUnlinkedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+  ConsumerKeychainLinkedPurposeV1 purpose = 2;
+}
+
 message ConsumerKeychainMemberAddedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
   string userId = 2;
@@ -30,4 +35,14 @@ message ConsumerKeychainMemberAddedV1 {
 message ConsumerKeychainMemberRemovedV1 {
   ConsumerKeychainV1 consumerKeychain = 1;
   string userId = 2;
+}
+
+message ConsumerKeychainKeyAddedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+  string kid = 2;
+}
+
+message ConsumerKeychainKeyRemovedV1 {
+  ConsumerKeychainV1 consumerKeychain = 1;
+  string kid = 2;
 }

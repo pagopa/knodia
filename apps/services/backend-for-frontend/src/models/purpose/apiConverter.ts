@@ -18,7 +18,6 @@ export const toAPI_ConsumerPurpose = ({
   purpose: remoteResourcesManagerApi.Purpose;
 }): API_ConsumerPurpose => ({
   dailyCalls: purpose.dailyCalls,
-  description: purpose.description,
   eservice: {
     id: eserviceDetails.id,
     name: eserviceDetails.name,

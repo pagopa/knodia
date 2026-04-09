@@ -9,24 +9,24 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export const protobufPackage = "keychain.v1";
 
-export const KeyFormatV1 = { JWK: 0, X509: 1, UNRECOGNIZED: -1 } as const;
+export const KeyFormatV1 = { PublicKey: 0, X509Certificate: 1, UNRECOGNIZED: -1 } as const;
 
 export type KeyFormatV1 = typeof KeyFormatV1[keyof typeof KeyFormatV1];
 
 export namespace KeyFormatV1 {
-  export type JWK = typeof KeyFormatV1.JWK;
-  export type X509 = typeof KeyFormatV1.X509;
+  export type PublicKey = typeof KeyFormatV1.PublicKey;
+  export type X509Certificate = typeof KeyFormatV1.X509Certificate;
   export type UNRECOGNIZED = typeof KeyFormatV1.UNRECOGNIZED;
 }
 
 export function keyFormatV1FromJSON(object: any): KeyFormatV1 {
   switch (object) {
     case 0:
-    case "JWK":
-      return KeyFormatV1.JWK;
+    case "PublicKey":
+      return KeyFormatV1.PublicKey;
     case 1:
-    case "X509":
-      return KeyFormatV1.X509;
+    case "X509Certificate":
+      return KeyFormatV1.X509Certificate;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -36,10 +36,10 @@ export function keyFormatV1FromJSON(object: any): KeyFormatV1 {
 
 export function keyFormatV1ToJSON(object: KeyFormatV1): string {
   switch (object) {
-    case KeyFormatV1.JWK:
-      return "JWK";
-    case KeyFormatV1.X509:
-      return "X509";
+    case KeyFormatV1.PublicKey:
+      return "PublicKey";
+    case KeyFormatV1.X509Certificate:
+      return "X509Certificate";
     case KeyFormatV1.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
