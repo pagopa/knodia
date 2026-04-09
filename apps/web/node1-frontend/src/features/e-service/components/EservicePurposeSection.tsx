@@ -3,7 +3,6 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import {
   Banner,
-  ButtonLink,
   Cell,
   Column,
   Loader,
@@ -14,13 +13,12 @@ import {
 } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { useQuery } from "@tanstack/react-query";
-import { createLink, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 import { consumerPurposesByEserviceQuery } from "@/features/purpose/services/queries";
-
-const ButtonLinkWithPreload = createLink(ButtonLink);
 
 export function EservicePurposeSection({
   eserviceId,
