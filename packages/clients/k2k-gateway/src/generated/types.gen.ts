@@ -339,6 +339,32 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
+export type AccessTokenDataRequest = {
+    /**
+     * Key ID from client assertion header
+     */
+    kid: string;
+    /**
+     * Purpose ID from client assertion claims
+     */
+    purposeId: string;
+};
+
+export type PublicKeyForVerification = {
+    algorithm: string;
+    encodedPem: string;
+    format: string;
+    kid: string;
+};
+
+export type AccessTokenDataResponse = {
+    /**
+     * Attributes of the Consumer organization
+     */
+    consumerAttributes: Array<Attribute>;
+    publicKey: PublicKeyForVerification;
+};
+
 export type Organization = {
     /**
      * Attributes associated with the Organization
@@ -477,6 +503,40 @@ export type GetStatusResponses = {
 };
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
+
+export type GetAccessTokenDataData = {
+    body: AccessTokenDataRequest;
+    path: {
+        /**
+         * Consumer Keychain ID
+         */
+        keychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{keychainId}/accessTokenData';
+};
+
+export type GetAccessTokenDataErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetAccessTokenDataError = GetAccessTokenDataErrors[keyof GetAccessTokenDataErrors];
+
+export type GetAccessTokenDataResponses = {
+    /**
+     * Access token data retrieved successfully
+     */
+    200: AccessTokenDataResponse;
+};
+
+export type GetAccessTokenDataResponse = GetAccessTokenDataResponses[keyof GetAccessTokenDataResponses];
 
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;
