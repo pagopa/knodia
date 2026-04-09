@@ -83,6 +83,7 @@ export const API_KeychainKey = z
     createdAt: z.iso.datetime(),
     kid: API_KeyId,
     name: API_KeychainKeyLocalizedName,
+    uploaderUsername: z.string(),
   })
   .meta({ id: "KeychainKey" });
 export type API_KeychainKey = z.infer<typeof API_KeychainKey>;

@@ -76,7 +76,7 @@ export function KeychainPublicKeysTable({
             <Cell>
               <span className="body-md-em">{key.name.en}</span>
             </Cell>
-            <Cell>TODO</Cell>
+            <Cell>{key.uploaderUsername}</Cell>
             <Cell>{formatShortDate(key.createdAt)}</Cell>
             <Cell>
               <div className="flex items-center">
