@@ -1,6 +1,7 @@
 import type { UserRole } from "@knodia/common-models/auth";
 import type { ReactElement, ReactNode } from "react";
 
+import { generateUserId } from "@knodia/common-models/ids";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   createMemoryHistory,
@@ -99,6 +100,7 @@ function createTestWrapper(options: WrapperOptions = {}) {
             logout: () => Promise.resolve(),
             roles,
             token: "test-token",
+            userId: generateUserId(),
             username: "test-user",
           }}
         >
