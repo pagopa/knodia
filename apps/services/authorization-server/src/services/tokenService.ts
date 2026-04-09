@@ -7,17 +7,17 @@ export function tokenServiceBuilder() {
   return {
     async issueToken(requestBody: API_TokenRequest) {
       // Request body parameters validation
-      const { errors: parametersErrors } = validateRequestParameters({
+      const { errors: requestParametersErrors } = validateRequestParameters({
         client_assertion: requestBody.client_assertion,
         client_assertion_type: requestBody.client_assertion_type,
         consumer_keychain_id: requestBody.consumer_keychain_id,
         grant_type: requestBody.grant_type,
       });
 
-      if (parametersErrors) {
+      if (requestParametersErrors) {
         throw tokenRequestValidationError(
           requestBody.consumer_keychain_id,
-          parametersErrors,
+          requestParametersErrors,
         );
       }
 
