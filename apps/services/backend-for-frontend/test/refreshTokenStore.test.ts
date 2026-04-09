@@ -64,6 +64,17 @@ describe("refreshTokenStore", () => {
       expect(first).toBe(true);
       expect(second).toBe(true);
     });
+
+    it("overwrites a stale expired record (DynamoDB TTL cleanup lag)", async () => {
+      const jti = crypto.randomUUID();
+      const pastExpiry = Math.floor(Date.now() / 1000) - 60;
+
+      await store.consume(jti, pastExpiry);
+
+      const reuse = await store.consume(jti, futureExpiry());
+
+      expect(reuse).toBe(true);
+    });
   });
 
   describe("revoke", () => {
