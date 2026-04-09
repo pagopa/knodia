@@ -55,6 +55,7 @@ describe("assertFormAnswersAreValid", () => {
           personalDataTypes: ["WITH_IDENTIFYING_DATA"],
           purpose: "INSTITUTIONAL",
           purposeDescription: "Testing purpose",
+          purposePursuit: "MERE_CORRECTNESS",
           usesThirdPartyPersonalData: "NO",
         },
         version,

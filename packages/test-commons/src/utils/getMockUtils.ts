@@ -113,6 +113,7 @@ export const MOCK_PURPOSE_FORM_ANSWERS = {
   personalDataTypes: ["WITH_IDENTIFYING_DATA"],
   purpose: "INSTITUTIONAL",
   purposeDescription: "Test purpose for local development",
+  purposePursuit: "MERE_CORRECTNESS",
   usesThirdPartyPersonalData: "NO",
 };
 
