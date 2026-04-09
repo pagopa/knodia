@@ -5,7 +5,7 @@ import { z } from "zod";
 export const ReadmodelEserviceConfig = ReadmodelConfig.and(
   z
     .object({
-      READMODEL_DB_ESERVICE_SCHEMA: z.string().default("eservice"),
+      READMODEL_DB_ESERVICE_SCHEMA: z.string(),
     })
     .transform((c) => ({
       readmodelDbEserviceSchema: c.READMODEL_DB_ESERVICE_SCHEMA,
