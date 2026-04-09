@@ -5,7 +5,7 @@ import { z } from "zod";
 export const ReadmodelAgreementConfig = ReadmodelConfig.and(
   z
     .object({
-      READMODEL_DB_AGREEMENT_SCHEMA: z.string().default("agreement"),
+      READMODEL_DB_AGREEMENT_SCHEMA: z.string(),
     })
     .transform((c) => ({
       readmodelDbAgreementSchema: c.READMODEL_DB_AGREEMENT_SCHEMA,

@@ -5,7 +5,7 @@ import { z } from "zod";
 export const EventStoreOrganizationConfig = EventStoreConfig.and(
   z
     .object({
-      EVENTSTORE_DB_ORGANIZATION_SCHEMA: z.string().default("organization"),
+      EVENTSTORE_DB_ORGANIZATION_SCHEMA: z.string(),
     })
     .transform((c) => ({
       eventStoreDbOrganizationSchema: c.EVENTSTORE_DB_ORGANIZATION_SCHEMA,
