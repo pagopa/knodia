@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -21,6 +22,7 @@ import {
   type ConsumerKeychainId,
   generateId,
   type KeyId,
+  type PurposeId,
   unsafeBrandKeyId,
   unsafeBrandUserId,
   type UserId,
@@ -226,7 +228,7 @@ export function consumerKeychainServiceBuilder(
     async getConsumerKeychainKeyByKeyId(
       consumerKeychainId: ConsumerKeychainId,
       kid: KeyId,
-      { logger }: AuthorizedContext<UISessionAuthData>,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<ConsumerKeychainKey> {
       logger.info(
         `Getting key with ID ${kid} of Consumer Keychain with ID ${consumerKeychainId}`,
@@ -245,6 +247,7 @@ export function consumerKeychainServiceBuilder(
 
       return key;
     },
+
     async getConsumerKeychainKeys(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainKeysQueryParams,
@@ -272,7 +275,6 @@ export function consumerKeychainServiceBuilder(
         params,
       );
     },
-
     async getConsumerKeychainMembers(
       consumerKeychainId: ConsumerKeychainId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
@@ -307,6 +309,23 @@ export function consumerKeychainServiceBuilder(
       }
 
       return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
+    },
+
+    async getConsumerKeychainPurpose(
+      consumerKeychainId: ConsumerKeychainId,
+      purpose: ExternalResource<PurposeId>,
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
+      logger.info(
+        `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) of Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+
+      return await retrieveConsumerKeychainPurpose(
+        { consumerKeychainId, purpose },
+        readmodelService,
+      );
     },
 
     async getConsumerKeychainPurposes(
