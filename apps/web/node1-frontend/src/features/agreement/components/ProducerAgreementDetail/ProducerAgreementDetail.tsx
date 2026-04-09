@@ -1,18 +1,16 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Link } from "@knodia/ui-kit/ui";
-import { createLink } from "@tanstack/react-router";
+import { Button } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
+import { RouterLink } from "@/components/routerLinks";
 import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
 import { AgreementStateChip } from "../AgreementStateChip";
-
-const RouterLink = createLink(Link);
 
 export function ProducerAgreementDetail({
   agreement,
