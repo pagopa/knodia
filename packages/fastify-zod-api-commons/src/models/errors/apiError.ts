@@ -1,5 +1,3 @@
-import type { ZodIssue } from "zod-validation-error";
-
 export class ApiError<T> extends Error {
   public errors: { code: T; detail: string }[];
   public status: number;
@@ -46,7 +44,7 @@ export function createApiErrorFromErrorsList<T>({
   title,
 }: {
   code: T;
-  errors: Error[] | ZodIssue[];
+  errors: Error[];
   status: number;
   title: string;
 }) {
