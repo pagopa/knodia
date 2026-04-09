@@ -2,7 +2,10 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
+import {
+  API_AgreementIdPathParam,
+  API_AgreementState,
+} from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -159,7 +162,8 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
         client: remoteResourcesManagerClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
-          agreementState: "PendingConsumerOperatorIdentification",
+          agreementState:
+            API_AgreementState.enum.PendingConsumerOperatorIdentification,
           limit: req.query.limit,
           offset: req.query.offset,
         },
