@@ -65,8 +65,10 @@ export const API_ConsumerPurpose = z
     dailyCalls: API_PurposeDailyCalls,
     eservice: API_CompactEservice,
     id: z.uuid(),
-    // TODO: Replace with actual keychain data when consumer keychains for purposes are implemented
-    keychain: z.string(),
+    keychains: z.int().min(0).meta({
+      description: "Number of Consumer Keychains associated with this purpose",
+      format: "int32",
+    }),
     name: API_LocalizedPurposeName,
     producer: API_CompactOrganization,
     state: API_PurposeState,
