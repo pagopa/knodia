@@ -22,6 +22,7 @@ import {
   API_PendingConsumerAgreements,
   API_SuspendReactivateConsumerAgreementQueryParams,
 } from "../../models/agreement/api.ts";
+import { toAPI_PendingConsumerAgreement } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
@@ -166,17 +167,7 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
 
       res.status(200).send({
         pagination: data.pagination,
-        results: data.results.map((eservice) => ({
-          eservice: {
-            categories: eservice.categories,
-            id: eservice.id,
-            mode: eservice.mode,
-            name: eservice.name,
-            state: eservice.version.state,
-          },
-          id: eservice.agreement.id,
-          producer: eservice.producer,
-        })),
+        results: data.results.map(toAPI_PendingConsumerAgreement),
       });
     },
     method: "GET",
