@@ -1,6 +1,6 @@
 import { Banner } from "@knodia/ui-kit/ui";
-import { useForm, useStore } from "@tanstack/react-form";
-import { useMemo, useState } from "react";
+import { useStore } from "@tanstack/react-form";
+import { useMemo } from "react";
 
 import type {
   FormValues,
@@ -11,14 +11,16 @@ import type {
 import { ModalFooter } from "@/components/ModalFooter";
 import { StepHeader } from "@/components/StepHeader";
 import { useStepsContext } from "@/contexts/steps";
-import { usePurposeWizardContext } from "@/features/purpose/contexts/usePurposeFormContext";
+import {
+  useDynamicStepForm,
+  usePurposeWizardContext,
+} from "@/features/purpose/contexts/usePurposeFormContext";
 import { createAjvValidator } from "@/features/purpose/engine/ajv/validation";
 import {
   getVisibleFields,
   isLabelVisible,
   scopeToFieldName,
 } from "@/features/purpose/engine/dependencyResolver";
-import { getDefaultValues } from "@/features/purpose/engine/schemaParser";
 import {
   collectErrorMessages,
   collectGroups,
@@ -52,9 +54,6 @@ export function DynamicFormStep({
     knodeId,
   );
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
-
   const stepUischema: UISchema = useMemo(
     () => ({ elements: step.elements, type: "VerticalLayout" as const }),
     [step.elements],
@@ -70,13 +69,15 @@ export function DynamicFormStep({
     [jsonSchema, errorMessages],
   );
 
-  const form = useForm({
-    defaultValues: {
-      ...getDefaultValues(jsonSchema),
-      ...formAnswers,
-    } as Record<string, string | string[]>,
-    onSubmit: ({ value }) => {
-      setErrors({});
+  const form = useDynamicStepForm({
+    formAnswers,
+    jsonSchema,
+    onDynamic: ({ value }) => {
+      const fieldErrors = validate(value, stepVisibleFields);
+      if (Object.keys(fieldErrors).length === 0) return undefined;
+      return { fields: fieldErrors };
+    },
+    onSubmitSuccess: (value) => {
       updateFormAnswers(value);
 
       if (isLastStep) {
@@ -92,25 +93,6 @@ export function DynamicFormStep({
         nextStep();
       }
     },
-    validators: {
-      onSubmit: ({ value }) => {
-        setSubmitted(true);
-        const fieldErrors = validate(value, stepVisibleFields);
-        if (Object.keys(fieldErrors).length > 0) {
-          setErrors(fieldErrors);
-          requestAnimationFrame(() => {
-            const firstInvalid = document.querySelector("[data-invalid=true]");
-            firstInvalid?.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          });
-          return "Validation failed";
-        }
-        setErrors({});
-        return undefined;
-      },
-    },
   });
 
   const values = useStore(form.store, (state) => state.values);
@@ -121,17 +103,6 @@ export function DynamicFormStep({
     const stepVisible = getVisibleFields(stepUischema, values);
     return new Set([...stepVisible].filter((f) => visibleFieldNames.has(f)));
   })();
-
-  const handleChange = (fieldName: string, newValue: string | string[]) => {
-    form.setFieldValue(fieldName, newValue);
-    if (submitted) {
-      setErrors((prev) =>
-        Object.fromEntries(
-          Object.entries(prev).filter(([key]) => key !== fieldName),
-        ),
-      );
-    }
-  };
 
   const groups = useMemo(() => collectGroups(stepUischema), [stepUischema]);
 
@@ -158,12 +129,11 @@ export function DynamicFormStep({
 
         {visibleGroups.map((group, groupIndex) => (
           <GroupSection
-            errors={errors}
+            form={form}
             group={group}
             isLast={groupIndex === visibleGroups.length - 1}
             jsonSchema={jsonSchema}
             key={group.label ?? groupIndex}
-            onChange={handleChange}
             values={values}
             visibleFieldNames={visibleFieldNames}
           />
@@ -176,31 +146,33 @@ export function DynamicFormStep({
         </Banner>
       )}
 
-      <ModalFooter
-        cancelLabel="Previous"
-        confirmLabel={isLastStep ? "Create Purpose" : "Next"}
-        isDisabled={isPending || Object.keys(errors).length > 0}
-        onCancel={prevStep}
-        onConfirm={() => form.handleSubmit()}
-      />
+      <form.Subscribe selector={(state) => state.canSubmit}>
+        {(canSubmit) => (
+          <ModalFooter
+            cancelLabel="Previous"
+            confirmLabel={isLastStep ? "Create Purpose" : "Next"}
+            isDisabled={!canSubmit || isPending}
+            onCancel={prevStep}
+            onConfirm={() => form.handleSubmit()}
+          />
+        )}
+      </form.Subscribe>
     </>
   );
 }
 
 function GroupSection({
-  errors,
+  form,
   group,
   isLast,
   jsonSchema,
-  onChange,
   values,
   visibleFieldNames,
 }: {
-  errors: Record<string, string>;
+  form: ReturnType<typeof useDynamicStepForm>;
   group: GroupLayout;
   isLast: boolean;
   jsonSchema: JsonSchema;
-  onChange: (fieldName: string, value: string | string[]) => void;
   values: FormValues;
   visibleFieldNames: Set<string>;
 }) {
@@ -232,18 +204,27 @@ function GroupSection({
         const fieldName = scopeToFieldName(element.scope);
         if (!visibleFieldNames.has(fieldName)) return null;
         return (
-          <FieldRenderer
-            allValues={values}
-            control={element}
-            error={errors[fieldName]}
-            jsonSchema={jsonSchema}
-            key={fieldName}
-            onChange={(v) => onChange(fieldName, v)}
-            value={
-              values[fieldName] ??
-              (jsonSchema.properties[fieldName]?.type === "array" ? [] : "")
-            }
-          />
+          <form.Field key={fieldName} name={fieldName}>
+            {(field) => {
+              const rawError = field.state.meta.errorMap.onDynamic;
+              const error = typeof rawError === "string" ? rawError : undefined;
+              return (
+                <FieldRenderer
+                  allValues={values}
+                  control={element}
+                  error={error}
+                  jsonSchema={jsonSchema}
+                  onChange={(v) => field.handleChange(v)}
+                  value={
+                    field.state.value ??
+                    (jsonSchema.properties[fieldName]?.type === "array"
+                      ? []
+                      : "")
+                  }
+                />
+              );
+            }}
+          </form.Field>
         );
       })}
       {!isLast && <hr className="border-primary-light-decorative mt-2" />}
