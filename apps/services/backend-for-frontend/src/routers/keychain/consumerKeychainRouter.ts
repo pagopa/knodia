@@ -14,8 +14,6 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
-  API_UnlinkConsumerKeychainIdPathParams,
-  API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
@@ -35,10 +33,8 @@ import {
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
-  API_GetConsumerKeychainKeysQueryParams,
   type API_Keychain,
   API_KeychainDetails,
-  API_KeychainKeys,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_Keychains,
@@ -47,7 +43,6 @@ import {
 import {
   toAPI_Keychain,
   toAPI_KeychainDetails,
-  toAPI_KeychainKey,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 
@@ -98,48 +93,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     pollingService.pollResourceUntilDeletion(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
     )();
-
-  fastify.route({
-    handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
-      const { limit, offset } = req.query;
-
-      logger.info(
-        { requestParams: req.params, requestQuery: req.query },
-        `Getting Consumer Keychain keys with ID ${req.params.consumerKeychainId}`,
-      );
-
-      const { data: keys } = await keychainProcessApi.getConsumerKeychainKeys({
-        client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { consumerKeychainId: req.params.consumerKeychainId },
-        query: { limit, offset },
-      });
-
-      res.send({
-        pagination: keys.pagination,
-        results: keys.results.map(toAPI_KeychainKey),
-      });
-    },
-    method: "GET",
-    schema: {
-      description: "Retrieve keys of a Consumer Keychain",
-      operationId: "getConsumerKeychainKeys",
-      params: API_ConsumerKeychainIdPathParam,
-      querystring: API_GetConsumerKeychainKeysQueryParams,
-      response: {
-        200: API_KeychainKeys.meta({
-          description: "Consumer Keychain keys retrieved successfully",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer keychain not found" }),
-      },
-      tags: [apiTags.consumerKeychain],
-    },
-    url: "/consumerKeychains/:consumerKeychainId/keys",
-  });
 
   fastify.route({
     handler: async (req, res) => {
@@ -533,22 +486,15 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       async function enhanceKeychainWithCounts(
         keychain: keychainProcessApi.Keychain,
       ): Promise<API_Keychain> {
-        const [{ data: keys }, { data: members }] = await Promise.all([
-          keychainProcessApi.getConsumerKeychainKeys({
+        const { data: members } =
+          await keychainProcessApi.getConsumerKeychainMembers({
             client: keychainProcessClient,
             headers,
             path: { consumerKeychainId: keychain.id },
-            query: { limit: 1, offset: 0 },
-          }),
-          keychainProcessApi.getConsumerKeychainMembers({
-            client: keychainProcessClient,
-            headers,
-            path: { consumerKeychainId: keychain.id },
-          }),
-        ]);
+          });
 
         return toAPI_Keychain(keychain, {
-          keysCount: keys.pagination.total,
+          keysCount: 0, // TODO: retrieve keysCount when available
           membersCount: members.length,
         });
       }
@@ -624,56 +570,5 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
-      const { consumerKeychainId, purposeId } = req.params;
-      logger.info(
-        {
-          request: {
-            params: req.params,
-            query: req.query,
-          },
-        },
-        `Unlinking Purpose ${purposeId} owned by Knode ${req.query.knodeId} from Consumer Keychain ${consumerKeychainId}`,
-      );
-
-      const headers = getKnodiaServiceHeaders(req, correlationId);
-
-      const response =
-        await keychainProcessApi.unlinkPurposeFromConsumerKeychain({
-          client: keychainProcessClient,
-          headers,
-          path: {
-            consumerKeychainId,
-            purposeId,
-          },
-          query: { knodeId: req.query.knodeId },
-        });
-
-      await pollConsumerKeychain(response, headers, consumerKeychainId);
-
-      res.status(204).send();
-    },
-    method: "DELETE",
-    schema: {
-      description: "Unlink a Purpose from a Consumer Keychain",
-      operationId: "unlinkPurposeFromConsumerKeychain",
-      params: API_UnlinkConsumerKeychainIdPathParams,
-      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
-      response: {
-        204: z.undefined().meta({
-          description: "Purpose successfully unlinked from Consumer Keychain",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Not Found" }),
-      },
-      tags: [apiTags.consumerKeychain],
-    },
-    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };

@@ -11,11 +11,9 @@ import type {
 } from "./api.ts";
 
 export const toAPI_ConsumerPurpose = ({
-  consumerKeychainsCount,
   eserviceDetails,
   purpose,
 }: {
-  consumerKeychainsCount: number;
   eserviceDetails: remoteResourcesManagerApi.EserviceDetails;
   purpose: remoteResourcesManagerApi.Purpose;
 }): API_ConsumerPurpose => ({
@@ -25,7 +23,8 @@ export const toAPI_ConsumerPurpose = ({
     name: eserviceDetails.name,
   },
   id: purpose.id,
-  keychains: consumerKeychainsCount,
+  // TODO: https://pagopa.atlassian.net/browse/KN-406 Replace with actual keychain data when consumer keychains for purposes are implemented
+  keychain: "TODO",
   name: purpose.name,
   producer: {
     id: eserviceDetails.producer.id,

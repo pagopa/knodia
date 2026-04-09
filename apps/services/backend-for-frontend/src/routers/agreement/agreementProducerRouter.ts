@@ -139,7 +139,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
             consumersMap
               .get(agreement.consumer.knodeId)
               ?.get(unsafeBrandExternalId(agreement.consumer.id)),
-            `Consumer organization ${agreement.consumer.id} owned by Knode ${agreement.consumer.knodeId} not found for Agreement ${agreement.id}`,
+            `Consumer organization ${agreement.consumer.id} not found for Agreement ${agreement.id}`,
           ),
           eservice: assertEntityExists(
             eservicesMap.get(agreement.eserviceId),

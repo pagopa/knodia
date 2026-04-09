@@ -1,20 +1,12 @@
-import type {
-  ConsumerKeychain,
-  ConsumerKeychainPurpose,
-  ConsumerKeychainV1,
-} from "@knodia/keychain-models";
+import type { ConsumerKeychain } from "@knodia/keychain-models";
 
 import { generateId } from "@knodia/common-models/ids";
 import { eventStoreKeychainEvents } from "@knodia/db-event-store-keychain";
 import { keychainEventStoreWriterBuilder } from "@knodia/db-event-store-writer/keychain";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
 import crypto from "crypto";
-import { expect } from "vitest";
 
-import {
-  createConsumerKeychainCreatedV1Event,
-  createConsumerKeychainPurposeLinkedV1Event,
-} from "../src/models/keychainEventFactory.ts";
+import { createConsumerKeychainCreatedV1Event } from "../src/models/keychainEventFactory.ts";
 import { app, eventStoreDb, keychainWriterService } from "./setup.ts";
 
 export async function getAllKeychainEvents() {
@@ -46,35 +38,6 @@ export async function seedConsumerKeychain(consumerKeychain: ConsumerKeychain) {
     createConsumerKeychainCreatedV1Event(consumerKeychain, generateId()),
   );
   await keychainWriterService.upsertConsumerKeychain(consumerKeychain, 0);
-}
-
-export async function seedConsumerKeychainPurpose(
-  consumerKeychain: ConsumerKeychain,
-  consumerKeychainPurpose: ConsumerKeychainPurpose,
-) {
-  await keychainEventStoreWriterBuilder(eventStoreDb).insertEvent(
-    createConsumerKeychainPurposeLinkedV1Event({
-      consumerKeychain,
-      correlationId: generateId(),
-      currentMetadataVersion: 0,
-      linkedAt: consumerKeychainPurpose.linkedAt,
-      purpose: consumerKeychainPurpose.purpose,
-    }),
-  );
-  await keychainWriterService.upsertConsumerKeychainPurpose(
-    consumerKeychainPurpose,
-    1,
-  );
-}
-
-export function toExpectConsumerKeychainV1(
-  consumerKeychain: ConsumerKeychainV1,
-) {
-  return expect.objectContaining({
-    ...consumerKeychain,
-    keys: expect.arrayContaining(consumerKeychain.keys),
-    users: expect.arrayContaining(consumerKeychain.users),
-  });
 }
 
 export const toBase64 = (value: string) =>

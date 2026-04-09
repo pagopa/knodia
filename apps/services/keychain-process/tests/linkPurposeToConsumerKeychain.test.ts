@@ -132,7 +132,7 @@ describe("POST /consumerKeychains/:consumerKeychainId/purposes (linkPurposeToCon
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],
-    ["invalid knode id", { ...body, knodeId: "InvalidKnodeId" }],
+    ["invalid property", { ...body, knodeId: "InvalidKnodeId" }],
     ["purposeId is invalid", { purposeId: "not-a-valid-uuid" }],
     ["empty body", {}],
   ])(

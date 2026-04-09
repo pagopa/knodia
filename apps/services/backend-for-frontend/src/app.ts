@@ -123,7 +123,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
-      keychainProcessClient: clients.keychainProcessClient,
       knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,

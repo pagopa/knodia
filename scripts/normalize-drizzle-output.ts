@@ -64,15 +64,10 @@ interface ConfigInfo {
  * - Whether this is an event-store package (for bytea column handling)
  */
 function parseConfigFile(): ConfigInfo {
-  const candidates = ["config/config.ts", "src/config.ts"];
-  const configPath = candidates
-    .map((c) => resolve(cwd(), c))
-    .find((p) => existsSync(p));
+  const configPath = resolve(cwd(), "config/config.ts");
 
-  if (!configPath) {
-    console.error(
-      `Error: Config file not found. Checked: ${candidates.join(", ")}`,
-    );
+  if (!existsSync(configPath)) {
+    console.error(`Error: Config file not found: ${configPath}`);
     console.error(
       "This script must be run from a db package directory (e.g., packages/db/event-store/eservice/)",
     );

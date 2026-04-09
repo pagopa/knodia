@@ -5,7 +5,7 @@ import { z } from "zod";
 export const EventStorePurposeConfig = EventStoreConfig.and(
   z
     .object({
-      EVENTSTORE_DB_PURPOSE_SCHEMA: z.string(),
+      EVENTSTORE_DB_PURPOSE_SCHEMA: z.string().default("purpose"),
     })
     .transform((c) => ({
       eventStoreDbPurposeSchema: c.EVENTSTORE_DB_PURPOSE_SCHEMA,

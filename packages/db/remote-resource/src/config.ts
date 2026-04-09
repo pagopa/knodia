@@ -3,14 +3,19 @@ import { z } from "zod";
 
 export const RemoteResourceDbConfig = z
   .object({
-    REMOTE_RESOURCE_DB_AGREEMENT_SCHEMA: z.string(),
-    REMOTE_RESOURCE_DB_HOST: z.string(),
-    REMOTE_RESOURCE_DB_NAME: z.string(),
-    REMOTE_RESOURCE_DB_PASSWORD: z.string(),
-    REMOTE_RESOURCE_DB_PORT: z.coerce.number().int().min(1024).max(65535),
-    REMOTE_RESOURCE_DB_PURPOSE_SCHEMA: z.string(),
-    REMOTE_RESOURCE_DB_USE_SSL: z.stringbool(),
-    REMOTE_RESOURCE_DB_USER: z.string(),
+    REMOTE_RESOURCE_DB_AGREEMENT_SCHEMA: z.string().default("agreement"),
+    REMOTE_RESOURCE_DB_HOST: z.string().default("localhost"),
+    REMOTE_RESOURCE_DB_NAME: z.string().default("remote_resource"),
+    REMOTE_RESOURCE_DB_PASSWORD: z.string().default("root"),
+    REMOTE_RESOURCE_DB_PORT: z.coerce
+      .number()
+      .int()
+      .min(1024)
+      .max(65535)
+      .default(5432),
+    REMOTE_RESOURCE_DB_PURPOSE_SCHEMA: z.string().default("purpose"),
+    REMOTE_RESOURCE_DB_USE_SSL: z.stringbool().default(false),
+    REMOTE_RESOURCE_DB_USER: z.string().default("root"),
   })
   .transform((c) => ({
     remoteResourceDbAgreementSchema: c.REMOTE_RESOURCE_DB_AGREEMENT_SCHEMA,

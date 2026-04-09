@@ -1,8 +1,11 @@
-/* eslint-disable max-lines-per-function */
-import type { ConsumerKeychainId, KeyId } from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type {
+  ConsumerKeychainId,
+  KeyId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import type { ListResult } from "@knodia/db-readmodel-commons/models";
 import type {
-  ConsumerKeychainKey,
   ConsumerKeychainPurpose,
   FlatConsumerKeychain,
 } from "@knodia/keychain-models";
@@ -19,14 +22,12 @@ import {
 } from "@knodia/db-readmodel-keychain";
 import {
   aggregateFlatConsumerKeychains,
-  toConsumerKeychainKey,
   toConsumerKeychainPurpose,
 } from "@knodia/db-readmodel-keychain/converters";
 import { consumerKeychainReadmodelServiceBuilder } from "@knodia/db-readmodel-keychain/services";
-import { and, desc, eq, exists } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import type {
-  API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
 } from "../models/api.ts";
@@ -52,64 +53,18 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         consumerKeychainId,
       );
     },
-    async getConsumerKeychainKeys(
-      consumerKeychainId: ConsumerKeychainId,
-      params: API_GetConsumerKeychainKeysQueryParams,
-    ): Promise<ListResult<ConsumerKeychainKey>> {
-      const { limit, offset } = params;
-
-      return await readmodelDb.transaction(async (tx) => {
-        const createFilterQuery = () =>
-          tx
-            .select({ kid: readmodelConsumerKeychainKey.kid })
-            .from(readmodelConsumerKeychainKey)
-            .where(
-              eq(
-                readmodelConsumerKeychainKey.consumerKeychainId,
-                consumerKeychainId,
-              ),
-            )
-            .$dynamic();
-
-        const [queryRes, totalCount] = await Promise.all([
-          tx
-            .select()
-            .from(readmodelConsumerKeychainKey)
-            .where(
-              eq(
-                readmodelConsumerKeychainKey.consumerKeychainId,
-                consumerKeychainId,
-              ),
-            )
-            .orderBy(desc(readmodelConsumerKeychainKey.createdAt))
-            .limit(limit)
-            .offset(offset),
-          getTableTotalCount(tx, createFilterQuery()),
-        ]);
-
-        return {
-          results: queryRes.map(toConsumerKeychainKey),
-          totalCount,
-        };
-      });
-    },
     async getConsumerKeychainPurpose(
-      consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
+      consumerKeychainId: ConsumerKeychainId,
+      purpose: ExternalResource<PurposeId>,
     ) {
       return await consumerKeychainReadmodelService.getConsumerKeychainPurposeByFilter(
         and(
           eq(
             readmodelConsumerKeychainPurpose.consumerKeychainId,
-            consumerKeychainPurpose.consumerKeychainId,
+            consumerKeychainId,
           ),
-          eq(
-            readmodelConsumerKeychainPurpose.purposeId,
-            consumerKeychainPurpose.purpose.id,
-          ),
-          eq(
-            readmodelConsumerKeychainPurpose.producerKnodeId,
-            consumerKeychainPurpose.purpose.knodeId,
-          ),
+          eq(readmodelConsumerKeychainPurpose.purposeId, purpose.id),
+          eq(readmodelConsumerKeychainPurpose.producerKnodeId, purpose.knodeId),
         ),
       );
     },
@@ -159,7 +114,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
     ): Promise<ListResult<FlatConsumerKeychain>> {
-      const { limit, offset, purpose } = params;
+      const { limit, offset } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -172,31 +127,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           tx
             .select({ keychainId: readmodelConsumerKeychain.id })
             .from(readmodelConsumerKeychain)
-            .where(
-              purpose
-                ? exists(
-                    tx
-                      .select()
-                      .from(readmodelConsumerKeychainPurpose)
-                      .where(
-                        and(
-                          eq(
-                            readmodelConsumerKeychainPurpose.consumerKeychainId,
-                            readmodelConsumerKeychain.id,
-                          ),
-                          eq(
-                            readmodelConsumerKeychainPurpose.purposeId,
-                            purpose.id,
-                          ),
-                          eq(
-                            readmodelConsumerKeychainPurpose.producerKnodeId,
-                            purpose.knodeId,
-                          ),
-                        ),
-                      ),
-                  )
-                : undefined,
-            )
             .groupBy(readmodelConsumerKeychain.id)
             .$dynamic();
 
@@ -227,11 +157,6 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           totalCount,
         };
       });
-    },
-    async getFlatConsumerKeychainById(consumerKeychainId: ConsumerKeychainId) {
-      return await consumerKeychainReadmodelService.getFlatConsumerKeychainById(
-        consumerKeychainId,
-      );
     },
   };
 }

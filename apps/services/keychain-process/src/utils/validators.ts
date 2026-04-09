@@ -58,10 +58,10 @@ export async function assertPurposeIsNotLinkedToConsumerKeychain(
   readmodelService: ReadmodelService,
 ): Promise<void> {
   const consumerKeychainPurpose =
-    await readmodelService.getConsumerKeychainPurpose({
+    await readmodelService.getConsumerKeychainPurpose(
       consumerKeychainId,
       purpose,
-    });
+    );
 
   if (consumerKeychainPurpose) {
     throw purposeAlreadyLinkedToConsumerKeychain(consumerKeychainId, purpose);

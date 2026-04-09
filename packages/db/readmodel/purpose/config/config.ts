@@ -5,7 +5,7 @@ import { z } from "zod";
 export const ReadmodelPurposeConfig = ReadmodelConfig.and(
   z
     .object({
-      READMODEL_DB_PURPOSE_SCHEMA: z.string(),
+      READMODEL_DB_PURPOSE_SCHEMA: z.string().default("purpose"),
     })
     .transform((c) => ({
       readmodelDbPurposeSchema: c.READMODEL_DB_PURPOSE_SCHEMA,

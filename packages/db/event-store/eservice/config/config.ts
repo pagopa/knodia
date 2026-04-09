@@ -5,7 +5,7 @@ import { z } from "zod";
 export const EventStoreEserviceConfig = EventStoreConfig.and(
   z
     .object({
-      EVENTSTORE_DB_ESERVICE_SCHEMA: z.string(),
+      EVENTSTORE_DB_ESERVICE_SCHEMA: z.string().default("eservice"),
     })
     .transform((c) => ({
       eventStoreDbEserviceSchema: c.EVENTSTORE_DB_ESERVICE_SCHEMA,

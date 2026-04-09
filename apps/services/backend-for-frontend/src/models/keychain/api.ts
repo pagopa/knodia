@@ -1,5 +1,4 @@
 import {
-  API_KeyId,
   API_Pagination,
   API_PaginationQueryParams,
   API_UserId,
@@ -54,11 +53,6 @@ export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
 >;
 
-export const API_GetConsumerKeychainKeysQueryParams = API_PaginationQueryParams;
-export type API_GetConsumerKeychainKeysQueryParams = z.infer<
-  typeof API_GetConsumerKeychainKeysQueryParams
->;
-
 export const API_ConsumerKeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
@@ -77,23 +71,6 @@ export const API_KeychainKeySeed = z
   })
   .meta({ id: "KeychainKeySeed" });
 export type API_KeychainKeySeed = z.infer<typeof API_KeychainKeySeed>;
-
-export const API_KeychainKey = z
-  .strictObject({
-    createdAt: z.iso.datetime(),
-    kid: API_KeyId,
-    name: API_KeychainKeyLocalizedName,
-  })
-  .meta({ id: "KeychainKey" });
-export type API_KeychainKey = z.infer<typeof API_KeychainKey>;
-
-export const API_KeychainKeys = z
-  .strictObject({
-    pagination: API_Pagination,
-    results: z.array(API_KeychainKey),
-  })
-  .meta({ id: "KeychainKeys" });
-export type API_KeychainKeys = z.infer<typeof API_KeychainKeys>;
 
 export const API_KeychainMemberSeed = z
   .strictObject({

@@ -20,8 +20,6 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
-  API_UnlinkConsumerKeychainIdPathParams,
-  API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -33,12 +31,10 @@ import {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
-  API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
   API_KeychainKey,
-  API_KeychainKeys,
   API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_Keychains,
@@ -134,48 +130,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
-      ]);
-
-      const keys = await consumerKeychainService.getConsumerKeychainKeys(
-        req.params.consumerKeychainId,
-        req.query,
-        ctx,
-      );
-
-      res.status(200).send({
-        pagination: {
-          limit: req.query.limit,
-          offset: req.query.offset,
-          total: keys.totalCount,
-        },
-        results: keys.results.map(toAPI_KeychainKey),
-      });
-    },
-    method: "GET",
-    schema: {
-      description: "Retrieve keys of a Consumer Keychain",
-      headers: KnodiaServiceHeaders,
-      operationId: "getConsumerKeychainKeys",
-      params: API_ConsumerKeychainIdPathParam,
-      querystring: API_GetConsumerKeychainKeysQueryParams,
-      response: {
-        200: API_KeychainKeys.meta({
-          description: "Consumer Keychain keys retrieved successfully",
-        }),
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
-      },
-      tags: [apiTags.consumerKeychain],
-    },
-    url: "/consumerKeychains/:consumerKeychainId/keys",
   });
 
   fastify.route({
@@ -500,14 +454,10 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         metadata: { version },
       } = await consumerKeychainService.linkPurposeToConsumerKeychain(
         {
-          consumerKeychainPurpose: {
-            consumerKeychainId: req.params.consumerKeychainId,
-            purpose: {
-              id: unsafeBrandExternalId(req.body.purposeId),
-              knodeId: req.body.knodeId,
-            },
-          },
+          consumerKeychainId: req.params.consumerKeychainId,
           headers: getKnodiaServiceHeaders(req, ctx.correlationId),
+          knodeId: req.body.knodeId,
+          purposeId: unsafeBrandExternalId(req.body.purposeId),
         },
         ctx,
       );
@@ -583,52 +533,5 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
-  });
-
-  fastify.route({
-    handler: async (req, res) => {
-      const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative"] },
-      ]);
-
-      const {
-        metadata: { version },
-      } = await consumerKeychainService.unlinkPurposeFromConsumerKeychain(
-        {
-          consumerKeychainId: req.params.consumerKeychainId,
-          purpose: {
-            id: req.params.purposeId,
-            knodeId: req.query.knodeId,
-          },
-        },
-        ctx,
-      );
-
-      setMetadataVersionHeader(res, version);
-
-      res.status(204).send();
-    },
-    method: "DELETE",
-    schema: {
-      description: "Unlink a Purpose from a Consumer Keychain",
-      headers: KnodiaServiceHeaders,
-      operationId: "unlinkPurposeFromConsumerKeychain",
-      params: API_UnlinkConsumerKeychainIdPathParams,
-      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
-      response: {
-        204: {
-          headers: MetadataVersionHeader,
-          properties: z.undefined().meta({
-            description: "Purpose successfully unlinked from Consumer Keychain",
-          }),
-        },
-        400: API_Problem.meta({ description: "Bad Request" }),
-        401: API_Problem.meta({ description: "Unauthorized" }),
-        403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Not Found" }),
-      },
-      tags: [apiTags.consumerKeychain],
-    },
-    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };
