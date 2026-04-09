@@ -199,7 +199,11 @@ function RouteComponent() {
         onSelectionChange={(key) =>
           navigate({
             replace: true,
-            search: () => ({ tab: key as ConsumerKeychainDetailsTab }),
+            search: (s) => ({
+              ...s,
+              offset: 0,
+              tab: key as ConsumerKeychainDetailsTab,
+            }),
           })
         }
         selectedKey={activeTab}
