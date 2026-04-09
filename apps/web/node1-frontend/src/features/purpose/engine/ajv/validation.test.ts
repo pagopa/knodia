@@ -143,4 +143,54 @@ describe("createAjvValidator", () => {
     );
     expect(errors["purpose"]).toBeDefined();
   });
+
+  it("respects if.required when computing conditional required fields", () => {
+    // Schema where the if-clause uses `required` to guard the condition:
+    // the then-branch should only fire when the field is present AND matches.
+    const schemaWithIfRequired: JsonSchema = {
+      allOf: [
+        {
+          if: {
+            properties: { trigger: { const: "GO" } },
+            required: ["trigger"],
+          },
+          then: { required: ["dependentField"] },
+        },
+      ],
+      properties: {
+        dependentField: { type: "string" },
+        trigger: { enum: ["GO", "STOP"], type: "string" },
+      },
+      type: "object",
+    };
+
+    const validateWithRequired = createAjvValidator(schemaWithIfRequired, {
+      dependentField: { required: "Required when trigger is GO" },
+    });
+
+    // trigger is "GO" → dependentField is required → error
+    expect(
+      validateWithRequired(
+        { trigger: "GO" },
+        new Set(["dependentField", "trigger"]),
+      ),
+    ).toHaveProperty("dependentField");
+
+    // trigger is "STOP" → dependentField is NOT required → no error
+    expect(
+      validateWithRequired(
+        { trigger: "STOP" },
+        new Set(["dependentField", "trigger"]),
+      ),
+    ).not.toHaveProperty("dependentField");
+
+    // trigger is missing (empty string from form init) → if.required fails
+    // because the field exists but doesn't match "GO" → no error
+    expect(
+      validateWithRequired(
+        { trigger: "" },
+        new Set(["dependentField", "trigger"]),
+      ),
+    ).not.toHaveProperty("dependentField");
+  });
 });
