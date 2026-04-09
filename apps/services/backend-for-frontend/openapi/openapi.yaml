@@ -131,6 +131,7 @@ components:
         - Active
         - Suspended
         - Archived
+        - PendingConsumerOperatorIdentification
     EserviceVersionState:
       type: string
       enum:
