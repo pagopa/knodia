@@ -25,6 +25,7 @@ describe("ConsumerAgreementsSummary", () => {
           archivedAgreements: 3,
           suspendedAgreements: 2,
         }}
+        hasPendingAgreements={false}
       />,
       {
         routes: [
@@ -42,7 +43,10 @@ describe("ConsumerAgreementsSummary", () => {
 
   it("renders the empty state when all counters are zero", () => {
     renderWithProviders(
-      <ConsumerAgreementsSummary counters={emptyCounters} />,
+      <ConsumerAgreementsSummary
+        counters={emptyCounters}
+        hasPendingAgreements={false}
+      />,
       {
         routes: [{ path: "/consumption/e-services/search" }],
       },
@@ -55,7 +59,10 @@ describe("ConsumerAgreementsSummary", () => {
 
   it("shows search button and description in empty state for administrative users", () => {
     renderWithProviders(
-      <ConsumerAgreementsSummary counters={emptyCounters} />,
+      <ConsumerAgreementsSummary
+        counters={emptyCounters}
+        hasPendingAgreements={false}
+      />,
       {
         roles: ["administrative"],
         routes: [{ path: "/consumption/e-services/search" }],
@@ -70,9 +77,35 @@ describe("ConsumerAgreementsSummary", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows counters (not empty state) when only pending agreements exist", () => {
+    renderWithProviders(
+      <ConsumerAgreementsSummary
+        counters={emptyCounters}
+        hasPendingAgreements
+      />,
+      {
+        routes: [
+          { path: "/consumption/e-services" },
+          { path: "/consumption/e-services/search" },
+          { path: "/consumption/agreements/archive" },
+        ],
+      },
+    );
+
+    expect(
+      screen.queryByText("You don't have any Agreements yet."),
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Active")).toBeInTheDocument();
+    expect(screen.getByText("Suspended")).toBeInTheDocument();
+    expect(screen.getByText("Archived")).toBeInTheDocument();
+  });
+
   it("hides search button and description in empty state for technical-only users", () => {
     renderWithProviders(
-      <ConsumerAgreementsSummary counters={emptyCounters} />,
+      <ConsumerAgreementsSummary
+        counters={emptyCounters}
+        hasPendingAgreements={false}
+      />,
       {
         roles: ["technical"],
         routes: [{ path: "/consumption/e-services/search" }],

@@ -15,8 +15,10 @@ import { formatNumber } from "@/utils/formatters";
 
 export function ConsumerAgreementsSummary({
   counters,
+  hasPendingAgreements,
 }: {
   counters: bffApi.ConsumerAgreements["counters"];
+  hasPendingAgreements: boolean;
 }) {
   const navigate = useNavigate();
 
@@ -24,7 +26,8 @@ export function ConsumerAgreementsSummary({
   const { activeAgreements, archivedAgreements, suspendedAgreements } =
     counters;
   const hasAgreements =
-    activeAgreements + suspendedAgreements + archivedAgreements > 0;
+    activeAgreements + suspendedAgreements + archivedAgreements > 0 ||
+    hasPendingAgreements;
 
   if (!hasAgreements) {
     return (
@@ -87,8 +90,6 @@ export function ConsumerAgreementsSummary({
           onViewAll={() => navigate({ to: "/consumption/agreements/archive" })}
         />
       </div>
-
-      {/* TODO: Implement "Action needed" section */}
     </>
   );
 }
