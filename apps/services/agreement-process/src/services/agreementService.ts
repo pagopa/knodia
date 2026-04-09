@@ -1,4 +1,3 @@
-import type { Agreement } from "@knodia/agreement-models";
 import type { AttributeId } from "@knodia/attribute-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
@@ -12,6 +11,7 @@ import type {
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
+import { type Agreement, AgreementState } from "@knodia/agreement-models";
 import {
   type AgreementId,
   type EserviceId,
@@ -23,7 +23,10 @@ import {
 import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
-import { createAgreementActivatedV1Event } from "../models/agreementEventFactory.ts";
+import {
+  createAgreementActivatedV1Event,
+  createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
+} from "../models/agreementEventFactory.ts";
 import {
   retrieveAgreement,
   retrieveEservice,
@@ -94,6 +97,10 @@ export function agreementServiceBuilder(
       );
 
       const now = new Date();
+      const state = eservice.isConsumerOperatorIdentificationRequired
+        ? AgreementState.enum.PendingConsumerOperatorIdentification
+        : AgreementState.enum.Active;
+
       const agreement: Agreement = {
         attributes: matchingAttributes,
         consumer: {
@@ -105,13 +112,18 @@ export function agreementServiceBuilder(
         eserviceVersionId,
         id: agreementId,
         producerId: eservice.producerId,
-        state: "Active",
+        state,
         updatedAt: now,
       };
 
-      const { newVersion } = await eventStoreWriter.insertEvent(
-        createAgreementActivatedV1Event(agreement, correlationId),
-      );
+      const event = eservice.isConsumerOperatorIdentificationRequired
+        ? createAgreementCreatedPendingConsumerOperatorIdentificationV1Event(
+            agreement,
+            correlationId,
+          )
+        : createAgreementActivatedV1Event(agreement, correlationId);
+
+      const { newVersion } = await eventStoreWriter.insertEvent(event);
 
       return { data: agreement, metadata: { version: newVersion } };
     },
