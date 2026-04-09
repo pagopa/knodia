@@ -1,8 +1,9 @@
-import { ButtonLink, Pagination } from "@knodia/ui-kit/ui";
+import { ButtonLink } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
+import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { ConsumerPurposeTable } from "@/features/purpose/components/ConsumerPurposeTable/ConsumerPurposeTable";
 import {
@@ -34,7 +35,15 @@ function RouteComponent() {
   });
 
   return (
-    <div className="flex min-h-full flex-col">
+    <ListPageLayout
+      pagination={{
+        limit: data?.pagination.limit ?? 0,
+        offset,
+        onOffsetChange: (offset) =>
+          navigate({ replace: true, search: (s) => ({ ...s, offset }) }),
+        totalItems: data?.pagination.total ?? 0,
+      }}
+    >
       <PageHeader
         actions={
           <ButtonLink
@@ -54,16 +63,6 @@ function RouteComponent() {
         isLoading={isLoading}
         purposes={data?.results ?? []}
       />
-
-      <Pagination
-        className="mx-auto mt-auto pt-6"
-        limit={data?.pagination.limit ?? 0}
-        offset={offset}
-        onOffsetChange={(offset) =>
-          navigate({ replace: true, search: (s) => ({ ...s, offset }) })
-        }
-        totalItems={data?.pagination.total ?? 0}
-      />
-    </div>
+    </ListPageLayout>
   );
 }

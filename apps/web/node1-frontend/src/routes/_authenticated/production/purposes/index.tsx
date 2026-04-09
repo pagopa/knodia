@@ -1,7 +1,7 @@
-import { Pagination } from "@knodia/ui-kit/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
+import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
 import { ProducerPurposeTable } from "@/features/purpose/components/ProducerPurposeTable/ProducerPurposeTable";
 import {
@@ -33,23 +33,21 @@ function RouteComponent() {
   });
 
   return (
-    <div className="flex min-h-full flex-col">
+    <ListPageLayout
+      pagination={{
+        limit: data?.pagination.limit ?? 0,
+        offset,
+        onOffsetChange: (offset) =>
+          navigate({ replace: true, search: (s) => ({ ...s, offset }) }),
+        totalItems: data?.pagination.total ?? 0,
+      }}
+    >
       <PageHeader overline="Production" title="Purposes" />
 
       <ProducerPurposeTable
         isLoading={isLoading}
         purposes={data?.results ?? []}
       />
-
-      <Pagination
-        className="mx-auto mt-auto pt-6"
-        limit={data?.pagination.limit ?? 0}
-        offset={offset}
-        onOffsetChange={(offset) =>
-          navigate({ replace: true, search: (s) => ({ ...s, offset }) })
-        }
-        totalItems={data?.pagination.total ?? 0}
-      />
-    </div>
+    </ListPageLayout>
   );
 }
