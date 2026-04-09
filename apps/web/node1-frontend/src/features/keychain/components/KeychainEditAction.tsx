@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  getConsumerKeychainDetailsOptions,
+  getConsumerKeychainDetailsQueryKey,
   updateConsumerKeychainMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
@@ -72,12 +72,12 @@ function EditKeychainModal({
       client,
     }),
     onSuccess: async () => {
-      queryClient.invalidateQueries(
-        getConsumerKeychainDetailsOptions({
+      queryClient.invalidateQueries({
+        queryKey: getConsumerKeychainDetailsQueryKey({
           client,
           path: { consumerKeychainId: keychain.id },
         }),
-      );
+      });
       onClose();
     },
   });

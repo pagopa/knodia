@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  getConsumerKeychainKeysOptions,
+  getConsumerKeychainKeysQueryKey,
   removeConsumerKeychainKeyMutation,
 } from "@knodia/bff-client/tanstack-query";
 import {
@@ -121,14 +121,14 @@ function RemoveFromKeychainAction({
   const { isPending, mutate: deleteConsumerKeychainKey } = useMutation({
     ...removeConsumerKeychainKeyMutation({ client }),
     onSuccess: () => {
-      queryClient.invalidateQueries(
-        getConsumerKeychainKeysOptions({
+      queryClient.invalidateQueries({
+        queryKey: getConsumerKeychainKeysQueryKey({
           client,
           path: { consumerKeychainId: keychainId },
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           query: undefined!,
         }),
-      );
+      });
     },
   });
 

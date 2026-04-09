@@ -1,6 +1,6 @@
 import {
   addConsumerKeychainMemberMutation,
-  getConsumerKeychainMembersOptions,
+  getConsumerKeychainMembersQueryKey,
   getTechnicalUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
@@ -70,12 +70,12 @@ function AddKeychainMemberModal({
   const { isPending, mutate: addConsumerKeychainMember } = useMutation({
     ...addConsumerKeychainMemberMutation({ client }),
     onSuccess: () => {
-      queryClient.invalidateQueries(
-        getConsumerKeychainMembersOptions({
+      queryClient.invalidateQueries({
+        queryKey: getConsumerKeychainMembersQueryKey({
           client,
           path: { consumerKeychainId: keychainId },
         }),
-      );
+      });
       onClose();
     },
   });
