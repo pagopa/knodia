@@ -14,6 +14,8 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
+  API_UnlinkConsumerKeychainIdPathParams,
+  API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import {
   keychainProcessApi,
@@ -27,12 +29,17 @@ import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
-  API_ConsumerKeychainMemberPathParam,
+  API_ConsumerKeychainKeyPathParams,
+  API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
+  API_CreatedKeyResource,
+  API_GetConsumerKeychainKeysQueryParams,
   type API_Keychain,
   API_KeychainDetails,
+  API_KeychainKeys,
+  API_KeychainKeySeed,
   API_KeychainMemberSeed,
   API_Keychains,
   API_Users,
@@ -40,6 +47,7 @@ import {
 import {
   toAPI_Keychain,
   toAPI_KeychainDetails,
+  toAPI_KeychainKey,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 
@@ -72,6 +80,17 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
 
+  const pollConsumerKeychainById = (
+    consumerKeychainId: ConsumerKeychainId,
+    response: AxiosResponse<unknown>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveConsumerKeychainById(consumerKeychainId, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   const pollConsumerKeychainUntilDeletion = (
     consumerKeychainId: ConsumerKeychainId,
     headers: KnodiaServiceHeaders,
@@ -79,6 +98,48 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     pollingService.pollResourceUntilDeletion(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
     )();
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { limit, offset } = req.query;
+
+      logger.info(
+        { requestParams: req.params, requestQuery: req.query },
+        `Getting Consumer Keychain keys with ID ${req.params.consumerKeychainId}`,
+      );
+
+      const { data: keys } = await keychainProcessApi.getConsumerKeychainKeys({
+        client: keychainProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { consumerKeychainId: req.params.consumerKeychainId },
+        query: { limit, offset },
+      });
+
+      res.send({
+        pagination: keys.pagination,
+        results: keys.results.map(toAPI_KeychainKey),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve keys of a Consumer Keychain",
+      operationId: "getConsumerKeychainKeys",
+      params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainKeysQueryParams,
+      response: {
+        200: API_KeychainKeys.meta({
+          description: "Consumer Keychain keys retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys",
+  });
 
   fastify.route({
     handler: async (req, res) => {
@@ -208,6 +269,92 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId } = req.params;
+
+      logger.info(
+        { requestBody: req.body, requestParams: req.params },
+        `Uploading key to Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.uploadConsumerKeychainKey({
+        body: req.body,
+        client: keychainProcessClient,
+        headers,
+        path: { consumerKeychainId },
+      });
+
+      await pollConsumerKeychainById(consumerKeychainId, response, headers);
+
+      res.status(201).send({ kid: response.data.kid });
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainKeySeed,
+      description: "Upload a key to a Consumer Keychain",
+      operationId: "uploadConsumerKeychainKey",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        201: API_CreatedKeyResource.meta({
+          description: "Consumer Keychain key uploaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId, keyId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Removing key ${keyId} from Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await keychainProcessApi.removeConsumerKeychainKey({
+        client: keychainProcessClient,
+        headers,
+        path: { consumerKeychainId, keyId },
+      });
+
+      await pollConsumerKeychainById(consumerKeychainId, response, headers);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a key from a Consumer Keychain",
+      operationId: "removeConsumerKeychainKey",
+      params: API_ConsumerKeychainKeyPathParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Consumer Keychain key removed successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
         { requestParams: req.params },
@@ -233,7 +380,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Remove a member from a Consumer Keychain",
       operationId: "removeConsumerKeychainMember",
-      params: API_ConsumerKeychainMemberPathParam,
+      params: API_ConsumerKeychainMemberPathParams,
       response: {
         204: z.undefined().meta({
           description: "Consumer Keychain member removed successfully",
@@ -386,15 +533,22 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       async function enhanceKeychainWithCounts(
         keychain: keychainProcessApi.Keychain,
       ): Promise<API_Keychain> {
-        const { data: members } =
-          await keychainProcessApi.getConsumerKeychainMembers({
+        const [{ data: keys }, { data: members }] = await Promise.all([
+          keychainProcessApi.getConsumerKeychainKeys({
             client: keychainProcessClient,
             headers,
             path: { consumerKeychainId: keychain.id },
-          });
+            query: { limit: 1, offset: 0 },
+          }),
+          keychainProcessApi.getConsumerKeychainMembers({
+            client: keychainProcessClient,
+            headers,
+            path: { consumerKeychainId: keychain.id },
+          }),
+        ]);
 
         return toAPI_Keychain(keychain, {
-          keysCount: 0, // TODO: retrieve keysCount when available
+          keysCount: keys.pagination.total,
           membersCount: members.length,
         });
       }
@@ -470,5 +624,56 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId, purposeId } = req.params;
+      logger.info(
+        {
+          request: {
+            params: req.params,
+            query: req.query,
+          },
+        },
+        `Unlinking Purpose ${purposeId} owned by Knode ${req.query.knodeId} from Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response =
+        await keychainProcessApi.unlinkPurposeFromConsumerKeychain({
+          client: keychainProcessClient,
+          headers,
+          path: {
+            consumerKeychainId,
+            purposeId,
+          },
+          query: { knodeId: req.query.knodeId },
+        });
+
+      await pollConsumerKeychain(response, headers, consumerKeychainId);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Unlink a Purpose from a Consumer Keychain",
+      operationId: "unlinkPurposeFromConsumerKeychain",
+      params: API_UnlinkConsumerKeychainIdPathParams,
+      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Purpose successfully unlinked from Consumer Keychain",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };

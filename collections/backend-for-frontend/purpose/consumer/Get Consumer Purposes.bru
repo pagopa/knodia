@@ -1,0 +1,20 @@
+meta {
+  name: Get Consumer Purposes
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumer/purposes?limit=50&offset=0
+  body: none
+  auth: none
+}
+
+params:query {
+  limit: 50
+  offset: 0
+  ~eserviceId: {{eserviceId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

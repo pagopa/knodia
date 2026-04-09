@@ -116,10 +116,12 @@ export function buildAppFromConfig(
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(eserviceProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
       config,
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
       pollingService,
+      purposeProcessClient: clients.purposeProcessClient,
     });
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
@@ -137,6 +139,7 @@ export function buildAppFromConfig(
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
+      keychainProcessClient: clients.keychainProcessClient,
       knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,

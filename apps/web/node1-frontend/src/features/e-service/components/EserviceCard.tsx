@@ -1,8 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { ButtonLink, Divider } from "@knodia/ui-kit/ui";
+import { Divider } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { createLink } from "@tanstack/react-router";
+
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 
 import { EserviceModeChip } from "./EserviceModeChip";
 import { EserviceStateChip } from "./EserviceStateChip";
@@ -80,5 +81,3 @@ export function EserviceCardHeader({
     </header>
   );
 }
-
-const ButtonLinkWithPreload = createLink(ButtonLink);

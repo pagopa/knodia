@@ -1,12 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { zocker } from "zocker";
 
 import { API_Purpose } from "../../src/models/purpose/api.ts";
 import { toK2KKnodeId, toK2KPurposeState } from "../k2kConverters.ts";
+import { remoteResourceDbService } from "../setup.ts";
 import { injectAppRequest } from "../utils.ts";
 
 const getPurposesMock = vi.hoisted(() => vi.fn());
@@ -61,8 +66,14 @@ describe("GET /purposes (getPurposes)", () => {
     results: [k2kResult],
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     getPurposesMock.mockReset();
+    await remoteResourceDbService.insertPurpose({
+      consumerId: TEST_ORGANIZATION_ID,
+      eserviceId: expectedApiResult.eserviceId,
+      knodeId: expectedApiResult.knodeId,
+      purposeId: expectedApiResult.id,
+    });
   });
 
   it("should return 200 with converted results on success", async () => {
@@ -78,7 +89,12 @@ describe("GET /purposes (getPurposes)", () => {
 
     expect(getPurposesMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        query: parsedDefaultQuery,
+        query: expect.objectContaining({
+          consumerId: TEST_ORGANIZATION_ID,
+          eserviceId: undefined,
+          limit: parsedDefaultQuery.limit,
+          offset: parsedDefaultQuery.offset,
+        }),
       }),
     );
 
@@ -105,7 +121,6 @@ describe("GET /purposes (getPurposes)", () => {
     { limit: "10", offset: "-1" },
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
-    { ...defaultQuery, consumerId: "InvalidConsumerId" },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
     {
       ...defaultQuery,

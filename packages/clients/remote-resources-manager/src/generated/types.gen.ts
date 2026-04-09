@@ -339,6 +339,10 @@ export type Purpose = {
     description: LocalizedPurposeDescription;
     eserviceId: string;
     id: string;
+    /**
+     * Knode ID of the producer's Knode that owns this Purpose
+     */
+    knodeId: KnodeId;
     name: LocalizedPurposeName;
     state: PurposeState;
     updatedAt: string;
@@ -549,10 +553,6 @@ export type GetAgreementsData = {
          */
         offset: number;
         /**
-         * Filter by Consumer ID
-         */
-        consumerId?: string;
-        /**
          * Filter by Agreement State
          */
         state?: AgreementState;
@@ -680,10 +680,6 @@ export type GetPurposesData = {
          * Pagination starting position
          */
         offset: number;
-        /**
-         * Filter by Consumer ID
-         */
-        consumerId?: string;
         /**
          * Filter by E-service ID
          */

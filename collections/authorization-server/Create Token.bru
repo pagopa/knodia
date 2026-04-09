@@ -1,0 +1,17 @@
+meta {
+  name: Create Token
+  type: http
+}
+
+post {
+  url: {{host-authorization-server}}/token
+  body: json
+}
+
+body:json {
+  {
+    "grant_type": "client_credentials",
+    "client_id": "test-client",
+    "scope": "eservices.read"
+  }
+}

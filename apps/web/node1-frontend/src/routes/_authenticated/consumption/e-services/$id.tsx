@@ -1,13 +1,7 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { bffApi } from "@knodia/bff-client";
-import {
-  Banner,
-  Breadcrumb,
-  Breadcrumbs,
-  ButtonLink,
-  Divider,
-} from "@knodia/ui-kit/ui";
+import { Banner, Breadcrumb, Breadcrumbs, Divider } from "@knodia/ui-kit/ui";
 import { SealCheckIcon, WarningIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -17,6 +11,7 @@ import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { Section } from "@/components/Section";
 import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
@@ -100,18 +95,16 @@ function ConsumptionRequirementsSection({
               {canRequestAgreement &&
                 hasRequiredAttributes &&
                 !hasAgreement && (
-                  <ButtonLink
+                  <ButtonLinkWithPreload
                     className="shrink-0"
                     hierarchy="brand"
-                    href={{
-                      search: { eserviceId, knodeId },
-                      to: "/consumption/e-services/request-agreement",
-                    }}
                     kind="filled"
+                    search={{ eserviceId, knodeId }}
                     size="md"
+                    to="/consumption/e-services/request-agreement"
                   >
                     Request Agreement
-                  </ButtonLink>
+                  </ButtonLinkWithPreload>
                 )}
             </div>
           </Banner>
