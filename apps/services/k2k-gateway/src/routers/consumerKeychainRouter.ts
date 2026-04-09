@@ -1,14 +1,18 @@
 import type { KnodeId } from "@knodia/common-models/ids";
-import type { KeychainProcessClient } from "@knodia/keychain-process-client";
-import type { OrganizationProcessClient } from "@knodia/organization-process-client";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { keychainProcessApi } from "@knodia/keychain-process-client";
-import { organizationProcessApi } from "@knodia/organization-process-client";
+import {
+  keychainProcessApi,
+  type KeychainProcessClient,
+} from "@knodia/keychain-process-client";
+import {
+  organizationProcessApi,
+  type OrganizationProcessClient,
+} from "@knodia/organization-process-client";
 
 import { apiTags } from "../models/apiTags.ts";
 import {
