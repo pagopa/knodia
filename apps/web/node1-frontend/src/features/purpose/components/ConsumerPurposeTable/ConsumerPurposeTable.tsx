@@ -91,8 +91,9 @@ export function ConsumerPurposeTable({
                 size="sm"
               />
             </Cell>
-            {/* TODO(KN-406): Replace with actual keychain data when consumer keychains for purposes are implemented */}
-            <Cell className="body-md text-primary-light-mid-contrast">-</Cell>
+            <Cell className="body-md text-primary-light-mid-contrast">
+              {purpose.keychains}
+            </Cell>
             <Cell>
               <PurposeStateChip state={purpose.state} type="bright" />
             </Cell>

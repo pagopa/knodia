@@ -37,9 +37,33 @@ export const API_Keychains = z
   .meta({ id: "Keychains" });
 export type API_Keychains = z.infer<typeof API_Keychains>;
 
-export const API_GetConsumerKeychainsQueryParams = API_PaginationQueryParams;
+const API_GetConsumerKeychainsQueryPurposeFilter = z
+  .string()
+  .transform((v) => {
+    const [knodeId, id] = v.split(":");
+    return { id, knodeId };
+  })
+  .pipe(
+    z.object({
+      id: z.uuid(),
+      knodeId: API_KnodeId,
+    }),
+  );
+
+export const API_GetConsumerKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    purpose: API_GetConsumerKeychainsQueryPurposeFilter.optional().meta({
+      description:
+        "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
+    }),
+  });
 export type API_GetConsumerKeychainsQueryParams = z.infer<
   typeof API_GetConsumerKeychainsQueryParams
+>;
+
+export const API_GetConsumerKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetConsumerKeychainKeysQueryParams = z.infer<
+  typeof API_GetConsumerKeychainKeysQueryParams
 >;
 
 export const API_ConsumerKeychainSeed = z
@@ -80,6 +104,14 @@ export const API_KeychainKey = z
   })
   .meta({ id: "KeychainKey" });
 export type API_KeychainKey = z.infer<typeof API_KeychainKey>;
+
+export const API_KeychainKeys = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_KeychainKey),
+  })
+  .meta({ id: "KeychainKeys" });
+export type API_KeychainKeys = z.infer<typeof API_KeychainKeys>;
 
 export const API_User = z
   .strictObject({

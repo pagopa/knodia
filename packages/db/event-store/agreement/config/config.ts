@@ -5,7 +5,7 @@ import { z } from "zod";
 export const EventStoreAgreementConfig = EventStoreConfig.and(
   z
     .object({
-      EVENTSTORE_DB_AGREEMENT_SCHEMA: z.string().default("agreement"),
+      EVENTSTORE_DB_AGREEMENT_SCHEMA: z.string(),
     })
     .transform((c) => ({
       eventStoreDbAgreementSchema: c.EVENTSTORE_DB_AGREEMENT_SCHEMA,
