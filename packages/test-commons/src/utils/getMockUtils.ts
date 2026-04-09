@@ -1,5 +1,5 @@
 import { Agreement, type AgreementState } from "@knodia/agreement-models";
-import { unsafeBrandKeyId } from "@knodia/common-models/ids";
+import { generateUserId, unsafeBrandKeyId } from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceCategory,
@@ -58,6 +58,7 @@ export function getMockConsumerKeychainKey(seed = 0): ConsumerKeychainKey {
     kid: unsafeBrandKeyId(
       Buffer.from(`mock-key-${seed}`, "utf-8").toString("base64url"),
     ),
+    userId: generateUserId(),
   };
 }
 
