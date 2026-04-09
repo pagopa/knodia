@@ -15,6 +15,7 @@ import { type K2KGatewayConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
+import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
@@ -25,6 +26,7 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     callerKnodeId: config.callerKnodeId,
     eserviceProcessUrl: config.eserviceProcessUrl,
     internalJwt: config.internalJwt,
+    keychainProcessUrl: config.keychainProcessUrl,
     loggerConfig: config,
     organizationProcessUrl: config.organizationProcessUrl,
     pollingService: pollingServiceBuilder(config),
@@ -39,6 +41,7 @@ function buildApp({
   callerKnodeId,
   eserviceProcessUrl,
   internalJwt,
+  keychainProcessUrl,
   loggerConfig,
   organizationProcessUrl,
   pollingService,
@@ -48,6 +51,7 @@ function buildApp({
   callerKnodeId: KnodeId;
   eserviceProcessUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
+  keychainProcessUrl: string;
   loggerConfig: LoggerConfig;
   organizationProcessUrl: string;
   pollingService: PollingService;
@@ -56,6 +60,7 @@ function buildApp({
   const clients = getKnodiaClients({
     agreementProcessUrl,
     eserviceProcessUrl,
+    keychainProcessUrl,
     organizationProcessUrl,
     purposeProcessUrl,
   });
@@ -87,6 +92,10 @@ function buildApp({
             name: apiTags.agreement,
           },
           {
+            description: "Routes related to Consumer Keychains",
+            name: apiTags.consumerKeychain,
+          },
+          {
             description: "Routes related to E-services",
             name: apiTags.eservice,
           },
@@ -107,6 +116,12 @@ function buildApp({
   });
 
   app.register(healthRouter);
+  app.register(consumerKeychainRouter, {
+    callerKnodeId,
+    keychainProcessClient: clients.keychainProcessClient,
+    organizationProcessClient: clients.organizationProcessClient,
+    tokenProvider,
+  });
   app.register(eserviceRouter, {
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,

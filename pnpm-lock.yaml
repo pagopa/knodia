@@ -797,6 +797,9 @@ importers:
       '@knodia/file-manager':
         specifier: workspace:*
         version: link:../../../packages/file-manager
+      '@knodia/keychain-process-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/keychain-process-client
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
