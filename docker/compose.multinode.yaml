@@ -395,6 +395,7 @@ services:
       CALLER_KNODE_ID: "Lynx"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-orion-eservice-interfaces
       ESERVICE_PROCESS_URL: "http://eservice-process-orion:3000"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-orion:3000"
       ORGANIZATION_PROCESS_URL: "http://organization-process-orion:3000"
       PURPOSE_PROCESS_URL: "http://purpose-process-orion:3000"
       INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
@@ -411,6 +412,8 @@ services:
       agreement-process-orion:
         condition: service_started
       eservice-process-orion:
+        condition: service_started
+      keychain-process-orion:
         condition: service_started
       organization-process-orion:
         condition: service_started
@@ -903,6 +906,7 @@ services:
       CALLER_KNODE_ID: "Orion"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-lynx-eservice-interfaces
       ESERVICE_PROCESS_URL: "http://eservice-process-lynx:3000"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-lynx:3000"
       ORGANIZATION_PROCESS_URL: "http://organization-process-lynx:3000"
       PURPOSE_PROCESS_URL: "http://purpose-process-lynx:3000"
       INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
@@ -919,6 +923,8 @@ services:
       agreement-process-lynx:
         condition: service_started
       eservice-process-lynx:
+        condition: service_started
+      keychain-process-lynx:
         condition: service_started
       organization-process-lynx:
         condition: service_started

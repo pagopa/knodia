@@ -20,23 +20,7 @@ import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
 
-export function buildAppFromConfig(config: K2KGatewayConfig) {
-  const app = buildApp({
-    agreementProcessUrl: config.agreementProcessUrl,
-    callerKnodeId: config.callerKnodeId,
-    eserviceProcessUrl: config.eserviceProcessUrl,
-    internalJwt: config.internalJwt,
-    keychainProcessUrl: config.keychainProcessUrl,
-    loggerConfig: config,
-    organizationProcessUrl: config.organizationProcessUrl,
-    pollingService: pollingServiceBuilder(config),
-    purposeProcessUrl: config.purposeProcessUrl,
-  });
-
-  return app;
-}
-
-function buildApp({
+export function buildApp({
   agreementProcessUrl,
   callerKnodeId,
   eserviceProcessUrl,
@@ -142,6 +126,22 @@ function buildApp({
     pollingService,
     purposeProcessClient: clients.purposeProcessClient,
     tokenProvider,
+  });
+
+  return app;
+}
+
+export function buildAppFromConfig(config: K2KGatewayConfig) {
+  const app = buildApp({
+    agreementProcessUrl: config.agreementProcessUrl,
+    callerKnodeId: config.callerKnodeId,
+    eserviceProcessUrl: config.eserviceProcessUrl,
+    internalJwt: config.internalJwt,
+    keychainProcessUrl: config.keychainProcessUrl,
+    loggerConfig: config,
+    organizationProcessUrl: config.organizationProcessUrl,
+    pollingService: pollingServiceBuilder(config),
+    purposeProcessUrl: config.purposeProcessUrl,
   });
 
   return app;
