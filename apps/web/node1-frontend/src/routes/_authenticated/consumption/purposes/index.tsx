@@ -1,10 +1,10 @@
-import { ButtonLink } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { ConsumerPurposeTable } from "@/features/purpose/components/ConsumerPurposeTable/ConsumerPurposeTable";
 import {
   purposeListSearchDefaultValues,
@@ -46,14 +46,14 @@ function RouteComponent() {
     >
       <PageHeader
         actions={
-          <ButtonLink
+          <ButtonLinkWithPreload
             hierarchy="neutral"
-            href={{ to: "/consumption/purposes/archive" }}
             kind="ghost"
+            to="/consumption/purposes/archive"
           >
             <ArchiveIcon />
             Archive
-          </ButtonLink>
+          </ButtonLinkWithPreload>
         }
         overline="Consumption"
         title="Purposes"
