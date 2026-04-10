@@ -11,9 +11,14 @@ import {
   getKnodiaServiceHeaders,
 } from "@knodia/fastify-zod-api-commons/models";
 import {
+  keychainProcessApi,
+  type KeychainProcessClient,
+} from "@knodia/keychain-process-client";
+import {
   organizationProcessApi,
   type OrganizationProcessClient,
 } from "@knodia/organization-process-client";
+import { API_PurposeState } from "@knodia/purpose-models/api";
 import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
@@ -40,6 +45,7 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceConsumerRouterOptions {
   config: BffProcessConfig;
+  keychainProcessClient: KeychainProcessClient;
   organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
@@ -49,7 +55,12 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
   // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
-  { config, organizationProcessClient, remoteResourcesManagerClient },
+  {
+    config,
+    keychainProcessClient,
+    organizationProcessClient,
+    remoteResourcesManagerClient,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -222,18 +233,66 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         `Getting Consumer E-services with query parameters`,
       );
 
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
       const { data } = await remoteResourcesManagerApi.getEservices({
         client: remoteResourcesManagerClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
+        headers,
         query: req.query,
       });
 
-      res.send({
-        pagination: data.pagination,
-        results: data.results.map((eservice) =>
-          toAPI_ConsumerEservice(eservice, config.recentEserviceUpdateDays),
-        ),
-      });
+      if (data.results.length === 0) {
+        res.send({ pagination: data.pagination, results: [] });
+        return;
+      }
+
+      const results = await Promise.all(
+        data.results.map(async (eservice) => {
+          // TODO: paginate to fetch all active purposes if >50 exist,
+          // otherwise consumerKeychains count will be undercounted
+          const { data: activePurposes } =
+            await remoteResourcesManagerApi.getPurposes({
+              client: remoteResourcesManagerClient,
+              headers,
+              query: {
+                eserviceId: eservice.id,
+                limit: 50,
+                offset: 0,
+                state: API_PurposeState.enum.Active,
+              },
+            });
+
+          const keychainResponses = await Promise.all(
+            activePurposes.results.map((purpose) =>
+              keychainProcessApi.getConsumerKeychains({
+                client: keychainProcessClient,
+                headers,
+                query: {
+                  limit: 1,
+                  offset: 0,
+                  purpose: `${purpose.knodeId}:${purpose.id}`,
+                },
+              }),
+            ),
+          );
+
+          const consumerKeychains = keychainResponses.reduce(
+            (sum, resp) => sum + resp.data.pagination.total,
+            0,
+          );
+
+          return toAPI_ConsumerEservice({
+            counters: {
+              activePurposes: activePurposes.pagination.total,
+              consumerKeychains,
+            },
+            eservice,
+            recentEserviceUpdateDays: config.recentEserviceUpdateDays,
+          });
+        }),
+      );
+
+      res.send({ pagination: data.pagination, results });
     },
     method: "GET",
     schema: {

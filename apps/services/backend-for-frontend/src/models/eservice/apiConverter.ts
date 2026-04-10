@@ -118,10 +118,15 @@ export const toAPI_ConsumerEserviceDetails = (
   state: detail.latestVersion.state,
 });
 
-export const toAPI_ConsumerEservice = (
-  eservice: remoteResourcesManagerApi.Eservice,
-  recentEserviceUpdateDays: number,
-): API_ConsumerEservice => {
+export const toAPI_ConsumerEservice = ({
+  counters,
+  eservice,
+  recentEserviceUpdateDays,
+}: {
+  counters: { activePurposes: number; consumerKeychains: number };
+  eservice: remoteResourcesManagerApi.Eservice;
+  recentEserviceUpdateDays: number;
+}): API_ConsumerEservice => {
   // TODO https://pagopa.atlassian.net/browse/KN-246
   const hasRecentlyBeenUpdated = (dateString: string): boolean => {
     const updatedAt = new Date(dateString);
@@ -132,8 +137,10 @@ export const toAPI_ConsumerEservice = (
   };
 
   return {
+    activePurposes: counters.activePurposes,
     agreement: eservice.agreement,
     categories: eservice.categories,
+    consumerKeychains: counters.consumerKeychains,
     hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice.updatedAt),
     id: eservice.id,
     mode: eservice.mode,
