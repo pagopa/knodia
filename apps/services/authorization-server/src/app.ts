@@ -35,7 +35,6 @@ export function buildApp({ config }: { config: LoggerConfig }) {
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "authorization-server",
   });
 
   app.register(healthRouter);

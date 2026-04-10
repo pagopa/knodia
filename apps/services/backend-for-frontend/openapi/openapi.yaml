@@ -1016,21 +1016,10 @@ components:
     SessionResponse:
       type: object
       properties:
-        refreshToken:
-          type: string
         uiSessionToken:
           type: string
       required:
-        - refreshToken
         - uiSessionToken
-      additionalProperties: false
-    RefreshRequest:
-      type: object
-      properties:
-        refreshToken:
-          type: string
-      required:
-        - refreshToken
       additionalProperties: false
     PurposeState:
       type: string
@@ -1522,7 +1511,8 @@ paths:
       operationId: createSession
       tags:
         - auth
-      description: Validate a Cognito token and generate a session token
+      description: Validate a Cognito token and generate a session token. Sets a
+        HttpOnly refresh token cookie.
       requestBody:
         required: true
         content:
@@ -1560,13 +1550,15 @@ paths:
       operationId: refreshSession
       tags:
         - auth
-      description: Refresh an expired UI session token using a refresh token
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RefreshRequest"
+      description: Refresh an expired UI session token using the refresh token cookie
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: refresh
+          required: true
+          description: HttpOnly refresh token (set automatically by login and refresh
+            responses)
       security: []
       responses:
         "200":
@@ -1577,14 +1569,6 @@ paths:
                 description: Session refreshed successfully
                 allOf:
                   - $ref: "#/components/schemas/SessionResponse"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:
@@ -1593,6 +1577,24 @@ paths:
                 description: Unauthorized
                 allOf:
                   - $ref: "#/components/schemas/Problem"
+  /auth/logout:
+    post:
+      operationId: logout
+      tags:
+        - auth
+      description: Clear the refresh token cookie
+      parameters:
+        - schema:
+            type: string
+          in: cookie
+          name: refresh
+          required: false
+          description: HttpOnly refresh token (set automatically by login and refresh
+            responses)
+      security: []
+      responses:
+        "204":
+          description: Logged out successfully
   /producer/eservices:
     post:
       operationId: createEservice

@@ -1,4 +1,3 @@
-import type { ServiceName } from "@knodia/common-models/services";
 import type { LoggerConfig } from "@knodia/logger/config";
 
 import { createLogger } from "@knodia/logger";
@@ -15,7 +14,6 @@ export function createTestLogger(): {
 
   const logger = createLogger({
     config: loggerConfig,
-    serviceName: "test-service" as ServiceName,
   });
 
   return { logger, loggerConfig };

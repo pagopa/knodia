@@ -96,7 +96,6 @@ export function buildApp({
     },
     loggerConfig,
     makeApiProblem,
-    serviceName: "k2k-gateway",
   });
 
   app.register(healthRouter);
