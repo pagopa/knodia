@@ -24,10 +24,13 @@
   },
   "dependencies": {
     "@fastify/request-context": "catalog:",
+    "@knodia/common-models": "workspace:*",
     "@knodia/fastify-zod-api-commons": "workspace:*",
     "@knodia/logger": "workspace:*",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
+    "jose": "catalog:",
+    "pino": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:"
   }

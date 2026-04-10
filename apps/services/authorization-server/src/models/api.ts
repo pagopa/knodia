@@ -9,11 +9,11 @@ export const API_TokenRequest = z
   .strictObject({
     client_assertion: z.jwt(),
     client_assertion_type: z
-      .string()
+      .literal(EXPECTED_CLIENT_ASSERTION_TYPE)
       .meta({ description: `Must be '${EXPECTED_CLIENT_ASSERTION_TYPE}'` }),
     consumer_keychain_id: z.uuid(),
     grant_type: z
-      .string()
+      .literal(EXPECTED_GRANT_TYPE)
       .meta({ description: `Must be '${EXPECTED_GRANT_TYPE}'` }),
   })
   .meta({ id: "TokenRequest" });
