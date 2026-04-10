@@ -842,6 +842,10 @@ export type GetPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: EserviceId;
+        /**
+         * Filter by Purpose State
+         */
+        state?: PurposeState;
     };
     url: '/purposes';
 };

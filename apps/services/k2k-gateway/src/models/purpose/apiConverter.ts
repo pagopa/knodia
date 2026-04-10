@@ -44,6 +44,16 @@ export function toProcessAPI_PurposeSeed(
   };
 }
 
+export function toProcessAPI_PurposeState(
+  state: API_PurposeState,
+): purposeProcessApi.PurposeState {
+  return match(state)
+    .with("ACTIVE", () => "Active" as const)
+    .with("SUSPENDED", () => "Suspended" as const)
+    .with("ARCHIVED", () => "Archived" as const)
+    .exhaustive();
+}
+
 function toAPI_PurposeState(
   state: purposeProcessApi.PurposeState,
 ): API_PurposeState {
