@@ -41,7 +41,12 @@ export const eserviceRouter: FastifyPluginAsyncZod<
   // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
-  { eserviceInterfacesS3Bucket, eserviceProcessClient, fileManager, tokenProvider },
+  {
+    eserviceInterfacesS3Bucket,
+    eserviceProcessClient,
+    fileManager,
+    tokenProvider,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {

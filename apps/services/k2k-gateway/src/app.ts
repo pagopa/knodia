@@ -10,8 +10,9 @@ import { initFileManager } from "@knodia/file-manager";
 import { type PollingService, pollingServiceBuilder } from "@knodia/polling";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
-import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import type { K2KGatewayConfig } from "./config/config.ts";
+
+import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";

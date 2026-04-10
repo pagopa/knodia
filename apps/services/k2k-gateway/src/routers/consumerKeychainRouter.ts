@@ -54,7 +54,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
       const [, keyResponse, keychainResponse] = await Promise.all([
-        // Verify purpose is linked to keychain, we just need a 200 and discard the return value 
+        // Verify purpose is linked to keychain, we just need a 200 and discard the return value
         keychainProcessApi.getConsumerKeychainPurpose({
           client: keychainProcessClient,
           headers,
