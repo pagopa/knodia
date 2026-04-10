@@ -74,4 +74,120 @@ describe("Agreement read model writer tests", async () => {
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<Agreement>);
   });
+
+  it("AgreementSuspendedByConsumerV1", async () => {
+    const agreement = getMockAgreement({ state: "Suspended" });
+    const eventData = protobufBinaryCodec(
+      agreementEvents.AgreementSuspendedByConsumerV1,
+    ).encode({
+      agreement: toAgreementV1(agreement),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "AgreementSuspendedByConsumerV1",
+      metadataVersion,
+      producer,
+      streamId: agreement.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedAgreements = await getAllAgreements(readmodelDb);
+
+    expect(retrievedAgreements.length).toBe(1);
+    expect(retrievedAgreements[0]).toEqual({
+      data: toExpectAgreement(agreement),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Agreement>);
+  });
+
+  it("AgreementSuspendedByProducerV1", async () => {
+    const agreement = getMockAgreement({ state: "Suspended" });
+    const eventData = protobufBinaryCodec(
+      agreementEvents.AgreementSuspendedByProducerV1,
+    ).encode({
+      agreement: toAgreementV1(agreement),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "AgreementSuspendedByProducerV1",
+      metadataVersion,
+      producer,
+      streamId: agreement.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedAgreements = await getAllAgreements(readmodelDb);
+
+    expect(retrievedAgreements.length).toBe(1);
+    expect(retrievedAgreements[0]).toEqual({
+      data: toExpectAgreement(agreement),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Agreement>);
+  });
+
+  it("AgreementReactivatedByConsumerV1", async () => {
+    const agreement = getMockAgreement();
+    const eventData = protobufBinaryCodec(
+      agreementEvents.AgreementReactivatedByConsumerV1,
+    ).encode({
+      agreement: toAgreementV1(agreement),
+    });
+
+    const metadataVersion = 2;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "AgreementReactivatedByConsumerV1",
+      metadataVersion,
+      producer,
+      streamId: agreement.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedAgreements = await getAllAgreements(readmodelDb);
+
+    expect(retrievedAgreements.length).toBe(1);
+    expect(retrievedAgreements[0]).toEqual({
+      data: toExpectAgreement(agreement),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Agreement>);
+  });
+
+  it("AgreementReactivatedByProducerV1", async () => {
+    const agreement = getMockAgreement();
+    const eventData = protobufBinaryCodec(
+      agreementEvents.AgreementReactivatedByProducerV1,
+    ).encode({
+      agreement: toAgreementV1(agreement),
+    });
+
+    const metadataVersion = 2;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "AgreementReactivatedByProducerV1",
+      metadataVersion,
+      producer,
+      streamId: agreement.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedAgreements = await getAllAgreements(readmodelDb);
+
+    expect(retrievedAgreements.length).toBe(1);
+    expect(retrievedAgreements[0]).toEqual({
+      data: toExpectAgreement(agreement),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Agreement>);
+  });
 });
