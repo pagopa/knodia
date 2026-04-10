@@ -9,7 +9,7 @@ pnpm install
 ## Development
 
 ```bash
-# Start all backend services (infra starts automatically)
+# Start all local dev services (infra starts automatically)
 pnpm dev:services
 
 # Start specific services
