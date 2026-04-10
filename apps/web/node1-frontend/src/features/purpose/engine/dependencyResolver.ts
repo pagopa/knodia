@@ -22,6 +22,10 @@ export function evaluateCondition(
   const fieldName = scopeToFieldName(condition.scope);
   const value = values[fieldName];
 
+  // JSON Forms UI rules treat `const` as "value is or contains this" — NOT
+  // strict equality like JSON Schema. This is intentional and differs from
+  // evaluateIfCondition in requiredFields.ts, which follows JSON Schema
+  // semantics (strict equality) because it must agree with the AJV validator.
   if ("const" in condition.schema) {
     if (Array.isArray(value)) {
       return value.includes(condition.schema.const);
