@@ -154,12 +154,11 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Downloading key ${keyId} from Consumer Keychain with ID ${consumerKeychainId}`,
       );
 
-      const { data: key } =
-        await keychainProcessApi.getConsumerKeychainKeyByKeyId({
-          client: keychainProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          path: { consumerKeychainId, keyId },
-        });
+      const { data: key } = await keychainProcessApi.getConsumerKeychainKey({
+        client: keychainProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { consumerKeychainId, keyId },
+      });
 
       const pem = atob(key.encodedPem);
       const content = Buffer.from(pem, "utf-8");

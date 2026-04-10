@@ -189,7 +189,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
       ]);
 
-      const key = await consumerKeychainService.getConsumerKeychainKeyByKeyId(
+      const key = await consumerKeychainService.getConsumerKeychainKey(
         req.params.consumerKeychainId,
         unsafeBrandKeyId(req.params.keyId),
         ctx,
@@ -201,7 +201,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     schema: {
       description: "Retrieve a Consumer Keychain key by kid",
       headers: KnodiaServiceHeaders,
-      operationId: "getConsumerKeychainKeyByKeyId",
+      operationId: "getConsumerKeychainKey",
       params: API_ConsumerKeychainKeyPathParams,
       response: {
         200: API_KeychainKey.meta({
