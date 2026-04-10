@@ -71,7 +71,7 @@ function evaluateIfCondition(
     if (values[field] === undefined) return false;
   }
 
-  for (const [field, constraint] of Object.entries(ifClause.properties)) {
+  for (const [field, constraint] of Object.entries(ifClause.properties ?? {})) {
     const value = values[field];
     if (value === undefined) continue;
 

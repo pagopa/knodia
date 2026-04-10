@@ -27,7 +27,7 @@ export interface JsonSchema {
 }
 
 export interface JsonSchemaIfClause {
-  properties: Record<
+  properties?: Record<
     string,
     {
       const?: string;
