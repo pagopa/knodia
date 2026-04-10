@@ -41,7 +41,7 @@ export function toExpectAPI_Agreement(agreement: Agreement | API_Agreement) {
   };
 }
 
-function toExpectIsoOrNull(value: Date | string | null) {
+function toExpectIsoOrNull(value: Date | null | string) {
   if (value === null) return null;
   return typeof value === "string" ? value : value.toISOString();
 }
