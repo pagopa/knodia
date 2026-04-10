@@ -82,6 +82,9 @@ export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
     .uuid()
     .optional()
     .meta({ description: "Filter by E-service ID" }),
+  state: API_PurposeState.optional().meta({
+    description: "Filter by Purpose State",
+  }),
 });
 export type API_GetPurposesQueryParams = z.infer<
   typeof API_GetPurposesQueryParams

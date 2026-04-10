@@ -28,6 +28,16 @@ export function toAPI_Purpose(
   };
 }
 
+export function toK2KAPI_PurposeState(
+  state: API_PurposeState,
+): k2kGatewayApi.PurposeState {
+  return match(state)
+    .with("Active", () => "ACTIVE" as const)
+    .with("Suspended", () => "SUSPENDED" as const)
+    .with("Archived", () => "ARCHIVED" as const)
+    .exhaustive();
+}
+
 function toAPI_PurposeState(
   state: k2kGatewayApi.PurposeState,
 ): API_PurposeState {
