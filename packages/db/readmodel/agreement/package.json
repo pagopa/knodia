@@ -8,9 +8,7 @@
     "lint:autofix": "eslint . --fix",
     "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
     "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
-    "db:schema-normalize": "node ../../../../scripts/normalize-drizzle-output.ts",
-    "test": "pnpm -w test --project @knodia/db-readmodel-agreement",
-    "test:watch": "pnpm test --watch"
+    "db:schema-normalize": "node ../../../../scripts/normalize-drizzle-output.ts"
   },
   "dependencies": {
     "@knodia/agreement-models": "workspace:*",

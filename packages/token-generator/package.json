@@ -5,9 +5,7 @@
     "dev": "tsc --watch",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/token-generator",
-    "test:watch": "pnpm test --watch"
+    "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
     "@aws-sdk/client-kms": "catalog:",
