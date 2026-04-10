@@ -37,7 +37,8 @@ import {
   type PurposeProcessClient,
 } from "@knodia/purpose-process-client";
 
-import { config } from "../../config/config.ts";
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_EserviceSeed,
@@ -53,6 +54,7 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
+  config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
   pollingService: PollingService;
@@ -67,6 +69,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
   fastify,
   {
     agreementProcessClient,
+    config,
     eserviceProcessClient,
     fileManager,
     pollingService,
