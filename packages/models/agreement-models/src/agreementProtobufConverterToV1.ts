@@ -22,5 +22,7 @@ export const toAgreementV1 = (agreement: Agreement): AgreementV1 => ({
   ...agreement,
   createdAt: agreement.createdAt.getTime(),
   state: toAgreementStateV1(agreement.state),
+  suspendedByConsumerAt: agreement.suspendedByConsumerAt?.getTime(),
+  suspendedByProducerAt: agreement.suspendedByProducerAt?.getTime(),
   updatedAt: agreement.updatedAt.getTime(),
 });
