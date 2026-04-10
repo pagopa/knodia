@@ -40,6 +40,8 @@
     "./eventstore": "./src/eventstore.ts",
     "./kafka": "./src/testcontainers/kafka.ts",
     "./minio": "./src/testcontainers/minio.ts",
+    "./dynamodb": "./src/testcontainers/dynamodb.ts",
+    "./network": "./src/testcontainers/network.ts",
     "./readmodel": "./src/readmodel.ts",
     "./remoteResourceDb": "./src/remoteResourceDb.ts",
     "./types": "./src/models/types.ts",

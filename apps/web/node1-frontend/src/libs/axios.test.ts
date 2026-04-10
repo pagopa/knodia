@@ -2,12 +2,10 @@ import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  clearAllTokens,
+  clearAuthToken,
   getAuthToken,
-  getRefreshToken,
   redirectToLogout,
   setAuthToken,
-  setRefreshToken,
 } from "@/test/mocks/auth";
 import { server } from "@/test/msw/server";
 
@@ -40,7 +38,6 @@ function setupRefreshEndpoint(success: boolean) {
     http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
       if (success) {
         return HttpResponse.json({
-          refreshToken: "new-refresh-token",
           uiSessionToken: "new-session-token",
         });
       }
@@ -53,7 +50,6 @@ describe("axios interceptors", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     getAuthToken.mockReturnValue(null);
-    getRefreshToken.mockReturnValue(null);
   });
 
   describe("request interceptor (addAuthHeader)", () => {
@@ -90,7 +86,6 @@ describe("axios interceptors", () => {
 
   describe("response interceptor (handleUnauthorized)", () => {
     it("retries with new token after successful refresh", async () => {
-      getRefreshToken.mockReturnValue("old-refresh");
       getAuthToken
         .mockReturnValueOnce("expired-token")
         .mockReturnValue("new-session-token");
@@ -102,11 +97,9 @@ describe("axios interceptors", () => {
 
       expect(response.data).toEqual({ result: "ok" });
       expect(setAuthToken).toHaveBeenCalledWith("new-session-token");
-      expect(setRefreshToken).toHaveBeenCalledWith("new-refresh-token");
     });
 
-    it("clears tokens and redirects to logout when refresh fails", async () => {
-      getRefreshToken.mockReturnValue("old-refresh");
+    it("clears token and redirects to logout when refresh fails", async () => {
       getAuthToken.mockReturnValue("expired-token");
 
       setupProtectedEndpoint([{ status: 401 }]);
@@ -114,19 +107,7 @@ describe("axios interceptors", () => {
 
       await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
 
-      expect(clearAllTokens).toHaveBeenCalledOnce();
-      expect(redirectToLogout).toHaveBeenCalledOnce();
-    });
-
-    it("clears tokens and redirects when no refresh token is available", async () => {
-      getRefreshToken.mockReturnValue(null);
-      getAuthToken.mockReturnValue("expired-token");
-
-      setupProtectedEndpoint([{ status: 401 }]);
-
-      await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
-
-      expect(clearAllTokens).toHaveBeenCalledOnce();
+      expect(clearAuthToken).toHaveBeenCalledOnce();
       expect(redirectToLogout).toHaveBeenCalledOnce();
     });
 
@@ -139,8 +120,7 @@ describe("axios interceptors", () => {
 
       await expect(axios.get(`${BFF_URL}/api/data`)).rejects.toThrow();
 
-      expect(getRefreshToken).not.toHaveBeenCalled();
-      expect(clearAllTokens).not.toHaveBeenCalled();
+      expect(clearAuthToken).not.toHaveBeenCalled();
     });
 
     it("does not intercept 401 on auth endpoints", async () => {
@@ -151,6 +131,9 @@ describe("axios interceptors", () => {
         http.post(`${BFF_URL}/auth/ui-session/refresh`, () =>
           HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
         ),
+        http.post(`${BFF_URL}/auth/logout`, () =>
+          HttpResponse.json({ message: "Unauthorized" }, { status: 401 }),
+        ),
       );
 
       await expect(
@@ -159,13 +142,13 @@ describe("axios interceptors", () => {
       await expect(
         axios.post(`${BFF_URL}/auth/ui-session/refresh`, {}),
       ).rejects.toThrow();
+      await expect(axios.post(`${BFF_URL}/auth/logout`, {})).rejects.toThrow();
 
-      expect(clearAllTokens).not.toHaveBeenCalled();
+      expect(clearAuthToken).not.toHaveBeenCalled();
       expect(redirectToLogout).not.toHaveBeenCalled();
     });
 
     it("coalesces concurrent refresh requests", async () => {
-      getRefreshToken.mockReturnValue("old-refresh");
       getAuthToken
         .mockReturnValueOnce("expired")
         .mockReturnValueOnce("expired")
@@ -197,7 +180,6 @@ describe("axios interceptors", () => {
         http.post(`${BFF_URL}/auth/ui-session/refresh`, () => {
           refreshCallCount++;
           return HttpResponse.json({
-            refreshToken: "new-refresh",
             uiSessionToken: "new-session-token",
           });
         }),

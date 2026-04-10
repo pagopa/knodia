@@ -308,6 +308,40 @@ services:
     volumes:
       - jwks-data:/usr/share/nginx/html:ro
 
+  dynamodb-local:
+    security_opt:
+      - no-new-privileges:true
+    image: amazon/dynamodb-local:3.3.0
+    container_name: knodia-dynamodb-local
+    ports:
+      - 8085:8000
+    command: -jar DynamoDBLocal.jar -inMemory -sharedDb
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -s -o /dev/null http://localhost:8000 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  dynamodb-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: amazon/aws-cli:2.34.25
+    container_name: knodia-dynamodb-setup
+    depends_on:
+      dynamodb-local:
+        condition: service_healthy
+    volumes:
+      - ../scripts/dynamo:/dynamo-scripts:ro
+      - ../dynamo-tables:/dynamo-tables:ro
+    environment:
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_DEFAULT_REGION: eu-south-1
+      DYNAMODB_CONNECTION_STRING: http://dynamodb-local:8000
+      TABLES_DIR: /dynamo-tables
+    entrypoint: ["/bin/bash", "/dynamo-scripts/setup-tables.sh"]
+
   local-cognito:
     security_opt:
       - no-new-privileges:true
