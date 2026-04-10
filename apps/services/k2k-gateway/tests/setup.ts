@@ -20,11 +20,15 @@ beforeAll(async () => {
       subject: "test-subject",
     },
     keychainProcessUrl: "http://localhost:0",
-    loggerConfig: { logLevel: "silent" },
+    loggerConfig: {
+      isProduction: false,
+      logLevel: "silent",
+      nodeEnv: "test",
+    },
     organizationProcessUrl: "http://localhost:0",
     pollingService: pollingServiceBuilder({
-      maxPollingAttempts: 1,
-      pollingDelayMs: 0,
+      defaultPollingMaxRetries: 1,
+      defaultPollingRetryDelay: 0,
     }),
     purposeProcessUrl: "http://localhost:0",
   });

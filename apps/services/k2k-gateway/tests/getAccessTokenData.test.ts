@@ -2,7 +2,7 @@ import { generateId } from "@knodia/common-models/ids";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getConsumerKeychainPurposeMock = vi.hoisted(() => vi.fn());
-const getConsumerKeychainKeyByKeyIdMock = vi.hoisted(() => vi.fn());
+const getConsumerKeychainKeyMock = vi.hoisted(() => vi.fn());
 const getConsumerKeychainMock = vi.hoisted(() => vi.fn());
 const getOrganizationMock = vi.hoisted(() => vi.fn());
 
@@ -23,7 +23,7 @@ vi.mock("@knodia/keychain-process-client", async (importOriginal) => {
     keychainProcessApi: {
       ...original.keychainProcessApi,
       getConsumerKeychain: getConsumerKeychainMock,
-      getConsumerKeychainKeyByKeyId: getConsumerKeychainKeyByKeyIdMock,
+      getConsumerKeychainKey: getConsumerKeychainKeyMock,
       getConsumerKeychainPurpose: getConsumerKeychainPurposeMock,
     },
   };
@@ -91,7 +91,7 @@ const mockOrganization = {
 
 beforeEach(() => {
   getConsumerKeychainPurposeMock.mockReset();
-  getConsumerKeychainKeyByKeyIdMock.mockReset();
+  getConsumerKeychainKeyMock.mockReset();
   getConsumerKeychainMock.mockReset();
   getOrganizationMock.mockReset();
 });
@@ -104,7 +104,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
 
   it("should return 200 with public key and consumer attributes on success", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
-    getConsumerKeychainKeyByKeyIdMock.mockResolvedValue(mockKeyResponse);
+    getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
     getOrganizationMock.mockResolvedValue({ data: mockOrganization.data });
 
@@ -124,7 +124,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
 
   it("should call keychain-process with correct parameters", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
-    getConsumerKeychainKeyByKeyIdMock.mockResolvedValue(mockKeyResponse);
+    getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
     getOrganizationMock.mockResolvedValue({ data: mockOrganization.data });
 
@@ -140,7 +140,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
       }),
     );
 
-    expect(getConsumerKeychainKeyByKeyIdMock).toHaveBeenCalledWith(
+    expect(getConsumerKeychainKeyMock).toHaveBeenCalledWith(
       expect.objectContaining({
         path: {
           consumerKeychainId: mockKeychainId,
@@ -166,7 +166,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     getConsumerKeychainPurposeMock.mockRejectedValue({
       response: { status: 404 },
     });
-    getConsumerKeychainKeyByKeyIdMock.mockResolvedValue(mockKeyResponse);
+    getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
 
     const response = await makeRequest();
@@ -175,7 +175,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
 
   it("should return 404 when key is not found", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
-    getConsumerKeychainKeyByKeyIdMock.mockRejectedValue({
+    getConsumerKeychainKeyMock.mockRejectedValue({
       response: { status: 404 },
     });
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
@@ -186,7 +186,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
 
   it("should return 404 when keychain is not found", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
-    getConsumerKeychainKeyByKeyIdMock.mockResolvedValue(mockKeyResponse);
+    getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockRejectedValue({
       response: { status: 404 },
     });

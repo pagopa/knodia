@@ -68,7 +68,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           query: { knodeId: callerKnodeId },
         }),
         // b. Get key by kid
-        keychainProcessApi.getConsumerKeychainKeyByKeyId({
+        keychainProcessApi.getConsumerKeychainKey({
           client: keychainProcessClient,
           headers,
           path: {
