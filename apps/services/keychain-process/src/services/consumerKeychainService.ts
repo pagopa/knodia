@@ -66,6 +66,7 @@ import {
 import { calculateKid, createJWK, decodeBase64Pem } from "../utils/crypto.ts";
 import {
   retrieveConsumerKeychain,
+  retrieveConsumerKeychainKey,
   retrieveConsumerKeychainPurpose,
 } from "../utils/readmodelUtils.ts";
 import {
@@ -239,13 +240,7 @@ export function consumerKeychainServiceBuilder(
         readmodelService,
       );
 
-      const key = consumerKeychain.data.keys.find((key) => key.kid === kid);
-
-      if (!key) {
-        throw keyNotFoundInKeychain(kid, consumerKeychainId);
-      }
-
-      return key;
+      return retrieveConsumerKeychainKey(consumerKeychain.data, kid);
     },
 
     async getConsumerKeychainKeys(
