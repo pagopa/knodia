@@ -162,7 +162,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     );
   });
 
-  it("should return 404 when purpose is not linked to keychain", async () => {
+  it("should return 500 when purpose is not linked to keychain", async () => {
     getConsumerKeychainPurposeMock.mockRejectedValue({
       response: { status: 404 },
     });
@@ -173,7 +173,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     expect(response.statusCode).toBe(500);
   });
 
-  it("should return 404 when key is not found", async () => {
+  it("should return 500 when key is not found", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
     getConsumerKeychainKeyMock.mockRejectedValue({
       response: { status: 404 },
@@ -184,7 +184,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     expect(response.statusCode).toBe(500);
   });
 
-  it("should return 404 when keychain is not found", async () => {
+  it("should return 500 when keychain is not found", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
     getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockRejectedValue({
