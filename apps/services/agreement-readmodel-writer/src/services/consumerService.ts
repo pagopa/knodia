@@ -24,5 +24,29 @@ export async function handleAgreementEvent(
         );
       },
     )
+    .with({ type: "AgreementSuspendedByConsumerV1" }, async (msg) => {
+      await writerService.upsertAgreement(
+        fromAgreementV1(msg.data.agreement),
+        message.version,
+      );
+    })
+    .with({ type: "AgreementSuspendedByProducerV1" }, async (msg) => {
+      await writerService.upsertAgreement(
+        fromAgreementV1(msg.data.agreement),
+        message.version,
+      );
+    })
+    .with({ type: "AgreementReactivatedByConsumerV1" }, async (msg) => {
+      await writerService.upsertAgreement(
+        fromAgreementV1(msg.data.agreement),
+        message.version,
+      );
+    })
+    .with({ type: "AgreementReactivatedByProducerV1" }, async (msg) => {
+      await writerService.upsertAgreement(
+        fromAgreementV1(msg.data.agreement),
+        message.version,
+      );
+    })
     .exhaustive();
 }
