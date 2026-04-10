@@ -599,6 +599,10 @@ export type KeychainMemberSeed = {
     userId: UserId;
 };
 
+export type CurrentUserConsumerKeychainMembership = {
+    isMember: boolean;
+};
+
 export type User = {
     email: string;
     id: UserId;
@@ -1453,6 +1457,45 @@ export type RemoveConsumerKeychainMemberResponses = {
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
+export type GetCurrentUserConsumerKeychainMembershipData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/members/me';
+};
+
+export type GetCurrentUserConsumerKeychainMembershipErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer keychain not found
+     */
+    404: Problem;
+};
+
+export type GetCurrentUserConsumerKeychainMembershipError = GetCurrentUserConsumerKeychainMembershipErrors[keyof GetCurrentUserConsumerKeychainMembershipErrors];
+
+export type GetCurrentUserConsumerKeychainMembershipResponses = {
+    /**
+     * Current user Consumer Keychain membership retrieved successfully
+     */
+    200: CurrentUserConsumerKeychainMembership;
+};
+
+export type GetCurrentUserConsumerKeychainMembershipResponse = GetCurrentUserConsumerKeychainMembershipResponses[keyof GetCurrentUserConsumerKeychainMembershipResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;

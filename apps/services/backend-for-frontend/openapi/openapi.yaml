@@ -1254,6 +1254,14 @@ components:
       required:
         - userId
       additionalProperties: false
+    CurrentUserConsumerKeychainMembership:
+      type: object
+      properties:
+        isMember:
+          type: boolean
+      required:
+        - isMember
+      additionalProperties: false
     User:
       type: object
       properties:
@@ -2574,6 +2582,61 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/members/me:
+    get:
+      operationId: getCurrentUserConsumerKeychainMembership
+      tags:
+        - consumerKeychain
+      description: Check whether the current user is a member of a Consumer Keychain
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "200":
+          description: Current user Consumer Keychain membership retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Current user Consumer Keychain membership retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/CurrentUserConsumerKeychainMembership"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/purposes:

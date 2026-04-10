@@ -1,6 +1,5 @@
 /* eslint-disable max-lines-per-function */
 import type { ConsumerKeychainId } from "@knodia/common-models/ids";
-import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -28,6 +27,7 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import { type AxiosResponse, isAxiosError } from "axios";
 import { z } from "zod";
 
 import { apiTags } from "../../models/apiTags.ts";
@@ -38,6 +38,7 @@ import {
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
+  API_CurrentUserConsumerKeychainMembership,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   type API_Keychain,
@@ -54,6 +55,7 @@ import {
   toAPI_KeychainKey,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
+import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -572,6 +574,70 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/members",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+
+      const { userId } = getUISessionAuthData(authData);
+      const { consumerKeychainId } = req.params;
+
+      logger.info(
+        { requestParams: req.params, userId },
+        `Checking current user membership for Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      /**
+       * First check if the Consumer Keychain exists so we are sure that the 404
+       * from getConsumerKeychainMember is due to the user not being a member,
+       * and not to the Consumer Keychain not existing.
+       */
+      await keychainProcessApi.getConsumerKeychain({
+        client: keychainProcessClient,
+        headers,
+        path: { consumerKeychainId },
+      });
+
+      try {
+        await keychainProcessApi.getConsumerKeychainMember({
+          client: keychainProcessClient,
+          headers,
+          path: { consumerKeychainId, userId },
+        });
+
+        res.send({ isMember: true });
+      } catch (error) {
+        if (isAxiosError(error) && error.response?.status === 404) {
+          res.send({ isMember: false });
+          return;
+        }
+
+        throw error;
+      }
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Check whether the current user is a member of a Consumer Keychain",
+      operationId: "getCurrentUserConsumerKeychainMembership",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        200: API_CurrentUserConsumerKeychainMembership.meta({
+          description:
+            "Current user Consumer Keychain membership retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/members/me",
   });
 
   fastify.route({
