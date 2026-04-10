@@ -1,4 +1,5 @@
 import { generateId } from "@knodia/common-models/ids";
+import { AxiosError, type AxiosResponse } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const getConsumerKeychainPurposeMock = vi.hoisted(() => vi.fn());
@@ -46,6 +47,21 @@ vi.mock("@knodia/organization-process-client", async (importOriginal) => {
 
 // Must import after vi.mock
 import { injectRequest } from "./utils.ts";
+
+function makeAxios404(title: string): AxiosError {
+  const error = new AxiosError("Request failed with status code 404");
+  error.response = {
+    data: {
+      correlationId: generateId(),
+      errors: [{ code: "000-0000", detail: title }],
+      status: 404,
+      title,
+    },
+    headers: {},
+    status: 404,
+  } as AxiosResponse;
+  return error;
+}
 
 const mockKeychainId = generateId();
 const mockKid = "test-kid-123";
@@ -162,37 +178,37 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     );
   });
 
-  it("should return 500 when purpose is not linked to keychain", async () => {
-    getConsumerKeychainPurposeMock.mockRejectedValue({
-      response: { status: 404 },
-    });
+  it("should return 404 when purpose is not linked to keychain", async () => {
+    getConsumerKeychainPurposeMock.mockRejectedValue(
+      makeAxios404("Consumer Keychain Purpose Not Found"),
+    );
     getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
 
     const response = await makeRequest();
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(404);
   });
 
-  it("should return 500 when key is not found", async () => {
+  it("should return 404 when key is not found", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
-    getConsumerKeychainKeyMock.mockRejectedValue({
-      response: { status: 404 },
-    });
+    getConsumerKeychainKeyMock.mockRejectedValue(
+      makeAxios404("Key Not Found in Keychain"),
+    );
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
 
     const response = await makeRequest();
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(404);
   });
 
-  it("should return 500 when keychain is not found", async () => {
+  it("should return 404 when keychain is not found", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
     getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
-    getConsumerKeychainMock.mockRejectedValue({
-      response: { status: 404 },
-    });
+    getConsumerKeychainMock.mockRejectedValue(
+      makeAxios404("Consumer Keychain Not Found"),
+    );
 
     const response = await makeRequest();
-    expect(response.statusCode).toBe(500);
+    expect(response.statusCode).toBe(404);
   });
 
   it("should return 400 for invalid request body", async () => {
