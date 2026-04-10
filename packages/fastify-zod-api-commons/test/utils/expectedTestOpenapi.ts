@@ -309,10 +309,45 @@ const expectedStatusGet = {
   },
 };
 
+const expectedTestCookiePost = {
+  description: "Test endpoint with cookie parameter",
+  operationId: "testCookie",
+  parameters: [
+    {
+      description: "HttpOnly session cookie",
+      in: "cookie",
+      name: "session",
+      required: false,
+      schema: { type: "string" },
+    },
+  ],
+  responses: {
+    "200": {
+      content: {
+        "application/json": {
+          schema: {
+            allOf: [
+              {
+                $ref: "#/components/schemas/Test",
+              },
+            ],
+            description: "OK",
+          },
+        },
+      },
+      description: "OK",
+    },
+  },
+  tags: [testTags.test],
+};
+
 export const expectedOpenapiPaths = {
   "/status": expectedStatusGet,
   "/test": {
     get: expectedTestGet,
     post: expectedTestPost,
+  },
+  "/test/cookie": {
+    post: expectedTestCookiePost,
   },
 };

@@ -8,7 +8,6 @@ import {
   getAuthToken,
   redirectToLogout,
   setAuthToken,
-  setRefreshToken,
 } from "@/test/mocks/auth";
 import { server } from "@/test/msw/server";
 
@@ -104,7 +103,6 @@ describe("AuthContext", () => {
 
     await waitFor(() => {
       expect(setAuthToken).toHaveBeenCalledWith("session-token");
-      expect(setRefreshToken).toHaveBeenCalledWith("refresh-token");
       expect(mockNavigate).toHaveBeenCalledWith({ replace: true, to: "/" });
     });
   });

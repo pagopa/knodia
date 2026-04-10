@@ -6,22 +6,12 @@ import { OrganizationId, UserId } from "@knodia/common-models/ids";
 import { NonEmptyArray } from "@knodia/common-models/types";
 import { unauthorizedError } from "@knodia/fastify-zod-api-commons/models";
 import { type TokenGenerator } from "@knodia/token-generator";
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 import z from "zod";
 
-import { config } from "../config/config.ts";
+import type { BffProcessConfig } from "../config/config.ts";
 
-// In-memory store of consumed refresh token JTIs to prevent reuse.
-// Entries are auto-purged once the token's exp has passed.
-const usedRefreshJtis = new Map<string, number>();
-
-const cleanupTimer = setInterval(() => {
-  const now = Math.floor(Date.now() / 1000);
-  for (const [jti, exp] of usedRefreshJtis) {
-    if (exp <= now) usedRefreshJtis.delete(jti);
-  }
-}, 600_000);
-cleanupTimer.unref();
+import { type RefreshTokenStore } from "./refreshTokenStore.ts";
 
 const CognitoPayload = z.object({
   "cognito:groups": NonEmptyArray(z.string()),
@@ -35,9 +25,14 @@ const ClaimsFromCognito = z.object({
   sub: UserId,
   username: z.string(),
 });
+
 type ClaimsFromCognito = z.infer<typeof ClaimsFromCognito>;
 
-export function authServiceBuilder(tokenGenerator: TokenGenerator) {
+export function authServiceBuilder(
+  config: BffProcessConfig,
+  tokenGenerator: TokenGenerator,
+  refreshTokenStore: RefreshTokenStore,
+) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
   const bffJwksSets = config.wellKnownUrls.map((url) =>
     createRemoteJWKSet(new URL(url)),
@@ -150,10 +145,13 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
       throw unauthorizedError("Invalid refresh token claims");
     }
 
-    if (usedRefreshJtis.has(parsed.data.jti)) {
+    const firstUse = await refreshTokenStore.consume(
+      parsed.data.jti,
+      parsed.data.exp,
+    );
+    if (!firstUse) {
       throw unauthorizedError("Refresh token already used");
     }
-    usedRefreshJtis.set(parsed.data.jti, parsed.data.exp);
 
     return ClaimsFromCognito.parse({
       organizationId: parsed.data.organizationId,
@@ -172,12 +170,24 @@ export function authServiceBuilder(tokenGenerator: TokenGenerator) {
       return generateTokenPairFromClaims(claims);
     },
 
-    async refreshUISessionTokenPair(refreshTokenJwt: string): Promise<{
+    async refreshUISessionTokenPair(refreshToken: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;
     }> {
-      const claims = await verifyRefreshToken(refreshTokenJwt);
+      const claims = await verifyRefreshToken(refreshToken);
       return generateTokenPairFromClaims(claims);
+    },
+
+    async revokeRefreshToken(refreshToken: string): Promise<void> {
+      try {
+        const payload = decodeJwt(refreshToken);
+        const parsed = UISessionRefreshTokenClaims.safeParse(payload);
+        if (parsed.success) {
+          await refreshTokenStore.revoke(parsed.data.jti, parsed.data.exp);
+        }
+      } catch {
+        // Best-effort: if the token is malformed, there is nothing to revoke
+      }
     },
   };
 }
