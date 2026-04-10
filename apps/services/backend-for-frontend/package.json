@@ -14,6 +14,7 @@
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
     "@knodia/spectral-config": "workspace:*",
+    "@knodia/test-commons": "workspace:*",
     "@knodia/typescript-config": "workspace:*",
     "@stoplight/spectral-cli": "catalog:",
     "@types/node": "catalog:",
@@ -23,6 +24,7 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "catalog:",
+    "@fastify/cookie": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/agreement-process-client": "workspace:*",
@@ -47,6 +49,7 @@
     "fastify-type-provider-zod": "catalog:",
     "jose": "catalog:",
     "pino-pretty": "catalog:",
+    "@aws-sdk/client-dynamodb": "catalog:",
     "zod": "catalog:"
   }
 }

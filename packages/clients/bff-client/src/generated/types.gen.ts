@@ -483,12 +483,7 @@ export type SessionRequest = {
 };
 
 export type SessionResponse = {
-    refreshToken: string;
     uiSessionToken: string;
-};
-
-export type RefreshRequest = {
-    refreshToken: string;
 };
 
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
@@ -635,6 +630,7 @@ export type PurposeSeed = {
 };
 
 export type ConsumerPurpose = {
+    dailyCalls: number;
     eservice: CompactEservice;
     id: string;
     /**
@@ -741,17 +737,13 @@ export type CreateSessionResponses = {
 export type CreateSessionResponse = CreateSessionResponses[keyof CreateSessionResponses];
 
 export type RefreshSessionData = {
-    body: RefreshRequest;
+    body?: never;
     path?: never;
     query?: never;
     url: '/auth/ui-session/refresh';
 };
 
 export type RefreshSessionErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
     /**
      * Unauthorized
      */
@@ -768,6 +760,22 @@ export type RefreshSessionResponses = {
 };
 
 export type RefreshSessionResponse = RefreshSessionResponses[keyof RefreshSessionResponses];
+
+export type LogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/logout';
+};
+
+export type LogoutResponses = {
+    /**
+     * Logged out successfully
+     */
+    204: void;
+};
+
+export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
@@ -1758,6 +1766,10 @@ export type GetConsumerPurposesData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
     };
     url: '/consumer/purposes';
 };
