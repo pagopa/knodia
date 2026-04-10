@@ -211,10 +211,27 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     expect(response.statusCode).toBe(404);
   });
 
-  it("should return 400 for invalid request body", async () => {
+  it.each([
+    { body: {}, testCase: "empty body" },
+    { body: { kid: mockKid }, testCase: "missing purposeId" },
+    { body: { purposeId: mockPurposeId }, testCase: "missing kid" },
+    { body: { kid: mockKid, purposeId: "not-a-uuid" }, testCase: "invalid purposeId" },
+    { body: { kid: mockKid, purposeId: mockPurposeId, extra: "field" }, testCase: "extra property" },
+  ])(
+    "should return 400 for invalid request body: $testCase",
+    async ({ body }) => {
+      const response = await injectRequest()
+        .post(`/consumerKeychains/${mockKeychainId}/accessTokenData`)
+        .payload(body);
+
+      expect(response.statusCode).toBe(400);
+    },
+  );
+
+  it("should return 400 for invalid keychainId path param", async () => {
     const response = await injectRequest()
-      .post(`/consumerKeychains/${mockKeychainId}/accessTokenData`)
-      .payload({ invalid: "body" });
+      .post("/consumerKeychains/not-a-uuid/accessTokenData")
+      .payload({ kid: mockKid, purposeId: mockPurposeId });
 
     expect(response.statusCode).toBe(400);
   });

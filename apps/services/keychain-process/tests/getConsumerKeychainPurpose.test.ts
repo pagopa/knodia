@@ -94,4 +94,21 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes/:purposeId (getCon
       .query({ knodeId: wrongKnodeId });
     expect(response.statusCode).toBe(404);
   });
+
+  it.each([
+    { params: { keychainId: "not-a-uuid", purposeId: mockPurpose.purpose.id }, query: { knodeId: mockPurpose.purpose.knodeId }, testCase: "invalid keychainId" },
+    { params: { keychainId: consumerKeychain.id, purposeId: "not-a-uuid" }, query: { knodeId: mockPurpose.purpose.knodeId }, testCase: "invalid purposeId" },
+    { params: { keychainId: consumerKeychain.id, purposeId: mockPurpose.purpose.id }, query: { knodeId: "InvalidKnode" }, testCase: "invalid knodeId" },
+    { params: { keychainId: consumerKeychain.id, purposeId: mockPurpose.purpose.id }, query: {}, testCase: "missing knodeId" },
+  ])(
+    "should return 400 for invalid parameters: $testCase",
+    async ({ params, query }) => {
+      const response = await injectAppRequest(allowedTestTokens[0]!)
+        .get(
+          `/consumerKeychains/${params.keychainId}/purposes/${params.purposeId}`,
+        )
+        .query(query);
+      expect(response.statusCode).toBe(400);
+    },
+  );
 });

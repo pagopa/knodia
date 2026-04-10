@@ -312,7 +312,7 @@ export function consumerKeychainServiceBuilder(
       { logger }: AuthorizedContext<InternalAuthData>,
     ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
       logger.info(
-        `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) of Consumer Keychain ${consumerKeychainId}`,
+        `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) linked to Consumer Keychain ${consumerKeychainId}`,
       );
 
       await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
