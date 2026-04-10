@@ -28,6 +28,22 @@ export const API_AgreementSeed = z
   .meta({ id: "AgreementSeed" });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
+export const API_SuspendAgreementBody = z
+  .strictObject({
+    suspendedBy: z.enum(["consumer", "producer"]),
+  })
+  .meta({ id: "SuspendAgreementBody" });
+export type API_SuspendAgreementBody = z.infer<typeof API_SuspendAgreementBody>;
+
+export const API_ReactivateAgreementBody = z
+  .strictObject({
+    reactivatedBy: z.enum(["consumer", "producer"]),
+  })
+  .meta({ id: "ReactivateAgreementBody" });
+export type API_ReactivateAgreementBody = z.infer<
+  typeof API_ReactivateAgreementBody
+>;
+
 export const API_Agreement = z
   .strictObject({
     attributes: z.array(API_Attribute),

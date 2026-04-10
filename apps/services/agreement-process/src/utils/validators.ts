@@ -6,7 +6,7 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
-import { AgreementState } from "@knodia/agreement-models";
+import { type Agreement, AgreementState } from "@knodia/agreement-models";
 import {
   type AttributeId,
   hasAllRequiredAttributes,
@@ -21,6 +21,8 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   agreementAlreadyExists,
+  agreementNotInReactivatableState,
+  agreementNotInSuspendableState,
   consumerMissingRequiredAttributes,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
@@ -34,6 +36,69 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
   EserviceVersionState.enum.Active,
   EserviceVersionState.enum.Suspended,
 ];
+
+export function assertAgreementCanBeReactivatedBy(
+  agreement: Agreement,
+  reactivatedBy: "consumer" | "producer",
+): void {
+  const ownSuspensionAt =
+    reactivatedBy === "producer"
+      ? agreement.suspendedByProducerAt
+      : agreement.suspendedByConsumerAt;
+
+  if (
+    agreement.state !== AgreementState.enum.Suspended ||
+    ownSuspensionAt === null
+  ) {
+    throw agreementNotInReactivatableState({
+      agreementId: agreement.id,
+      reactivatedBy,
+      state: agreement.state,
+      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+      suspendedByProducerAt: agreement.suspendedByProducerAt,
+    });
+  }
+}
+
+export function assertAgreementCanBeSuspendedBy(
+  agreement: Agreement,
+  suspendedBy: "consumer" | "producer",
+): void {
+  if (agreement.state === AgreementState.enum.Archived) {
+    throw agreementNotInSuspendableState({
+      agreementId: agreement.id,
+      state: agreement.state,
+      suspendedBy,
+      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+      suspendedByProducerAt: agreement.suspendedByProducerAt,
+    });
+  }
+
+  const alreadySuspendedByActor =
+    suspendedBy === "producer"
+      ? agreement.suspendedByProducerAt !== null
+      : agreement.suspendedByConsumerAt !== null;
+
+  if (alreadySuspendedByActor) {
+    throw agreementNotInSuspendableState({
+      agreementId: agreement.id,
+      state: agreement.state,
+      suspendedBy,
+      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+      suspendedByProducerAt: agreement.suspendedByProducerAt,
+    });
+  }
+
+  if (suspendedBy === "consumer" && agreement.suspendedByProducerAt !== null) {
+    throw agreementNotInSuspendableState({
+      agreementId: agreement.id,
+      state: agreement.state,
+      suspendedBy,
+      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+      suspendedByProducerAt: agreement.suspendedByProducerAt,
+    });
+  }
+}
 
 export const assertEserviceVersionAllowsAgreementCreation = (
   eservice: Eservice,

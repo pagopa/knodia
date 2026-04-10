@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -20,6 +21,8 @@ import {
   API_Agreements,
   API_AgreementSeed,
   API_GetAgreementsQueryParams,
+  API_ReactivateAgreementBody,
+  API_SuspendAgreementBody,
 } from "../models/api.ts";
 import { toAPI_Agreement } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -158,5 +161,97 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/agreements/:agreementId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.suspendAgreement(
+        {
+          agreementId: req.params.agreementId,
+          suspendedBy: req.body.suspendedBy,
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      body: API_SuspendAgreementBody,
+      description: "Suspend an Agreement",
+      headers: KnodiaServiceHeaders,
+      operationId: "suspendAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement suspended successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/suspend",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.reactivateAgreement(
+        {
+          agreementId: req.params.agreementId,
+          reactivatedBy: req.body.reactivatedBy,
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      body: API_ReactivateAgreementBody,
+      description: "Reactivate an Agreement",
+      headers: KnodiaServiceHeaders,
+      operationId: "reactivateAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement reactivated successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/reactivate",
   });
 };

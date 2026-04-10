@@ -1,0 +1,25 @@
+meta {
+  name: Suspend Agreement
+  type: http
+}
+
+post {
+  url: {{host-agreement-process}}/agreements/:agreementId/suspend
+  body: json
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+body:json {
+  {
+    "suspendedBy": "producer"
+  }
+}

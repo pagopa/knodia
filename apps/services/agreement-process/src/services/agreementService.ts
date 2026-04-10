@@ -26,12 +26,18 @@ import type { ReadmodelService } from "./readmodelService.ts";
 import {
   createAgreementActivatedV1Event,
   createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
+  createAgreementReactivatedByConsumerV1Event,
+  createAgreementReactivatedByProducerV1Event,
+  createAgreementSuspendedByConsumerV1Event,
+  createAgreementSuspendedByProducerV1Event,
 } from "../models/agreementEventFactory.ts";
 import {
   retrieveAgreement,
   retrieveEservice,
 } from "../utils/readmodelUtils.ts";
 import {
+  assertAgreementCanBeReactivatedBy,
+  assertAgreementCanBeSuspendedBy,
   assertConsumerHasRequiredAttributes,
   assertEserviceVersionAllowsAgreementCreation,
   assertEserviceVersionIsLatest,
@@ -146,6 +152,95 @@ export function agreementServiceBuilder(
       logger.info({ requestQuery }, "Getting Agreements with query params");
 
       return await readmodelService.getAgreements(requestQuery);
+    },
+    async reactivateAgreement(
+      {
+        agreementId,
+        reactivatedBy,
+      }: {
+        agreementId: AgreementId;
+        reactivatedBy: "consumer" | "producer";
+      },
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<Agreement>> {
+      logger.info(`Reactivating Agreement ${agreementId} by ${reactivatedBy}`);
+
+      const { data: agreement, metadata } = await retrieveAgreement(
+        agreementId,
+        readmodelService,
+      );
+
+      assertAgreementCanBeReactivatedBy(agreement, reactivatedBy);
+
+      const now = new Date();
+      const suspendedByConsumerAt =
+        reactivatedBy === "consumer" ? null : agreement.suspendedByConsumerAt;
+      const suspendedByProducerAt =
+        reactivatedBy === "producer" ? null : agreement.suspendedByProducerAt;
+      const nextState: Agreement["state"] =
+        suspendedByConsumerAt === null && suspendedByProducerAt === null
+          ? "Active"
+          : "Suspended";
+
+      const updatedAgreement: Agreement = {
+        ...agreement,
+        state: nextState,
+        suspendedByConsumerAt,
+        suspendedByProducerAt,
+        updatedAt: now,
+      };
+
+      const eventFactory =
+        reactivatedBy === "producer"
+          ? createAgreementReactivatedByProducerV1Event
+          : createAgreementReactivatedByConsumerV1Event;
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        eventFactory(updatedAgreement, metadata.version, correlationId),
+      );
+
+      return { data: updatedAgreement, metadata: { version: newVersion } };
+    },
+    async suspendAgreement(
+      {
+        agreementId,
+        suspendedBy,
+      }: {
+        agreementId: AgreementId;
+        suspendedBy: "consumer" | "producer";
+      },
+      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<Agreement>> {
+      logger.info(`Suspending Agreement ${agreementId} by ${suspendedBy}`);
+
+      const { data: agreement, metadata } = await retrieveAgreement(
+        agreementId,
+        readmodelService,
+      );
+
+      assertAgreementCanBeSuspendedBy(agreement, suspendedBy);
+
+      const now = new Date();
+      const updatedAgreement: Agreement = {
+        ...agreement,
+        state: "Suspended",
+        suspendedByConsumerAt:
+          suspendedBy === "consumer" ? now : agreement.suspendedByConsumerAt,
+        suspendedByProducerAt:
+          suspendedBy === "producer" ? now : agreement.suspendedByProducerAt,
+        updatedAt: now,
+      };
+
+      const eventFactory =
+        suspendedBy === "producer"
+          ? createAgreementSuspendedByProducerV1Event
+          : createAgreementSuspendedByConsumerV1Event;
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        eventFactory(updatedAgreement, metadata.version, correlationId),
+      );
+
+      return { data: updatedAgreement, metadata: { version: newVersion } };
     },
   };
 }

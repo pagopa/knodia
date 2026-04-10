@@ -76,6 +76,14 @@ export type AgreementSeed = {
     eserviceVersionId: string;
 };
 
+export type SuspendAgreementBody = {
+    suspendedBy: 'consumer' | 'producer';
+};
+
+export type ReactivateAgreementBody = {
+    reactivatedBy: 'consumer' | 'producer';
+};
+
 export type Agreement = {
     attributes: Array<Attribute>;
     consumer: AgreementConsumer;
@@ -270,3 +278,101 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type SuspendAgreementData = {
+    body: SuspendAgreementBody;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/suspend';
+};
+
+export type SuspendAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendAgreementError = SuspendAgreementErrors[keyof SuspendAgreementErrors];
+
+export type SuspendAgreementResponses = {
+    /**
+     * Agreement suspended successfully
+     */
+    200: Agreement;
+};
+
+export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
+
+export type ReactivateAgreementData = {
+    body: ReactivateAgreementBody;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/reactivate';
+};
+
+export type ReactivateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateAgreementError = ReactivateAgreementErrors[keyof ReactivateAgreementErrors];
+
+export type ReactivateAgreementResponses = {
+    /**
+     * Agreement reactivated successfully
+     */
+    200: Agreement;
+};
+
+export type ReactivateAgreementResponse = ReactivateAgreementResponses[keyof ReactivateAgreementResponses];
