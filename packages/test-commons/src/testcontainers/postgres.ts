@@ -1,12 +1,7 @@
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
 import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { fileURLToPath } from "node:url";
-import {
-  GenericContainer,
-  Network,
-  type StartedNetwork,
-  Wait,
-} from "testcontainers";
+import { GenericContainer, type StartedNetwork, Wait } from "testcontainers";
 
 const TEST_POSTGRES_DB_PORT = 5432;
 const TEST_POSTGRES_IMAGE = "postgres:17.7";
@@ -97,9 +92,7 @@ export async function runTestFlywayMigrations({
   });
 }
 
-export async function setupPostgresTestContainer() {
-  const network = await new Network().start();
-
+export async function setupPostgresTestContainer(network: StartedNetwork) {
   const container = await new PostgreSqlContainer(TEST_POSTGRES_IMAGE)
     .withNetwork(network)
     .withNetworkAliases("postgres")
@@ -113,7 +106,7 @@ export async function setupPostgresTestContainer() {
   const host = container.getHost();
   const connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${host}:${port}`;
 
-  return { connectionString, container, network };
+  return { connectionString, container };
 }
 
 async function runFlywayContainer({
