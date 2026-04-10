@@ -30,7 +30,6 @@
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
     "jose": "catalog:",
-    "pino": "catalog:",
     "pino-pretty": "catalog:",
     "zod": "catalog:",
     "zod-validation-error": "catalog:"
