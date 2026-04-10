@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
     "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
-    "test": "pnpm -w test --project @knodia/k2k-gateway"
+    "test": "pnpm -w test --project @knodia/k2k-gateway",
+    "test:watch": "pnpm test --watch"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
