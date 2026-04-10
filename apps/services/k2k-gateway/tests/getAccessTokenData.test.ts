@@ -215,8 +215,14 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     { body: {}, testCase: "empty body" },
     { body: { kid: mockKid }, testCase: "missing purposeId" },
     { body: { purposeId: mockPurposeId }, testCase: "missing kid" },
-    { body: { kid: mockKid, purposeId: "not-a-uuid" }, testCase: "invalid purposeId" },
-    { body: { kid: mockKid, purposeId: mockPurposeId, extra: "field" }, testCase: "extra property" },
+    {
+      body: { kid: mockKid, purposeId: "not-a-uuid" },
+      testCase: "invalid purposeId",
+    },
+    {
+      body: { extra: "field", kid: mockKid, purposeId: mockPurposeId },
+      testCase: "extra property",
+    },
   ])(
     "should return 400 for invalid request body: $testCase",
     async ({ body }) => {
