@@ -10,7 +10,6 @@ const { db: readmodelDb, pool: readmodelPool } =
 
 const logger = createLogger({
   config,
-  serviceName: "keychain-readmodel-writer",
 });
 
 await runConsumer(

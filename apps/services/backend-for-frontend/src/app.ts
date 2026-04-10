@@ -90,7 +90,6 @@ export function buildAppFromConfig(
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "backend-for-frontend",
   });
 
   const pollingService = pollingServiceBuilder(config);
