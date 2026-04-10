@@ -96,10 +96,32 @@ describe("GET /consumerKeychains/:consumerKeychainId/purposes/:purposeId (getCon
   });
 
   it.each([
-    { params: { keychainId: "not-a-uuid", purposeId: mockPurpose.purpose.id }, query: { knodeId: mockPurpose.purpose.knodeId }, testCase: "invalid keychainId" },
-    { params: { keychainId: consumerKeychain.id, purposeId: "not-a-uuid" }, query: { knodeId: mockPurpose.purpose.knodeId }, testCase: "invalid purposeId" },
-    { params: { keychainId: consumerKeychain.id, purposeId: mockPurpose.purpose.id }, query: { knodeId: "InvalidKnode" }, testCase: "invalid knodeId" },
-    { params: { keychainId: consumerKeychain.id, purposeId: mockPurpose.purpose.id }, query: {} as Record<string, string>, testCase: "missing knodeId" },
+    {
+      params: { keychainId: "not-a-uuid", purposeId: mockPurpose.purpose.id },
+      query: { knodeId: mockPurpose.purpose.knodeId },
+      testCase: "invalid keychainId",
+    },
+    {
+      params: { keychainId: consumerKeychain.id, purposeId: "not-a-uuid" },
+      query: { knodeId: mockPurpose.purpose.knodeId },
+      testCase: "invalid purposeId",
+    },
+    {
+      params: {
+        keychainId: consumerKeychain.id,
+        purposeId: mockPurpose.purpose.id,
+      },
+      query: { knodeId: "InvalidKnode" },
+      testCase: "invalid knodeId",
+    },
+    {
+      params: {
+        keychainId: consumerKeychain.id,
+        purposeId: mockPurpose.purpose.id,
+      },
+      query: {} as Record<string, string>,
+      testCase: "missing knodeId",
+    },
   ])(
     "should return 400 for invalid parameters: $testCase",
     async ({ params, query }) => {

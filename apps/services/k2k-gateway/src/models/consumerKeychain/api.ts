@@ -22,7 +22,7 @@ export const API_ConsumerKeychainIdPathParam = z.strictObject({
   }),
 });
 
-export const API_PublicKeyForVerification = z
+const API_PublicKeyForVerification = z
   .strictObject({
     algorithm: z.string(),
     encodedPem: z.string(),
