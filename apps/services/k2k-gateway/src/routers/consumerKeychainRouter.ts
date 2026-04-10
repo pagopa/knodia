@@ -53,11 +53,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      // Phase 1: parallel calls to keychain-process
-      // callerKnodeId identifies the Producer Knode calling this Consumer Knode.
-      // Currently hardcoded in config; will be set automatically by mutual TLS.
       const [, keyResponse, keychainResponse] = await Promise.all([
-        // a. Verify purpose is linked to keychain
+        // Verify purpose is linked to keychain, we just need a 200 and discard the return value 
         keychainProcessApi.getConsumerKeychainPurpose({
           client: keychainProcessClient,
           headers,
@@ -67,7 +64,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           },
           query: { knodeId: callerKnodeId },
         }),
-        // b. Get key by kid
         keychainProcessApi.getConsumerKeychainKey({
           client: keychainProcessClient,
           headers,
@@ -76,7 +72,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
             keyId: req.body.kid,
           },
         }),
-        // c. Get keychain for ownerId
         keychainProcessApi.getConsumerKeychain({
           client: keychainProcessClient,
           headers,
@@ -84,7 +79,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         }),
       ]);
 
-      // Phase 2: get consumer organization attributes
       const { data: organization } =
         await organizationProcessApi.getOrganization({
           client: organizationProcessClient,
