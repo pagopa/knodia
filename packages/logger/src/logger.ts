@@ -1,5 +1,3 @@
-import type { ServiceName } from "@knodia/common-models/services";
-
 import { type Logger, type LoggerOptions, pino } from "pino";
 
 import type { LoggerConfig } from "./config.ts";
@@ -16,7 +14,7 @@ const TRANSPORT_TARGET = new URL("transport.mts", import.meta.url).pathname;
 const buildLoggerEnvOptions = (
   isProduction: boolean,
 ): Partial<LoggerOptions> =>
-  isProduction
+  !isProduction
     ? {
         timestamp: false,
         transport: {
@@ -45,15 +43,11 @@ const buildLoggerEnvOptions = (
         },
       };
 
-export const createLoggerOptions = (
-  config: LoggerConfig,
-  serviceName: ServiceName,
-): LoggerOptions => ({
+export const createLoggerOptions = (config: LoggerConfig): LoggerOptions => ({
   formatters: {
     bindings: () => ({}), // Removes pid, hostname and name from logs
   },
   level: config.logLevel,
-  name: serviceName,
   redact: DEFAULT_REDACT_PATHS,
   ...buildLoggerEnvOptions(config.isProduction),
 });
@@ -61,10 +55,7 @@ export const createLoggerOptions = (
 export const createLogger = ({
   config,
   loggerMetadata,
-  serviceName,
 }: {
   config: LoggerConfig;
   loggerMetadata?: LoggerMetadata;
-  serviceName: ServiceName;
-}): Logger =>
-  pino(createLoggerOptions(config, serviceName)).child(loggerMetadata ?? {});
+}): Logger => pino(createLoggerOptions(config)).child(loggerMetadata ?? {});

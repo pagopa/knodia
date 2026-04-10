@@ -1,6 +1,5 @@
 import { FastifyError } from "@fastify/error";
 import { requestContext } from "@fastify/request-context";
-import { HTTPServiceName } from "@knodia/common-models/services";
 import { type AxiosError, isAxiosError } from "axios";
 import {
   hasZodFastifySchemaValidationErrors,
@@ -22,7 +21,10 @@ import {
   responseSerializationError,
   zodFastifySchemaValidationError,
 } from "../models/errors/errors.ts";
-import { serviceErrorCode } from "../models/errors/services.ts";
+import {
+  HTTPServiceName,
+  serviceErrorCode,
+} from "../models/errors/services.ts";
 
 const { HTTP_STATUS_INTERNAL_SERVER_ERROR } = constants;
 

@@ -89,7 +89,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "backend-for-frontend",
   });
 
   // Public routes (no JWT required)
