@@ -9,7 +9,10 @@ import {
   ClientAssertionHeader,
   ClientAssertionPayload,
 } from "../models/clientAssertion.ts";
-import { ALLOWED_CLIENT_ASSERTION_ALGORITHM } from "../models/constants.ts";
+import {
+  ALLOWED_CLIENT_ASSERTION_ALGORITHM,
+  ALLOWED_CLIENT_ASSERTION_TYP,
+} from "../models/constants.ts";
 import {
   algNotFound,
   algNotSupported,
@@ -27,6 +30,8 @@ import {
   jtiNotFound,
   kidNotFound,
   subNotFound,
+  typNotFound,
+  typNotSupported,
 } from "../models/errors.ts";
 import {
   failedValidation,
@@ -36,7 +41,7 @@ import {
 
 export function checkAlg(
   alg: ProtectedHeaderParameters["alg"],
-): ValidationResult<string> {
+): ValidationResult<typeof ALLOWED_CLIENT_ASSERTION_ALGORITHM> {
   if (!alg) {
     return failedValidation([algNotFound()]);
   }
@@ -71,16 +76,10 @@ export function checkClientAssertionStrictClaims(
   if (!headerParseResult.success || !payloadParseResult.success) {
     return failedValidation([
       !headerParseResult.success
-        ? clientAssertionInvalidClaims(
-            headerParseResult.error.message,
-            "header",
-          )
+        ? clientAssertionInvalidClaims(headerParseResult.error, "header")
         : undefined,
       !payloadParseResult.success
-        ? clientAssertionInvalidClaims(
-            payloadParseResult.error.message,
-            "payload",
-          )
+        ? clientAssertionInvalidClaims(payloadParseResult.error, "payload")
         : undefined,
     ]);
   }
@@ -176,4 +175,17 @@ export function checkSub(
   }
 
   return successfulValidation(subParseResult.data);
+}
+
+export function checkTyp(
+  typ: ProtectedHeaderParameters["typ"],
+): ValidationResult<typeof ALLOWED_CLIENT_ASSERTION_TYP> {
+  if (!typ) {
+    return failedValidation([typNotFound()]);
+  }
+
+  if (typ === ALLOWED_CLIENT_ASSERTION_TYP) {
+    return successfulValidation(typ);
+  }
+  return failedValidation([typNotSupported(typ)]);
 }

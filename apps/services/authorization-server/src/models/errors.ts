@@ -1,3 +1,5 @@
+import type { ZodError } from "zod";
+
 import {
   type ApiError,
   type CommonErrorCodes,
@@ -5,6 +7,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/models";
 import { makeApiProblemBuilder } from "@knodia/fastify-zod-api-commons/problemBuilder";
 import { constants } from "http2";
+import { fromZodError } from "zod-validation-error";
 
 const { HTTP_STATUS_BAD_REQUEST } = constants;
 
@@ -28,6 +31,8 @@ const errorCodes = {
   INVALID_ISS: "0016",
   CLIENT_ASSERTION_INVALID_CLAIMS: "0017",
   INVALID_CLIENT_ASSERTION_FORMAT: "0018",
+  TYP_NOT_FOUND: "0019",
+  TYP_NOT_SUPPORTED: "0020",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -71,21 +76,23 @@ export function clientAssertionClaimsValidationError(
   consumerKeychainId: string,
   validationErrors: ApiError<ErrorCodes>[],
 ) {
+  const errorDetails = `${validationErrors.map((e) => e.errors.map((err) => err.detail).join("; ")).join("; ")}`;
+
   return createApiError<ErrorCodes>({
     code: "CLIENT_ASSERTION_CLAIMS_VALIDATION_ERROR",
-    detail: `Client Assertion claims validation failed for Consumer Keychain ${consumerKeychainId}. Reasons: ${validationErrors.map((e) => `${e.message}`).join("; ")}`,
+    detail: `Client Assertion claims validation failed for Consumer Keychain ${consumerKeychainId}. Reasons: ${errorDetails}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Client Assertion claims validation error",
   });
 }
 
 export function clientAssertionInvalidClaims(
-  error: string,
+  error: ZodError,
   headerOrPayload: "header" | "payload",
 ) {
   return createApiError<ErrorCodes>({
     code: "CLIENT_ASSERTION_INVALID_CLAIMS",
-    detail: `Invalid claims in Client Assertion ${headerOrPayload}. Error: ${error}`,
+    detail: `Invalid claims in Client Assertion ${headerOrPayload}. Error: ${fromZodError(error)}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: `Invalid claims in Client Assertion ${headerOrPayload}`,
   });
@@ -211,5 +218,24 @@ export function subNotFound() {
       "The 'sub' claim is required but was not found in the Client Assertion",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Missing 'sub' claim",
+  });
+}
+
+export function typNotFound() {
+  return createApiError<ErrorCodes>({
+    code: "TYP_NOT_FOUND",
+    detail:
+      "The 'typ' header is required but was not found in the Client Assertion",
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Missing 'typ' header",
+  });
+}
+
+export function typNotSupported(typ: string) {
+  return createApiError<ErrorCodes>({
+    code: "TYP_NOT_SUPPORTED",
+    detail: `The 'typ' header value '${typ}' is not supported. Only 'JWT' is supported.`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Unsupported 'typ' header value",
   });
 }

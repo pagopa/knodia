@@ -10,6 +10,7 @@
     "test:watch": "pnpm test --watch"
   },
   "exports": {
+    "./algorithms": "./src/algorithms.ts",
     "./api": "./src/api/api.ts",
     "./internalApi": "./src/api/internalApi.ts",
     "./auth": "./src/auth/index.ts",
