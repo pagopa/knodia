@@ -3,7 +3,12 @@ import { type Logger, type LoggerOptions, pino } from "pino";
 import type { LoggerConfig } from "./config.ts";
 import type { LoggerMetadata } from "./models/models.ts";
 
-const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
+const DEFAULT_REDACT_PATHS: string[] = [
+  "req.headers.authorization",
+  "req.host",
+  "req.remoteAddress",
+  "req.remotePort",
+];
 const TRANSPORT_TARGET = new URL("transport.ts", import.meta.url).pathname;
 /**
  * Builds logger options based on the environment
@@ -48,7 +53,7 @@ export const createLoggerOptions = (config: LoggerConfig): LoggerOptions => ({
     bindings: () => ({}), // Removes pid, hostname and name from logs
   },
   level: config.logLevel,
-  redact: DEFAULT_REDACT_PATHS,
+  redact: { paths: DEFAULT_REDACT_PATHS, remove: true },
   ...buildLoggerEnvOptions(config.isProduction),
 });
 
