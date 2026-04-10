@@ -11,6 +11,7 @@ beforeAll(async () => {
   app = buildApp({
     agreementProcessUrl: "http://localhost:0",
     callerKnodeId: "Lynx",
+    eserviceInterfacesS3Bucket: "test-bucket",
     eserviceProcessUrl: "http://localhost:0",
     internalJwt: {
       audience: "test-audience",

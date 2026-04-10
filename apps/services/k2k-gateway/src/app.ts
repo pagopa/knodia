@@ -11,7 +11,7 @@ import { type PollingService, pollingServiceBuilder } from "@knodia/polling";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
-import { type K2KGatewayConfig } from "./config/config.ts";
+import type { K2KGatewayConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
@@ -23,6 +23,7 @@ import { purposeRouter } from "./routers/purposeRouter.ts";
 export function buildApp({
   agreementProcessUrl,
   callerKnodeId,
+  eserviceInterfacesS3Bucket,
   eserviceProcessUrl,
   internalJwt,
   keychainProcessUrl,
@@ -33,6 +34,7 @@ export function buildApp({
 }: {
   agreementProcessUrl: string;
   callerKnodeId: KnodeId;
+  eserviceInterfacesS3Bucket: string;
   eserviceProcessUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   keychainProcessUrl: string;
@@ -106,6 +108,7 @@ export function buildApp({
     tokenProvider,
   });
   app.register(eserviceRouter, {
+    eserviceInterfacesS3Bucket,
     eserviceProcessClient: clients.eserviceProcessClient,
     fileManager,
     tokenProvider,
@@ -134,6 +137,7 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
   const app = buildApp({
     agreementProcessUrl: config.agreementProcessUrl,
     callerKnodeId: config.callerKnodeId,
+    eserviceInterfacesS3Bucket: config.eserviceInterfacesS3Bucket,
     eserviceProcessUrl: config.eserviceProcessUrl,
     internalJwt: config.internalJwt,
     keychainProcessUrl: config.keychainProcessUrl,
