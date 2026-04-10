@@ -109,6 +109,26 @@ const extractResponseHeaders = (input: TransformInput): TransformInput => {
   return { ...input, schema: schemaRest };
 };
 
+/**
+ * Convert `cookies` Zod schemas into JSON Schema so that @fastify/swagger
+ * can generate OpenAPI cookie parameters.
+ *
+ * fastify-type-provider-zod only handles body, querystring, headers, params;
+ * cookies are passed through as raw Zod objects, which @fastify/swagger
+ * cannot resolve.
+ */
+const convertCookiesZodToJsonSchema = (
+  input: TransformInput,
+): TransformInput => {
+  const schema = input.schema as Record<string, unknown> | undefined;
+  if (schema?.["cookies"]) {
+    schema["cookies"] = z.toJSONSchema(schema["cookies"] as z.ZodType, {
+      target: OPENAPI_3_0_ZOD_TO_JSON_SCHEMA,
+    });
+  }
+  return input;
+};
+
 const applyTransformSteps = (
   input: TransformInput,
   steps: TransformStep[],
@@ -116,7 +136,11 @@ const applyTransformSteps = (
 
 export const zodToJsonSchemaTransform: typeof baseTransform = (input) =>
   baseTransform(
-    applyTransformSteps(input, [enforceOperationId, extractResponseHeaders]),
+    applyTransformSteps(input, [
+      enforceOperationId,
+      extractResponseHeaders,
+      convertCookiesZodToJsonSchema,
+    ]),
   );
 
 const ResponseEntryWithHeadersSchema = z.object({

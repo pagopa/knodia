@@ -86,7 +86,6 @@ export function buildApp({
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "remote-resources-manager",
   });
 
   // Public routes (no auth required)
