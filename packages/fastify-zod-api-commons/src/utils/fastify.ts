@@ -1,4 +1,3 @@
-import type { HTTPServiceName } from "@knodia/common-models/services";
 import type { LoggerConfig } from "@knodia/logger/config";
 
 import fastifyRequestContext, {
@@ -24,12 +23,10 @@ export const createFastifyApp = ({
   fastifyOptions,
   loggerConfig,
   makeApiProblem,
-  serviceName,
 }: {
   fastifyOptions: FastifyRegisterOptions<OpenapiZodPluginOptions>;
   loggerConfig: LoggerConfig;
   makeApiProblem: MakeApiProblemFn;
-  serviceName: HTTPServiceName;
 }) => {
   const app = Fastify({
     // Always generate a fresh ID — never read from the incoming header.
@@ -37,23 +34,18 @@ export const createFastifyApp = ({
     // inject a correlation ID. Internal services that need the header use
     // requireCorrelationIdHeaderPlugin, which overrides the generated value.
     genReqId: () => generateId(),
-    logger: createLoggerOptions(loggerConfig, serviceName),
+    logger: createLoggerOptions(loggerConfig),
+    requestIdLogLabel: "correlationId",
   });
 
   // openapiPlugin must be registered before any routes to ensure proper route discovery
   app.register(openapiZodPlugin, fastifyOptions);
 
   app.register(fastifyRequestContext, {
-    defaultStoreValues: (req) => {
-      const correlationId = unsafeBrandId<CorrelationId>(req.id);
-      const logger = req.log.child({ correlationId });
-      req.log = logger;
-
-      return {
-        correlationId,
-        logger,
-      };
-    },
+    defaultStoreValues: (req) => ({
+      correlationId: unsafeBrandId<CorrelationId>(req.id),
+      logger: req.log,
+    }),
   });
 
   app.addContentTypeParser(

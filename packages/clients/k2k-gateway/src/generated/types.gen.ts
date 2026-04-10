@@ -423,7 +423,7 @@ export type PurposeConsumer = {
 };
 
 /**
- * Describes the states a Purpose can be in
+ * State of the Purpose
  */
 export type PurposeState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
 

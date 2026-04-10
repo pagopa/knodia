@@ -101,10 +101,9 @@ const API_PurposeConsumer = z
     id: "PurposeConsumer",
   });
 
-const API_PurposeState = z.enum(["ACTIVE", "SUSPENDED", "ARCHIVED"]).meta({
-  description: "Describes the states a Purpose can be in",
-  id: "PurposeState",
-});
+export const API_PurposeState = z
+  .enum(["ACTIVE", "SUSPENDED", "ARCHIVED"])
+  .meta({ description: "State of the Purpose", id: "PurposeState" });
 export type API_PurposeState = z.infer<typeof API_PurposeState>;
 
 export const API_Purpose = z

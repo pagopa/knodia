@@ -16,11 +16,10 @@ import {
 
 const toKeyFormatV1 = (format: KeyFormat): KeyFormatV1 =>
   match(format)
-    .with("jwk", () => KeyFormatV1.JWK)
-    .with("x509", () => KeyFormatV1.X509)
+    .with("PublicKey", () => KeyFormatV1.PublicKey)
+    .with("X509Certificate", () => KeyFormatV1.X509Certificate)
     .exhaustive();
 
-/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
 const toConsumerKeychainKeyV1 = (
   key: ConsumerKeychainKey,
 ): ConsumerKeychainKeyV1 => ({
@@ -30,8 +29,7 @@ const toConsumerKeychainKeyV1 = (
   format: toKeyFormatV1(key.format),
 });
 
-/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
-export const toKeyAlgorithm = (algorithm: KeyAlgorithm): KeyAlgorithmV1 =>
+const toKeyAlgorithm = (algorithm: KeyAlgorithm): KeyAlgorithmV1 =>
   match(algorithm)
     .with("RS256", () => KeyAlgorithmV1.RS256)
     .exhaustive();

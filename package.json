@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "typecheck": "turbo run typecheck",
-    "dev:services": "turbo run dev --concurrency=15 --filter='./apps/**/*'",
+    "dev:services": "turbo run dev --concurrency=20 --filter='./apps/**/*'",
     "dev:process": "turbo dev --filter @knodia/*-process",
     "dev:rmw": "turbo dev --filter @knodia/*-readmodel-writer",
     "generate-api-client": "turbo run generate-api-client",
@@ -19,7 +19,7 @@
     "db:drizzle-pull": "turbo run db:drizzle-pull",
     "db:generate-schema": "turbo run db:generate-schema",
     "db:schema-normalize": "turbo run db:schema-normalize",
-    "knip": "turbo run generate-artifacts && knip",
+    "knip": "turbo run generate-artifacts && dotenvx run --env-file .env.test -- knip",
     "generate-token": "node scripts/local-kms/generate-token.mjs",
     "generate-all-tokens": "node scripts/local-kms/generate-all-tokens.mjs",
     "infra:start": "./scripts/infra-start.sh",
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@aws-sdk/client-kms": "catalog:",
+    "@dotenvx/dotenvx": "catalog:",
     "@types/node": "catalog:",
     "knip": "catalog:",
     "turbo": "catalog:",

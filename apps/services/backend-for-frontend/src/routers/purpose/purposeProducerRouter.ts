@@ -42,7 +42,7 @@ import {
 } from "../../models/purpose/api.ts";
 import {
   toAPI_ProducerPurpose,
-  toAPI_ProducerPurposeDetails,
+  toAPI_PurposeDetails,
 } from "../../models/purpose/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
@@ -146,7 +146,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
             consumersMap
               .get(purpose.consumer.knodeId)
               ?.get(unsafeBrandExternalId(purpose.consumer.id)),
-            `Consumer organization ${purpose.consumer.id} not found for Purpose ${purpose.id}`,
+            `Consumer organization ${purpose.consumer.id} owned by Knode ${purpose.consumer.knodeId} not found for Purpose ${purpose.id}`,
           ),
           eservice: assertEntityExists(
             eservicesMap.get(purpose.eserviceId),
@@ -249,7 +249,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
       );
 
       res.status(200).send(
-        toAPI_ProducerPurposeDetails({
+        toAPI_PurposeDetails({
           agreement,
           consumer,
           eservice,

@@ -1,4 +1,5 @@
 import { Agreement, type AgreementState } from "@knodia/agreement-models";
+import { generateUserId, unsafeBrandKeyId } from "@knodia/common-models/ids";
 import {
   Eservice,
   EserviceCategory,
@@ -7,6 +8,7 @@ import {
 } from "@knodia/eservice-models";
 import {
   ConsumerKeychain,
+  type ConsumerKeychainKey,
   ConsumerKeychainPurpose,
 } from "@knodia/keychain-models";
 import { Organization } from "@knodia/organization-models";
@@ -34,14 +36,30 @@ export function getMockAgreement({
 export function getMockConsumerKeychain(seed = 0): ConsumerKeychain {
   // Re-parse through the schema to normalize zocker's mixed-case GUIDs
   // (zocker ignores Zod transforms like toLowerCase on guid-based UserId)
-  return ConsumerKeychain.parse(
-    zocker(ConsumerKeychain)
+  return ConsumerKeychain.parse({
+    ...zocker(ConsumerKeychain)
       .array({
         min: 1,
       })
       .setSeed(seed)
       .generate(),
-  );
+    keys: [getMockConsumerKeychainKey(seed)],
+  });
+}
+
+export function getMockConsumerKeychainKey(seed = 0): ConsumerKeychainKey {
+  const baseKey = zocker(ConsumerKeychain.shape.keys.element)
+    .setSeed(seed)
+    .generate();
+
+  return {
+    ...baseKey,
+    encodedPem: `-----BEGIN PUBLIC KEY-----mock-key-${seed}-----END PUBLIC KEY-----`,
+    kid: unsafeBrandKeyId(
+      Buffer.from(`mock-key-${seed}`, "utf-8").toString("base64url"),
+    ),
+    userId: generateUserId(),
+  };
 }
 
 export function getMockEservice({
@@ -89,12 +107,14 @@ export function getMockOrganization(seed = 0): Organization {
 }
 
 export const MOCK_PURPOSE_FORM_ANSWERS = {
+  checkedExistenceMereCorrectnessInteropCatalogue: "true",
   confirmPrincipleIntegrityAndDiscretion: "true",
   declarationConfirmGDPR: "true",
   legalBasis: ["CONSENT"],
   personalDataTypes: ["WITH_IDENTIFYING_DATA"],
   purpose: "INSTITUTIONAL",
   purposeDescription: "Test purpose for local development",
+  purposePursuit: "MERE_CORRECTNESS",
   usesThirdPartyPersonalData: "NO",
 };
 

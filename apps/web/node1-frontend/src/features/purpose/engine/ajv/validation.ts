@@ -115,13 +115,13 @@ function buildSubsetSchema(
       if: {
         ...cond.if,
         properties: Object.fromEntries(
-          Object.entries(cond.if.properties).filter(([key]) =>
+          Object.entries(cond.if.properties ?? {}).filter(([key]) =>
             visibleFields.has(key),
           ),
         ),
       },
     }))
-    .filter((cond) => Object.keys(cond.if.properties).length > 0);
+    .filter((cond) => Object.keys(cond.if.properties ?? {}).length > 0);
 
   return {
     properties,

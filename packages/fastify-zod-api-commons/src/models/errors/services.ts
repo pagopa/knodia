@@ -1,4 +1,17 @@
-import type { HTTPServiceName } from "@knodia/common-models/services";
+import z from "zod";
+
+export const HTTPServiceName = z.enum([
+  "authorization-server",
+  "backend-for-frontend",
+  "eservice-process",
+  "k2k-gateway",
+  "remote-resources-manager",
+  "agreement-process",
+  "keychain-process",
+  "organization-process",
+  "purpose-process",
+]);
+export type HTTPServiceName = z.infer<typeof HTTPServiceName>;
 
 /* eslint-disable perfectionist/sort-objects */
 export const serviceErrorCode: Record<HTTPServiceName, string> = {
@@ -10,5 +23,6 @@ export const serviceErrorCode: Record<HTTPServiceName, string> = {
   "keychain-process": "006",
   "organization-process": "007",
   "purpose-process": "008",
+  "authorization-server": "009",
 };
 /* eslint-enable perfectionist/sort-objects */

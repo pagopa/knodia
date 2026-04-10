@@ -5,7 +5,7 @@ import { z } from "zod";
 export const ReadmodelOrganizationConfig = ReadmodelConfig.and(
   z
     .object({
-      READMODEL_DB_ORGANIZATION_SCHEMA: z.string().default("organization"),
+      READMODEL_DB_ORGANIZATION_SCHEMA: z.string(),
     })
     .transform((c) => ({
       readmodelDbOrganizationSchema: c.READMODEL_DB_ORGANIZATION_SCHEMA,

@@ -50,6 +50,11 @@ export type FileDownload = Blob | File;
 export type UserId = string;
 
 /**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -478,18 +483,61 @@ export type SessionRequest = {
 };
 
 export type SessionResponse = {
-    refreshToken: string;
     uiSessionToken: string;
 };
 
-export type RefreshRequest = {
-    refreshToken: string;
+export type PurposeState = 'Active' | 'Suspended' | 'Archived';
+
+/**
+ * Name of the Purpose
+ */
+export type LocalizedPurposeName = {
+    en: string;
+};
+
+/**
+ * Description of the Purpose
+ */
+export type LocalizedPurposeDescription = {
+    en: string;
+};
+
+export type PurposeFormAnswers = {
+    [key: string]: unknown;
+};
+
+/**
+ * Current Purpose form schemas (JSON Schema + UI Schema + Texts) with their version identifier
+ */
+export type PurposeFormSchemasResponse = {
+    schema: {
+        [key: string]: unknown;
+    };
+    texts: {
+        en: {
+            [key: string]: unknown;
+        };
+    };
+    uiSchema: {
+        [key: string]: unknown;
+    };
+    /**
+     * Version identifier for the Purpose form schema provided by the target Knode
+     */
+    version: string;
 };
 
 /**
  * Name of the Keychain
  */
 export type KeychainLocalizedName = {
+    en: string;
+};
+
+/**
+ * Name of the Keychain Key
+ */
+export type KeychainKeyLocalizedName = {
     en: string;
 };
 
@@ -535,6 +583,22 @@ export type ConsumerKeychainPatch = {
     name?: KeychainLocalizedName;
 };
 
+export type KeychainKeySeed = {
+    encodedPem: string;
+    name: KeychainKeyLocalizedName;
+};
+
+export type KeychainKey = {
+    createdAt: string;
+    kid: KeyId;
+    name: KeychainKeyLocalizedName;
+};
+
+export type KeychainKeys = {
+    pagination: Pagination;
+    results: Array<KeychainKey>;
+};
+
 export type KeychainMemberSeed = {
     userId: UserId;
 };
@@ -547,45 +611,11 @@ export type User = {
 
 export type Users = Array<User>;
 
-export type PurposeState = 'Active' | 'Suspended' | 'Archived';
-
 /**
- * Name of the Purpose
+ * Unique JWK identifier (kid) of the created key
  */
-export type LocalizedPurposeName = {
-    en: string;
-};
-
-/**
- * Description of the Purpose
- */
-export type LocalizedPurposeDescription = {
-    en: string;
-};
-
-export type PurposeFormAnswers = {
-    [key: string]: unknown;
-};
-
-/**
- * Current Purpose form schemas (JSON Schema + UI Schema + Texts) with their version identifier
- */
-export type PurposeFormSchemasResponse = {
-    schema: {
-        [key: string]: unknown;
-    };
-    texts: {
-        en: {
-            [key: string]: unknown;
-        };
-    };
-    uiSchema: {
-        [key: string]: unknown;
-    };
-    /**
-     * Version identifier for the Purpose form schema provided by the target Knode
-     */
-    version: string;
+export type CreatedKeyResource = {
+    kid: string;
 };
 
 /**
@@ -602,6 +632,24 @@ export type PurposeSeed = {
     formSchemaVersion: string;
     knodeId: KnodeId;
     name: LocalizedPurposeName;
+};
+
+export type ConsumerPurpose = {
+    dailyCalls: number;
+    eservice: CompactEservice;
+    id: string;
+    /**
+     * Number of Consumer Keychains associated with this purpose
+     */
+    keychains: number;
+    name: LocalizedPurposeName;
+    producer: CompactOrganization;
+    state: PurposeState;
+};
+
+export type ConsumerPurposes = {
+    pagination: Pagination;
+    results: Array<ConsumerPurpose>;
 };
 
 export type ProducerPurpose = {
@@ -694,17 +742,13 @@ export type CreateSessionResponses = {
 export type CreateSessionResponse = CreateSessionResponses[keyof CreateSessionResponses];
 
 export type RefreshSessionData = {
-    body: RefreshRequest;
+    body?: never;
     path?: never;
     query?: never;
     url: '/auth/ui-session/refresh';
 };
 
 export type RefreshSessionErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
     /**
      * Unauthorized
      */
@@ -721,6 +765,22 @@ export type RefreshSessionResponses = {
 };
 
 export type RefreshSessionResponse = RefreshSessionResponses[keyof RefreshSessionResponses];
+
+export type LogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/logout';
+};
+
+export type LogoutResponses = {
+    /**
+     * Logged out successfully
+     */
+    204: void;
+};
+
+export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
@@ -894,6 +954,97 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
 };
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
+
+export type GetConsumerKeychainKeysData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+    };
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/keys';
+};
+
+export type GetConsumerKeychainKeysErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainKeysError = GetConsumerKeychainKeysErrors[keyof GetConsumerKeychainKeysErrors];
+
+export type GetConsumerKeychainKeysResponses = {
+    /**
+     * Consumer Keychain keys retrieved successfully
+     */
+    200: KeychainKeys;
+};
+
+export type GetConsumerKeychainKeysResponse = GetConsumerKeychainKeysResponses[keyof GetConsumerKeychainKeysResponses];
+
+export type UploadConsumerKeychainKeyData = {
+    body: KeychainKeySeed;
+    path: {
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys';
+};
+
+export type UploadConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[keyof UploadConsumerKeychainKeyErrors];
+
+export type UploadConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain key uploaded successfully
+     */
+    201: CreatedKeyResource;
+};
+
+export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
 
 export type GetConsumerKeychainsData = {
     body?: never;
@@ -1169,6 +1320,50 @@ export type AddConsumerKeychainMemberResponses = {
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
 
+export type RemoveConsumerKeychainKeyData = {
+    body?: never;
+    path: {
+        keyId: string;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
+};
+
+export type RemoveConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
+
+export type RemoveConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyResponses[keyof RemoveConsumerKeychainKeyResponses];
+
 export type RemoveConsumerKeychainMemberData = {
     body?: never;
     path: {
@@ -1251,6 +1446,48 @@ export type LinkPurposeToConsumerKeychainResponses = {
 };
 
 export type LinkPurposeToConsumerKeychainResponse = LinkPurposeToConsumerKeychainResponses[keyof LinkPurposeToConsumerKeychainResponses];
+
+export type UnlinkPurposeFromConsumerKeychainData = {
+    body?: never;
+    path: {
+        consumerKeychainId: string;
+        purposeId: string;
+    };
+    query: {
+        knodeId: KnodeId;
+    };
+    url: '/consumerKeychains/{consumerKeychainId}/purposes/{purposeId}';
+};
+
+export type UnlinkPurposeFromConsumerKeychainErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type UnlinkPurposeFromConsumerKeychainError = UnlinkPurposeFromConsumerKeychainErrors[keyof UnlinkPurposeFromConsumerKeychainErrors];
+
+export type UnlinkPurposeFromConsumerKeychainResponses = {
+    /**
+     * Purpose successfully unlinked from Consumer Keychain
+     */
+    204: void;
+};
+
+export type UnlinkPurposeFromConsumerKeychainResponse = UnlinkPurposeFromConsumerKeychainResponses[keyof UnlinkPurposeFromConsumerKeychainResponses];
 
 export type GetTechnicalUsersData = {
     body?: never;
@@ -1521,6 +1758,56 @@ export type CreateConsumerAgreementResponses = {
 };
 
 export type CreateConsumerAgreementResponse = CreateConsumerAgreementResponses[keyof CreateConsumerAgreementResponses];
+
+export type GetConsumerPurposesData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
+    };
+    url: '/consumer/purposes';
+};
+
+export type GetConsumerPurposesErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetConsumerPurposesError = GetConsumerPurposesErrors[keyof GetConsumerPurposesErrors];
+
+export type GetConsumerPurposesResponses = {
+    /**
+     * Consumer Purposes retrieved successfully
+     */
+    200: ConsumerPurposes;
+};
+
+export type GetConsumerPurposesResponse = GetConsumerPurposesResponses[keyof GetConsumerPurposesResponses];
 
 export type CreateConsumerPurposeData = {
     body: PurposeSeed;
