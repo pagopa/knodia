@@ -4,7 +4,7 @@ import type { LoggerConfig } from "./config.ts";
 import type { LoggerMetadata } from "./models/models.ts";
 
 const DEFAULT_REDACT_PATHS: string[] = ["req.headers.authorization"];
-const TRANSPORT_TARGET = new URL("transport.mts", import.meta.url).pathname;
+const TRANSPORT_TARGET = new URL("transport.ts", import.meta.url).pathname;
 /**
  * Builds logger options based on the environment
  *
@@ -14,7 +14,7 @@ const TRANSPORT_TARGET = new URL("transport.mts", import.meta.url).pathname;
 const buildLoggerEnvOptions = (
   isProduction: boolean,
 ): Partial<LoggerOptions> =>
-  !isProduction
+  isProduction
     ? {
         timestamp: false,
         transport: {
