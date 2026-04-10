@@ -1,5 +1,4 @@
 import type { RequestContextData } from "@fastify/request-context";
-import type { HTTPServiceName } from "@knodia/common-models/services";
 import type { ZodIssue } from "zod-validation-error";
 
 import createError from "@fastify/error";
@@ -10,7 +9,10 @@ import { ZodError } from "zod";
 import { toDotPath } from "zod/v4/core";
 
 import * as contextModule from "../../src/context/context.ts";
-import { serviceErrorCode } from "../../src/models/errors/services.ts";
+import {
+  type HTTPServiceName,
+  serviceErrorCode,
+} from "../../src/models/errors/services.ts";
 import {
   type API_Problem,
   ApiError,
