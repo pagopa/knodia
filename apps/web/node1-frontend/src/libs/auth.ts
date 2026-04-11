@@ -1,19 +1,22 @@
 import { config } from "@/config/config";
 
+/*
+ * The UI session token (short-lived, minutes) is stored in localStorage and
+ * sent as an explicit Authorization: Bearer header.
+ *
+ * The refresh token (long-lived, days) needs stronger protection — if stolen,
+ * it can mint new session tokens until it expires. It is stored in an HttpOnly
+ * cookie, invisible to JavaScript, and only sent to the BFF's /auth endpoints
+ * (Path=/auth, SameSite=Strict).
+ */
 const AUTH_TOKEN_KEY = "knodia_auth_token";
-const REFRESH_TOKEN_KEY = "knodia_refresh_token";
 
-export function clearAllTokens(): void {
-  clearAuthToken();
-  clearRefreshToken();
+export function clearAuthToken(): void {
+  localStorage.removeItem(AUTH_TOKEN_KEY);
 }
 
 export function getAuthToken(): null | string {
   return localStorage.getItem(AUTH_TOKEN_KEY);
-}
-
-export function getRefreshToken(): null | string {
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
 }
 
 // Cognito does not support OIDC RP-Initiated Logout (end_session_endpoint),
@@ -25,16 +28,4 @@ export function redirectToLogout(): void {
 
 export function setAuthToken(token: string): void {
   localStorage.setItem(AUTH_TOKEN_KEY, token);
-}
-
-export function setRefreshToken(token: string): void {
-  localStorage.setItem(REFRESH_TOKEN_KEY, token);
-}
-
-function clearAuthToken(): void {
-  localStorage.removeItem(AUTH_TOKEN_KEY);
-}
-
-function clearRefreshToken(): void {
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
 }

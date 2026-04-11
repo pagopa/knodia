@@ -32,7 +32,8 @@ export function buildApp({
   eventStoreDb,
   readmodelDb,
 }: {
-  config: AuthConfig & LoggerConfig;
+  config: AuthConfig &
+    LoggerConfig & { isConsumerOperatorIdentificationRequired: boolean };
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
 }) {
@@ -58,7 +59,6 @@ export function buildApp({
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "eservice-process",
   });
 
   // Public routes (no auth required)
@@ -75,6 +75,10 @@ export function buildApp({
       eserviceServiceBuilder(
         eserviceEventStoreWriterBuilder(eventStoreDb),
         readmodelServiceBuilder(readmodelDb),
+        {
+          isConsumerOperatorIdentificationRequired:
+            config.isConsumerOperatorIdentificationRequired,
+        },
       ),
     );
   });

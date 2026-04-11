@@ -38,7 +38,7 @@ export function buildApp({
 }: {
   config: AuthConfig &
     LoggerConfig &
-    Pick<KeychainProcessConfig, "cognitoUserPoolId">;
+    Pick<KeychainProcessConfig, "cognitoUserPoolId" | "maxKeysPerKeychain">;
   eventStoreDb: NodePgDatabase;
   readmodelDb: NodePgDatabase;
   remoteResourcesManagerUrl: string;
@@ -73,7 +73,6 @@ export function buildApp({
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "keychain-process",
   });
 
   const userService = userServiceBuilder({
@@ -95,6 +94,7 @@ export function buildApp({
         readmodelServiceBuilder(readmodelDb),
         userService,
         clients.remoteResourcesManagerClient,
+        config,
       ),
     });
     protectedApp.register(userRouter, userService);

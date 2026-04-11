@@ -16,6 +16,12 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         AGREEMENT_PROCESS_URL: z.url(),
         COGNITO_ISSUER: z.string(),
         COGNITO_JWKS_URL: z.url(),
+        COOKIE_DOMAIN: z.string().optional(),
+        COOKIE_PATH_PREFIX: z.string(),
+        COOKIE_SECURE: z.coerce.boolean().default(true),
+        DYNAMODB_REFRESH_TOKENS_TABLE: z
+          .string()
+          .default("knodia-bff-refresh-tokens"),
         ESERVICE_INTERFACES_S3_BUCKET: z.string(),
         ESERVICE_PROCESS_URL: z.url(),
         KEYCHAIN_PROCESS_URL: z.url(),
@@ -42,6 +48,12 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         agreementProcessUrl: c.AGREEMENT_PROCESS_URL,
         cognitoIssuer: c.COGNITO_ISSUER,
         cognitoJwksUrl: c.COGNITO_JWKS_URL,
+        cookie: {
+          domain: c.COOKIE_DOMAIN,
+          pathPrefix: c.COOKIE_PATH_PREFIX,
+          secure: c.COOKIE_SECURE,
+        },
+        dynamoDbRefreshTokensTable: c.DYNAMODB_REFRESH_TOKENS_TABLE,
         eserviceInterfacesS3Bucket: c.ESERVICE_INTERFACES_S3_BUCKET,
         eserviceProcessUrl: c.ESERVICE_PROCESS_URL,
         keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
