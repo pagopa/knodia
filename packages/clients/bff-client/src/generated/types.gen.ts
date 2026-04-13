@@ -275,7 +275,7 @@ export type ProducerEserviceDetailsPurposeCounters = {
      */
     total: number;
     /**
-     * Total API calls per day across all purposes
+     * Total API calls per day across all Active purposes
      */
     totalApiCallsPerDay: number;
 };
