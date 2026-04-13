@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Chip, type ChipProps } from "@knodia/ui-kit/ui";
-import { ArchiveIcon, CheckIcon, XIcon } from "@phosphor-icons/react";
+import { ArchiveIcon, CheckIcon, ProhibitIcon } from "@phosphor-icons/react";
 import { match } from "ts-pattern";
 
 export function PurposeStateChip({
@@ -16,7 +16,12 @@ export function PurposeStateChip({
       <Chip icon={<CheckIcon />} kind="success" label="Active" type={type} />
     ))
     .with("Suspended", () => (
-      <Chip icon={<XIcon />} kind="error" label="Suspended" type={type} />
+      <Chip
+        icon={<ProhibitIcon />}
+        kind="error"
+        label="Suspended"
+        type={type}
+      />
     ))
     .with("Archived", () => (
       <Chip
