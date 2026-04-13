@@ -160,8 +160,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId, keyId },
       });
 
-      const pem = atob(key.encodedPem);
-      const content = Buffer.from(pem, "utf-8");
+      const content = Buffer.from(key.encodedPem, "base64");
 
       res.raw.writeHead(200, {
         "Content-Disposition": `attachment; filename="public_key_${keyId}.pub"`,

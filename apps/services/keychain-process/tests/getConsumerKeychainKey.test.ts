@@ -76,7 +76,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/keys/:keyId (getConsumerKey
       .query({ limit: "50", offset: "0" });
 
     const listBody = listResponse.json<{ results: API_KeychainKey[] }>();
-    console.log(listBody);
+
     const expectedItem = listBody.results.find(
       (key) => key.kid === VALID_KEY_ID,
     );
