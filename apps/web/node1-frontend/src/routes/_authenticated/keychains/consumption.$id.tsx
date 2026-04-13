@@ -36,7 +36,7 @@ export const Route = createFileRoute(
   "/_authenticated/keychains/consumption/$id",
 )({
   component: RouteComponent,
-  loader: async ({ context: { queryClient }, params: { id } }) =>
+  loader: ({ context: { queryClient }, params: { id } }) =>
     queryClient.ensureQueryData(consumerKeychainQuery(id)),
 });
 
