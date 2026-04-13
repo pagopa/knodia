@@ -6,9 +6,7 @@
     "typecheck": "tsc",
     "generate-protobuf": "buf generate --template ../../../buf.gen.yaml",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/purpose-models",
-    "test:watch": "pnpm test --watch"
+    "lint:autofix": "eslint . --fix"
   },
   "dependencies": {
     "@bufbuild/protobuf": "catalog:",

@@ -97,6 +97,7 @@ export async function setupPostgresTestContainer(network: StartedNetwork) {
     .withNetwork(network)
     .withNetworkAliases("postgres")
     .withName("knodia-postgres-test-container")
+    .withLabels({ "com.docker.compose.project": "knodia-test" })
     .withReuse()
     .withPassword(DB_PASSWORD)
     .withUsername(DB_USER)
@@ -123,6 +124,8 @@ async function runFlywayContainer({
   network: StartedNetwork;
 }) {
   const startedContainer = await new GenericContainer(FLYWAY_IMAGE)
+    .withName("knodia-flyway-test-container")
+    .withLabels({ "com.docker.compose.project": "knodia-test" })
     .withNetwork(network)
     .withEnvironment(environment)
     .withEntrypoint(entrypoint)
