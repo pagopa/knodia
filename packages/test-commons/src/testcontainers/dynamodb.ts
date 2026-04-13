@@ -22,6 +22,8 @@ const DYNAMO_TABLES_PATH = fileURLToPath(
  */
 export async function setupDynamoDBTestContainer(network: StartedNetwork) {
   const container = await new GenericContainer(DYNAMODB_IMAGE)
+    .withName("knodia-dynamodb-test-container")
+    .withLabels({ "com.docker.compose.project": "knodia-test" })
     .withNetwork(network)
     .withNetworkAliases(DYNAMODB_NETWORK_ALIAS)
     .withExposedPorts(DYNAMODB_PORT)
@@ -40,6 +42,8 @@ export async function setupDynamoDBTestContainer(network: StartedNetwork) {
 
 async function runDynamoDBTableSetup(network: StartedNetwork) {
   const setupContainer = await new GenericContainer(AWS_CLI_IMAGE)
+    .withName("knodia-dynamodb-setup-test-container")
+    .withLabels({ "com.docker.compose.project": "knodia-test" })
     .withNetwork(network)
     .withBindMounts([
       {

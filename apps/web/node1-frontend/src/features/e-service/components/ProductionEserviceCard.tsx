@@ -29,7 +29,7 @@ export function ProductionEserviceCard({
           {eservice.activePurposes}
         </GenericInfoCard>
       </EserviceCardInfoGrid>
-      <EserviceCardFooter mode="ProvideData" state="Active">
+      <EserviceCardFooter mode={eservice.mode} state={eservice.state}>
         {eservice.categories.map((category) => (
           <CategoryChip
             code={category.code}

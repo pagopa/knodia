@@ -7,9 +7,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "preview": "vite preview",
-    "test": "pnpm -w test --project @knodia/node1-frontend",
-    "test:watch": "pnpm test --watch"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@knodia/attribute-models": "workspace:*",

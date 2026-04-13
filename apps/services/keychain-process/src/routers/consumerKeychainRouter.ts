@@ -199,19 +199,19 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve a Consumer Keychain key by kid",
+      description: "Retrieve a Consumer Keychain Key by kid",
       headers: KnodiaServiceHeaders,
       operationId: "getConsumerKeychainKey",
       params: API_ConsumerKeychainKeyPathParams,
       response: {
         200: API_KeychainKey.meta({
-          description: "Consumer Keychain key retrieved successfully",
+          description: "Consumer Keychain Key retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({
-          description: "Consumer Keychain key not found",
+          description: "Consumer Keychain Key not found",
         }),
       },
       tags: [apiTags.consumerKeychain],
@@ -402,7 +402,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         201: {
           headers: MetadataVersionHeader,
           properties: API_KeychainKey.meta({
-            description: "Consumer Keychain key uploaded successfully",
+            description: "Consumer Keychain Key uploaded successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -443,7 +443,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         204: {
           headers: MetadataVersionHeader,
           properties: z.undefined().meta({
-            description: "Consumer Keychain key removed successfully",
+            description: "Consumer Keychain Key removed successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),

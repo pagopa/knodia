@@ -26,6 +26,18 @@ export interface JsonSchema {
   type: "object";
 }
 
+export interface JsonSchemaIfClause {
+  properties?: Record<
+    string,
+    {
+      const?: string;
+      contains?: { const: string };
+      type?: "array" | "string";
+    }
+  >;
+  required?: string[];
+}
+
 export interface JsonSchemaProperty {
   const?: string;
   default?: string | string[];
@@ -84,12 +96,7 @@ interface HideOptionCondition {
 
 interface JsonSchemaConditional {
   else?: { required?: string[] };
-  if: {
-    properties: Record<
-      string,
-      { const?: string; contains?: { const: string } }
-    >;
-  };
+  if: JsonSchemaIfClause;
   then: { required?: string[] };
 }
 
