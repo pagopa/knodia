@@ -504,12 +504,108 @@ export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[key
 
 export type UploadConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key uploaded successfully
+     * Consumer Keychain Key uploaded successfully
      */
     201: KeychainKey;
 };
 
 export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
+
+export type RemoveConsumerKeychainKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        keyId: string;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
+};
+
+export type RemoveConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
+
+export type RemoveConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain Key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyResponses[keyof RemoveConsumerKeychainKeyResponses];
+
+export type GetConsumerKeychainKeyData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        keyId: string;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
+};
+
+export type GetConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain Key not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainKeyError = GetConsumerKeychainKeyErrors[keyof GetConsumerKeychainKeyErrors];
+
+export type GetConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain Key retrieved successfully
+     */
+    200: KeychainKey;
+};
+
+export type GetConsumerKeychainKeyResponse = GetConsumerKeychainKeyResponses[keyof GetConsumerKeychainKeyResponses];
 
 export type GetConsumerKeychainMembersData = {
     body?: never;
@@ -604,56 +700,6 @@ export type AddConsumerKeychainMemberResponses = {
 };
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
-
-export type RemoveConsumerKeychainKeyData = {
-    body?: never;
-    headers: {
-        /**
-         * Unique identifier of the request
-         */
-        'x-correlation-id': CorrelationId;
-    };
-    path: {
-        keyId: string;
-        consumerKeychainId: string;
-    };
-    query?: never;
-    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
-};
-
-export type RemoveConsumerKeychainKeyErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Consumer Keychain not found
-     */
-    404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
-};
-
-export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
-
-export type RemoveConsumerKeychainKeyResponses = {
-    /**
-     * Consumer Keychain key removed successfully
-     */
-    204: void;
-};
-
-export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyResponses[keyof RemoveConsumerKeychainKeyResponses];
 
 export type RemoveConsumerKeychainMemberData = {
     body?: never;

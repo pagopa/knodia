@@ -27,6 +27,7 @@ function EServiceActions() {
         </Button>
         <Modal
           actionLabel="Suspend anyway"
+          cancelLabel="Cancel"
           description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
           isDismissable
           kind="destructive"

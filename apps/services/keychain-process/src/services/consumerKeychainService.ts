@@ -223,6 +223,28 @@ export function consumerKeychainServiceBuilder(
       );
     },
 
+    async getConsumerKeychainKey(
+      consumerKeychainId: ConsumerKeychainId,
+      kid: KeyId,
+      { logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ConsumerKeychainKey> {
+      logger.info(
+        `Getting key with ID ${kid} of Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      const key = consumerKeychain.data.keys.find((key) => key.kid === kid);
+
+      if (!key) {
+        throw keyNotFoundInKeychain(kid, consumerKeychainId);
+      }
+
+      return key;
+    },
     async getConsumerKeychainKeys(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainKeysQueryParams,
