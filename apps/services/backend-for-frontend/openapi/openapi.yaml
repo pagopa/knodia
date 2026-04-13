@@ -1254,7 +1254,7 @@ components:
       required:
         - userId
       additionalProperties: false
-    CurrentUserConsumerKeychainMembership:
+    ConsumerKeychainMembershipCheckResult:
       type: object
       properties:
         isMember:
@@ -2584,13 +2584,18 @@ paths:
                 description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{consumerKeychainId}/members/me:
+  /consumerKeychains/{consumerKeychainId}/membership/{userId}:
     get:
-      operationId: getCurrentUserConsumerKeychainMembership
+      operationId: getConsumerKeychainMembership
       tags:
         - consumerKeychain
-      description: Check whether the current user is a member of a Consumer Keychain
+      description: Check whether the given user is a member of a Consumer Keychain
       parameters:
+        - schema:
+            $ref: "#/components/schemas/UserId"
+          in: path
+          name: userId
+          required: true
         - schema:
             type: string
             format: uuid
@@ -2600,13 +2605,13 @@ paths:
           required: true
       responses:
         "200":
-          description: Current user Consumer Keychain membership retrieved successfully
+          description: Consumer Keychain membership check retrieved successfully
           content:
             application/json:
               schema:
-                description: Current user Consumer Keychain membership retrieved successfully
+                description: Consumer Keychain membership check retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/CurrentUserConsumerKeychainMembership"
+                  - $ref: "#/components/schemas/ConsumerKeychainMembershipCheckResult"
         "400":
           description: Bad Request
           content:

@@ -34,11 +34,11 @@ import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
+  API_ConsumerKeychainMembershipCheckResult,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
-  API_CurrentUserConsumerKeychainMembership,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
   type API_Keychain,
@@ -55,7 +55,6 @@ import {
   toAPI_KeychainKey,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
-import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -578,11 +577,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { authData, correlationId, logger } =
-        getContextValues(requestContext);
+      const { correlationId, logger } = getContextValues(requestContext);
 
-      const { userId } = getUISessionAuthData(authData);
-      const { consumerKeychainId } = req.params;
+      const { consumerKeychainId, userId } = req.params;
 
       logger.info(
         { requestParams: req.params, userId },
@@ -622,13 +619,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Check whether the current user is a member of a Consumer Keychain",
-      operationId: "getCurrentUserConsumerKeychainMembership",
-      params: API_ConsumerKeychainIdPathParam,
+        "Check whether the given user is a member of a Consumer Keychain",
+      operationId: "getConsumerKeychainMembership",
+      params: API_ConsumerKeychainMemberPathParams,
       response: {
-        200: API_CurrentUserConsumerKeychainMembership.meta({
+        200: API_ConsumerKeychainMembershipCheckResult.meta({
           description:
-            "Current user Consumer Keychain membership retrieved successfully",
+            "Consumer Keychain membership check retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -637,7 +634,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.consumerKeychain],
     },
-    url: "/consumerKeychains/:consumerKeychainId/members/me",
+    url: "/consumerKeychains/:consumerKeychainId/membership/:userId",
   });
 
   fastify.route({

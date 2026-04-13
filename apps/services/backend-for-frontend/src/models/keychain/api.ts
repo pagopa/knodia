@@ -109,13 +109,13 @@ export const API_KeychainMemberSeed = z
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
 
-export const API_CurrentUserConsumerKeychainMembership = z
+export const API_ConsumerKeychainMembershipCheckResult = z
   .strictObject({
     isMember: z.boolean(),
   })
-  .meta({ id: "CurrentUserConsumerKeychainMembership" });
-export type API_CurrentUserConsumerKeychainMembership = z.infer<
-  typeof API_CurrentUserConsumerKeychainMembership
+  .meta({ id: "ConsumerKeychainMembershipCheckResult" });
+export type API_ConsumerKeychainMembershipCheckResult = z.infer<
+  typeof API_ConsumerKeychainMembershipCheckResult
 >;
 
 export const API_ConsumerKeychainMemberPathParams = z

@@ -599,7 +599,7 @@ export type KeychainMemberSeed = {
     userId: UserId;
 };
 
-export type CurrentUserConsumerKeychainMembership = {
+export type ConsumerKeychainMembershipCheckResult = {
     isMember: boolean;
 };
 
@@ -1458,16 +1458,17 @@ export type RemoveConsumerKeychainMemberResponses = {
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
 
-export type GetCurrentUserConsumerKeychainMembershipData = {
+export type GetConsumerKeychainMembershipData = {
     body?: never;
     path: {
+        userId: UserId;
         consumerKeychainId: string;
     };
     query?: never;
-    url: '/consumerKeychains/{consumerKeychainId}/members/me';
+    url: '/consumerKeychains/{consumerKeychainId}/membership/{userId}';
 };
 
-export type GetCurrentUserConsumerKeychainMembershipErrors = {
+export type GetConsumerKeychainMembershipErrors = {
     /**
      * Bad Request
      */
@@ -1486,16 +1487,16 @@ export type GetCurrentUserConsumerKeychainMembershipErrors = {
     404: Problem;
 };
 
-export type GetCurrentUserConsumerKeychainMembershipError = GetCurrentUserConsumerKeychainMembershipErrors[keyof GetCurrentUserConsumerKeychainMembershipErrors];
+export type GetConsumerKeychainMembershipError = GetConsumerKeychainMembershipErrors[keyof GetConsumerKeychainMembershipErrors];
 
-export type GetCurrentUserConsumerKeychainMembershipResponses = {
+export type GetConsumerKeychainMembershipResponses = {
     /**
-     * Current user Consumer Keychain membership retrieved successfully
+     * Consumer Keychain membership check retrieved successfully
      */
-    200: CurrentUserConsumerKeychainMembership;
+    200: ConsumerKeychainMembershipCheckResult;
 };
 
-export type GetCurrentUserConsumerKeychainMembershipResponse = GetCurrentUserConsumerKeychainMembershipResponses[keyof GetCurrentUserConsumerKeychainMembershipResponses];
+export type GetConsumerKeychainMembershipResponse = GetConsumerKeychainMembershipResponses[keyof GetConsumerKeychainMembershipResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;

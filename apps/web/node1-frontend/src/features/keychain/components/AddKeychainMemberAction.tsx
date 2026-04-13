@@ -1,3 +1,4 @@
+import { bffApi } from "@knodia/bff-client";
 import {
   addConsumerKeychainMemberMutation,
   getConsumerKeychainMembersQueryKey,
@@ -101,6 +102,27 @@ function AddKeychainMemberModal({
       .exhaustive();
   };
 
+  const checkUserKeychainMembership = async (userId: string) => {
+    const {
+      data: { isMember },
+    } = await match(keychainType)
+      .with("consumption", () =>
+        bffApi.getConsumerKeychainMembership({
+          client,
+          path: { consumerKeychainId: keychainId, userId },
+        }),
+      )
+      .with("production", () => {
+        throw new Error("Producer keychains are not supported yet.");
+      })
+      .with("api", () => {
+        throw new Error("API keychains are not supported yet.");
+      })
+      .exhaustive();
+
+    return isMember;
+  };
+
   const form = useForm({
     defaultValues: {
       userId: null as null | string,
@@ -117,6 +139,20 @@ function AddKeychainMemberModal({
           .nullable()
           .refine((value) => value !== null, "Select an operator"),
       }),
+      onSubmitAsync: async ({ value: { userId } }) => {
+        if (!userId) return undefined;
+        const isMember = await checkUserKeychainMembership(userId);
+
+        if (isMember) {
+          return {
+            fields: {
+              userId: { message: "User is already a member of the keychain" },
+            },
+          };
+        }
+
+        return undefined;
+      },
     },
   });
 
