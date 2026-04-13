@@ -1,12 +1,13 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { createConsumerPurposeMutation } from "@knodia/bff-client/tanstack-query";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 
 import { client } from "@/libs/axios";
 
 import { usePurposeWizardContext } from "../contexts/usePurposeFormContext";
+import { consumerPurposesByEserviceQuery } from "../services/queries";
 
 interface CreatePurposeInput {
   formAnswersJson: Record<string, unknown>;
@@ -14,11 +15,16 @@ interface CreatePurposeInput {
 
 export function useCreatePurpose(eserviceId: EserviceId, knodeId: KnodeId) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data, formSchemaVersion } = usePurposeWizardContext();
 
   const { isError, isPending, mutate } = useMutation({
     ...createConsumerPurposeMutation({ client }),
     onSuccess: () => {
+      queryClient.invalidateQueries(
+        consumerPurposesByEserviceQuery(eserviceId),
+      );
+
       navigate({
         params: { id: eserviceId },
         replace: true,
