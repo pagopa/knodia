@@ -14,17 +14,15 @@ export async function handleEserviceEvent(
   assertDataExistsInEvent(message, "eservice");
 
   return match(message)
-    .with({ type: "EserviceVersionActivatedV1" }, async (msg) => {
-      await writerService.upsertEservice(
-        fromEserviceV1(msg.data.eservice),
-        message.version,
-      );
-    })
-    .with({ type: "EserviceVersionSuspendedV1" }, async (msg) => {
-      await writerService.upsertEservice(
-        fromEserviceV1(msg.data.eservice),
-        message.version,
-      );
-    })
+    .with(
+      { type: "EserviceVersionActivatedV1" },
+      { type: "EserviceVersionSuspendedV1" },
+      async (msg) => {
+        await writerService.upsertEservice(
+          fromEserviceV1(msg.data.eservice),
+          message.version,
+        );
+      },
+    )
     .exhaustive();
 }
