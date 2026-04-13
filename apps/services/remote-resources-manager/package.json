@@ -7,9 +7,7 @@
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
-    "test": "pnpm -w test --project @knodia/remote-resources-manager",
-    "test:watch": "pnpm test --watch"
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
   },
   "devDependencies": {
     "@knodia/eslint-config": "workspace:*",
