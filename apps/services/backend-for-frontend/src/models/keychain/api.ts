@@ -136,7 +136,7 @@ export type API_Users = z.infer<typeof API_Users>;
 
 export const API_CreatedKeyResource = z
   .strictObject({
-    kid: z.base64url(),
+    kid: API_KeyId,
   })
   .meta({
     description: "Unique JWK identifier (kid) of the created key",

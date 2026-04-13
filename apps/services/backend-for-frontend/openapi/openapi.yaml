@@ -1275,9 +1275,7 @@ components:
       type: object
       properties:
         kid:
-          type: string
-          format: base64url
-          pattern: ^[A-Za-z0-9_-]*$
+          $ref: "#/components/schemas/KeyId"
       required:
         - kid
       additionalProperties: false

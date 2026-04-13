@@ -1,4 +1,8 @@
-import { ConsumerKeychainId, PurposeId } from "@knodia/common-models/ids";
+import {
+  ConsumerKeychainId,
+  KeyId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 import z from "zod";
 
 import {
@@ -8,7 +12,7 @@ import {
 
 export const ClientAssertionHeader = z.strictObject({
   alg: z.literal(ALLOWED_CLIENT_ASSERTION_ALGORITHM),
-  kid: z.base64url(),
+  kid: KeyId,
   typ: z.literal(ALLOWED_CLIENT_ASSERTION_TYP),
 });
 export type ClientAssertionHeader = z.infer<typeof ClientAssertionHeader>;
