@@ -39,7 +39,6 @@ import {
 } from "../models/errors.ts";
 import {
   createEserviceVersionActivatedV1Event,
-  createEserviceVersionReactivatedV1Event,
   createEserviceVersionSuspendedV1Event,
 } from "../models/eserviceEventFactory.ts";
 import {
@@ -89,7 +88,7 @@ export function eserviceServiceBuilder(
       );
 
       const { newVersion } = await eventStoreWriter.insertEvent(
-        createEserviceVersionReactivatedV1Event(
+        createEserviceVersionActivatedV1Event(
           updatedEservice,
           latestVersion.id,
           correlationId,
