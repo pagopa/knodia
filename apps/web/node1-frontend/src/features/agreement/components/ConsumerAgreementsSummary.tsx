@@ -4,8 +4,8 @@ import { Button, Empty } from "@knodia/ui-kit/ui";
 import {
   ArchiveIcon,
   CheckIcon,
+  ProhibitIcon,
   SelectionPlusIcon,
-  XIcon,
 } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { match } from "ts-pattern";
@@ -69,7 +69,7 @@ export function ConsumerAgreementsSummary({
         />
         <AgreementCounterCard
           count={suspendedAgreements}
-          icon={<XIcon />}
+          icon={<ProhibitIcon />}
           kind="error"
           label="Suspended"
           onViewAll={() =>
