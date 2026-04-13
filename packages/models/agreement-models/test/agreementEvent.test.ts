@@ -8,7 +8,7 @@ import { match } from "ts-pattern";
 import { describe, expect, it } from "vitest";
 import { zocker } from "zocker";
 
-import { Agreement } from "../src/agreement.ts";
+import { Agreement, AgreementState } from "../src/agreement.ts";
 import { AgreementEventV1 } from "../src/agreementEvent.ts";
 import { toAgreementV1 } from "../src/agreementProtobufConverterToV1.ts";
 import {
@@ -22,7 +22,19 @@ import {
 
 describe("AgreementEventV1 codec", () => {
   const agreement = zocker(Agreement).generate();
+
+  // Suspend/reactivate events carry agreements with non-null suspendedBy*At dates,
+  // ensuring the Date serialization path is always exercised
+  const suspendedAgreement: Agreement = {
+    ...zocker(Agreement).generate(),
+    state: AgreementState.enum.Suspended,
+    suspendedByConsumerAt: new Date(),
+    suspendedByProducerAt: new Date(),
+  };
+
   const defaultData = { agreement: toAgreementV1(agreement) };
+  const suspendedData = { agreement: toAgreementV1(suspendedAgreement) };
+
   const cases = [
     {
       data: defaultData,
@@ -30,22 +42,22 @@ describe("AgreementEventV1 codec", () => {
       type: "AgreementActivatedV1" as const,
     },
     {
-      data: defaultData,
+      data: suspendedData,
       message: AgreementSuspendedByConsumerV1,
       type: "AgreementSuspendedByConsumerV1" as const,
     },
     {
-      data: defaultData,
+      data: suspendedData,
       message: AgreementSuspendedByProducerV1,
       type: "AgreementSuspendedByProducerV1" as const,
     },
     {
-      data: defaultData,
+      data: suspendedData,
       message: AgreementReactivatedByConsumerV1,
       type: "AgreementReactivatedByConsumerV1" as const,
     },
     {
-      data: defaultData,
+      data: suspendedData,
       message: AgreementReactivatedByProducerV1,
       type: "AgreementReactivatedByProducerV1" as const,
     },
