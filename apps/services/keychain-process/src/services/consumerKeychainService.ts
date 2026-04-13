@@ -114,7 +114,7 @@ export function consumerKeychainServiceBuilder(
 
       const userId = unsafeBrandUserId(member.userId);
 
-      if (consumerKeychain.data.users.includes(userId)) {
+      if (consumerKeychain.data.users.some((user) => user.userId === userId)) {
         throw userAlreadyMember(consumerKeychainId, userId);
       }
 
@@ -133,10 +133,14 @@ export function consumerKeychainServiceBuilder(
       );
       assertUserHasTechnicalRole(userId, userGroups);
 
+      const now = new Date();
       const updatedConsumerKeychain: ConsumerKeychain = {
         ...consumerKeychain.data,
-        updatedAt: new Date(),
-        users: [...consumerKeychain.data.users, user.id],
+        updatedAt: now,
+        users: [
+          ...consumerKeychain.data.users,
+          { addedAt: now, userId: user.id },
+        ],
       };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
@@ -310,12 +314,12 @@ export function consumerKeychainServiceBuilder(
       }
 
       const paginatedUserIds = consumerKeychain.users
-        .toSorted()
+        .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
         .slice(params.offset, params.offset + params.limit);
 
       return {
         results: await Promise.all(
-          paginatedUserIds.map((userId) => retrieveUser(userId)),
+          paginatedUserIds.map((user) => retrieveUser(user.userId)),
         ),
         totalCount: consumerKeychain.users.length,
       };
@@ -490,7 +494,7 @@ export function consumerKeychainServiceBuilder(
         ...consumerKeychain.data,
         updatedAt: new Date(),
         users: consumerKeychain.data.users.filter(
-          (memberId) => memberId !== userId,
+          (member) => member.userId !== userId,
         ),
       };
 

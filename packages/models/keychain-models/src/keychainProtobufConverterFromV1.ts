@@ -8,6 +8,7 @@ import { match } from "ts-pattern";
 
 import {
   type ConsumerKeychainKeyV1,
+  ConsumerKeychainUserV1,
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
@@ -15,6 +16,7 @@ import {
 import {
   type ConsumerKeychain,
   type ConsumerKeychainKey,
+  ConsumerKeychainUser,
   KeyAlgorithm,
   KeyFormat,
 } from "./keychain.ts";
@@ -32,7 +34,7 @@ export const fromConsumerKeychainV1 = (
     name: input.name,
     ownerId: unsafeBrandId(input.ownerId),
     updatedAt: new Date(input.updatedAt),
-    users: input.users.map(unsafeBrandUserId),
+    users: input.users.map(fromConsumerKeychainUserV1),
   };
 };
 
@@ -51,6 +53,13 @@ const fromConsumerKeychainKeyV1 = (
     userId: unsafeBrandUserId(input.userId),
   };
 };
+
+const fromConsumerKeychainUserV1 = (
+  input: ConsumerKeychainUserV1,
+): ConsumerKeychainUser => ({
+  addedAt: new Date(input.addedAt),
+  userId: unsafeBrandUserId(input.userId),
+});
 
 const fromKeyAlgorithmV1 = (input: KeyAlgorithmV1): KeyAlgorithm =>
   match(input)
