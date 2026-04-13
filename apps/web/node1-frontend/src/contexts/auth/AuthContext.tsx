@@ -1,4 +1,7 @@
-import { createSessionMutation } from "@knodia/bff-client/tanstack-query";
+import {
+  createSessionMutation,
+  logoutMutation,
+} from "@knodia/bff-client/tanstack-query";
 import { UISessionTokenClaims } from "@knodia/common-models/auth";
 import { useMutation } from "@tanstack/react-query";
 import { decodeJwt } from "jose";
@@ -16,11 +19,10 @@ import {
 
 import { config } from "@/config/config";
 import {
-  clearAllTokens,
+  clearAuthToken,
   getAuthToken,
   redirectToLogout,
   setAuthToken,
-  setRefreshToken,
 } from "@/libs/auth";
 import { client } from "@/libs/axios";
 import { router } from "@/libs/router";
@@ -61,7 +63,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   const {
     error: exchangeError,
     isPending: isExchangePending,
-    mutate,
+    mutate: exchangeToken,
   } = useMutation({
     ...createSessionMutation({ client }),
     onError: () => {
@@ -69,17 +71,24 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (data) => {
       setAuthToken(data.uiSessionToken);
-      setRefreshToken(data.refreshToken);
       setUiSessionToken(data.uiSessionToken);
       void router.navigate({ replace: true, to: "/" });
     },
   });
 
+  const { mutate: bffLogout } = useMutation(
+    logoutMutation({ client, withCredentials: true }),
+  );
+
+  // After OIDC login completes, exchange the Cognito token for a BFF session.
   useEffect(() => {
     if (user?.access_token && !uiSessionToken) {
-      mutate({ body: { oidcToken: user.access_token } });
+      exchangeToken({
+        body: { oidcToken: user.access_token },
+        withCredentials: true,
+      });
     }
-  }, [user?.access_token, uiSessionToken, mutate]);
+  }, [user?.access_token, uiSessionToken, exchangeToken]);
 
   const sessionClaims = useMemo(() => {
     if (!uiSessionToken) return null;
@@ -96,15 +105,18 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
   }, [signinRedirect]);
 
   const logout = useCallback(async () => {
+    // Best-effort: clear the refresh token cookie
+    bffLogout({ withCredentials: true });
+
     // removeUser() can throw — ensure cleanup and redirect happen regardless
     try {
       await removeUser();
     } finally {
-      clearAllTokens();
+      clearAuthToken();
       setUiSessionToken(null);
       redirectToLogout();
     }
-  }, [removeUser]);
+  }, [bffLogout, removeUser]);
 
   return (
     <AuthContext.Provider
