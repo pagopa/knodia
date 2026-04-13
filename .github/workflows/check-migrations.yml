@@ -50,8 +50,9 @@ jobs:
 
       - name: Resolve Flyway image
         id: flyway-image
+        working-directory: pr
         run: |
-          IMAGE=$(awk '/^FROM /{img=$2} END{print img}' pr/apps/infra/migrations/Dockerfile)
+          IMAGE=$(awk '/^FROM /{img=$2} END{print img}' apps/infra/migrations/Dockerfile)
           echo "ref=$IMAGE" >> "$GITHUB_OUTPUT"
 
       - name: Create databases and roles (base)
