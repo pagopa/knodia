@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "pino": "catalog:",
+    "pino-abstract-transport": "catalog:",
     "zod": "catalog:"
   },
   "peerDependencies": {

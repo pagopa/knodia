@@ -19,5 +19,4 @@ export const buildTestApp = (
     },
     loggerConfig: { isProduction: false, logLevel: "silent", nodeEnv: "test" },
     makeApiProblem,
-    serviceName: "eservice-process",
   });
