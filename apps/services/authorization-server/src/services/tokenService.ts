@@ -4,17 +4,27 @@ import {
 } from "@knodia/k2k-gateway-client";
 
 import type { API_TokenRequest } from "../models/api.ts";
+import type { ReadmodelService } from "./readmodelService.ts";
 
-import { validateClientAssertionClaims } from "../utils/validators.ts";
+import {
+  validateClientAssertionClaims,
+  validatePlatformObjects,
+  verifyClientAssertionSignature,
+} from "../utils/validators.ts";
 
-export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
+export function tokenServiceBuilder(
+  k2kGatewayClient: K2K2GatewayApiClient,
+  readmodelService: ReadmodelService,
+) {
   return {
     async issueToken(requestBody: API_TokenRequest) {
       // Client assertion claims validation
       const clientAssertion = validateClientAssertionClaims(requestBody);
 
       // Get access token data from the external Knode through the K2K2Gateway API
-      await k2kGatewayApi.getAccessTokenData({
+      const {
+        data: { consumerAttributes, publicKey },
+      } = await k2kGatewayApi.getAccessTokenData({
         body: {
           kid: clientAssertion.header.kid,
           purposeId: clientAssertion.payload.purpose_id,
@@ -25,10 +35,19 @@ export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
         },
       });
 
-      // TODO: verify client assertion signature with the retrieved public key
-      // TODO: verify platform states (agreement, purpose and eservice version must be active)
-      // TODO: verify consumer attributes meet the eservice required attributes and
-      //  the client assertion audience claim must match the expected audience value based on the eservice version data
+      await verifyClientAssertionSignature(
+        requestBody.client_assertion,
+        publicKey,
+        clientAssertion.header.alg,
+      );
+
+      await validatePlatformObjects(
+        clientAssertion.payload.purpose_id,
+        clientAssertion.payload.aud,
+        consumerAttributes,
+        readmodelService,
+      );
+
       // TODO: generate token
 
       // TODO remove this mock implementation when the authorization server issues real tokens.

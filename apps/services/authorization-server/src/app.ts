@@ -1,5 +1,7 @@
 import type { LoggerConfig } from "@knodia/logger/config";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
+import { makeReadmodelDrizzleConnection } from "@knodia/db-readmodel-commons/utils";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -12,14 +14,17 @@ import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { tokenRouter } from "./routers/tokenRouter.ts";
+import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
   config,
   knodeUrl,
+  readmodelDb,
 }: {
   config: LoggerConfig;
   knodeUrl: string;
+  readmodelDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
     knodeUrl,
@@ -50,12 +55,24 @@ export function buildApp({
 
   app.register(healthRouter);
   app.register(tokenRouter, {
-    tokenService: tokenServiceBuilder(k2kGatewayClient),
+    tokenService: tokenServiceBuilder(
+      k2kGatewayClient,
+      readmodelServiceBuilder(readmodelDb),
+    ),
   });
 
   return app;
 }
 
 export function buildAppFromConfig(config: AuthorizationServerConfig) {
-  return buildApp({ config, knodeUrl: config.knodeUrl });
+  const { db: readmodelDb, pool: readmodelPool } =
+    makeReadmodelDrizzleConnection(config);
+
+  const app = buildApp({ config, knodeUrl: config.knodeUrl, readmodelDb });
+
+  app.addHook("onClose", async () => {
+    await readmodelPool.end();
+  });
+
+  return app;
 }

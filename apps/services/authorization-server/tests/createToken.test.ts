@@ -1,13 +1,27 @@
 /* eslint-disable max-lines-per-function */
+import type { Agreement } from "@knodia/agreement-models";
+import type { Eservice } from "@knodia/eservice-models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import type { Purpose } from "@knodia/purpose-models";
 
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
-import { getMockClientAssertion } from "@knodia/test-commons/utils";
+import {
+  getMockAgreement,
+  getMockClientAssertion,
+  getMockEservice,
+  getMockEserviceVersion,
+  getMockPurpose,
+} from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_TokenRequest } from "../src/models/api.ts";
 
-import { app } from "./setup.ts";
+import {
+  agreementWriterService,
+  app,
+  eserviceWriterService,
+  purposeWriterService,
+} from "./setup.ts";
 
 const getAccessTokenDataMock = vi.hoisted(() => vi.fn());
 
@@ -29,29 +43,75 @@ describe("POST /token", async () => {
     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   const VALID_GRANT_TYPE = "client_credentials";
 
+  const commonAudience = "test.knodia.com";
+  const commonAttribute: k2kGatewayApi.Attribute = {
+    code: "vc_territorial_units",
+    scheme: "nuts1",
+  };
+  const purpose: Purpose = {
+    ...getMockPurpose(),
+    state: "Active",
+  };
+  const agreement: Agreement = {
+    ...getMockAgreement(),
+    consumer: purpose.consumer,
+    eserviceId: purpose.eserviceId,
+    state: "Active",
+  };
+  const eservice: Eservice = {
+    ...getMockEservice(),
+    id: purpose.eserviceId,
+    versions: [
+      {
+        ...getMockEserviceVersion(),
+        accessTokenAudience: ["https://example.com/", commonAudience],
+        id: agreement.eserviceVersionId,
+        requiredAttributes: [
+          [commonAttribute],
+          [
+            commonAttribute,
+            {
+              code: "vc_organizational_units",
+              scheme: "nuts3",
+            },
+          ],
+        ],
+        state: "Active",
+      },
+    ],
+  };
+
+  const consumerKeychainId = generateId<ConsumerKeychainId>();
+  const {
+    clientAssertion,
+    clientAssertionJWS,
+    keySet,
+    publicKeyEncodedPem,
+    signClientAssertion,
+  } = await getMockClientAssertion({
+    standardClaimsOverride: {
+      aud: commonAudience,
+      iss: consumerKeychainId,
+      purpose_id: purpose.id,
+      sub: consumerKeychainId,
+    },
+  });
+
   const mockK2KResponse: k2kGatewayApi.AccessTokenDataResponse = {
     consumerAttributes: [
-      {
-        code: "vc_territorial_units",
-        scheme: "nuts1",
-      },
+      commonAttribute,
       {
         code: "vc_organizational_units",
         scheme: "nuts2",
       },
     ],
-    publicKey:
-      "mock-public-key" as unknown as k2kGatewayApi.PublicKeyForVerification,
+    publicKey: {
+      algorithm: clientAssertion.headers.alg,
+      encodedPem: publicKeyEncodedPem,
+      format: "PublicKey",
+      kid: "kid",
+    },
   };
-
-  const consumerKeychainId = generateId<ConsumerKeychainId>();
-  const { clientAssertion, clientAssertionJWS, keySet, signClientAssertion } =
-    await getMockClientAssertion({
-      standardClaimsOverride: {
-        iss: consumerKeychainId,
-        sub: consumerKeychainId,
-      },
-    });
 
   const defaultBody: API_TokenRequest = {
     client_assertion: clientAssertionJWS,
@@ -65,6 +125,12 @@ describe("POST /token", async () => {
   });
 
   it("returns a mocked bearer token", async () => {
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(eservice, 0),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
     getAccessTokenDataMock.mockResolvedValue({
       data: mockK2KResponse,
     });

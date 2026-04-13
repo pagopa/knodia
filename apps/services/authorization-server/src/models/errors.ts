@@ -1,3 +1,17 @@
+import type { AgreementState } from "@knodia/agreement-models";
+import type {
+  ExternalId,
+  ExternalResource,
+} from "@knodia/common-models/externalResource";
+import type {
+  AgreementId,
+  EserviceId,
+  EserviceVersionId,
+  OrganizationId,
+  PurposeId,
+} from "@knodia/common-models/ids";
+import type { EserviceVersionState } from "@knodia/eservice-models";
+import type { PurposeState } from "@knodia/purpose-models";
 import type { ZodError } from "zod";
 
 import {
@@ -34,6 +48,18 @@ const errorCodes = {
   TYP_NOT_FOUND: "0019",
   TYP_NOT_SUPPORTED: "0020",
   PURPOSE_ID_NOT_FOUND: "0021",
+  UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR: "0022",
+  CLIENT_ASSERTION_EXPIRED: "0023",
+  INVALID_CLIENT_ASSERTION_SIGNATURE: "0024",
+  JSON_WEB_TOKEN_ERROR: "0025",
+  AGREEMENT_NOT_ACTIVE: "0026",
+  ESERVICE_VERSION_NOT_ACTIVE: "0027",
+  PURPOSE_NOT_ACTIVE: "0028",
+  INVALID_AUDIENCE: "0029",
+  CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0030",
+  AGREEMENT_NOT_FOUND: "0031",
+  ESERVICE_VERSION_NOT_FOUND: "0032",
+  PURPOSE_NOT_FOUND: "0033",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -43,6 +69,27 @@ export const makeApiProblem = makeApiProblemBuilder(errorCodes, {
   forceGenericProblemOn500: true,
   serviceName: "authorization-server",
 });
+
+export function agreementNotActive(id: AgreementId, state: AgreementState) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_ACTIVE",
+    detail: `Agreement with ID ${id} is in state '${state}', but it must be in 'Active' state`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Agreement state is not Active",
+  });
+}
+
+export function agreementNotFound(
+  consumer: ExternalResource<OrganizationId>,
+  eserviceId: EserviceId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_FOUND",
+    detail: `Agreement for Consumer ${consumer.id} (${consumer.knodeId}) and E-service ${eserviceId} was not found`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Agreement not found",
+  });
+}
 
 export function algNotFound() {
   return createApiError<ErrorCodes>({
@@ -87,6 +134,15 @@ export function clientAssertionClaimsValidationError(
   });
 }
 
+export function clientAssertionExpired() {
+  return createApiError<ErrorCodes>({
+    code: "CLIENT_ASSERTION_EXPIRED",
+    detail: "The Client Assertion has expired",
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Client Assertion expired",
+  });
+}
+
 export function clientAssertionInvalidClaims(
   error: ZodError,
   headerOrPayload: "header" | "payload",
@@ -96,6 +152,42 @@ export function clientAssertionInvalidClaims(
     detail: `Invalid claims in Client Assertion ${headerOrPayload}. Error: ${fromZodError(error)}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: `Invalid claims in Client Assertion ${headerOrPayload}`,
+  });
+}
+
+export function consumerMissingRequiredAttributes(
+  consumerId: ExternalId<OrganizationId>,
+  eserviceVersionId: EserviceVersionId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "CONSUMER_MISSING_REQUIRED_ATTRIBUTES",
+    detail: `Consumer ${consumerId} missing required attributes for the requested E-service version ${eserviceVersionId}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Consumer Missing Required Attributes",
+  });
+}
+
+export function eserviceVersionNotActive(
+  id: EserviceVersionId,
+  state: EserviceVersionState,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_VERSION_NOT_ACTIVE",
+    detail: `E-service Version with ID ${id} is in state '${state}', but it must be in 'Active' state`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "E-service Version state is not Active",
+  });
+}
+
+export function eserviceVersionNotFound(
+  eserviceId: EserviceId,
+  eserviceVersionId: EserviceVersionId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ESERVICE_VERSION_NOT_FOUND",
+    detail: `E-service Version with ID ${eserviceVersionId} for E-service ${eserviceId} was not found`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "E-service Version not found",
   });
 }
 
@@ -119,12 +211,33 @@ export function iatNotFound() {
   });
 }
 
+export function invalidAudience(
+  clientAssertionAud: string | string[],
+  eserviceVersionAudiences: string[],
+) {
+  return createApiError<ErrorCodes>({
+    code: "INVALID_AUDIENCE",
+    detail: `Invalid audience in Client Assertion. Received: ${JSON.stringify(clientAssertionAud)}, Expected: ${JSON.stringify(eserviceVersionAudiences)}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Invalid audience in Client Assertion",
+  });
+}
+
 export function invalidClientAssertionFormat(message: string) {
   return createApiError<ErrorCodes>({
     code: "INVALID_CLIENT_ASSERTION_FORMAT",
     detail: `Invalid format for Client Assertion: ${message}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Invalid format for Client Assertion",
+  });
+}
+
+export function invalidClientAssertionSignature() {
+  return createApiError<ErrorCodes>({
+    code: "INVALID_CLIENT_ASSERTION_SIGNATURE",
+    detail: "The Client Assertion signature is invalid",
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Invalid Client Assertion signature",
   });
 }
 
@@ -192,6 +305,15 @@ export function issNotFound() {
   });
 }
 
+export function jsonWebTokenError(message: string) {
+  return createApiError<ErrorCodes>({
+    code: "JSON_WEB_TOKEN_ERROR",
+    detail: `Invalid JWT format in Client Assertion signature verification. Reason: ${message}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "JSON Web Token error",
+  });
+}
+
 export function jtiNotFound() {
   return createApiError<ErrorCodes>({
     code: "JTI_NOT_FOUND",
@@ -222,6 +344,24 @@ export function purposeIdNotFound() {
   });
 }
 
+export function purposeNotActive(id: PurposeId, state: PurposeState) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_NOT_ACTIVE",
+    detail: `Purpose with ID ${id} is in state '${state}', but it must be in 'Active' state`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Purpose state is not Active",
+  });
+}
+
+export function purposeNotFound(id: PurposeId) {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_NOT_FOUND",
+    detail: `Purpose with ID ${id} was not found`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Purpose not found",
+  });
+}
+
 export function subNotFound() {
   return createApiError<ErrorCodes>({
     code: "SUB_NOT_FOUND",
@@ -248,5 +388,16 @@ export function typNotSupported(typ: string) {
     detail: `The 'typ' header value '${typ}' is not supported. Only 'JWT' is supported.`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Unsupported 'typ' header value",
+  });
+}
+
+export function unexpectedClientAssertionSignatureVerificationError(
+  message: string,
+) {
+  return createApiError<ErrorCodes>({
+    code: "UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR",
+    detail: `An unexpected error occurred during Client Assertion verification: ${message}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Unexpected error during Client Assertion verification",
   });
 }
