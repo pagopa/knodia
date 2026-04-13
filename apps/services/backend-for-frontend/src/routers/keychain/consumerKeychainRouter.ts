@@ -112,16 +112,22 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Getting Consumer Keychain keys with ID ${req.params.consumerKeychainId}`,
       );
 
-      const { data: keys } = await keychainProcessApi.getConsumerKeychainKeys({
-        client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { consumerKeychainId: req.params.consumerKeychainId },
-        query: { limit, offset },
-      });
+      const [{ data: keys }, { data: users }] = await Promise.all([
+        keychainProcessApi.getConsumerKeychainKeys({
+          client: keychainProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { consumerKeychainId: req.params.consumerKeychainId },
+          query: { limit, offset },
+        }),
+        keychainProcessApi.getTechnicalUsers({
+          client: keychainProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+        }),
+      ]);
 
       res.send({
         pagination: keys.pagination,
-        results: keys.results.map(toAPI_KeychainKey),
+        results: keys.results.map((key) => toAPI_KeychainKey(key, users)),
       });
     },
     method: "GET",

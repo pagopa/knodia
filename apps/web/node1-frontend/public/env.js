@@ -6,4 +6,5 @@ window.env = {
   COGNITO_LOGOUT_URI: "http://localhost:5175/ui",
   COGNITO_REDIRECT_URI: "http://localhost:5175/ui/callback",
   KNODE_ID: "Orion",
+  MAX_KEYS_PER_KEYCHAIN: "100",
 };

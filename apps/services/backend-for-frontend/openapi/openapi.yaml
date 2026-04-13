@@ -1226,6 +1226,8 @@ components:
           $ref: "#/components/schemas/KeyId"
         name:
           $ref: "#/components/schemas/KeychainKeyLocalizedName"
+        uploaderUsername:
+          type: string
       required:
         - createdAt
         - kid

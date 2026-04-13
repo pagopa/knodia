@@ -38,3 +38,20 @@ export const createKeychainFormDefaultValues: CreateKeychainFormValues = {
 };
 
 export type CreateKeychainFormValues = z.infer<typeof createKeychainFormSchema>;
+
+export const publicKeyUploadFormSchema = z.object({
+  name: z
+    .string()
+    .min(5, "Name must be at least 5 characters.")
+    .max(60, "Name must be at most 60 characters."),
+  pem: z.string().min(1, "Public Key is required."),
+});
+
+export type PublicKeyUploadFormValues = z.infer<
+  typeof publicKeyUploadFormSchema
+>;
+
+export const publicKeyUploadFormDefaultValues: PublicKeyUploadFormValues = {
+  name: "",
+  pem: "",
+};
