@@ -1,4 +1,9 @@
-import type { AgreementId, EserviceId, KnodeId, PurposeId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  KnodeId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 
 import {
   getConsumerPurposeDetailsOptions,
