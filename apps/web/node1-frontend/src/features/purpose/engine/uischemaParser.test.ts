@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import type { ControlElement, FormTexts, LabelElement, UISchema } from "./types";
+import type {
+  ControlElement,
+  FormTexts,
+  LabelElement,
+  UISchema,
+} from "./types";
 
 import {
   collectConditionScopes,
