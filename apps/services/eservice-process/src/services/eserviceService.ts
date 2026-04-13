@@ -49,7 +49,7 @@ import {
 } from "../utils/readmodelUtils.ts";
 import {
   assertEserviceVersionIsActive,
-  assertEserviceVersionIsNotActive,
+  assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
   assertOrganizationExists,
   findLatestEserviceVersion,
@@ -79,7 +79,7 @@ export function eserviceServiceBuilder(
       assertIsEserviceProducer(eservice, authData.organizationId);
 
       const latestVersion = findLatestEserviceVersion(eservice);
-      assertEserviceVersionIsNotActive(eservice, latestVersion);
+      assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
         eservice,

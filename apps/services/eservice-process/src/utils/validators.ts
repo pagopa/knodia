@@ -67,7 +67,7 @@ export const assertEserviceVersionIsActive = (
   }
 };
 
-export const assertEserviceVersionIsNotActive = (
+export const assertEserviceVersionIsSuspended = (
   eservice: Eservice,
   eserviceVersion: EserviceVersion,
 ): void => {
