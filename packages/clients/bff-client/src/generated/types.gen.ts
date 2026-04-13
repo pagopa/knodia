@@ -2048,6 +2048,10 @@ export type GetProducerPurposesData = {
          */
         offset: number;
         /**
+         * Filter by Agreement ID
+         */
+        agreementId?: string;
+        /**
          * Filter by E-service ID
          */
         eserviceId?: string;

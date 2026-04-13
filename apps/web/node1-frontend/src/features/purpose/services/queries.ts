@@ -1,4 +1,4 @@
-import type { EserviceId, KnodeId, PurposeId } from "@knodia/common-models/ids";
+import type { AgreementId, EserviceId, KnodeId, PurposeId } from "@knodia/common-models/ids";
 
 import {
   getConsumerPurposeDetailsOptions,
@@ -42,4 +42,11 @@ export const producerPurposesQuery = (offset: number) =>
   getProducerPurposesOptions({
     client,
     query: { limit: PURPOSES_PAGE_LIMIT, offset },
+  });
+
+// TODO: replace hardcoded limit with pagination when the number of purposes per agreement grows
+export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
+  getProducerPurposesOptions({
+    client,
+    query: { agreementId, limit: PURPOSES_PER_ESERVICE_LIMIT, offset: 0 },
   });

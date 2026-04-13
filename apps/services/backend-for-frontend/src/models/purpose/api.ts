@@ -86,6 +86,10 @@ export type API_ConsumerPurposes = z.infer<typeof API_ConsumerPurposes>;
 
 export const API_GetProducerPurposesQueryParams =
   API_PaginationQueryParams.extend({
+    agreementId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by Agreement ID" }),
     eserviceId: z
       .uuid()
       .optional()
