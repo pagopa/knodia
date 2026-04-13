@@ -587,7 +587,7 @@ export type KeychainKey = {
     createdAt: string;
     kid: KeyId;
     name: KeychainKeyLocalizedName;
-    uploaderUsername: string;
+    uploaderUsername?: string;
 };
 
 export type KeychainKeys = {

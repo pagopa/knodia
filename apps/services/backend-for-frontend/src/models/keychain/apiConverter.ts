@@ -32,13 +32,12 @@ export const toAPI_KeychainKey = (
   users: keychainProcessApi.Users,
 ): API_KeychainKey => {
   const owner = users.find((user) => user.id === key.userId);
-  const uploaderUsername = owner ? owner.username : "Removed user";
 
   return {
     createdAt: key.createdAt,
     kid: key.kid,
     name: key.name,
-    uploaderUsername,
+    uploaderUsername: owner?.username,
   };
 };
 

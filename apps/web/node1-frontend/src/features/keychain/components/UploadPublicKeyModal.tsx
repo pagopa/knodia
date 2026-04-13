@@ -115,7 +115,7 @@ export function UploadPublicKeyModal({
           size="md"
           title="You are not a member of this keychain"
         >
-          Only keychain&apos;member can upload public keys.
+          Only Keychain members can upload public keys.
         </Banner>
       </Modal>
     );

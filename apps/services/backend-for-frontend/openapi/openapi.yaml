@@ -1232,7 +1232,6 @@ components:
         - createdAt
         - kid
         - name
-        - uploaderUsername
       additionalProperties: false
     KeychainKeys:
       type: object
