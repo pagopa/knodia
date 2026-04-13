@@ -44,7 +44,7 @@ import { useAuth } from "./useAuthContext";
 
 const fakeSessionToken = createTestTokenPayload({
   type: "ui-session",
-  username: "Mario Rossi",
+  username: "jane.doe",
 });
 
 function AuthConsumer({
@@ -152,7 +152,7 @@ describe("AuthContext", () => {
     renderWithAuth(onAuth);
 
     const lastCall = onAuth.mock.calls.at(-1)?.[0];
-    expect(lastCall?.username).toBe("Mario Rossi");
+    expect(lastCall?.username).toBe("jane.doe");
     expect(lastCall?.roles).toEqual(["administrative"]);
   });
 
