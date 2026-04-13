@@ -140,6 +140,7 @@ export function UploadPublicKeyModal({
   return (
     <Modal
       actionLabel="Upload"
+      cancelLabel="Cancel"
       confirmButtonProps={{ isPending }}
       description={modalDescription}
       isOpen={isOpen}

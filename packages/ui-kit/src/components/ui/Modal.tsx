@@ -133,7 +133,7 @@ export function Modal({
                     slot="close"
                     {...(onClose && { onPress: onClose })}
                   >
-                    {cancelLabel ?? "Cancel"}
+                    {cancelLabel}
                   </Button>
                 )}
                 {actionLabel && (

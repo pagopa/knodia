@@ -211,6 +211,7 @@ function RemoveFromKeychainAction({
       </Button>
       <Modal
         actionLabel="Delete anyway"
+        cancelLabel="Cancel"
         confirmButtonProps={{ isPending }}
         description="Are you sure you want to delete this public key? This action cannot be undone. If you are unsure, download the key before deleting it."
         isDismissable

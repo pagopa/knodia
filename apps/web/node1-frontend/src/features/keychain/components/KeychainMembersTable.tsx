@@ -140,6 +140,7 @@ function RemoveFromKeychainAction({
       </Button>
       <Modal
         actionLabel="Remove anyway"
+        cancelLabel="Cancel"
         confirmButtonProps={{ isPending }}
         description="Are you sure you want to remove this member from the Keychain? They will no longer be able to upload public keys."
         isDismissable
