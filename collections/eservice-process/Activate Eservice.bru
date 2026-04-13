@@ -1,0 +1,19 @@
+meta {
+  name: Activate Eservice
+  type: http
+}
+
+post {
+  url: {{host-eservice-process}}/eservices/:eserviceId/activate
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}
