@@ -12,7 +12,7 @@ import {
   type ConsumerKeychain,
   type ConsumerKeychainKey,
   type ConsumerKeychainPurpose,
-  ConsumerKeychainUser,
+  type ConsumerKeychainUser,
   type FlatConsumerKeychain,
   KeyAlgorithm,
   KeyFormat,

@@ -10,7 +10,7 @@ import type {
 
 import {
   type ConsumerKeychainKeyV1,
-  ConsumerKeychainUserV1,
+  type ConsumerKeychainUserV1,
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
