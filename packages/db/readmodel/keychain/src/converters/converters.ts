@@ -106,7 +106,7 @@ export function toConsumerKeychainPurpose(
   };
 }
 
-export function toConsumerKeychainUser(
+function toConsumerKeychainUser(
   userSQL: ConsumerKeychainUserSQL,
 ): ConsumerKeychainUser {
   return {
