@@ -5,9 +5,7 @@
     "dev": "tsc --watch",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/common-models",
-    "test:watch": "pnpm test --watch"
+    "lint:autofix": "eslint . --fix"
   },
   "exports": {
     "./api": "./src/api/api.ts",

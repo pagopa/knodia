@@ -1,9 +1,9 @@
-import { ButtonLink } from "@knodia/ui-kit/ui";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
 import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 import { ConsumptionEserviceList } from "@/features/e-service/components/ConsumptionEserviceList";
 import {
@@ -59,12 +59,12 @@ function RouteComponent() {
       <PageHeader
         actions={
           canManageAgreements && (
-            <ButtonLink
+            <ButtonLinkWithPreload
               hierarchy="brand"
-              href={{ to: "/consumption/e-services/search" }}
+              to="/consumption/e-services/search"
             >
               Search new E-Services
-            </ButtonLink>
+            </ButtonLinkWithPreload>
           )
         }
         overline="Consumption"

@@ -73,7 +73,6 @@ export function buildApp({
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "keychain-process",
   });
 
   const userService = userServiceBuilder({
