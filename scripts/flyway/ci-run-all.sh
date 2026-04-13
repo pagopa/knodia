@@ -48,9 +48,13 @@ for dir_name in "${!DB_MAP[@]}"; do
     exit 1
   fi
 
+  flat_sql_count=$(find "$base_path" -maxdepth 1 -name "*.sql" -type f 2>/dev/null | wc -l)
   subdirs=$(find "$base_path" -mindepth 1 -maxdepth 1 -type d 2>/dev/null)
 
-  if [ -n "$subdirs" ]; then
+  if [ "$flat_sql_count" -gt 0 ] && [ -n "$subdirs" ]; then
+    echo "::error::$base_path has both SQL files and subdirectories — ambiguous layout"
+    exit 1
+  elif [ -n "$subdirs" ]; then
     for schema_dir in "$base_path"/*/; do
       run_flyway "$schema_dir" "$db_name" "${NAMESPACE}_$(basename "$schema_dir")" "$COMMAND"
     done
