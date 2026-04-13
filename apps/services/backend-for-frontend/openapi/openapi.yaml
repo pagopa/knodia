@@ -839,7 +839,7 @@ components:
           items:
             $ref: "#/components/schemas/EserviceCategory"
         hasRecentlyBeenUpdated:
-          description: Indicates whether the E-service has been updated in the last days
+          description: Indicates whether the E-service has been recently updated
           type: boolean
         id:
           type: string
@@ -1328,7 +1328,7 @@ components:
         eservice:
           $ref: "#/components/schemas/CompactEservice"
         hasRecentlyBeenUpdated:
-          description: Indicates whether the Purpose state has been updated in the last days
+          description: Indicates whether the Purpose has been recently updated
           type: boolean
         id:
           type: string

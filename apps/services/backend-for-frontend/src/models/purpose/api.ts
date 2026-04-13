@@ -65,8 +65,7 @@ export const API_ConsumerPurpose = z
     dailyCalls: API_PurposeDailyCalls,
     eservice: API_CompactEservice,
     hasRecentlyBeenUpdated: z.boolean().meta({
-      description:
-        "Indicates whether the Purpose state has been updated in the last days",
+      description: "Indicates whether the Purpose has been recently updated",
     }),
     id: z.uuid(),
     keychains: z.int().min(0).meta({
