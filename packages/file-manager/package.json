@@ -4,9 +4,7 @@
   "scripts": {
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/file-manager",
-    "test:watch": "pnpm test --watch"
+    "lint:autofix": "eslint . --fix"
   },
   "exports": {
     ".": "./src/fileManager.ts"
