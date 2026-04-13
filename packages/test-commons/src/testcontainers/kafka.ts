@@ -27,6 +27,8 @@ const { logger } = createTestLogger();
  */
 export async function setupKafkaTestContainer() {
   const container = await new KafkaContainer(TEST_KAFKA_IMAGE)
+    .withName("knodia-kafka-test-container")
+    .withLabels({ "com.docker.compose.project": "knodia-test" })
     .withKraft()
     .withExposedPorts()
     .withReuse()

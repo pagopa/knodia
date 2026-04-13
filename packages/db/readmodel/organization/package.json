@@ -6,7 +6,6 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/db-readmodel-organization",
     "db:drizzle-pull": "dotenvx run -- drizzle-kit pull",
     "db:generate-schema": "pnpm run db:drizzle-pull && pnpm run db:schema-normalize",
     "db:schema-normalize": "node ../../../../scripts/normalize-drizzle-output.ts"

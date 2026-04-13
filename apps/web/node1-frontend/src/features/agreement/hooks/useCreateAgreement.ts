@@ -25,8 +25,8 @@ export function useCreateAgreement({
 
   const { isError, isPending, mutate } = useMutation({
     ...createConsumerAgreementMutation({ client }),
-    onSuccess: async () => {
-      await queryClient.refetchQueries(
+    onSuccess: () => {
+      queryClient.invalidateQueries(
         consumerEserviceDetailsQuery(eserviceId, knodeId),
       );
 
