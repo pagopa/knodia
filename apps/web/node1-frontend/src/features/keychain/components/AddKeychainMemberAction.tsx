@@ -17,13 +17,11 @@ import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 import type { KeychainType } from "../models/commons";
 
 interface AddKeychainMemberActionProps {
-  alreadyKeychainMembersIds: string[];
   keychainId: string;
   keychainType: KeychainType;
 }
 
 export function AddKeychainMemberAction({
-  alreadyKeychainMembersIds,
   keychainId,
   keychainType,
 }: AddKeychainMemberActionProps) {
@@ -43,7 +41,6 @@ export function AddKeychainMemberAction({
         Add member
       </Button>
       <AddKeychainMemberModal
-        alreadyKeychainMembersIds={alreadyKeychainMembersIds}
         isOpen={isOpen}
         keychainId={keychainId}
         keychainType={keychainType}
@@ -54,13 +51,11 @@ export function AddKeychainMemberAction({
 }
 
 function AddKeychainMemberModal({
-  alreadyKeychainMembersIds,
   isOpen,
   keychainId,
   keychainType,
   onClose,
 }: {
-  alreadyKeychainMembersIds: string[];
   isOpen: boolean;
   keychainId: string;
   keychainType: KeychainType;
@@ -74,6 +69,8 @@ function AddKeychainMemberModal({
         queryKey: getConsumerKeychainMembersQueryKey({
           client,
           path: { consumerKeychainId: keychainId },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
         }),
       });
       onClose();
@@ -162,11 +159,7 @@ function AddKeychainMemberModal({
               value={field.state.value}
             >
               {technicalUsersOptions.map((option) => (
-                <SelectItem
-                  id={option.id}
-                  isDisabled={alreadyKeychainMembersIds.includes(option.id)}
-                  key={option.id}
-                >
+                <SelectItem id={option.id} key={option.id}>
                   {option.label}
                 </SelectItem>
               ))}

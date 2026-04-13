@@ -62,10 +62,14 @@ export const Route = createFileRoute(
 function MembersTab() {
   const consumerKeychainId = Route.useParams().id;
 
-  const { data: members = [], isLoading } = useQuery(
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const { data, isLoading } = useQuery(
     getConsumerKeychainMembersOptions({
       client,
       path: { consumerKeychainId },
+      query: { limit: 50, offset: search.offset },
     }),
   );
 
@@ -73,7 +77,6 @@ function MembersTab() {
     <Section
       actions={
         <AddKeychainMemberAction
-          alreadyKeychainMembersIds={members.map((member) => member.id)}
           keychainId={consumerKeychainId}
           keychainType="consumption"
         />
@@ -84,8 +87,17 @@ function MembersTab() {
       <KeychainMembersTable
         isLoading={isLoading}
         keychainId={consumerKeychainId}
-        members={members}
+        members={data?.results ?? []}
         type="consumption"
+      />
+      <Pagination
+        className="mx-auto mt-6"
+        limit={data?.pagination.limit ?? 0}
+        offset={search.offset}
+        onOffsetChange={(offset) =>
+          navigate({ replace: true, search: (s) => ({ ...s, offset }) })
+        }
+        totalItems={data?.pagination.total ?? 0}
       />
     </Section>
   );

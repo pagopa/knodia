@@ -59,6 +59,12 @@ export type API_GetConsumerKeychainKeysQueryParams = z.infer<
   typeof API_GetConsumerKeychainKeysQueryParams
 >;
 
+export const API_GetConsumerKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerKeychainMembersQueryParams = z.infer<
+  typeof API_GetConsumerKeychainMembersQueryParams
+>;
+
 export const API_ConsumerKeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
@@ -134,6 +140,14 @@ export type API_User = z.infer<typeof API_User>;
 
 export const API_Users = z.array(API_User).meta({ id: "Users" });
 export type API_Users = z.infer<typeof API_Users>;
+
+export const API_KeychainMembers = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_User),
+  })
+  .meta({ id: "KeychainMembers" });
+export type API_KeychainMembers = z.infer<typeof API_KeychainMembers>;
 
 export const API_CreatedKeyResource = z
   .strictObject({

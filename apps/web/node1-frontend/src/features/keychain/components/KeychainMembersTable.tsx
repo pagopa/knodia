@@ -108,6 +108,8 @@ function RemoveFromKeychainAction({
         queryKey: getConsumerKeychainMembersQueryKey({
           client,
           path: { consumerKeychainId: keychainId },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
         }),
       });
     },

@@ -3,12 +3,14 @@ import { match } from "ts-pattern";
 import type {
   ConsumerKeychain,
   ConsumerKeychainKey,
+  ConsumerKeychainUser,
   KeyAlgorithm,
   KeyFormat,
 } from "./keychain.ts";
 
 import {
   type ConsumerKeychainKeyV1,
+  type ConsumerKeychainUserV1,
   type ConsumerKeychainV1,
   KeyAlgorithmV1,
   KeyFormatV1,
@@ -29,6 +31,13 @@ const toConsumerKeychainKeyV1 = (
   format: toKeyFormatV1(key.format),
 });
 
+const toConsumerKeychainUserV1 = (
+  user: ConsumerKeychainUser,
+): ConsumerKeychainUserV1 => ({
+  ...user,
+  addedAt: user.addedAt.getTime(),
+});
+
 const toKeyAlgorithm = (algorithm: KeyAlgorithm): KeyAlgorithmV1 =>
   match(algorithm)
     .with("RS256", () => KeyAlgorithmV1.RS256)
@@ -41,4 +50,5 @@ export const toConsumerKeychainV1 = (
   createdAt: consumerKeychain.createdAt.getTime(),
   keys: consumerKeychain.keys.map(toConsumerKeychainKeyV1),
   updatedAt: consumerKeychain.updatedAt.getTime(),
+  users: consumerKeychain.users.map(toConsumerKeychainUserV1),
 });
