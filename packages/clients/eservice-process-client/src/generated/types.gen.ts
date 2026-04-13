@@ -521,6 +521,96 @@ export type GetEserviceLatestVersionInterfaceResponses = {
 
 export type GetEserviceLatestVersionInterfaceResponse = GetEserviceLatestVersionInterfaceResponses[keyof GetEserviceLatestVersionInterfaceResponses];
 
+export type SuspendEserviceData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/suspend';
+};
+
+export type SuspendEserviceErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendEserviceError = SuspendEserviceErrors[keyof SuspendEserviceErrors];
+
+export type SuspendEserviceResponses = {
+    /**
+     * E-service suspended successfully
+     */
+    200: Eservice;
+};
+
+export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
+
+export type ActivateEserviceData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/activate';
+};
+
+export type ActivateEserviceErrors = {
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ActivateEserviceError = ActivateEserviceErrors[keyof ActivateEserviceErrors];
+
+export type ActivateEserviceResponses = {
+    /**
+     * E-service activated successfully
+     */
+    200: Eservice;
+};
+
+export type ActivateEserviceResponse = ActivateEserviceResponses[keyof ActivateEserviceResponses];
+
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;
     headers: {

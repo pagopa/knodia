@@ -4,11 +4,6 @@ import type {
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import type {
-  Eservice,
-  EserviceInterface,
-  EserviceVersion,
-} from "@knodia/eservice-models";
-import type {
   InternalAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
@@ -21,6 +16,12 @@ import {
   type EserviceVersionId,
   generateId,
 } from "@knodia/common-models/ids";
+import {
+  type Eservice,
+  type EserviceInterface,
+  type EserviceVersion,
+  EserviceVersionState,
+} from "@knodia/eservice-models";
 
 import type {
   API_EserviceSeed,
@@ -36,22 +37,68 @@ import {
   invalidAttribute,
   invalidCategory,
 } from "../models/errors.ts";
-import { createEserviceVersionActivatedV1Event } from "../models/eserviceEventFactory.ts";
+import {
+  createEserviceVersionActivatedV1Event,
+  createEserviceVersionReactivatedV1Event,
+  createEserviceVersionSuspendedV1Event,
+} from "../models/eserviceEventFactory.ts";
 import {
   retrieveEservice,
   retrieveEserviceLatestVersion,
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
-import { assertOrganizationExists } from "../utils/validators.ts";
+import {
+  assertEserviceVersionIsActive,
+  assertEserviceVersionIsNotActive,
+  assertIsEserviceProducer,
+  assertOrganizationExists,
+  findLatestEserviceVersion,
+  updateEserviceVersionState,
+} from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
 
+// eslint-disable-next-line max-lines-per-function
 export function eserviceServiceBuilder(
   eventStoreWriter: EserviceEventStoreWriter,
   readmodelService: ReadmodelService,
   config: { isConsumerOperatorIdentificationRequired: boolean },
 ) {
   return {
+    async activateEservice(
+      eserviceId: EserviceId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<Eservice>> {
+      logger.info(`Activating E-service ${eserviceId}`);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await retrieveEservice(eserviceId, readmodelService);
+
+      assertIsEserviceProducer(eservice, authData.organizationId);
+
+      const latestVersion = findLatestEserviceVersion(eservice);
+      assertEserviceVersionIsNotActive(eservice, latestVersion);
+
+      const updatedEservice = updateEserviceVersionState(
+        eservice,
+        latestVersion.id,
+        EserviceVersionState.enum.Active,
+        new Date(),
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createEserviceVersionReactivatedV1Event(
+          updatedEservice,
+          latestVersion.id,
+          correlationId,
+          version,
+        ),
+      );
+
+      return { data: updatedEservice, metadata: { version: newVersion } };
+    },
     async createEservice(
       seed: API_EserviceSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
@@ -142,6 +189,7 @@ export function eserviceServiceBuilder(
 
       return { data: eservice, metadata: { version: newVersion } };
     },
+
     async getCatalogEservices(
       body: API_GetCatalogEserviceSearchParams,
       params: API_GetCatalogEservicesQueryParams,
@@ -150,7 +198,6 @@ export function eserviceServiceBuilder(
       logger.info({ body, params }, "Getting catalog E-services with params");
       return await readmodelService.getCatalogEservices(body, params);
     },
-
     async getEservice(
       eserviceId: EserviceId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -180,6 +227,7 @@ export function eserviceServiceBuilder(
         readmodelService,
       );
     },
+
     async getEservices(
       params: API_GetEservicesQueryParams,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -187,6 +235,41 @@ export function eserviceServiceBuilder(
       logger.info({ params }, "Getting E-services with params");
 
       return await readmodelService.getEservices(params);
+    },
+
+    async suspendEservice(
+      eserviceId: EserviceId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<Eservice>> {
+      logger.info(`Suspending E-service ${eserviceId}`);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await retrieveEservice(eserviceId, readmodelService);
+
+      assertIsEserviceProducer(eservice, authData.organizationId);
+
+      const latestVersion = findLatestEserviceVersion(eservice);
+      assertEserviceVersionIsActive(eservice, latestVersion);
+
+      const updatedEservice = updateEserviceVersionState(
+        eservice,
+        latestVersion.id,
+        EserviceVersionState.enum.Suspended,
+        new Date(),
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createEserviceVersionSuspendedV1Event(
+          updatedEservice,
+          latestVersion.id,
+          correlationId,
+          version,
+        ),
+      );
+
+      return { data: updatedEservice, metadata: { version: newVersion } };
     },
   };
 }

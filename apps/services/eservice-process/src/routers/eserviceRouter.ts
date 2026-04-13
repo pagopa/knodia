@@ -226,6 +226,80 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await eserviceService.suspendEservice(req.params.eserviceId, ctx);
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Eservice(eservice));
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend an E-service",
+      headers: KnodiaServiceHeaders,
+      operationId: "suspendEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Eservice.meta({
+            description: "E-service suspended successfully",
+          }),
+        },
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/suspend",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical"] },
+      ]);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await eserviceService.activateEservice(req.params.eserviceId, ctx);
+
+      setMetadataVersionHeader(res, version);
+      res.status(200).send(toAPI_Eservice(eservice));
+    },
+    method: "POST",
+    schema: {
+      description: "Activate a suspended E-service",
+      headers: KnodiaServiceHeaders,
+      operationId: "activateEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Eservice.meta({
+            description: "E-service activated successfully",
+          }),
+        },
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/eservices/:eserviceId/activate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "internal" },
       ]);
 

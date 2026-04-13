@@ -22,3 +22,39 @@ export const createEserviceVersionActivatedV1Event = (
   },
   streamId: eservice.id,
 });
+
+export const createEserviceVersionSuspendedV1Event = (
+  eservice: Eservice,
+  eserviceVersionId: EserviceVersionId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreEserviceEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      eservice: toEserviceV1(eservice),
+      eserviceVersionId,
+    },
+    type: "EserviceVersionSuspendedV1",
+  },
+  streamId: eservice.id,
+});
+
+export const createEserviceVersionReactivatedV1Event = (
+  eservice: Eservice,
+  eserviceVersionId: EserviceVersionId,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreEserviceEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      eservice: toEserviceV1(eservice),
+      eserviceVersionId,
+    },
+    type: "EserviceVersionActivatedV1",
+  },
+  streamId: eservice.id,
+});
