@@ -1,14 +1,9 @@
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
 import { bffApi } from "@knodia/bff-client";
-import {
-  Banner,
-  Breadcrumb,
-  Breadcrumbs,
-  ButtonLink,
-  Divider,
-} from "@knodia/ui-kit/ui";
+import { Banner, Breadcrumb, Breadcrumbs, Divider } from "@knodia/ui-kit/ui";
 import { SealCheckIcon, WarningIcon } from "@phosphor-icons/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
@@ -17,6 +12,7 @@ import { AttributeGroupContainer } from "@/components/AttributeGroupContainer";
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { OrganizationContactPopover } from "@/components/OrganizationContactPopover";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { Section } from "@/components/Section";
 import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
@@ -41,14 +37,8 @@ export const Route = createFileRoute(
   component: RouteComponent,
   loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({
-    context: { queryClient },
-    deps: { knodeId },
-    params: { id },
-  }) =>
-    await queryClient.ensureQueryData(
-      consumerEserviceDetailsQuery(id, knodeId),
-    ),
+  loader: ({ context: { queryClient }, deps: { knodeId }, params: { id } }) =>
+    queryClient.ensureQueryData(consumerEserviceDetailsQuery(id, knodeId)),
   validateSearch: eserviceDetailSearchSchema,
 });
 
@@ -100,18 +90,16 @@ function ConsumptionRequirementsSection({
               {canRequestAgreement &&
                 hasRequiredAttributes &&
                 !hasAgreement && (
-                  <ButtonLink
+                  <ButtonLinkWithPreload
                     className="shrink-0"
                     hierarchy="brand"
-                    href={{
-                      search: { eserviceId, knodeId },
-                      to: "/consumption/e-services/request-agreement",
-                    }}
                     kind="filled"
+                    search={{ eserviceId, knodeId }}
                     size="md"
+                    to="/consumption/e-services/request-agreement"
                   >
                     Request Agreement
-                  </ButtonLink>
+                  </ButtonLinkWithPreload>
                 )}
             </div>
           </Banner>
@@ -134,8 +122,11 @@ function ConsumptionRequirementsSection({
 
 function RouteComponent() {
   const canManageAgreements = useHasRole("administrative");
-  const bffDetail = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
+  const { id } = Route.useParams();
+  const { data: bffDetail } = useSuspenseQuery(
+    consumerEserviceDetailsQuery(id, knodeId),
+  );
   const eservice = toConsumptionEserviceDetail(bffDetail);
   const { agreement } = eservice;
   const hasAgreement = agreement !== undefined;

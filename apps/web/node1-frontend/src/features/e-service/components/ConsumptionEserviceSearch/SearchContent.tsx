@@ -1,4 +1,4 @@
-import { Banner, Empty, Pagination } from "@knodia/ui-kit/ui";
+import { Banner, Empty } from "@knodia/ui-kit/ui";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 import type { ConsumptionEserviceSearchResult } from "@/features/e-service/models/consumption-eservice-search";
@@ -9,16 +9,13 @@ export function SearchContent({
   hasValidationError,
   isLoading,
   knodeId,
-  onOffsetChange,
   results,
 }: {
   hasValidationError: boolean;
   isLoading: boolean;
   knodeId: string;
-  onOffsetChange: (offset: number) => void;
   results: null | {
     items: ConsumptionEserviceSearchResult[];
-    pagination: { limit: number; offset: number; total: number };
   };
 }) {
   if (hasValidationError) {
@@ -40,19 +37,10 @@ export function SearchContent({
   }
 
   return (
-    <>
-      <SearchResultList
-        eservices={results.items}
-        isLoading={isLoading}
-        knodeId={knodeId}
-      />
-      <Pagination
-        className="mx-auto mt-auto pt-6"
-        limit={results.pagination.limit}
-        offset={results.pagination.offset}
-        onOffsetChange={onOffsetChange}
-        totalItems={results.pagination.total}
-      />
-    </>
+    <SearchResultList
+      eservices={results.items}
+      isLoading={isLoading}
+      knodeId={knodeId}
+    />
   );
 }

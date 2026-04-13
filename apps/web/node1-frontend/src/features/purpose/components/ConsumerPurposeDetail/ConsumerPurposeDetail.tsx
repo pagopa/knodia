@@ -1,22 +1,19 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { KnodeId } from "@knodia/common-models/ids";
 
-import { Button, ButtonLink, Link, Modal } from "@knodia/ui-kit/ui";
+import { Button, Modal } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { createLink } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload, RouterLink } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgreementCard";
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
-
-const RouterLink = createLink(Link);
-const RouterButtonLink = createLink(ButtonLink);
 
 export function ConsumerPurposeDetail({
   knodeId,
@@ -74,7 +71,7 @@ export function ConsumerPurposeDetail({
 
       <PurposeAgreementCard
         action={
-          <RouterButtonLink
+          <ButtonLinkWithPreload
             aria-label="Go to E-Service"
             hierarchy="neutral"
             kind="tonal"
@@ -84,7 +81,7 @@ export function ConsumerPurposeDetail({
             to="/consumption/e-services/$id"
           >
             <ArrowRightIcon />
-          </RouterButtonLink>
+          </ButtonLinkWithPreload>
         }
         agreement={purpose.agreement}
       />

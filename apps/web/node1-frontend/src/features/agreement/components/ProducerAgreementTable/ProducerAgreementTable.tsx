@@ -1,7 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  ButtonLink,
   Cell,
   Column,
   Empty,
@@ -12,13 +11,11 @@ import {
   TableHeader,
 } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
-import { createLink } from "@tanstack/react-router";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 
 import { AgreementStateChip } from "../AgreementStateChip";
-
-const ButtonLinkWithPreload = createLink(ButtonLink);
 
 export function ProducerAgreementTable({
   agreements,
