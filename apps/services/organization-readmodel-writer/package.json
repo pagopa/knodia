@@ -5,9 +5,7 @@
     "dev": "concurrently -n tsc,run -c auto -k 'tsc --watch --pretty' 'dotenvx run -- node --watch ./src/index.ts'",
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/organization-readmodel-writer",
-    "test:watch": "pnpm test --watch"
+    "lint:autofix": "eslint . --fix"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
