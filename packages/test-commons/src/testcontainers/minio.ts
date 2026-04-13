@@ -41,6 +41,8 @@ export async function setupMinioTestBucket(connectionString: string) {
  */
 export async function setupMinioTestContainer() {
   const container = await new MinioContainer(TEST_MINIO_IMAGE)
+    .withName("knodia-minio-test-container")
+    .withLabels({ "com.docker.compose.project": "knodia-test" })
     .withUsername(TEST_MINIO_USERNAME)
     .withPassword(TEST_MINIO_PASSWORD)
     .withExposedPorts(TEST_MINIO_PORT)

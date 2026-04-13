@@ -3,6 +3,7 @@ import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 import { bffApi } from "@knodia/bff-client";
 import { Banner, Breadcrumb, Breadcrumbs, Divider } from "@knodia/ui-kit/ui";
 import { SealCheckIcon, WarningIcon } from "@phosphor-icons/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
@@ -36,14 +37,8 @@ export const Route = createFileRoute(
   component: RouteComponent,
   loaderDeps: ({ search: { knodeId } }) => ({ knodeId }),
   // eslint-disable-next-line perfectionist/sort-objects
-  loader: async ({
-    context: { queryClient },
-    deps: { knodeId },
-    params: { id },
-  }) =>
-    await queryClient.ensureQueryData(
-      consumerEserviceDetailsQuery(id, knodeId),
-    ),
+  loader: ({ context: { queryClient }, deps: { knodeId }, params: { id } }) =>
+    queryClient.ensureQueryData(consumerEserviceDetailsQuery(id, knodeId)),
   validateSearch: eserviceDetailSearchSchema,
 });
 
@@ -127,8 +122,11 @@ function ConsumptionRequirementsSection({
 
 function RouteComponent() {
   const canManageAgreements = useHasRole("administrative");
-  const bffDetail = Route.useLoaderData();
   const { knodeId } = Route.useSearch();
+  const { id } = Route.useParams();
+  const { data: bffDetail } = useSuspenseQuery(
+    consumerEserviceDetailsQuery(id, knodeId),
+  );
   const eservice = toConsumptionEserviceDetail(bffDetail);
   const { agreement } = eservice;
   const hasAgreement = agreement !== undefined;
