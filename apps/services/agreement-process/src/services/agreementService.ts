@@ -177,7 +177,7 @@ export function agreementServiceBuilder(
         reactivatedBy === "consumer" ? null : agreement.suspendedByConsumerAt;
       const suspendedByProducerAt =
         reactivatedBy === "producer" ? null : agreement.suspendedByProducerAt;
-      const nextState: Agreement["state"] =
+      const nextState: AgreementState =
         suspendedByConsumerAt === null && suspendedByProducerAt === null
           ? "Active"
           : "Suspended";

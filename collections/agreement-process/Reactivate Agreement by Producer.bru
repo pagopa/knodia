@@ -1,11 +1,11 @@
 meta {
-  name: Suspend Agreement
+  name: Reactivate Agreement by Producer
   type: http
 }
 
 post {
-  url: {{host-agreement-process}}/agreements/:agreementId/suspend
-  body: json
+  url: {{host-agreement-process}}/agreements/:agreementId/producer/reactivation
+  body: none
   auth: none
 }
 
@@ -16,10 +16,4 @@ params:path {
 headers {
   x-correlation-id: {{correlation-id}}
   authorization: {{internal-jwt}}
-}
-
-body:json {
-  {
-    "suspendedBy": "producer"
-  }
 }

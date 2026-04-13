@@ -76,14 +76,6 @@ export type AgreementSeed = {
     eserviceVersionId: string;
 };
 
-export type SuspendAgreementBody = {
-    suspendedBy: 'consumer' | 'producer';
-};
-
-export type ReactivateAgreementBody = {
-    reactivatedBy: 'consumer' | 'producer';
-};
-
 export type Agreement = {
     attributes: Array<Attribute>;
     consumer: AgreementConsumer;
@@ -279,8 +271,8 @@ export type GetAgreementResponses = {
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
 
-export type SuspendAgreementData = {
-    body: SuspendAgreementBody;
+export type SuspendAgreementByConsumerData = {
+    body?: never;
     headers: {
         /**
          * Unique identifier of the request
@@ -291,10 +283,10 @@ export type SuspendAgreementData = {
         agreementId: string;
     };
     query?: never;
-    url: '/agreements/{agreementId}/suspend';
+    url: '/agreements/{agreementId}/consumer/suspension';
 };
 
-export type SuspendAgreementErrors = {
+export type SuspendAgreementByConsumerErrors = {
     /**
      * Bad Request
      */
@@ -317,19 +309,19 @@ export type SuspendAgreementErrors = {
     409: Problem;
 };
 
-export type SuspendAgreementError = SuspendAgreementErrors[keyof SuspendAgreementErrors];
+export type SuspendAgreementByConsumerError = SuspendAgreementByConsumerErrors[keyof SuspendAgreementByConsumerErrors];
 
-export type SuspendAgreementResponses = {
+export type SuspendAgreementByConsumerResponses = {
     /**
      * Agreement suspended successfully
      */
     200: Agreement;
 };
 
-export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
+export type SuspendAgreementByConsumerResponse = SuspendAgreementByConsumerResponses[keyof SuspendAgreementByConsumerResponses];
 
-export type ReactivateAgreementData = {
-    body: ReactivateAgreementBody;
+export type SuspendAgreementByProducerData = {
+    body?: never;
     headers: {
         /**
          * Unique identifier of the request
@@ -340,10 +332,10 @@ export type ReactivateAgreementData = {
         agreementId: string;
     };
     query?: never;
-    url: '/agreements/{agreementId}/reactivate';
+    url: '/agreements/{agreementId}/producer/suspension';
 };
 
-export type ReactivateAgreementErrors = {
+export type SuspendAgreementByProducerErrors = {
     /**
      * Bad Request
      */
@@ -366,13 +358,111 @@ export type ReactivateAgreementErrors = {
     409: Problem;
 };
 
-export type ReactivateAgreementError = ReactivateAgreementErrors[keyof ReactivateAgreementErrors];
+export type SuspendAgreementByProducerError = SuspendAgreementByProducerErrors[keyof SuspendAgreementByProducerErrors];
 
-export type ReactivateAgreementResponses = {
+export type SuspendAgreementByProducerResponses = {
+    /**
+     * Agreement suspended successfully
+     */
+    200: Agreement;
+};
+
+export type SuspendAgreementByProducerResponse = SuspendAgreementByProducerResponses[keyof SuspendAgreementByProducerResponses];
+
+export type ReactivateAgreementByConsumerData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/consumer/reactivation';
+};
+
+export type ReactivateAgreementByConsumerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateAgreementByConsumerError = ReactivateAgreementByConsumerErrors[keyof ReactivateAgreementByConsumerErrors];
+
+export type ReactivateAgreementByConsumerResponses = {
     /**
      * Agreement reactivated successfully
      */
     200: Agreement;
 };
 
-export type ReactivateAgreementResponse = ReactivateAgreementResponses[keyof ReactivateAgreementResponses];
+export type ReactivateAgreementByConsumerResponse = ReactivateAgreementByConsumerResponses[keyof ReactivateAgreementByConsumerResponses];
+
+export type ReactivateAgreementByProducerData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/producer/reactivation';
+};
+
+export type ReactivateAgreementByProducerErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateAgreementByProducerError = ReactivateAgreementByProducerErrors[keyof ReactivateAgreementByProducerErrors];
+
+export type ReactivateAgreementByProducerResponses = {
+    /**
+     * Agreement reactivated successfully
+     */
+    200: Agreement;
+};
+
+export type ReactivateAgreementByProducerResponse = ReactivateAgreementByProducerResponses[keyof ReactivateAgreementByProducerResponses];
