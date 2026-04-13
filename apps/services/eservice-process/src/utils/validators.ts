@@ -18,7 +18,7 @@ import {
   organizationNotFound,
 } from "../models/errors.ts";
 
-export const findLatestEserviceVersion = (
+export const findEserviceLatestVersion = (
   eservice: Eservice,
 ): EserviceVersion => {
   const latestVersion = eservice.versions.reduce<EserviceVersion | undefined>(

@@ -51,7 +51,7 @@ import {
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
   assertOrganizationExists,
-  findLatestEserviceVersion,
+  findEserviceLatestVersion,
   updateEserviceVersionState,
 } from "../utils/validators.ts";
 
@@ -77,7 +77,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findLatestEserviceVersion(eservice);
+      const latestVersion = findEserviceLatestVersion(eservice);
       assertEserviceVersionIsSuspended(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
@@ -249,7 +249,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      const latestVersion = findLatestEserviceVersion(eservice);
+      const latestVersion = findEserviceLatestVersion(eservice);
       assertEserviceVersionIsActive(eservice, latestVersion);
 
       const updatedEservice = updateEserviceVersionState(
