@@ -156,7 +156,9 @@ describe("ProducerAgreementDetail", () => {
       renderDetail();
 
       expect(
-        await screen.findByText("No Purposes found for this Agreement."),
+        await screen.findByText(
+          "You don't have any Purpose for this E-Service.",
+        ),
       ).toBeInTheDocument();
     });
 

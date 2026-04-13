@@ -52,7 +52,7 @@ function AgreementPurposeTable({
   if (purposes.length === 0) {
     return (
       <Banner icon={<SelectionPlusIcon />} kind="neutral">
-        No Purposes found for this Agreement.
+        You don&apos;t have any Purpose for this E-Service.
       </Banner>
     );
   }
