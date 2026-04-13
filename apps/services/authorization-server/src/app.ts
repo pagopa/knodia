@@ -8,12 +8,23 @@ import {
 
 import type { AuthorizationServerConfig } from "./config/config.ts";
 
+import { getK2K2GatewayApiClient } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { tokenRouter } from "./routers/tokenRouter.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
 
-export function buildApp({ config }: { config: LoggerConfig }) {
+export function buildApp({
+  config,
+  knodeUrl,
+}: {
+  config: LoggerConfig;
+  knodeUrl: string;
+}) {
+  const k2kGatewayClient = getK2K2GatewayApiClient({
+    knodeUrl,
+  });
+
   const app = createFastifyApp({
     fastifyOptions: {
       openapi: {
@@ -39,12 +50,12 @@ export function buildApp({ config }: { config: LoggerConfig }) {
 
   app.register(healthRouter);
   app.register(tokenRouter, {
-    tokenService: tokenServiceBuilder(),
+    tokenService: tokenServiceBuilder(k2kGatewayClient),
   });
 
   return app;
 }
 
 export function buildAppFromConfig(config: AuthorizationServerConfig) {
-  return buildApp({ config });
+  return buildApp({ config, knodeUrl: config.knodeUrl });
 }

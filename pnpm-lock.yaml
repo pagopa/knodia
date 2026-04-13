@@ -481,6 +481,9 @@ importers:
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
+      '@knodia/k2k-gateway-client':
+        specifier: workspace:*
+        version: link:../../../packages/clients/k2k-gateway
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
