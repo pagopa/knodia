@@ -39,6 +39,14 @@ run_flyway() {
     "$command"
 }
 
+for dir in migration/*/; do
+  dir_name=$(basename "$dir")
+  if [ -z "${DB_MAP[$dir_name]+x}" ]; then
+    echo "::error::Unexpected directory under migration/: $dir_name"
+    exit 1
+  fi
+done
+
 for dir_name in "${!DB_MAP[@]}"; do
   db_name="${DB_MAP[$dir_name]}"
   base_path="migration/${dir_name}"
