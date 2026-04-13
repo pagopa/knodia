@@ -1,0 +1,24 @@
+meta {
+  name: 5 - Reject: Consumer suspend producer-suspended
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{host-agreement-process}}/agreements/:agreementId/consumer/suspension
+  body: none
+  auth: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{internal-jwt}}
+}
+
+assert {
+  res.status: eq 409
+}
