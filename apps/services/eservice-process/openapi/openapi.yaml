@@ -905,6 +905,14 @@ paths:
               schema:
                 type: string
               description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:
@@ -973,6 +981,14 @@ paths:
               schema:
                 type: string
               description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
         "401":
           description: Unauthorized
           content:

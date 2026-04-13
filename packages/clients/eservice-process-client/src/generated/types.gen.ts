@@ -538,6 +538,10 @@ export type SuspendEserviceData = {
 
 export type SuspendEserviceErrors = {
     /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
      * Unauthorized
      */
     401: Problem;
@@ -582,6 +586,10 @@ export type ActivateEserviceData = {
 };
 
 export type ActivateEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
     /**
      * Unauthorized
      */
