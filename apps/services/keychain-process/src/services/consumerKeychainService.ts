@@ -309,10 +309,9 @@ export function consumerKeychainServiceBuilder(
         return user;
       }
 
-      const paginatedUserIds = consumerKeychain.users.slice(
-        params.offset,
-        params.offset + params.limit,
-      );
+      const paginatedUserIds = consumerKeychain.users
+        .toSorted()
+        .slice(params.offset, params.offset + params.limit);
 
       return {
         results: await Promise.all(
