@@ -22,18 +22,27 @@ const { values } = parseArgs({
 const keychainId = values.keychainId;
 const kid = values.kid;
 const purposeId = values.purposeId;
-const aud = values.aud;
+// Per RFC, the aud of the client assertion identifies the authorization server
+// where the JWT is presented. Must match CLIENT_ASSERTION_ACCEPTED_AUDIENCES
+// configured in the authorization-server .env.
+const DEFAULT_AUD = "test.knodia.org";
+const AUTH_SERVER_URL = "http://localhost:3700";
+const aud = values.aud ?? DEFAULT_AUD;
 const keyPath = values.key;
 const durationSeconds = Number(values.duration);
 
-if (!keychainId || !purposeId || !aud) {
+if (!keychainId || !purposeId) {
   console.error(`Usage: node scripts/local-auth/generate-client-assertion.ts \\
   --keychainId <uuid> \\
   --purposeId <uuid> \\
-  --aud <audience> \\
+  [--aud <audience>] \\
   [--kid <key-id>] \\
   [--key <path-to-pem-private-key>] \\
   [--duration <seconds>]
+
+If --aud is omitted, defaults to ${DEFAULT_AUD} (the local
+authorization server). Per RFC, the audience must identify the
+authorization server where the client assertion is presented.
 
 If --key is omitted, a fresh RSA-2048 keypair is generated and
 the public key is written to docker/keys/ for use in local testing.
@@ -125,7 +134,7 @@ console.log("\n--- Client Assertion JWT ---\n");
 console.log(clientAssertion);
 
 console.log("\n--- Sample curl command ---\n");
-console.log(`curl -X POST http://localhost:3200/token \\
+console.log(`curl -X POST ${AUTH_SERVER_URL}/token \\
   -H 'Content-Type: application/json' \\
   -d '{
     "client_assertion": "${clientAssertion}",
