@@ -15,6 +15,8 @@ import type {
   API_ProducerEserviceDetails,
 } from "./api.ts";
 
+import { hasRecentlyBeenUpdated } from "../../utils/recentUpdate.ts";
+
 export const toAPI_ProducerEservice = ({
   activeAgreements,
   activePurposes,
@@ -120,29 +122,22 @@ export const toAPI_ConsumerEserviceDetails = (
 
 export const toAPI_ConsumerEservice = (
   eservice: remoteResourcesManagerApi.Eservice,
-  recentEserviceUpdateDays: number,
-): API_ConsumerEservice => {
+  recentUpdateDays: number,
+): API_ConsumerEservice => ({
+  agreement: eservice.agreement,
+  categories: eservice.categories,
   // TODO https://pagopa.atlassian.net/browse/KN-246
-  const hasRecentlyBeenUpdated = (dateString: string): boolean => {
-    const updatedAt = new Date(dateString);
-    const xDaysAgo = new Date();
-    xDaysAgo.setDate(xDaysAgo.getDate() - recentEserviceUpdateDays);
-
-    return updatedAt >= xDaysAgo;
-  };
-
-  return {
-    agreement: eservice.agreement,
-    categories: eservice.categories,
-    hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice.updatedAt),
-    id: eservice.id,
-    mode: eservice.mode,
-    name: eservice.name,
-    producer: eservice.producer,
-    requiredAttributes: eservice.version.requiredAttributes,
-    state: eservice.version.state,
-  };
-};
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(
+    eservice.updatedAt,
+    recentUpdateDays,
+  ),
+  id: eservice.id,
+  mode: eservice.mode,
+  name: eservice.name,
+  producer: eservice.producer,
+  requiredAttributes: eservice.version.requiredAttributes,
+  state: eservice.version.state,
+});
 
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,

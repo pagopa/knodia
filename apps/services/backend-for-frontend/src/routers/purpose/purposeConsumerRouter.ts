@@ -30,6 +30,8 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_ConsumerPurposes,
@@ -46,6 +48,7 @@ import {
 import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface PurposeConsumerRouterOptions {
+  config: BffProcessConfig;
   keychainProcessClient: KeychainProcessClient;
   knodeId: KnodeId;
   organizationProcessClient: OrganizationProcessClient;
@@ -58,6 +61,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
 > = async (
   fastify,
   {
+    config,
     keychainProcessClient,
     knodeId,
     organizationProcessClient,
@@ -166,6 +170,7 @@ export const purposeConsumerRouter: FastifyPluginAsyncZod<
             `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
           ),
           purpose,
+          recentUpdateDays: config.recentUpdateDays,
         }),
       );
 

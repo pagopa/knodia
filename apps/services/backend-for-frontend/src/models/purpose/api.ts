@@ -64,6 +64,10 @@ export const API_ConsumerPurpose = z
   .strictObject({
     dailyCalls: API_PurposeDailyCalls,
     eservice: API_CompactEservice,
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the Purpose state has been updated in the last days",
+    }),
     id: z.uuid(),
     keychains: z.int().min(0).meta({
       description: "Number of Consumer Keychains associated with this purpose",

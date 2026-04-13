@@ -632,6 +632,10 @@ export type PurposeSeed = {
 export type ConsumerPurpose = {
     dailyCalls: number;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose state has been updated in the last days
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     /**
      * Number of Consumer Keychains associated with this purpose

@@ -138,6 +138,7 @@ export function buildAppFromConfig(
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
+      config,
       keychainProcessClient: clients.keychainProcessClient,
       knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
