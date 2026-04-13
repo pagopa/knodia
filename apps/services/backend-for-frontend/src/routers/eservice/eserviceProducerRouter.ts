@@ -339,7 +339,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
             state: [API_PurposeState.enum.Active],
           },
         }),
-        purposeProcessApi.getTotalDailyCalls({
+        purposeProcessApi.getPurposesTotalDailyCalls({
           client: purposeProcessClient,
           headers,
           query: {

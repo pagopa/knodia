@@ -476,8 +476,8 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /purposes/totalDailyCalls:
     get:
-      operationId: getTotalDailyCalls
-      summary: Get total daily calls
+      operationId: getPurposesTotalDailyCalls
+      summary: Get Purposes total daily calls
       tags:
         - purpose
       description: Get the total daily API calls declared by Purposes matching the
@@ -508,11 +508,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Total daily calls retrieved successfully
+          description: Purposes total daily calls retrieved successfully
           content:
             application/json:
               schema:
-                description: Total daily calls retrieved successfully
+                description: Purposes total daily calls retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/TotalDailyCalls"
         "400":

@@ -259,7 +259,7 @@ export type CreatePurposeResponses = {
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
 
-export type GetTotalDailyCallsData = {
+export type GetPurposesTotalDailyCallsData = {
     body?: never;
     headers: {
         /**
@@ -281,7 +281,7 @@ export type GetTotalDailyCallsData = {
     url: '/purposes/totalDailyCalls';
 };
 
-export type GetTotalDailyCallsErrors = {
+export type GetPurposesTotalDailyCallsErrors = {
     /**
      * Bad Request
      */
@@ -296,16 +296,16 @@ export type GetTotalDailyCallsErrors = {
     403: Problem;
 };
 
-export type GetTotalDailyCallsError = GetTotalDailyCallsErrors[keyof GetTotalDailyCallsErrors];
+export type GetPurposesTotalDailyCallsError = GetPurposesTotalDailyCallsErrors[keyof GetPurposesTotalDailyCallsErrors];
 
-export type GetTotalDailyCallsResponses = {
+export type GetPurposesTotalDailyCallsResponses = {
     /**
-     * Total daily calls retrieved successfully
+     * Purposes total daily calls retrieved successfully
      */
     200: TotalDailyCalls;
 };
 
-export type GetTotalDailyCallsResponse = GetTotalDailyCallsResponses[keyof GetTotalDailyCallsResponses];
+export type GetPurposesTotalDailyCallsResponse = GetPurposesTotalDailyCallsResponses[keyof GetPurposesTotalDailyCallsResponses];
 
 export type GetPurposeData = {
     body?: never;

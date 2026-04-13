@@ -243,7 +243,7 @@ const API_ProducerEserviceDetailsCounters = z
 const API_ProducerEserviceDetailsPurposeCounters =
   API_ProducerEserviceDetailsCounters.extend({
     totalApiCallsPerDay: z.number().int().min(0).meta({
-      description: "Total API calls per day across all purposes",
+      description: "Total API calls per day across all Active purposes",
       format: "int64",
     }),
   }).meta({ id: "ProducerEserviceDetailsPurposeCounters" });

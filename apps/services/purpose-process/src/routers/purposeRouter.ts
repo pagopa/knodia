@@ -152,17 +152,17 @@ export const purposeRouter: FastifyPluginAsyncZod<
       description:
         "Get the total daily API calls declared by Purposes matching the given filters",
       headers: KnodiaServiceHeaders,
-      operationId: "getTotalDailyCalls",
+      operationId: "getPurposesTotalDailyCalls",
       querystring: API_GetTotalDailyCallsQueryParams,
       response: {
         200: API_TotalDailyCalls.meta({
-          description: "Total daily calls retrieved successfully",
+          description: "Purposes total daily calls retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
-      summary: "Get total daily calls",
+      summary: "Get Purposes total daily calls",
       tags: [apiTags.purpose],
     },
     url: "/purposes/totalDailyCalls",
