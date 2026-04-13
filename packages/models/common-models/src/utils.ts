@@ -11,3 +11,7 @@ export function assertRequired<T>(
     throw genericInternalError(message);
   }
 }
+
+export function dateToSeconds(date: Date): number {
+  return Math.floor(date.getTime() / 1000);
+}
