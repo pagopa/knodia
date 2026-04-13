@@ -128,6 +128,7 @@ function AuthStateProvider({ children }: { children: ReactNode }) {
         logout,
         roles: sessionClaims?.roles ?? [],
         token: uiSessionToken,
+        userId: sessionClaims?.sub ?? null,
         username: sessionClaims?.username ?? null,
       }}
     >
