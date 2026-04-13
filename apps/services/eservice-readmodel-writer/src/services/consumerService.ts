@@ -20,5 +20,11 @@ export async function handleEserviceEvent(
         message.version,
       );
     })
+    .with({ type: "EserviceVersionSuspendedV1" }, async (msg) => {
+      await writerService.upsertEservice(
+        fromEserviceV1(msg.data.eservice),
+        message.version,
+      );
+    })
     .exhaustive();
 }
