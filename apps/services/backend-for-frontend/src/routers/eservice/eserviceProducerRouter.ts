@@ -36,6 +36,7 @@ import {
   purposeProcessApi,
   type PurposeProcessClient,
 } from "@knodia/purpose-process-client";
+import { z } from "zod";
 
 import type { BffProcessConfig } from "../../config/config.ts";
 
@@ -437,5 +438,97 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId/interface",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { eserviceId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Suspending Producer E-service with ID ${eserviceId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await eserviceProcessApi.suspendEservice({
+        client: eserviceProcessClient,
+        headers,
+        path: { eserviceId },
+      });
+
+      await pollingService.pollResourceWithMetadata(() =>
+        retrieveEservice(eserviceId, headers),
+      )({
+        condition: isPolledVersionAtLeastResponseVersion(response),
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend a Producer E-service",
+      operationId: "suspendProducerEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Producer E-service suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/:eserviceId/suspend",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { eserviceId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Reactivating Producer E-service with ID ${eserviceId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await eserviceProcessApi.reactivateEservice({
+        client: eserviceProcessClient,
+        headers,
+        path: { eserviceId },
+      });
+
+      await pollingService.pollResourceWithMetadata(() =>
+        retrieveEservice(eserviceId, headers),
+      )({
+        condition: isPolledVersionAtLeastResponseVersion(response),
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate a suspended Producer E-service",
+      operationId: "reactivateProducerEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Producer E-service reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/:eserviceId/reactivate",
   });
 };
