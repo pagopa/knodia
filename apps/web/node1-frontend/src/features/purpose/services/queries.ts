@@ -15,7 +15,7 @@ import {
 import { client } from "@/libs/axios";
 
 const PURPOSES_PAGE_LIMIT = 9;
-const PURPOSES_PER_ESERVICE_LIMIT = 50;
+const PURPOSES_SECTION_LIMIT = 50;
 
 export const consumerPurposeDetailsQuery = (
   purposeId: PurposeId,
@@ -40,7 +40,7 @@ export const consumerPurposesQuery = (offset: number) =>
 export const consumerPurposesByEserviceQuery = (eserviceId: EserviceId) =>
   getConsumerPurposesOptions({
     client,
-    query: { eserviceId, limit: PURPOSES_PER_ESERVICE_LIMIT, offset: 0 },
+    query: { eserviceId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
   });
 
 export const producerPurposesQuery = (offset: number) =>
@@ -53,5 +53,5 @@ export const producerPurposesQuery = (offset: number) =>
 export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
   getProducerPurposesOptions({
     client,
-    query: { agreementId, limit: PURPOSES_PER_ESERVICE_LIMIT, offset: 0 },
+    query: { agreementId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
   });
