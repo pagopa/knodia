@@ -41,14 +41,9 @@ export function assertAgreementCanBeReactivatedBy(
   agreement: Agreement,
   reactivatedBy: "consumer" | "producer",
 ): void {
-  const ownSuspensionAt =
-    reactivatedBy === "producer"
-      ? agreement.suspendedByProducerAt
-      : agreement.suspendedByConsumerAt;
-
   if (
     agreement.state !== AgreementState.enum.Suspended ||
-    ownSuspensionAt === null
+    getOwnSuspendedAt(agreement, reactivatedBy) === null
   ) {
     throw agreementNotInReactivatableState({
       agreementId: agreement.id,
@@ -74,12 +69,7 @@ export function assertAgreementCanBeSuspendedBy(
     });
   }
 
-  const alreadySuspendedByActor =
-    suspendedBy === "producer"
-      ? agreement.suspendedByProducerAt !== null
-      : agreement.suspendedByConsumerAt !== null;
-
-  if (alreadySuspendedByActor) {
+  if (getOwnSuspendedAt(agreement, suspendedBy) !== null) {
     throw agreementNotInSuspendableState({
       agreementId: agreement.id,
       state: agreement.state,
@@ -98,6 +88,15 @@ export function assertAgreementCanBeSuspendedBy(
       suspendedByProducerAt: agreement.suspendedByProducerAt,
     });
   }
+}
+
+function getOwnSuspendedAt(
+  agreement: Agreement,
+  actor: "consumer" | "producer",
+): Date | null {
+  return actor === "producer"
+    ? agreement.suspendedByProducerAt
+    : agreement.suspendedByConsumerAt;
 }
 
 export const assertEserviceVersionAllowsAgreementCreation = (
