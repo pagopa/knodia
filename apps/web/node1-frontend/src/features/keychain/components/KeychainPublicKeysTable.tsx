@@ -190,7 +190,7 @@ function DownloadPublicKeyAction({
     return (
       <DisabledTooltipButton
         {...commonButtonProps}
-        tooltip="Only Keychain's members can download public keys"
+        tooltip="Only Keychain members can download public keys"
       >
         {content}
       </DisabledTooltipButton>

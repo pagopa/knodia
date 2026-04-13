@@ -144,7 +144,7 @@ export const downloadConsumerKeychainKey = <ThrowOnError extends boolean = true>
 });
 
 /**
- * Retrieve a paginated list of Consumer keychains for the logged-in user's organization
+ * Retrieve a paginated list of Consumer Keychains for the logged-in user's organization
  */
 export const getConsumerKeychains = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainsResponses, GetConsumerKeychainsErrors, ThrowOnError>({
     responseType: 'json',
@@ -223,7 +223,7 @@ export const addConsumerKeychainMember = <ThrowOnError extends boolean = true>(o
 });
 
 /**
- * Remove a member from a Consumer Keychain
+ * Remove a Member from a Consumer Keychain
  */
 export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<RemoveConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).delete<RemoveConsumerKeychainMemberResponses, RemoveConsumerKeychainMemberErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -232,7 +232,7 @@ export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
- * Check whether the given user is a member of a Consumer Keychain
+ * Check whether the given User is a Member of a Consumer Keychain
  */
 export const getConsumerKeychainMembership = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMembershipData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMembershipResponses, GetConsumerKeychainMembershipErrors, ThrowOnError>({
     responseType: 'json',

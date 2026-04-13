@@ -4,13 +4,14 @@ meta {
 }
 
 get {
-  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId/members/me
+  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId/members/:userId
   body: none
   auth: none
 }
 
 params:path {
   consumerKeychainId: {{consumerKeychainId}}
+  userId: {{userId}}
 }
 
 headers {

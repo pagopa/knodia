@@ -688,7 +688,7 @@ export type GetConsumerKeychainMemberErrors = {
      */
     403: Problem;
     /**
-     * Consumer Keychain member not found
+     * Consumer Keychain Member not found
      */
     404: Problem;
 };
@@ -697,7 +697,7 @@ export type GetConsumerKeychainMemberError = GetConsumerKeychainMemberErrors[key
 
 export type GetConsumerKeychainMemberResponses = {
     /**
-     * Consumer Keychain member retrieved successfully
+     * Consumer Keychain Member retrieved successfully
      */
     200: User;
 };

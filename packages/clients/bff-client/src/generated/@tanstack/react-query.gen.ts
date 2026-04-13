@@ -338,7 +338,7 @@ export const downloadConsumerKeychainKeyOptions = (options: Options<DownloadCons
 export const getConsumerKeychainsQueryKey = (options: Options<GetConsumerKeychainsData>) => createQueryKey('getConsumerKeychains', options);
 
 /**
- * Retrieve a paginated list of Consumer keychains for the logged-in user's organization
+ * Retrieve a paginated list of Consumer Keychains for the logged-in user's organization
  */
 export const getConsumerKeychainsOptions = (options: Options<GetConsumerKeychainsData>) => queryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, GetConsumerKeychainsResponse, ReturnType<typeof getConsumerKeychainsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -356,7 +356,7 @@ export const getConsumerKeychainsOptions = (options: Options<GetConsumerKeychain
 export const getConsumerKeychainsInfiniteQueryKey = (options: Options<GetConsumerKeychainsData>): QueryKey<Options<GetConsumerKeychainsData>> => createQueryKey('getConsumerKeychains', options, true);
 
 /**
- * Retrieve a paginated list of Consumer keychains for the logged-in user's organization
+ * Retrieve a paginated list of Consumer Keychains for the logged-in user's organization
  */
 export const getConsumerKeychainsInfiniteOptions = (options: Options<GetConsumerKeychainsData>) => infiniteQueryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, InfiniteData<GetConsumerKeychainsResponse>, QueryKey<Options<GetConsumerKeychainsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
 // @ts-ignore
@@ -512,7 +512,7 @@ export const addConsumerKeychainMemberMutation = (options?: Partial<Options<AddC
 };
 
 /**
- * Remove a member from a Consumer Keychain
+ * Remove a Member from a Consumer Keychain
  */
 export const removeConsumerKeychainMemberMutation = (options?: Partial<Options<RemoveConsumerKeychainMemberData>>): UseMutationOptions<RemoveConsumerKeychainMemberResponse, AxiosError<RemoveConsumerKeychainMemberError>, Options<RemoveConsumerKeychainMemberData>> => {
     const mutationOptions: UseMutationOptions<RemoveConsumerKeychainMemberResponse, AxiosError<RemoveConsumerKeychainMemberError>, Options<RemoveConsumerKeychainMemberData>> = {
@@ -531,7 +531,7 @@ export const removeConsumerKeychainMemberMutation = (options?: Partial<Options<R
 export const getConsumerKeychainMembershipQueryKey = (options: Options<GetConsumerKeychainMembershipData>) => createQueryKey('getConsumerKeychainMembership', options);
 
 /**
- * Check whether the given user is a member of a Consumer Keychain
+ * Check whether the given User is a Member of a Consumer Keychain
  */
 export const getConsumerKeychainMembershipOptions = (options: Options<GetConsumerKeychainMembershipData>) => queryOptions<GetConsumerKeychainMembershipResponse, AxiosError<GetConsumerKeychainMembershipError>, GetConsumerKeychainMembershipResponse, ReturnType<typeof getConsumerKeychainMembershipQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {

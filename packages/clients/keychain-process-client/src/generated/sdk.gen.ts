@@ -138,7 +138,7 @@ export const removeConsumerKeychainMember = <ThrowOnError extends boolean = true
 });
 
 /**
- * Retrieve a Consumer Keychain member by user ID
+ * Retrieve a Consumer Keychain Member by user ID
  */
 export const getConsumerKeychainMember = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainMemberData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainMemberResponses, GetConsumerKeychainMemberErrors, ThrowOnError>({
     responseType: 'json',

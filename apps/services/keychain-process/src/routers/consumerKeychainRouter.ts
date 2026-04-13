@@ -232,19 +232,19 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Retrieve a Consumer Keychain member by user ID",
+      description: "Retrieve a Consumer Keychain Member by user ID",
       headers: KnodiaServiceHeaders,
       operationId: "getConsumerKeychainMember",
       params: API_ConsumerKeychainMemberPathParams,
       response: {
         200: API_User.meta({
-          description: "Consumer Keychain member retrieved successfully",
+          description: "Consumer Keychain Member retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({
-          description: "Consumer Keychain member not found",
+          description: "Consumer Keychain Member not found",
         }),
       },
       tags: [apiTags.consumerKeychain],

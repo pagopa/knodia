@@ -1018,7 +1018,7 @@ paths:
       operationId: getConsumerKeychainMember
       tags:
         - consumerKeychain
-      description: Retrieve a Consumer Keychain member by user ID
+      description: Retrieve a Consumer Keychain Member by user ID
       parameters:
         - schema:
             $ref: "#/components/schemas/UserId"
@@ -1041,11 +1041,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: Consumer Keychain member retrieved successfully
+          description: Consumer Keychain Member retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer Keychain member retrieved successfully
+                description: Consumer Keychain Member retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/User"
         "400":
@@ -1073,11 +1073,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Consumer Keychain member not found
+          description: Consumer Keychain Member not found
           content:
             application/problem+json:
               schema:
-                description: Consumer Keychain member not found
+                description: Consumer Keychain Member not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     delete:

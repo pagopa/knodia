@@ -140,12 +140,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerKeychainKeysQueryParams,
       response: {
         200: API_KeychainKeys.meta({
-          description: "Consumer Keychain keys retrieved successfully",
+          description: "Consumer Keychain Keys retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer keychain not found" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -310,7 +310,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       params: API_ConsumerKeychainIdPathParam,
       response: {
         204: z.undefined().meta({
-          description: "Consumer Keychain member added successfully",
+          description: "Consumer Keychain Member added successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -354,7 +354,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       params: API_ConsumerKeychainIdPathParam,
       response: {
         201: API_CreatedKeyResource.meta({
-          description: "Consumer Keychain key uploaded successfully",
+          description: "Consumer Keychain Key uploaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -396,7 +396,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       params: API_ConsumerKeychainKeyPathParams,
       response: {
         204: z.undefined().meta({
-          description: "Consumer Keychain key removed successfully",
+          description: "Consumer Keychain Key removed successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -435,12 +435,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "DELETE",
     schema: {
-      description: "Remove a member from a Consumer Keychain",
+      description: "Remove a Member from a Consumer Keychain",
       operationId: "removeConsumerKeychainMember",
       params: API_ConsumerKeychainMemberPathParams,
       response: {
         204: z.undefined().meta({
-          description: "Consumer Keychain member removed successfully",
+          description: "Consumer Keychain Member removed successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -525,7 +525,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer keychain not found" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -563,12 +563,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       querystring: API_GetConsumerKeychainMembersQueryParams,
       response: {
         200: API_KeychainMembers.meta({
-          description: "Consumer Keychain members retrieved successfully",
+          description: "Consumer Keychain Members retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer keychain not found" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -588,17 +588,6 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
-      /**
-       * First check if the Consumer Keychain exists so we are sure that the 404
-       * from getConsumerKeychainMember is due to the user not being a member,
-       * and not to the Consumer Keychain not existing.
-       */
-      await keychainProcessApi.getConsumerKeychain({
-        client: keychainProcessClient,
-        headers,
-        path: { consumerKeychainId },
-      });
-
       try {
         await keychainProcessApi.getConsumerKeychainMember({
           client: keychainProcessClient,
@@ -609,8 +598,15 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         res.send({ isMember: true });
       } catch (error) {
         if (isAxiosError(error) && error.response?.status === 404) {
-          res.send({ isMember: false });
-          return;
+          const problem = API_Problem.safeParse(error.response?.data);
+
+          if (
+            problem.success &&
+            problem.data.errors?.some(({ code }) => code === "006-0005")
+          ) {
+            res.send({ isMember: false });
+            return;
+          }
         }
 
         throw error;
@@ -619,7 +615,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Check whether the given user is a member of a Consumer Keychain",
+        "Check whether the given User is a Member of a Consumer Keychain",
       operationId: "getConsumerKeychainMembership",
       params: API_ConsumerKeychainMemberPathParams,
       response: {
@@ -630,7 +626,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
-        404: API_Problem.meta({ description: "Consumer keychain not found" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
       },
       tags: [apiTags.consumerKeychain],
     },
@@ -689,12 +685,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve a paginated list of Consumer keychains for the logged-in user's organization",
+        "Retrieve a paginated list of Consumer Keychains for the logged-in user's organization",
       operationId: "getConsumerKeychains",
       querystring: API_ConsumerKeychainsQueryParams,
       response: {
         200: API_Keychains.meta({
-          description: "Consumer keychains retrieved successfully",
+          description: "Consumer Keychains retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
