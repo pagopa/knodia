@@ -610,7 +610,7 @@ export type Users = Array<User>;
  * Unique JWK identifier (kid) of the created key
  */
 export type CreatedKeyResource = {
-    kid: string;
+    kid: KeyId;
 };
 
 /**

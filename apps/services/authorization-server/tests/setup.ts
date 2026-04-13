@@ -8,6 +8,7 @@ const app = buildApp({
     logLevel: "silent",
     nodeEnv: "test",
   },
+  knodeUrl: "http://localhost:0",
 });
 
 beforeAll(async () => {
