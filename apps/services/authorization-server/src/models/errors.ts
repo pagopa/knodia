@@ -33,6 +33,7 @@ const errorCodes = {
   INVALID_CLIENT_ASSERTION_FORMAT: "0018",
   TYP_NOT_FOUND: "0019",
   TYP_NOT_SUPPORTED: "0020",
+  PURPOSE_ID_NOT_FOUND: "0021",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -208,6 +209,16 @@ export function kidNotFound() {
       "The 'kid' header is required but was not found in the Client Assertion",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Missing 'kid' header",
+  });
+}
+
+export function purposeIdNotFound() {
+  return createApiError<ErrorCodes>({
+    code: "PURPOSE_ID_NOT_FOUND",
+    detail:
+      "The 'purpose_id' claim is required but was not found in the Client Assertion",
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Missing 'purpose_id' claim",
   });
 }
 

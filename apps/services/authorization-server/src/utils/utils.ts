@@ -29,6 +29,7 @@ import {
   issNotFound,
   jtiNotFound,
   kidNotFound,
+  purposeIdNotFound,
   subNotFound,
   typNotFound,
   typNotSupported,
@@ -148,7 +149,11 @@ export function checkKid(
 
 export function checkPurposeId(
   purposeId: unknown,
-): ValidationResult<PurposeId | undefined> {
+): ValidationResult<PurposeId> {
+  if (purposeId === undefined) {
+    return failedValidation([purposeIdNotFound()]);
+  }
+
   const purposeIdParseResult = PurposeId.safeParse(purposeId);
   if (purposeIdParseResult.success) {
     return successfulValidation(purposeIdParseResult.data);

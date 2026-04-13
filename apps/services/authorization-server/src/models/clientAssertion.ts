@@ -19,7 +19,7 @@ export const ClientAssertionPayload = z.strictObject({
   iat: z.int().positive(),
   iss: ConsumerKeychainId,
   jti: z.uuid(),
-  purpose_id: PurposeId.optional(),
+  purpose_id: PurposeId,
   sub: ConsumerKeychainId,
 });
 export type ClientAssertionPayload = z.infer<typeof ClientAssertionPayload>;
