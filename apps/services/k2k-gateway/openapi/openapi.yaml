@@ -570,6 +570,52 @@ components:
         - pagination
         - results
       additionalProperties: false
+    AccessTokenDataRequest:
+      type: object
+      properties:
+        kid:
+          description: Key ID from client assertion header
+          type: string
+        purposeId:
+          description: Purpose ID from client assertion claims
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - kid
+        - purposeId
+      additionalProperties: false
+    PublicKeyForVerification:
+      type: object
+      properties:
+        algorithm:
+          type: string
+        encodedPem:
+          type: string
+        format:
+          type: string
+        kid:
+          type: string
+      required:
+        - algorithm
+        - encodedPem
+        - format
+        - kid
+      additionalProperties: false
+    AccessTokenDataResponse:
+      type: object
+      properties:
+        consumerAttributes:
+          description: Attributes of the Consumer organization
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        publicKey:
+          $ref: "#/components/schemas/PublicKeyForVerification"
+      required:
+        - consumerAttributes
+        - publicKey
+      additionalProperties: false
     Organization:
       type: object
       properties:
@@ -777,6 +823,55 @@ paths:
             application/problem+json:
               schema:
                 description: Service status OK
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{keychainId}/accessTokenData:
+    post:
+      operationId: getAccessTokenData
+      summary: Get access token data
+      tags:
+        - operation
+        - consumerKeychain
+      description: Retrieve consumer public key and attributes needed for access token
+        emission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessTokenDataRequest"
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: keychainId
+          required: true
+          description: Consumer Keychain ID
+      responses:
+        "200":
+          description: Access token data retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Access token data retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/AccessTokenDataResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /catalog:
@@ -1408,6 +1503,8 @@ tags:
     name: operation
   - description: Routes related to Agreements
     name: agreement
+  - description: Routes related to Consumer Keychains
+    name: consumerKeychain
   - description: Routes related to E-services
     name: eservice
   - description: Routes related to Organizations

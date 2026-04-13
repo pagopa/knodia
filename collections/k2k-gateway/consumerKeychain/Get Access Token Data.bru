@@ -1,0 +1,20 @@
+meta {
+  name: Get Access Token Data
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/consumerKeychains/:keychainId/accessTokenData
+  body: json
+}
+
+params:path {
+  keychainId: {{consumerKeychainId}}
+}
+
+body:json {
+  {
+    "kid": "{{kid}}",
+    "purposeId": "{{purposeId}}"
+  }
+}

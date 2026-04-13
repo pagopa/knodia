@@ -13,7 +13,6 @@
       "outputs": ["src/generated/**"]
     },
     "generate-openapi": {
-      "dependsOn": ["typecheck"],
       "outputs": ["openapi/openapi.yaml"]
     },
     "generate-protobuf": {

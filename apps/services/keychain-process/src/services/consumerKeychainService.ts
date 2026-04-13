@@ -1,4 +1,5 @@
 /* eslint-disable max-lines-per-function */
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { KeychainEventStoreWriter } from "@knodia/db-event-store-writer/keychain";
 import type {
   ListResult,
@@ -21,6 +22,7 @@ import {
   type ConsumerKeychainId,
   generateId,
   type KeyId,
+  type PurposeId,
   unsafeBrandKeyId,
   unsafeBrandUserId,
   type UserId,
@@ -64,6 +66,7 @@ import {
 import { calculateKid, createJWK, decodeBase64Pem } from "../utils/crypto.ts";
 import {
   retrieveConsumerKeychain,
+  retrieveConsumerKeychainKey,
   retrieveConsumerKeychainPurpose,
 } from "../utils/readmodelUtils.ts";
 import {
@@ -223,6 +226,23 @@ export function consumerKeychainServiceBuilder(
       );
     },
 
+    async getConsumerKeychainKey(
+      consumerKeychainId: ConsumerKeychainId,
+      kid: KeyId,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<ConsumerKeychainKey> {
+      logger.info(
+        `Getting key with ID ${kid} of Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      return retrieveConsumerKeychainKey(consumerKeychain.data, kid);
+    },
+
     async getConsumerKeychainKeys(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainKeysQueryParams,
@@ -250,7 +270,6 @@ export function consumerKeychainServiceBuilder(
         params,
       );
     },
-
     async getConsumerKeychainMembers(
       consumerKeychainId: ConsumerKeychainId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
@@ -285,6 +304,23 @@ export function consumerKeychainServiceBuilder(
       }
 
       return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
+    },
+
+    async getConsumerKeychainPurpose(
+      consumerKeychainId: ConsumerKeychainId,
+      purpose: ExternalResource<PurposeId>,
+      { logger }: AuthorizedContext<InternalAuthData>,
+    ): Promise<WithMetadata<ConsumerKeychainPurpose>> {
+      logger.info(
+        `Getting purpose ${purpose.id} (knode ${purpose.knodeId}) linked to Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      await retrieveConsumerKeychain(consumerKeychainId, readmodelService);
+
+      return await retrieveConsumerKeychainPurpose(
+        { consumerKeychainId, purpose },
+        readmodelService,
+      );
     },
 
     async getConsumerKeychainPurposes(
