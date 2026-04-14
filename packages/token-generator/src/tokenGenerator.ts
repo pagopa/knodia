@@ -1,10 +1,19 @@
 import type {
+  EserviceAccessTokenClaims,
   InternalTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import type { OrganizationId, UserId } from "@knodia/common-models/ids";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
+import type {
+  ConsumerKeychainId,
+  EserviceId,
+  EserviceVersionId,
+  OrganizationId,
+  PurposeId,
+  UserId,
+} from "@knodia/common-models/ids";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
@@ -13,6 +22,7 @@ import { dateToSeconds } from "@knodia/common-models/utils";
 import { randomUUID } from "node:crypto";
 
 import type {
+  EserviceAccessToken,
   InternalToken,
   UISessionRefreshToken,
   UISessionToken,
@@ -24,6 +34,16 @@ const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 export interface InternalTokenInput extends TokenParams {
   subject: string;
+}
+
+interface EserviceAccessTokenInput extends TokenParams {
+  consumer: ExternalResource<OrganizationId>;
+  consumerKeychainId: ConsumerKeychainId; // access token client_id claim
+  eserviceId: EserviceId;
+  eserviceVersionId: EserviceVersionId;
+  producerId: OrganizationId;
+  purposeId: PurposeId;
+  subject: ConsumerKeychainId;
 }
 
 interface TokenParams {
@@ -77,11 +97,15 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   async function buildAndSignToken(
     kid: string,
     claims:
+      | EserviceAccessTokenClaims
       | InternalTokenClaims
       | UISessionRefreshTokenClaims
       | UISessionTokenClaims,
   ): Promise<{ header: string; serialized: string }> {
-    const typ = claims.type === "refresh-ui-session" ? "JWT" : "at+jwt";
+    const typ =
+      "type" in claims && claims.type === "refresh-ui-session"
+        ? "JWT"
+        : "at+jwt";
     const header = buildHeader(kid, typ);
     const payload = b64url(JSON.stringify(claims));
     const message = `${header}.${payload}`;
@@ -107,6 +131,36 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   }
 
   return {
+    async generateEserviceAccessToken(
+      input: EserviceAccessTokenInput,
+    ): Promise<EserviceAccessToken> {
+      const now = dateToSeconds(new Date());
+      const claims: EserviceAccessTokenClaims = {
+        aud: input.audience,
+        client_id: input.consumerKeychainId,
+        consumer_id: input.consumer.id,
+        consumer_knode_id: input.consumer.knodeId,
+        eservice_id: input.eserviceId,
+        eservice_version_id: input.eserviceVersionId,
+        exp: now + input.secondsDuration,
+        iat: now,
+        iss: input.issuer,
+        jti: randomUUID(),
+        nbf: now,
+        producer_id: input.producerId,
+        purpose_id: input.purposeId,
+        sub: input.subject,
+      };
+
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+
+      return {
+        header,
+        payload: claims,
+        serialized,
+      };
+    },
+
     async generateInternalToken(
       input: InternalTokenInput,
     ): Promise<InternalToken> {
