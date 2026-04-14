@@ -357,6 +357,19 @@ components:
         - pagination
         - results
       additionalProperties: false
+    KeychainMembers:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
 paths:
   /status:
     get:
@@ -806,11 +819,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "201":
-          description: Consumer Keychain key uploaded successfully
+          description: Consumer Keychain Key uploaded successfully
           content:
             application/json:
               schema:
-                description: Consumer Keychain key uploaded successfully
+                description: Consumer Keychain Key uploaded successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainKey"
           headers:
@@ -857,6 +870,286 @@ paths:
             application/problem+json:
               schema:
                 description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/keys/{keyId}:
+    get:
+      operationId: getConsumerKeychainKey
+      tags:
+        - consumerKeychain
+      description: Retrieve a Consumer Keychain Key by kid
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: keyId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Consumer Keychain Key retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain Key retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/KeychainKey"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain Key not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain Key not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    delete:
+      operationId: removeConsumerKeychainKey
+      tags:
+        - consumerKeychain
+      description: Remove a key from a Consumer Keychain
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: keyId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "204":
+          description: Consumer Keychain Key removed successfully
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/members/{userId}:
+    get:
+      operationId: getConsumerKeychainMember
+      tags:
+        - consumerKeychain
+      description: Retrieve a Consumer Keychain Member by user ID
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/UserId"
+          in: path
+          name: userId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Consumer Keychain Member retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain Member retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/User"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain Member not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain Member not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+    delete:
+      operationId: removeConsumerKeychainMember
+      tags:
+        - consumerKeychain
+      description: Remove a member from a Consumer Keychain
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/UserId"
+          in: path
+          name: userId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/CorrelationId"
+          in: header
+          name: x-correlation-id
+          required: true
+          description: Unique identifier of the request
+      responses:
+        "200":
+          description: Consumer Keychain member removed successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain member removed successfully
+                allOf:
+                  - $ref: "#/components/schemas/Keychain"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members:
@@ -948,6 +1241,23 @@ paths:
       description: Retrieve members of a Consumer Keychain
       parameters:
         - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
             type: string
             format: uuid
             pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
@@ -969,155 +1279,7 @@ paths:
               schema:
                 description: Consumer Keychain members retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Users"
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Consumer Keychain not found
-          content:
-            application/problem+json:
-              schema:
-                description: Consumer Keychain not found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{consumerKeychainId}/keys/{keyId}:
-    delete:
-      operationId: removeConsumerKeychainKey
-      tags:
-        - consumerKeychain
-      description: Remove a key from a Consumer Keychain
-      parameters:
-        - schema:
-            type: string
-          in: path
-          name: keyId
-          required: true
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: consumerKeychainId
-          required: true
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "204":
-          description: Consumer Keychain key removed successfully
-          headers:
-            metadata-version:
-              required: true
-              schema:
-                type: string
-              description: Metadata version of the resource
-        "400":
-          description: Bad Request
-          content:
-            application/problem+json:
-              schema:
-                description: Bad Request
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "401":
-          description: Unauthorized
-          content:
-            application/problem+json:
-              schema:
-                description: Unauthorized
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "403":
-          description: Forbidden
-          content:
-            application/problem+json:
-              schema:
-                description: Forbidden
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "404":
-          description: Consumer Keychain not found
-          content:
-            application/problem+json:
-              schema:
-                description: Consumer Keychain not found
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-        "409":
-          description: Conflict
-          content:
-            application/problem+json:
-              schema:
-                description: Conflict
-                allOf:
-                  - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{consumerKeychainId}/members/{userId}:
-    delete:
-      operationId: removeConsumerKeychainMember
-      tags:
-        - consumerKeychain
-      description: Remove a member from a Consumer Keychain
-      parameters:
-        - schema:
-            $ref: "#/components/schemas/UserId"
-          in: path
-          name: userId
-          required: true
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: consumerKeychainId
-          required: true
-        - schema:
-            allOf:
-              - $ref: "#/components/schemas/CorrelationId"
-          in: header
-          name: x-correlation-id
-          required: true
-          description: Unique identifier of the request
-      responses:
-        "200":
-          description: Consumer Keychain member removed successfully
-          content:
-            application/json:
-              schema:
-                description: Consumer Keychain member removed successfully
-                allOf:
-                  - $ref: "#/components/schemas/Keychain"
-          headers:
-            metadata-version:
-              required: true
-              schema:
-                type: string
-              description: Metadata version of the resource
+                  - $ref: "#/components/schemas/KeychainMembers"
         "400":
           description: Bad Request
           content:

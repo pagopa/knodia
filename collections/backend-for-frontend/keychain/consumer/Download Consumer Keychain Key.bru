@@ -1,0 +1,19 @@
+meta {
+  name: Download Consumer Keychain Key
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId/keys/:keyId
+  body: none
+  auth: none
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+  keyId: {{consumerKeychainKeyId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

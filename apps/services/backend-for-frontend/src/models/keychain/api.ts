@@ -59,6 +59,12 @@ export type API_GetConsumerKeychainKeysQueryParams = z.infer<
   typeof API_GetConsumerKeychainKeysQueryParams
 >;
 
+export const API_GetConsumerKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerKeychainMembersQueryParams = z.infer<
+  typeof API_GetConsumerKeychainMembersQueryParams
+>;
+
 export const API_ConsumerKeychainPatch = z
   .strictObject({
     description: API_KeychainLocalizedDescription.nullable().optional(),
@@ -83,6 +89,7 @@ export const API_KeychainKey = z
     createdAt: z.iso.datetime(),
     kid: API_KeyId,
     name: API_KeychainKeyLocalizedName,
+    uploaderUsername: z.string().optional(),
   })
   .meta({ id: "KeychainKey" });
 export type API_KeychainKey = z.infer<typeof API_KeychainKey>;
@@ -101,6 +108,15 @@ export const API_KeychainMemberSeed = z
   })
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
+
+export const API_ConsumerKeychainMembershipCheckResult = z
+  .strictObject({
+    isMember: z.boolean(),
+  })
+  .meta({ id: "ConsumerKeychainMembershipCheckResult" });
+export type API_ConsumerKeychainMembershipCheckResult = z.infer<
+  typeof API_ConsumerKeychainMembershipCheckResult
+>;
 
 export const API_ConsumerKeychainMemberPathParams = z
   .strictObject({
@@ -133,6 +149,14 @@ export type API_User = z.infer<typeof API_User>;
 
 export const API_Users = z.array(API_User).meta({ id: "Users" });
 export type API_Users = z.infer<typeof API_Users>;
+
+export const API_KeychainMembers = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_User),
+  })
+  .meta({ id: "KeychainMembers" });
+export type API_KeychainMembers = z.infer<typeof API_KeychainMembers>;
 
 export const API_CreatedKeyResource = z
   .strictObject({

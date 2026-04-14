@@ -40,7 +40,12 @@ const keyId = existingKey.kid;
 const mockConsumerKeychain: ConsumerKeychain = {
   ...getMockConsumerKeychain(),
   keys: [existingKey],
-  users: [callerUserId],
+  users: [
+    {
+      addedAt: new Date(),
+      userId: callerUserId,
+    },
+  ],
 };
 
 describe("DELETE /consumerKeychains/:consumerKeychainId/keys/:keyId (removeConsumerKeychainKey)", () => {

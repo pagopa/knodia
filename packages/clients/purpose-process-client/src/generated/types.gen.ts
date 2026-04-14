@@ -117,6 +117,13 @@ export type Purposes = {
     results: Array<Purpose>;
 };
 
+export type TotalDailyCalls = {
+    /**
+     * Sum of daily API calls declared by Purposes matching the filters
+     */
+    totalDailyCalls: number;
+};
+
 export type CurrentPurposeFormSchemasResponse = {
     schema: PurposeFormSchema;
     texts: PurposeFormTexts;
@@ -258,6 +265,54 @@ export type CreatePurposeResponses = {
 };
 
 export type CreatePurposeResponse = CreatePurposeResponses[keyof CreatePurposeResponses];
+
+export type GetPurposesTotalDailyCallsData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path?: never;
+    query: {
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId: string;
+        /**
+         * Filter by Purpose State
+         */
+        state?: Array<PurposeState>;
+    };
+    url: '/purposes/totalDailyCalls';
+};
+
+export type GetPurposesTotalDailyCallsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetPurposesTotalDailyCallsError = GetPurposesTotalDailyCallsErrors[keyof GetPurposesTotalDailyCallsErrors];
+
+export type GetPurposesTotalDailyCallsResponses = {
+    /**
+     * Purposes total daily calls retrieved successfully
+     */
+    200: TotalDailyCalls;
+};
+
+export type GetPurposesTotalDailyCallsResponse = GetPurposesTotalDailyCallsResponses[keyof GetPurposesTotalDailyCallsResponses];
 
 export type GetPurposeData = {
     body?: never;

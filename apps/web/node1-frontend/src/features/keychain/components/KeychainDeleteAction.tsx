@@ -17,12 +17,14 @@ export function KeychainDeleteAction({
   type: KeychainType;
 }) {
   const navigate = useNavigate();
-  const { isPending: isDeleting, mutate: deleteConsumerKeychain } = useMutation(
-    {
-      ...deleteConsumerKeychainMutation({ client }),
-      onSuccess: () => navigate({ to: "/keychains" }),
-    },
-  );
+  const {
+    isError,
+    isPending: isDeleting,
+    mutate: deleteConsumerKeychain,
+  } = useMutation({
+    ...deleteConsumerKeychainMutation({ client }),
+    onSuccess: () => navigate({ to: "/keychains" }),
+  });
 
   function handleDelete() {
     match(type)
@@ -45,11 +47,13 @@ export function KeychainDeleteAction({
       </Button>
       <Modal
         actionLabel="Delete anyway"
+        cancelLabel="Cancel"
         confirmButtonProps={{ isPending: isDeleting }}
         description="Are you sure you want to delete this Keychain? All its public keys will be deleted. This action cannot be undone."
         isDismissable
         kind="destructive"
         onConfirm={handleDelete}
+        showErrorBanner={isError}
         title="Delete Keychain"
       />
     </DialogTrigger>

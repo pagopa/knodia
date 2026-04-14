@@ -10,6 +10,7 @@ vi.stubGlobal("env", {
   COGNITO_LOGOUT_URI: "http://localhost:5173/auth/callback",
   COGNITO_REDIRECT_URI: "http://localhost:5173/auth/callback",
   KNODE_ID: "Orion",
+  MAX_KEYS_PER_KEYCHAIN: "100",
 });
 
 import { server } from "./msw/server";

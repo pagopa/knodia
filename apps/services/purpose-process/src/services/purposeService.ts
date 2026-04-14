@@ -27,7 +27,10 @@ import {
   PurposeState,
 } from "@knodia/purpose-models";
 
-import type { API_GetPurposesQueryParams } from "../models/api.ts";
+import type {
+  API_GetPurposesQueryParams,
+  API_GetTotalDailyCallsQueryParams,
+} from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
@@ -153,6 +156,16 @@ export function purposeServiceBuilder(
     ): Promise<ListResult<Purpose>> {
       logger.info({ requestQuery }, "Getting Purposes with query params");
       return await readmodelService.getPurposes(requestQuery);
+    },
+    async getTotalDailyCalls(
+      requestQuery: API_GetTotalDailyCallsQueryParams,
+      { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+    ): Promise<number> {
+      logger.info(
+        { requestQuery },
+        "Getting total daily calls for Purposes with query params",
+      );
+      return await readmodelService.getTotalDailyCalls(requestQuery);
     },
   };
 }
