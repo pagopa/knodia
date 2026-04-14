@@ -50,6 +50,11 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -339,13 +344,14 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
-export type AccessTokenDataRequest = {
+export type ClientAssertionVerificationRequest = {
     /**
-     * Key ID from client assertion header
+     * Unique identifier of the Consumer Keychain
      */
-    kid: string;
+    keychainId: string;
+    kid: KeyId;
     /**
-     * Purpose ID from client assertion claims
+     * Unique identifier of the Purpose
      */
     purposeId: string;
 };
@@ -354,10 +360,10 @@ export type PublicKeyForVerification = {
     algorithm: string;
     encodedPem: string;
     format: string;
-    kid: string;
+    kid: KeyId;
 };
 
-export type AccessTokenDataResponse = {
+export type ClientAssertionVerificationResponse = {
     /**
      * Attributes of the Consumer organization
      */
@@ -504,19 +510,14 @@ export type GetStatusResponses = {
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
 
-export type GetAccessTokenDataData = {
-    body: AccessTokenDataRequest;
-    path: {
-        /**
-         * Consumer Keychain ID
-         */
-        keychainId: string;
-    };
+export type GetClientAssertionVerificationDataData = {
+    body: ClientAssertionVerificationRequest;
+    path?: never;
     query?: never;
-    url: '/consumerKeychains/{keychainId}/accessTokenData';
+    url: '/clientAssertionVerificationData';
 };
 
-export type GetAccessTokenDataErrors = {
+export type GetClientAssertionVerificationDataErrors = {
     /**
      * Bad Request
      */
@@ -527,16 +528,16 @@ export type GetAccessTokenDataErrors = {
     404: Problem;
 };
 
-export type GetAccessTokenDataError = GetAccessTokenDataErrors[keyof GetAccessTokenDataErrors];
+export type GetClientAssertionVerificationDataError = GetClientAssertionVerificationDataErrors[keyof GetClientAssertionVerificationDataErrors];
 
-export type GetAccessTokenDataResponses = {
+export type GetClientAssertionVerificationDataResponses = {
     /**
-     * Access token data retrieved successfully
+     * Client assertion verification data retrieved successfully
      */
-    200: AccessTokenDataResponse;
+    200: ClientAssertionVerificationResponse;
 };
 
-export type GetAccessTokenDataResponse = GetAccessTokenDataResponses[keyof GetAccessTokenDataResponses];
+export type GetClientAssertionVerificationDataResponse = GetClientAssertionVerificationDataResponses[keyof GetClientAssertionVerificationDataResponses];
 
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;

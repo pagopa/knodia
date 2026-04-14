@@ -1,12 +1,12 @@
 import type { keychainProcessApi } from "@knodia/keychain-process-client";
 import type { organizationProcessApi } from "@knodia/organization-process-client";
 
-import type { API_AccessTokenDataResponse } from "./api.ts";
+import type { API_ClientAssertionVerificationResponse } from "./api.ts";
 
-export function toAPI_AccessTokenDataResponse(
+export function toAPI_ClientAssertionVerificationResponse(
   key: keychainProcessApi.KeychainKey,
   organization: organizationProcessApi.Organization,
-): API_AccessTokenDataResponse {
+): API_ClientAssertionVerificationResponse {
   return {
     consumerAttributes: organization.attributes,
     publicKey: {
