@@ -407,7 +407,7 @@ export type ConsumerEservice = {
     };
     categories: Array<EserviceCategory>;
     /**
-     * Indicates whether the E-service has been updated in the last days
+     * Indicates whether the E-service has been recently updated
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
@@ -642,6 +642,10 @@ export type PurposeSeed = {
 export type ConsumerPurpose = {
     dailyCalls: number;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     /**
      * Number of Consumer Keychains associated with this purpose

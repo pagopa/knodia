@@ -52,7 +52,7 @@ beforeAll(async () => {
       organizationProcessUrl: "http://localhost:0",
       port: 0,
       purposeProcessUrl: "http://localhost:0",
-      recentEserviceUpdateDays: 3,
+      recentUpdateDays: 3,
       refreshJwt: { secondsDuration: 86400 },
       remoteResourcesManagerUrl: "http://localhost:0",
       uiSessionJwt: {

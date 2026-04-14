@@ -434,8 +434,7 @@ export const API_ConsumerEservice = z
     // TODO: add purposes and consumerKeychains
     categories: z.array(API_EserviceCategory),
     hasRecentlyBeenUpdated: z.boolean().meta({
-      description:
-        "Indicates whether the E-service has been updated in the last days",
+      description: "Indicates whether the E-service has been recently updated",
     }),
     id: z.uuid(),
     mode: API_EserviceMode,
