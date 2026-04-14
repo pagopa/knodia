@@ -67,7 +67,11 @@ function EditKeychainModal({
 }: EditKeychainModalProps) {
   const queryClient = useQueryClient();
 
-  const { isPending, mutate: editConsumerKeychain } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: editConsumerKeychain,
+  } = useMutation({
     ...updateConsumerKeychainMutation({
       client,
     }),
@@ -132,6 +136,7 @@ function EditKeychainModal({
           onClose();
         }
       }}
+      showErrorBanner={isError}
       title="Edit Keychain"
     >
       <form

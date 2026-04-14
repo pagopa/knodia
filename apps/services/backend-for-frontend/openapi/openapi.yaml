@@ -1254,6 +1254,14 @@ components:
       required:
         - userId
       additionalProperties: false
+    ConsumerKeychainMembershipCheckResult:
+      type: object
+      properties:
+        isMember:
+          type: boolean
+      required:
+        - isMember
+      additionalProperties: false
     User:
       type: object
       properties:
@@ -1900,11 +1908,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Consumer Keychain keys retrieved successfully
+          description: Consumer Keychain Keys retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer Keychain keys retrieved successfully
+                description: Consumer Keychain Keys retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainKeys"
         "400":
@@ -1932,11 +1940,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Consumer keychain not found
+          description: Consumer Keychain not found
           content:
             application/problem+json:
               schema:
-                description: Consumer keychain not found
+                description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     post:
@@ -1960,11 +1968,11 @@ paths:
           required: true
       responses:
         "201":
-          description: Consumer Keychain key uploaded successfully
+          description: Consumer Keychain Key uploaded successfully
           content:
             application/json:
               schema:
-                description: Consumer Keychain key uploaded successfully
+                description: Consumer Keychain Key uploaded successfully
                 allOf:
                   - $ref: "#/components/schemas/CreatedKeyResource"
         "400":
@@ -2088,7 +2096,7 @@ paths:
           required: true
       responses:
         "204":
-          description: Consumer Keychain key removed successfully
+          description: Consumer Keychain Key removed successfully
         "400":
           description: Bad Request
           content:
@@ -2178,7 +2186,7 @@ paths:
       operationId: getConsumerKeychains
       tags:
         - consumerKeychain
-      description: Retrieve a paginated list of Consumer keychains for the logged-in
+      description: Retrieve a paginated list of Consumer Keychains for the logged-in
         user's organization
       parameters:
         - schema:
@@ -2200,11 +2208,11 @@ paths:
           description: Pagination starting position
       responses:
         "200":
-          description: Consumer keychains retrieved successfully
+          description: Consumer Keychains retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer keychains retrieved successfully
+                description: Consumer Keychains retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/Keychains"
         "400":
@@ -2381,11 +2389,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Consumer keychain not found
+          description: Consumer Keychain not found
           content:
             application/problem+json:
               schema:
-                description: Consumer keychain not found
+                description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members:
@@ -2410,7 +2418,7 @@ paths:
           required: true
       responses:
         "204":
-          description: Consumer Keychain member added successfully
+          description: Consumer Keychain Member added successfully
         "400":
           description: Bad Request
           content:
@@ -2483,11 +2491,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Consumer Keychain members retrieved successfully
+          description: Consumer Keychain Members retrieved successfully
           content:
             application/json:
               schema:
-                description: Consumer Keychain members retrieved successfully
+                description: Consumer Keychain Members retrieved successfully
                 allOf:
                   - $ref: "#/components/schemas/KeychainMembers"
         "400":
@@ -2515,11 +2523,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Consumer keychain not found
+          description: Consumer Keychain not found
           content:
             application/problem+json:
               schema:
-                description: Consumer keychain not found
+                description: Consumer Keychain not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/members/{userId}:
@@ -2527,7 +2535,7 @@ paths:
       operationId: removeConsumerKeychainMember
       tags:
         - consumerKeychain
-      description: Remove a member from a Consumer Keychain
+      description: Remove a Member from a Consumer Keychain
       parameters:
         - schema:
             $ref: "#/components/schemas/UserId"
@@ -2543,7 +2551,67 @@ paths:
           required: true
       responses:
         "204":
-          description: Consumer Keychain member removed successfully
+          description: Consumer Keychain Member removed successfully
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Consumer Keychain not found
+          content:
+            application/problem+json:
+              schema:
+                description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/{consumerKeychainId}/membership/{userId}:
+    get:
+      operationId: getConsumerKeychainMembership
+      tags:
+        - consumerKeychain
+      description: Check whether the given User is a Member of a Consumer Keychain
+      parameters:
+        - schema:
+            $ref: "#/components/schemas/UserId"
+          in: path
+          name: userId
+          required: true
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: consumerKeychainId
+          required: true
+      responses:
+        "200":
+          description: Consumer Keychain membership check retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain membership check retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainMembershipCheckResult"
         "400":
           description: Bad Request
           content:
