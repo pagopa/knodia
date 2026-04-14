@@ -48,7 +48,7 @@ export function tokenServiceBuilder(
       );
 
       await validatePlatformObjects(
-        clientAssertion.payload.purpose_id,
+        clientAssertion.payload.purposeId,
         clientAssertion.payload.aud,
         consumerAttributes,
         readmodelService,
