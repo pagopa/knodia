@@ -16,6 +16,7 @@ export async function handleEserviceEvent(
   return match(message)
     .with(
       { type: "EserviceVersionActivatedV1" },
+      { type: "EserviceVersionReactivatedV1" },
       { type: "EserviceVersionSuspendedV1" },
       async (msg) => {
         await writerService.upsertEservice(

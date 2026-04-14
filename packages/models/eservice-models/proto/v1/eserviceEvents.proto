@@ -14,3 +14,8 @@ message EserviceVersionSuspendedV1 {
   EserviceV1 eservice = 1;
   string eserviceVersionId = 2;
 }
+
+message EserviceVersionReactivatedV1 {
+  EserviceV1 eservice = 1;
+  string eserviceVersionId = 2;
+}

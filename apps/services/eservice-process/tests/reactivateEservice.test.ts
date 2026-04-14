@@ -48,7 +48,7 @@ describe("POST /eservices/:eserviceId/reactivate (reactivateEservice)", () => {
     const reactivateEvent = events[1];
     expect(reactivateEvent).toMatchObject({
       streamId: eservice.id,
-      type: "EserviceVersionActivatedV1",
+      type: "EserviceVersionReactivatedV1",
       version: 1,
     });
 
