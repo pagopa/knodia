@@ -1213,6 +1213,29 @@ components:
         - name
         - updatedAt
       additionalProperties: false
+    ConsumerKeychainOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - id
+        - name
+      additionalProperties: false
+    ConsumerKeychainOptions:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerKeychainOption"
+      required:
+        - results
+      additionalProperties: false
     ConsumerKeychainPatch:
       type: object
       properties:
@@ -2677,6 +2700,52 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/options:
+    get:
+      operationId: getConsumerKeychainOptions
+      tags:
+        - consumerKeychain
+      description: Retrieve Consumer Keychain options for combobox selection
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: q
+          required: true
+          description: Search text used to filter Consumer Keychains by name
+      responses:
+        "200":
+          description: Consumer Keychain options retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain options retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/purposes:

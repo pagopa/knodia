@@ -73,6 +73,34 @@ export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
 >;
 
+export const API_GetConsumerKeychainOptionsQueryParams = z.strictObject({
+  q: z.string().meta({
+    description: "Search text used to filter Consumer Keychains by name",
+  }),
+});
+export type API_GetConsumerKeychainOptionsQueryParams = z.infer<
+  typeof API_GetConsumerKeychainOptionsQueryParams
+>;
+
+export const API_ConsumerKeychainOption = z
+  .strictObject({
+    id: z.uuid(),
+    name: API_KeychainLocalizedName,
+  })
+  .meta({ id: "ConsumerKeychainOption" });
+export type API_ConsumerKeychainOption = z.infer<
+  typeof API_ConsumerKeychainOption
+>;
+
+export const API_ConsumerKeychainOptions = z
+  .strictObject({
+    results: z.array(API_ConsumerKeychainOption),
+  })
+  .meta({ id: "ConsumerKeychainOptions" });
+export type API_ConsumerKeychainOptions = z.infer<
+  typeof API_ConsumerKeychainOptions
+>;
+
 export const API_GetConsumerKeychainKeysQueryParams = API_PaginationQueryParams;
 export type API_GetConsumerKeychainKeysQueryParams = z.infer<
   typeof API_GetConsumerKeychainKeysQueryParams
