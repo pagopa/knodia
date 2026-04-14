@@ -145,6 +145,21 @@ describe("createAjvValidator", () => {
     expect(errors["purpose"]).toBeDefined();
   });
 
+  // Nested AJV errors report `instancePath` like "/legalBasis/0"; the parser
+  // must key the error by the top-level field name, not the full path.
+  it("keys nested array-item errors by the top-level field name", () => {
+    const errors = validate(
+      {
+        description: "Test",
+        legalBasis: ["INVALID_BASIS" as never],
+        purpose: "INSTITUTIONAL",
+      },
+      new Set(["description", "legalBasis", "purpose"]),
+    );
+    expect(errors["legalBasis"]).toBeDefined();
+    expect(errors["legalBasis/0"]).toBeUndefined();
+  });
+
   describe("hideOptions stripping", () => {
     const hideOptionsSchema: JsonSchema = {
       properties: {
