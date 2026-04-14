@@ -96,6 +96,11 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    KeyId:
+      description: Unique identifier of the Key
+      type: string
+      format: base64url
+      pattern: ^[A-Za-z0-9_-]*$
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -570,18 +575,23 @@ components:
         - pagination
         - results
       additionalProperties: false
-    AccessTokenDataRequest:
+    ClientAssertionVerificationRequest:
       type: object
       properties:
-        kid:
-          description: Key ID from client assertion header
+        keychainId:
+          description: Unique identifier of the Consumer Keychain
           type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        kid:
+          $ref: "#/components/schemas/KeyId"
         purposeId:
-          description: Purpose ID from client assertion claims
+          description: Unique identifier of the Purpose
           type: string
           format: uuid
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
+        - keychainId
         - kid
         - purposeId
       additionalProperties: false
@@ -595,14 +605,14 @@ components:
         format:
           type: string
         kid:
-          type: string
+          $ref: "#/components/schemas/KeyId"
       required:
         - algorithm
         - encodedPem
         - format
         - kid
       additionalProperties: false
-    AccessTokenDataResponse:
+    ClientAssertionVerificationResponse:
       type: object
       properties:
         consumerAttributes:
@@ -825,39 +835,30 @@ paths:
                 description: Service status OK
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /consumerKeychains/{keychainId}/accessTokenData:
+  /clientAssertionVerificationData:
     post:
-      operationId: getAccessTokenData
-      summary: Get access token data
+      operationId: getClientAssertionVerificationData
+      summary: Get client assertion verification data
       tags:
         - operation
-        - consumerKeychain
-      description: Retrieve consumer public key and attributes needed for access token
-        emission
+      description: Verify that the key and purpose are associated with the consumer
+        keychain, and return the public key and consumer attributes for further
+        verification by the auth server
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AccessTokenDataRequest"
-      parameters:
-        - schema:
-            type: string
-            format: uuid
-            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-          in: path
-          name: keychainId
-          required: true
-          description: Consumer Keychain ID
+              $ref: "#/components/schemas/ClientAssertionVerificationRequest"
       responses:
         "200":
-          description: Access token data retrieved successfully
+          description: Client assertion verification data retrieved successfully
           content:
             application/json:
               schema:
-                description: Access token data retrieved successfully
+                description: Client assertion verification data retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/AccessTokenDataResponse"
+                  - $ref: "#/components/schemas/ClientAssertionVerificationResponse"
         "400":
           description: Bad Request
           content:
@@ -1503,8 +1504,6 @@ tags:
     name: operation
   - description: Routes related to Agreements
     name: agreement
-  - description: Routes related to Consumer Keychains
-    name: consumerKeychain
   - description: Routes related to E-services
     name: eservice
   - description: Routes related to Organizations

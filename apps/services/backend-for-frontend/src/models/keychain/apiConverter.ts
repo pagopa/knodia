@@ -29,11 +29,17 @@ export const toAPI_Keychain = (
 
 export const toAPI_KeychainKey = (
   key: keychainProcessApi.KeychainKey,
-): API_KeychainKey => ({
-  createdAt: key.createdAt,
-  kid: key.kid,
-  name: key.name,
-});
+  users: keychainProcessApi.Users,
+): API_KeychainKey => {
+  const owner = users.find((user) => user.id === key.userId);
+
+  return {
+    createdAt: key.createdAt,
+    kid: key.kid,
+    name: key.name,
+    uploaderUsername: owner?.username,
+  };
+};
 
 export const toAPI_User = (user: keychainProcessApi.User): API_User => ({
   email: user.email,

@@ -4,13 +4,13 @@ meta {
 }
 
 get {
-  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/purposes/:purposeId?knodeId=Orion
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/purposes/:purposeId?knodeId={{other-knode-id}}
   body: none
   auth: none
 }
 
 params:query {
-  knodeId: Orion
+  knodeId: {{other-knode-id}}
 }
 
 params:path {

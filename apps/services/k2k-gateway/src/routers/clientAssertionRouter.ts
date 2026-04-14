@@ -16,22 +16,21 @@ import {
 
 import { apiTags } from "../models/apiTags.ts";
 import {
-  API_AccessTokenDataRequest,
-  API_AccessTokenDataResponse,
-  API_ConsumerKeychainIdPathParam,
-} from "../models/consumerKeychain/api.ts";
-import { toAPI_AccessTokenDataResponse } from "../models/consumerKeychain/apiConverters.ts";
+  API_ClientAssertionVerificationRequest,
+  API_ClientAssertionVerificationResponse,
+} from "../models/clientAssertion/api.ts";
+import { toAPI_ClientAssertionVerificationResponse } from "../models/clientAssertion/apiConverters.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
-interface ConsumerKeychainRouterOptions {
+interface ClientAssertionRouterOptions {
   callerKnodeId: KnodeId;
   keychainProcessClient: KeychainProcessClient;
   organizationProcessClient: OrganizationProcessClient;
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
-export const consumerKeychainRouter: FastifyPluginAsyncZod<
-  ConsumerKeychainRouterOptions
+export const clientAssertionRouter: FastifyPluginAsyncZod<
+  ClientAssertionRouterOptions
 > = async (
   fastify,
   {
@@ -46,8 +45,8 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { correlationId, logger } = getContextValues(requestContext);
 
       logger.info(
-        { keychainId: req.params.keychainId, requestBody: req.body },
-        "Getting access token data for consumer keychain",
+        { requestBody: req.body },
+        "Verifying client assertion data for access token emission",
       );
 
       const token = await tokenProvider.get();
@@ -59,7 +58,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           client: keychainProcessClient,
           headers,
           path: {
-            consumerKeychainId: req.params.keychainId,
+            consumerKeychainId: req.body.keychainId,
             purposeId: req.body.purposeId,
           },
           query: { knodeId: callerKnodeId },
@@ -68,14 +67,14 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           client: keychainProcessClient,
           headers,
           path: {
-            consumerKeychainId: req.params.keychainId,
+            consumerKeychainId: req.body.keychainId,
             keyId: req.body.kid,
           },
         }),
         keychainProcessApi.getConsumerKeychain({
           client: keychainProcessClient,
           headers,
-          path: { consumerKeychainId: req.params.keychainId },
+          path: { consumerKeychainId: req.body.keychainId },
         }),
       ]);
 
@@ -86,25 +85,30 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
           path: { organizationId: keychainResponse.data.ownerId },
         });
 
-      res.send(toAPI_AccessTokenDataResponse(keyResponse.data, organization));
+      res.send(
+        toAPI_ClientAssertionVerificationResponse(
+          keyResponse.data,
+          organization,
+        ),
+      );
     },
     method: "POST",
     schema: {
-      body: API_AccessTokenDataRequest,
+      body: API_ClientAssertionVerificationRequest,
       description:
-        "Retrieve consumer public key and attributes needed for access token emission",
-      operationId: "getAccessTokenData",
-      params: API_ConsumerKeychainIdPathParam,
+        "Verify that the key and purpose are associated with the consumer keychain, and return the public key and consumer attributes for further verification by the auth server",
+      operationId: "getClientAssertionVerificationData",
       response: {
-        200: API_AccessTokenDataResponse.meta({
-          description: "Access token data retrieved successfully",
+        200: API_ClientAssertionVerificationResponse.meta({
+          description:
+            "Client assertion verification data retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
-      summary: "Get access token data",
-      tags: [apiTags.operation, apiTags.consumerKeychain],
+      summary: "Get client assertion verification data",
+      tags: [apiTags.operation],
     },
-    url: "/consumerKeychains/:keychainId/accessTokenData",
+    url: "/clientAssertionVerificationData",
   });
 };

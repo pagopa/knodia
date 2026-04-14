@@ -18,9 +18,11 @@ import type { PurposeService } from "../services/purposeService.ts";
 import {
   API_CurrentPurposeFormSchemasResponse,
   API_GetPurposesQueryParams,
+  API_GetTotalDailyCallsQueryParams,
   API_Purpose,
   API_Purposes,
   API_PurposeSeed,
+  API_TotalDailyCalls,
 } from "../models/api.ts";
 import { toAPI_Purpose } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -31,6 +33,7 @@ interface PurposeRouterOptions {
 
 export const purposeRouter: FastifyPluginAsyncZod<
   PurposeRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (fastify, { purposeService }) => {
   fastify.route({
     handler: async (req, res) => {
@@ -125,6 +128,44 @@ export const purposeRouter: FastifyPluginAsyncZod<
       tags: [apiTags.purpose],
     },
     url: "/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "internal" },
+        {
+          tokenType: "ui-session",
+          userRoles: ["administrative", "technical"],
+        },
+      ]);
+
+      const totalDailyCalls = await purposeService.getTotalDailyCalls(
+        req.query,
+        ctx,
+      );
+
+      res.status(200).send({ totalDailyCalls });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Get the total daily API calls declared by Purposes matching the given filters",
+      headers: KnodiaServiceHeaders,
+      operationId: "getPurposesTotalDailyCalls",
+      querystring: API_GetTotalDailyCallsQueryParams,
+      response: {
+        200: API_TotalDailyCalls.meta({
+          description: "Purposes total daily calls retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      summary: "Get Purposes total daily calls",
+      tags: [apiTags.purpose],
+    },
+    url: "/purposes/totalDailyCalls",
   });
 
   fastify.route({
