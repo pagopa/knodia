@@ -1272,6 +1272,19 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/User"
+    KeychainMembers:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     CreatedKeyResource:
       description: Unique JWK identifier (kid) of the created key
       type: object
@@ -2449,6 +2462,23 @@ paths:
       description: Retrieve members of a Consumer Keychain
       parameters:
         - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
             type: string
             format: uuid
             pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
@@ -2463,7 +2493,7 @@ paths:
               schema:
                 description: Consumer Keychain members retrieved successfully
                 allOf:
-                  - $ref: "#/components/schemas/Users"
+                  - $ref: "#/components/schemas/KeychainMembers"
         "400":
           description: Bad Request
           content:

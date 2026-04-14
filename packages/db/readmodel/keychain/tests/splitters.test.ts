@@ -44,10 +44,11 @@ describe("Consumer keychain splitters", () => {
       }));
 
     const expectedConsumerKeychainUsersSQL: ConsumerKeychainUserSQL[] =
-      consumerKeychain.users.map((userId) => ({
+      consumerKeychain.users.map((user) => ({
+        addedAt: user.addedAt,
         consumerKeychainId: consumerKeychain.id,
         metadataVersion,
-        userId,
+        userId: user.userId,
       }));
 
     expect(consumerKeychainSQL).toEqual(expectedConsumerKeychainSQL);

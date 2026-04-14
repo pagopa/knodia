@@ -39,13 +39,14 @@ import {
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
   API_GetConsumerKeychainKeysQueryParams,
+  API_GetConsumerKeychainMembersQueryParams,
   type API_Keychain,
   API_KeychainDetails,
   API_KeychainKeys,
   API_KeychainKeySeed,
+  API_KeychainMembers,
   API_KeychainMemberSeed,
   API_Keychains,
-  API_Users,
 } from "../../models/keychain/api.ts";
 import {
   toAPI_Keychain,
@@ -533,28 +534,34 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
+      const { limit, offset } = req.query;
 
       logger.info(
-        { requestParams: req.params },
+        { requestParams: req.params, requestQuery: req.query },
         `Getting Consumer Keychain members with ID ${req.params.consumerKeychainId}`,
       );
 
-      const { data: users } =
+      const { data: members } =
         await keychainProcessApi.getConsumerKeychainMembers({
           client: keychainProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           path: { consumerKeychainId: req.params.consumerKeychainId },
+          query: { limit, offset },
         });
 
-      res.send(users.map(toAPI_User));
+      res.send({
+        pagination: members.pagination,
+        results: members.results.map(toAPI_User),
+      });
     },
     method: "GET",
     schema: {
       description: "Retrieve members of a Consumer Keychain",
       operationId: "getConsumerKeychainMembers",
       params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainMembersQueryParams,
       response: {
-        200: API_Users.meta({
+        200: API_KeychainMembers.meta({
           description: "Consumer Keychain members retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -599,12 +606,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
             client: keychainProcessClient,
             headers,
             path: { consumerKeychainId: keychain.id },
+            query: { limit: 1, offset: 0 },
           }),
         ]);
 
         return toAPI_Keychain(keychain, {
           keysCount: keys.pagination.total,
-          membersCount: members.length,
+          membersCount: members.pagination.total,
         });
       }
 
