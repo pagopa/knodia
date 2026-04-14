@@ -1,8 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  activateProducerEserviceMutation,
   getProducerEserviceDetailsQueryKey,
+  reactivateProducerEserviceMutation,
   suspendProducerEserviceMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, toastQueue } from "@knodia/ui-kit/ui";
@@ -49,8 +49,8 @@ export function EserviceProducerActions({
     },
   });
 
-  const { isPending: isActivating, mutate: activate } = useMutation({
-    ...activateProducerEserviceMutation({ client }),
+  const { isPending: isReactivating, mutate: reactivate } = useMutation({
+    ...reactivateProducerEserviceMutation({ client }),
     onError: () =>
       toastQueue.add({
         description: "Please try again later.",
@@ -87,9 +87,9 @@ export function EserviceProducerActions({
     .with("Suspended", () => (
       <Button
         hierarchy="brand"
-        isPending={isActivating}
+        isPending={isReactivating}
         kind="filled"
-        onPress={() => activate({ path: { eserviceId } })}
+        onPress={() => reactivate({ path: { eserviceId } })}
         size="md"
       >
         Reactivate

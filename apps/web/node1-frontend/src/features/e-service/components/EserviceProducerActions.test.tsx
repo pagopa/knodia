@@ -70,13 +70,13 @@ describe("EserviceProducerActions", () => {
   });
 
   it("shows the Reactivate button when the eservice is suspended and calls the mutation", async () => {
-    const activateHandler = vi.fn(
+    const reactivateHandler = vi.fn(
       () => new HttpResponse(null, { status: 204 }),
     );
     server.use(
       http.post(
-        `${BASE_URL}/producer/eservices/:eserviceId/activate`,
-        activateHandler,
+        `${BASE_URL}/producer/eservices/:eserviceId/reactivate`,
+        reactivateHandler,
       ),
     );
 
@@ -91,7 +91,7 @@ describe("EserviceProducerActions", () => {
     await user.click(screen.getByRole("button", { name: "Reactivate" }));
 
     await waitFor(() => {
-      expect(activateHandler).toHaveBeenCalledTimes(1);
+      expect(reactivateHandler).toHaveBeenCalledTimes(1);
     });
   });
 });
