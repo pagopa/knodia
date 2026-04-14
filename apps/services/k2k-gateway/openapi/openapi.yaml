@@ -1258,13 +1258,13 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/consumer/reactivation:
+  /agreements/{agreementId}/reactivation:
     post:
-      operationId: reactivateAgreementByConsumer
+      operationId: reactivateAgreement
       tags:
         - resource
         - agreement
-      description: Reactivate an Agreement by Consumer
+      description: Reactivate an Agreement
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"
@@ -1304,13 +1304,13 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/consumer/suspension:
+  /agreements/{agreementId}/suspension:
     post:
-      operationId: suspendAgreementByConsumer
+      operationId: suspendAgreement
       tags:
         - resource
         - agreement
-      description: Suspend an Agreement by Consumer
+      description: Suspend an Agreement
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"

@@ -1256,7 +1256,7 @@ paths:
                 description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/consumer/reactivation:
+  /agreements/{agreementId}/reactivation:
     post:
       operationId: reactivateAgreement
       summary: Reactivate an Agreement
@@ -1325,7 +1325,7 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/consumer/suspension:
+  /agreements/{agreementId}/suspension:
     post:
       operationId: suspendAgreement
       summary: Suspend an Agreement

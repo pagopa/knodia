@@ -822,16 +822,16 @@ export type GetAgreementResponses = {
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
 
-export type ReactivateAgreementByConsumerData = {
+export type ReactivateAgreementData = {
     body?: never;
     path: {
         agreementId: AgreementId;
     };
     query?: never;
-    url: '/agreements/{agreementId}/consumer/reactivation';
+    url: '/agreements/{agreementId}/reactivation';
 };
 
-export type ReactivateAgreementByConsumerErrors = {
+export type ReactivateAgreementErrors = {
     /**
      * Bad Request
      */
@@ -846,27 +846,27 @@ export type ReactivateAgreementByConsumerErrors = {
     409: Problem;
 };
 
-export type ReactivateAgreementByConsumerError = ReactivateAgreementByConsumerErrors[keyof ReactivateAgreementByConsumerErrors];
+export type ReactivateAgreementError = ReactivateAgreementErrors[keyof ReactivateAgreementErrors];
 
-export type ReactivateAgreementByConsumerResponses = {
+export type ReactivateAgreementResponses = {
     /**
      * Agreement reactivated successfully
      */
     200: Agreement;
 };
 
-export type ReactivateAgreementByConsumerResponse = ReactivateAgreementByConsumerResponses[keyof ReactivateAgreementByConsumerResponses];
+export type ReactivateAgreementResponse = ReactivateAgreementResponses[keyof ReactivateAgreementResponses];
 
-export type SuspendAgreementByConsumerData = {
+export type SuspendAgreementData = {
     body?: never;
     path: {
         agreementId: AgreementId;
     };
     query?: never;
-    url: '/agreements/{agreementId}/consumer/suspension';
+    url: '/agreements/{agreementId}/suspension';
 };
 
-export type SuspendAgreementByConsumerErrors = {
+export type SuspendAgreementErrors = {
     /**
      * Bad Request
      */
@@ -881,16 +881,16 @@ export type SuspendAgreementByConsumerErrors = {
     409: Problem;
 };
 
-export type SuspendAgreementByConsumerError = SuspendAgreementByConsumerErrors[keyof SuspendAgreementByConsumerErrors];
+export type SuspendAgreementError = SuspendAgreementErrors[keyof SuspendAgreementErrors];
 
-export type SuspendAgreementByConsumerResponses = {
+export type SuspendAgreementResponses = {
     /**
      * Agreement suspended successfully
      */
     200: Agreement;
 };
 
-export type SuspendAgreementByConsumerResponse = SuspendAgreementByConsumerResponses[keyof SuspendAgreementByConsumerResponses];
+export type SuspendAgreementResponse = SuspendAgreementResponses[keyof SuspendAgreementResponses];
 
 export type GetOrganizationData = {
     body?: never;

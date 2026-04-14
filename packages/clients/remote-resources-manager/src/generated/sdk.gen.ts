@@ -111,7 +111,7 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
 export const reactivateAgreement = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementResponses, ReactivateAgreementErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/agreements/{agreementId}/consumer/reactivation',
+    url: '/agreements/{agreementId}/reactivation',
     ...options
 });
 
@@ -123,7 +123,7 @@ export const reactivateAgreement = <ThrowOnError extends boolean = true>(options
 export const suspendAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementResponses, SuspendAgreementErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/agreements/{agreementId}/consumer/suspension',
+    url: '/agreements/{agreementId}/suspension',
     ...options
 });
 

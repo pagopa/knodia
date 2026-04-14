@@ -171,8 +171,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Reactivate an Agreement by Consumer",
-      operationId: "reactivateAgreementByConsumer",
+      description: "Reactivate an Agreement",
+      operationId: "reactivateAgreement",
       params: API_AgreementIdPathParam,
       response: {
         200: API_Agreement.meta({
@@ -184,7 +184,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.resource, apiTags.agreement],
     },
-    url: "/agreements/:agreementId/consumer/reactivation",
+    url: "/agreements/:agreementId/reactivation",
   });
 
   fastify.route({
@@ -205,8 +205,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Suspend an Agreement by Consumer",
-      operationId: "suspendAgreementByConsumer",
+      description: "Suspend an Agreement",
+      operationId: "suspendAgreement",
       params: API_AgreementIdPathParam,
       response: {
         200: API_Agreement.meta({
@@ -218,7 +218,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.resource, apiTags.agreement],
     },
-    url: "/agreements/:agreementId/consumer/suspension",
+    url: "/agreements/:agreementId/suspension",
   });
 
   fastify.route({

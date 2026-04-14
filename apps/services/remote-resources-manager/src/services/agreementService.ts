@@ -168,7 +168,7 @@ export function agreementServiceBuilder(
         throw agreementNotFound(agreementId);
       }
 
-      const { data } = await k2kGatewayApi.reactivateAgreementByConsumer({
+      const { data } = await k2kGatewayApi.reactivateAgreement({
         client: k2kGatewayClient,
         path: { agreementId },
       });
@@ -198,7 +198,7 @@ export function agreementServiceBuilder(
         throw agreementNotFound(agreementId);
       }
 
-      const { data } = await k2kGatewayApi.suspendAgreementByConsumer({
+      const { data } = await k2kGatewayApi.suspendAgreement({
         client: k2kGatewayClient,
         path: { agreementId },
       });
