@@ -1,8 +1,8 @@
 export const hasRecentlyBeenUpdated = (
-  dateString: string,
+  resource: { updatedAt: string },
   recentUpdateDays: number,
 ): boolean => {
-  const updatedAt = new Date(dateString);
+  const updatedAt = new Date(resource.updatedAt);
   const xDaysAgo = new Date();
   xDaysAgo.setDate(xDaysAgo.getDate() - recentUpdateDays);
 
