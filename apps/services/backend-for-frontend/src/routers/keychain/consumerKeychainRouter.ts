@@ -55,6 +55,7 @@ import {
   toAPI_KeychainKey,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
+import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface ConsumerKeychainRouterOptions {
   keychainProcessClient: KeychainProcessClient;
@@ -635,11 +636,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: ownerId } = getUISessionAuthData(authData);
 
       logger.info(
-        { requestQuery: req.query },
-        "Getting Consumer Keychains with query parameters",
+        { ownerId, requestQuery: req.query },
+        `Getting Consumer Keychains with query parameters for owner ${ownerId}`,
       );
 
       const { limit, offset } = req.query;
@@ -648,7 +651,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       const { data } = await keychainProcessApi.getConsumerKeychains({
         client: keychainProcessClient,
         headers,
-        query: { limit, offset },
+        query: { limit, offset, ownerId },
       });
 
       async function enhanceKeychainWithCounts(
@@ -685,7 +688,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     method: "GET",
     schema: {
       description:
-        "Retrieve a paginated list of Consumer Keychains for the logged-in user's organization",
+        "Retrieve a paginated list of Consumer Keychains owned by the current user organization",
       operationId: "getConsumerKeychains",
       querystring: API_ConsumerKeychainsQueryParams,
       response: {

@@ -2186,8 +2186,8 @@ paths:
       operationId: getConsumerKeychains
       tags:
         - consumerKeychain
-      description: Retrieve a paginated list of Consumer Keychains for the logged-in
-        user's organization
+      description: Retrieve a paginated list of Consumer Keychains owned by the
+        current user organization
       parameters:
         - schema:
             format: int32
