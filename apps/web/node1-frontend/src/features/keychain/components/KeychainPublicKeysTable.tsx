@@ -214,7 +214,11 @@ function RemoveFromKeychainAction({
   type: KeychainType;
 }) {
   const queryClient = useQueryClient();
-  const { isPending, mutate: deleteConsumerKeychainKey } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: deleteConsumerKeychainKey,
+  } = useMutation({
     ...removeConsumerKeychainKeyMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -261,6 +265,7 @@ function RemoveFromKeychainAction({
         isDismissable
         kind="destructive"
         onConfirm={handleDelete}
+        showErrorBanner={isError}
         title="Delete public key"
       />
     </DialogTrigger>

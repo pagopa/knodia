@@ -63,7 +63,11 @@ function AddKeychainMemberModal({
   onClose: () => void;
 }) {
   const queryClient = useQueryClient();
-  const { isPending, mutate: addConsumerKeychainMember } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: addConsumerKeychainMember,
+  } = useMutation({
     ...addConsumerKeychainMemberMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -170,6 +174,7 @@ function AddKeychainMemberModal({
           onClose();
         }
       }}
+      showErrorBanner={isError}
       title="Add Member"
     >
       <form
