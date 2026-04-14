@@ -268,7 +268,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 client: keychainProcessClient,
                 headers,
                 query: {
-                  limit: 1,
+                  limit: 50,
                   offset: 0,
                   purpose: `${purpose.knodeId}:${purpose.id}`,
                 },
@@ -276,10 +276,13 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
             ),
           );
 
-          const consumerKeychains = keychainResponses.reduce(
-            (sum, resp) => sum + resp.data.pagination.total,
-            0,
+          const uniqueKeychainIds = new Set(
+            keychainResponses.flatMap((resp) =>
+              resp.data.results.map((k) => k.id),
+            ),
           );
+
+          const consumerKeychains = uniqueKeychainIds.size;
 
           return toAPI_ConsumerEservice({
             counters: {
