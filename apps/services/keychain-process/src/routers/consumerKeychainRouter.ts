@@ -37,15 +37,17 @@ import {
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainPurposePathParams,
   API_GetConsumerKeychainPurposeQueryParams,
+  API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
   API_KeychainKey,
   API_KeychainKeys,
   API_KeychainKeySeed,
+  API_KeychainMembers,
   API_KeychainMemberSeed,
   API_Keychains,
-  API_Users,
+  API_User,
 } from "../models/api.ts";
 import {
   toAPI_ConsumerKeychainPurpose,
@@ -217,6 +219,42 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const member = await consumerKeychainService.getConsumerKeychainMember(
+        req.params.consumerKeychainId,
+        unsafeBrandUserId(req.params.userId),
+        ctx,
+      );
+
+      res.status(200).send(toAPI_User(member));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Consumer Keychain Member by user ID",
+      headers: KnodiaServiceHeaders,
+      operationId: "getConsumerKeychainMember",
+      params: API_ConsumerKeychainMemberPathParams,
+      response: {
+        200: API_User.meta({
+          description: "Consumer Keychain Member retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Consumer Keychain Member not found",
+        }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/members/:userId",
   });
 
   fastify.route({
@@ -463,12 +501,21 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const users = await consumerKeychainService.getConsumerKeychainMembers(
-        req.params.consumerKeychainId,
-        ctx,
-      );
+      const { results, totalCount } =
+        await consumerKeychainService.getConsumerKeychainMembers(
+          req.params.consumerKeychainId,
+          req.query,
+          ctx,
+        );
 
-      res.status(200).send(users.map(toAPI_User));
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_User),
+      });
     },
     method: "GET",
     schema: {
@@ -476,8 +523,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       headers: KnodiaServiceHeaders,
       operationId: "getConsumerKeychainMembers",
       params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainMembersQueryParams,
       response: {
-        200: API_Users.meta({
+        200: API_KeychainMembers.meta({
           description: "Consumer Keychain members retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),

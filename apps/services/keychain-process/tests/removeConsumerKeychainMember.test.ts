@@ -36,7 +36,12 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeC
   it("should correctly create consumer keychain member removal event", async () => {
     const consumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
-      users: [unsafeBrandUserId(memberId)],
+      users: [
+        {
+          addedAt: new Date(),
+          userId: unsafeBrandUserId(memberId),
+        },
+      ],
     };
 
     await seedConsumerKeychain(consumerKeychain);
@@ -79,7 +84,12 @@ describe("DELETE /consumerKeychains/:consumerKeychainId/members/:userId (removeC
     const consumerKeychain: ConsumerKeychain = {
       ...mockConsumerKeychain,
       ownerId: generateId<OrganizationId>(),
-      users: [unsafeBrandUserId(memberId)],
+      users: [
+        {
+          addedAt: new Date(),
+          userId: unsafeBrandUserId(memberId),
+        },
+      ],
     };
 
     await seedConsumerKeychain(consumerKeychain);
