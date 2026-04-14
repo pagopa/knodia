@@ -6,14 +6,14 @@ import {
 import z from "zod";
 
 import {
-  ALLOWED_CLIENT_ASSERTION_ALGORITHM,
-  ALLOWED_CLIENT_ASSERTION_TYP,
+  EXPECTED_CLIENT_ASSERTION_ALGORITHM,
+  EXPECTED_CLIENT_ASSERTION_TYP,
 } from "./constants.ts";
 
 export const ClientAssertionHeader = z.strictObject({
-  alg: z.literal(ALLOWED_CLIENT_ASSERTION_ALGORITHM),
+  alg: z.literal(EXPECTED_CLIENT_ASSERTION_ALGORITHM),
   kid: KeyId,
-  typ: z.literal(ALLOWED_CLIENT_ASSERTION_TYP),
+  typ: z.literal(EXPECTED_CLIENT_ASSERTION_TYP),
 });
 export type ClientAssertionHeader = z.infer<typeof ClientAssertionHeader>;
 
