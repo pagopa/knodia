@@ -13,7 +13,8 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
     z
       .object({
         CLIENT_ASSERTION_ACCEPTED_AUDIENCES: z.string(),
-
+        ESERVICE_ACCESS_TOKEN_JWT_KID: z.string(),
+        GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.url(),
         KNODE_URL: z.url(),
       })
       .transform((c) => ({
@@ -21,6 +22,9 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
           c.CLIENT_ASSERTION_ACCEPTED_AUDIENCES.split(",").map((aud) =>
             aud.trim(),
           ),
+        eserviceAccessTokenJwtKid: c.ESERVICE_ACCESS_TOKEN_JWT_KID,
+        generatedEserviceAccessTokenIssuer:
+          c.GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER,
         knodeUrl: c.KNODE_URL,
       })),
   );

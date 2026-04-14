@@ -35,6 +35,7 @@
     "@knodia/k2k-gateway-client": "workspace:*",
     "@knodia/logger": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
+    "@knodia/token-generator": "workspace:*",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",

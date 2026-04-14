@@ -511,6 +511,9 @@ importers:
       '@knodia/purpose-models':
         specifier: workspace:*
         version: link:../../../packages/models/purpose-models
+      '@knodia/token-generator':
+        specifier: workspace:*
+        version: link:../../../packages/token-generator
       drizzle-orm:
         specifier: 'catalog:'
         version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
@@ -3080,6 +3083,9 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@knodia/test-commons':
+        specifier: workspace:*
+        version: link:../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config

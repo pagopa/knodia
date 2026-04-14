@@ -7,6 +7,7 @@ import {
   healthRouter,
   healthRouterTag,
 } from "@knodia/fastify-zod-api-commons/health";
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
 import type { AuthorizationServerConfig } from "./config/config.ts";
 
@@ -20,17 +21,22 @@ import { tokenServiceBuilder } from "./services/tokenService.ts";
 export function buildApp({
   clientAssertionAcceptedAudiences,
   config,
+  eserviceAccessTokenJwtKid,
+  generatedEserviceAccessTokenIssuer,
   knodeUrl,
   readmodelDb,
 }: {
   clientAssertionAcceptedAudiences: string[];
   config: LoggerConfig;
+  eserviceAccessTokenJwtKid: string;
+  generatedEserviceAccessTokenIssuer: string;
   knodeUrl: string;
   readmodelDb: NodePgDatabase;
 }) {
   const k2kGatewayClient = getK2K2GatewayApiClient({
     knodeUrl,
   });
+  const tokenGenerator = tokenGeneratorBuilder();
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -58,10 +64,13 @@ export function buildApp({
   app.register(healthRouter);
   app.register(tokenRouter, {
     clientAssertionAcceptedAudiences,
-    tokenService: tokenServiceBuilder(
+    tokenService: tokenServiceBuilder({
+      eserviceAccessTokenJwtKid,
+      generatedEserviceAccessTokenIssuer,
       k2kGatewayClient,
-      readmodelServiceBuilder(readmodelDb),
-    ),
+      readmodelService: readmodelServiceBuilder(readmodelDb),
+      tokenGenerator,
+    }),
   });
 
   return app;
@@ -74,6 +83,9 @@ export function buildAppFromConfig(config: AuthorizationServerConfig) {
   const app = buildApp({
     clientAssertionAcceptedAudiences: config.clientAssertionAcceptedAudiences,
     config,
+    eserviceAccessTokenJwtKid: config.eserviceAccessTokenJwtKid,
+    generatedEserviceAccessTokenIssuer:
+      config.generatedEserviceAccessTokenIssuer,
     knodeUrl: config.knodeUrl,
     readmodelDb,
   });

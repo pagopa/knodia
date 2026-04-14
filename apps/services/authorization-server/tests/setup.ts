@@ -51,6 +51,8 @@ beforeAll(async () => {
       logLevel: "silent",
       nodeEnv: "test",
     },
+    eserviceAccessTokenJwtKid: "test-kid",
+    generatedEserviceAccessTokenIssuer: "knodia.org",
     knodeUrl: "http://localhost:0",
     readmodelDb,
   });

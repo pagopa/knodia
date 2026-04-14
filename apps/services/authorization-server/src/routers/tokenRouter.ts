@@ -26,7 +26,6 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
         "Issuing mocked access token",
       );
 
-      // TODO remove this mocked route behavior when the real token flow is implemented.
       const token = await tokenService.issueToken(
         req.body,
         clientAssertionAcceptedAudiences,

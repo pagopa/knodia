@@ -162,7 +162,6 @@ export const validateClientAssertionClaims = (
 
 export async function validatePlatformObjects(
   purposeId: PurposeId,
-  audience: string | string[],
   consumerAttributes: k2kGatewayApi.Attribute[],
   readmodelService: ReadmodelService,
 ) {
@@ -184,6 +183,12 @@ export async function validatePlatformObjects(
     consumerAttributes,
     purpose.consumer.id,
   );
+
+  return {
+    agreement,
+    eserviceVersion,
+    purpose,
+  };
 }
 
 export async function verifyClientAssertionSignature(

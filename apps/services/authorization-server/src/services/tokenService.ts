@@ -1,3 +1,6 @@
+import type { TokenGenerator } from "@knodia/token-generator";
+
+import { unsafeBrandId } from "@knodia/common-models/ids";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -12,10 +15,19 @@ import {
   verifyClientAssertionSignature,
 } from "../utils/validators.ts";
 
-export function tokenServiceBuilder(
-  k2kGatewayClient: K2K2GatewayApiClient,
-  readmodelService: ReadmodelService,
-) {
+export function tokenServiceBuilder({
+  eserviceAccessTokenJwtKid,
+  generatedEserviceAccessTokenIssuer,
+  k2kGatewayClient,
+  readmodelService,
+  tokenGenerator,
+}: {
+  eserviceAccessTokenJwtKid: string;
+  generatedEserviceAccessTokenIssuer: string;
+  k2kGatewayClient: K2K2GatewayApiClient;
+  readmodelService: ReadmodelService;
+  tokenGenerator: TokenGenerator;
+}) {
   return {
     async issueToken(
       requestBody: API_TokenRequest,
@@ -47,18 +59,31 @@ export function tokenServiceBuilder(
         clientAssertion.header.alg,
       );
 
-      await validatePlatformObjects(
-        clientAssertion.payload.purposeId,
-        clientAssertion.payload.aud,
-        consumerAttributes,
-        readmodelService,
-      );
+      const { agreement, eserviceVersion, purpose } =
+        await validatePlatformObjects(
+          clientAssertion.payload.purposeId,
+          consumerAttributes,
+          readmodelService,
+        );
 
-      // TODO: generate token
+      const token = await tokenGenerator.generateEserviceAccessToken({
+        audience: eserviceVersion.accessTokenAudience.join(","),
+        consumer: purpose.consumer,
+        consumerKeychainId: unsafeBrandId(requestBody.client_id),
+        eserviceId: purpose.eserviceId,
+        eserviceVersionId: eserviceVersion.id,
+        issuer: generatedEserviceAccessTokenIssuer,
+        kid: eserviceAccessTokenJwtKid, // TODO: producer kid to sign the token with
+        producerId: agreement.producerId,
+        purposeId: purpose.id,
+        secondsDuration: eserviceVersion.accessTokenDuration,
+        subject: clientAssertion.payload.sub,
+      });
 
-      // TODO remove this mock implementation when the authorization server issues real tokens.
       return {
-        mockAccessToken: "mock-access-token",
+        access_token: token.serialized,
+        expires_in: token.payload.exp - token.payload.iat,
+        token_type: "Bearer" as const,
       };
     },
   };
