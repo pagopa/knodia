@@ -18,7 +18,10 @@ export function Cell(props: CellProps) {
   return (
     <RACCell
       {...props}
-      className={composeTailwindRenderProps(props.className, "px-4 py-3")}
+      className={composeTailwindRenderProps(
+        props.className,
+        "px-4 py-3 text-primary-light-mid-contrast",
+      )}
     />
   );
 }
@@ -41,7 +44,7 @@ export function Row<T extends object>(props: RowProps<T>) {
       {...props}
       className={composeTailwindRenderProps(
         props.className,
-        "border-b border-slate-100 align-middle odd:bg-secondary-light even:bg-white",
+        "align-middle odd:bg-white even:bg-secondary-light",
       )}
     />
   );

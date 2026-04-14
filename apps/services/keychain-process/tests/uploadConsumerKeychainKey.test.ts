@@ -75,13 +75,18 @@ const mockSeed: API_KeychainKeySeed = {
   name: { en: "Valid key name" },
 };
 
+const consumerKeychain: ConsumerKeychain = {
+  ...getMockConsumerKeychain(),
+  users: [
+    {
+      addedAt: new Date(),
+      userId: TEST_USER_ID,
+    },
+  ],
+};
+
 describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeychainKey)", () => {
   it("should correctly create consumer keychain key added event", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
-      users: [TEST_USER_ID],
-    };
-
     await seedConsumerKeychain(consumerKeychain);
 
     const expectedKid = unsafeBrandKeyId(
@@ -148,11 +153,6 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const consumerKeychain: ConsumerKeychain = {
-        ...getMockConsumerKeychain(),
-        users: [TEST_USER_ID],
-      };
-
       const response = await injectAppRequest({
         ...allowedTestTokens[0]!,
         organizationId: consumerKeychain.ownerId,
@@ -166,11 +166,6 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   );
 
   it("should return 400 if the uploaded key is invalid", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
-      users: [TEST_USER_ID],
-    };
-
     await seedConsumerKeychain(consumerKeychain);
 
     const response = await injectAppRequest({
@@ -188,11 +183,6 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   });
 
   it("should return 400 with certificate-specific error if the uploaded key is an X.509 certificate", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
-      users: [TEST_USER_ID],
-    };
-
     await seedConsumerKeychain(consumerKeychain);
 
     const response = await injectAppRequest({
@@ -217,11 +207,6 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   ])(
     "should return 400 if the uploaded key is not allowed - %s",
     async (_label, encodedPem) => {
-      const consumerKeychain: ConsumerKeychain = {
-        ...getMockConsumerKeychain(),
-        users: [TEST_USER_ID],
-      };
-
       await seedConsumerKeychain(consumerKeychain);
 
       const response = await injectAppRequest({
@@ -240,16 +225,15 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   );
 
   it("should return 403 if the organization is not the owner of the consumer keychain", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
+    const mockConsumerKeychain: ConsumerKeychain = {
+      ...consumerKeychain,
       ownerId: generateId<OrganizationId>(),
-      users: [TEST_USER_ID],
     };
 
-    await seedConsumerKeychain(consumerKeychain);
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest(allowedTestTokens[0]!)
-      .post(`/consumerKeychains/${consumerKeychain.id}/keys`)
+      .post(`/consumerKeychains/${mockConsumerKeychain.id}/keys`)
       .body(mockSeed);
 
     expect(response.statusCode).toBe(403);
@@ -264,16 +248,18 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   });
 
   it("should return 403 if the caller is not a member of the consumer keychain", async () => {
-    const consumerKeychain = getMockConsumerKeychain();
-
-    await seedConsumerKeychain(consumerKeychain);
+    const mockConsumerKeychain: ConsumerKeychain = {
+      ...consumerKeychain,
+      users: [],
+    };
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
-      organizationId: consumerKeychain.ownerId,
+      organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
     })
-      .post(`/consumerKeychains/${consumerKeychain.id}/keys`)
+      .post(`/consumerKeychains/${mockConsumerKeychain.id}/keys`)
       .body(mockSeed);
 
     expect(response.statusCode).toBe(403);
@@ -298,20 +284,20 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
       name: { en: "Existing key name" },
       userId: TEST_USER_ID,
     };
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
+
+    const mockConsumerKeychain: ConsumerKeychain = {
+      ...consumerKeychain,
       keys: [existingKey],
-      users: [TEST_USER_ID],
     };
 
-    await seedConsumerKeychain(consumerKeychain);
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
-      organizationId: consumerKeychain.ownerId,
+      organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
     })
-      .post(`/consumerKeychains/${consumerKeychain.id}/keys`)
+      .post(`/consumerKeychains/${mockConsumerKeychain.id}/keys`)
       .body({
         encodedPem,
         name: { en: "Valid key name" },
@@ -321,22 +307,21 @@ describe("POST /consumerKeychains/:consumerKeychainId/keys (uploadConsumerKeycha
   });
 
   it("should return 400 if the keychain already reached the maximum number of keys", async () => {
-    const consumerKeychain: ConsumerKeychain = {
-      ...getMockConsumerKeychain(),
+    const mockConsumerKeychain: ConsumerKeychain = {
+      ...consumerKeychain,
       keys: Array.from({ length: mockMaxKeysPerKeychain }, (_, i) =>
         getMockConsumerKeychainKey(i),
       ),
-      users: [TEST_USER_ID],
     };
 
-    await seedConsumerKeychain(consumerKeychain);
+    await seedConsumerKeychain(mockConsumerKeychain);
 
     const response = await injectAppRequest({
       ...allowedTestTokens[0]!,
-      organizationId: consumerKeychain.ownerId,
+      organizationId: mockConsumerKeychain.ownerId,
       type: "ui-session",
     })
-      .post(`/consumerKeychains/${consumerKeychain.id}/keys`)
+      .post(`/consumerKeychains/${mockConsumerKeychain.id}/keys`)
       .body(mockSeed);
 
     expect(response.statusCode).toBe(400);

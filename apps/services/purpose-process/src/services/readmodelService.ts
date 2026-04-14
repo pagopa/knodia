@@ -28,9 +28,12 @@ import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/s
 import { readmodelPurpose } from "@knodia/db-readmodel-purpose";
 import { aggregatePurposes } from "@knodia/db-readmodel-purpose/converters";
 import { purposeReadmodelServiceBuilder } from "@knodia/db-readmodel-purpose/services";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sum } from "drizzle-orm";
 
-import type { API_GetPurposesQueryParams } from "../models/api.ts";
+import type {
+  API_GetPurposesQueryParams,
+  API_GetTotalDailyCallsQueryParams,
+} from "../models/api.ts";
 
 export type ReadmodelService = ReturnType<typeof readmodelServiceBuilder>;
 
@@ -170,6 +173,27 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
           totalCount,
         };
       });
+    },
+    async getTotalDailyCalls(
+      requestQuery: API_GetTotalDailyCallsQueryParams,
+    ): Promise<number> {
+      const { eserviceId, state } = requestQuery;
+
+      const result = await readmodelDb
+        .select({
+          totalDailyCalls: sum(readmodelPurpose.dailyCalls).mapWith(Number),
+        })
+        .from(readmodelPurpose)
+        .where(
+          and(
+            eq(readmodelPurpose.eserviceId, eserviceId),
+            state && state.length > 0
+              ? inArray(readmodelPurpose.state, state)
+              : undefined,
+          ),
+        );
+
+      return result.at(0)?.totalDailyCalls ?? 0;
     },
   };
 }

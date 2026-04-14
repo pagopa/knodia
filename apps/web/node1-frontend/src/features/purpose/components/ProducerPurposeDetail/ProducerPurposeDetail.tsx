@@ -93,6 +93,7 @@ function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
         </Button>
         <Modal
           actionLabel="Suspend anyway"
+          cancelLabel="Cancel"
           description="If you suspend it, the Consumer won't be able to use the associated E-Service for this Purpose. Are you sure you want to suspend this Purpose? You will be able to reactivate it later."
           isDismissable
           kind="destructive"

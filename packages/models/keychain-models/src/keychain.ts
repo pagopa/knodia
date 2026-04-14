@@ -41,6 +41,12 @@ export const ConsumerKeychainKey = z.strictObject({
 });
 export type ConsumerKeychainKey = z.infer<typeof ConsumerKeychainKey>;
 
+export const ConsumerKeychainUser = z.strictObject({
+  addedAt: z.coerce.date(),
+  userId: UserId,
+});
+export type ConsumerKeychainUser = z.infer<typeof ConsumerKeychainUser>;
+
 export const ConsumerKeychain = z.strictObject({
   createdAt: z.coerce.date(),
   description: LocalizedDescription.optional(),
@@ -49,7 +55,7 @@ export const ConsumerKeychain = z.strictObject({
   name: LocalizedName,
   ownerId: OrganizationId,
   updatedAt: z.coerce.date(),
-  users: z.array(UserId),
+  users: z.array(ConsumerKeychainUser),
 });
 export type ConsumerKeychain = z.infer<typeof ConsumerKeychain>;
 
