@@ -839,7 +839,7 @@ components:
           items:
             $ref: "#/components/schemas/EserviceCategory"
         hasRecentlyBeenUpdated:
-          description: Indicates whether the E-service has been updated in the last days
+          description: Indicates whether the E-service has been recently updated
           type: boolean
         id:
           type: string
@@ -1348,6 +1348,9 @@ components:
           maximum: 1000000000
         eservice:
           $ref: "#/components/schemas/CompactEservice"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the Purpose has been recently updated
+          type: boolean
         id:
           type: string
           format: uuid
@@ -1367,6 +1370,7 @@ components:
       required:
         - dailyCalls
         - eservice
+        - hasRecentlyBeenUpdated
         - id
         - keychains
         - name
