@@ -76,7 +76,11 @@ describe("Agreement read model writer tests", async () => {
   });
 
   it("AgreementSuspendedByConsumerV1", async () => {
-    const agreement = getMockAgreement({ state: "Suspended" });
+    const agreement: Agreement = {
+      ...getMockAgreement({ state: "Suspended" }),
+      suspendedByConsumerAt: new Date("2026-01-15T10:00:00Z"),
+      suspendedByProducerAt: null,
+    };
     const eventData = protobufBinaryCodec(
       agreementEvents.AgreementSuspendedByConsumerV1,
     ).encode({
@@ -105,7 +109,11 @@ describe("Agreement read model writer tests", async () => {
   });
 
   it("AgreementSuspendedByProducerV1", async () => {
-    const agreement = getMockAgreement({ state: "Suspended" });
+    const agreement: Agreement = {
+      ...getMockAgreement({ state: "Suspended" }),
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: new Date("2026-01-15T10:00:00Z"),
+    };
     const eventData = protobufBinaryCodec(
       agreementEvents.AgreementSuspendedByProducerV1,
     ).encode({
@@ -134,7 +142,11 @@ describe("Agreement read model writer tests", async () => {
   });
 
   it("AgreementReactivatedByConsumerV1", async () => {
-    const agreement = getMockAgreement();
+    const agreement: Agreement = {
+      ...getMockAgreement(),
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
+    };
     const eventData = protobufBinaryCodec(
       agreementEvents.AgreementReactivatedByConsumerV1,
     ).encode({
@@ -163,7 +175,11 @@ describe("Agreement read model writer tests", async () => {
   });
 
   it("AgreementReactivatedByProducerV1", async () => {
-    const agreement = getMockAgreement();
+    const agreement: Agreement = {
+      ...getMockAgreement(),
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
+    };
     const eventData = protobufBinaryCodec(
       agreementEvents.AgreementReactivatedByProducerV1,
     ).encode({
