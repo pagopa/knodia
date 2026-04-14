@@ -6,7 +6,11 @@ import type {
   OrganizationId,
 } from "@knodia/common-models/ids";
 
-import { type Agreement, AgreementState } from "@knodia/agreement-models";
+import {
+  type Agreement,
+  AgreementActor,
+  AgreementState,
+} from "@knodia/agreement-models";
 import {
   type AttributeId,
   hasAllRequiredAttributes,
@@ -16,6 +20,7 @@ import {
   type EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
+import { match } from "ts-pattern";
 
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
@@ -39,7 +44,7 @@ const agreementCreationAllowedEserviceVersionStates: EserviceVersionState[] = [
 
 export function assertAgreementCanBeReactivatedBy(
   agreement: Agreement,
-  reactivatedBy: "consumer" | "producer",
+  reactivatedBy: AgreementActor,
 ): void {
   if (
     agreement.state !== AgreementState.enum.Suspended ||
@@ -57,9 +62,9 @@ export function assertAgreementCanBeReactivatedBy(
 
 export function assertAgreementCanBeSuspendedBy(
   agreement: Agreement,
-  suspendedBy: "consumer" | "producer",
+  suspendedBy: AgreementActor,
 ): void {
-  if (agreement.state === AgreementState.enum.Archived) {
+  const throwNotSuspendable = (): never => {
     throw agreementNotInSuspendableState({
       agreementId: agreement.id,
       state: agreement.state,
@@ -67,34 +72,34 @@ export function assertAgreementCanBeSuspendedBy(
       suspendedByConsumerAt: agreement.suspendedByConsumerAt,
       suspendedByProducerAt: agreement.suspendedByProducerAt,
     });
-  }
+  };
 
-  if (getOwnSuspendedAt(agreement, suspendedBy) !== null) {
-    throw agreementNotInSuspendableState({
-      agreementId: agreement.id,
-      state: agreement.state,
-      suspendedBy,
-      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
-      suspendedByProducerAt: agreement.suspendedByProducerAt,
-    });
-  }
-
-  if (suspendedBy === "consumer" && agreement.suspendedByProducerAt !== null) {
-    throw agreementNotInSuspendableState({
-      agreementId: agreement.id,
-      state: agreement.state,
-      suspendedBy,
-      suspendedByConsumerAt: agreement.suspendedByConsumerAt,
-      suspendedByProducerAt: agreement.suspendedByProducerAt,
-    });
-  }
+  match(agreement.state)
+    .with(AgreementState.enum.Active, () => undefined)
+    .with(AgreementState.enum.Suspended, () => {
+      if (getOwnSuspendedAt(agreement, suspendedBy) !== null) {
+        throwNotSuspendable();
+      }
+      // Consumer cannot suspend an agreement already suspended by the producer.
+      // Consumer's only action on a producer-suspended agreement is to archive.
+      if (
+        suspendedBy === AgreementActor.enum.Consumer &&
+        agreement.suspendedByProducerAt !== null
+      ) {
+        throwNotSuspendable();
+      }
+    })
+    .with(AgreementState.enum.Archived, () => {
+      throwNotSuspendable();
+    })
+    .exhaustive();
 }
 
 function getOwnSuspendedAt(
   agreement: Agreement,
-  actor: "consumer" | "producer",
+  actor: AgreementActor,
 ): Date | null {
-  return actor === "producer"
+  return actor === AgreementActor.enum.Producer
     ? agreement.suspendedByProducerAt
     : agreement.suspendedByConsumerAt;
 }

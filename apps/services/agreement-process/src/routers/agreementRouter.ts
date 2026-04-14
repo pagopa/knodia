@@ -2,6 +2,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { AgreementActor } from "@knodia/agreement-models";
 import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
 import { KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
@@ -171,7 +172,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
         data: agreement,
         metadata: { version },
       } = await agreementService.suspendAgreement(
-        { agreementId: req.params.agreementId, suspendedBy: "consumer" },
+        {
+          agreementId: req.params.agreementId,
+          suspendedBy: AgreementActor.enum.Consumer,
+        },
         ctx,
       );
 
@@ -206,14 +210,17 @@ export const agreementRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
+        { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
       const {
         data: agreement,
         metadata: { version },
       } = await agreementService.suspendAgreement(
-        { agreementId: req.params.agreementId, suspendedBy: "producer" },
+        {
+          agreementId: req.params.agreementId,
+          suspendedBy: AgreementActor.enum.Producer,
+        },
         ctx,
       );
 
@@ -255,7 +262,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
         data: agreement,
         metadata: { version },
       } = await agreementService.reactivateAgreement(
-        { agreementId: req.params.agreementId, reactivatedBy: "consumer" },
+        {
+          agreementId: req.params.agreementId,
+          reactivatedBy: AgreementActor.enum.Consumer,
+        },
         ctx,
       );
 
@@ -290,14 +300,17 @@ export const agreementRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "internal" },
+        { tokenType: "ui-session", userRoles: ["administrative"] },
       ]);
 
       const {
         data: agreement,
         metadata: { version },
       } = await agreementService.reactivateAgreement(
-        { agreementId: req.params.agreementId, reactivatedBy: "producer" },
+        {
+          agreementId: req.params.agreementId,
+          reactivatedBy: AgreementActor.enum.Producer,
+        },
         ctx,
       );
 

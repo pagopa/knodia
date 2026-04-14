@@ -14,7 +14,12 @@ import {
 } from "./utils.ts";
 
 const internalToken: TestToken = { type: "internal" };
-const allowedTestTokens: TestToken[] = [internalToken];
+const producerToken: TestToken = {
+  roles: ["administrative"],
+  type: "ui-session",
+};
+const consumerAllowedTokens: TestToken[] = [internalToken];
+const producerAllowedTokens: TestToken[] = [producerToken];
 
 function makeSuspendedAgreement(
   overrides: Partial<Agreement> & {
@@ -40,7 +45,7 @@ describe("POST /agreements/:agreementId/producer/reactivation", () => {
     });
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/reactivation`,
     );
 
@@ -71,7 +76,7 @@ describe("POST /agreements/:agreementId/producer/reactivation", () => {
     });
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/reactivation`,
     );
 
@@ -94,7 +99,7 @@ describe("POST /agreements/:agreementId/producer/reactivation", () => {
     };
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/reactivation`,
     );
 
@@ -108,7 +113,7 @@ describe("POST /agreements/:agreementId/producer/reactivation", () => {
     });
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/reactivation`,
     );
 
@@ -125,7 +130,7 @@ describe("POST /agreements/:agreementId/producer/reactivation", () => {
     };
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/reactivation`,
     );
 
@@ -133,14 +138,14 @@ describe("POST /agreements/:agreementId/producer/reactivation", () => {
   });
 
   it("returns 404 when the agreement does not exist", async () => {
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${generateId<AgreementId>()}/producer/reactivation`,
     );
 
     expect(response.statusCode).toBe(404);
   });
 
-  it.each(forbiddenTestTokens(allowedTestTokens))(
+  it.each(forbiddenTestTokens(producerAllowedTokens))(
     "returns 403 for unauthorized token ($type, $roles)",
     async (spec) => {
       const agreement = makeSuspendedAgreement({
@@ -267,7 +272,7 @@ describe("POST /agreements/:agreementId/consumer/reactivation", () => {
     expect(response.statusCode).toBe(404);
   });
 
-  it.each(forbiddenTestTokens(allowedTestTokens))(
+  it.each(forbiddenTestTokens(consumerAllowedTokens))(
     "returns 403 for unauthorized token ($type, $roles)",
     async (spec) => {
       const agreement = makeSuspendedAgreement({

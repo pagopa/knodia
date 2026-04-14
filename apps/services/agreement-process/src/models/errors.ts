@@ -1,4 +1,4 @@
-import type { AgreementState } from "@knodia/agreement-models";
+import type { AgreementActor, AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
@@ -70,7 +70,7 @@ export function agreementNotInReactivatableState({
   suspendedByProducerAt,
 }: {
   agreementId: AgreementId;
-  reactivatedBy: "consumer" | "producer";
+  reactivatedBy: AgreementActor;
   state: AgreementState;
   suspendedByConsumerAt: Date | null;
   suspendedByProducerAt: Date | null;
@@ -92,7 +92,7 @@ export function agreementNotInSuspendableState({
 }: {
   agreementId: AgreementId;
   state: AgreementState;
-  suspendedBy: "consumer" | "producer";
+  suspendedBy: AgreementActor;
   suspendedByConsumerAt: Date | null;
   suspendedByProducerAt: Date | null;
 }) {

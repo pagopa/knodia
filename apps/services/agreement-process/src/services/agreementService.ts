@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { AttributeId } from "@knodia/attribute-models";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { AgreementEventStoreWriter } from "@knodia/db-event-store-writer/agreement";
@@ -11,7 +12,11 @@ import type {
 } from "@knodia/fastify-zod-api-commons/auth";
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
-import { type Agreement, AgreementState } from "@knodia/agreement-models";
+import {
+  type Agreement,
+  AgreementActor,
+  AgreementState,
+} from "@knodia/agreement-models";
 import {
   type AgreementId,
   type EserviceId,
@@ -159,9 +164,12 @@ export function agreementServiceBuilder(
         reactivatedBy,
       }: {
         agreementId: AgreementId;
-        reactivatedBy: "consumer" | "producer";
+        reactivatedBy: AgreementActor;
       },
-      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+      {
+        correlationId,
+        logger,
+      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<WithMetadata<Agreement>> {
       logger.info(`Reactivating Agreement ${agreementId} by ${reactivatedBy}`);
 
@@ -174,13 +182,17 @@ export function agreementServiceBuilder(
 
       const now = new Date();
       const suspendedByConsumerAt =
-        reactivatedBy === "consumer" ? null : agreement.suspendedByConsumerAt;
+        reactivatedBy === AgreementActor.enum.Consumer
+          ? null
+          : agreement.suspendedByConsumerAt;
       const suspendedByProducerAt =
-        reactivatedBy === "producer" ? null : agreement.suspendedByProducerAt;
+        reactivatedBy === AgreementActor.enum.Producer
+          ? null
+          : agreement.suspendedByProducerAt;
       const nextState: AgreementState =
         suspendedByConsumerAt === null && suspendedByProducerAt === null
-          ? "Active"
-          : "Suspended";
+          ? AgreementState.enum.Active
+          : AgreementState.enum.Suspended;
 
       const updatedAgreement: Agreement = {
         ...agreement,
@@ -191,7 +203,7 @@ export function agreementServiceBuilder(
       };
 
       const eventFactory =
-        reactivatedBy === "producer"
+        reactivatedBy === AgreementActor.enum.Producer
           ? createAgreementReactivatedByProducerV1Event
           : createAgreementReactivatedByConsumerV1Event;
 
@@ -207,9 +219,12 @@ export function agreementServiceBuilder(
         suspendedBy,
       }: {
         agreementId: AgreementId;
-        suspendedBy: "consumer" | "producer";
+        suspendedBy: AgreementActor;
       },
-      { correlationId, logger }: AuthorizedContext<InternalAuthData>,
+      {
+        correlationId,
+        logger,
+      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
     ): Promise<WithMetadata<Agreement>> {
       logger.info(`Suspending Agreement ${agreementId} by ${suspendedBy}`);
 
@@ -223,16 +238,20 @@ export function agreementServiceBuilder(
       const now = new Date();
       const updatedAgreement: Agreement = {
         ...agreement,
-        state: "Suspended",
+        state: AgreementState.enum.Suspended,
         suspendedByConsumerAt:
-          suspendedBy === "consumer" ? now : agreement.suspendedByConsumerAt,
+          suspendedBy === AgreementActor.enum.Consumer
+            ? now
+            : agreement.suspendedByConsumerAt,
         suspendedByProducerAt:
-          suspendedBy === "producer" ? now : agreement.suspendedByProducerAt,
+          suspendedBy === AgreementActor.enum.Producer
+            ? now
+            : agreement.suspendedByProducerAt,
         updatedAt: now,
       };
 
       const eventFactory =
-        suspendedBy === "producer"
+        suspendedBy === AgreementActor.enum.Producer
           ? createAgreementSuspendedByProducerV1Event
           : createAgreementSuspendedByConsumerV1Event;
 

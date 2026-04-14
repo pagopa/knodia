@@ -14,7 +14,12 @@ import {
 } from "./utils.ts";
 
 const internalToken: TestToken = { type: "internal" };
-const allowedTestTokens: TestToken[] = [internalToken];
+const producerToken: TestToken = {
+  roles: ["administrative"],
+  type: "ui-session",
+};
+const consumerAllowedTokens: TestToken[] = [internalToken];
+const producerAllowedTokens: TestToken[] = [producerToken];
 
 function makeAgreement(overrides: Partial<Agreement>): Agreement {
   return {
@@ -31,7 +36,7 @@ describe("POST /agreements/:agreementId/producer/suspension", () => {
     const agreement = makeAgreement({ id: generateId<AgreementId>() });
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/suspension`,
     );
 
@@ -61,7 +66,7 @@ describe("POST /agreements/:agreementId/producer/suspension", () => {
     });
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/suspension`,
     );
 
@@ -80,7 +85,7 @@ describe("POST /agreements/:agreementId/producer/suspension", () => {
     });
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/suspension`,
     );
 
@@ -94,7 +99,7 @@ describe("POST /agreements/:agreementId/producer/suspension", () => {
     });
     await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${agreement.id}/producer/suspension`,
     );
 
@@ -102,14 +107,14 @@ describe("POST /agreements/:agreementId/producer/suspension", () => {
   });
 
   it("returns 404 when the agreement does not exist", async () => {
-    const response = await injectAppRequest(internalToken).post(
+    const response = await injectAppRequest(producerToken).post(
       `/agreements/${generateId<AgreementId>()}/producer/suspension`,
     );
 
     expect(response.statusCode).toBe(404);
   });
 
-  it.each(forbiddenTestTokens(allowedTestTokens))(
+  it.each(forbiddenTestTokens(producerAllowedTokens))(
     "returns 403 for unauthorized token ($type, $roles)",
     async (spec) => {
       const agreement = makeAgreement({ id: generateId<AgreementId>() });
@@ -218,7 +223,7 @@ describe("POST /agreements/:agreementId/consumer/suspension", () => {
     expect(response.statusCode).toBe(404);
   });
 
-  it.each(forbiddenTestTokens(allowedTestTokens))(
+  it.each(forbiddenTestTokens(consumerAllowedTokens))(
     "returns 403 for unauthorized token ($type, $roles)",
     async (spec) => {
       const agreement = makeAgreement({ id: generateId<AgreementId>() });
