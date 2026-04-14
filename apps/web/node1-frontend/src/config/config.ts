@@ -26,6 +26,10 @@ const FrontendNode1Config = z.object({
   COGNITO_LOGOUT_URI: z.string().min(1, "COGNITO_LOGOUT_URI is required"),
   COGNITO_REDIRECT_URI: z.string().min(1, "COGNITO_REDIRECT_URI is required"),
   KNODE_ID: KnodeId,
+
+  MAX_KEYS_PER_KEYCHAIN: z.coerce
+    .number()
+    .min(1, "MAX_KEYS_PER_KEYCHAIN must be at least 1"),
 });
 
 const parsed = FrontendNode1Config.safeParse(window.env);
@@ -48,6 +52,7 @@ export const config = {
     redirectUri: parsed.data.COGNITO_REDIRECT_URI,
   },
   knodeId: parsed.data.KNODE_ID,
+  maxKeysPerKeychain: parsed.data.MAX_KEYS_PER_KEYCHAIN,
 };
 
 declare global {

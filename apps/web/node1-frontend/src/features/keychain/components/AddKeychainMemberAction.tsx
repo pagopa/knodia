@@ -1,6 +1,6 @@
 import {
   addConsumerKeychainMemberMutation,
-  getConsumerKeychainMembersOptions,
+  getConsumerKeychainMembersQueryKey,
   getTechnicalUsersOptions,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, Select, SelectItem } from "@knodia/ui-kit/ui";
@@ -10,23 +10,25 @@ import { useState } from "react";
 import { match } from "ts-pattern";
 import z from "zod";
 
+import { useHasRole } from "@/contexts/auth";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
 import type { KeychainType } from "../models/commons";
 
 interface AddKeychainMemberActionProps {
-  alreadyKeychainMembersIds: string[];
   keychainId: string;
   keychainType: KeychainType;
 }
 
 export function AddKeychainMemberAction({
-  alreadyKeychainMembersIds,
   keychainId,
   keychainType,
 }: AddKeychainMemberActionProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const isAdmin = useHasRole("administrative");
+
+  if (!isAdmin) return null;
 
   return (
     <>
@@ -39,7 +41,6 @@ export function AddKeychainMemberAction({
         Add member
       </Button>
       <AddKeychainMemberModal
-        alreadyKeychainMembersIds={alreadyKeychainMembersIds}
         isOpen={isOpen}
         keychainId={keychainId}
         keychainType={keychainType}
@@ -50,13 +51,11 @@ export function AddKeychainMemberAction({
 }
 
 function AddKeychainMemberModal({
-  alreadyKeychainMembersIds,
   isOpen,
   keychainId,
   keychainType,
   onClose,
 }: {
-  alreadyKeychainMembersIds: string[];
   isOpen: boolean;
   keychainId: string;
   keychainType: KeychainType;
@@ -66,24 +65,24 @@ function AddKeychainMemberModal({
   const { isPending, mutate: addConsumerKeychainMember } = useMutation({
     ...addConsumerKeychainMemberMutation({ client }),
     onSuccess: () => {
-      queryClient.invalidateQueries(
-        getConsumerKeychainMembersOptions({
+      queryClient.invalidateQueries({
+        queryKey: getConsumerKeychainMembersQueryKey({
           client,
           path: { consumerKeychainId: keychainId },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
         }),
-      );
+      });
       onClose();
     },
   });
 
   const { data = [] } = useQuery(getTechnicalUsersOptions({ client }));
 
-  const technicalUsersOptions = data
-    .filter((user) => !alreadyKeychainMembersIds.includes(user.id))
-    .map((user) => ({
-      id: user.id,
-      label: user.username,
-    }));
+  const technicalUsersOptions = data.map((user) => ({
+    id: user.id,
+    label: user.username,
+  }));
 
   const handleAddKeychainMember = (userId: string) => {
     match(keychainType)
