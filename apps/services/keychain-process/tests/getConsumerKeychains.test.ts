@@ -116,8 +116,7 @@ describe("GET /consumerKeychains (getConsumerKeychains)", () => {
     {
       expectedResult: sortedMockConsumerKeychains.slice(0, 4),
       query: defaultQuery,
-      testCase:
-        "pagination only (1st page), sort by updatedAt desc by default",
+      testCase: "pagination only (1st page), sort by updatedAt desc by default",
       totalCount: seededConsumerKeychains.length,
     },
     {
