@@ -160,8 +160,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         path: { consumerKeychainId, keyId },
       });
 
-      const pem = atob(key.encodedPem);
-      const content = Buffer.from(pem, "utf-8");
+      const content = Buffer.from(key.encodedPem, "base64");
 
       res.raw.writeHead(200, {
         "Content-Disposition": `attachment; filename="public_key_${keyId}.pub"`,
@@ -172,18 +171,18 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     },
     method: "GET",
     schema: {
-      description: "Download a Consumer Keychain key",
+      description: "Download a Consumer Keychain Key",
       operationId: "downloadConsumerKeychainKey",
       params: API_ConsumerKeychainKeyPathParams,
       response: {
         200: API_FileDownload.meta({
-          description: "Consumer Keychain key downloaded successfully",
+          description: "Consumer Keychain Key downloaded successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
         404: API_Problem.meta({
-          description: "Consumer keychain key not found",
+          description: "Consumer Keychain Key not found",
         }),
       },
       tags: [apiTags.consumerKeychain],

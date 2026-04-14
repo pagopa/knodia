@@ -118,7 +118,7 @@ export const removeConsumerKeychainKey = <ThrowOnError extends boolean = true>(o
 });
 
 /**
- * Retrieve a Consumer Keychain key by kid
+ * Retrieve a Consumer Keychain Key by kid
  */
 export const getConsumerKeychainKey = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainKeyData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainKeyResponses, GetConsumerKeychainKeyErrors, ThrowOnError>({
     responseType: 'json',

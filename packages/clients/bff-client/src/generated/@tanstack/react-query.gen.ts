@@ -320,7 +320,7 @@ export const removeConsumerKeychainKeyMutation = (options?: Partial<Options<Remo
 export const downloadConsumerKeychainKeyQueryKey = (options: Options<DownloadConsumerKeychainKeyData>) => createQueryKey('downloadConsumerKeychainKey', options);
 
 /**
- * Download a Consumer Keychain key
+ * Download a Consumer Keychain Key
  */
 export const downloadConsumerKeychainKeyOptions = (options: Options<DownloadConsumerKeychainKeyData>) => queryOptions<DownloadConsumerKeychainKeyResponse, AxiosError<DownloadConsumerKeychainKeyError>, DownloadConsumerKeychainKeyResponse, ReturnType<typeof downloadConsumerKeychainKeyQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {

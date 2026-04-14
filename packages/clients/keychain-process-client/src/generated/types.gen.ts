@@ -504,7 +504,7 @@ export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[key
 
 export type UploadConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key uploaded successfully
+     * Consumer Keychain Key uploaded successfully
      */
     201: KeychainKey;
 };
@@ -554,7 +554,7 @@ export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[key
 
 export type RemoveConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key removed successfully
+     * Consumer Keychain Key removed successfully
      */
     204: void;
 };
@@ -591,7 +591,7 @@ export type GetConsumerKeychainKeyErrors = {
      */
     403: Problem;
     /**
-     * Consumer Keychain key not found
+     * Consumer Keychain Key not found
      */
     404: Problem;
 };
@@ -600,7 +600,7 @@ export type GetConsumerKeychainKeyError = GetConsumerKeychainKeyErrors[keyof Get
 
 export type GetConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key retrieved successfully
+     * Consumer Keychain Key retrieved successfully
      */
     200: KeychainKey;
 };
