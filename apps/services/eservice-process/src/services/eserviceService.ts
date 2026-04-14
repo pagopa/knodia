@@ -47,12 +47,14 @@ import {
   retrieveEserviceLatestVersionInterface,
 } from "../utils/readmodelUtils.ts";
 import {
+  findEserviceLatestVersion,
+  updateEserviceVersionState,
+} from "../utils/utils.ts";
+import {
   assertEserviceVersionIsActive,
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
   assertOrganizationExists,
-  findEserviceLatestVersion,
-  updateEserviceVersionState,
 } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;

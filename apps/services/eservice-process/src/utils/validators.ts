@@ -1,7 +1,4 @@
-import type {
-  EserviceVersionId,
-  OrganizationId,
-} from "@knodia/common-models/ids";
+import type { OrganizationId } from "@knodia/common-models/ids";
 
 import {
   type Eservice,
@@ -12,40 +9,10 @@ import {
 import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
-  eserviceVersionNotFound,
   eserviceVersionNotInExpectedStates,
   notEserviceProducer,
   organizationNotFound,
 } from "../models/errors.ts";
-
-export const findEserviceLatestVersion = (
-  eservice: Eservice,
-): EserviceVersion => {
-  const latestVersion = eservice.versions.reduce<EserviceVersion | undefined>(
-    (max, cur) =>
-      max === undefined || cur.versionNumber > max.versionNumber ? cur : max,
-    undefined,
-  );
-
-  if (!latestVersion) {
-    throw eserviceVersionNotFound(eservice.id);
-  }
-
-  return latestVersion;
-};
-
-export const updateEserviceVersionState = (
-  eservice: Eservice,
-  eserviceVersionId: EserviceVersionId,
-  newState: EserviceVersionState,
-  now: Date,
-): Eservice => ({
-  ...eservice,
-  updatedAt: now,
-  versions: eservice.versions.map((v) =>
-    v.id === eserviceVersionId ? { ...v, state: newState, updatedAt: now } : v,
-  ),
-});
 
 export const assertIsEserviceProducer = (
   eservice: Eservice,
