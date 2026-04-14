@@ -21,7 +21,7 @@ export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
         },
         client: k2kGatewayClient,
         path: {
-          keychainId: requestBody.consumer_keychain_id,
+          keychainId: requestBody.client_id,
         },
       });
 

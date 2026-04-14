@@ -56,7 +56,7 @@ describe("POST /token", async () => {
   const defaultBody: API_TokenRequest = {
     client_assertion: clientAssertionJWS,
     client_assertion_type: VALID_CLIENT_ASSERTION_TYPE,
-    consumer_keychain_id: consumerKeychainId,
+    client_id: consumerKeychainId,
     grant_type: VALID_GRANT_TYPE,
   };
 
@@ -93,10 +93,10 @@ describe("POST /token", async () => {
       { ...defaultBody, client_assertion: "InvalidClientAssertion" },
     ],
     [
-      "invalid consumer_keychain_id",
+      "invalid client_id",
       {
         ...defaultBody,
-        consumer_keychain_id: "InvalidConsumerKeychainId",
+        client_id: "InvalidConsumerKeychainId",
       },
     ],
     ["empty body", {}],
@@ -164,7 +164,7 @@ describe("POST /token", async () => {
       },
     ],
     [
-      "iss does not match consumer_keychain_id",
+      "iss does not match client_id",
       {
         ...clientAssertion,
         payload: {
@@ -204,7 +204,7 @@ describe("POST /token", async () => {
       },
     ],
     [
-      "sub does not match consumer_keychain_id",
+      "sub does not match client_id",
       {
         ...clientAssertion,
         payload: {

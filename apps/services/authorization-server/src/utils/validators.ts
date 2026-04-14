@@ -31,10 +31,10 @@ import {
 
 export const validateClientAssertionClaims = ({
   client_assertion: clientAssertionJWS,
-  consumer_keychain_id: consumerKeychainId,
+  client_id: consumerKeychainId,
 }: Pick<
   API_TokenRequest,
-  "client_assertion" | "consumer_keychain_id"
+  "client_assertion" | "client_id"
 >): ClientAssertion => {
   let decodedHeader: ProtectedHeaderParameters;
   let decodedPayload: JWTPayload;

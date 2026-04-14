@@ -11,7 +11,7 @@ export const API_TokenRequest = z
     client_assertion_type: z
       .literal(EXPECTED_CLIENT_ASSERTION_TYPE)
       .meta({ description: `Must be '${EXPECTED_CLIENT_ASSERTION_TYPE}'` }),
-    consumer_keychain_id: z.uuid(),
+    client_id: z.uuid(),
     grant_type: z
       .literal(EXPECTED_GRANT_TYPE)
       .meta({ description: `Must be '${EXPECTED_GRANT_TYPE}'` }),
