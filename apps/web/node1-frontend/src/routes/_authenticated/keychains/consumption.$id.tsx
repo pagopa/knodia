@@ -26,13 +26,14 @@ import type { ConsumerKeychainDetailsTab } from "@/features/keychain/models/comm
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
 import { config } from "@/config/config";
+import { useHasRole } from "@/contexts/auth";
 import { AddKeychainMemberAction } from "@/features/keychain/components/AddKeychainMemberAction";
 import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDeleteAction";
 import { KeychainEditAction } from "@/features/keychain/components/KeychainEditAction";
 import { KeychainMembersTable } from "@/features/keychain/components/KeychainMembersTable";
 import { KeychainPublicKeysTable } from "@/features/keychain/components/KeychainPublicKeysTable";
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
-import { useIsKeychainMember } from "@/features/keychain/hooks/useIsKeychainMember";
+import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 import {
   consumerKeychainDetailsSearchDefaultValues,
   consumerKeychainDetailsSearchSchema,
@@ -121,7 +122,9 @@ function PublicKeysTab() {
   const hasReachedMaxKeys = data
     ? data.pagination.total >= config.maxKeysPerKeychain
     : false;
-  const isKeychainMember = useIsKeychainMember();
+
+  const isKeychainMember = useIsCurrentUserKeychainMember(consumerKeychainId);
+  const canDownloadKey = useHasRole("administrative") || isKeychainMember;
 
   return (
     <>
@@ -141,6 +144,7 @@ function PublicKeysTab() {
         title="Public Keys"
       >
         <KeychainPublicKeysTable
+          canDownloadKey={canDownloadKey}
           isLoading={isLoading}
           keychainId={consumerKeychainId}
           keys={data?.results ?? []}

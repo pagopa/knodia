@@ -101,7 +101,11 @@ function RemoveFromKeychainAction({
   userId: string;
 }) {
   const queryClient = useQueryClient();
-  const { isPending, mutate: deleteConsumerKeychainMember } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: deleteConsumerKeychainMember,
+  } = useMutation({
     ...removeConsumerKeychainMemberMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -148,6 +152,7 @@ function RemoveFromKeychainAction({
         isDismissable
         kind="destructive"
         onConfirm={handleDelete}
+        showErrorBanner={isError}
         title="Remove Member"
       >
         <Banner

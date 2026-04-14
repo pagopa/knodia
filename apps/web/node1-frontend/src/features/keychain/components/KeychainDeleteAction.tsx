@@ -17,12 +17,14 @@ export function KeychainDeleteAction({
   type: KeychainType;
 }) {
   const navigate = useNavigate();
-  const { isPending: isDeleting, mutate: deleteConsumerKeychain } = useMutation(
-    {
-      ...deleteConsumerKeychainMutation({ client }),
-      onSuccess: () => navigate({ to: "/keychains" }),
-    },
-  );
+  const {
+    isError,
+    isPending: isDeleting,
+    mutate: deleteConsumerKeychain,
+  } = useMutation({
+    ...deleteConsumerKeychainMutation({ client }),
+    onSuccess: () => navigate({ to: "/keychains" }),
+  });
 
   function handleDelete() {
     match(type)
@@ -51,6 +53,7 @@ export function KeychainDeleteAction({
         isDismissable
         kind="destructive"
         onConfirm={handleDelete}
+        showErrorBanner={isError}
         title="Delete Keychain"
       />
     </DialogTrigger>

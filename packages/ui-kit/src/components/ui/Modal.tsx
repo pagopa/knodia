@@ -10,6 +10,7 @@ import {
 } from "react-aria-components";
 import { tv } from "tailwind-variants";
 
+import { Banner } from "./Banner";
 import { Button, type ButtonProps } from "./Button";
 import { Checkbox } from "./Checkbox";
 
@@ -49,6 +50,7 @@ interface ModalProps extends AriaModalOverlayProps {
   onDismiss?: () => void;
   onDontShowAgainChange?: (isSelected: boolean) => void;
   showDontShowAgain?: boolean;
+  showErrorBanner?: boolean;
   title: string;
 }
 
@@ -66,6 +68,7 @@ export function Modal({
   showDontShowAgain = false,
   title,
   confirmButtonProps,
+  showErrorBanner,
   ...props
 }: ModalProps) {
   const titleId = useId();
@@ -110,6 +113,12 @@ export function Modal({
           </div>
 
           {children}
+
+          {showErrorBanner && (
+            <Banner kind="error">
+              Something went wrong. Please try again later.
+            </Banner>
+          )}
 
           {hasFooter && (
             <div className="flex justify-between gap-6 items-center">

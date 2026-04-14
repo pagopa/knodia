@@ -607,6 +607,10 @@ export type KeychainMemberSeed = {
     userId: UserId;
 };
 
+export type ConsumerKeychainMembershipCheckResult = {
+    isMember: boolean;
+};
+
 export type User = {
     email: string;
     id: UserId;
@@ -996,7 +1000,7 @@ export type GetConsumerKeychainKeysErrors = {
      */
     403: Problem;
     /**
-     * Consumer keychain not found
+     * Consumer Keychain not found
      */
     404: Problem;
 };
@@ -1005,7 +1009,7 @@ export type GetConsumerKeychainKeysError = GetConsumerKeychainKeysErrors[keyof G
 
 export type GetConsumerKeychainKeysResponses = {
     /**
-     * Consumer Keychain keys retrieved successfully
+     * Consumer Keychain Keys retrieved successfully
      */
     200: KeychainKeys;
 };
@@ -1048,7 +1052,7 @@ export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[key
 
 export type UploadConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key uploaded successfully
+     * Consumer Keychain Key uploaded successfully
      */
     201: CreatedKeyResource;
 };
@@ -1092,7 +1096,7 @@ export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[key
 
 export type RemoveConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key removed successfully
+     * Consumer Keychain Key removed successfully
      */
     204: void;
 };
@@ -1174,7 +1178,7 @@ export type GetConsumerKeychainsError = GetConsumerKeychainsErrors[keyof GetCons
 
 export type GetConsumerKeychainsResponses = {
     /**
-     * Consumer keychains retrieved successfully
+     * Consumer Keychains retrieved successfully
      */
     200: Keychains;
 };
@@ -1276,7 +1280,7 @@ export type GetConsumerKeychainDetailsErrors = {
      */
     403: Problem;
     /**
-     * Consumer keychain not found
+     * Consumer Keychain not found
      */
     404: Problem;
 };
@@ -1363,7 +1367,7 @@ export type GetConsumerKeychainMembersErrors = {
      */
     403: Problem;
     /**
-     * Consumer keychain not found
+     * Consumer Keychain not found
      */
     404: Problem;
 };
@@ -1372,7 +1376,7 @@ export type GetConsumerKeychainMembersError = GetConsumerKeychainMembersErrors[k
 
 export type GetConsumerKeychainMembersResponses = {
     /**
-     * Consumer Keychain members retrieved successfully
+     * Consumer Keychain Members retrieved successfully
      */
     200: KeychainMembers;
 };
@@ -1415,7 +1419,7 @@ export type AddConsumerKeychainMemberError = AddConsumerKeychainMemberErrors[key
 
 export type AddConsumerKeychainMemberResponses = {
     /**
-     * Consumer Keychain member added successfully
+     * Consumer Keychain Member added successfully
      */
     204: void;
 };
@@ -1455,12 +1459,52 @@ export type RemoveConsumerKeychainMemberError = RemoveConsumerKeychainMemberErro
 
 export type RemoveConsumerKeychainMemberResponses = {
     /**
-     * Consumer Keychain member removed successfully
+     * Consumer Keychain Member removed successfully
      */
     204: void;
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
+export type GetConsumerKeychainMembershipData = {
+    body?: never;
+    path: {
+        userId: UserId;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/membership/{userId}';
+};
+
+export type GetConsumerKeychainMembershipErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainMembershipError = GetConsumerKeychainMembershipErrors[keyof GetConsumerKeychainMembershipErrors];
+
+export type GetConsumerKeychainMembershipResponses = {
+    /**
+     * Consumer Keychain membership check retrieved successfully
+     */
+    200: ConsumerKeychainMembershipCheckResult;
+};
+
+export type GetConsumerKeychainMembershipResponse = GetConsumerKeychainMembershipResponses[keyof GetConsumerKeychainMembershipResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;
