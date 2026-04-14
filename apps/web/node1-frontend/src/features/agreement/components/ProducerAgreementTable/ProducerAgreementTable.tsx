@@ -13,6 +13,7 @@ import {
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 
 import { AgreementStateChip } from "../AgreementStateChip";
@@ -46,6 +47,9 @@ export function ProducerAgreementTable({
         </Column>
         <Column id="consumer">Consumer</Column>
         <Column id="status">Status</Column>
+        <Column id="recentUpdate">
+          <span className="sr-only">Recent update</span>
+        </Column>
         <Column id="actions">
           <span className="sr-only">Actions</span>
         </Column>
@@ -64,6 +68,9 @@ export function ProducerAgreementTable({
             </Cell>
             <Cell>
               <AgreementStateChip state={agreement.state} />
+            </Cell>
+            <Cell>
+              {agreement.hasRecentlyBeenUpdated && <RecentlyUpdatedIcon />}
             </Cell>
             <Cell className="text-right">
               <ButtonLinkWithPreload

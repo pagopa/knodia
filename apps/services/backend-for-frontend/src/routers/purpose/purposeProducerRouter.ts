@@ -34,6 +34,8 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_GetProducerPurposesQueryParams,
@@ -48,8 +50,8 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface PurposeProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
+  config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
-  knodeId: KnodeId;
   organizationProcessClient: OrganizationProcessClient;
   purposeProcessClient: PurposeProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
@@ -62,8 +64,8 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
   fastify,
   {
     agreementProcessClient,
+    config,
     eserviceProcessClient,
-    knodeId,
     organizationProcessClient,
     purposeProcessClient,
     remoteResourcesManagerClient,
@@ -127,7 +129,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
                 client: remoteResourcesManagerClient,
                 headers: getKnodiaServiceHeaders(req, correlationId),
                 query: {
-                  knodeId,
+                  knodeId: config.knodeId,
                   limit: entityIds.length,
                   offset: 0,
                   organizationId: entityIds,
@@ -153,6 +155,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
             `E-service ${purpose.eserviceId} not found for Purpose ${purpose.id}`,
           ),
           purpose,
+          recentUpdateDays: config.recentUpdateDays,
         }),
       );
 
@@ -257,7 +260,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
           maxDailyCallsPerConsumer: latestVersion.maxDailyCallsPerConsumer,
           producer: {
             ...producer,
-            knodeId,
+            knodeId: config.knodeId,
           },
           purpose,
         }),

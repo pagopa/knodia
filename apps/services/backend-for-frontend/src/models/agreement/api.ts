@@ -41,6 +41,9 @@ export const API_ProducerAgreement = z
   .strictObject({
     consumer: API_CompactOrganization,
     eservice: API_CompactEservice,
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description: "Indicates whether the Agreement has been recently updated",
+    }),
     id: z.uuid(),
     state: API_AgreementState,
   })

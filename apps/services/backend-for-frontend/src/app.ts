@@ -149,15 +149,15 @@ export function buildAppFromConfig(
     });
     protectedApp.register(agreementProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
+      config,
       eserviceProcessClient: clients.eserviceProcessClient,
-      knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeProducerRouter, {
       agreementProcessClient: clients.agreementProcessClient,
+      config,
       eserviceProcessClient: clients.eserviceProcessClient,
-      knodeId: config.knodeId,
       organizationProcessClient: clients.organizationProcessClient,
       purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
