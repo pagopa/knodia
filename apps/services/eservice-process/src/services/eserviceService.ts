@@ -67,40 +67,6 @@ export function eserviceServiceBuilder(
   config: { isConsumerOperatorIdentificationRequired: boolean },
 ) {
   return {
-    async reactivateEservice(
-      eserviceId: EserviceId,
-      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<WithMetadata<Eservice>> {
-      logger.info(`Reactivating E-service ${eserviceId}`);
-
-      const {
-        data: eservice,
-        metadata: { version },
-      } = await retrieveEservice(eserviceId, readmodelService);
-
-      assertIsEserviceProducer(eservice, authData.organizationId);
-
-      const latestVersion = findEserviceLatestVersion(eservice);
-      assertEserviceVersionIsSuspended(eservice, latestVersion);
-
-      const updatedEservice = updateEserviceVersionState(
-        eservice,
-        latestVersion.id,
-        EserviceVersionState.enum.Active,
-        new Date(),
-      );
-
-      const { newVersion } = await eventStoreWriter.insertEvent(
-        createEserviceVersionReactivatedV1Event(
-          updatedEservice,
-          latestVersion.id,
-          correlationId,
-          version,
-        ),
-      );
-
-      return { data: updatedEservice, metadata: { version: newVersion } };
-    },
     async createEservice(
       seed: API_EserviceSeed,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
@@ -191,7 +157,6 @@ export function eserviceServiceBuilder(
 
       return { data: eservice, metadata: { version: newVersion } };
     },
-
     async getCatalogEservices(
       body: API_GetCatalogEserviceSearchParams,
       params: API_GetCatalogEservicesQueryParams,
@@ -200,6 +165,7 @@ export function eserviceServiceBuilder(
       logger.info({ body, params }, "Getting catalog E-services with params");
       return await readmodelService.getCatalogEservices(body, params);
     },
+
     async getEservice(
       eserviceId: EserviceId,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -229,7 +195,6 @@ export function eserviceServiceBuilder(
         readmodelService,
       );
     },
-
     async getEservices(
       params: API_GetEservicesQueryParams,
       { logger }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -237,6 +202,41 @@ export function eserviceServiceBuilder(
       logger.info({ params }, "Getting E-services with params");
 
       return await readmodelService.getEservices(params);
+    },
+
+    async reactivateEservice(
+      eserviceId: EserviceId,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<Eservice>> {
+      logger.info(`Reactivating E-service ${eserviceId}`);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await retrieveEservice(eserviceId, readmodelService);
+
+      assertIsEserviceProducer(eservice, authData.organizationId);
+
+      const latestVersion = findEserviceLatestVersion(eservice);
+      assertEserviceVersionIsSuspended(eservice, latestVersion);
+
+      const updatedEservice = updateEserviceVersionState(
+        eservice,
+        latestVersion.id,
+        EserviceVersionState.enum.Active,
+        new Date(),
+      );
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createEserviceVersionReactivatedV1Event(
+          updatedEservice,
+          latestVersion.id,
+          correlationId,
+          version,
+        ),
+      );
+
+      return { data: updatedEservice, metadata: { version: newVersion } };
     },
 
     async suspendEservice(
