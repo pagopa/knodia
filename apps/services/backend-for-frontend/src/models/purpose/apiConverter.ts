@@ -62,10 +62,7 @@ export const toAPI_ProducerPurpose = ({
     id: eservice.id,
     name: eservice.name,
   },
-  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(
-    purpose.updatedAt,
-    recentUpdateDays,
-  ),
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   name: purpose.name,
   state: purpose.state,

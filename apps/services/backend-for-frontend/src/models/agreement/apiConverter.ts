@@ -30,10 +30,7 @@ export const toAPI_ProducerAgreement = ({
     id: eservice.id,
     name: eservice.name,
   },
-  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(
-    agreement.updatedAt,
-    recentUpdateDays,
-  ),
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(agreement, recentUpdateDays),
   id: agreement.id,
   state: agreement.state,
 });
