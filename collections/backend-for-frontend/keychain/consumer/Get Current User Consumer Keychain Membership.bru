@@ -1,0 +1,19 @@
+meta {
+  name: Get Current User Consumer Keychain Membership
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId/members/:userId
+  body: none
+  auth: none
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+  userId: {{userId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}
