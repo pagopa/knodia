@@ -1,4 +1,5 @@
 import type { UserRole } from "@knodia/common-models/auth";
+import type { UserId } from "@knodia/common-models/ids";
 
 import { createContext, useContext } from "react";
 
@@ -10,6 +11,7 @@ interface AuthContextValue {
   logout: () => Promise<void>;
   roles: readonly UserRole[];
   token: null | string;
+  userId: null | UserId;
   username: null | string;
 }
 

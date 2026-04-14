@@ -243,8 +243,8 @@ const API_ProducerEserviceDetailsCounters = z
 const API_ProducerEserviceDetailsPurposeCounters =
   API_ProducerEserviceDetailsCounters.extend({
     totalApiCallsPerDay: z.number().int().min(0).meta({
-      description: "Total API calls per day across all purposes",
-      format: "int32",
+      description: "Total API calls per day across all Active purposes",
+      format: "int64",
     }),
   }).meta({ id: "ProducerEserviceDetailsPurposeCounters" });
 
@@ -434,8 +434,7 @@ export const API_ConsumerEservice = z
     // TODO: add purposes and consumerKeychains
     categories: z.array(API_EserviceCategory),
     hasRecentlyBeenUpdated: z.boolean().meta({
-      description:
-        "Indicates whether the E-service has been updated in the last days",
+      description: "Indicates whether the E-service has been recently updated",
     }),
     id: z.uuid(),
     mode: API_EserviceMode,

@@ -16,7 +16,7 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementRouter } from "./routers/agreementRouter.ts";
-import { consumerKeychainRouter } from "./routers/consumerKeychainRouter.ts";
+import { clientAssertionRouter } from "./routers/clientAssertionRouter.ts";
 import { eserviceRouter } from "./routers/eserviceRouter.ts";
 import { organizationRouter } from "./routers/organizationRouter.ts";
 import { purposeRouter } from "./routers/purposeRouter.ts";
@@ -79,10 +79,6 @@ export function buildApp({
             name: apiTags.agreement,
           },
           {
-            description: "Routes related to Consumer Keychains",
-            name: apiTags.consumerKeychain,
-          },
-          {
             description: "Routes related to E-services",
             name: apiTags.eservice,
           },
@@ -102,7 +98,7 @@ export function buildApp({
   });
 
   app.register(healthRouter);
-  app.register(consumerKeychainRouter, {
+  app.register(clientAssertionRouter, {
     callerKnodeId,
     keychainProcessClient: clients.keychainProcessClient,
     organizationProcessClient: clients.organizationProcessClient,

@@ -1,7 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  getConsumerKeychainDetailsOptions,
+  getConsumerKeychainDetailsQueryKey,
   updateConsumerKeychainMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, TextArea, TextField } from "@knodia/ui-kit/ui";
@@ -67,17 +67,21 @@ function EditKeychainModal({
 }: EditKeychainModalProps) {
   const queryClient = useQueryClient();
 
-  const { isPending, mutate: editConsumerKeychain } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: editConsumerKeychain,
+  } = useMutation({
     ...updateConsumerKeychainMutation({
       client,
     }),
     onSuccess: async () => {
-      queryClient.invalidateQueries(
-        getConsumerKeychainDetailsOptions({
+      queryClient.invalidateQueries({
+        queryKey: getConsumerKeychainDetailsQueryKey({
           client,
           path: { consumerKeychainId: keychain.id },
         }),
-      );
+      });
       onClose();
     },
   });
@@ -132,6 +136,7 @@ function EditKeychainModal({
           onClose();
         }
       }}
+      showErrorBanner={isError}
       title="Edit Keychain"
     >
       <form

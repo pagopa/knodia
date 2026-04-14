@@ -46,6 +46,9 @@ export const readmodelConsumerKeychain = keychainSchema.table(
 export const readmodelConsumerKeychainUser = keychainSchema.table(
   "consumer_keychain_user",
   {
+    addedAt: timestamp("added_at", { mode: "date", withTimezone: true })
+      .defaultNow()
+      .notNull(),
     consumerKeychainId: uuid("consumer_keychain_id").notNull(),
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     userId: uuid("user_id").notNull(),

@@ -1,0 +1,20 @@
+meta {
+  name: Get Total Daily Calls
+  type: http
+}
+
+get {
+  url: {{host-purpose-process}}/purposes/totalDailyCalls?eserviceId={{eserviceId}}
+  body: none
+  auth: none
+}
+
+params:query {
+  eserviceId: {{eserviceId}}
+  ~state: Active
+}
+
+headers {
+  x-correlation-id: {{correlation-id}}
+  authorization: {{ui-session-jwt}}
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Get Client Assertion Verification Data
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/clientAssertionVerificationData
+  body: json
+}
+
+body:json {
+  {
+    "keychainId": "{{consumerKeychainId}}",
+    "kid": "{{kid}}",
+    "purposeId": "{{purposeId}}"
+  }
+}
