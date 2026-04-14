@@ -1109,7 +1109,7 @@ export type DownloadConsumerKeychainKeyErrors = {
      */
     403: Problem;
     /**
-     * Consumer keychain key not found
+     * Consumer Keychain Key not found
      */
     404: Problem;
 };
@@ -1118,7 +1118,7 @@ export type DownloadConsumerKeychainKeyError = DownloadConsumerKeychainKeyErrors
 
 export type DownloadConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key downloaded successfully
+     * Consumer Keychain Key downloaded successfully
      */
     200: FileDownload;
 };

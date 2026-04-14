@@ -3,7 +3,7 @@ import type { KnodeId } from "@knodia/common-models/ids";
 import { getConsumerCurrentPurposeFormSchemasOptions } from "@knodia/bff-client/tanstack-query";
 import { Banner, Steps } from "@knodia/ui-kit/ui";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useRef } from "react";
+import { Fragment, useEffect, useMemo, useRef } from "react";
 
 import type { ConsumptionEserviceDetail } from "@/features/e-service/models/consumption-eservice-detail";
 
@@ -142,7 +142,7 @@ function ModalContent() {
         current={currentStepIndex}
         steps={stepLabels}
       />
-      {content}
+      <Fragment key={currentStepIndex}>{content}</Fragment>
     </div>
   );
 }
