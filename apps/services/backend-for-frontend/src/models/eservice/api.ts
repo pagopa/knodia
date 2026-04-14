@@ -442,8 +442,7 @@ export const API_ConsumerEservice = z
       format: "int32",
     }),
     hasRecentlyBeenUpdated: z.boolean().meta({
-      description:
-        "Indicates whether the E-service has been updated in the last days",
+      description: "Indicates whether the E-service has been recently updated",
     }),
     id: z.uuid(),
     mode: API_EserviceMode,

@@ -10,20 +10,25 @@ import type {
   API_PurposeDetails,
 } from "./api.ts";
 
+import { hasRecentlyBeenUpdated } from "../../utils/recentUpdate.ts";
+
 export const toAPI_ConsumerPurpose = ({
   consumerKeychainsCount,
   eserviceDetails,
   purpose,
+  recentUpdateDays,
 }: {
   consumerKeychainsCount: number;
   eserviceDetails: remoteResourcesManagerApi.EserviceDetails;
   purpose: remoteResourcesManagerApi.Purpose;
+  recentUpdateDays: number;
 }): API_ConsumerPurpose => ({
   dailyCalls: purpose.dailyCalls,
   eservice: {
     id: eserviceDetails.id,
     name: eserviceDetails.name,
   },
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   keychains: consumerKeychainsCount,
   name: purpose.name,

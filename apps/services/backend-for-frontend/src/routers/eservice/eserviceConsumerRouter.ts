@@ -290,7 +290,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               consumerKeychains,
             },
             eservice,
-            recentEserviceUpdateDays: config.recentEserviceUpdateDays,
+            recentUpdateDays: config.recentUpdateDays,
           });
         }),
       );
