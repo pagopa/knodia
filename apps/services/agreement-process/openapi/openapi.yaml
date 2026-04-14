@@ -504,7 +504,7 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/consumer/suspension:
+  /agreements/{agreementId}/consumer/suspend:
     post:
       operationId: suspendAgreementByConsumer
       tags:
@@ -580,7 +580,7 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/producer/suspension:
+  /agreements/{agreementId}/producer/suspend:
     post:
       operationId: suspendAgreementByProducer
       tags:
@@ -656,7 +656,7 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/consumer/reactivation:
+  /agreements/{agreementId}/consumer/reactivate:
     post:
       operationId: reactivateAgreementByConsumer
       tags:
@@ -732,7 +732,7 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/producer/reactivation:
+  /agreements/{agreementId}/producer/reactivate:
     post:
       operationId: reactivateAgreementByProducer
       tags:

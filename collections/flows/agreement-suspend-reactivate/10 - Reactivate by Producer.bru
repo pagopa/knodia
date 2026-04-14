@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{host-agreement-process}}/agreements/:agreementId/producer/reactivation
+  url: {{host-agreement-process}}/agreements/:agreementId/producer/reactivate
   body: none
   auth: none
 }
@@ -16,7 +16,7 @@ params:path {
 
 headers {
   x-correlation-id: {{correlation-id}}
-  authorization: {{internal-jwt}}
+  authorization: {{ui-session-jwt}}
 }
 
 assert {

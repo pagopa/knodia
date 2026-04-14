@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{host-agreement-process}}/agreements/:agreementId/producer/suspension
+  url: {{host-agreement-process}}/agreements/:agreementId/producer/suspend
   body: none
   auth: none
 }
@@ -16,7 +16,7 @@ params:path {
 
 headers {
   x-correlation-id: {{correlation-id}}
-  authorization: {{internal-jwt}}
+  authorization: {{ui-session-jwt}}
 }
 
 assert {

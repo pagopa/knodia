@@ -204,7 +204,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.agreement],
     },
-    url: "/agreements/:agreementId/consumer/suspension",
+    url: "/agreements/:agreementId/consumer/suspend",
   });
 
   fastify.route({
@@ -249,7 +249,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.agreement],
     },
-    url: "/agreements/:agreementId/producer/suspension",
+    url: "/agreements/:agreementId/producer/suspend",
   });
 
   fastify.route({
@@ -294,7 +294,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.agreement],
     },
-    url: "/agreements/:agreementId/consumer/reactivation",
+    url: "/agreements/:agreementId/consumer/reactivate",
   });
 
   fastify.route({
@@ -339,6 +339,6 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.agreement],
     },
-    url: "/agreements/:agreementId/producer/reactivation",
+    url: "/agreements/:agreementId/producer/reactivate",
   });
 };
