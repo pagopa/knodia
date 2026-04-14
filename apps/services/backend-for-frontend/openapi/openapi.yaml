@@ -1995,7 +1995,7 @@ paths:
       operationId: downloadConsumerKeychainKey
       tags:
         - consumerKeychain
-      description: Download a Consumer Keychain key
+      description: Download a Consumer Keychain Key
       parameters:
         - schema:
             type: string
@@ -2011,11 +2011,11 @@ paths:
           required: true
       responses:
         "200":
-          description: Consumer Keychain key downloaded successfully
+          description: Consumer Keychain Key downloaded successfully
           content:
             application/json:
               schema:
-                description: Consumer Keychain key downloaded successfully
+                description: Consumer Keychain Key downloaded successfully
                 format: binary
                 allOf:
                   - $ref: "#/components/schemas/FileDownload"
@@ -2044,11 +2044,11 @@ paths:
                 allOf:
                   - $ref: "#/components/schemas/Problem"
         "404":
-          description: Consumer keychain key not found
+          description: Consumer Keychain Key not found
           content:
             application/problem+json:
               schema:
-                description: Consumer keychain key not found
+                description: Consumer Keychain Key not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
     delete:
