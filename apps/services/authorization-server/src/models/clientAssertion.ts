@@ -17,15 +17,20 @@ export const ClientAssertionHeader = z.strictObject({
 });
 export type ClientAssertionHeader = z.infer<typeof ClientAssertionHeader>;
 
-export const ClientAssertionPayload = z.strictObject({
-  aud: z.array(z.string()).or(z.string()),
-  exp: z.int().positive(),
-  iat: z.int().positive(),
-  iss: ConsumerKeychainId,
-  jti: z.uuid(),
-  purpose_id: PurposeId,
-  sub: ConsumerKeychainId,
-});
+export const ClientAssertionPayload = z
+  .strictObject({
+    aud: z.array(z.string()).or(z.string()),
+    exp: z.int().positive(),
+    iat: z.int().positive(),
+    iss: ConsumerKeychainId,
+    jti: z.uuid(),
+    purpose_id: PurposeId,
+    sub: ConsumerKeychainId,
+  })
+  .transform(({ purpose_id, ...rest }) => ({
+    ...rest,
+    purposeId: purpose_id,
+  }));
 export type ClientAssertionPayload = z.infer<typeof ClientAssertionPayload>;
 
 export const ClientAssertion = z.strictObject({

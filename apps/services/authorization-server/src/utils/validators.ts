@@ -152,7 +152,7 @@ export function validateClientAssertionClaims({
       iat,
       iss,
       jti,
-      purpose_id: purposeId,
+      purposeId,
       sub,
     },
   };
