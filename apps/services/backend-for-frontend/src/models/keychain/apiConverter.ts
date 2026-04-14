@@ -1,6 +1,11 @@
 import type { keychainProcessApi } from "@knodia/keychain-process-client";
 
-import type { API_Keychain, API_KeychainDetails, API_User } from "./api.ts";
+import type {
+  API_Keychain,
+  API_KeychainDetails,
+  API_KeychainKey,
+  API_User,
+} from "./api.ts";
 
 export const toAPI_KeychainDetails = (
   keychain: keychainProcessApi.Keychain,
@@ -21,6 +26,20 @@ export const toAPI_Keychain = (
   membersCount: counters.membersCount,
   name: keychain.name,
 });
+
+export const toAPI_KeychainKey = (
+  key: keychainProcessApi.KeychainKey,
+  users: keychainProcessApi.Users,
+): API_KeychainKey => {
+  const owner = users.find((user) => user.id === key.userId);
+
+  return {
+    createdAt: key.createdAt,
+    kid: key.kid,
+    name: key.name,
+    uploaderUsername: owner?.username,
+  };
+};
 
 export const toAPI_User = (user: keychainProcessApi.User): API_User => ({
   email: user.email,

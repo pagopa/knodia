@@ -49,12 +49,14 @@ describe("assertFormAnswersAreValid", () => {
     expect(() =>
       assertFormAnswersAreValid(
         {
+          checkedExistenceMereCorrectnessInteropCatalogue: "true",
           confirmPrincipleIntegrityAndDiscretion: "true",
           declarationConfirmGDPR: "true",
           legalBasis: ["CONSENT"],
           personalDataTypes: ["WITH_IDENTIFYING_DATA"],
           purpose: "INSTITUTIONAL",
           purposeDescription: "Testing purpose",
+          purposePursuit: "MERE_CORRECTNESS",
           usesThirdPartyPersonalData: "NO",
         },
         version,

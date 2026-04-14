@@ -3,7 +3,11 @@ import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
 import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
-import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
+import {
+  unsafeBrandId,
+  unsafeBrandKeyId,
+  unsafeBrandUserId,
+} from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -16,26 +20,36 @@ import {
 import {
   API_ConsumerKeychainIdPathParam,
   API_ConsumerKeychainPurposeLinkSeed,
+  API_UnlinkConsumerKeychainIdPathParams,
+  API_UnlinkConsumerKeychainPurposeQueryParams,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
 import type { ConsumerKeychainService } from "../services/consumerKeychainService.ts";
 
 import {
-  API_ConsumerKeychainMemberPathParam,
+  API_ConsumerKeychainKeyPathParams,
+  API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
+  API_GetConsumerKeychainKeysQueryParams,
+  API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
+  API_KeychainKey,
+  API_KeychainKeys,
+  API_KeychainKeySeed,
+  API_KeychainMembers,
   API_KeychainMemberSeed,
   API_Keychains,
-  API_Users,
+  API_User,
 } from "../models/api.ts";
 import {
   toAPI_ConsumerKeychainPurpose,
   toAPI_Keychain,
+  toAPI_KeychainKey,
   toAPI_User,
 } from "../models/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
@@ -122,6 +136,120 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const keys = await consumerKeychainService.getConsumerKeychainKeys(
+        req.params.consumerKeychainId,
+        req.query,
+        ctx,
+      );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: keys.totalCount,
+        },
+        results: keys.results.map(toAPI_KeychainKey),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve keys of a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "getConsumerKeychainKeys",
+      params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainKeysQueryParams,
+      response: {
+        200: API_KeychainKeys.meta({
+          description: "Consumer Keychain keys retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const key = await consumerKeychainService.getConsumerKeychainKey(
+        req.params.consumerKeychainId,
+        unsafeBrandKeyId(req.params.keyId),
+        ctx,
+      );
+
+      res.status(200).send(toAPI_KeychainKey(key));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Consumer Keychain Key by kid",
+      headers: KnodiaServiceHeaders,
+      operationId: "getConsumerKeychainKey",
+      params: API_ConsumerKeychainKeyPathParams,
+      response: {
+        200: API_KeychainKey.meta({
+          description: "Consumer Keychain Key retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Consumer Keychain Key not found",
+        }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const member = await consumerKeychainService.getConsumerKeychainMember(
+        req.params.consumerKeychainId,
+        unsafeBrandUserId(req.params.userId),
+        ctx,
+      );
+
+      res.status(200).send(toAPI_User(member));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Consumer Keychain Member by user ID",
+      headers: KnodiaServiceHeaders,
+      operationId: "getConsumerKeychainMember",
+      params: API_ConsumerKeychainMemberPathParams,
+      response: {
+        200: API_User.meta({
+          description: "Consumer Keychain Member retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Consumer Keychain Member not found",
+        }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/members/:userId",
   });
 
   fastify.route({
@@ -281,15 +409,108 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
-        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+        { tokenType: "ui-session", userRoles: ["technical"] },
       ]);
 
-      const users = await consumerKeychainService.getConsumerKeychainMembers(
+      const {
+        data: key,
+        metadata: { version },
+      } = await consumerKeychainService.uploadConsumerKeychainKey(
         req.params.consumerKeychainId,
+        req.body,
         ctx,
       );
 
-      res.status(200).send(users.map(toAPI_User));
+      setMetadataVersionHeader(res, version);
+      res.status(201).send(toAPI_KeychainKey(key));
+    },
+    method: "POST",
+    schema: {
+      body: API_KeychainKeySeed,
+      description: "Upload a key to a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "uploadConsumerKeychainKey",
+      params: API_ConsumerKeychainIdPathParam,
+      response: {
+        201: {
+          headers: MetadataVersionHeader,
+          properties: API_KeychainKey.meta({
+            description: "Consumer Keychain Key uploaded successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const {
+        metadata: { version },
+      } = await consumerKeychainService.removeConsumerKeychainKey(
+        req.params.consumerKeychainId,
+        unsafeBrandKeyId(req.params.keyId),
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Remove a key from a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "removeConsumerKeychainKey",
+      params: API_ConsumerKeychainKeyPathParams,
+      response: {
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description: "Consumer Keychain Key removed successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys/:keyId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
+      ]);
+
+      const { results, totalCount } =
+        await consumerKeychainService.getConsumerKeychainMembers(
+          req.params.consumerKeychainId,
+          req.query,
+          ctx,
+        );
+
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_User),
+      });
     },
     method: "GET",
     schema: {
@@ -297,8 +518,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       headers: KnodiaServiceHeaders,
       operationId: "getConsumerKeychainMembers",
       params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainMembersQueryParams,
       response: {
-        200: API_Users.meta({
+        200: API_KeychainMembers.meta({
           description: "Consumer Keychain members retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -334,7 +556,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       description: "Remove a member from a Consumer Keychain",
       headers: KnodiaServiceHeaders,
       operationId: "removeConsumerKeychainMember",
-      params: API_ConsumerKeychainMemberPathParam,
+      params: API_ConsumerKeychainMemberPathParams,
       response: {
         200: {
           headers: MetadataVersionHeader,
@@ -362,10 +584,14 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         metadata: { version },
       } = await consumerKeychainService.linkPurposeToConsumerKeychain(
         {
-          consumerKeychainId: req.params.consumerKeychainId,
+          consumerKeychainPurpose: {
+            consumerKeychainId: req.params.consumerKeychainId,
+            purpose: {
+              id: unsafeBrandExternalId(req.body.purposeId),
+              knodeId: req.body.knodeId,
+            },
+          },
           headers: getKnodiaServiceHeaders(req, ctx.correlationId),
-          knodeId: req.body.knodeId,
-          purposeId: unsafeBrandExternalId(req.body.purposeId),
         },
         ctx,
       );
@@ -441,5 +667,52 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const {
+        metadata: { version },
+      } = await consumerKeychainService.unlinkPurposeFromConsumerKeychain(
+        {
+          consumerKeychainId: req.params.consumerKeychainId,
+          purpose: {
+            id: req.params.purposeId,
+            knodeId: req.query.knodeId,
+          },
+        },
+        ctx,
+      );
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(204).send();
+    },
+    method: "DELETE",
+    schema: {
+      description: "Unlink a Purpose from a Consumer Keychain",
+      headers: KnodiaServiceHeaders,
+      operationId: "unlinkPurposeFromConsumerKeychain",
+      params: API_UnlinkConsumerKeychainIdPathParams,
+      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
+      response: {
+        204: {
+          headers: MetadataVersionHeader,
+          properties: z.undefined().meta({
+            description: "Purpose successfully unlinked from Consumer Keychain",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purposes/:purposeId",
   });
 };

@@ -58,7 +58,6 @@ export function buildApp({
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "organization-process",
   });
 
   // Public routes (no auth required)

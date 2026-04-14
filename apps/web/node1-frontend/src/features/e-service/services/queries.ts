@@ -1,15 +1,19 @@
 import type { KnodeId } from "@knodia/common-models/ids";
 
+import { bffApi } from "@knodia/bff-client";
 import {
   getConsumerEserviceDetailsOptions,
   getConsumerEservicesOptions,
   getProducerEserviceDetailsOptions,
   getProducerEservicesOptions,
 } from "@knodia/bff-client/tanstack-query";
+import { queryOptions } from "@tanstack/react-query";
 
 import type { ConsumptionEserviceListParams } from "@/features/e-service/models/search-params";
 
 import { client } from "@/libs/axios";
+
+const DEFAULT_PAGE_LIMIT = 10;
 
 export const consumerEserviceDetailsQuery = (
   eserviceId: string,
@@ -27,7 +31,7 @@ export const consumerEservicesQuery = (
 ) =>
   getConsumerEservicesOptions({
     client,
-    query: { agreementState, limit: 10, offset },
+    query: { agreementState, limit: DEFAULT_PAGE_LIMIT, offset },
   });
 
 export const producerEserviceDetailsQuery = (eserviceId: string) =>
@@ -39,5 +43,23 @@ export const producerEserviceDetailsQuery = (eserviceId: string) =>
 export const producerEservicesQuery = (offset: number) =>
   getProducerEservicesOptions({
     client,
-    query: { limit: 10, offset },
+    query: { limit: DEFAULT_PAGE_LIMIT, offset },
+  });
+
+export const consumerCatalogEservicesQuery = (
+  body: bffApi.GetConsumerCatalogEserviceSearchParams,
+  offset: number,
+) =>
+  queryOptions({
+    queryFn: async ({ signal }) => {
+      const { data } = await bffApi.getConsumerCatalogEservices({
+        body,
+        client,
+        query: { limit: DEFAULT_PAGE_LIMIT, offset },
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: ["getConsumerCatalogEservices", { body, offset }] as const,
   });

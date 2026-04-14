@@ -1,9 +1,11 @@
-import { Button, ButtonLink, Pagination } from "@knodia/ui-kit/ui";
+import { Button } from "@knodia/ui-kit/ui";
 import { ArchiveIcon } from "@phosphor-icons/react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 
+import { ListPageLayout } from "@/components/ListPageLayout";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 import { ProductionEserviceFilters } from "@/features/e-service/components/ProductionEserviceFilters";
 import { ProductionEserviceList } from "@/features/e-service/components/ProductionEserviceList";
@@ -43,7 +45,14 @@ function RouteComponent() {
   }
 
   return (
-    <>
+    <ListPageLayout
+      pagination={{
+        limit: data?.pagination.limit ?? 0,
+        offset,
+        onOffsetChange: (offset) => handleSearchChange({ offset }),
+        totalItems: data?.pagination.total ?? 0,
+      }}
+    >
       <PageHeader
         actions={
           <>
@@ -52,12 +61,12 @@ function RouteComponent() {
               Archive
             </Button>
             {canPublishEservices && (
-              <ButtonLink
+              <ButtonLinkWithPreload
                 hierarchy="brand"
-                href={{ to: "/production/e-services/new" }}
+                to="/production/e-services/new"
               >
                 Create E-Service
-              </ButtonLink>
+              </ButtonLinkWithPreload>
             )}
           </>
         }
@@ -80,14 +89,6 @@ function RouteComponent() {
         eservices={data?.results ?? []}
         isLoading={isLoading}
       />
-
-      <Pagination
-        className="mx-auto mt-6"
-        limit={data?.pagination.limit ?? 0}
-        offset={offset}
-        onOffsetChange={(offset) => handleSearchChange({ offset })}
-        totalItems={data?.pagination.total ?? 0}
-      />
-    </>
+    </ListPageLayout>
   );
 }

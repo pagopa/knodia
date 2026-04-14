@@ -134,7 +134,13 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     const expectedConsumerKeychain: ConsumerKeychain = {
       ...consumerKeychain,
       updatedAt: new Date(responseBody.updatedAt),
-      users: [...consumerKeychain.users, unsafeBrandUserId(memberId)],
+      users: [
+        ...consumerKeychain.users,
+        {
+          addedAt: new Date(responseBody.updatedAt),
+          userId: unsafeBrandUserId(memberId),
+        },
+      ],
     };
 
     expect(responseBody).toEqual(toAPI_Keychain(expectedConsumerKeychain));
@@ -326,7 +332,12 @@ describe("POST /consumerKeychains/:consumerKeychainId/members (addKeychainMember
     const memberId = "10000000-1000-1000-8000-000000000011";
     const keychainWithExistingMember: ConsumerKeychain = {
       ...consumerKeychain,
-      users: [unsafeBrandUserId(memberId)],
+      users: [
+        {
+          addedAt: new Date(),
+          userId: unsafeBrandUserId(memberId),
+        },
+      ],
     };
 
     await seedConsumerKeychain(keychainWithExistingMember);

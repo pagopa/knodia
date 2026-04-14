@@ -231,7 +231,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       res.send({
         pagination: data.pagination,
         results: data.results.map((eservice) =>
-          toAPI_ConsumerEservice(eservice, config.recentEserviceUpdateDays),
+          toAPI_ConsumerEservice(eservice, config.recentUpdateDays),
         ),
       });
     },

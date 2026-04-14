@@ -20,10 +20,7 @@ export function toCatalogSearchResultUI(
     id: unsafeBrandId(result.id),
     mode: result.mode,
     name: result.name.en,
-    organization: {
-      knodeId: result.producer.knodeId,
-      name: result.producer.name,
-    },
+    organization: result.producer,
     state: result.latestVersionState,
   };
 }
@@ -55,12 +52,7 @@ export function toConsumptionEserviceDetail(
     maxDailyCalls: detail.maxDailyCalls,
     mode: detail.mode,
     name: detail.name.en,
-    producer: {
-      email: detail.producer.email,
-      knodeId: detail.producer.knodeId,
-      name: detail.producer.name,
-      notes: detail.producer.notes,
-    },
+    producer: detail.producer,
     requiredAttributes: detail.requiredAttributes,
     state: detail.state,
   };

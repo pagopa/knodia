@@ -9,11 +9,14 @@ import {
   type OrganizationId,
   unsafeBrandId,
   unsafeBrandUserId,
+  type UserId,
 } from "@knodia/common-models/ids";
 import { UnsecuredJWT } from "jose";
 import { match } from "ts-pattern";
 
-const TEST_USER_ID = unsafeBrandUserId("10000000-1000-1000-8000-000000000001");
+export const TEST_USER_ID = unsafeBrandUserId(
+  "10000000-1000-1000-8000-000000000001",
+);
 export const TEST_ORGANIZATION_ID = unsafeBrandId<OrganizationId>(
   "20000000-2000-1000-8000-000000000002",
 );
@@ -23,6 +26,7 @@ export type TestToken =
       organizationId?: OrganizationId;
       roles?: NonEmptyArray<UserRole>;
       type: "ui-session";
+      userId?: UserId;
       username?: string;
     }
   | { type: "internal" };
@@ -33,8 +37,15 @@ export type TestToken =
  */
 export function createTestTokenPayload(spec: TestToken): string {
   const claims = match(spec)
-    .with({ type: "ui-session" }, ({ organizationId, roles, username }) =>
-      getTestUISessionTokenClaims({ organizationId, roles, username }),
+    .with(
+      { type: "ui-session" },
+      ({ organizationId, roles, userId, username }) =>
+        getTestUISessionTokenClaims({
+          organizationId,
+          roles,
+          userId,
+          username,
+        }),
     )
     .with({ type: "internal" }, getTestInternalTokenClaims)
     .exhaustive();
@@ -57,6 +68,7 @@ export function getTestUISessionTokenClaims(
   props: {
     organizationId?: OrganizationId;
     roles?: NonEmptyArray<UserRole>;
+    userId?: UserId;
     username?: string;
   } = {},
 ): UISessionTokenClaims {
@@ -68,7 +80,7 @@ export function getTestUISessionTokenClaims(
     jti: "test-jti",
     organizationId: props.organizationId ?? TEST_ORGANIZATION_ID,
     roles: props.roles ?? ["administrative"],
-    sub: TEST_USER_ID,
+    sub: props.userId ?? TEST_USER_ID,
     type: "ui-session",
     username: props.username ?? "test-user",
   };

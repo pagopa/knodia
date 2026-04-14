@@ -5,12 +5,14 @@ import {
   KnodeId,
   type OrganizationId,
   unsafeBrandId,
+  unsafeBrandKeyId,
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import {
   type ConsumerKeychain,
   type ConsumerKeychainKey,
   type ConsumerKeychainPurpose,
+  type ConsumerKeychainUser,
   type FlatConsumerKeychain,
   KeyAlgorithm,
   KeyFormat,
@@ -22,6 +24,7 @@ import type {
   ConsumerKeychainItemsSQL,
   ConsumerKeychainKeySQL,
   ConsumerKeychainPurposeSQL,
+  ConsumerKeychainUserSQL,
   FlatConsumerKeychainItemsSQL,
 } from "../consumerKeychain.ts";
 
@@ -37,13 +40,11 @@ export const buildConsumerKeychain = ({
         ? undefined
         : LocalizedDescription.parse(consumerKeychainSQL.description),
     id: unsafeBrandId(consumerKeychainSQL.id),
-    keys: consumerKeychainKeysSQL.map(buildConsumerKeychainKey),
+    keys: consumerKeychainKeysSQL.map(toConsumerKeychainKey),
     name: LocalizedName.parse(consumerKeychainSQL.name),
     ownerId: unsafeBrandId<OrganizationId>(consumerKeychainSQL.ownerId),
     updatedAt: consumerKeychainSQL.updatedAt,
-    users: consumerKeychainUsersSQL.map((userSQL) =>
-      unsafeBrandUserId(userSQL.userId),
-    ),
+    users: consumerKeychainUsersSQL.map(toConsumerKeychainUser),
   };
 
   return {
@@ -73,8 +74,7 @@ export const buildFlatConsumerKeychain = ({
   };
 };
 
-/** @knipignore -  Will be used when implementing the keychain keys lifecycle */
-export function buildConsumerKeychainKey(
+export function toConsumerKeychainKey(
   keySQL: ConsumerKeychainKeySQL,
 ): ConsumerKeychainKey {
   return {
@@ -82,7 +82,7 @@ export function buildConsumerKeychainKey(
     createdAt: keySQL.createdAt,
     encodedPem: keySQL.encodedPem,
     format: KeyFormat.parse(keySQL.format),
-    kid: keySQL.kid,
+    kid: unsafeBrandKeyId(keySQL.kid),
     name: LocalizedName.parse(keySQL.name),
     userId: unsafeBrandUserId(keySQL.userId),
   };
@@ -103,5 +103,14 @@ export function toConsumerKeychainPurpose(
       },
     },
     metadata: { version: consumerKeychainPurposeSQL.metadataVersion },
+  };
+}
+
+function toConsumerKeychainUser(
+  userSQL: ConsumerKeychainUserSQL,
+): ConsumerKeychainUser {
+  return {
+    addedAt: userSQL.addedAt,
+    userId: unsafeBrandUserId(userSQL.userId),
   };
 }

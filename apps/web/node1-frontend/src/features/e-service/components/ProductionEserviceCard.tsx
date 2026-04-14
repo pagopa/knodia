@@ -22,10 +22,14 @@ export function ProductionEserviceCard({
         to="/production/e-services/$id"
       />
       <EserviceCardInfoGrid>
-        <GenericInfoCard label="Active Agreements">-</GenericInfoCard>
-        <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
+        <GenericInfoCard label="Active Agreements">
+          {eservice.activeAgreements}
+        </GenericInfoCard>
+        <GenericInfoCard label="Active Purposes">
+          {eservice.activePurposes}
+        </GenericInfoCard>
       </EserviceCardInfoGrid>
-      <EserviceCardFooter mode="ProvideData" state="Active">
+      <EserviceCardFooter mode={eservice.mode} state={eservice.state}>
         {eservice.categories.map((category) => (
           <CategoryChip
             code={category.code}

@@ -66,7 +66,7 @@ function buildApp({
     fastifyOptions: {
       openapi: {
         info: {
-          description: "API for communicating with other Knodes",
+          description: "API for communicating with a Knode",
           title: "Knode to Knode API",
           version: "1.0.0",
         },
@@ -103,7 +103,6 @@ function buildApp({
     },
     loggerConfig,
     makeApiProblem,
-    serviceName: "k2k-gateway",
   });
 
   app.register(healthRouter);

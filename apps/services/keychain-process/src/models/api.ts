@@ -1,4 +1,5 @@
 import {
+  API_KeyId,
   API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
@@ -7,9 +8,12 @@ import {
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
+  API_KeyAlgorithm,
   API_KeychainId,
+  API_KeychainKeyLocalizedName,
   API_KeychainLocalizedDescription,
   API_KeychainLocalizedName,
+  API_KeyFormat,
 } from "@knodia/keychain-models/api";
 import { z } from "zod";
 
@@ -33,9 +37,33 @@ export const API_Keychains = z
   .meta({ id: "Keychains" });
 export type API_Keychains = z.infer<typeof API_Keychains>;
 
-export const API_GetConsumerKeychainsQueryParams = API_PaginationQueryParams;
+const API_GetConsumerKeychainsQueryPurposeFilter = z
+  .string()
+  .transform((v) => {
+    const [knodeId, id] = v.split(":");
+    return { id, knodeId };
+  })
+  .pipe(
+    z.object({
+      id: z.uuid(),
+      knodeId: API_KnodeId,
+    }),
+  );
+
+export const API_GetConsumerKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    purpose: API_GetConsumerKeychainsQueryPurposeFilter.optional().meta({
+      description:
+        "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
+    }),
+  });
 export type API_GetConsumerKeychainsQueryParams = z.infer<
   typeof API_GetConsumerKeychainsQueryParams
+>;
+
+export const API_GetConsumerKeychainKeysQueryParams = API_PaginationQueryParams;
+export type API_GetConsumerKeychainKeysQueryParams = z.infer<
+  typeof API_GetConsumerKeychainKeysQueryParams
 >;
 
 export const API_ConsumerKeychainSeed = z
@@ -56,6 +84,35 @@ export type API_ConsumerKeychainPatch = z.infer<
   typeof API_ConsumerKeychainPatch
 >;
 
+export const API_KeychainKeySeed = z
+  .strictObject({
+    encodedPem: z.string(),
+    name: API_KeychainKeyLocalizedName,
+  })
+  .meta({ id: "KeychainKeySeed" });
+export type API_KeychainKeySeed = z.infer<typeof API_KeychainKeySeed>;
+
+export const API_KeychainKey = z
+  .strictObject({
+    algorithm: API_KeyAlgorithm,
+    createdAt: z.iso.datetime(),
+    encodedPem: z.string(),
+    format: API_KeyFormat,
+    kid: API_KeyId,
+    name: API_KeychainKeyLocalizedName,
+    userId: API_UserId,
+  })
+  .meta({ id: "KeychainKey" });
+export type API_KeychainKey = z.infer<typeof API_KeychainKey>;
+
+export const API_KeychainKeys = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_KeychainKey),
+  })
+  .meta({ id: "KeychainKeys" });
+export type API_KeychainKeys = z.infer<typeof API_KeychainKeys>;
+
 export const API_User = z
   .strictObject({
     email: z.string(),
@@ -75,13 +132,13 @@ export const API_KeychainMemberSeed = z
   .meta({ id: "KeychainMemberSeed" });
 export type API_KeychainMemberSeed = z.infer<typeof API_KeychainMemberSeed>;
 
-export const API_ConsumerKeychainMemberPathParam = z
+export const API_ConsumerKeychainMemberPathParams = z
   .strictObject({
     userId: API_UserId,
   })
   .extend(API_ConsumerKeychainIdPathParam.shape);
-export type API_ConsumerKeychainMemberPathParam = z.infer<
-  typeof API_ConsumerKeychainMemberPathParam
+export type API_ConsumerKeychainMemberPathParams = z.infer<
+  typeof API_ConsumerKeychainMemberPathParams
 >;
 
 const API_ConsumerKeychainLinkedPurpose = z
@@ -117,3 +174,27 @@ export const API_GetConsumerKeychainPurposesQueryParams =
 export type API_GetConsumerKeychainPurposesQueryParams = z.infer<
   typeof API_GetConsumerKeychainPurposesQueryParams
 >;
+
+export const API_ConsumerKeychainKeyPathParams = z
+  .strictObject({
+    keyId: z.string(),
+  })
+  .extend(API_ConsumerKeychainIdPathParam.shape);
+
+export type API_ConsumerKeychainKeyPathParams = z.infer<
+  typeof API_ConsumerKeychainKeyPathParams
+>;
+
+export const API_GetConsumerKeychainMembersQueryParams =
+  API_PaginationQueryParams;
+export type API_GetConsumerKeychainMembersQueryParams = z.infer<
+  typeof API_GetConsumerKeychainMembersQueryParams
+>;
+
+export const API_KeychainMembers = z
+  .strictObject({
+    pagination: API_Pagination,
+    results: z.array(API_User),
+  })
+  .meta({ id: "KeychainMembers" });
+export type API_KeychainMembers = z.infer<typeof API_KeychainMembers>;

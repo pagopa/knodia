@@ -1,3 +1,5 @@
+import { type DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import cookie from "@fastify/cookie";
 import { authenticationPlugin } from "@knodia/fastify-zod-api-commons/auth";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
@@ -12,8 +14,9 @@ import { initFileManager } from "@knodia/file-manager";
 import { pollingServiceBuilder } from "@knodia/polling";
 import { tokenGeneratorBuilder } from "@knodia/token-generator";
 
+import type { BffProcessConfig } from "./config/config.ts";
+
 import { getKnodiaClients } from "./clients/clientsProvider.ts";
-import { type BffProcessConfig } from "./config/config.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementConsumerRouter } from "./routers/agreement/agreementConsumerRouter.ts";
@@ -27,12 +30,12 @@ import { purposeConsumerRouter } from "./routers/purpose/purposeConsumerRouter.t
 import { purposeProducerRouter } from "./routers/purpose/purposeProducerRouter.ts";
 import { sessionRouter } from "./routers/sessionRouter.ts";
 import { authServiceBuilder } from "./services/authService.ts";
+import { createRefreshTokenStore } from "./services/refreshTokenStore.ts";
 
-export function buildAppFromConfig(config: BffProcessConfig) {
-  return buildApp({ config });
-}
-
-function buildApp({ config }: { config: BffProcessConfig }) {
+export function buildAppFromConfig(
+  config: BffProcessConfig,
+  dynamoClient?: DynamoDBClient,
+) {
   const clients = getKnodiaClients({
     agreementProcessUrl: config.agreementProcessUrl,
     eserviceProcessUrl: config.eserviceProcessUrl,
@@ -44,8 +47,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
 
   const fileManager = initFileManager();
   const tokenGenerator = tokenGeneratorBuilder();
-  const pollingService = pollingServiceBuilder(config);
-  const authService = authServiceBuilder(tokenGenerator);
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -89,21 +90,37 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     },
     loggerConfig: config,
     makeApiProblem,
-    serviceName: "backend-for-frontend",
   });
+
+  const pollingService = pollingServiceBuilder(config);
+  const refreshTokenStore = createRefreshTokenStore(
+    config.dynamoDbRefreshTokensTable,
+    dynamoClient,
+  );
+  const authService = authServiceBuilder(
+    config,
+    tokenGenerator,
+    refreshTokenStore,
+  );
+
+  // Register cookie parser
+  app.register(cookie);
 
   // Public routes (no JWT required)
   app.register(healthRouter);
-  app.register(authRouter, { authService });
+  app.register(authRouter, { authService, cookieConfig: config.cookie });
 
   // Protected routes — authenticationPlugin hook is scoped to this context only.
   // See https://fastify.dev/docs/latest/Reference/Encapsulation/
   app.register(async (protectedApp) => {
     protectedApp.register(authenticationPlugin, config);
     protectedApp.register(eserviceProducerRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
+      config,
       eserviceProcessClient: clients.eserviceProcessClient,
       fileManager,
       pollingService,
+      purposeProcessClient: clients.purposeProcessClient,
     });
     protectedApp.register(consumerKeychainRouter, {
       keychainProcessClient: clients.keychainProcessClient,
@@ -121,7 +138,8 @@ function buildApp({ config }: { config: BffProcessConfig }) {
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
     protectedApp.register(purposeConsumerRouter, {
-      knodeId: config.knodeId,
+      config,
+      keychainProcessClient: clients.keychainProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });
@@ -146,5 +164,6 @@ function buildApp({ config }: { config: BffProcessConfig }) {
     });
   });
 
+  app.addHook("onClose", () => refreshTokenStore.close());
   return app;
 }

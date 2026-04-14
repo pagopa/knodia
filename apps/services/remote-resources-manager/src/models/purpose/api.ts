@@ -67,6 +67,9 @@ export const API_Purpose = z
     description: API_LocalizedPurposeDescription,
     eserviceId: z.uuid(),
     id: z.uuid(),
+    knodeId: API_KnodeId.meta({
+      description: "Knode ID of the producer's Knode that owns this Purpose",
+    }),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
     updatedAt: z.iso.datetime(),
@@ -75,10 +78,6 @@ export const API_Purpose = z
 export type API_Purpose = z.infer<typeof API_Purpose>;
 
 export const API_GetPurposesQueryParams = API_PaginationQueryParams.extend({
-  consumerId: z
-    .uuid()
-    .optional()
-    .meta({ description: "Filter by Consumer ID" }),
   eserviceId: z
     .uuid()
     .optional()

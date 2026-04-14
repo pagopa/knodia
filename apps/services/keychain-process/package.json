@@ -7,9 +7,7 @@
     "generate-openapi": "dotenvx run -- node ./openapi/generateOpenapi.ts",
     "lint": "eslint .",
     "lint:autofix": "eslint . --fix",
-    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml",
-    "test": "pnpm -w test --project @knodia/keychain-process",
-    "test:watch": "pnpm test --watch"
+    "lint-openapi": "spectral lint --fail-severity='warn' ./openapi/openapi.yaml --ruleset=./spectral.yaml"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "catalog:",
@@ -23,8 +21,7 @@
     "concurrently": "catalog:",
     "eslint": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:",
-    "zocker": "catalog:"
+    "vitest": "catalog:"
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "catalog:",

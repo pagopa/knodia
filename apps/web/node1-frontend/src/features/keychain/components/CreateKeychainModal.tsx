@@ -31,7 +31,11 @@ interface Props {
 export function CreateKeychainModal({ isOpen, onClose }: Props) {
   const navigate = useNavigate();
 
-  const { isPending, mutate: createConsumerKeychain } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: createConsumerKeychain,
+  } = useMutation({
     ...createConsumerKeychainMutation({
       client,
     }),
@@ -82,6 +86,7 @@ export function CreateKeychainModal({ isOpen, onClose }: Props) {
           onClose();
         }
       }}
+      showErrorBanner={isError}
       title="Create Keychain"
     >
       <form

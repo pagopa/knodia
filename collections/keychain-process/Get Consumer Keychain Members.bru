@@ -4,7 +4,7 @@ meta {
 }
 
 get {
-  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/members
+  url: {{host-keychain-process}}/consumerKeychains/:consumerKeychainId/members?offset=0&limit=50
   body: none
   auth: none
 }
@@ -12,6 +12,11 @@ get {
 headers {
   X-Correlation-Id: {{correlation-id}}
   Authorization: {{ui-session-jwt}}
+}
+
+params:query {
+  offset: 0
+  limit: 50
 }
 
 params:path {
