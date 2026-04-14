@@ -6,6 +6,7 @@ import {
 import {
   Banner,
   Button,
+  type ButtonProps,
   Cell,
   Column,
   CopyButton,
@@ -16,6 +17,7 @@ import {
   TableBody,
   TableHeader,
   toastQueue,
+  Tooltip,
 } from "@knodia/ui-kit/ui";
 import {
   DownloadSimpleIcon,
@@ -23,7 +25,7 @@ import {
   TrashIcon,
 } from "@phosphor-icons/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DialogTrigger } from "react-aria-components";
+import { DialogTrigger, TooltipTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { client } from "@/libs/axios";
@@ -33,6 +35,7 @@ import { formatShortDate } from "@/utils/formatters";
 import type { KeychainType } from "../models/commons";
 
 interface KeychainPublicKeysTableProps {
+  canDownloadKey: boolean;
   isLoading: boolean;
   keychainId: string;
   keys: bffApi.KeychainKey[];
@@ -40,6 +43,7 @@ interface KeychainPublicKeysTableProps {
 }
 
 export function KeychainPublicKeysTable({
+  canDownloadKey,
   isLoading,
   keychainId,
   keys,
@@ -86,6 +90,7 @@ export function KeychainPublicKeysTable({
             <Cell>
               <div className="flex justify-end gap-2">
                 <DownloadPublicKeyAction
+                  canDownloadKey={canDownloadKey}
                   keychainId={keychainId}
                   keyId={key.kid}
                   type={type}
@@ -104,11 +109,32 @@ export function KeychainPublicKeysTable({
   );
 }
 
+function DisabledTooltipButton({
+  children,
+  tooltip,
+  ...props
+}: Omit<ButtonProps, "onClick" | "onPress"> & { tooltip: React.ReactNode }) {
+  return (
+    <TooltipTrigger>
+      <Button
+        {...props}
+        aria-disabled
+        className="cursor-not-allowed opacity-30 hover:cursor-not-allowed hover:bg-transparent pressed:bg-transparent"
+      >
+        {children}
+      </Button>
+      <Tooltip>{tooltip}</Tooltip>
+    </TooltipTrigger>
+  );
+}
+
 function DownloadPublicKeyAction({
+  canDownloadKey,
   keychainId,
   keyId,
   type,
 }: {
+  canDownloadKey: boolean;
   keychainId: string;
   keyId: string;
   type: KeychainType;
@@ -147,15 +173,33 @@ function DownloadPublicKeyAction({
     }
   }
 
-  return (
-    <Button
-      hierarchy="neutral"
-      kind="outlined"
-      onPress={handleDownloadPublicKey}
-      size="icon-sm"
-    >
+  const content = (
+    <>
       <DownloadSimpleIcon />
       <span className="sr-only">Download public key</span>
+    </>
+  );
+
+  const commonButtonProps: ButtonProps = {
+    hierarchy: "neutral",
+    kind: "outlined",
+    size: "icon-sm",
+  };
+
+  if (!canDownloadKey) {
+    return (
+      <DisabledTooltipButton
+        {...commonButtonProps}
+        tooltip="Only Keychain members can download public keys"
+      >
+        {content}
+      </DisabledTooltipButton>
+    );
+  }
+
+  return (
+    <Button {...commonButtonProps} onPress={handleDownloadPublicKey}>
+      {content}
     </Button>
   );
 }
@@ -170,7 +214,11 @@ function RemoveFromKeychainAction({
   type: KeychainType;
 }) {
   const queryClient = useQueryClient();
-  const { isPending, mutate: deleteConsumerKeychainKey } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: deleteConsumerKeychainKey,
+  } = useMutation({
     ...removeConsumerKeychainKeyMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -217,6 +265,7 @@ function RemoveFromKeychainAction({
         isDismissable
         kind="destructive"
         onConfirm={handleDelete}
+        showErrorBanner={isError}
         title="Delete public key"
       />
     </DialogTrigger>
