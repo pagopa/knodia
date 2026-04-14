@@ -26,19 +26,6 @@ export const retrieveConsumerKeychain = async (
   return consumerKeychain;
 };
 
-export const retrieveConsumerKeychainKey = (
-  consumerKeychain: ConsumerKeychain,
-  kid: KeyId,
-) => {
-  const key = consumerKeychain.keys.find((key) => key.kid === kid);
-
-  if (!key) {
-    throw keyNotFoundInKeychain(kid, consumerKeychain.id);
-  }
-
-  return key;
-};
-
 export const retrieveConsumerKeychainPurpose = async (
   consumerKeychainPurpose: Omit<ConsumerKeychainPurpose, "linkedAt">,
   readmodelService: ReadmodelService,
@@ -51,4 +38,17 @@ export const retrieveConsumerKeychainPurpose = async (
   }
 
   return consumerKeychainPurposeResult;
+};
+
+export const retrieveConsumerKeychainKey = (
+  consumerKeychain: ConsumerKeychain,
+  kid: KeyId,
+) => {
+  const key = consumerKeychain.keys.find((key) => key.kid === kid);
+
+  if (!key) {
+    throw keyNotFoundInKeychain(kid, consumerKeychain.id);
+  }
+
+  return key;
 };

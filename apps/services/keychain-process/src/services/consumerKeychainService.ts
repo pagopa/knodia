@@ -69,7 +69,7 @@ import {
   retrieveConsumerKeychain,
   retrieveConsumerKeychainKey,
   retrieveConsumerKeychainPurpose,
-} from "../utils/readmodelUtils.ts";
+} from "../utils/retrievalUtils.ts";
 import {
   assertKeychainKeysCountIsBelowThreshold,
   assertKeyIsUnique,

@@ -105,6 +105,12 @@ const mockOrganization = {
   },
 };
 
+const makeRequestBody = () => ({
+  keychainId: mockKeychainId,
+  kid: mockKid,
+  purposeId: mockPurposeId,
+});
+
 beforeEach(() => {
   getConsumerKeychainPurposeMock.mockReset();
   getConsumerKeychainKeyMock.mockReset();
@@ -112,11 +118,11 @@ beforeEach(() => {
   getOrganizationMock.mockReset();
 });
 
-describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenData)", () => {
+describe("POST /clientAssertionVerificationData (getClientAssertionVerificationData)", () => {
   const makeRequest = () =>
     injectRequest()
-      .post(`/consumerKeychains/${mockKeychainId}/accessTokenData`)
-      .payload({ kid: mockKid, purposeId: mockPurposeId });
+      .post("/clientAssertionVerificationData")
+      .payload(makeRequestBody());
 
   it("should return 200 with public key and consumer attributes on success", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
@@ -138,7 +144,7 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
     });
   });
 
-  it("should call keychain-process with correct parameters", async () => {
+  it("should call keychain-process and organization-process with correct parameters", async () => {
     getConsumerKeychainPurposeMock.mockResolvedValue(mockPurposeResponse);
     getConsumerKeychainKeyMock.mockResolvedValue(mockKeyResponse);
     getConsumerKeychainMock.mockResolvedValue(mockKeychainResponse);
@@ -213,32 +219,51 @@ describe("POST /consumerKeychains/:keychainId/accessTokenData (getAccessTokenDat
 
   it.each([
     { body: {}, testCase: "empty body" },
-    { body: { kid: mockKid }, testCase: "missing purposeId" },
-    { body: { purposeId: mockPurposeId }, testCase: "missing kid" },
     {
-      body: { kid: mockKid, purposeId: "not-a-uuid" },
+      body: { keychainId: mockKeychainId, kid: mockKid },
+      testCase: "missing purposeId",
+    },
+    {
+      body: { keychainId: mockKeychainId, purposeId: mockPurposeId },
+      testCase: "missing kid",
+    },
+    {
+      body: { kid: mockKid, purposeId: mockPurposeId },
+      testCase: "missing keychainId",
+    },
+    {
+      body: {
+        keychainId: mockKeychainId,
+        kid: mockKid,
+        purposeId: "not-a-uuid",
+      },
       testCase: "invalid purposeId",
     },
     {
-      body: { extra: "field", kid: mockKid, purposeId: mockPurposeId },
+      body: {
+        keychainId: "not-a-uuid",
+        kid: mockKid,
+        purposeId: mockPurposeId,
+      },
+      testCase: "invalid keychainId",
+    },
+    {
+      body: {
+        extra: "field",
+        keychainId: mockKeychainId,
+        kid: mockKid,
+        purposeId: mockPurposeId,
+      },
       testCase: "extra property",
     },
   ])(
     "should return 400 for invalid request body: $testCase",
     async ({ body }) => {
       const response = await injectRequest()
-        .post(`/consumerKeychains/${mockKeychainId}/accessTokenData`)
+        .post("/clientAssertionVerificationData")
         .payload(body);
 
       expect(response.statusCode).toBe(400);
     },
   );
-
-  it("should return 400 for invalid keychainId path param", async () => {
-    const response = await injectRequest()
-      .post("/consumerKeychains/not-a-uuid/accessTokenData")
-      .payload({ kid: mockKid, purposeId: mockPurposeId });
-
-    expect(response.statusCode).toBe(400);
-  });
 });
