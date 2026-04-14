@@ -28,7 +28,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         KNODE_ID: KnodeId,
         ORGANIZATION_PROCESS_URL: z.url(),
         PURPOSE_PROCESS_URL: z.url(),
-        RECENT_ESERVICE_UPDATE_DAYS: z.coerce.number().positive().default(3),
+        RECENT_UPDATE_DAYS: z.coerce.number().positive().default(3),
         REFRESH_JWT_SECONDS_DURATION: z.coerce
           .number()
           .int()
@@ -60,7 +60,7 @@ const BffProcessConfig = LoggerConfig.and(HTTPServerConfig)
         knodeId: c.KNODE_ID,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
         purposeProcessUrl: c.PURPOSE_PROCESS_URL,
-        recentEserviceUpdateDays: c.RECENT_ESERVICE_UPDATE_DAYS,
+        recentUpdateDays: c.RECENT_UPDATE_DAYS,
         refreshJwt: {
           secondsDuration: c.REFRESH_JWT_SECONDS_DURATION,
         },
