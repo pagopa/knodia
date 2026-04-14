@@ -96,6 +96,7 @@ components:
         access_token:
           type: string
         expires_in:
+          format: int32
           type: number
         token_type:
           type: string

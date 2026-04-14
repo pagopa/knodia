@@ -18,7 +18,7 @@ export type API_TokenRequest = z.infer<typeof API_TokenRequest>;
 export const API_TokenResponse = z
   .strictObject({
     access_token: z.string(),
-    expires_in: z.number(),
+    expires_in: z.number().meta({ format: "int32" }),
     token_type: z.enum(["Bearer"]),
   })
   .meta({ id: "TokenResponse" });
