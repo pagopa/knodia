@@ -4,7 +4,10 @@ import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
-import { API_CreatedResource } from "@knodia/common-models/api";
+import {
+  API_CreatedResource,
+  API_FileDownload,
+} from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
   API_Problem,
@@ -36,13 +39,14 @@ import {
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
   API_GetConsumerKeychainKeysQueryParams,
+  API_GetConsumerKeychainMembersQueryParams,
   type API_Keychain,
   API_KeychainDetails,
   API_KeychainKeys,
   API_KeychainKeySeed,
+  API_KeychainMembers,
   API_KeychainMemberSeed,
   API_Keychains,
-  API_Users,
 } from "../../models/keychain/api.ts";
 import {
   toAPI_Keychain,
@@ -109,16 +113,22 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Getting Consumer Keychain keys with ID ${req.params.consumerKeychainId}`,
       );
 
-      const { data: keys } = await keychainProcessApi.getConsumerKeychainKeys({
-        client: keychainProcessClient,
-        headers: getKnodiaServiceHeaders(req, correlationId),
-        path: { consumerKeychainId: req.params.consumerKeychainId },
-        query: { limit, offset },
-      });
+      const [{ data: keys }, { data: users }] = await Promise.all([
+        keychainProcessApi.getConsumerKeychainKeys({
+          client: keychainProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+          path: { consumerKeychainId: req.params.consumerKeychainId },
+          query: { limit, offset },
+        }),
+        keychainProcessApi.getTechnicalUsers({
+          client: keychainProcessClient,
+          headers: getKnodiaServiceHeaders(req, correlationId),
+        }),
+      ]);
 
       res.send({
         pagination: keys.pagination,
-        results: keys.results.map(toAPI_KeychainKey),
+        results: keys.results.map((key) => toAPI_KeychainKey(key, users)),
       });
     },
     method: "GET",
@@ -139,6 +149,52 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId, keyId } = req.params;
+
+      logger.info(
+        { requestParams: req.params },
+        `Downloading key ${keyId} from Consumer Keychain with ID ${consumerKeychainId}`,
+      );
+
+      const { data: key } = await keychainProcessApi.getConsumerKeychainKey({
+        client: keychainProcessClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { consumerKeychainId, keyId },
+      });
+
+      const content = Buffer.from(key.encodedPem, "base64");
+
+      res.raw.writeHead(200, {
+        "Content-Disposition": `attachment; filename="public_key_${keyId}.pub"`,
+        "Content-Type": "text/plain; charset=utf-8",
+      });
+
+      res.raw.end(content);
+    },
+    method: "GET",
+    schema: {
+      description: "Download a Consumer Keychain Key",
+      operationId: "downloadConsumerKeychainKey",
+      params: API_ConsumerKeychainKeyPathParams,
+      response: {
+        200: API_FileDownload.meta({
+          description: "Consumer Keychain Key downloaded successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Consumer Keychain Key not found",
+        }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys/:keyId",
   });
 
   fastify.route({
@@ -478,28 +534,34 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
+      const { limit, offset } = req.query;
 
       logger.info(
-        { requestParams: req.params },
+        { requestParams: req.params, requestQuery: req.query },
         `Getting Consumer Keychain members with ID ${req.params.consumerKeychainId}`,
       );
 
-      const { data: users } =
+      const { data: members } =
         await keychainProcessApi.getConsumerKeychainMembers({
           client: keychainProcessClient,
           headers: getKnodiaServiceHeaders(req, correlationId),
           path: { consumerKeychainId: req.params.consumerKeychainId },
+          query: { limit, offset },
         });
 
-      res.send(users.map(toAPI_User));
+      res.send({
+        pagination: members.pagination,
+        results: members.results.map(toAPI_User),
+      });
     },
     method: "GET",
     schema: {
       description: "Retrieve members of a Consumer Keychain",
       operationId: "getConsumerKeychainMembers",
       params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainMembersQueryParams,
       response: {
-        200: API_Users.meta({
+        200: API_KeychainMembers.meta({
           description: "Consumer Keychain members retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -544,12 +606,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
             client: keychainProcessClient,
             headers,
             path: { consumerKeychainId: keychain.id },
+            query: { limit: 1, offset: 0 },
           }),
         ]);
 
         return toAPI_Keychain(keychain, {
           keysCount: keys.pagination.total,
-          membersCount: members.length,
+          membersCount: members.pagination.total,
         });
       }
 

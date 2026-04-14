@@ -34,15 +34,16 @@ import {
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainKeysQueryParams,
+  API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_Keychain,
   API_KeychainKey,
   API_KeychainKeys,
   API_KeychainKeySeed,
+  API_KeychainMembers,
   API_KeychainMemberSeed,
   API_Keychains,
-  API_Users,
 } from "../models/api.ts";
 import {
   toAPI_ConsumerKeychainPurpose,
@@ -176,6 +177,42 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/keys",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["technical", "administrative"] },
+      ]);
+
+      const key = await consumerKeychainService.getConsumerKeychainKey(
+        req.params.consumerKeychainId,
+        unsafeBrandKeyId(req.params.keyId),
+        ctx,
+      );
+
+      res.status(200).send(toAPI_KeychainKey(key));
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve a Consumer Keychain Key by kid",
+      headers: KnodiaServiceHeaders,
+      operationId: "getConsumerKeychainKey",
+      params: API_ConsumerKeychainKeyPathParams,
+      response: {
+        200: API_KeychainKey.meta({
+          description: "Consumer Keychain Key retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({
+          description: "Consumer Keychain Key not found",
+        }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/keys/:keyId",
   });
 
   fastify.route({
@@ -361,7 +398,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         201: {
           headers: MetadataVersionHeader,
           properties: API_KeychainKey.meta({
-            description: "Consumer Keychain key uploaded successfully",
+            description: "Consumer Keychain Key uploaded successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -402,7 +439,7 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         204: {
           headers: MetadataVersionHeader,
           properties: z.undefined().meta({
-            description: "Consumer Keychain key removed successfully",
+            description: "Consumer Keychain Key removed successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -422,12 +459,21 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 
-      const users = await consumerKeychainService.getConsumerKeychainMembers(
-        req.params.consumerKeychainId,
-        ctx,
-      );
+      const { results, totalCount } =
+        await consumerKeychainService.getConsumerKeychainMembers(
+          req.params.consumerKeychainId,
+          req.query,
+          ctx,
+        );
 
-      res.status(200).send(users.map(toAPI_User));
+      res.status(200).send({
+        pagination: {
+          limit: req.query.limit,
+          offset: req.query.offset,
+          total: totalCount,
+        },
+        results: results.map(toAPI_User),
+      });
     },
     method: "GET",
     schema: {
@@ -435,8 +481,9 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       headers: KnodiaServiceHeaders,
       operationId: "getConsumerKeychainMembers",
       params: API_ConsumerKeychainIdPathParam,
+      querystring: API_GetConsumerKeychainMembersQueryParams,
       response: {
-        200: API_Users.meta({
+        200: API_KeychainMembers.meta({
           description: "Consumer Keychain members retrieved successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
