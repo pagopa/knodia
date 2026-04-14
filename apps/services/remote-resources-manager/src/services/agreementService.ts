@@ -145,5 +145,65 @@ export function agreementServiceBuilder(
         results,
       };
     },
+
+    async reactivateAgreement(
+      agreementId: ExternalId<AgreementId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Agreement> {
+      logger.info(`Reactivating Agreement ${agreementId} on Knode ${knodeId}`);
+
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+        agreementId,
+        knodeId,
+      );
+
+      // Both consumerId and authData.organizationId are local node IDs,
+      // so this is a local-to-local comparison that prevents cross-org
+      // access within the same node
+      if (
+        !remoteAgreement ||
+        remoteAgreement.consumerId !== authData.organizationId
+      ) {
+        throw agreementNotFound(agreementId);
+      }
+
+      const { data } = await k2kGatewayApi.reactivateAgreementByConsumer({
+        client: k2kGatewayClient,
+        path: { agreementId },
+      });
+
+      return toAPI_Agreement(data);
+    },
+
+    async suspendAgreement(
+      agreementId: ExternalId<AgreementId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_Agreement> {
+      logger.info(`Suspending Agreement ${agreementId} on Knode ${knodeId}`);
+
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+        agreementId,
+        knodeId,
+      );
+
+      // Both consumerId and authData.organizationId are local node IDs,
+      // so this is a local-to-local comparison that prevents cross-org
+      // access within the same node
+      if (
+        !remoteAgreement ||
+        remoteAgreement.consumerId !== authData.organizationId
+      ) {
+        throw agreementNotFound(agreementId);
+      }
+
+      const { data } = await k2kGatewayApi.suspendAgreementByConsumer({
+        client: k2kGatewayClient,
+        path: { agreementId },
+      });
+
+      return toAPI_Agreement(data);
+    },
   };
 }

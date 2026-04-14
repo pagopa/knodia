@@ -1,0 +1,17 @@
+meta {
+  name: Reactivate Agreement by Consumer
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/agreements/:agreementId/consumer/reactivation
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  ~Authorization:
+}

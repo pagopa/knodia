@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetClientAssertionVerificationDataData, GetClientAssertionVerificationDataErrors, GetClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses } from './types.gen.ts';
+import type { CreateAgreementData, CreateAgreementErrors, CreateAgreementResponses, CreatePurposeData, CreatePurposeErrors, CreatePurposeResponses, DownloadEserviceLatestVersionInterfaceData, DownloadEserviceLatestVersionInterfaceErrors, DownloadEserviceLatestVersionInterfaceResponses, GetAgreementData, GetAgreementErrors, GetAgreementResponses, GetAgreementsData, GetAgreementsErrors, GetAgreementsResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetClientAssertionVerificationDataData, GetClientAssertionVerificationDataErrors, GetClientAssertionVerificationDataResponses, GetCurrentPurposeFormSchemasData, GetCurrentPurposeFormSchemasResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetOrganizationData, GetOrganizationErrors, GetOrganizationResponses, GetOrganizationsData, GetOrganizationsErrors, GetOrganizationsResponses, GetPurposeData, GetPurposeErrors, GetPurposeResponses, GetPurposesData, GetPurposesErrors, GetPurposesResponses, GetStatusData, GetStatusResponses, ReactivateAgreementByConsumerData, ReactivateAgreementByConsumerErrors, ReactivateAgreementByConsumerResponses, SuspendAgreementByConsumerData, SuspendAgreementByConsumerErrors, SuspendAgreementByConsumerResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -109,8 +109,6 @@ export const getAgreements = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
- * Create a new Agreement
- *
  * Create a new Agreement for a Consumer to access a Producer's E-service
  */
 export const createAgreement = <ThrowOnError extends boolean = true>(options: Options<CreateAgreementData, ThrowOnError>) => (options.client ?? client).post<CreateAgreementResponses, CreateAgreementErrors, ThrowOnError>({
@@ -129,6 +127,24 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
 export const getAgreement = <ThrowOnError extends boolean = true>(options: Options<GetAgreementData, ThrowOnError>) => (options.client ?? client).get<GetAgreementResponses, GetAgreementErrors, ThrowOnError>({
     responseType: 'json',
     url: '/agreements/{agreementId}',
+    ...options
+});
+
+/**
+ * Reactivate an Agreement by Consumer
+ */
+export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByConsumerResponses, ReactivateAgreementByConsumerErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/agreements/{agreementId}/consumer/reactivation',
+    ...options
+});
+
+/**
+ * Suspend an Agreement by Consumer
+ */
+export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByConsumerResponses, SuspendAgreementByConsumerErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/agreements/{agreementId}/consumer/suspension',
     ...options
 });
 

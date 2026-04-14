@@ -1,0 +1,17 @@
+meta {
+  name: Suspend Agreement by Consumer
+  type: http
+}
+
+post {
+  url: {{host-k2k-gateway}}/agreements/:agreementId/consumer/suspension
+  body: none
+}
+
+params:path {
+  agreementId: {{agreementId}}
+}
+
+headers {
+  ~Authorization:
+}

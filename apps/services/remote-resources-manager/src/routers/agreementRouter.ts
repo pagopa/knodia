@@ -60,6 +60,78 @@ export const agreementRouter: FastifyPluginAsyncZod<
   fastify.route({
     handler: async (req, res) => {
       const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await agreementService.reactivateAgreement(
+        unsafeBrandExternalId<AgreementId>(req.params.agreementId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate an Agreement by Consumer",
+      operationId: "reactivateAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_GetAgreementQueryParams,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Reactivate an Agreement",
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/consumer/reactivation",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await agreementService.suspendAgreement(
+        unsafeBrandExternalId<AgreementId>(req.params.agreementId),
+        KnodeId.parse(req.query.knodeId),
+        ctx,
+      );
+
+      res.send(data);
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend an Agreement by Consumer",
+      operationId: "suspendAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_GetAgreementQueryParams,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      summary: "Suspend an Agreement",
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/consumer/suspension",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
         { tokenType: "ui-session", userRoles: ["administrative", "technical"] },
       ]);
 

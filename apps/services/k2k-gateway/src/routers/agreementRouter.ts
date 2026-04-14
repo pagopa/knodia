@@ -1,5 +1,5 @@
 import type { API_CreatedResource } from "@knodia/common-models/api";
-import type { KnodeId } from "@knodia/common-models/ids";
+import type { CorrelationId, KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { AxiosResponse } from "axios";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
@@ -42,12 +42,10 @@ interface AgreementRouterOptions {
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
-export const agreementRouter: FastifyPluginAsyncZod<
-  AgreementRouterOptions
-> = async (
-  fastify,
-  { agreementProcessClient, callerKnodeId, pollingService, tokenProvider },
-) => {
+function makePollAgreement(
+  agreementProcessClient: AgreementProcessClient,
+  pollingService: PollingService,
+) {
   const retrieveAgreement = async (
     agreementId: string,
     headers: KnodiaServiceHeaders,
@@ -58,7 +56,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       path: { agreementId },
     });
 
-  const pollAgreement = (
+  return (
     response: AxiosResponse<API_CreatedResource>,
     headers: KnodiaServiceHeaders,
   ) =>
@@ -67,18 +65,28 @@ export const agreementRouter: FastifyPluginAsyncZod<
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
+}
+
+export const agreementRouter: FastifyPluginAsyncZod<
+  AgreementRouterOptions
+> = async (
+  fastify,
+  { agreementProcessClient, callerKnodeId, pollingService, tokenProvider },
+) => {
+  const pollAgreement = makePollAgreement(
+    agreementProcessClient,
+    pollingService,
+  );
+  const getHeaders = async (correlationId: CorrelationId) =>
+    getKnodiaServiceHeaders(correlationId, await tokenProvider.get());
 
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
-      logger.info(
-        { requestBody: req.body },
-        "Creating agreement with body data",
-      );
+      logger.info({ requestBody: req.body }, "Creating Agreement");
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const response = await agreementProcessApi.createAgreement({
         body: toProcessAPI_AgreementSeed(req.body, callerKnodeId),
@@ -107,7 +115,6 @@ export const agreementRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
-      summary: "Create a new Agreement",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",
@@ -119,8 +126,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
 
       logger.info(`Getting Agreement with ID ${req.params.agreementId}`);
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const { data } = await agreementProcessApi.getAgreement({
         client: agreementProcessClient,
@@ -151,13 +157,80 @@ export const agreementRouter: FastifyPluginAsyncZod<
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
 
+      logger.info(`Reactivating Agreement ${req.params.agreementId}`);
+
+      const headers = await getHeaders(correlationId);
+
+      const { data } = await agreementProcessApi.reactivateAgreementByConsumer({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      res.send(toAPI_Agreement(data));
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate an Agreement by Consumer",
+      operationId: "reactivateAgreementByConsumer",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/consumer/reactivation",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(`Suspending Agreement ${req.params.agreementId}`);
+
+      const headers = await getHeaders(correlationId);
+
+      const { data } = await agreementProcessApi.suspendAgreementByConsumer({
+        client: agreementProcessClient,
+        headers,
+        path: { agreementId: req.params.agreementId },
+      });
+
+      res.send(toAPI_Agreement(data));
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend an Agreement by Consumer",
+      operationId: "suspendAgreementByConsumer",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_Agreement.meta({
+          description: "Agreement suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.resource, apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/consumer/suspension",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
       logger.info(
         { requestQuery: req.query },
         "Getting Agreements with query params",
       );
 
-      const token = await tokenProvider.get();
-      const headers = getKnodiaServiceHeaders(correlationId, token);
+      const headers = await getHeaders(correlationId);
 
       const { consumerId, eserviceId, limit, offset, state } = req.query;
 
