@@ -17,7 +17,7 @@ export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
       await k2kGatewayApi.getAccessTokenData({
         body: {
           kid: clientAssertion.header.kid,
-          purposeId: clientAssertion.payload.purpose_id,
+          purposeId: clientAssertion.payload.purposeId,
         },
         client: k2kGatewayClient,
         path: {
