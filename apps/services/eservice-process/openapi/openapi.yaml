@@ -945,12 +945,12 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eservices/{eserviceId}/activate:
+  /eservices/{eserviceId}/reactivate:
     post:
-      operationId: activateEservice
+      operationId: reactivateEservice
       tags:
         - eservice
-      description: Activate a suspended E-service
+      description: Reactivate a suspended E-service
       parameters:
         - schema:
             type: string
@@ -968,11 +968,11 @@ paths:
           description: Unique identifier of the request
       responses:
         "200":
-          description: E-service activated successfully
+          description: E-service reactivated successfully
           content:
             application/json:
               schema:
-                description: E-service activated successfully
+                description: E-service reactivated successfully
                 allOf:
                   - $ref: "#/components/schemas/Eservice"
           headers:

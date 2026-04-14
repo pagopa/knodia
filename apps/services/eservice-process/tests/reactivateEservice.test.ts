@@ -21,8 +21,8 @@ const allowedTestTokens: TestToken[] = [
   { roles: ["administrative"], type: "ui-session" },
 ];
 
-describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
-  it("should activate a suspended e-service", async () => {
+describe("POST /eservices/:eserviceId/reactivate (reactivateEservice)", () => {
+  it("should reactivate a suspended e-service", async () => {
     const eservice = makeEserviceWithVersionState(
       EserviceVersionState.enum.Suspended,
       200,
@@ -30,7 +30,7 @@ describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
     await seedEservice(eservice);
 
     const response = await injectAppRequest(allowedTestTokens[0]!).post(
-      `/eservices/${eservice.id}/activate`,
+      `/eservices/${eservice.id}/reactivate`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -45,14 +45,14 @@ describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
     const events = await getAllEserviceEvents();
     expect(events).toHaveLength(2);
 
-    const activateEvent = events[1];
-    expect(activateEvent).toMatchObject({
+    const reactivateEvent = events[1];
+    expect(reactivateEvent).toMatchObject({
       streamId: eservice.id,
       type: "EserviceVersionActivatedV1",
       version: 1,
     });
 
-    const eventData = EserviceEventV1.parse(activateEvent).data;
+    const eventData = EserviceEventV1.parse(reactivateEvent).data;
     const eserviceFromEvent = fromEserviceV1(eventData.eservice!);
     expect(eserviceFromEvent.versions[0]!.state).toBe(
       EserviceVersionState.enum.Active,
@@ -67,7 +67,7 @@ describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
     await seedEservice(eservice);
 
     const response = await injectAppRequest(allowedTestTokens[0]!).post(
-      `/eservices/${eservice.id}/activate`,
+      `/eservices/${eservice.id}/reactivate`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -81,7 +81,7 @@ describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
     await seedEservice(eservice);
 
     const response = await injectAppRequest(allowedTestTokens[0]!).post(
-      `/eservices/${eservice.id}/activate`,
+      `/eservices/${eservice.id}/reactivate`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -96,7 +96,7 @@ describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
     await seedEservice(eservice);
 
     const response = await injectAppRequest(allowedTestTokens[0]!).post(
-      `/eservices/${eservice.id}/activate`,
+      `/eservices/${eservice.id}/reactivate`,
     );
 
     expect(response.statusCode).toBe(403);
@@ -104,7 +104,7 @@ describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
 
   it("should return 404 if e-service does not exist", async () => {
     const response = await injectAppRequest(allowedTestTokens[0]!).post(
-      `/eservices/${generateId()}/activate`,
+      `/eservices/${generateId()}/reactivate`,
     );
 
     expect(response.statusCode).toBe(404);
@@ -120,7 +120,7 @@ describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
       await seedEservice(eservice);
 
       const response = await injectAppRequest(spec).post(
-        `/eservices/${eservice.id}/activate`,
+        `/eservices/${eservice.id}/reactivate`,
       );
 
       expect(response.statusCode).toBe(403);

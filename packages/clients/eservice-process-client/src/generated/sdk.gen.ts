@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.ts';
 import type { Client, Options as Options2, TDataShape } from './client/index.ts';
-import type { ActivateEserviceData, ActivateEserviceErrors, ActivateEserviceResponses, CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses } from './types.gen.ts';
+import type { CreateEserviceData, CreateEserviceErrors, CreateEserviceResponses, GetCatalogEservicesData, GetCatalogEservicesErrors, GetCatalogEservicesResponses, GetEserviceData, GetEserviceErrors, GetEserviceLatestVersionData, GetEserviceLatestVersionErrors, GetEserviceLatestVersionInterfaceData, GetEserviceLatestVersionInterfaceErrors, GetEserviceLatestVersionInterfaceResponses, GetEserviceLatestVersionResponses, GetEserviceResponses, GetEservicesData, GetEservicesErrors, GetEservicesResponses, GetStatusData, GetStatusResponses, ReactivateEserviceData, ReactivateEserviceErrors, ReactivateEserviceResponses, SuspendEserviceData, SuspendEserviceErrors, SuspendEserviceResponses } from './types.gen.ts';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean> = Options2<TData, ThrowOnError> & {
     /**
@@ -92,12 +92,12 @@ export const suspendEservice = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
- * Activate a suspended E-service
+ * Reactivate a suspended E-service
  */
-export const activateEservice = <ThrowOnError extends boolean = true>(options: Options<ActivateEserviceData, ThrowOnError>) => (options.client ?? client).post<ActivateEserviceResponses, ActivateEserviceErrors, ThrowOnError>({
+export const reactivateEservice = <ThrowOnError extends boolean = true>(options: Options<ReactivateEserviceData, ThrowOnError>) => (options.client ?? client).post<ReactivateEserviceResponses, ReactivateEserviceErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/eservices/{eserviceId}/activate',
+    url: '/eservices/{eserviceId}/reactivate',
     ...options
 });
 

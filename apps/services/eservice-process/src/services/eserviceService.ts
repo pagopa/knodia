@@ -66,11 +66,11 @@ export function eserviceServiceBuilder(
   config: { isConsumerOperatorIdentificationRequired: boolean },
 ) {
   return {
-    async activateEservice(
+    async reactivateEservice(
       eserviceId: EserviceId,
       { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
     ): Promise<WithMetadata<Eservice>> {
-      logger.info(`Activating E-service ${eserviceId}`);
+      logger.info(`Reactivating E-service ${eserviceId}`);
 
       const {
         data: eservice,

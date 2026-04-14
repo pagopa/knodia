@@ -570,7 +570,7 @@ export type SuspendEserviceResponses = {
 
 export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
 
-export type ActivateEserviceData = {
+export type ReactivateEserviceData = {
     body?: never;
     headers: {
         /**
@@ -582,10 +582,10 @@ export type ActivateEserviceData = {
         eserviceId: string;
     };
     query?: never;
-    url: '/eservices/{eserviceId}/activate';
+    url: '/eservices/{eserviceId}/reactivate';
 };
 
-export type ActivateEserviceErrors = {
+export type ReactivateEserviceErrors = {
     /**
      * Bad Request
      */
@@ -608,16 +608,16 @@ export type ActivateEserviceErrors = {
     409: Problem;
 };
 
-export type ActivateEserviceError = ActivateEserviceErrors[keyof ActivateEserviceErrors];
+export type ReactivateEserviceError = ReactivateEserviceErrors[keyof ReactivateEserviceErrors];
 
-export type ActivateEserviceResponses = {
+export type ReactivateEserviceResponses = {
     /**
-     * E-service activated successfully
+     * E-service reactivated successfully
      */
     200: Eservice;
 };
 
-export type ActivateEserviceResponse = ActivateEserviceResponses[keyof ActivateEserviceResponses];
+export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
 
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;

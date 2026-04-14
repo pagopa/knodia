@@ -270,22 +270,22 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       const {
         data: eservice,
         metadata: { version },
-      } = await eserviceService.activateEservice(req.params.eserviceId, ctx);
+      } = await eserviceService.reactivateEservice(req.params.eserviceId, ctx);
 
       setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_Eservice(eservice));
     },
     method: "POST",
     schema: {
-      description: "Activate a suspended E-service",
+      description: "Reactivate a suspended E-service",
       headers: KnodiaServiceHeaders,
-      operationId: "activateEservice",
+      operationId: "reactivateEservice",
       params: API_EserviceIdPathParam,
       response: {
         200: {
           headers: MetadataVersionHeader,
           properties: API_Eservice.meta({
-            description: "E-service activated successfully",
+            description: "E-service reactivated successfully",
           }),
         },
         400: API_Problem.meta({ description: "Bad Request" }),
@@ -296,7 +296,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       },
       tags: [apiTags.eservice],
     },
-    url: "/eservices/:eserviceId/activate",
+    url: "/eservices/:eserviceId/reactivate",
   });
 
   fastify.route({
