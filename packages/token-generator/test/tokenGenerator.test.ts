@@ -15,6 +15,7 @@ import {
 import {
   type ConsumerKeychainId,
   generateId,
+  type KnodeId,
   type OrganizationId,
   type PurposeId,
   unsafeBrandId,
@@ -39,9 +40,12 @@ const generator = tokenGeneratorBuilder(testKmsClient);
 const consumerKeychainId = generateId<ConsumerKeychainId>();
 const consumer: ExternalResource<OrganizationId> = {
   id: generateExternalId(),
+  knodeId: "Lynx",
+};
+const producer: { id: OrganizationId; knodeId: KnodeId } = {
+  id: generateId(),
   knodeId: "Orion",
 };
-const producerId = generateId<OrganizationId>();
 const eservice = getMockEservice({ latestVersionState: "Active" });
 const eserviceVersion = eservice.versions[0]!;
 const purposeId = generateId<PurposeId>();
@@ -99,17 +103,16 @@ const testCases = [
     expectedPayload: {
       aud: "my-audience",
       client_id: consumerKeychainId,
-      consumer_id: consumer.id,
-      consumer_knode_id: consumer.knodeId,
-      eservice_id: eservice.id,
-      eservice_version_id: eserviceVersion.id,
+      consumer,
+      eservice: { id: eservice.id, knodeId: producer.knodeId },
+      eservice_version: { id: eserviceVersion.id, knodeId: producer.knodeId },
       exp: MOCK_NOW_SECONDS + eserviceVersion.accessTokenDuration,
       iat: MOCK_NOW_SECONDS,
       iss: "my-issuer",
       jti: expect.any(String),
       nbf: MOCK_NOW_SECONDS,
-      producer_id: producerId,
-      purpose_id: purposeId,
+      producer,
+      purpose: { id: purposeId, knodeId: producer.knodeId },
       sub: consumerKeychainId,
     } satisfies EserviceAccessTokenClaims,
     generate: () =>
@@ -121,7 +124,7 @@ const testCases = [
         eserviceVersionId: eserviceVersion.id,
         issuer: "my-issuer",
         kid: KID,
-        producerId,
+        producer,
         purposeId,
         secondsDuration: eserviceVersion.accessTokenDuration,
         subject: consumerKeychainId,

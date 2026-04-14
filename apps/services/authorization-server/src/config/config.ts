@@ -1,3 +1,4 @@
+import { KnodeId } from "@knodia/common-models/ids";
 import { ReadmodelAgreementConfig } from "@knodia/db-readmodel-agreement/config";
 import { ReadmodelEserviceConfig } from "@knodia/db-readmodel-eservice/config";
 import { ReadmodelPurposeConfig } from "@knodia/db-readmodel-purpose/config";
@@ -15,6 +16,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         CLIENT_ASSERTION_ACCEPTED_AUDIENCES: z.string(),
         ESERVICE_ACCESS_TOKEN_JWT_KID: z.string(),
         GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER: z.url(),
+        KNODE_ID: KnodeId,
         KNODE_URL: z.url(),
       })
       .transform((c) => ({
@@ -25,6 +27,7 @@ const AuthorizationServerConfig = LoggerConfig.and(HTTPServerConfig)
         eserviceAccessTokenJwtKid: c.ESERVICE_ACCESS_TOKEN_JWT_KID,
         generatedEserviceAccessTokenIssuer:
           c.GENERATED_ESERVICE_ACCESS_TOKEN_ISSUER,
+        knodeId: c.KNODE_ID,
         knodeUrl: c.KNODE_URL,
       })),
   );

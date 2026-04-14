@@ -1,6 +1,6 @@
 import z from "zod";
 
-import { ExternalId } from "../externalResource.ts";
+import { ExternalResource } from "../externalResource.ts";
 import {
   ConsumerKeychainId,
   EserviceId,
@@ -31,13 +31,12 @@ const UserTokenClaims = BaseJwtClaims.extend({
 
 const EserviceAccessTokenClaims = BaseJwtClaims.extend({
   client_id: ConsumerKeychainId,
-  consumer_id: ExternalId<OrganizationId>,
-  consumer_knode_id: KnodeId,
-  eservice_id: EserviceId,
-  eservice_version_id: EserviceVersionId,
+  consumer: ExternalResource<OrganizationId>,
+  eservice: { id: EserviceId, knodeId: KnodeId },
+  eservice_version: { id: EserviceVersionId, knodeId: KnodeId },
   nbf: z.int(),
-  producer_id: OrganizationId,
-  purpose_id: PurposeId,
+  producer: { id: OrganizationId, knodeId: KnodeId },
+  purpose: { id: PurposeId, knodeId: KnodeId },
   sub: ConsumerKeychainId,
 });
 export type EserviceAccessTokenClaims = z.infer<

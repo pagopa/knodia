@@ -1,6 +1,6 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { type KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -15,16 +15,19 @@ import {
   verifyClientAssertionSignature,
 } from "../utils/validators.ts";
 
+export type TokenService = ReturnType<typeof tokenServiceBuilder>;
 export function tokenServiceBuilder({
   eserviceAccessTokenJwtKid,
   generatedEserviceAccessTokenIssuer,
   k2kGatewayClient,
+  knodeId,
   readmodelService,
   tokenGenerator,
 }: {
   eserviceAccessTokenJwtKid: string;
   generatedEserviceAccessTokenIssuer: string;
   k2kGatewayClient: K2K2GatewayApiClient;
+  knodeId: KnodeId;
   readmodelService: ReadmodelService;
   tokenGenerator: TokenGenerator;
 }) {
@@ -75,7 +78,7 @@ export function tokenServiceBuilder({
         eserviceVersionId: eserviceVersion.id,
         issuer: generatedEserviceAccessTokenIssuer,
         kid: eserviceAccessTokenJwtKid,
-        producerId: agreement.producerId,
+        producer: { id: agreement.producerId, knodeId },
         purposeId: purpose.id,
         secondsDuration: eserviceVersion.accessTokenDuration,
         subject: clientAssertion.payload.sub,

@@ -10,6 +10,7 @@ import type {
   ConsumerKeychainId,
   EserviceId,
   EserviceVersionId,
+  KnodeId,
   OrganizationId,
   PurposeId,
   UserId,
@@ -41,7 +42,7 @@ interface EserviceAccessTokenInput extends TokenParams {
   consumerKeychainId: ConsumerKeychainId; // access token client_id claim
   eserviceId: EserviceId;
   eserviceVersionId: EserviceVersionId;
-  producerId: OrganizationId;
+  producer: { id: OrganizationId; knodeId: KnodeId };
   purposeId: PurposeId;
   subject: ConsumerKeychainId;
 }
@@ -138,17 +139,19 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
       const claims: EserviceAccessTokenClaims = {
         aud: input.audience,
         client_id: input.consumerKeychainId,
-        consumer_id: input.consumer.id,
-        consumer_knode_id: input.consumer.knodeId,
-        eservice_id: input.eserviceId,
-        eservice_version_id: input.eserviceVersionId,
+        consumer: input.consumer,
+        eservice: { id: input.eserviceId, knodeId: input.producer.knodeId },
+        eservice_version: {
+          id: input.eserviceVersionId,
+          knodeId: input.producer.knodeId,
+        },
         exp: now + input.secondsDuration,
         iat: now,
         iss: input.issuer,
         jti: randomUUID(),
         nbf: now,
-        producer_id: input.producerId,
-        purpose_id: input.purposeId,
+        producer: input.producer,
+        purpose: { id: input.purposeId, knodeId: input.producer.knodeId },
         sub: input.subject,
       };
 

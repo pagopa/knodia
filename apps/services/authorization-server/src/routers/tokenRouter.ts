@@ -6,11 +6,11 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 
 import { API_TokenRequest, API_TokenResponse } from "../models/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-import { type tokenServiceBuilder } from "../services/tokenService.ts";
+import { type TokenService } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
   clientAssertionAcceptedAudiences: string[];
-  tokenService: ReturnType<typeof tokenServiceBuilder>;
+  tokenService: TokenService;
 }
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (

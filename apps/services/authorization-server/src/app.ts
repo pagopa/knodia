@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { LoggerConfig } from "@knodia/logger/config";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
@@ -23,6 +24,7 @@ export function buildApp({
   config,
   eserviceAccessTokenJwtKid,
   generatedEserviceAccessTokenIssuer,
+  knodeId,
   knodeUrl,
   readmodelDb,
 }: {
@@ -30,6 +32,7 @@ export function buildApp({
   config: LoggerConfig;
   eserviceAccessTokenJwtKid: string;
   generatedEserviceAccessTokenIssuer: string;
+  knodeId: KnodeId;
   knodeUrl: string;
   readmodelDb: NodePgDatabase;
 }) {
@@ -68,6 +71,7 @@ export function buildApp({
       eserviceAccessTokenJwtKid,
       generatedEserviceAccessTokenIssuer,
       k2kGatewayClient,
+      knodeId,
       readmodelService: readmodelServiceBuilder(readmodelDb),
       tokenGenerator,
     }),
@@ -86,6 +90,7 @@ export function buildAppFromConfig(config: AuthorizationServerConfig) {
     eserviceAccessTokenJwtKid: config.eserviceAccessTokenJwtKid,
     generatedEserviceAccessTokenIssuer:
       config.generatedEserviceAccessTokenIssuer,
+    knodeId: config.knodeId,
     knodeUrl: config.knodeUrl,
     readmodelDb,
   });
