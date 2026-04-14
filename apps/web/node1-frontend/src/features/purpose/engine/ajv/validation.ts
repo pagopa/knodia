@@ -26,18 +26,19 @@ export function createAjvValidator(
       )
     : {};
   return (values, visibleFields) => {
-    const subsetSchema = buildSubsetSchema(
-      jsonSchema,
-      visibleFields,
-      values,
-      controlsByField,
-    );
+    const subsetSchema = buildSubsetSchema(jsonSchema, visibleFields, values);
     const validateFn = ajv.compile(subsetSchema);
 
     const visibleValues: FormValues = {};
     for (const field of visibleFields) {
       const val = values[field];
-      if (val !== undefined) visibleValues[field] = val;
+      if (val === undefined) continue;
+      const cleaned = stripHiddenOptionValues(
+        val,
+        controlsByField[field],
+        values,
+      );
+      if (cleaned !== undefined) visibleValues[field] = cleaned;
     }
 
     if (validateFn(visibleValues)) return {};
@@ -100,14 +101,10 @@ function ajvErrorsToFieldErrors(
 
 // Builds a subset JSON Schema for the current step's visible fields only.
 // Drops allOf conditions whose required fields are outside this step.
-// When a visible field has a `hideOptions` rule on its control, the currently
-// hidden option values are removed from the property's enum so AJV rejects
-// stale selections via its normal `enum` keyword.
 function buildSubsetSchema(
   jsonSchema: JsonSchema,
   visibleFields: Set<string>,
-  values: FormValues | undefined,
-  controlsByField: Record<string, ControlElement>,
+  values?: FormValues,
 ): Record<string, unknown> {
   const allRequired = getRequiredFields(jsonSchema, values ?? {});
   const requiredSet = new Set(
@@ -118,14 +115,7 @@ function buildSubsetSchema(
   for (const field of visibleFields) {
     const prop = jsonSchema.properties[field];
     if (!prop) continue;
-    const narrowed = narrowEnumByHiddenOptions(
-      prop,
-      controlsByField[field],
-      values ?? {},
-    );
-    properties[field] = requiredSet.has(field)
-      ? patchPropNonEmpty(narrowed)
-      : narrowed;
+    properties[field] = requiredSet.has(field) ? patchPropNonEmpty(prop) : prop;
   }
 
   const allOf = (jsonSchema.allOf ?? [])
@@ -158,30 +148,6 @@ function buildSubsetSchema(
   };
 }
 
-function narrowEnumByHiddenOptions(
-  prop: JsonSchemaProperty,
-  control: ControlElement | undefined,
-  values: FormValues,
-): JsonSchemaProperty {
-  if (!control?.options?.hideOptions) return prop;
-  const hidden = getFilteredOptionValues(control, values);
-  if (!hidden) return prop;
-
-  if (prop.type === "array" && prop.items?.enum) {
-    return {
-      ...prop,
-      items: {
-        ...prop.items,
-        enum: prop.items.enum.filter((v) => !hidden.has(v)),
-      },
-    };
-  }
-  if (prop.type === "string" && prop.enum) {
-    return { ...prop, enum: prop.enum.filter((v) => !hidden.has(v)) };
-  }
-  return prop;
-}
-
 // JSON Schema `required` only checks that a property key exists in the object —
 // it does NOT reject empty strings ("") or empty arrays ([]).
 // Since our form initializes fields with these empty defaults, a required field
@@ -194,4 +160,16 @@ function patchPropNonEmpty(prop: JsonSchemaProperty): JsonSchemaProperty {
   if (prop.type === "string" && prop.const === undefined)
     return { ...prop, minLength: Math.max(1, prop.minLength ?? 0) };
   return prop;
+}
+
+function stripHiddenOptionValues(
+  value: string | string[],
+  control: ControlElement | undefined,
+  allValues: FormValues,
+): string | string[] | undefined {
+  if (!control?.options?.hideOptions) return value;
+  const hidden = getFilteredOptionValues(control, allValues);
+  if (!hidden) return value;
+  if (Array.isArray(value)) return value.filter((v) => !hidden.has(v));
+  return hidden.has(value) ? undefined : value;
 }

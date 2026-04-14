@@ -145,7 +145,7 @@ describe("createAjvValidator", () => {
     expect(errors["purpose"]).toBeDefined();
   });
 
-  describe("hideOptions enum narrowing", () => {
+  describe("hideOptions stripping", () => {
     const hideOptionsSchema: JsonSchema = {
       properties: {
         legalBasisPublicInterest: {
@@ -157,6 +157,7 @@ describe("createAjvValidator", () => {
           type: "array",
         },
       },
+      required: ["legalBasisPublicInterest", "personalDataTypes"],
       type: "object",
     };
 
@@ -164,6 +165,7 @@ describe("createAjvValidator", () => {
       elements: [
         {
           options: {
+            errorMessages: { required: "Pick one" },
             hideOptions: {
               PUBLIC_INTEREST_TASK: {
                 schema: { contains: { const: "GDPR_ART_9" } },
@@ -186,10 +188,10 @@ describe("createAjvValidator", () => {
 
     const visible = new Set(["legalBasisPublicInterest", "personalDataTypes"]);
 
-    it("flags scalar selection that became hidden", () => {
+    it("treats a stale scalar selection as missing required", () => {
       const validate = createAjvValidator(
         hideOptionsSchema,
-        {},
+        { legalBasisPublicInterest: { required: "Pick one" } },
         scalarHideUischema,
       );
       const errors = validate(
@@ -199,7 +201,7 @@ describe("createAjvValidator", () => {
         },
         visible,
       );
-      expect(errors["legalBasisPublicInterest"]).toBeDefined();
+      expect(errors["legalBasisPublicInterest"]).toBe("Pick one");
     });
 
     it("passes when current selection is still visible", () => {
@@ -218,7 +220,7 @@ describe("createAjvValidator", () => {
       expect(errors["legalBasisPublicInterest"]).toBeUndefined();
     });
 
-    it("flags array element that became hidden", () => {
+    it("filters hidden array elements; remaining elements satisfy the schema", () => {
       const arrayHideUischema: UISchema = {
         elements: [
           {
@@ -253,6 +255,44 @@ describe("createAjvValidator", () => {
           personalDataTypes: ["GDPR_ART_9", "OTHER"],
         },
         visible,
+      );
+      expect(errors["personalDataTypes"]).toBeUndefined();
+    });
+
+    it("flags a required array that becomes empty after stripping hidden elements", () => {
+      const arrayHideUischema: UISchema = {
+        elements: [
+          {
+            options: {
+              hideOptions: {
+                GDPR_ART_9: {
+                  schema: { const: "PUBLIC_INTEREST_TASK" },
+                  scope: "#/properties/legalBasisPublicInterest",
+                },
+                OTHER: {
+                  schema: { const: "PUBLIC_INTEREST_TASK" },
+                  scope: "#/properties/legalBasisPublicInterest",
+                },
+              },
+              widget: "checkbox",
+            },
+            scope: "#/properties/personalDataTypes",
+            type: "Control",
+          },
+        ],
+        type: "VerticalLayout",
+      };
+      const validate = createAjvValidator(
+        hideOptionsSchema,
+        {},
+        arrayHideUischema,
+      );
+      const errors = validate(
+        {
+          legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
+          personalDataTypes: ["GDPR_ART_9", "OTHER"],
+        },
+        new Set(["personalDataTypes"]),
       );
       expect(errors["personalDataTypes"]).toBeDefined();
     });
