@@ -127,10 +127,7 @@ export const toAPI_ConsumerEservice = (
   agreement: eservice.agreement,
   categories: eservice.categories,
   // TODO https://pagopa.atlassian.net/browse/KN-246
-  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(
-    eservice.updatedAt,
-    recentUpdateDays,
-  ),
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice, recentUpdateDays),
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,

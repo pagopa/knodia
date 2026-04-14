@@ -92,6 +92,24 @@ export function consumerKeychainServiceBuilder(
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
+  async function retrieveUser(
+    userId: UserId,
+    consumerKeychainId: ConsumerKeychainId,
+  ): Promise<IdmUser> {
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      /**
+       * This should not happen as users are validated when added as members.
+       * If it does happen, it means there's a data inconsistency that should be investigated.
+       * Hence, we throw a generic internal error.
+       */
+      throw genericInternalError(
+        `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
+      );
+    }
+    return user;
+  }
+
   return {
     async addConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
@@ -278,6 +296,34 @@ export function consumerKeychainServiceBuilder(
       );
     },
 
+    async getConsumerKeychainMember(
+      consumerKeychainId: ConsumerKeychainId,
+      userId: UserId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<IdmUser> {
+      logger.info(
+        `Getting member ${userId} of Consumer Keychain with id ${consumerKeychainId}`,
+      );
+
+      const consumerKeychain = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain.data,
+      );
+
+      assertUserIsMemberOfKeychain(
+        userId,
+        consumerKeychainId,
+        consumerKeychain.data.users,
+      );
+
+      return await retrieveUser(userId, consumerKeychainId);
+    },
+
     async getConsumerKeychainMembers(
       consumerKeychainId: ConsumerKeychainId,
       params: API_GetConsumerKeychainMembersQueryParams,
@@ -298,28 +344,15 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain,
       );
 
-      async function retrieveUser(userId: UserId): Promise<IdmUser> {
-        const user = await userService.getUserById(userId);
-        if (!user) {
-          /**
-           * This should not happen as users are validated when added as members.
-           * If it does happen, it means there's a data inconsistency that should be investigated.
-           * Hence, we throw a generic internal error.
-           */
-          throw genericInternalError(
-            `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
-          );
-        }
-        return user;
-      }
-
       const paginatedUserIds = consumerKeychain.users
         .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
         .slice(params.offset, params.offset + params.limit);
 
       return {
         results: await Promise.all(
-          paginatedUserIds.map((user) => retrieveUser(user.userId)),
+          paginatedUserIds.map(({ userId }) =>
+            retrieveUser(userId, consumerKeychainId),
+          ),
         ),
         totalCount: consumerKeychain.users.length,
       };

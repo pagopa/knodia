@@ -28,10 +28,7 @@ export const toAPI_ConsumerPurpose = ({
     id: eserviceDetails.id,
     name: eserviceDetails.name,
   },
-  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(
-    purpose.updatedAt,
-    recentUpdateDays,
-  ),
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   keychains: consumerKeychainsCount,
   name: purpose.name,
