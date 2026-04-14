@@ -44,7 +44,11 @@ export function UploadPublicKeyModal({
     onClose();
   }
 
-  const { isPending, mutate: uploadConsumerKeychainKey } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: uploadConsumerKeychainKey,
+  } = useMutation({
     ...uploadConsumerKeychainKeyMutation({
       client,
     }),
@@ -151,6 +155,7 @@ export function UploadPublicKeyModal({
           handleClose();
         }
       }}
+      showErrorBanner={isError}
       title={modalTitle}
     >
       <form

@@ -26,13 +26,14 @@ import type { ConsumerKeychainDetailsTab } from "@/features/keychain/models/comm
 import { PageHeader } from "@/components/PageHeader";
 import { Section } from "@/components/Section";
 import { config } from "@/config/config";
+import { useHasRole } from "@/contexts/auth";
 import { AddKeychainMemberAction } from "@/features/keychain/components/AddKeychainMemberAction";
 import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDeleteAction";
 import { KeychainEditAction } from "@/features/keychain/components/KeychainEditAction";
 import { KeychainMembersTable } from "@/features/keychain/components/KeychainMembersTable";
 import { KeychainPublicKeysTable } from "@/features/keychain/components/KeychainPublicKeysTable";
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
-import { useIsKeychainMember } from "@/features/keychain/hooks/useIsKeychainMember";
+import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 import {
   consumerKeychainDetailsSearchDefaultValues,
   consumerKeychainDetailsSearchSchema,
@@ -62,10 +63,14 @@ export const Route = createFileRoute(
 function MembersTab() {
   const consumerKeychainId = Route.useParams().id;
 
-  const { data: members = [], isLoading } = useQuery(
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const { data, isLoading } = useQuery(
     getConsumerKeychainMembersOptions({
       client,
       path: { consumerKeychainId },
+      query: { limit: 50, offset: search.offset },
     }),
   );
 
@@ -73,7 +78,6 @@ function MembersTab() {
     <Section
       actions={
         <AddKeychainMemberAction
-          alreadyKeychainMembersIds={members.map((member) => member.id)}
           keychainId={consumerKeychainId}
           keychainType="consumption"
         />
@@ -84,8 +88,17 @@ function MembersTab() {
       <KeychainMembersTable
         isLoading={isLoading}
         keychainId={consumerKeychainId}
-        members={members}
+        members={data?.results ?? []}
         type="consumption"
+      />
+      <Pagination
+        className="mx-auto mt-6"
+        limit={data?.pagination.limit ?? 0}
+        offset={search.offset}
+        onOffsetChange={(offset) =>
+          navigate({ replace: true, search: (s) => ({ ...s, offset }) })
+        }
+        totalItems={data?.pagination.total ?? 0}
       />
     </Section>
   );
@@ -109,7 +122,9 @@ function PublicKeysTab() {
   const hasReachedMaxKeys = data
     ? data.pagination.total >= config.maxKeysPerKeychain
     : false;
-  const isKeychainMember = useIsKeychainMember();
+
+  const isKeychainMember = useIsCurrentUserKeychainMember(consumerKeychainId);
+  const canDownloadKey = useHasRole("administrative") || isKeychainMember;
 
   return (
     <>
@@ -129,6 +144,7 @@ function PublicKeysTab() {
         title="Public Keys"
       >
         <KeychainPublicKeysTable
+          canDownloadKey={canDownloadKey}
           isLoading={isLoading}
           keychainId={consumerKeychainId}
           keys={data?.results ?? []}

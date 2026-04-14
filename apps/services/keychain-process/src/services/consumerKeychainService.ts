@@ -36,6 +36,7 @@ import type {
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_GetConsumerKeychainKeysQueryParams,
+  API_GetConsumerKeychainMembersQueryParams,
   API_GetConsumerKeychainPurposesQueryParams,
   API_GetConsumerKeychainsQueryParams,
   API_KeychainKeySeed,
@@ -91,6 +92,24 @@ export function consumerKeychainServiceBuilder(
   remoteResourcesManagerClient: RemoteResourcesManagerClient,
   config: { maxKeysPerKeychain: number },
 ) {
+  async function retrieveUser(
+    userId: UserId,
+    consumerKeychainId: ConsumerKeychainId,
+  ): Promise<IdmUser> {
+    const user = await userService.getUserById(userId);
+    if (!user) {
+      /**
+       * This should not happen as users are validated when added as members.
+       * If it does happen, it means there's a data inconsistency that should be investigated.
+       * Hence, we throw a generic internal error.
+       */
+      throw genericInternalError(
+        `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
+      );
+    }
+    return user;
+  }
+
   return {
     async addConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
@@ -113,7 +132,7 @@ export function consumerKeychainServiceBuilder(
 
       const userId = unsafeBrandUserId(member.userId);
 
-      if (consumerKeychain.data.users.includes(userId)) {
+      if (consumerKeychain.data.users.some((user) => user.userId === userId)) {
         throw userAlreadyMember(consumerKeychainId, userId);
       }
 
@@ -132,10 +151,14 @@ export function consumerKeychainServiceBuilder(
       );
       assertUserHasTechnicalRole(userId, userGroups);
 
+      const now = new Date();
       const updatedConsumerKeychain: ConsumerKeychain = {
         ...consumerKeychain.data,
-        updatedAt: new Date(),
-        users: [...consumerKeychain.data.users, user.id],
+        updatedAt: now,
+        users: [
+          ...consumerKeychain.data.users,
+          { addedAt: now, userId: user.id },
+        ],
       };
 
       const { newVersion } = await eventStoreWriter.insertEvent(
@@ -273,12 +296,13 @@ export function consumerKeychainServiceBuilder(
       );
     },
 
-    async getConsumerKeychainMembers(
+    async getConsumerKeychainMember(
       consumerKeychainId: ConsumerKeychainId,
+      userId: UserId,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,
-    ): Promise<IdmUser[]> {
+    ): Promise<IdmUser> {
       logger.info(
-        `Getting members of Consumer Keychain with ID ${consumerKeychainId}`,
+        `Getting member ${userId} of Consumer Keychain with id ${consumerKeychainId}`,
       );
 
       const consumerKeychain = await retrieveConsumerKeychain(
@@ -291,22 +315,47 @@ export function consumerKeychainServiceBuilder(
         consumerKeychain.data,
       );
 
-      async function retrieveUser(userId: UserId): Promise<IdmUser> {
-        const user = await userService.getUserById(userId);
-        if (!user) {
-          /**
-           * This should not happen as users are validated when added as members.
-           * If it does happen, it means there's a data inconsistency that should be investigated.
-           * Hence, we throw a generic internal error.
-           */
-          throw genericInternalError(
-            `User ${userId} in Consumer Keychain ${consumerKeychainId} not found in IDM`,
-          );
-        }
-        return user;
-      }
+      assertUserIsMemberOfKeychain(
+        userId,
+        consumerKeychainId,
+        consumerKeychain.data.users,
+      );
 
-      return await Promise.all(consumerKeychain.data.users.map(retrieveUser));
+      return await retrieveUser(userId, consumerKeychainId);
+    },
+
+    async getConsumerKeychainMembers(
+      consumerKeychainId: ConsumerKeychainId,
+      params: API_GetConsumerKeychainMembersQueryParams,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<ListResult<IdmUser>> {
+      logger.info(
+        { params },
+        `Getting members of Consumer Keychain with id ${consumerKeychainId}, with params`,
+      );
+
+      const { data: consumerKeychain } = await retrieveConsumerKeychain(
+        consumerKeychainId,
+        readmodelService,
+      );
+
+      assertOrganizationIsKeychainOwner(
+        authData.organizationId,
+        consumerKeychain,
+      );
+
+      const paginatedUserIds = consumerKeychain.users
+        .toSorted((a, b) => b.addedAt.getTime() - a.addedAt.getTime()) // Sort by addedAt desc
+        .slice(params.offset, params.offset + params.limit);
+
+      return {
+        results: await Promise.all(
+          paginatedUserIds.map(({ userId }) =>
+            retrieveUser(userId, consumerKeychainId),
+          ),
+        ),
+        totalCount: consumerKeychain.users.length,
+      };
     },
 
     async getConsumerKeychainPurposes(
@@ -478,7 +527,7 @@ export function consumerKeychainServiceBuilder(
         ...consumerKeychain.data,
         updatedAt: new Date(),
         users: consumerKeychain.data.users.filter(
-          (memberId) => memberId !== userId,
+          (member) => member.userId !== userId,
         ),
       };
 

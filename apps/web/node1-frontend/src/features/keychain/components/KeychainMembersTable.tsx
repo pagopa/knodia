@@ -101,13 +101,19 @@ function RemoveFromKeychainAction({
   userId: string;
 }) {
   const queryClient = useQueryClient();
-  const { isPending, mutate: deleteConsumerKeychainMember } = useMutation({
+  const {
+    isError,
+    isPending,
+    mutate: deleteConsumerKeychainMember,
+  } = useMutation({
     ...removeConsumerKeychainMemberMutation({ client }),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: getConsumerKeychainMembersQueryKey({
           client,
           path: { consumerKeychainId: keychainId },
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          query: undefined!,
         }),
       });
     },
@@ -146,6 +152,7 @@ function RemoveFromKeychainAction({
         isDismissable
         kind="destructive"
         onConfirm={handleDelete}
+        showErrorBanner={isError}
         title="Remove Member"
       >
         <Banner
