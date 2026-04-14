@@ -9,7 +9,7 @@ import type { API_TokenRequest } from "../src/models/api.ts";
 
 import { app } from "./setup.ts";
 
-const getAccessTokenDataMock = vi.hoisted(() => vi.fn());
+const getClientAssertionVerificationDataMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   const original =
@@ -19,7 +19,8 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
     ...original,
     k2kGatewayApi: {
       ...original.k2kGatewayApi,
-      getAccessTokenData: getAccessTokenDataMock,
+      getClientAssertionVerificationData:
+        getClientAssertionVerificationDataMock,
     },
   };
 });
@@ -29,7 +30,7 @@ describe("POST /token", async () => {
     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   const VALID_GRANT_TYPE = "client_credentials";
 
-  const mockK2KResponse: k2kGatewayApi.AccessTokenDataResponse = {
+  const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
     consumerAttributes: [
       {
         code: "vc_territorial_units",
@@ -62,11 +63,11 @@ describe("POST /token", async () => {
   };
 
   beforeEach(() => {
-    getAccessTokenDataMock.mockReset();
+    getClientAssertionVerificationDataMock.mockReset();
   });
 
   it("returns a mocked bearer token", async () => {
-    getAccessTokenDataMock.mockResolvedValue({
+    getClientAssertionVerificationDataMock.mockResolvedValue({
       data: mockK2KResponse,
     });
 
@@ -325,7 +326,9 @@ describe("POST /token", async () => {
   );
 
   it("should return 500 when the k2k gateway call fails", async () => {
-    getAccessTokenDataMock.mockRejectedValue(new Error("k2k gateway error"));
+    getClientAssertionVerificationDataMock.mockRejectedValue(
+      new Error("k2k gateway error"),
+    );
 
     const response = await app.inject({
       method: "POST",
