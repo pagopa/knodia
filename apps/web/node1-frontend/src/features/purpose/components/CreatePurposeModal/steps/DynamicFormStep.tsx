@@ -65,8 +65,8 @@ export function DynamicFormStep({
   );
 
   const validate = useMemo(
-    () => createAjvValidator(jsonSchema, errorMessages),
-    [jsonSchema, errorMessages],
+    () => createAjvValidator(jsonSchema, errorMessages, uischema),
+    [jsonSchema, errorMessages, uischema],
   );
 
   const form = useDynamicStepForm({
@@ -81,12 +81,13 @@ export function DynamicFormStep({
       updateFormAnswers(value);
 
       if (isLastStep) {
-        const allAnswers = { ...formAnswers, ...value };
+        const mergedAnswers = { ...formAnswers, ...value };
+        const fullVisible = getVisibleFields(uischema, mergedAnswers);
         const filteredAnswers: Record<string, unknown> = {};
-        for (const [key, val] of Object.entries(allAnswers)) {
-          if (Array.isArray(val) ? val.length > 0 : val !== "") {
-            filteredAnswers[key] = val;
-          }
+        for (const [key, val] of Object.entries(mergedAnswers)) {
+          if (!fullVisible.has(key)) continue;
+          if (Array.isArray(val) ? val.length === 0 : val === "") continue;
+          filteredAnswers[key] = val;
         }
         createPurpose({ formAnswersJson: filteredAnswers });
       } else {

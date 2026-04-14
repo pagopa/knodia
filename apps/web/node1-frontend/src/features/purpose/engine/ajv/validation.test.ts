@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { JsonSchema } from "../types";
+import type { JsonSchema, UISchema } from "../types";
 
 import { createAjvValidator } from "./validation";
 
@@ -46,6 +46,7 @@ const schema: JsonSchema = {
   type: "object",
 };
 
+// eslint-disable-next-line max-lines-per-function
 describe("createAjvValidator", () => {
   const validate = createAjvValidator(schema, {
     description: { required: "Describe your purpose" },
@@ -142,6 +143,119 @@ describe("createAjvValidator", () => {
       new Set(["description", "legalBasis", "purpose"]),
     );
     expect(errors["purpose"]).toBeDefined();
+  });
+
+  describe("hideOptions enum narrowing", () => {
+    const hideOptionsSchema: JsonSchema = {
+      properties: {
+        legalBasisPublicInterest: {
+          enum: ["PUBLIC_INTEREST_TASK", "OFFICIAL_AUTHORITY"],
+          type: "string",
+        },
+        personalDataTypes: {
+          items: { enum: ["GDPR_ART_9", "OTHER"], type: "string" },
+          type: "array",
+        },
+      },
+      type: "object",
+    };
+
+    const scalarHideUischema: UISchema = {
+      elements: [
+        {
+          options: {
+            hideOptions: {
+              PUBLIC_INTEREST_TASK: {
+                schema: { contains: { const: "GDPR_ART_9" } },
+                scope: "#/properties/personalDataTypes",
+              },
+            },
+            widget: "radio",
+          },
+          scope: "#/properties/legalBasisPublicInterest",
+          type: "Control",
+        },
+        {
+          options: { widget: "checkbox" },
+          scope: "#/properties/personalDataTypes",
+          type: "Control",
+        },
+      ],
+      type: "VerticalLayout",
+    };
+
+    const visible = new Set(["legalBasisPublicInterest", "personalDataTypes"]);
+
+    it("flags scalar selection that became hidden", () => {
+      const validate = createAjvValidator(
+        hideOptionsSchema,
+        {},
+        scalarHideUischema,
+      );
+      const errors = validate(
+        {
+          legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
+          personalDataTypes: ["GDPR_ART_9"],
+        },
+        visible,
+      );
+      expect(errors["legalBasisPublicInterest"]).toBeDefined();
+    });
+
+    it("passes when current selection is still visible", () => {
+      const validate = createAjvValidator(
+        hideOptionsSchema,
+        {},
+        scalarHideUischema,
+      );
+      const errors = validate(
+        {
+          legalBasisPublicInterest: "OFFICIAL_AUTHORITY",
+          personalDataTypes: ["GDPR_ART_9"],
+        },
+        visible,
+      );
+      expect(errors["legalBasisPublicInterest"]).toBeUndefined();
+    });
+
+    it("flags array element that became hidden", () => {
+      const arrayHideUischema: UISchema = {
+        elements: [
+          {
+            options: {
+              hideOptions: {
+                GDPR_ART_9: {
+                  schema: { const: "PUBLIC_INTEREST_TASK" },
+                  scope: "#/properties/legalBasisPublicInterest",
+                },
+              },
+              widget: "checkbox",
+            },
+            scope: "#/properties/personalDataTypes",
+            type: "Control",
+          },
+          {
+            options: { widget: "radio" },
+            scope: "#/properties/legalBasisPublicInterest",
+            type: "Control",
+          },
+        ],
+        type: "VerticalLayout",
+      };
+      const validate = createAjvValidator(
+        hideOptionsSchema,
+        {},
+        arrayHideUischema,
+      );
+      const errors = validate(
+        {
+          legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
+          personalDataTypes: ["GDPR_ART_9", "OTHER"],
+        },
+        visible,
+      );
+      expect(errors["personalDataTypes"]).toBeDefined();
+    });
   });
 
   it("respects if.required when computing conditional required fields", () => {
