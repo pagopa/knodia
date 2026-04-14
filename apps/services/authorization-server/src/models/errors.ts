@@ -34,6 +34,7 @@ const errorCodes = {
   TYP_NOT_FOUND: "0019",
   TYP_NOT_SUPPORTED: "0020",
   PURPOSE_ID_NOT_FOUND: "0021",
+  INVALID_AUD: "0022",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -116,6 +117,18 @@ export function iatNotFound() {
       "The 'iat' claim is required but was not found in the Client Assertion",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Missing 'iat' claim",
+  });
+}
+
+export function invalidAud(
+  clientAssertionAud: string | string[],
+  expectedAud: string[],
+) {
+  return createApiError<ErrorCodes>({
+    code: "INVALID_AUD",
+    detail: `The 'aud' claim value '${JSON.stringify(clientAssertionAud)}' does not match the expected audience '${JSON.stringify(expectedAud)}'`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Invalid audience in Client Assertion",
   });
 }
 

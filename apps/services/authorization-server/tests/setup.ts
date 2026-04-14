@@ -3,6 +3,7 @@ import { afterAll, beforeAll } from "vitest";
 import { buildApp } from "../src/app.ts";
 
 const app = buildApp({
+  clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
   config: {
     isProduction: false,
     logLevel: "silent",

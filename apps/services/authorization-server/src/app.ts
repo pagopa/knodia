@@ -15,9 +15,11 @@ import { tokenRouter } from "./routers/tokenRouter.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
+  clientAssertionAcceptedAudiences,
   config,
   knodeUrl,
 }: {
+  clientAssertionAcceptedAudiences: string[];
   config: LoggerConfig;
   knodeUrl: string;
 }) {
@@ -50,6 +52,7 @@ export function buildApp({
 
   app.register(healthRouter);
   app.register(tokenRouter, {
+    clientAssertionAcceptedAudiences,
     tokenService: tokenServiceBuilder(k2kGatewayClient),
   });
 
@@ -57,5 +60,9 @@ export function buildApp({
 }
 
 export function buildAppFromConfig(config: AuthorizationServerConfig) {
-  return buildApp({ config, knodeUrl: config.knodeUrl });
+  return buildApp({
+    clientAssertionAcceptedAudiences: config.clientAssertionAcceptedAudiences,
+    config,
+    knodeUrl: config.knodeUrl,
+  });
 }

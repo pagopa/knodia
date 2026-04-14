@@ -48,6 +48,7 @@ describe("POST /token", async () => {
   const { clientAssertion, clientAssertionJWS, keySet, signClientAssertion } =
     await getMockClientAssertion({
       standardClaimsOverride: {
+        aud: ["test-audience-1"],
         iss: consumerKeychainId,
         sub: consumerKeychainId,
       },
@@ -130,6 +131,16 @@ describe("POST /token", async () => {
         payload: {
           ...clientAssertion.payload,
           wrong_claim: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid aud claim in client_assertion payload",
+      {
+        ...clientAssertion,
+        payload: {
+          ...clientAssertion.payload,
+          aud: ["invalid-audience"],
         },
       },
     ],

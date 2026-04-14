@@ -29,13 +29,13 @@ import {
   checkTyp,
 } from "./utils.ts";
 
-export const validateClientAssertionClaims = ({
-  client_assertion: clientAssertionJWS,
-  client_id: consumerKeychainId,
-}: Pick<
-  API_TokenRequest,
-  "client_assertion" | "client_id"
->): ClientAssertion => {
+export const validateClientAssertionClaims = (
+  {
+    client_assertion: clientAssertionJWS,
+    client_id: consumerKeychainId,
+  }: Pick<API_TokenRequest, "client_assertion" | "client_id">,
+  clientAssertionAcceptedAudiences: string[],
+): ClientAssertion => {
   let decodedHeader: ProtectedHeaderParameters;
   let decodedPayload: JWTPayload;
   try {
@@ -57,7 +57,10 @@ export const validateClientAssertionClaims = ({
   const { data: kid, errors: kidErrors } = checkKid(decodedHeader.kid);
   const { data: typ, errors: typErrors } = checkTyp(decodedHeader.typ);
 
-  const { data: aud, errors: audErrors } = checkAud(decodedPayload.aud);
+  const { data: aud, errors: audErrors } = checkAud(
+    decodedPayload.aud,
+    clientAssertionAcceptedAudiences,
+  );
   const { data: exp, errors: expErrors } = checkExp(decodedPayload.exp);
   const { data: iat, errors: iatErrors } = checkIat(decodedPayload.iat);
   const { data: iss, errors: issErrors } = checkIss(

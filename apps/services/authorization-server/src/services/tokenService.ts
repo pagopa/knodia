@@ -9,9 +9,15 @@ import { validateClientAssertionClaims } from "../utils/validators.ts";
 
 export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
   return {
-    async issueToken(requestBody: API_TokenRequest) {
+    async issueToken(
+      requestBody: API_TokenRequest,
+      clientAssertionAcceptedAudiences: string[],
+    ) {
       // Client assertion claims validation
-      const clientAssertion = validateClientAssertionClaims(requestBody);
+      const clientAssertion = validateClientAssertionClaims(
+        requestBody,
+        clientAssertionAcceptedAudiences,
+      );
 
       // Get access token data from the external Knode through the K2K2Gateway API
       await k2kGatewayApi.getAccessTokenData({
