@@ -35,7 +35,6 @@ import {
   clientAssertionExpired,
   consumerMissingRequiredAttributes,
   eserviceVersionNotActive,
-  invalidAudience,
   invalidClientAssertionFormat,
   invalidClientAssertionSignature,
   jsonWebTokenError,
@@ -62,10 +61,13 @@ import {
   checkTyp,
 } from "./utils.ts";
 
-export function validateClientAssertionClaims({
-  client_assertion: clientAssertionJWS,
-  client_id: consumerKeychainId,
-}: Pick<API_TokenRequest, "client_assertion" | "client_id">): ClientAssertion {
+export const validateClientAssertionClaims = (
+  {
+    client_assertion: clientAssertionJWS,
+    client_id: consumerKeychainId,
+  }: Pick<API_TokenRequest, "client_assertion" | "client_id">,
+  clientAssertionAcceptedAudiences: string[],
+): ClientAssertion => {
   let decodedHeader: ProtectedHeaderParameters;
   let decodedPayload: JWTPayload;
   try {
@@ -87,7 +89,10 @@ export function validateClientAssertionClaims({
   const { data: kid, errors: kidErrors } = checkKid(decodedHeader.kid);
   const { data: typ, errors: typErrors } = checkTyp(decodedHeader.typ);
 
-  const { data: aud, errors: audErrors } = checkAud(decodedPayload.aud);
+  const { data: aud, errors: audErrors } = checkAud(
+    decodedPayload.aud,
+    clientAssertionAcceptedAudiences,
+  );
   const { data: exp, errors: expErrors } = checkExp(decodedPayload.exp);
   const { data: iat, errors: iatErrors } = checkIat(decodedPayload.iat);
   const { data: iss, errors: issErrors } = checkIss(
@@ -153,7 +158,7 @@ export function validateClientAssertionClaims({
       sub,
     },
   };
-}
+};
 
 export async function validatePlatformObjects(
   purposeId: PurposeId,
@@ -174,7 +179,6 @@ export async function validatePlatformObjects(
   );
 
   assertPlatformStatesAreActive(purpose, agreement, eserviceVersion);
-  assertAudienceIsValidForEserviceVersion(eserviceVersion, audience);
   assertConsumerAttributesMeetEserviceRequirements(
     eserviceVersion,
     consumerAttributes,
@@ -219,25 +223,6 @@ export async function verifyClientAssertionSignature(
     } else {
       const message = error instanceof Error ? error.message : "generic error";
       throw unexpectedClientAssertionSignatureVerificationError(message);
-    }
-  }
-}
-
-function assertAudienceIsValidForEserviceVersion(
-  eserviceVersion: Omit<EserviceVersion, "interfaceDocument">,
-  audience: string | string[],
-): void {
-  if (Array.isArray(audience)) {
-    if (
-      !eserviceVersion.accessTokenAudience.some((entry) =>
-        audience.includes(entry),
-      )
-    ) {
-      throw invalidAudience(audience, eserviceVersion.accessTokenAudience);
-    }
-  } else {
-    if (!eserviceVersion.accessTokenAudience.includes(audience)) {
-      throw invalidAudience(audience, eserviceVersion.accessTokenAudience);
     }
   }
 }

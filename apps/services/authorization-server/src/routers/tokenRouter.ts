@@ -9,12 +9,13 @@ import { apiTags } from "../models/apiTags.ts";
 import { type tokenServiceBuilder } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
+  clientAssertionAcceptedAudiences: string[];
   tokenService: ReturnType<typeof tokenServiceBuilder>;
 }
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  { tokenService },
+  { clientAssertionAcceptedAudiences, tokenService },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -26,7 +27,10 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       );
 
       // TODO remove this mocked route behavior when the real token flow is implemented.
-      const token = await tokenService.issueToken(req.body);
+      const token = await tokenService.issueToken(
+        req.body,
+        clientAssertionAcceptedAudiences,
+      );
 
       res.send(token);
     },

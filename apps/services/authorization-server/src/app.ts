@@ -18,10 +18,12 @@ import { readmodelServiceBuilder } from "./services/readmodelService.ts";
 import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
+  clientAssertionAcceptedAudiences,
   config,
   knodeUrl,
   readmodelDb,
 }: {
+  clientAssertionAcceptedAudiences: string[];
   config: LoggerConfig;
   knodeUrl: string;
   readmodelDb: NodePgDatabase;
@@ -55,6 +57,7 @@ export function buildApp({
 
   app.register(healthRouter);
   app.register(tokenRouter, {
+    clientAssertionAcceptedAudiences,
     tokenService: tokenServiceBuilder(
       k2kGatewayClient,
       readmodelServiceBuilder(readmodelDb),
@@ -68,7 +71,12 @@ export function buildAppFromConfig(config: AuthorizationServerConfig) {
   const { db: readmodelDb, pool: readmodelPool } =
     makeReadmodelDrizzleConnection(config);
 
-  const app = buildApp({ config, knodeUrl: config.knodeUrl, readmodelDb });
+  const app = buildApp({
+    clientAssertionAcceptedAudiences: config.clientAssertionAcceptedAudiences,
+    config,
+    knodeUrl: config.knodeUrl,
+    readmodelDb,
+  });
 
   app.addHook("onClose", async () => {
     await readmodelPool.end();

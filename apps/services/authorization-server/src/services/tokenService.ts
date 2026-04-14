@@ -17,9 +17,15 @@ export function tokenServiceBuilder(
   readmodelService: ReadmodelService,
 ) {
   return {
-    async issueToken(requestBody: API_TokenRequest) {
+    async issueToken(
+      requestBody: API_TokenRequest,
+      clientAssertionAcceptedAudiences: string[],
+    ) {
       // Client assertion claims validation
-      const clientAssertion = validateClientAssertionClaims(requestBody);
+      const clientAssertion = validateClientAssertionClaims(
+        requestBody,
+        clientAssertionAcceptedAudiences,
+      );
 
       // Get access token data from the external Knode through the K2K2Gateway API
       const {

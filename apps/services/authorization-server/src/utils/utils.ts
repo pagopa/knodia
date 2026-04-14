@@ -20,6 +20,7 @@ import {
   clientAssertionInvalidClaims,
   expNotFound,
   iatNotFound,
+  invalidAud,
   invalidIss,
   invalidIssFormat,
   invalidKidFormat,
@@ -54,13 +55,34 @@ export function checkAlg(
 }
 
 export function checkAud(
-  aud: JWTPayload["aud"],
+  receivedAud: JWTPayload["aud"],
+  clientAssertionAcceptedAudiences: string[],
 ): ValidationResult<string | string[]> {
-  if (!aud) {
+  if (!receivedAud) {
     return failedValidation([audNotFound()]);
   }
 
-  return successfulValidation(aud);
+  if (Array.isArray(receivedAud)) {
+    if (
+      clientAssertionAcceptedAudiences.some((entry) =>
+        receivedAud.includes(entry),
+      )
+    ) {
+      return successfulValidation(receivedAud);
+    }
+    return failedValidation([
+      invalidAud(receivedAud, clientAssertionAcceptedAudiences),
+    ]);
+  } else {
+    if (
+      clientAssertionAcceptedAudiences.some((entry) => receivedAud === entry)
+    ) {
+      return successfulValidation(receivedAud);
+    }
+    return failedValidation([
+      invalidAud(receivedAud, clientAssertionAcceptedAudiences),
+    ]);
+  }
 }
 
 export function checkClientAssertionStrictClaims(

@@ -45,6 +45,7 @@ beforeAll(async () => {
   readmodelDb = await setupReadmodelTestDatabase(connectionString);
 
   app = buildApp({
+    clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
     config: {
       isProduction: false,
       logLevel: "silent",

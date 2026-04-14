@@ -43,7 +43,6 @@ describe("POST /token", async () => {
     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   const VALID_GRANT_TYPE = "client_credentials";
 
-  const commonAudience = "test.knodia.com";
   const commonAttribute: k2kGatewayApi.Attribute = {
     code: "vc_territorial_units",
     scheme: "nuts1",
@@ -64,7 +63,6 @@ describe("POST /token", async () => {
     versions: [
       {
         ...getMockEserviceVersion(),
-        accessTokenAudience: ["https://example.com/", commonAudience],
         id: agreement.eserviceVersionId,
         requiredAttributes: [
           [commonAttribute],
@@ -90,7 +88,7 @@ describe("POST /token", async () => {
     signClientAssertion,
   } = await getMockClientAssertion({
     standardClaimsOverride: {
-      aud: commonAudience,
+      aud: ["test-audience-1"],
       iss: consumerKeychainId,
       purpose_id: purpose.id,
       sub: consumerKeychainId,
@@ -196,6 +194,16 @@ describe("POST /token", async () => {
         payload: {
           ...clientAssertion.payload,
           wrong_claim: "wrong",
+        },
+      },
+    ],
+    [
+      "invalid aud claim in client_assertion payload",
+      {
+        ...clientAssertion,
+        payload: {
+          ...clientAssertion.payload,
+          aud: ["invalid-audience"],
         },
       },
     ],

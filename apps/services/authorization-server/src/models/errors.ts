@@ -48,14 +48,14 @@ const errorCodes = {
   TYP_NOT_FOUND: "0019",
   TYP_NOT_SUPPORTED: "0020",
   PURPOSE_ID_NOT_FOUND: "0021",
-  UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR: "0022",
-  CLIENT_ASSERTION_EXPIRED: "0023",
-  INVALID_CLIENT_ASSERTION_SIGNATURE: "0024",
-  JSON_WEB_TOKEN_ERROR: "0025",
-  AGREEMENT_NOT_ACTIVE: "0026",
-  ESERVICE_VERSION_NOT_ACTIVE: "0027",
-  PURPOSE_NOT_ACTIVE: "0028",
-  INVALID_AUDIENCE: "0029",
+  INVALID_AUD: "0022",
+  UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR: "0023",
+  CLIENT_ASSERTION_EXPIRED: "0024",
+  INVALID_CLIENT_ASSERTION_SIGNATURE: "0025",
+  JSON_WEB_TOKEN_ERROR: "0026",
+  AGREEMENT_NOT_ACTIVE: "0027",
+  ESERVICE_VERSION_NOT_ACTIVE: "0028",
+  PURPOSE_NOT_ACTIVE: "0029",
   CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0030",
   AGREEMENT_NOT_FOUND: "0031",
   ESERVICE_VERSION_NOT_FOUND: "0032",
@@ -211,13 +211,13 @@ export function iatNotFound() {
   });
 }
 
-export function invalidAudience(
+export function invalidAud(
   clientAssertionAud: string | string[],
-  eserviceVersionAudiences: string[],
+  expectedAud: string[],
 ) {
   return createApiError<ErrorCodes>({
-    code: "INVALID_AUDIENCE",
-    detail: `Invalid audience in Client Assertion. Received: ${JSON.stringify(clientAssertionAud)}, Expected: ${JSON.stringify(eserviceVersionAudiences)}`,
+    code: "INVALID_AUD",
+    detail: `The 'aud' claim value '${JSON.stringify(clientAssertionAud)}' does not match the expected audience '${JSON.stringify(expectedAud)}'`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Invalid audience in Client Assertion",
   });
