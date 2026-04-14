@@ -10,8 +10,8 @@ import {
   ClientAssertionPayload,
 } from "../models/clientAssertion.ts";
 import {
-  ALLOWED_CLIENT_ASSERTION_ALGORITHM,
-  ALLOWED_CLIENT_ASSERTION_TYP,
+  EXPECTED_CLIENT_ASSERTION_ALGORITHM,
+  EXPECTED_CLIENT_ASSERTION_TYP,
 } from "../models/constants.ts";
 import {
   algNotFound,
@@ -43,12 +43,12 @@ import {
 
 export function checkAlg(
   alg: ProtectedHeaderParameters["alg"],
-): ValidationResult<typeof ALLOWED_CLIENT_ASSERTION_ALGORITHM> {
+): ValidationResult<typeof EXPECTED_CLIENT_ASSERTION_ALGORITHM> {
   if (!alg) {
     return failedValidation([algNotFound()]);
   }
 
-  if (alg === ALLOWED_CLIENT_ASSERTION_ALGORITHM) {
+  if (alg === EXPECTED_CLIENT_ASSERTION_ALGORITHM) {
     return successfulValidation(alg);
   }
   return failedValidation([algNotSupported(alg)]);
@@ -206,12 +206,12 @@ export function checkSub(
 
 export function checkTyp(
   typ: ProtectedHeaderParameters["typ"],
-): ValidationResult<typeof ALLOWED_CLIENT_ASSERTION_TYP> {
+): ValidationResult<typeof EXPECTED_CLIENT_ASSERTION_TYP> {
   if (!typ) {
     return failedValidation([typNotFound()]);
   }
 
-  if (typ === ALLOWED_CLIENT_ASSERTION_TYP) {
+  if (typ === EXPECTED_CLIENT_ASSERTION_TYP) {
     return successfulValidation(typ);
   }
   return failedValidation([typNotSupported(typ)]);

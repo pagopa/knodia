@@ -42,15 +42,13 @@ export function tokenServiceBuilder({
       // Get access token data from the external Knode through the K2K2Gateway API
       const {
         data: { consumerAttributes, publicKey },
-      } = await k2kGatewayApi.getAccessTokenData({
+      } = await k2kGatewayApi.getClientAssertionVerificationData({
         body: {
+          keychainId: requestBody.client_id,
           kid: clientAssertion.header.kid,
           purposeId: clientAssertion.payload.purposeId,
         },
         client: k2kGatewayClient,
-        path: {
-          keychainId: requestBody.client_id,
-        },
       });
 
       await verifyClientAssertionSignature(

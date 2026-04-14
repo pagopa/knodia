@@ -8,13 +8,9 @@ import {
 export const API_TokenRequest = z
   .strictObject({
     client_assertion: z.jwt(),
-    client_assertion_type: z
-      .literal(EXPECTED_CLIENT_ASSERTION_TYPE)
-      .meta({ description: `Must be '${EXPECTED_CLIENT_ASSERTION_TYPE}'` }),
+    client_assertion_type: z.literal(EXPECTED_CLIENT_ASSERTION_TYPE),
     client_id: z.uuid(),
-    grant_type: z
-      .literal(EXPECTED_GRANT_TYPE)
-      .meta({ description: `Must be '${EXPECTED_GRANT_TYPE}'` }),
+    grant_type: z.literal(EXPECTED_GRANT_TYPE),
   })
   .meta({ id: "TokenRequest" });
 export type API_TokenRequest = z.infer<typeof API_TokenRequest>;
