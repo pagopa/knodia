@@ -1,6 +1,7 @@
 /* eslint-disable max-lines-per-function */
 import type { Agreement } from "@knodia/agreement-models";
 import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
+import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
 
@@ -16,6 +17,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
+import {
+  agreementNotActive,
+  consumerMissingRequiredAttributes,
+  invalidClientAssertionSignature,
+  platformStatesNotActive,
+} from "../src/models/errors.ts";
 import {
   agreementWriterService,
   app,
@@ -413,6 +420,7 @@ describe("POST /token", async () => {
         },
         url: "/token",
       });
+
       expect(response.statusCode).toBe(400);
     },
   );
@@ -429,5 +437,97 @@ describe("POST /token", async () => {
     });
 
     expect(response.statusCode).toBe(500);
+  });
+
+  it("should return 400 when the client assertion signature is invalid", async () => {
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(eservice, 0),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
+    const { publicKeyEncodedPem: invalidPublicKeyEncodedPem } =
+      await getMockClientAssertion();
+
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: {
+        ...mockK2KResponse,
+        publicKey: {
+          ...mockK2KResponse.publicKey,
+          encodedPem: invalidPublicKeyEncodedPem,
+        },
+      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      payload: defaultBody,
+      url: "/token",
+    });
+
+    const error = invalidClientAssertionSignature();
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 400 when platform states are not active", async () => {
+    const suspendedAgreement: Agreement = { ...agreement, state: "Suspended" };
+    await Promise.all([
+      agreementWriterService.upsertAgreement(suspendedAgreement, 0),
+      eserviceWriterService.upsertEservice(eservice, 0),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      payload: defaultBody,
+      url: "/token",
+    });
+
+    const error = platformStatesNotActive([
+      agreementNotActive(suspendedAgreement.id, suspendedAgreement.state),
+    ]);
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
+
+  it("should return 400 when the Consumer Attributes do not meet the E-service version Required Attributes", async () => {
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(eservice, 0),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: {
+        ...mockK2KResponse,
+        consumerAttributes: [
+          {
+            code: "vc_organizational_units",
+            scheme: "nuts3",
+          },
+        ],
+      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      payload: defaultBody,
+      url: "/token",
+    });
+
+    const error = consumerMissingRequiredAttributes(
+      purpose.consumer,
+      eserviceVersion.id,
+    );
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 });

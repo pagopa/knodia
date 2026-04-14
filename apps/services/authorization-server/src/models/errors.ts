@@ -1,8 +1,5 @@
 import type { AgreementState } from "@knodia/agreement-models";
-import type {
-  ExternalId,
-  ExternalResource,
-} from "@knodia/common-models/externalResource";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
   EserviceId,
@@ -60,6 +57,7 @@ const errorCodes = {
   AGREEMENT_NOT_FOUND: "0031",
   ESERVICE_VERSION_NOT_FOUND: "0032",
   PURPOSE_NOT_FOUND: "0033",
+  PLATFORM_STATES_NOT_ACTIVE: "0034",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -156,12 +154,12 @@ export function clientAssertionInvalidClaims(
 }
 
 export function consumerMissingRequiredAttributes(
-  consumerId: ExternalId<OrganizationId>,
+  consumer: ExternalResource<OrganizationId>,
   eserviceVersionId: EserviceVersionId,
 ) {
   return createApiError<ErrorCodes>({
     code: "CONSUMER_MISSING_REQUIRED_ATTRIBUTES",
-    detail: `Consumer ${consumerId} missing required attributes for the requested E-service version ${eserviceVersionId}`,
+    detail: `Consumer ${consumer.id} (Knode ${consumer.knodeId}) missing required attributes for the requested E-service version ${eserviceVersionId}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Consumer Missing Required Attributes",
   });
@@ -331,6 +329,17 @@ export function kidNotFound() {
       "The 'kid' header is required but was not found in the Client Assertion",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Missing 'kid' header",
+  });
+}
+
+export function platformStatesNotActive(errors: ApiError<ErrorCodes>[]) {
+  const errorDetails = `${errors.map((e) => e.errors.map((err) => err.detail).join("; ")).join("; ")}`;
+
+  return createApiError<ErrorCodes>({
+    code: "PLATFORM_STATES_NOT_ACTIVE",
+    detail: `One or more platform objects are not in 'Active' state. Details: ${errorDetails}`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Platform states not Active",
   });
 }
 

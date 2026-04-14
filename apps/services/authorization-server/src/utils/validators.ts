@@ -1,6 +1,6 @@
 import type { Agreement } from "@knodia/agreement-models";
 import type { Algorithm } from "@knodia/common-models/algorithms";
-import type { ExternalId } from "@knodia/common-models/externalResource";
+import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { EserviceVersion } from "@knodia/eservice-models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
@@ -38,6 +38,7 @@ import {
   invalidClientAssertionFormat,
   invalidClientAssertionSignature,
   jsonWebTokenError,
+  platformStatesNotActive,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
 } from "../models/errors.ts";
@@ -181,7 +182,7 @@ export async function validatePlatformObjects(
   assertConsumerAttributesMeetEserviceRequirements(
     eserviceVersion,
     consumerAttributes,
-    purpose.consumer.id,
+    purpose.consumer,
   );
 
   return {
@@ -238,10 +239,10 @@ function assertConsumerAttributesMeetEserviceRequirements(
     requiredAttributes,
   }: Pick<EserviceVersion, "id" | "requiredAttributes">,
   consumerAttributes: k2kGatewayApi.Attribute[],
-  consumerId: ExternalId<OrganizationId>,
+  consumer: ExternalResource<OrganizationId>,
 ) {
   if (!hasAllRequiredAttributes(consumerAttributes, requiredAttributes)) {
-    throw consumerMissingRequiredAttributes(consumerId, eserviceVersionId);
+    throw consumerMissingRequiredAttributes(consumer, eserviceVersionId);
   }
 }
 
@@ -272,6 +273,6 @@ function assertPlatformStatesAreActive(
       purposeError,
     ]);
 
-    throw errors;
+    throw platformStatesNotActive(errors);
   }
 }

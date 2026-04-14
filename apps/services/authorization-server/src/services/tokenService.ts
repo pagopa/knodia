@@ -51,12 +51,14 @@ export function tokenServiceBuilder({
         client: k2kGatewayClient,
       });
 
+      // Client assertion signature verification
       await verifyClientAssertionSignature(
         requestBody.client_assertion,
         publicKey,
         clientAssertion.header.alg,
       );
 
+      // Check that the platform objects (agreement, e-service version, purpose) are in Active state and that the Consumer meets the E-service version required attributes
       const { agreement, eserviceVersion, purpose } =
         await validatePlatformObjects(
           clientAssertion.payload.purposeId,
@@ -64,6 +66,7 @@ export function tokenServiceBuilder({
           readmodelService,
         );
 
+      // Generate the E-service access token
       const token = await tokenGenerator.generateEserviceAccessToken({
         audience: eserviceVersion.accessTokenAudience.join(","),
         consumer: purpose.consumer,
