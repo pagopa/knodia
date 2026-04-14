@@ -21,15 +21,7 @@ import {
   unsafeBrandUserId,
 } from "@knodia/common-models/ids";
 import { getMockEservice } from "@knodia/test-commons/utils";
-import {
-  afterEach,
-  assert,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vitest";
+import { afterAll, assert, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { tokenGeneratorBuilder } from "../src/tokenGenerator.ts";
 import { kmsSendMock, testKmsClient } from "./utils.ts";
@@ -142,12 +134,12 @@ const testCases = [
 describe.each(testCases)(
   "$name",
   ({ expectedPayload, generate, tokenDuration }) => {
-    beforeEach(() => {
+    beforeAll(() => {
       vi.useFakeTimers();
       vi.setSystemTime(new Date(MOCK_NOW_SECONDS * 1000));
     });
 
-    afterEach(() => {
+    afterAll(() => {
       vi.useRealTimers();
     });
 

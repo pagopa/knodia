@@ -1,6 +1,6 @@
 /* eslint-disable max-lines-per-function */
 import type { Agreement } from "@knodia/agreement-models";
-import type { Eservice } from "@knodia/eservice-models";
+import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
 
@@ -14,7 +14,7 @@ import {
 } from "@knodia/test-commons/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { API_TokenRequest } from "../src/models/api.ts";
+import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
 import {
   agreementWriterService,
@@ -38,48 +38,73 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   };
 });
 
+const commonAttribute: k2kGatewayApi.Attribute = {
+  code: "vc_territorial_units",
+  scheme: "nuts1",
+};
+const purpose: Purpose = {
+  ...getMockPurpose(),
+  state: "Active",
+};
+const agreement: Agreement = {
+  ...getMockAgreement(),
+  consumer: purpose.consumer,
+  eserviceId: purpose.eserviceId,
+  state: "Active",
+};
+const eserviceVersion: EserviceVersion = {
+  ...getMockEserviceVersion(),
+  id: agreement.eserviceVersionId,
+  requiredAttributes: [
+    [commonAttribute],
+    [
+      commonAttribute,
+      {
+        code: "vc_organizational_units",
+        scheme: "nuts3",
+      },
+    ],
+  ],
+  state: "Active",
+};
+const eservice: Eservice = {
+  ...getMockEservice(),
+  id: purpose.eserviceId,
+  versions: [eserviceVersion],
+};
+const consumerKeychainId = generateId<ConsumerKeychainId>();
+const MOCK_NOW_SECONDS = 1_000_000_000;
+const MOCK_TOKEN = "mock-eservice-access-token";
+
+vi.mock("@knodia/token-generator", () => ({
+  tokenGeneratorBuilder: () => ({
+    generateEserviceAccessToken: vi.fn().mockResolvedValue({
+      payload: {
+        aud: eserviceVersion.accessTokenAudience.join(","),
+        client_id: consumerKeychainId,
+        consumer_id: purpose.consumer,
+        consumer_knode_id: purpose.consumer.knodeId,
+        eservice_id: eservice.id,
+        eservice_version_id: eserviceVersion.id,
+        exp: MOCK_NOW_SECONDS + eserviceVersion.accessTokenDuration,
+        iat: MOCK_NOW_SECONDS,
+        iss: "knodia.org",
+        jti: generateId(),
+        nbf: MOCK_NOW_SECONDS,
+        producer_id: agreement.producerId,
+        purpose_id: purpose.id,
+        sub: consumerKeychainId,
+      },
+      serialized: MOCK_TOKEN,
+    }),
+  }),
+}));
+
 describe("POST /token", async () => {
   const VALID_CLIENT_ASSERTION_TYPE =
     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   const VALID_GRANT_TYPE = "client_credentials";
 
-  const commonAttribute: k2kGatewayApi.Attribute = {
-    code: "vc_territorial_units",
-    scheme: "nuts1",
-  };
-  const purpose: Purpose = {
-    ...getMockPurpose(),
-    state: "Active",
-  };
-  const agreement: Agreement = {
-    ...getMockAgreement(),
-    consumer: purpose.consumer,
-    eserviceId: purpose.eserviceId,
-    state: "Active",
-  };
-  const eservice: Eservice = {
-    ...getMockEservice(),
-    id: purpose.eserviceId,
-    versions: [
-      {
-        ...getMockEserviceVersion(),
-        id: agreement.eserviceVersionId,
-        requiredAttributes: [
-          [commonAttribute],
-          [
-            commonAttribute,
-            {
-              code: "vc_organizational_units",
-              scheme: "nuts3",
-            },
-          ],
-        ],
-        state: "Active",
-      },
-    ],
-  };
-
-  const consumerKeychainId = generateId<ConsumerKeychainId>();
   const {
     clientAssertion,
     clientAssertionJWS,
@@ -139,9 +164,13 @@ describe("POST /token", async () => {
       url: "/token",
     });
 
+    const responseBody = response.json<API_TokenResponse>();
+
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({
-      mockAccessToken: "mock-access-token",
+    expect(responseBody).toEqual({
+      access_token: MOCK_TOKEN,
+      expires_in: eserviceVersion.accessTokenDuration,
+      token_type: "Bearer",
     });
   });
 

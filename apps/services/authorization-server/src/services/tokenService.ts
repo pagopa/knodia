@@ -73,7 +73,7 @@ export function tokenServiceBuilder({
         eserviceId: purpose.eserviceId,
         eserviceVersionId: eserviceVersion.id,
         issuer: generatedEserviceAccessTokenIssuer,
-        kid: eserviceAccessTokenJwtKid, // TODO: producer kid to sign the token with
+        kid: eserviceAccessTokenJwtKid,
         producerId: agreement.producerId,
         purposeId: purpose.id,
         secondsDuration: eserviceVersion.accessTokenDuration,
