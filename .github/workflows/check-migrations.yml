@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "migration/**"
+      - "scripts/flyway/**"
+      - "docker/init-databases.sql"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
