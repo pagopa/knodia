@@ -18,7 +18,7 @@ import {
 } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
-  { roles: ["technical"], type: "ui-session" },
+  { roles: ["administrative"], type: "ui-session" },
 ];
 
 describe("POST /eservices/:eserviceId/activate (activateEservice)", () => {
