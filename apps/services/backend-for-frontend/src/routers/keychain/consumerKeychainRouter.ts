@@ -645,13 +645,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         `Getting Consumer Keychains with query parameters for owner ${ownerId}`,
       );
 
-      const { limit, offset } = req.query;
+      const { limit, offset, purpose } = req.query;
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const { data } = await keychainProcessApi.getConsumerKeychains({
         client: keychainProcessClient,
         headers,
-        query: { limit, offset, ownerId },
+        query: { limit, offset, ownerId, purpose },
       });
 
       async function enhanceKeychainWithCounts(
