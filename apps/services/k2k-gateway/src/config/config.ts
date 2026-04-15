@@ -22,6 +22,7 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
           .positive()
           .default(3600),
         INTERNAL_JWT_SUBJECT: z.string(),
+        KEYCHAIN_PROCESS_URL: z.url(),
         ORGANIZATION_PROCESS_URL: z.url(),
         PURPOSE_PROCESS_URL: z.url(),
       })
@@ -37,6 +38,7 @@ const K2KGatewayConfig = LoggerConfig.and(HTTPServerConfig)
           secondsDuration: c.INTERNAL_JWT_SECONDS_DURATION,
           subject: c.INTERNAL_JWT_SUBJECT,
         },
+        keychainProcessUrl: c.KEYCHAIN_PROCESS_URL,
         organizationProcessUrl: c.ORGANIZATION_PROCESS_URL,
         purposeProcessUrl: c.PURPOSE_PROCESS_URL,
       })),
