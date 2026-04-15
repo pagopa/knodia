@@ -1,0 +1,78 @@
+name: Check migrations
+
+on:
+  pull_request:
+    paths:
+      - "migration/**"
+      - "scripts/flyway/**"
+      - "docker/init-databases.sql"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: check-migrations
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17.7@sha256:2006493727bd5277eece187319af1ef82b4cf82cf4fc1ed00da0775b646ac2a4
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U root"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      NAMESPACE: ci
+      PGHOST: localhost
+      PGUSER: root
+      PGPASSWORD: root
+      PGDATABASE: postgres
+    steps:
+      - name: Checkout PR base branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - name: Checkout PR branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          path: pr
+
+      - name: Resolve Flyway image
+        id: flyway-image
+        working-directory: pr
+        run: |
+          IMAGE=$(awk '/^FROM /{img=$2} END{print img}' apps/infra/migrations/Dockerfile)
+          echo "ref=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Create databases and roles (base)
+        working-directory: base
+        run: |
+          psql -f docker/init-databases.sql
+          sed "s/\${NAMESPACE}/$NAMESPACE/g" scripts/flyway/roles/R__roles.sql | psql
+
+      - name: Apply base branch migrations
+        working-directory: base
+        run: ../pr/scripts/flyway/ci-run-all.sh "${{ steps.flyway-image.outputs.ref }}" migrate
+
+      - name: Create databases and roles (PR)
+        working-directory: pr
+        run: |
+          psql -f docker/init-databases.sql
+          sed "s/\${NAMESPACE}/$NAMESPACE/g" scripts/flyway/roles/R__roles.sql | psql
+
+      - name: Apply PR migrations
+        working-directory: pr
+        run: scripts/flyway/ci-run-all.sh "${{ steps.flyway-image.outputs.ref }}" migrate
