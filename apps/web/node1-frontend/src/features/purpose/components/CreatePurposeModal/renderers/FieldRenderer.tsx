@@ -6,10 +6,11 @@ import type {
   FormTexts,
   FormValues,
   JsonSchema,
+  JsonSchemaProperty,
 } from "@/features/purpose/engine/types";
 
-import { scopeToFieldName } from "@/features/purpose/engine/dependencyResolver";
 import { getFilteredOptionValues } from "@/features/purpose/engine/optionFilter";
+import { scopeToFieldName } from "@/features/purpose/engine/scope";
 import {
   getFieldDescription,
   getFieldLabel,
@@ -43,27 +44,32 @@ export function FieldRenderer({
 }: Props) {
   const widget = control.options?.widget ?? "text";
   const fieldName = scopeToFieldName(control.scope);
-  const maxLength = jsonSchema.properties[fieldName]?.maxLength;
+  const schemaProperty = jsonSchema.properties[fieldName];
+  const maxLength = schemaProperty?.maxLength;
 
   const label = getFieldLabel(texts, fieldName) ?? fieldName;
   const description = getFieldDescription(texts, fieldName);
+  const optionValues = useMemo(
+    () => getOptionValues(schemaProperty),
+    [schemaProperty],
+  );
 
   const optionLabels = useMemo(
-    () => getFieldOptionLabels(texts, fieldName),
-    [texts, fieldName],
+    () => getFieldOptionLabels(texts, fieldName, optionValues),
+    [texts, fieldName, optionValues],
   );
 
   const options = useMemo(() => {
-    const allOptions = Object.entries(optionLabels).map(([val, lbl]) => ({
-      label: lbl,
-      value: val,
+    const allOptions = optionValues.map((optionValue) => ({
+      label: optionLabels[optionValue] ?? optionValue,
+      value: optionValue,
     }));
 
     const hiddenValues = getFilteredOptionValues(control, allValues);
     if (!hiddenValues) return allOptions;
 
     return allOptions.filter((opt) => !hiddenValues.has(opt.value));
-  }, [control, allValues, optionLabels]);
+  }, [control, allValues, optionLabels, optionValues]);
 
   const resolvedControl: ControlElement = useMemo(
     () => ({
@@ -127,4 +133,14 @@ export function FieldRenderer({
       />
     ))
     .exhaustive();
+}
+
+function getOptionValues(
+  schemaProperty: JsonSchemaProperty | undefined,
+): string[] {
+  if (!schemaProperty) return [];
+  if (schemaProperty.type === "array") {
+    return schemaProperty.items?.enum ?? [];
+  }
+  return schemaProperty.enum ?? [];
 }

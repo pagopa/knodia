@@ -127,7 +127,7 @@ export const API_PurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
     texts: z.strictObject({
-      en: z.record(z.string(), z.unknown()),
+      en: z.record(z.string(), z.string()),
     }),
     uiSchema: z.record(z.string(), z.unknown()),
     version: API_PurposeFormSchemaVersion,

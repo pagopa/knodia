@@ -744,7 +744,8 @@ components:
           properties:
             en:
               type: object
-              additionalProperties: {}
+              additionalProperties:
+                type: string
           required:
             - en
           additionalProperties: false

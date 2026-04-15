@@ -68,7 +68,7 @@ export type API_PurposeFormSchema = z.infer<typeof API_PurposeFormSchema>;
 
 export const API_PurposeFormTexts = z
   .strictObject({
-    en: z.record(z.string(), z.unknown()),
+    en: z.record(z.string(), z.string()),
   })
   .meta({ id: "PurposeFormTexts" });
 export type API_PurposeFormTexts = z.infer<typeof API_PurposeFormTexts>;
@@ -98,7 +98,7 @@ export const API_ExternalPurposeFormSchemasResponse = z
   .strictObject({
     schema: z.record(z.string(), z.unknown()),
     texts: z.strictObject({
-      en: z.record(z.string(), z.unknown()),
+      en: z.record(z.string(), z.string()),
     }),
     uiSchema: z.record(z.string(), z.unknown()),
     version: API_ExternalPurposeFormSchemaVersion,

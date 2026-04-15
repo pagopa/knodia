@@ -16,9 +16,9 @@ export const getFormSchema = (
 
 export const getFormTexts = (
   version: PurposeFormSchemaVersion,
-): { en: Record<string, unknown> } =>
+): { en: Record<string, string> } =>
   match(version)
-    .with("1.0", () => ({ en: texts_en_1_0 }))
+    .with("1.0", () => ({ en: texts_en_1_0 as Record<string, string> }))
     .exhaustive();
 
 export const getFormUiSchema = (

@@ -71,7 +71,7 @@ export type PurposeFormSchema = {
 
 export type PurposeFormTexts = {
     en: {
-        [key: string]: unknown;
+        [key: string]: string;
     };
 };
 

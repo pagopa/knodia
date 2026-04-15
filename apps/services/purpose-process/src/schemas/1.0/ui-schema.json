@@ -3,11 +3,9 @@
   "elements": [
     {
       "type": "Group",
-      "textKey": "lawfulnessOfProcessing",
       "elements": [
         {
           "type": "Group",
-          "textKey": "purposeOfAccess",
           "elements": [
             {
               "type": "Control",
@@ -23,11 +21,11 @@
                 "widget": "textarea"
               }
             }
-          ]
+          ],
+          "i18n": "groups.purposeOfAccess"
         },
         {
           "type": "Group",
-          "textKey": "personalDataTypes",
           "elements": [
             {
               "type": "Control",
@@ -47,16 +45,18 @@
                 "condition": {
                   "scope": "#/properties/personalDataTypes",
                   "schema": {
-                    "contains": { "const": "OTHER" }
+                    "contains": {
+                      "const": "OTHER"
+                    }
                   }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.personalDataTypes"
         },
         {
           "type": "Group",
-          "textKey": "legalBasis",
           "elements": [
             {
               "type": "Control",
@@ -76,7 +76,9 @@
                 "condition": {
                   "scope": "#/properties/legalBasis",
                   "schema": {
-                    "contains": { "const": "LEGAL_OBLIGATION" }
+                    "contains": {
+                      "const": "LEGAL_OBLIGATION"
+                    }
                   }
                 }
               }
@@ -92,22 +94,24 @@
                 "condition": {
                   "scope": "#/properties/legalBasis",
                   "schema": {
-                    "contains": { "const": "PUBLIC_INTEREST" }
+                    "contains": {
+                      "const": "PUBLIC_INTEREST"
+                    }
                   }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.legalBasis"
         }
-      ]
+      ],
+      "i18n": "groups.lawfulnessOfProcessing"
     },
     {
       "type": "Group",
-      "textKey": "riskAnalysis",
       "elements": [
         {
           "type": "Group",
-          "textKey": "publicInterestLegalBasis",
           "elements": [
             {
               "type": "Control",
@@ -118,7 +122,9 @@
                   "PUBLIC_INTEREST_TASK": {
                     "scope": "#/properties/personalDataTypes",
                     "schema": {
-                      "contains": { "const": "GDPR_ART_9" }
+                      "contains": {
+                        "const": "GDPR_ART_9"
+                      }
                     }
                   }
                 }
@@ -128,16 +134,18 @@
                 "condition": {
                   "scope": "#/properties/legalBasis",
                   "schema": {
-                    "contains": { "const": "PUBLIC_INTEREST" }
+                    "contains": {
+                      "const": "PUBLIC_INTEREST"
+                    }
                   }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.publicInterestLegalBasis"
         },
         {
           "type": "Group",
-          "textKey": "ruleOfLaw",
           "elements": [
             {
               "type": "Control",
@@ -152,21 +160,27 @@
                   "conditions": [
                     {
                       "scope": "#/properties/legalBasisPublicInterest",
-                      "schema": { "const": "RULE_OF_LAW" }
+                      "schema": {
+                        "const": "RULE_OF_LAW"
+                      }
                     },
                     {
                       "scope": "#/properties/legalBasis",
-                      "schema": { "contains": { "const": "PUBLIC_INTEREST" } }
+                      "schema": {
+                        "contains": {
+                          "const": "PUBLIC_INTEREST"
+                        }
+                      }
                     }
                   ]
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.ruleOfLaw"
         },
         {
           "type": "Group",
-          "textKey": "administrativeAct",
           "elements": [
             {
               "type": "Control",
@@ -181,21 +195,27 @@
                   "conditions": [
                     {
                       "scope": "#/properties/legalBasisPublicInterest",
-                      "schema": { "const": "ADMINISTRATIVE_ACT" }
+                      "schema": {
+                        "const": "ADMINISTRATIVE_ACT"
+                      }
                     },
                     {
                       "scope": "#/properties/legalBasis",
-                      "schema": { "contains": { "const": "PUBLIC_INTEREST" } }
+                      "schema": {
+                        "contains": {
+                          "const": "PUBLIC_INTEREST"
+                        }
+                      }
                     }
                   ]
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.administrativeAct"
         },
         {
           "type": "Group",
-          "textKey": "publicInterestTask",
           "elements": [
             {
               "type": "Control",
@@ -207,15 +227,17 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/legalBasisPublicInterest",
-                  "schema": { "const": "PUBLIC_INTEREST_TASK" }
+                  "schema": {
+                    "const": "PUBLIC_INTEREST_TASK"
+                  }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.publicInterestTask"
         },
         {
           "type": "Group",
-          "textKey": "amountOfPersonalData",
           "elements": [
             {
               "type": "Control",
@@ -234,15 +256,17 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/knowsDataQuantity",
-                  "schema": { "const": "YES" }
+                  "schema": {
+                    "const": "YES"
+                  }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.amountOfPersonalData"
         },
         {
           "type": "Group",
-          "textKey": "deliveryMethod",
           "elements": [
             {
               "type": "Control",
@@ -251,11 +275,11 @@
                 "widget": "radio"
               }
             }
-          ]
+          ],
+          "i18n": "groups.deliveryMethod"
         },
         {
           "type": "Group",
-          "textKey": "privacyNotice",
           "elements": [
             {
               "type": "Control",
@@ -274,7 +298,9 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/policyProvided",
-                  "schema": { "const": "NO" }
+                  "schema": {
+                    "const": "NO"
+                  }
                 }
               }
             },
@@ -288,7 +314,9 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/policyProvided",
-                  "schema": { "const": "YES" }
+                  "schema": {
+                    "const": "YES"
+                  }
                 }
               }
             },
@@ -305,21 +333,25 @@
                   "conditions": [
                     {
                       "scope": "#/properties/policyProvided",
-                      "schema": { "const": "YES" }
+                      "schema": {
+                        "const": "YES"
+                      }
                     },
                     {
                       "scope": "#/properties/policyProvidedMedium",
-                      "schema": { "const": "ONLINE" }
+                      "schema": {
+                        "const": "ONLINE"
+                      }
                     }
                   ]
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.privacyNotice"
         },
         {
           "type": "Group",
-          "textKey": "integrityAndConfidentiality",
           "elements": [
             {
               "type": "Control",
@@ -341,21 +373,27 @@
                   "conditions": [
                     {
                       "scope": "#/properties/personalDataTypes",
-                      "schema": { "contains": { "const": "GDPR_ART_10" } }
+                      "schema": {
+                        "contains": {
+                          "const": "GDPR_ART_10"
+                        }
+                      }
                     },
                     {
                       "scope": "#/properties/confirmPrincipleIntegrityAndDiscretion",
-                      "schema": { "const": "true" }
+                      "schema": {
+                        "const": "true"
+                      }
                     }
                   ]
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.integrityAndConfidentiality"
         },
         {
           "type": "Group",
-          "textKey": "dpia",
           "elements": [
             {
               "type": "Control",
@@ -366,15 +404,19 @@
             },
             {
               "type": "Label",
-              "textKey": "dpiaReminder",
-              "options": { "variant": "info" },
+              "options": {
+                "variant": "info"
+              },
               "rule": {
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/doneDpia",
-                  "schema": { "const": "NO" }
+                  "schema": {
+                    "const": "NO"
+                  }
                 }
-              }
+              },
+              "i18n": "banners.dpiaReminder"
             },
             {
               "type": "Control",
@@ -386,27 +428,33 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/doneDpia",
-                  "schema": { "const": "YES" }
+                  "schema": {
+                    "const": "YES"
+                  }
                 }
               }
             },
             {
               "type": "Label",
-              "textKey": "priorConsultationReminder",
-              "options": { "variant": "info" },
+              "options": {
+                "variant": "info"
+              },
               "rule": {
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/confirmedDoneDpia",
-                  "schema": { "const": "NO" }
+                  "schema": {
+                    "const": "NO"
+                  }
                 }
-              }
+              },
+              "i18n": "banners.priorConsultationReminder"
             }
-          ]
+          ],
+          "i18n": "groups.dpia"
         },
         {
           "type": "Group",
-          "textKey": "dataDownload",
           "elements": [
             {
               "type": "Control",
@@ -425,15 +473,17 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/dataDownload",
-                  "schema": { "const": "YES" }
+                  "schema": {
+                    "const": "YES"
+                  }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.dataDownload"
         },
         {
           "type": "Group",
-          "textKey": "dataMinimization",
           "elements": [
             {
               "type": "Control",
@@ -442,11 +492,11 @@
                 "widget": "radio"
               }
             }
-          ]
+          ],
+          "i18n": "groups.dataMinimization"
         },
         {
           "type": "Group",
-          "textKey": "catalogueCheck",
           "elements": [
             {
               "type": "Control",
@@ -458,15 +508,17 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/purposePursuit",
-                  "schema": { "const": "MERE_CORRECTNESS" }
+                  "schema": {
+                    "const": "MERE_CORRECTNESS"
+                  }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.catalogueCheck"
         },
         {
           "type": "Group",
-          "textKey": "neededDataCheck",
           "elements": [
             {
               "type": "Control",
@@ -478,15 +530,17 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/purposePursuit",
-                  "schema": { "const": "NEW_PERSONAL_DATA" }
+                  "schema": {
+                    "const": "NEW_PERSONAL_DATA"
+                  }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.neededDataCheck"
         },
         {
           "type": "Group",
-          "textKey": "thirdPartyData",
           "elements": [
             {
               "type": "Control",
@@ -505,15 +559,17 @@
                 "effect": "SHOW",
                 "condition": {
                   "scope": "#/properties/usesThirdPartyPersonalData",
-                  "schema": { "const": "YES" }
+                  "schema": {
+                    "const": "YES"
+                  }
                 }
               }
             }
-          ]
+          ],
+          "i18n": "groups.thirdPartyData"
         },
         {
           "type": "Group",
-          "textKey": "gdprDeclaration",
           "elements": [
             {
               "type": "Control",
@@ -522,9 +578,11 @@
                 "widget": "switch"
               }
             }
-          ]
+          ],
+          "i18n": "groups.gdprDeclaration"
         }
-      ]
+      ],
+      "i18n": "groups.riskAnalysis"
     }
   ]
 }

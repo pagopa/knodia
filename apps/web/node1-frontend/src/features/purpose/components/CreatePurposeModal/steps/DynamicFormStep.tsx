@@ -20,8 +20,8 @@ import { createAjvValidator } from "@/features/purpose/engine/ajv/validation";
 import {
   getVisibleFields,
   isLabelVisible,
-  scopeToFieldName,
 } from "@/features/purpose/engine/dependencyResolver";
+import { scopeToFieldName } from "@/features/purpose/engine/scope";
 import { getBannerText } from "@/features/purpose/engine/textsResolver";
 import {
   collectErrorMessages,
@@ -203,8 +203,7 @@ function GroupSection({
       {group.elements.map((element, i) => {
         if (element.type === "Label") {
           if (!isLabelVisible(element, values, visibleFieldNames)) return null;
-          const text =
-            getBannerText(texts, element.textKey) ?? element.textKey ?? "";
+          const text = getBannerText(texts, element.i18n) ?? element.i18n;
           return (
             <InfoBanner
               key={`label-${i}`}

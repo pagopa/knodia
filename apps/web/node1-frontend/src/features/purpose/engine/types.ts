@@ -13,11 +13,7 @@ export interface ControlElement {
 
 // JSON Schema types (subset we support)
 
-export interface FormTexts {
-  banners?: Record<string, string>;
-  fields: Record<string, FieldTexts>;
-  groups?: Record<string, { description?: string; label?: string }>;
-}
+export type FormTexts = Record<string, string>;
 
 // Form values
 export type FormValues = Record<string, string | string[]>;
@@ -57,9 +53,9 @@ export interface JsonSchemaProperty {
 }
 
 export interface LabelElement {
+  i18n: string;
   options?: { variant?: "error" | "info" | "warning" };
   rule?: Rule;
-  textKey: string;
   type: "Label";
 }
 
@@ -88,19 +84,9 @@ interface ControlOptions {
   widget: "checkbox" | "radio" | "select" | "switch" | "text" | "textarea";
 }
 
-// Form texts — all human-readable strings extracted from UI Schema into a
-// dedicated locale-keyed texts file. Controls are linked via field name
-// (derived from scope), groups/banners via textKey.
-interface FieldTexts {
-  description?: string;
-  errors?: Record<string, string>;
-  label?: string;
-  options?: Record<string, string>;
-}
-
 interface GroupElement {
   elements: UISchemaElement[];
-  textKey: string;
+  i18n: string;
   type: "Group";
 }
 
@@ -137,7 +123,7 @@ export function loadSchema(json: Record<string, unknown>): JsonSchema {
 }
 
 export function loadTexts(json: Record<string, unknown>): FormTexts {
-  return json as unknown as FormTexts;
+  return json as FormTexts;
 }
 
 export function loadUiSchema(json: Record<string, unknown>): UISchema {

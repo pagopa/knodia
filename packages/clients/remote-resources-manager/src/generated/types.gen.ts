@@ -299,7 +299,7 @@ export type PurposeFormSchemasResponse = {
     };
     texts: {
         en: {
-            [key: string]: unknown;
+            [key: string]: string;
         };
     };
     uiSchema: {

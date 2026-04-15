@@ -30,6 +30,12 @@ const textControl: ControlElement = {
   type: "Control",
 };
 
+const nestedTextControl: ControlElement = {
+  options: { widget: "textarea" },
+  scope: "#/properties/address/properties/street",
+  type: "Control",
+};
+
 const conditionalControl: ControlElement = {
   options: { widget: "textarea" },
   rule: {
@@ -44,6 +50,7 @@ const conditionalControl: ControlElement = {
 };
 
 const labelElement: LabelElement = {
+  i18n: "banners.dpiaReminder",
   options: { variant: "info" },
   rule: {
     condition: {
@@ -52,25 +59,22 @@ const labelElement: LabelElement = {
     },
     effect: "SHOW",
   },
-  textKey: "dpiaReminder",
   type: "Label",
 };
 
 const mockTexts: FormTexts = {
-  fields: {
-    purpose: {
-      errors: { required: "Please select" },
-      label: "Purpose",
-    },
-  },
-  groups: {
-    inner: { label: "Inner" },
-    nested: { label: "Nested" },
-    onlyGroup: { label: "Only Group" },
-    riskAnalysis: { description: "Step 1 desc", label: "Risk analysis" },
-    step1: { description: "First step", label: "Step 1" },
-    step2: { label: "Step 2" },
-  },
+  "address.street.error.required": "Street is required",
+  "banners.dpiaReminder.text": "DPIA reminder",
+  "groups.inner.label": "Inner",
+  "groups.nested.label": "Nested",
+  "groups.onlyGroup.label": "Only Group",
+  "groups.riskAnalysis.description": "Step 1 desc",
+  "groups.riskAnalysis.label": "Risk analysis",
+  "groups.step1.description": "First step",
+  "groups.step1.label": "Step 1",
+  "groups.step2.label": "Step 2",
+  "purpose.error.required": "Please select",
+  "purpose.label": "Purpose",
 };
 
 describe("isAndCondition", () => {
@@ -129,7 +133,7 @@ describe("collectControls", () => {
       elements: [
         {
           elements: [radioControl, textControl],
-          textKey: "step1",
+          i18n: "groups.step1",
           type: "Group",
         },
         conditionalControl,
@@ -161,6 +165,17 @@ describe("collectErrorMessages", () => {
     };
     expect(collectErrorMessages(mockTexts, uischema)).toEqual({});
   });
+
+  it("normalizes nested scopes before resolving error messages", () => {
+    const uischema: UISchema = {
+      elements: [nestedTextControl],
+      type: "VerticalLayout",
+    };
+
+    expect(collectErrorMessages(mockTexts, uischema)).toEqual({
+      "address.street": { required: "Street is required" },
+    });
+  });
 });
 
 describe("collectGroups", () => {
@@ -180,12 +195,12 @@ describe("collectGroups", () => {
       elements: [
         {
           elements: [radioControl],
-          textKey: "step1",
+          i18n: "groups.step1",
           type: "Group",
         },
         {
           elements: [textControl],
-          textKey: "step2",
+          i18n: "groups.step2",
           type: "Group",
         },
       ],
@@ -201,13 +216,25 @@ describe("collectGroups", () => {
   it("wraps a top-level Group into a single group", () => {
     const uischema: UISchema = {
       elements: [radioControl, textControl],
-      textKey: "onlyGroup",
+      i18n: "groups.onlyGroup",
       type: "Group",
     };
     const groups = collectGroups(uischema, mockTexts);
     expect(groups).toHaveLength(1);
     expect(groups.at(0)?.label).toBe("Only Group");
     expect(groups.at(0)?.elements).toEqual([radioControl, textControl]);
+  });
+
+  it("falls back to the raw i18n key when the group label is missing", () => {
+    const uischema: UISchema = {
+      elements: [radioControl],
+      i18n: "groups.missing",
+      type: "Group",
+    };
+
+    const groups = collectGroups(uischema, mockTexts);
+
+    expect(groups.at(0)?.label).toBe("groups.missing");
   });
 
   it("flattens nested layouts within groups", () => {
@@ -220,7 +247,7 @@ describe("collectGroups", () => {
               type: "VerticalLayout",
             },
           ],
-          textKey: "nested",
+          i18n: "groups.nested",
           type: "Group",
         },
       ],
@@ -248,12 +275,12 @@ describe("collectSteps", () => {
       elements: [
         {
           elements: [radioControl],
-          textKey: "riskAnalysis",
+          i18n: "groups.riskAnalysis",
           type: "Group",
         },
         {
           elements: [textControl],
-          textKey: "step2",
+          i18n: "groups.step2",
           type: "Group",
         },
       ],
@@ -266,17 +293,34 @@ describe("collectSteps", () => {
     expect(steps.at(1)?.label).toBe("Step 2");
   });
 
+  it("falls back to the raw i18n key when the step label is missing", () => {
+    const uischema: UISchema = {
+      elements: [
+        {
+          elements: [radioControl],
+          i18n: "groups.missing",
+          type: "Group",
+        },
+      ],
+      type: "VerticalLayout",
+    };
+
+    const steps = collectSteps(uischema, mockTexts);
+
+    expect(steps.at(0)?.label).toBe("groups.missing");
+  });
+
   it("preserves raw elements inside steps (does not flatten)", () => {
     const innerGroup = {
       elements: [radioControl],
-      textKey: "inner",
+      i18n: "groups.inner",
       type: "Group" as const,
     };
     const uischema: UISchema = {
       elements: [
         {
           elements: [innerGroup, textControl],
-          textKey: "nested",
+          i18n: "groups.nested",
           type: "Group",
         },
       ],

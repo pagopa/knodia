@@ -130,7 +130,7 @@ export function purposeServiceBuilder(
     },
     getCurrentPurposeFormSchemas({ logger }: AuthorizedContext<AuthData>): {
       schema: Record<string, unknown>;
-      texts: { en: Record<string, unknown> };
+      texts: { en: Record<string, string> };
       uiSchema: Record<string, unknown>;
       version: PurposeFormSchemaVersion;
     } {

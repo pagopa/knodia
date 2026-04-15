@@ -11,12 +11,18 @@ import {
   evaluateCondition,
   getVisibleFields,
   isLabelVisible,
-  scopeToFieldName,
 } from "./dependencyResolver";
+import { scopeToFieldName } from "./scope";
 
 describe("scopeToFieldName", () => {
   it("extracts field name from scope", () => {
     expect(scopeToFieldName("#/properties/purpose")).toBe("purpose");
+  });
+
+  it("converts nested property paths to dot notation", () => {
+    expect(scopeToFieldName("#/properties/address/properties/street")).toBe(
+      "address.street",
+    );
   });
 });
 
@@ -183,11 +189,12 @@ describe("getVisibleFields", () => {
 
 describe("isLabelVisible", () => {
   const labelWithoutRule: LabelElement = {
-    textKey: "Static label",
+    i18n: "banners.static",
     type: "Label",
   };
 
   const labelShownWhenPurposeIsOther: LabelElement = {
+    i18n: "banners.shownWhenPurposeIsOther",
     rule: {
       condition: {
         schema: { const: "OTHER" },
@@ -195,11 +202,11 @@ describe("isLabelVisible", () => {
       },
       effect: "SHOW",
     },
-    textKey: "Shown when purpose is OTHER",
     type: "Label",
   };
 
   const labelHiddenWhenPurposeIsOther: LabelElement = {
+    i18n: "banners.hiddenWhenPurposeIsOther",
     rule: {
       condition: {
         schema: { const: "OTHER" },
@@ -207,7 +214,6 @@ describe("isLabelVisible", () => {
       },
       effect: "HIDE",
     },
-    textKey: "Hidden when purpose is OTHER",
     type: "Label",
   };
 
@@ -269,6 +275,7 @@ describe("isLabelVisible", () => {
 
   it("is hidden when any scope of an AND condition references a hidden field", () => {
     const label: LabelElement = {
+      i18n: "banners.shownWhenBothConditionsAreMet",
       rule: {
         condition: {
           conditions: [
@@ -285,7 +292,6 @@ describe("isLabelVisible", () => {
         },
         effect: "SHOW",
       },
-      textKey: "Shown when both conditions are met",
       type: "Label",
     };
 
@@ -300,6 +306,7 @@ describe("isLabelVisible", () => {
 
   it("is visible when an AND condition is fully met and all referenced fields are visible", () => {
     const label: LabelElement = {
+      i18n: "banners.shownWhenBothConditionsAreMet",
       rule: {
         condition: {
           conditions: [
@@ -316,7 +323,6 @@ describe("isLabelVisible", () => {
         },
         effect: "SHOW",
       },
-      textKey: "Shown when both conditions are met",
       type: "Label",
     };
 

@@ -5,6 +5,7 @@ import type {
   UISchema,
 } from "./types";
 
+import { scopeToFieldName } from "./scope";
 import {
   collectConditionScopes,
   collectControls,
@@ -81,8 +82,4 @@ export function isLabelVisible(
   if (scopes.some((s) => !visibleFieldNames.has(s))) return false;
   const conditionMet = evaluateCondition(label.rule.condition, allValues);
   return label.rule.effect === "SHOW" ? conditionMet : !conditionMet;
-}
-
-export function scopeToFieldName(scope: string): string {
-  return scope.replace("#/properties/", "");
 }

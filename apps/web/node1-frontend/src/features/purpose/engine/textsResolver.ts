@@ -5,35 +5,41 @@ export function getBannerText(
   key: string | undefined,
 ): string | undefined {
   if (!key) return undefined;
-  return texts.banners?.[key];
+  return texts[`${key}.text`];
 }
 
 export function getFieldDescription(
   texts: FormTexts,
   field: string,
 ): string | undefined {
-  return texts.fields[field]?.description;
+  return texts[`${field}.description`];
 }
 
 export function getFieldErrorMessages(
   texts: FormTexts,
   field: string,
 ): Record<string, string> {
-  return texts.fields[field]?.errors ?? {};
+  return Object.fromEntries(getEntriesByPrefix(texts, `${field}.error.`));
 }
 
 export function getFieldLabel(
   texts: FormTexts,
   field: string,
 ): string | undefined {
-  return texts.fields[field]?.label;
+  return texts[`${field}.label`];
 }
 
 export function getFieldOptionLabels(
   texts: FormTexts,
   field: string,
+  optionValues: string[],
 ): Record<string, string> {
-  return texts.fields[field]?.options ?? {};
+  return Object.fromEntries(
+    optionValues.flatMap((optionValue) => {
+      const label = texts[`${field}.${optionValue}`];
+      return label ? [[optionValue, label] satisfies [string, string]] : [];
+    }),
+  );
 }
 
 export function getGroupDescription(
@@ -41,7 +47,7 @@ export function getGroupDescription(
   key: string | undefined,
 ): string | undefined {
   if (!key) return undefined;
-  return texts.groups?.[key]?.description;
+  return texts[`${key}.description`];
 }
 
 export function getGroupLabel(
@@ -49,5 +55,13 @@ export function getGroupLabel(
   key: string | undefined,
 ): string | undefined {
   if (!key) return undefined;
-  return texts.groups?.[key]?.label;
+  return texts[`${key}.label`];
+}
+function getEntriesByPrefix(
+  texts: FormTexts,
+  prefix: string,
+): [string, string][] {
+  return Object.entries(texts).flatMap(([key, value]) =>
+    key.startsWith(prefix) ? [[key.slice(prefix.length), value]] : [],
+  );
 }
