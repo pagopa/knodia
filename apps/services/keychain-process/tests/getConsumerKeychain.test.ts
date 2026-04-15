@@ -15,6 +15,7 @@ const VALID_CONSUMER_KEYCHAIN_ID = consumerKeychain.id;
 const NON_EXISTENT_CONSUMER_KEYCHAIN_ID = generateId<ConsumerKeychainId>();
 
 const allowedTestTokens: TestToken[] = [
+  { type: "internal" },
   { roles: ["administrative"], type: "ui-session" },
   { roles: ["technical"], type: "ui-session" },
 ];
