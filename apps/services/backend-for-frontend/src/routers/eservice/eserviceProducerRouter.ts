@@ -97,6 +97,17 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
 
+  const pollEserviceById = (
+    eserviceId: string,
+    response: AxiosResponse<unknown>,
+    headers: KnodiaServiceHeaders,
+  ) =>
+    pollingService.pollResourceWithMetadata(() =>
+      retrieveEservice(eserviceId, headers),
+    )({
+      condition: isPolledVersionAtLeastResponseVersion(response),
+    });
+
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
@@ -458,11 +469,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         path: { eserviceId },
       });
 
-      await pollingService.pollResourceWithMetadata(() =>
-        retrieveEservice(eserviceId, headers),
-      )({
-        condition: isPolledVersionAtLeastResponseVersion(response),
-      });
+      await pollEserviceById(eserviceId, response, headers);
 
       res.status(204).send();
     },
@@ -504,11 +511,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
         path: { eserviceId },
       });
 
-      await pollingService.pollResourceWithMetadata(() =>
-        retrieveEservice(eserviceId, headers),
-      )({
-        condition: isPolledVersionAtLeastResponseVersion(response),
-      });
+      await pollEserviceById(eserviceId, response, headers);
 
       res.status(204).send();
     },
