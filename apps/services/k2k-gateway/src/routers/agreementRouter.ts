@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { API_CreatedResource } from "@knodia/common-models/api";
 import type { CorrelationId, KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
@@ -18,6 +19,7 @@ import {
   isPolledVersionAtLeastResponseVersion,
   type PollingService,
 } from "@knodia/polling";
+import { z } from "zod";
 
 import {
   API_Agreement,
@@ -34,6 +36,8 @@ import {
 } from "../models/agreement/apiConverter.ts";
 import { apiTags } from "../models/apiTags.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
+
+const API_EmptyBody = z.strictObject({});
 
 interface AgreementRouterOptions {
   agreementProcessClient: AgreementProcessClient;
@@ -171,6 +175,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
+      body: API_EmptyBody,
       description: "Reactivate an Agreement",
       operationId: "reactivateAgreement",
       params: API_AgreementIdPathParam,
@@ -205,6 +210,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
+      body: API_EmptyBody,
       description: "Suspend an Agreement",
       operationId: "suspendAgreement",
       params: API_AgreementIdPathParam,

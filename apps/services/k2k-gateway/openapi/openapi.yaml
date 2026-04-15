@@ -1265,6 +1265,14 @@ paths:
         - resource
         - agreement
       description: Reactivate an Agreement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+              additionalProperties: false
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"
@@ -1311,6 +1319,14 @@ paths:
         - resource
         - agreement
       description: Suspend an Agreement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+              additionalProperties: false
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"

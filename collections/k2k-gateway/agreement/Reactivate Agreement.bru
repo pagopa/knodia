@@ -5,7 +5,7 @@ meta {
 
 post {
   url: {{host-k2k-gateway}}/agreements/:agreementId/reactivation
-  body: none
+  body: json
 }
 
 params:path {
@@ -14,4 +14,8 @@ params:path {
 
 headers {
   ~Authorization:
+}
+
+body:json {
+  {}
 }

@@ -1263,6 +1263,14 @@ paths:
       tags:
         - agreement
       description: Reactivate an Agreement by Consumer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+              additionalProperties: false
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1332,6 +1340,14 @@ paths:
       tags:
         - agreement
       description: Suspend an Agreement by Consumer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+              additionalProperties: false
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"

@@ -169,6 +169,7 @@ export function agreementServiceBuilder(
       }
 
       const { data } = await k2kGatewayApi.reactivateAgreement({
+        body: {},
         client: k2kGatewayClient,
         path: { agreementId },
       });
@@ -199,6 +200,7 @@ export function agreementServiceBuilder(
       }
 
       const { data } = await k2kGatewayApi.suspendAgreement({
+        body: {},
         client: k2kGatewayClient,
         path: { agreementId },
       });
