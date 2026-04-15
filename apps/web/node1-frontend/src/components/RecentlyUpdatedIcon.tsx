@@ -7,7 +7,7 @@ export function RecentlyUpdatedIcon() {
     <TooltipTrigger>
       <InteractiveIcon>
         <WarningCircleIcon
-          aria-label="Recently updated"
+          aria-label="Recent update"
           className="size-6 text-sky-600"
           weight="fill"
         />
