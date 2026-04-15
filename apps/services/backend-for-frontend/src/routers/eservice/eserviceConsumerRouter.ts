@@ -317,7 +317,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               consumerKeychains,
             },
             eservice,
-            purposes: allPurposes.results,
+            mostRecentPurpose: allPurposes.results.at(0),
             recentUpdateDays: config.recentUpdateDays,
           });
         }),
