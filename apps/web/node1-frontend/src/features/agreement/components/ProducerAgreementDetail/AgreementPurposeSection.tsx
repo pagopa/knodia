@@ -76,7 +76,7 @@ function AgreementPurposeTable({
               {purpose.name.en}
             </Cell>
             <Cell className="body-md text-primary-light-mid-contrast">
-              {purpose.dailyCalls}
+              {purpose.dailyCalls.toLocaleString()}
             </Cell>
             <Cell>
               <PurposeStateChip state={purpose.state} type="bright" />
