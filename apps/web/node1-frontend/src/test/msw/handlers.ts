@@ -59,16 +59,8 @@ export const handlers = [
 
   http.get(`${BASE_URL}/producer/purposes`, ({ request }) => {
     const url = new URL(request.url);
-    const agreementId = url.searchParams.get("agreementId");
     const limit = Number(url.searchParams.get("limit") ?? 50);
     const offset = Number(url.searchParams.get("offset") ?? 0);
-
-    if (!agreementId) {
-      return HttpResponse.json(
-        { title: "Missing agreementId", type: "bad-request" },
-        { status: 400 },
-      );
-    }
 
     return HttpResponse.json({
       pagination: { limit, offset, total: 0 },
