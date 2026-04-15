@@ -12,7 +12,8 @@ DECLARE
         '${NAMESPACE}_organization_process_user',
         '${NAMESPACE}_organization_rmw_user',
         '${NAMESPACE}_purpose_process_user',
-        '${NAMESPACE}_purpose_rmw_user'
+        '${NAMESPACE}_purpose_rmw_user',
+        '${NAMESPACE}_authorization_server_user'
     ];
 BEGIN
     FOREACH role_name IN ARRAY role_names LOOP
