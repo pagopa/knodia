@@ -1,15 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export interface UseDebouncedValueOptions {
-  leading?: boolean;
-}
-
-export type UseDebouncedValueReturnValue<T> = [T, () => void];
+type UseDebouncedValueReturnValue<T> = [T, () => void];
 
 export function useDebouncedValue<T = unknown>(
   value: T,
   wait: number,
-  options: UseDebouncedValueOptions = { leading: false },
 ): UseDebouncedValueReturnValue<T> {
   const [_value, setValue] = useState(value);
   const mountedRef = useRef(false);
@@ -24,19 +19,13 @@ export function useDebouncedValue<T = unknown>(
 
   useEffect(() => {
     if (mountedRef.current) {
-      if (!cooldownRef.current && options.leading) {
-        cooldownRef.current = true;
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+      cancel();
+      timeoutRef.current = window.setTimeout(() => {
+        cooldownRef.current = false;
         setValue(value);
-      } else {
-        cancel();
-        timeoutRef.current = window.setTimeout(() => {
-          cooldownRef.current = false;
-          setValue(value);
-        }, wait);
-      }
+      }, wait);
     }
-  }, [value, options.leading, wait, cancel]);
+  }, [value, wait, cancel]);
 
   useEffect(() => {
     mountedRef.current = true;

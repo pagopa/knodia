@@ -29,13 +29,14 @@ const alternateOwnerId = mockConsumerKeychains[1]!.ownerId;
 const seededConsumerKeychains = mockConsumerKeychains.map(
   (consumerKeychain, index) => {
     if ([0, 4].includes(index)) {
-      consumerKeychain = {
+      return {
         ...consumerKeychain,
         name: { en: `${matchingNamePrefix}-${index}` },
+        ownerId: ownerIdFilter,
       };
     }
 
-    if ([0, 4, 7].includes(index)) {
+    if (index === 7) {
       return {
         ...consumerKeychain,
         ownerId: ownerIdFilter,
