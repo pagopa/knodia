@@ -50,10 +50,14 @@ export const API_ProducerAgreement = z
   .meta({ id: "ProducerAgreement" });
 export type API_ProducerAgreement = z.infer<typeof API_ProducerAgreement>;
 
-export const API_ProducerAgreementDetails = API_ProducerAgreement.extend({
-  latestEserviceVersionState: API_EserviceVersionState,
-  producer: API_CompactOrganization,
-}).meta({ id: "ProducerAgreementDetails" });
+export const API_ProducerAgreementDetails = API_ProducerAgreement.omit({
+  hasRecentlyBeenUpdated: true,
+})
+  .extend({
+    latestEserviceVersionState: API_EserviceVersionState,
+    producer: API_CompactOrganization,
+  })
+  .meta({ id: "ProducerAgreementDetails" });
 export type API_ProducerAgreementDetails = z.infer<
   typeof API_ProducerAgreementDetails
 >;

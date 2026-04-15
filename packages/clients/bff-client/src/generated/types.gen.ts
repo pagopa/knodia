@@ -454,10 +454,6 @@ export type ProducerAgreement = {
 export type ProducerAgreementDetails = {
     consumer: CompactOrganization;
     eservice: CompactEservice;
-    /**
-     * Indicates whether the Agreement has been recently updated
-     */
-    hasRecentlyBeenUpdated: boolean;
     id: string;
     state: AgreementState;
     latestEserviceVersionState: EserviceVersionState;

@@ -946,9 +946,6 @@ components:
           $ref: "#/components/schemas/CompactOrganization"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
-        hasRecentlyBeenUpdated:
-          description: Indicates whether the Agreement has been recently updated
-          type: boolean
         id:
           type: string
           format: uuid
@@ -962,7 +959,6 @@ components:
       required:
         - consumer
         - eservice
-        - hasRecentlyBeenUpdated
         - id
         - state
         - latestEserviceVersionState

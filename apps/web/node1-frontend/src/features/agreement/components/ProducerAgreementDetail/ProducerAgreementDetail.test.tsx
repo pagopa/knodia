@@ -19,7 +19,6 @@ function createAgreementDetails(
       id: "eservice-1",
       name: { en: "Birth Certificate API" },
     },
-    hasRecentlyBeenUpdated: false,
     id: "agreement-1",
     latestEserviceVersionState: "Active",
     producer: {

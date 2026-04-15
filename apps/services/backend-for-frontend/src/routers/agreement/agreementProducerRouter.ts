@@ -229,7 +229,6 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
             ...producer,
             knodeId: config.knodeId,
           },
-          recentUpdateDays: config.recentUpdateDays,
         }),
       );
     },
