@@ -3,6 +3,15 @@ import type { ControlElement, FormValues, UISchema } from "./types";
 import { evaluateCondition, scopeToFieldName } from "./dependencyResolver";
 import { collectControls } from "./uischemaParser";
 
+export function buildControlsByField(
+  uischema: UISchema | undefined,
+): Record<string, ControlElement> {
+  if (!uischema) return {};
+  return Object.fromEntries(
+    collectControls(uischema).map((c) => [scopeToFieldName(c.scope), c]),
+  );
+}
+
 export function getFilteredOptionValues(
   control: ControlElement,
   values: FormValues,
@@ -45,9 +54,7 @@ export function stripHiddenOptionValuesFromAnswers(
   answers: FormValues,
   uischema: UISchema,
 ): FormValues {
-  const controlsByField: Record<string, ControlElement> = Object.fromEntries(
-    collectControls(uischema).map((c) => [scopeToFieldName(c.scope), c]),
-  );
+  const controlsByField = buildControlsByField(uischema);
   const result: FormValues = {};
   for (const [field, val] of Object.entries(answers)) {
     if (val === undefined) continue;

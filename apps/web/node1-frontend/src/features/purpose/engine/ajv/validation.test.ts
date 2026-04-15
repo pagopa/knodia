@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import type { JsonSchema, UISchema } from "../types";
 
+import { getVisibleFields } from "../dependencyResolver";
+import { stripHiddenOptionValuesFromAnswers } from "../optionFilter";
 import { createAjvValidator } from "./validation";
 
 const schema: JsonSchema = {
@@ -361,5 +363,83 @@ describe("createAjvValidator", () => {
         new Set(["dependentField", "trigger"]),
       ),
     ).not.toHaveProperty("dependentField");
+  });
+});
+
+// Regression for the cascade chain: hiding an option on a parent field
+// (legalBasisPublicInterest) must also drop a child field whose SHOW rule
+// points to that parent (publicInterestTaskText). Stripping answers first,
+// then computing visibility on the cleaned answers, is what closes it.
+describe("cascade: stripped parent option drops child SHOW-rule field", () => {
+  const cascadeSchema: JsonSchema = {
+    properties: {
+      legalBasisPublicInterest: {
+        enum: ["PUBLIC_INTEREST_TASK", "OFFICIAL_AUTHORITY"],
+        type: "string",
+      },
+      personalDataTypes: {
+        items: { enum: ["GDPR_ART_9", "OTHER"], type: "string" },
+        type: "array",
+      },
+      publicInterestTaskText: { type: "string" },
+    },
+    required: ["legalBasisPublicInterest", "publicInterestTaskText"],
+    type: "object",
+  };
+
+  const cascadeUischema: UISchema = {
+    elements: [
+      {
+        options: { widget: "checkbox" },
+        scope: "#/properties/personalDataTypes",
+        type: "Control",
+      },
+      {
+        options: {
+          hideOptions: {
+            PUBLIC_INTEREST_TASK: {
+              schema: { contains: { const: "GDPR_ART_9" } },
+              scope: "#/properties/personalDataTypes",
+            },
+          },
+          widget: "radio",
+        },
+        scope: "#/properties/legalBasisPublicInterest",
+        type: "Control",
+      },
+      {
+        options: { widget: "textarea" },
+        rule: {
+          condition: {
+            schema: { const: "PUBLIC_INTEREST_TASK" },
+            scope: "#/properties/legalBasisPublicInterest",
+          },
+          effect: "SHOW",
+        },
+        scope: "#/properties/publicInterestTaskText",
+        type: "Control",
+      },
+    ],
+    type: "VerticalLayout",
+  };
+
+  it("drops the dependent field and flags the required parent", () => {
+    const cleaned = stripHiddenOptionValuesFromAnswers(
+      {
+        legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
+        personalDataTypes: ["GDPR_ART_9"],
+        publicInterestTaskText: "some text",
+      },
+      cascadeUischema,
+    );
+    const visible = getVisibleFields(cascadeUischema, cleaned);
+
+    expect(visible.has("publicInterestTaskText")).toBe(false);
+
+    const validate = createAjvValidator(cascadeSchema, {}, cascadeUischema);
+    const errors = validate(cleaned, visible);
+
+    expect(errors["legalBasisPublicInterest"]).toBeDefined();
+    expect(errors["publicInterestTaskText"]).toBeUndefined();
   });
 });

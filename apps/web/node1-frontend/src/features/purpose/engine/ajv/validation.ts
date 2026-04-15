@@ -1,7 +1,6 @@
 import Ajv from "ajv";
 
 import type {
-  ControlElement,
   FormValues,
   JsonSchema,
   JsonSchemaProperty,
@@ -9,10 +8,8 @@ import type {
   ValidateFn,
 } from "../types";
 
-import { scopeToFieldName } from "../dependencyResolver";
-import { stripHiddenOptionValues } from "../optionFilter";
+import { buildControlsByField, stripHiddenOptionValues } from "../optionFilter";
 import { getRequiredFields } from "../requiredFields";
-import { collectControls } from "../uischemaParser";
 
 export function createAjvValidator(
   jsonSchema: JsonSchema,
@@ -20,11 +17,7 @@ export function createAjvValidator(
   uischema?: UISchema,
 ): ValidateFn {
   const ajv = new Ajv({ allErrors: true });
-  const controlsByField: Record<string, ControlElement> = uischema
-    ? Object.fromEntries(
-        collectControls(uischema).map((c) => [scopeToFieldName(c.scope), c]),
-      )
-    : {};
+  const controlsByField = buildControlsByField(uischema);
   return (values, visibleFields) => {
     const subsetSchema = buildSubsetSchema(jsonSchema, visibleFields, values);
     const validateFn = ajv.compile(subsetSchema);
