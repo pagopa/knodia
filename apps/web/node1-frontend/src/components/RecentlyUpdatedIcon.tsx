@@ -5,7 +5,7 @@ import { TooltipTrigger } from "react-aria-components";
 export function RecentlyUpdatedIcon() {
   return (
     <TooltipTrigger>
-      <InteractiveIcon aria-label="Recent update">
+      <InteractiveIcon aria-label="Recent update" excludeFromTabOrder>
         <WarningCircleIcon
           aria-hidden
           className="size-6 text-sky-600"
