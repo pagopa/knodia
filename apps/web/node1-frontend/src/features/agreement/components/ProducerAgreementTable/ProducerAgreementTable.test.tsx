@@ -122,13 +122,13 @@ describe("ProducerAgreementTable", () => {
   it("renders recently updated icon when agreement has been recently updated", () => {
     renderTable([createAgreement({ hasRecentlyBeenUpdated: true })]);
 
-    expect(screen.getByLabelText("Recently updated")).toBeInTheDocument();
+    expect(screen.getByLabelText("Recent update")).toBeInTheDocument();
   });
 
   it("does not render recently updated icon when agreement has not been recently updated", () => {
     renderTable([createAgreement({ hasRecentlyBeenUpdated: false })]);
 
-    expect(screen.queryByLabelText("Recently updated")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Recent update")).not.toBeInTheDocument();
   });
 
   it("renders a link to the agreement detail page", () => {
