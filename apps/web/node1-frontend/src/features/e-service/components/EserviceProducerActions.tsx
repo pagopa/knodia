@@ -2,8 +2,8 @@ import type { bffApi } from "@knodia/bff-client";
 
 import {
   getProducerEserviceDetailsQueryKey,
-  reactivateEserviceMutation,
-  suspendEserviceMutation,
+  reactivateProducerEserviceMutation,
+  suspendProducerEserviceMutation,
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, toastQueue } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -38,7 +38,7 @@ export function EserviceProducerActions({
     isPending: isSuspending,
     mutate: suspend,
   } = useMutation({
-    ...suspendEserviceMutation({ client }),
+    ...suspendProducerEserviceMutation({ client }),
     onSuccess: () => {
       setIsSuspendDialogOpen(false);
       invalidateDetails();
@@ -46,7 +46,7 @@ export function EserviceProducerActions({
   });
 
   const { isPending: isReactivating, mutate: reactivate } = useMutation({
-    ...reactivateEserviceMutation({ client }),
+    ...reactivateProducerEserviceMutation({ client }),
     onError: () =>
       toastQueue.add({
         description: "Please try again later.",
