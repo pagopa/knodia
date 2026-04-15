@@ -134,21 +134,40 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
         `Getting consumer E-service details with ID ${req.params.eserviceId}`,
       );
 
-      const [{ data }, { data: consumerOrg }] = await Promise.all([
-        remoteResourcesManagerApi.getEserviceDetails({
-          client: remoteResourcesManagerClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          path: { eserviceId: req.params.eserviceId },
-          query: { knodeId: req.query.knodeId },
-        }),
-        organizationProcessApi.getOrganization({
-          client: organizationProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
-          path: { organizationId: consumerId },
-        }),
-      ]);
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
-      res.send(toAPI_ConsumerEserviceDetails(data, consumerOrg.attributes));
+      const [{ data }, { data: consumerOrg }, { data: purposes }] =
+        await Promise.all([
+          remoteResourcesManagerApi.getEserviceDetails({
+            client: remoteResourcesManagerClient,
+            headers,
+            path: { eserviceId: req.params.eserviceId },
+            query: { knodeId: req.query.knodeId },
+          }),
+          organizationProcessApi.getOrganization({
+            client: organizationProcessClient,
+            headers,
+            path: { organizationId: consumerId },
+          }),
+          remoteResourcesManagerApi.getPurposes({
+            client: remoteResourcesManagerClient,
+            headers,
+            query: {
+              eserviceId: req.params.eserviceId,
+              limit: 50,
+              offset: 0,
+            },
+          }),
+        ]);
+
+      res.send(
+        toAPI_ConsumerEserviceDetails(
+          data,
+          consumerOrg.attributes,
+          config.recentUpdateDays,
+          purposes.results,
+        ),
+      );
     },
     method: "GET",
     schema: {
@@ -248,9 +267,9 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       const results = await Promise.all(
         data.results.map(async (eservice) => {
-          // TODO: paginate to fetch all active purposes if >50 exist,
+          // TODO: paginate to fetch all purposes if >50 exist,
           // otherwise consumerKeychains count will be undercounted
-          const { data: activePurposes } =
+          const { data: allPurposes } =
             await remoteResourcesManagerApi.getPurposes({
               client: remoteResourcesManagerClient,
               headers,
@@ -258,12 +277,15 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 eserviceId: eservice.id,
                 limit: 50,
                 offset: 0,
-                state: API_PurposeState.enum.Active,
               },
             });
 
+          const activePurposes = allPurposes.results.filter(
+            (p) => p.state === API_PurposeState.enum.Active,
+          );
+
           const keychainResponses = await Promise.all(
-            activePurposes.results.map((purpose) =>
+            activePurposes.map((purpose) =>
               keychainProcessApi.getConsumerKeychains({
                 client: keychainProcessClient,
                 headers,
@@ -286,10 +308,11 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
           return toAPI_ConsumerEservice({
             counters: {
-              activePurposes: activePurposes.pagination.total,
+              activePurposes: activePurposes.length,
               consumerKeychains,
             },
             eservice,
+            purposes: allPurposes.results,
             recentUpdateDays: config.recentUpdateDays,
           });
         }),

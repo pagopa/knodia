@@ -86,6 +86,8 @@ export const toAPI_ProducerEserviceDetails = ({
 export const toAPI_ConsumerEserviceDetails = (
   detail: remoteResourcesManagerApi.EserviceDetails,
   consumerAttributes: readonly AttributeId[],
+  recentUpdateDays: number,
+  purposes: readonly { updatedAt: string }[],
 ): API_ConsumerEserviceDetails => ({
   accessToken: {
     audience: detail.latestVersion.accessTokenAudience,
@@ -95,6 +97,11 @@ export const toAPI_ConsumerEserviceDetails = (
   agreement: detail.agreement,
   categories: detail.categories,
   description: detail.description,
+  hasRecentlyBeenUpdated:
+    hasRecentlyBeenUpdated(detail, recentUpdateDays) ||
+    (detail.agreement !== undefined &&
+      hasRecentlyBeenUpdated(detail.agreement, recentUpdateDays)) ||
+    purposes.some((p) => hasRecentlyBeenUpdated(p, recentUpdateDays)),
   id: detail.id,
   identificationRequired: detail.isConsumerOperatorIdentificationRequired,
   interfaceDocument: {
@@ -123,17 +130,22 @@ export const toAPI_ConsumerEserviceDetails = (
 export const toAPI_ConsumerEservice = ({
   counters,
   eservice,
+  purposes,
   recentUpdateDays,
 }: {
   counters: { activePurposes: number; consumerKeychains: number };
   eservice: remoteResourcesManagerApi.Eservice;
+  purposes: readonly { updatedAt: string }[];
   recentUpdateDays: number;
 }): API_ConsumerEservice => ({
   activePurposes: counters.activePurposes,
   agreement: eservice.agreement,
   categories: eservice.categories,
   consumerKeychains: counters.consumerKeychains,
-  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice, recentUpdateDays),
+  hasRecentlyBeenUpdated:
+    hasRecentlyBeenUpdated(eservice, recentUpdateDays) ||
+    hasRecentlyBeenUpdated(eservice.agreement, recentUpdateDays) ||
+    purposes.some((p) => hasRecentlyBeenUpdated(p, recentUpdateDays)),
   id: eservice.id,
   mode: eservice.mode,
   name: eservice.name,
