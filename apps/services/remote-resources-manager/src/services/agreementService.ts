@@ -24,6 +24,7 @@ import {
 } from "../models/agreement/apiConverter.ts";
 import { agreementNotFound } from "../models/errors.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
+import { assertAgreementOwnedByConsumerOrg } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -158,15 +159,11 @@ export function agreementServiceBuilder(
         knodeId,
       );
 
-      // Both consumerId and authData.organizationId are local node IDs,
-      // so this is a local-to-local comparison that prevents cross-org
-      // access within the same node
-      if (
-        !remoteAgreement ||
-        remoteAgreement.consumerId !== authData.organizationId
-      ) {
-        throw agreementNotFound(agreementId);
-      }
+      assertAgreementOwnedByConsumerOrg(
+        remoteAgreement,
+        agreementId,
+        authData.organizationId,
+      );
 
       const { data } = await k2kGatewayApi.reactivateAgreement({
         client: k2kGatewayClient,
@@ -188,15 +185,11 @@ export function agreementServiceBuilder(
         knodeId,
       );
 
-      // Both consumerId and authData.organizationId are local node IDs,
-      // so this is a local-to-local comparison that prevents cross-org
-      // access within the same node
-      if (
-        !remoteAgreement ||
-        remoteAgreement.consumerId !== authData.organizationId
-      ) {
-        throw agreementNotFound(agreementId);
-      }
+      assertAgreementOwnedByConsumerOrg(
+        remoteAgreement,
+        agreementId,
+        authData.organizationId,
+      );
 
       const { data } = await k2kGatewayApi.suspendAgreement({
         client: k2kGatewayClient,
