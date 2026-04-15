@@ -248,7 +248,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       const results = await Promise.all(
         data.results.map(async (eservice) => {
-          // TODO: paginate to fetch all active purposes if >50 exist,
+          // TODO(KN-473): paginate to fetch all active purposes if >50 exist,
           // otherwise consumerKeychains count will be undercounted
           const { data: activePurposes } =
             await remoteResourcesManagerApi.getPurposes({
@@ -262,7 +262,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               },
             });
 
-          // TODO: paginate to fetch all keychains if a purpose has >50,
+          // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,
           // otherwise consumerKeychains count will be undercounted
           const keychainResponses = await Promise.all(
             activePurposes.results.map((purpose) =>
