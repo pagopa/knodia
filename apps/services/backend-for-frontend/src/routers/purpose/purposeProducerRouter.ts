@@ -83,12 +83,13 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         "Getting Producer Purposes with query parameters",
       );
 
-      const { eserviceId, limit, offset, state } = req.query;
+      const { agreementId, eserviceId, limit, offset, state } = req.query;
 
       const { data } = await purposeProcessApi.getPurposes({
         client: purposeProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
+          agreementId,
           eserviceId,
           limit,
           offset,
