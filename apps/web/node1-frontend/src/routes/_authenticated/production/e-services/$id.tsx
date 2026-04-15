@@ -20,6 +20,28 @@ export const Route = createFileRoute(
     await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
 });
 
+function EServiceActions({
+  eserviceId,
+  state,
+}: {
+  eserviceId: string;
+  state: Parameters<typeof EserviceProducerActions>[0]["state"];
+}) {
+  return (
+    <>
+      <EserviceProducerActions eserviceId={eserviceId} state={state} />
+      <DialogTrigger>
+        <Button hierarchy="brand" isDisabled kind="filled" size="md">
+          Edit
+        </Button>
+        <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
+          TODO
+        </Modal>
+      </DialogTrigger>
+    </>
+  );
+}
+
 function RouteComponent() {
   const canManageEserviceState = useHasRole("administrative");
   const { id } = Route.useParams();
@@ -68,26 +90,3 @@ function RouteComponent() {
     </>
   );
 }
-
-function EServiceActions({
-  eserviceId,
-  state,
-}: {
-  eserviceId: string;
-  state: Parameters<typeof EserviceProducerActions>[0]["state"];
-}) {
-  return (
-    <>
-      <EserviceProducerActions eserviceId={eserviceId} state={state} />
-      <DialogTrigger>
-        <Button hierarchy="brand" isDisabled kind="filled" size="md">
-          Edit
-        </Button>
-        <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
-          TODO
-        </Modal>
-      </DialogTrigger>
-    </>
-  );
-}
-
