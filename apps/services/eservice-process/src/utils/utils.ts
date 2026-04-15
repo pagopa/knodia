@@ -12,8 +12,8 @@ export const findEserviceLatestVersion = (
   eservice: Eservice,
 ): EserviceVersion => {
   const latestVersion = eservice.versions
-    .sort((a, b) => a.versionNumber - b.versionNumber)
-    .at(-1);
+    .toSorted((a, b) => b.versionNumber - a.versionNumber)
+    .at(0);
 
   if (!latestVersion) {
     throw eserviceVersionNotFound(eservice.id);
