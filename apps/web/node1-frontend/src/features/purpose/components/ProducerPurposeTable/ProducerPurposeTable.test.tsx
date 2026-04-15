@@ -88,13 +88,13 @@ describe("ProducerPurposeTable", () => {
   it("renders recently updated icon when purpose has been recently updated", () => {
     renderTable([createPurpose({ hasRecentlyBeenUpdated: true })]);
 
-    expect(screen.getByLabelText("Recently updated")).toBeInTheDocument();
+    expect(screen.getByLabelText("Recent update")).toBeInTheDocument();
   });
 
   it("does not render recently updated icon when purpose has not been recently updated", () => {
     renderTable([createPurpose({ hasRecentlyBeenUpdated: false })]);
 
-    expect(screen.queryByLabelText("Recently updated")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Recent update")).not.toBeInTheDocument();
   });
 
   it("renders a link to the purpose detail page", () => {
