@@ -8,14 +8,18 @@ import type {
   API_ProducerAgreementDetails,
 } from "./api.ts";
 
+import { hasRecentlyBeenUpdated } from "../../utils/recentUpdate.ts";
+
 export const toAPI_ProducerAgreement = ({
   agreement,
   consumer,
   eservice,
+  recentUpdateDays,
 }: {
   agreement: agreementProcessApi.Agreement;
   consumer: remoteResourcesManagerApi.Organization;
   eservice: eserviceProcessApi.Eservice;
+  recentUpdateDays: number;
 }): API_ProducerAgreement => ({
   consumer: {
     id: consumer.id,
@@ -26,6 +30,7 @@ export const toAPI_ProducerAgreement = ({
     id: eservice.id,
     name: eservice.name,
   },
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(agreement, recentUpdateDays),
   id: agreement.id,
   state: agreement.state,
 });
@@ -43,11 +48,21 @@ export const toAPI_ProducerAgreementDetails = ({
   latestEserviceVersionState: eserviceProcessApi.EserviceVersionState;
   producer: OrganizationWithKnode;
 }): API_ProducerAgreementDetails => ({
-  ...toAPI_ProducerAgreement({ agreement, consumer, eservice }),
+  consumer: {
+    id: consumer.id,
+    knodeId: agreement.consumer.knodeId,
+    name: consumer.name,
+  },
+  eservice: {
+    id: eservice.id,
+    name: eservice.name,
+  },
+  id: agreement.id,
   latestEserviceVersionState,
   producer: {
     id: producer.id,
     knodeId: producer.knodeId,
     name: producer.name,
   },
+  state: agreement.state,
 });

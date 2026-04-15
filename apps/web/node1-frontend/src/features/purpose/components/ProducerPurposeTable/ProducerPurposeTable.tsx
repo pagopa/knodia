@@ -13,6 +13,7 @@ import {
 import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
 import { ButtonLinkWithPreload } from "@/components/routerLinks";
 
 import { PurposeStateChip } from "../PurposeStateChip";
@@ -48,6 +49,9 @@ export function ProducerPurposeTable({
         <Column id="consumer">Consumer</Column>
         <Column id="dailyCalls">Calls/Day</Column>
         <Column id="status">Status</Column>
+        <Column id="recentUpdate">
+          <span className="sr-only">Recent update</span>
+        </Column>
         <Column id="actions">
           <span className="sr-only">Actions</span>
         </Column>
@@ -74,6 +78,9 @@ export function ProducerPurposeTable({
             </Cell>
             <Cell>
               <PurposeStateChip state={purpose.state} type="bright" />
+            </Cell>
+            <Cell>
+              {purpose.hasRecentlyBeenUpdated && <RecentlyUpdatedIcon />}
             </Cell>
             <Cell className="text-right">
               <ButtonLinkWithPreload

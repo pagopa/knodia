@@ -938,6 +938,9 @@ components:
           $ref: "#/components/schemas/CompactOrganization"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the Agreement has been recently updated
+          type: boolean
         id:
           type: string
           format: uuid
@@ -947,6 +950,7 @@ components:
       required:
         - consumer
         - eservice
+        - hasRecentlyBeenUpdated
         - id
         - state
       additionalProperties: false
@@ -1419,6 +1423,9 @@ components:
           $ref: "#/components/schemas/LocalizedPurposeDescription"
         eservice:
           $ref: "#/components/schemas/CompactEservice"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the Purpose has been recently updated
+          type: boolean
         id:
           type: string
           format: uuid
@@ -1432,6 +1439,7 @@ components:
         - dailyCalls
         - description
         - eservice
+        - hasRecentlyBeenUpdated
         - id
         - name
         - state
@@ -3595,6 +3603,14 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: query
+          name: agreementId
+          required: false
+          description: Filter by Agreement ID
         - schema:
             type: string
             format: uuid
