@@ -5,9 +5,9 @@ import { TooltipTrigger } from "react-aria-components";
 export function RecentlyUpdatedIcon() {
   return (
     <TooltipTrigger>
-      <InteractiveIcon>
+      <InteractiveIcon aria-label="Recent update">
         <WarningCircleIcon
-          aria-label="Recent update"
+          aria-hidden
           className="size-6 text-sky-600"
           weight="fill"
         />
