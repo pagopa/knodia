@@ -639,9 +639,7 @@ export type CreateAgreementResponses = {
 export type CreateAgreementResponse = CreateAgreementResponses[keyof CreateAgreementResponses];
 
 export type ReactivateAgreementData = {
-    body: {
-        [key: string]: never;
-    };
+    body?: never;
     path: {
         agreementId: string;
     };
@@ -686,9 +684,7 @@ export type ReactivateAgreementResponses = {
 export type ReactivateAgreementResponse = ReactivateAgreementResponses[keyof ReactivateAgreementResponses];
 
 export type SuspendAgreementData = {
-    body: {
-        [key: string]: never;
-    };
+    body?: never;
     path: {
         agreementId: string;
     };

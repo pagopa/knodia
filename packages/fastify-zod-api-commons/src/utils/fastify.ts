@@ -60,6 +60,34 @@ export const createFastifyApp = ({
     },
   );
 
+  // Accept bodyless POST/PUT/PATCH as valid. When a request arrives with
+  // no Content-Type but a body is present (e.g. axios sending
+  // Transfer-Encoding: chunked on a no-data POST), Fastify looks up the
+  // catch-all parser registered under ''. Treat any such payload as empty.
+  app.addContentTypeParser("*", { parseAs: "string" }, (_req, _body, done) => {
+    done(null, undefined);
+  });
+
+  // Fastify's default application/json parser rejects empty payloads.
+  // Override it so POSTs with `Content-Type: application/json` but no body
+  // (e.g. from generated clients that forward the header) succeed.
+  app.removeContentTypeParser("application/json");
+  app.addContentTypeParser(
+    "application/json",
+    { parseAs: "string" },
+    (_req, body, done) => {
+      if (body === "" || body == null) {
+        done(null, undefined);
+        return;
+      }
+      try {
+        done(null, JSON.parse(body.toString()));
+      } catch (error) {
+        done(error as Error);
+      }
+    },
+  );
+
   app.setErrorHandler((error, _, res) => {
     const errorRes = makeApiProblem(error);
 

@@ -5,7 +5,7 @@ meta {
 
 post {
   url: {{host-remote-resources-manager}}/agreements/:agreementId/reactivation?knodeId={{other-knode-id}}
-  body: json
+  body: none
   auth: none
 }
 
@@ -16,8 +16,4 @@ params:path {
 headers {
   x-correlation-id: {{correlation-id}}
   authorization: {{ui-session-jwt}}
-}
-
-body:json {
-  {}
 }

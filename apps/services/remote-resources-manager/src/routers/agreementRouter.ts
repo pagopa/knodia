@@ -7,7 +7,6 @@ import { type AgreementId, KnodeId } from "@knodia/common-models/ids";
 import { validateAuthorization } from "@knodia/fastify-zod-api-commons/auth";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
-import { z } from "zod";
 
 import type { AgreementService } from "../services/agreementService.ts";
 
@@ -20,8 +19,6 @@ import {
   API_GetAgreementsQueryParams,
 } from "../models/agreement/api.ts";
 import { apiTags } from "../models/apiTags.ts";
-
-const API_EmptyBody = z.strictObject({});
 
 interface AgreementRouterOptions {
   agreementService: AgreementService;
@@ -76,7 +73,6 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_EmptyBody,
       description: "Reactivate an Agreement by Consumer",
       operationId: "reactivateAgreement",
       params: API_AgreementIdPathParam,
@@ -113,7 +109,6 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      body: API_EmptyBody,
       description: "Suspend an Agreement by Consumer",
       operationId: "suspendAgreement",
       params: API_AgreementIdPathParam,
