@@ -40,13 +40,13 @@ function makeAgreement(overrides: Partial<Agreement>): Agreement {
   };
 }
 
-describe("POST /agreements/:agreementId/producer/suspend", () => {
+describe("POST /agreements/:agreementId/suspendByProducer", () => {
   it("suspends an Active agreement", async () => {
     const agreement = makeAgreement({ id: generateId<AgreementId>() });
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/suspend`,
+      `/agreements/${agreement.id}/suspendByProducer`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -76,7 +76,7 @@ describe("POST /agreements/:agreementId/producer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/suspend`,
+      `/agreements/${agreement.id}/suspendByProducer`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -95,7 +95,7 @@ describe("POST /agreements/:agreementId/producer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/suspend`,
+      `/agreements/${agreement.id}/suspendByProducer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -109,7 +109,7 @@ describe("POST /agreements/:agreementId/producer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/suspend`,
+      `/agreements/${agreement.id}/suspendByProducer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -117,7 +117,7 @@ describe("POST /agreements/:agreementId/producer/suspend", () => {
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${generateId<AgreementId>()}/producer/suspend`,
+      `/agreements/${generateId<AgreementId>()}/suspendByProducer`,
     );
 
     expect(response.statusCode).toBe(404);
@@ -131,7 +131,7 @@ describe("POST /agreements/:agreementId/producer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/suspend`,
+      `/agreements/${agreement.id}/suspendByProducer`,
     );
 
     expect(response.statusCode).toBe(403);
@@ -144,7 +144,7 @@ describe("POST /agreements/:agreementId/producer/suspend", () => {
       await seedAgreement(agreement);
 
       const response = await injectAppRequest(spec).post(
-        `/agreements/${agreement.id}/producer/suspend`,
+        `/agreements/${agreement.id}/suspendByProducer`,
       );
 
       expect(response.statusCode).toBe(403);
@@ -152,13 +152,13 @@ describe("POST /agreements/:agreementId/producer/suspend", () => {
   );
 });
 
-describe("POST /agreements/:agreementId/consumer/suspend", () => {
+describe("POST /agreements/:agreementId/suspendByConsumer", () => {
   it("suspends an Active agreement", async () => {
     const agreement = makeAgreement({ id: generateId<AgreementId>() });
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/suspend`,
+      `/agreements/${agreement.id}/suspendByConsumer`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -187,7 +187,7 @@ describe("POST /agreements/:agreementId/consumer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/suspend`,
+      `/agreements/${agreement.id}/suspendByConsumer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -203,7 +203,7 @@ describe("POST /agreements/:agreementId/consumer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/suspend`,
+      `/agreements/${agreement.id}/suspendByConsumer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -218,7 +218,7 @@ describe("POST /agreements/:agreementId/consumer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/suspend`,
+      `/agreements/${agreement.id}/suspendByConsumer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -232,7 +232,7 @@ describe("POST /agreements/:agreementId/consumer/suspend", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/suspend`,
+      `/agreements/${agreement.id}/suspendByConsumer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -240,7 +240,7 @@ describe("POST /agreements/:agreementId/consumer/suspend", () => {
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${generateId<AgreementId>()}/consumer/suspend`,
+      `/agreements/${generateId<AgreementId>()}/suspendByConsumer`,
     );
 
     expect(response.statusCode).toBe(404);
@@ -253,7 +253,7 @@ describe("POST /agreements/:agreementId/consumer/suspend", () => {
       await seedAgreement(agreement);
 
       const response = await injectAppRequest(spec).post(
-        `/agreements/${agreement.id}/consumer/suspend`,
+        `/agreements/${agreement.id}/suspendByConsumer`,
       );
 
       expect(response.statusCode).toBe(403);

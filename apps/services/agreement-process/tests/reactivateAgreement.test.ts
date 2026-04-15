@@ -45,7 +45,7 @@ function makeSuspendedAgreement(
   };
 }
 
-describe("POST /agreements/:agreementId/producer/reactivate", () => {
+describe("POST /agreements/:agreementId/reactivateByProducer", () => {
   it("reactivates an agreement suspended only by producer -> Active", async () => {
     const suspendedAt = new Date("2026-01-01T00:00:00Z");
     const agreement = makeSuspendedAgreement({
@@ -55,7 +55,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByProducer`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -86,7 +86,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByProducer`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -109,7 +109,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByProducer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -123,7 +123,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByProducer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -140,7 +140,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByProducer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -148,7 +148,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${generateId<AgreementId>()}/producer/reactivate`,
+      `/agreements/${generateId<AgreementId>()}/reactivateByProducer`,
     );
 
     expect(response.statusCode).toBe(404);
@@ -163,7 +163,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/producer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByProducer`,
     );
 
     expect(response.statusCode).toBe(403);
@@ -179,7 +179,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
       await seedAgreement(agreement);
 
       const response = await injectAppRequest(spec).post(
-        `/agreements/${agreement.id}/producer/reactivate`,
+        `/agreements/${agreement.id}/reactivateByProducer`,
       );
 
       expect(response.statusCode).toBe(403);
@@ -187,7 +187,7 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
   );
 });
 
-describe("POST /agreements/:agreementId/consumer/reactivate", () => {
+describe("POST /agreements/:agreementId/reactivateByConsumer", () => {
   it("reactivates an agreement suspended only by consumer -> Active", async () => {
     const suspendedAt = new Date("2026-01-01T00:00:00Z");
     const agreement = makeSuspendedAgreement({
@@ -197,7 +197,7 @@ describe("POST /agreements/:agreementId/consumer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByConsumer`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -228,7 +228,7 @@ describe("POST /agreements/:agreementId/consumer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByConsumer`,
     );
 
     expect(response.statusCode).toBe(200);
@@ -251,7 +251,7 @@ describe("POST /agreements/:agreementId/consumer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByConsumer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -265,7 +265,7 @@ describe("POST /agreements/:agreementId/consumer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByConsumer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -282,7 +282,7 @@ describe("POST /agreements/:agreementId/consumer/reactivate", () => {
     await seedAgreement(agreement);
 
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/consumer/reactivate`,
+      `/agreements/${agreement.id}/reactivateByConsumer`,
     );
 
     expect(response.statusCode).toBe(409);
@@ -290,7 +290,7 @@ describe("POST /agreements/:agreementId/consumer/reactivate", () => {
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(internalToken).post(
-      `/agreements/${generateId<AgreementId>()}/consumer/reactivate`,
+      `/agreements/${generateId<AgreementId>()}/reactivateByConsumer`,
     );
 
     expect(response.statusCode).toBe(404);
@@ -306,7 +306,7 @@ describe("POST /agreements/:agreementId/consumer/reactivate", () => {
       await seedAgreement(agreement);
 
       const response = await injectAppRequest(spec).post(
-        `/agreements/${agreement.id}/consumer/reactivate`,
+        `/agreements/${agreement.id}/reactivateByConsumer`,
       );
 
       expect(response.statusCode).toBe(403);

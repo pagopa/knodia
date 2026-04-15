@@ -67,7 +67,7 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
 export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByConsumerResponses, SuspendAgreementByConsumerErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/agreements/{agreementId}/consumer/suspend',
+    url: '/agreements/{agreementId}/suspendByConsumer',
     ...options
 });
 
@@ -77,7 +77,7 @@ export const suspendAgreementByConsumer = <ThrowOnError extends boolean = true>(
 export const suspendAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementByProducerResponses, SuspendAgreementByProducerErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/agreements/{agreementId}/producer/suspend',
+    url: '/agreements/{agreementId}/suspendByProducer',
     ...options
 });
 
@@ -87,7 +87,7 @@ export const suspendAgreementByProducer = <ThrowOnError extends boolean = true>(
 export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByConsumerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByConsumerResponses, ReactivateAgreementByConsumerErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/agreements/{agreementId}/consumer/reactivate',
+    url: '/agreements/{agreementId}/reactivateByConsumer',
     ...options
 });
 
@@ -97,6 +97,6 @@ export const reactivateAgreementByConsumer = <ThrowOnError extends boolean = tru
 export const reactivateAgreementByProducer = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementByProducerData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementByProducerResponses, ReactivateAgreementByProducerErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/agreements/{agreementId}/producer/reactivate',
+    url: '/agreements/{agreementId}/reactivateByProducer',
     ...options
 });

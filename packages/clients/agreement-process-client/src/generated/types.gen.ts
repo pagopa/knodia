@@ -283,7 +283,7 @@ export type SuspendAgreementByConsumerData = {
         agreementId: string;
     };
     query?: never;
-    url: '/agreements/{agreementId}/consumer/suspend';
+    url: '/agreements/{agreementId}/suspendByConsumer';
 };
 
 export type SuspendAgreementByConsumerErrors = {
@@ -332,7 +332,7 @@ export type SuspendAgreementByProducerData = {
         agreementId: string;
     };
     query?: never;
-    url: '/agreements/{agreementId}/producer/suspend';
+    url: '/agreements/{agreementId}/suspendByProducer';
 };
 
 export type SuspendAgreementByProducerErrors = {
@@ -381,7 +381,7 @@ export type ReactivateAgreementByConsumerData = {
         agreementId: string;
     };
     query?: never;
-    url: '/agreements/{agreementId}/consumer/reactivate';
+    url: '/agreements/{agreementId}/reactivateByConsumer';
 };
 
 export type ReactivateAgreementByConsumerErrors = {
@@ -430,7 +430,7 @@ export type ReactivateAgreementByProducerData = {
         agreementId: string;
     };
     query?: never;
-    url: '/agreements/{agreementId}/producer/reactivate';
+    url: '/agreements/{agreementId}/reactivateByProducer';
 };
 
 export type ReactivateAgreementByProducerErrors = {
