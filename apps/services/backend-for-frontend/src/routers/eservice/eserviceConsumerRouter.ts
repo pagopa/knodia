@@ -262,6 +262,8 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
               },
             });
 
+          // TODO: paginate to fetch all keychains if a purpose has >50,
+          // otherwise consumerKeychains count will be undercounted
           const keychainResponses = await Promise.all(
             activePurposes.results.map((purpose) =>
               keychainProcessApi.getConsumerKeychains({
