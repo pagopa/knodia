@@ -270,27 +270,38 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
       const results = await Promise.all(
         data.results.map(async (eservice) => {
-          // TODO(KN-473): paginate to fetch all purposes if >50 exist,
-          // otherwise consumerKeychains count and hasRecentlyBeenUpdated may be inaccurate
-          const { data: allPurposes } =
-            await remoteResourcesManagerApi.getPurposes({
-              client: remoteResourcesManagerClient,
-              headers,
-              query: {
-                eserviceId: eservice.id,
-                limit: 50,
-                offset: 0,
-              },
-            });
-
-          const activePurposes = allPurposes.results.filter(
-            (p) => p.state === API_PurposeState.enum.Active,
-          );
+          // TODO(KN-473): paginate to fetch all active purposes if >50 exist,
+          // otherwise consumerKeychains count will be undercounted
+          const [{ data: activePurposes }, { data: allPurposes }] =
+            await Promise.all([
+              remoteResourcesManagerApi.getPurposes({
+                client: remoteResourcesManagerClient,
+                headers,
+                query: {
+                  eserviceId: eservice.id,
+                  limit: 50,
+                  offset: 0,
+                  state: API_PurposeState.enum.Active,
+                },
+              }),
+              // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:
+              // purposes are ordered by updatedAt DESC in the readmodel,
+              // so the first result is the most recently updated one.
+              remoteResourcesManagerApi.getPurposes({
+                client: remoteResourcesManagerClient,
+                headers,
+                query: {
+                  eserviceId: eservice.id,
+                  limit: 1,
+                  offset: 0,
+                },
+              }),
+            ]);
 
           // TODO(KN-473): paginate to fetch all keychains if a purpose has >50,
           // otherwise consumerKeychains count will be undercounted
           const keychainResponses = await Promise.all(
-            activePurposes.map((purpose) =>
+            activePurposes.results.map((purpose) =>
               keychainProcessApi.getConsumerKeychains({
                 client: keychainProcessClient,
                 headers,
@@ -313,7 +324,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
           return toAPI_ConsumerEservice({
             counters: {
-              activePurposes: activePurposes.length,
+              activePurposes: activePurposes.pagination.total,
               consumerKeychains,
             },
             eservice,
