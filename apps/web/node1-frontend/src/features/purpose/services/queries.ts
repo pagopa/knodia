@@ -73,16 +73,9 @@ export const purposeLinkedConsumerKeychainsQuery = (
     },
   });
 
-export const purposeLinkedConsumerKeychainsQueryKey = (
-  purposeId: string,
-  knodeId: KnodeId,
-) =>
+export const purposeLinkedConsumerKeychainsQueryKey = () =>
   getConsumerKeychainsQueryKey({
     client,
-    query: {
-      limit: PURPOSES_LINKED_KEYCHAINS_LIMIT,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      offset: undefined!,
-      purpose: `${knodeId}:${purposeId}`,
-    },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    query: undefined!,
   });

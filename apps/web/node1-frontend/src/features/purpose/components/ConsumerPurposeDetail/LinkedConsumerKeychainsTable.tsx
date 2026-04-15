@@ -74,7 +74,7 @@ export function LinkedConsumerKeychainsTable({
             </Cell>
             <Cell>{keychain.keysCount}</Cell>
             <Cell>
-              <div className="flex justify-end">
+              <div className="flex justify-end items-center gap-2">
                 {canManagePurpose && (
                   <UnlinkConsumerKeychainAction
                     consumerKeychainId={keychain.id}
@@ -87,7 +87,7 @@ export function LinkedConsumerKeychainsTable({
                   kind="outlined"
                   params={{ id: keychain.id }}
                   size="icon-sm"
-                  to={"/keychains/consumption/$id"}
+                  to="/keychains/consumption/$id"
                 >
                   <ArrowRightIcon />
                 </ButtonLinkWithPreload>
@@ -110,6 +110,7 @@ function UnlinkConsumerKeychainAction({
   purposeId: string;
 }) {
   const queryClient = useQueryClient();
+
   const {
     isError,
     isPending,
@@ -125,10 +126,7 @@ function UnlinkConsumerKeychainAction({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: purposeLinkedConsumerKeychainsQueryKey(
-              purposeId,
-              knodeId,
-            ),
+            queryKey: purposeLinkedConsumerKeychainsQueryKey(),
           });
         },
       },

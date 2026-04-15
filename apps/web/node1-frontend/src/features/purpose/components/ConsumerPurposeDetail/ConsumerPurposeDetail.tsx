@@ -98,6 +98,7 @@ export function ConsumerPurposeDetail({
         }
         agreement={purpose.agreement}
       />
+
       <Section
         actions={
           canManagePurpose && (
@@ -107,6 +108,7 @@ export function ConsumerPurposeDetail({
             />
           )
         }
+        className="mt-10"
         title="Keychains"
       >
         <LinkedConsumerKeychainsTable

@@ -4,7 +4,13 @@ import {
   getConsumerKeychainOptionsOptions,
   linkPurposeToConsumerKeychainMutation,
 } from "@knodia/bff-client/tanstack-query";
-import { Button, ComboBox, ComboBoxItem, Modal } from "@knodia/ui-kit/ui";
+import {
+  Banner,
+  Button,
+  ComboBox,
+  ComboBoxItem,
+  Modal,
+} from "@knodia/ui-kit/ui";
 import { revalidateLogic, useForm } from "@tanstack/react-form";
 import {
   keepPreviousData,
@@ -30,6 +36,37 @@ export function LinkConsumerKeychainAction({
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  return (
+    <>
+      <Button
+        hierarchy="neutral"
+        kind="tonal"
+        onClick={() => setIsModalOpen(true)}
+        size="md"
+      >
+        Link Keychain
+      </Button>
+      <LinkConsumerKeychainModal
+        isOpen={isModalOpen}
+        knodeId={knodeId}
+        onClose={() => setIsModalOpen(false)}
+        purposeId={purposeId}
+      />
+    </>
+  );
+}
+
+function LinkConsumerKeychainModal({
+  isOpen,
+  knodeId,
+  onClose,
+  purposeId,
+}: {
+  isOpen: boolean;
+  knodeId: KnodeId;
+  onClose: () => void;
+  purposeId: string;
+}) {
   const {
     isError,
     isPending,
@@ -47,12 +84,10 @@ export function LinkConsumerKeychainAction({
       {
         onSuccess: () => {
           queryClient.invalidateQueries({
-            queryKey: purposeLinkedConsumerKeychainsQueryKey(
-              purposeId,
-              knodeId,
-            ),
+            queryKey: purposeLinkedConsumerKeychainsQueryKey(),
           });
-          setIsModalOpen(false);
+          form.reset();
+          onClose();
         },
       },
     );
@@ -88,32 +123,33 @@ export function LinkConsumerKeychainAction({
   });
 
   return (
-    <>
-      <Button
-        hierarchy="neutral"
-        kind="tonal"
-        onClick={() => setIsModalOpen(true)}
-        size="md"
-      >
-        Link Keychain
-      </Button>
-      <Modal
-        actionLabel="Link"
-        cancelLabel="Cancel"
-        confirmButtonProps={{ isPending }}
-        description="Keys in linked Keychains can be used to request an access token for the E-Service."
-        isOpen={isModalOpen}
-        kind="default"
-        onConfirm={() => void form.handleSubmit()}
-        onOpenChange={(open) => {
-          if (!open) {
-            form.reset();
-            setIsModalOpen(false);
-          }
-        }}
-        showErrorBanner={isError}
-        title="Link Keychain"
-      >
+    <Modal
+      actionLabel="Link"
+      cancelLabel="Cancel"
+      confirmButtonProps={{ isPending }}
+      description="Keys in linked Keychains can be used to request an access token for the E-Service."
+      isOpen={isOpen}
+      kind="default"
+      onConfirm={() => void form.handleSubmit()}
+      onOpenChange={(open) => {
+        if (!open) {
+          form.reset();
+          onClose();
+        }
+      }}
+      showErrorBanner={isError}
+      title="Link Keychain"
+    >
+      {data && data.results.length === 0 ? (
+        <Banner
+          kind="informative"
+          size="md"
+          title="You don't have any Consumption Keychain yet"
+        >
+          Create a Production Keychain on the Keychains page to link it to
+          E-Services.
+        </Banner>
+      ) : (
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -147,7 +183,7 @@ export function LinkConsumerKeychainAction({
             name="keychainId"
           />
         </form>
-      </Modal>
-    </>
+      )}
+    </Modal>
   );
 }
