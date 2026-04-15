@@ -73,10 +73,17 @@ async function tryRefreshToken(): Promise<boolean> {
 axios.interceptors.request.use(addAuthHeader);
 axios.interceptors.response.use((response) => response, handleUnauthorized);
 
+// Axios's default `headers.post/put/patch['Content-Type']` is
+// `application/x-www-form-urlencoded`, which Fastify rejects with 415 since
+// no parser is registered for it. Axios already adds the correct
+// `application/json` Content-Type when a JSON body is present, so we clear
+// the per-method defaults to avoid sending Content-Type on empty-body
+// mutation requests (e.g. suspend/reactivate).
+axios.defaults.headers.post["Content-Type"] = null;
+axios.defaults.headers.put["Content-Type"] = null;
+axios.defaults.headers.patch["Content-Type"] = null;
+
 export const client = createBffApiClient({
   axios,
   baseURL: config.bffUrl,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });

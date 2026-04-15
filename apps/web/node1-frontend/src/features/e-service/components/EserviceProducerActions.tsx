@@ -7,6 +7,7 @@ import {
 } from "@knodia/bff-client/tanstack-query";
 import { Button, Modal, toastQueue } from "@knodia/ui-kit/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
@@ -22,6 +23,7 @@ export function EserviceProducerActions({
   state,
 }: EserviceProducerActionsProps) {
   const queryClient = useQueryClient();
+  const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
 
   const invalidateDetails = () =>
     queryClient.invalidateQueries({
@@ -40,6 +42,7 @@ export function EserviceProducerActions({
         title: "Unable to suspend E-Service",
       }),
     onSuccess: async () => {
+      setIsSuspendDialogOpen(false);
       await invalidateDetails();
       toastQueue.add({
         description: "The E-Service is no longer available to consumers.",
@@ -69,12 +72,16 @@ export function EserviceProducerActions({
 
   return match(state)
     .with("Active", () => (
-      <DialogTrigger>
+      <DialogTrigger
+        isOpen={isSuspendDialogOpen}
+        onOpenChange={setIsSuspendDialogOpen}
+      >
         <Button hierarchy="danger" kind="tonal" size="md">
           Suspend
         </Button>
         <Modal
           actionLabel="Suspend anyway"
+          cancelLabel="Cancel"
           confirmButtonProps={{ isPending: isSuspending }}
           description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
           isDismissable

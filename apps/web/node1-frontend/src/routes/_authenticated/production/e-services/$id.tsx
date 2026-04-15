@@ -1,4 +1,5 @@
 import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 
@@ -19,31 +20,10 @@ export const Route = createFileRoute(
     await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
 });
 
-function EServiceActions({
-  eserviceId,
-  state,
-}: {
-  eserviceId: string;
-  state: Parameters<typeof EserviceProducerActions>[0]["state"];
-}) {
-  return (
-    <>
-      <EserviceProducerActions eserviceId={eserviceId} state={state} />
-      <DialogTrigger>
-        <Button hierarchy="brand" isDisabled kind="filled" size="md">
-          Edit
-        </Button>
-        <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
-          TODO
-        </Modal>
-      </DialogTrigger>
-    </>
-  );
-}
-
 function RouteComponent() {
   const canManageEserviceState = useHasRole("administrative");
-  const eservice = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const { data: eservice } = useSuspenseQuery(producerEserviceDetailsQuery(id));
 
   return (
     <>
@@ -88,3 +68,26 @@ function RouteComponent() {
     </>
   );
 }
+
+function EServiceActions({
+  eserviceId,
+  state,
+}: {
+  eserviceId: string;
+  state: Parameters<typeof EserviceProducerActions>[0]["state"];
+}) {
+  return (
+    <>
+      <EserviceProducerActions eserviceId={eserviceId} state={state} />
+      <DialogTrigger>
+        <Button hierarchy="brand" isDisabled kind="filled" size="md">
+          Edit
+        </Button>
+        <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
+          TODO
+        </Modal>
+      </DialogTrigger>
+    </>
+  );
+}
+
