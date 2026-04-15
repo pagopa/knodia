@@ -1,7 +1,15 @@
 import { type Agreement } from "@knodia/agreement-models";
-import { type AgreementId, generateId } from "@knodia/common-models/ids";
+import {
+  type AgreementId,
+  generateId,
+  type OrganizationId,
+} from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
-import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
+import {
+  forbiddenTestTokens,
+  TEST_ORGANIZATION_ID,
+  type TestToken,
+} from "@knodia/test-commons/auth";
 import { getMockAgreement } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -29,6 +37,7 @@ function makeSuspendedAgreement(
 ): Agreement {
   return {
     ...getMockAgreement(),
+    producerId: TEST_ORGANIZATION_ID,
     state: "Suspended",
     suspendedByConsumerAt: null,
     suspendedByProducerAt: null,
@@ -143,6 +152,21 @@ describe("POST /agreements/:agreementId/producer/reactivate", () => {
     );
 
     expect(response.statusCode).toBe(404);
+  });
+
+  it("returns 403 when the caller is not the agreement's producer", async () => {
+    const agreement = makeSuspendedAgreement({
+      id: generateId<AgreementId>(),
+      producerId: generateId<OrganizationId>(),
+      suspendedByProducerAt: new Date(),
+    });
+    await seedAgreement(agreement);
+
+    const response = await injectAppRequest(producerToken).post(
+      `/agreements/${agreement.id}/producer/reactivate`,
+    );
+
+    expect(response.statusCode).toBe(403);
   });
 
   it.each(forbiddenTestTokens(producerAllowedTokens))(

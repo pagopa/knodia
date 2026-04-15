@@ -47,6 +47,7 @@ import {
   assertEserviceVersionAllowsAgreementCreation,
   assertEserviceVersionIsLatest,
   assertNoConflictingAgreementsExist,
+  assertOrganizationIsAgreementProducer,
 } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -167,6 +168,7 @@ export function agreementServiceBuilder(
         reactivatedBy: AgreementActor;
       },
       {
+        authData,
         correlationId,
         logger,
       }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -179,6 +181,19 @@ export function agreementServiceBuilder(
       );
 
       assertAgreementCanBeReactivatedBy(agreement, reactivatedBy);
+
+      // Consumer calls arrive via an internal k2k token from RRM; RRM is
+      // responsible for the caller=consumer check on its side before
+      // issuing the downstream call, so we only verify the producer here.
+      if (
+        reactivatedBy === AgreementActor.enum.Producer &&
+        authData.tokenType === "ui-session"
+      ) {
+        assertOrganizationIsAgreementProducer(
+          agreement,
+          authData.organizationId,
+        );
+      }
 
       const now = new Date();
       const suspendedByConsumerAt =
@@ -222,6 +237,7 @@ export function agreementServiceBuilder(
         suspendedBy: AgreementActor;
       },
       {
+        authData,
         correlationId,
         logger,
       }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
@@ -234,6 +250,19 @@ export function agreementServiceBuilder(
       );
 
       assertAgreementCanBeSuspendedBy(agreement, suspendedBy);
+
+      // Consumer calls arrive via an internal k2k token from RRM; RRM is
+      // responsible for the caller=consumer check on its side before
+      // issuing the downstream call, so we only verify the producer here.
+      if (
+        suspendedBy === AgreementActor.enum.Producer &&
+        authData.tokenType === "ui-session"
+      ) {
+        assertOrganizationIsAgreementProducer(
+          agreement,
+          authData.organizationId,
+        );
+      }
 
       const now = new Date();
       const updatedAgreement: Agreement = {

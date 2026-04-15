@@ -31,6 +31,7 @@ import {
   consumerMissingRequiredAttributes,
   eserviceVersionNotInExpectedStates,
   eserviceVersionNotLatest,
+  organizationNotAgreementProducer,
 } from "../models/errors.ts";
 import {
   retrieveEserviceLatestVersion,
@@ -95,13 +96,23 @@ export function assertAgreementCanBeSuspendedBy(
     .exhaustive();
 }
 
+export function assertOrganizationIsAgreementProducer(
+  agreement: Agreement,
+  organizationId: OrganizationId,
+): void {
+  if (agreement.producerId !== organizationId) {
+    throw organizationNotAgreementProducer(agreement.id, organizationId);
+  }
+}
+
 function getOwnSuspendedAt(
   agreement: Agreement,
   actor: AgreementActor,
 ): Date | null {
-  return actor === AgreementActor.enum.Producer
-    ? agreement.suspendedByProducerAt
-    : agreement.suspendedByConsumerAt;
+  return match(actor)
+    .with(AgreementActor.enum.Producer, () => agreement.suspendedByProducerAt)
+    .with(AgreementActor.enum.Consumer, () => agreement.suspendedByConsumerAt)
+    .exhaustive();
 }
 
 export const assertEserviceVersionAllowsAgreementCreation = (

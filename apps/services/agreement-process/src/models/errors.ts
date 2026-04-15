@@ -27,6 +27,7 @@ const errorCodes = {
   CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0007",
   AGREEMENT_NOT_IN_SUSPENDABLE_STATE: "0008",
   AGREEMENT_NOT_IN_REACTIVATABLE_STATE: "0009",
+  ORGANIZATION_NOT_AGREEMENT_PRODUCER: "0010",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -164,5 +165,17 @@ export function eserviceVersionNotLatest(
     detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not the latest version. Latest version is ${latestVersionId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Not Latest E-service Version",
+  });
+}
+
+export function organizationNotAgreementProducer(
+  agreementId: AgreementId,
+  organizationId: OrganizationId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "ORGANIZATION_NOT_AGREEMENT_PRODUCER",
+    detail: `Organization ${organizationId} is not the producer of Agreement ${agreementId}. Only the producer can perform this operation.`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Organization is not the Agreement producer",
   });
 }
