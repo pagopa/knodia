@@ -268,7 +268,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
       const results = await Promise.all(
         data.results.map(async (eservice) => {
           // TODO: paginate to fetch all purposes if >50 exist,
-          // otherwise consumerKeychains count will be undercounted
+          // otherwise consumerKeychains count and hasRecentlyBeenUpdated may be inaccurate
           const { data: allPurposes } =
             await remoteResourcesManagerApi.getPurposes({
               client: remoteResourcesManagerClient,
