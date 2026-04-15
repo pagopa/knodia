@@ -219,7 +219,7 @@ describe("ProducerAgreementDetail", () => {
       expect(
         screen.getByText("Cross-border social security coordination"),
       ).toBeInTheDocument();
-      expect(screen.getByText("1000")).toBeInTheDocument();
+      expect(screen.getByText((1000).toLocaleString())).toBeInTheDocument();
 
       const purposeLinks = screen.getAllByRole("link", {
         name: "Go to purpose",
