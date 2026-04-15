@@ -33,22 +33,15 @@ export function EserviceProducerActions({
       }),
     });
 
-  const { isPending: isSuspending, mutate: suspend } = useMutation({
+  const {
+    isError: isSuspendError,
+    isPending: isSuspending,
+    mutate: suspend,
+  } = useMutation({
     ...suspendEserviceMutation({ client }),
-    onError: () =>
-      toastQueue.add({
-        description: "Please try again later.",
-        kind: "error",
-        title: "Unable to suspend E-Service",
-      }),
     onSuccess: () => {
       setIsSuspendDialogOpen(false);
       invalidateDetails();
-      toastQueue.add({
-        description: "The E-Service is no longer available to consumers.",
-        kind: "success",
-        title: "E-Service suspended",
-      });
     },
   });
 
@@ -87,6 +80,7 @@ export function EserviceProducerActions({
           isDismissable
           kind="destructive"
           onConfirm={() => suspend({ path: { eserviceId } })}
+          showErrorBanner={isSuspendError}
           title="Suspend E-Service"
         />
       </DialogTrigger>

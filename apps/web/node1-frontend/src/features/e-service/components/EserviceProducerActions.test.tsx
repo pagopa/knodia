@@ -69,6 +69,26 @@ describe("EserviceProducerActions", () => {
     expect(suspendHandler).not.toHaveBeenCalled();
   });
 
+  it("shows the error banner in the modal when the suspend mutation fails", async () => {
+    server.use(
+      http.post(
+        `${BASE_URL}/producer/eservices/:eserviceId/suspend`,
+        () => new HttpResponse(null, { status: 500 }),
+      ),
+    );
+
+    const { user } = renderWithProviders(
+      <EserviceProducerActions eserviceId={ESERVICE_ID} state="Active" />,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Suspend" }));
+    await user.click(screen.getByRole("button", { name: "Suspend anyway" }));
+
+    expect(
+      await screen.findByText(/Something went wrong/i),
+    ).toBeInTheDocument();
+  });
+
   it("shows the Reactivate button when the eservice is suspended and calls the mutation", async () => {
     const reactivateHandler = vi.fn(
       () => new HttpResponse(null, { status: 204 }),
