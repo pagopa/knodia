@@ -44,10 +44,12 @@ export const toAPI_ProducerPurpose = ({
   consumer,
   eservice,
   purpose,
+  recentUpdateDays,
 }: {
   consumer: remoteResourcesManagerApi.Organization;
   eservice: eserviceProcessApi.Eservice;
   purpose: purposeProcessApi.Purpose;
+  recentUpdateDays: number;
 }): API_ProducerPurpose => ({
   consumer: {
     id: consumer.id,
@@ -60,6 +62,7 @@ export const toAPI_ProducerPurpose = ({
     id: eservice.id,
     name: eservice.name,
   },
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   name: purpose.name,
   state: purpose.state,

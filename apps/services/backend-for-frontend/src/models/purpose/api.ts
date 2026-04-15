@@ -111,6 +111,9 @@ export const API_ProducerPurpose = z
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description: "Indicates whether the Purpose has been recently updated",
+    }),
     id: z.uuid(),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,
