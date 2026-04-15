@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import type { ControlElement, UISchema } from "./types";
 
+import { getVisibleFields } from "./dependencyResolver";
 import {
   getFilteredOptionValues,
-  stripHiddenAnswers,
   stripHiddenOptionValues,
+  stripHiddenOptionValuesFromAnswers,
 } from "./optionFilter";
 
 const radioControl: ControlElement = {
@@ -102,7 +103,7 @@ describe("stripHiddenOptionValues", () => {
   });
 });
 
-describe("stripHiddenAnswers", () => {
+describe("stripHiddenOptionValuesFromAnswers", () => {
   const uischema: UISchema = {
     elements: [
       {
@@ -128,7 +129,7 @@ describe("stripHiddenAnswers", () => {
   };
 
   it("drops hidden option values from array fields", () => {
-    const cleaned = stripHiddenAnswers(
+    const cleaned = stripHiddenOptionValuesFromAnswers(
       {
         legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
         personalDataTypes: ["GDPR_ART_9", "OTHER"],
@@ -163,7 +164,7 @@ describe("stripHiddenAnswers", () => {
       ],
       type: "VerticalLayout",
     };
-    const cleaned = stripHiddenAnswers(
+    const cleaned = stripHiddenOptionValuesFromAnswers(
       {
         legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
         personalDataTypes: ["GDPR_ART_9"],
@@ -185,12 +186,70 @@ describe("stripHiddenAnswers", () => {
       ],
       type: "VerticalLayout",
     };
-    const cleaned = stripHiddenAnswers(
+    const cleaned = stripHiddenOptionValuesFromAnswers(
       { legalBasisPublicInterest: "PUBLIC_INTEREST_TASK" },
       plainUischema,
     );
     expect(cleaned).toEqual({
       legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
     });
+  });
+
+  // Stripping a hidden option can cascade through SHOW rules: a dependent
+  // field stays in the answers (it has no hideOptions of its own) but must
+  // drop out of `getVisibleFields` once its parent value is gone. Computing
+  // visibility on the cleaned answers is what makes the dependent field
+  // exit the payload in DynamicFormStep.
+  it("cascade: stripped parent option drops dependent field from visibility", () => {
+    const cascadeUischema: UISchema = {
+      elements: [
+        {
+          options: { widget: "checkbox" },
+          scope: "#/properties/personalDataTypes",
+          type: "Control",
+        },
+        {
+          options: {
+            hideOptions: {
+              PUBLIC_INTEREST_TASK: {
+                schema: { contains: { const: "GDPR_ART_9" } },
+                scope: "#/properties/personalDataTypes",
+              },
+            },
+            widget: "radio",
+          },
+          scope: "#/properties/legalBasisPublicInterest",
+          type: "Control",
+        },
+        {
+          options: { widget: "textarea" },
+          rule: {
+            condition: {
+              schema: { const: "PUBLIC_INTEREST_TASK" },
+              scope: "#/properties/legalBasisPublicInterest",
+            },
+            effect: "SHOW",
+          },
+          scope: "#/properties/publicInterestTaskText",
+          type: "Control",
+        },
+      ],
+      type: "VerticalLayout",
+    };
+
+    const cleaned = stripHiddenOptionValuesFromAnswers(
+      {
+        legalBasisPublicInterest: "PUBLIC_INTEREST_TASK",
+        personalDataTypes: ["GDPR_ART_9"],
+        publicInterestTaskText: "some text",
+      },
+      cascadeUischema,
+    );
+
+    expect(cleaned["legalBasisPublicInterest"]).toBeUndefined();
+    expect(cleaned["publicInterestTaskText"]).toBe("some text");
+
+    const visible = getVisibleFields(cascadeUischema, cleaned);
+    expect(visible.has("publicInterestTaskText")).toBe(false);
   });
 });

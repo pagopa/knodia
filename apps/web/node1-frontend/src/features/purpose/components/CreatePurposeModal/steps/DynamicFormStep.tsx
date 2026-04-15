@@ -21,7 +21,7 @@ import {
   isLabelVisible,
   scopeToFieldName,
 } from "@/features/purpose/engine/dependencyResolver";
-import { stripHiddenAnswers } from "@/features/purpose/engine/optionFilter";
+import { stripHiddenOptionValuesFromAnswers } from "@/features/purpose/engine/optionFilter";
 import {
   collectErrorMessages,
   collectGroups,
@@ -83,8 +83,11 @@ export function DynamicFormStep({
 
       if (isLastStep) {
         const mergedAnswers = { ...formAnswers, ...value };
-        const fullVisible = getVisibleFields(uischema, mergedAnswers);
-        const cleanedAnswers = stripHiddenAnswers(mergedAnswers, uischema);
+        const cleanedAnswers = stripHiddenOptionValuesFromAnswers(
+          mergedAnswers,
+          uischema,
+        );
+        const fullVisible = getVisibleFields(uischema, cleanedAnswers);
         const filteredAnswers: Record<string, unknown> = {};
         for (const [key, val] of Object.entries(cleanedAnswers)) {
           if (!fullVisible.has(key)) continue;

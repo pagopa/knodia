@@ -29,7 +29,19 @@ export function getFilteredOptionValues(
   return hidden.size > 0 ? hidden : null;
 }
 
-export function stripHiddenAnswers(
+export function stripHiddenOptionValues(
+  value: string | string[],
+  control: ControlElement | undefined,
+  allValues: FormValues,
+): string | string[] | undefined {
+  if (!control?.options?.hideOptions) return value;
+  const hidden = getFilteredOptionValues(control, allValues);
+  if (!hidden) return value;
+  if (Array.isArray(value)) return value.filter((v) => !hidden.has(v));
+  return hidden.has(value) ? undefined : value;
+}
+
+export function stripHiddenOptionValuesFromAnswers(
   answers: FormValues,
   uischema: UISchema,
 ): FormValues {
@@ -47,16 +59,4 @@ export function stripHiddenAnswers(
     if (cleaned !== undefined) result[field] = cleaned;
   }
   return result;
-}
-
-export function stripHiddenOptionValues(
-  value: string | string[],
-  control: ControlElement | undefined,
-  allValues: FormValues,
-): string | string[] | undefined {
-  if (!control?.options?.hideOptions) return value;
-  const hidden = getFilteredOptionValues(control, allValues);
-  if (!hidden) return value;
-  if (Array.isArray(value)) return value.filter((v) => !hidden.has(v));
-  return hidden.has(value) ? undefined : value;
 }
