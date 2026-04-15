@@ -89,6 +89,10 @@ export type API_ConsumerPurposes = z.infer<typeof API_ConsumerPurposes>;
 
 export const API_GetProducerPurposesQueryParams =
   API_PaginationQueryParams.extend({
+    agreementId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by Agreement ID" }),
     eserviceId: z
       .uuid()
       .optional()
@@ -107,6 +111,9 @@ export const API_ProducerPurpose = z
     dailyCalls: API_PurposeDailyCalls,
     description: API_LocalizedPurposeDescription,
     eservice: API_CompactEservice,
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description: "Indicates whether the Purpose has been recently updated",
+    }),
     id: z.uuid(),
     name: API_LocalizedPurposeName,
     state: API_PurposeState,

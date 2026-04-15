@@ -443,6 +443,10 @@ export type AgreementSeed = {
 export type ProducerAgreement = {
     consumer: CompactOrganization;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Agreement has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     state: AgreementState;
 };
@@ -666,6 +670,10 @@ export type ProducerPurpose = {
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
@@ -2150,6 +2158,10 @@ export type GetProducerPurposesData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Agreement ID
+         */
+        agreementId?: string;
         /**
          * Filter by E-service ID
          */

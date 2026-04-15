@@ -56,4 +56,15 @@ export const handlers = [
   http.post(`${BASE_URL}/producer/eservices`, () =>
     HttpResponse.json({ id: "test-eservice-id" }, { status: 201 }),
   ),
+
+  http.get(`${BASE_URL}/producer/purposes`, ({ request }) => {
+    const url = new URL(request.url);
+    const limit = Number(url.searchParams.get("limit") ?? 50);
+    const offset = Number(url.searchParams.get("offset") ?? 0);
+
+    return HttpResponse.json({
+      pagination: { limit, offset, total: 0 },
+      results: [],
+    });
+  }),
 ];

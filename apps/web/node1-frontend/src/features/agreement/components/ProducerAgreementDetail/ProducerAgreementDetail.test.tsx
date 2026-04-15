@@ -1,7 +1,9 @@
 import type { bffApi } from "@knodia/bff-client";
 
+import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 
+import { server } from "@/test/msw/server";
 import { renderWithProviders, screen } from "@/test/utils";
 
 import { ProducerAgreementDetail } from "./ProducerAgreementDetail";
@@ -11,18 +13,18 @@ function createAgreementDetails(
 ): bffApi.ProducerAgreementDetails {
   return {
     consumer: {
-      id: "consumer-1",
+      id: "20000000-0000-1000-8000-000000000001",
       knodeId: "Lynx",
       name: "Ursa Major",
     },
     eservice: {
-      id: "eservice-1",
+      id: "30000000-0000-1000-8000-000000000001",
       name: { en: "Birth Certificate API" },
     },
-    id: "agreement-1",
+    id: "10000000-0000-1000-8000-000000000001",
     latestEserviceVersionState: "Active",
     producer: {
-      id: "producer-1",
+      id: "40000000-0000-1000-8000-000000000001",
       knodeId: "Orion",
       name: "Rigel Corp",
     },
@@ -31,12 +33,19 @@ function createAgreementDetails(
   };
 }
 
+const BASE_URL = import.meta.env["BFF_URL"];
+
 function renderDetail(
   agreement: bffApi.ProducerAgreementDetails = createAgreementDetails(),
 ) {
   return renderWithProviders(
     <ProducerAgreementDetail agreement={agreement} />,
-    { routes: [{ path: "/production/e-services/$id" }] },
+    {
+      routes: [
+        { path: "/production/e-services/$id" },
+        { path: "/production/purposes/$id" },
+      ],
+    },
   );
 }
 
@@ -68,15 +77,19 @@ describe("ProducerAgreementDetail", () => {
   });
 
   it("renders a link to the eservice detail page", () => {
+    const eserviceId = "50000000-0000-1000-8000-000000000042";
     renderDetail(
       createAgreementDetails({
-        eservice: { id: "eservice-42", name: { en: "Tax Registry API" } },
+        eservice: { id: eserviceId, name: { en: "Tax Registry API" } },
       }),
     );
 
     const link = screen.getByRole("link", { name: "Tax Registry API" });
     expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute("href", "/production/e-services/eservice-42");
+    expect(link).toHaveAttribute(
+      "href",
+      `/production/e-services/${eserviceId}`,
+    );
   });
 
   it("renders the Suspended state chip", () => {
@@ -128,5 +141,100 @@ describe("ProducerAgreementDetail", () => {
     expect(
       screen.queryByRole("button", { name: "Reactivate" }),
     ).not.toBeInTheDocument();
+  });
+
+  describe("Purposes section", () => {
+    it("renders the Purposes heading", async () => {
+      renderDetail();
+
+      expect(
+        await screen.findByRole("heading", { name: "Purposes" }),
+      ).toBeInTheDocument();
+    });
+
+    it("renders empty state banner when there are no purposes", async () => {
+      renderDetail();
+
+      expect(
+        await screen.findByText(
+          "You don't have any Purpose for this Agreement.",
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it("renders purposes table with data", async () => {
+      const purposeId1 = "60000000-0000-1000-8000-000000000001";
+      const purposeId2 = "60000000-0000-1000-8000-000000000002";
+
+      const purposes: bffApi.ProducerPurpose[] = [
+        {
+          consumer: {
+            id: "20000000-0000-1000-8000-000000000001",
+            knodeId: "Lynx",
+            name: "Ursa Major",
+          },
+          dailyCalls: 100,
+          description: { en: "Freedom of movement" },
+          eservice: {
+            id: "30000000-0000-1000-8000-000000000001",
+            name: { en: "Birth Certificate API" },
+          },
+          hasRecentlyBeenUpdated: false,
+          id: purposeId1,
+          name: { en: "UE freedom of movement" },
+          state: "Active",
+        },
+        {
+          consumer: {
+            id: "20000000-0000-1000-8000-000000000001",
+            knodeId: "Lynx",
+            name: "Ursa Major",
+          },
+          dailyCalls: 1000,
+          description: { en: "Social security" },
+          eservice: {
+            id: "30000000-0000-1000-8000-000000000001",
+            name: { en: "Birth Certificate API" },
+          },
+          hasRecentlyBeenUpdated: false,
+          id: purposeId2,
+          name: { en: "Cross-border social security coordination" },
+          state: "Suspended",
+        },
+      ];
+
+      server.use(
+        http.get(`${BASE_URL}/producer/purposes`, () =>
+          HttpResponse.json({
+            pagination: { limit: 50, offset: 0, total: 2 },
+            results: purposes,
+          }),
+        ),
+      );
+
+      renderDetail();
+
+      expect(
+        await screen.findByText("UE freedom of movement"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("100")).toBeInTheDocument();
+      expect(
+        screen.getByText("Cross-border social security coordination"),
+      ).toBeInTheDocument();
+      expect(screen.getByText((1000).toLocaleString())).toBeInTheDocument();
+
+      const purposeLinks = screen.getAllByRole("link", {
+        name: "Go to purpose",
+      });
+      expect(purposeLinks).toHaveLength(2);
+      expect(purposeLinks.at(0)).toHaveAttribute(
+        "href",
+        `/production/purposes/${purposeId1}`,
+      );
+      expect(purposeLinks.at(1)).toHaveAttribute(
+        "href",
+        `/production/purposes/${purposeId2}`,
+      );
+    });
   });
 });
