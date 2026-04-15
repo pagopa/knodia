@@ -41,9 +41,9 @@ export function EserviceProducerActions({
         kind: "error",
         title: "Unable to suspend E-Service",
       }),
-    onSuccess: async () => {
+    onSuccess: () => {
       setIsSuspendDialogOpen(false);
-      await invalidateDetails();
+      invalidateDetails();
       toastQueue.add({
         description: "The E-Service is no longer available to consumers.",
         kind: "success",
@@ -60,8 +60,8 @@ export function EserviceProducerActions({
         kind: "error",
         title: "Unable to reactivate E-Service",
       }),
-    onSuccess: async () => {
-      await invalidateDetails();
+    onSuccess: () => {
+      invalidateDetails();
       toastQueue.add({
         description: "The E-Service is now available to consumers.",
         kind: "success",
