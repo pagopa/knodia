@@ -139,6 +139,6 @@ console.log(`curl -X POST ${AUTH_SERVER_URL}/token \\
   -d '{
     "client_assertion": "${clientAssertion}",
     "client_assertion_type": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-    "consumer_keychain_id": "${keychainId}",
+    "client_id": "${keychainId}",
     "grant_type": "client_credentials"
   }'`);
