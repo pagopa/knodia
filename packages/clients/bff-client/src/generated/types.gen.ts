@@ -964,7 +964,7 @@ export type GetProducerEserviceLatestVersionInterfaceResponses = {
 
 export type GetProducerEserviceLatestVersionInterfaceResponse = GetProducerEserviceLatestVersionInterfaceResponses[keyof GetProducerEserviceLatestVersionInterfaceResponses];
 
-export type SuspendProducerEserviceData = {
+export type SuspendEserviceData = {
     body?: never;
     path: {
         eserviceId: string;
@@ -973,7 +973,7 @@ export type SuspendProducerEserviceData = {
     url: '/producer/eservices/{eserviceId}/suspend';
 };
 
-export type SuspendProducerEserviceErrors = {
+export type SuspendEserviceErrors = {
     /**
      * Bad Request
      */
@@ -996,18 +996,18 @@ export type SuspendProducerEserviceErrors = {
     409: Problem;
 };
 
-export type SuspendProducerEserviceError = SuspendProducerEserviceErrors[keyof SuspendProducerEserviceErrors];
+export type SuspendEserviceError = SuspendEserviceErrors[keyof SuspendEserviceErrors];
 
-export type SuspendProducerEserviceResponses = {
+export type SuspendEserviceResponses = {
     /**
-     * Producer E-service suspended successfully
+     * E-service suspended successfully
      */
     204: void;
 };
 
-export type SuspendProducerEserviceResponse = SuspendProducerEserviceResponses[keyof SuspendProducerEserviceResponses];
+export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
 
-export type ReactivateProducerEserviceData = {
+export type ReactivateEserviceData = {
     body?: never;
     path: {
         eserviceId: string;
@@ -1016,7 +1016,7 @@ export type ReactivateProducerEserviceData = {
     url: '/producer/eservices/{eserviceId}/reactivate';
 };
 
-export type ReactivateProducerEserviceErrors = {
+export type ReactivateEserviceErrors = {
     /**
      * Bad Request
      */
@@ -1039,16 +1039,16 @@ export type ReactivateProducerEserviceErrors = {
     409: Problem;
 };
 
-export type ReactivateProducerEserviceError = ReactivateProducerEserviceErrors[keyof ReactivateProducerEserviceErrors];
+export type ReactivateEserviceError = ReactivateEserviceErrors[keyof ReactivateEserviceErrors];
 
-export type ReactivateProducerEserviceResponses = {
+export type ReactivateEserviceResponses = {
     /**
-     * Producer E-service reactivated successfully
+     * E-service reactivated successfully
      */
     204: void;
 };
 
-export type ReactivateProducerEserviceResponse = ReactivateProducerEserviceResponses[keyof ReactivateProducerEserviceResponses];
+export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
 
 export type GetConsumerKeychainKeysData = {
     body?: never;

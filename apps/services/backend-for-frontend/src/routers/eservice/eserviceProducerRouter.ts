@@ -458,7 +458,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Suspending Producer E-service with ID ${eserviceId}`,
+        `Suspending E-service with ID ${eserviceId}`,
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
@@ -475,12 +475,12 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Suspend a Producer E-service",
-      operationId: "suspendProducerEservice",
+      description: "Suspend an E-service",
+      operationId: "suspendEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({
-          description: "Producer E-service suspended successfully",
+          description: "E-service suspended successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),
@@ -500,7 +500,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       logger.info(
         { requestParams: req.params },
-        `Reactivating Producer E-service with ID ${eserviceId}`,
+        `Reactivating E-service with ID ${eserviceId}`,
       );
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
@@ -517,12 +517,12 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Reactivate a suspended Producer E-service",
-      operationId: "reactivateProducerEservice",
+      description: "Reactivate a suspended E-service",
+      operationId: "reactivateEservice",
       params: API_EserviceIdPathParam,
       response: {
         204: z.undefined().meta({
-          description: "Producer E-service reactivated successfully",
+          description: "E-service reactivated successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
         401: API_Problem.meta({ description: "Unauthorized" }),

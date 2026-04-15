@@ -1881,10 +1881,10 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/suspend:
     post:
-      operationId: suspendProducerEservice
+      operationId: suspendEservice
       tags:
         - eservice
-      description: Suspend a Producer E-service
+      description: Suspend an E-service
       parameters:
         - schema:
             type: string
@@ -1895,7 +1895,7 @@ paths:
           required: true
       responses:
         "204":
-          description: Producer E-service suspended successfully
+          description: E-service suspended successfully
         "400":
           description: Bad Request
           content:
@@ -1938,10 +1938,10 @@ paths:
                   - $ref: "#/components/schemas/Problem"
   /producer/eservices/{eserviceId}/reactivate:
     post:
-      operationId: reactivateProducerEservice
+      operationId: reactivateEservice
       tags:
         - eservice
-      description: Reactivate a suspended Producer E-service
+      description: Reactivate a suspended E-service
       parameters:
         - schema:
             type: string
@@ -1952,7 +1952,7 @@ paths:
           required: true
       responses:
         "204":
-          description: Producer E-service reactivated successfully
+          description: E-service reactivated successfully
         "400":
           description: Bad Request
           content:
