@@ -149,12 +149,15 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
             headers,
             path: { organizationId: consumerId },
           }),
+          // Fetching only 1 purpose is sufficient for hasRecentlyBeenUpdated:
+          // purposes are ordered by updatedAt DESC in the readmodel,
+          // so the first result is the most recently updated one.
           remoteResourcesManagerApi.getPurposes({
             client: remoteResourcesManagerClient,
             headers,
             query: {
               eserviceId: req.params.eserviceId,
-              limit: 50,
+              limit: 1,
               offset: 0,
             },
           }),
@@ -165,7 +168,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
           data,
           consumerOrg.attributes,
           config.recentUpdateDays,
-          purposes.results,
+          purposes.results.at(0),
         ),
       );
     },

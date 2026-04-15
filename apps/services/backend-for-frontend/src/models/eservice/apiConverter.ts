@@ -87,7 +87,7 @@ export const toAPI_ConsumerEserviceDetails = (
   detail: remoteResourcesManagerApi.EserviceDetails,
   consumerAttributes: readonly AttributeId[],
   recentUpdateDays: number,
-  purposes: readonly { updatedAt: string }[],
+  mostRecentPurpose: undefined | { updatedAt: string },
 ): API_ConsumerEserviceDetails => ({
   accessToken: {
     audience: detail.latestVersion.accessTokenAudience,
@@ -101,7 +101,8 @@ export const toAPI_ConsumerEserviceDetails = (
     hasRecentlyBeenUpdated(detail, recentUpdateDays) ||
     (detail.agreement !== undefined &&
       hasRecentlyBeenUpdated(detail.agreement, recentUpdateDays)) ||
-    purposes.some((p) => hasRecentlyBeenUpdated(p, recentUpdateDays)),
+    (mostRecentPurpose !== undefined &&
+      hasRecentlyBeenUpdated(mostRecentPurpose, recentUpdateDays)),
   id: detail.id,
   identificationRequired: detail.isConsumerOperatorIdentificationRequired,
   interfaceDocument: {
