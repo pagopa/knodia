@@ -17,6 +17,7 @@ import {
 } from "react-aria-components";
 import { match } from "ts-pattern";
 
+import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
 
 import { EservicePurposeSection } from "./EservicePurposeSection";
@@ -24,10 +25,12 @@ import { EservicePurposeSection } from "./EservicePurposeSection";
 export function OrgConsumptionStatusSection({
   agreement,
   eserviceId,
+  hasRecentlyBeenUpdated,
   knodeId,
 }: {
   agreement: bffApi.EserviceAgreementDetail;
   eserviceId: EserviceId;
+  hasRecentlyBeenUpdated: boolean;
   knodeId: KnodeId;
 }) {
   const canManageConsumption = useHasRole("administrative");
@@ -37,7 +40,7 @@ export function OrgConsumptionStatusSection({
       className="flex flex-col rounded-lg border border-primary-light-decorative px-6 pt-6 data-[expanded]:pb-6 elevation-2"
       defaultExpanded
     >
-      <CollapseTrigger />
+      <CollapseTrigger hasRecentlyBeenUpdated={hasRecentlyBeenUpdated} />
 
       <DisclosurePanel className="mt-6 flex flex-col gap-6">
         <AgreementStatusBanner
@@ -129,7 +132,11 @@ function AgreementStatusBanner({
   );
 }
 
-function CollapseTrigger() {
+function CollapseTrigger({
+  hasRecentlyBeenUpdated,
+}: {
+  hasRecentlyBeenUpdated: boolean;
+}) {
   const state = useContext(DisclosureStateContext);
   const isExpanded = state?.isExpanded ?? false;
 
@@ -143,7 +150,7 @@ function CollapseTrigger() {
           Your Org&apos;s consumption status
         </span>
         <span className="flex items-center gap-4">
-          {/* TODO: "Recent update" chip - not implemented yet, needs real update tracking */}
+          {hasRecentlyBeenUpdated && <RecentlyUpdatedChip />}
           <span
             aria-hidden
             className="flex items-center justify-center rounded-[7px] bg-slate-100 p-2"
