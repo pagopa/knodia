@@ -5,11 +5,15 @@ import {
   EXPECTED_GRANT_TYPE,
 } from "./constants.ts";
 
+const API_ConsumerKeychainId = z.uuid().meta({
+  description: "Unique identifier of the Consumer Keychain",
+});
+
 export const API_TokenRequest = z
   .strictObject({
     client_assertion: z.jwt(),
     client_assertion_type: z.literal(EXPECTED_CLIENT_ASSERTION_TYPE),
-    client_id: z.uuid(),
+    client_id: API_ConsumerKeychainId,
     grant_type: z.literal(EXPECTED_GRANT_TYPE),
   })
   .meta({ id: "TokenRequest" });
