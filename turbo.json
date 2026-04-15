@@ -10,6 +10,7 @@
       "dependsOn": ["generate-protobuf", "^generate-api-client", "^typecheck"]
     },
     "generate-api-client": {
+      "dependsOn": ["^generate-protobuf"],
       "outputs": ["src/generated/**"]
     },
     "generate-openapi": {
@@ -25,7 +26,7 @@
       "dependsOn": ["generate-openapi"]
     },
     "generate-artifacts": {
-      "dependsOn": ["generate-api-client", "generate-protobuf"]
+      "dependsOn": ["generate-api-client"]
     },
     "dev:storybook": {},
     "build:storybook": {},
