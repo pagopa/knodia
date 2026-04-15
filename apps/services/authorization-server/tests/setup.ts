@@ -1,3 +1,4 @@
+import type { KnodeId } from "@knodia/common-models/ids";
 import type { TestDrizzleDb } from "@knodia/test-commons/types";
 import type { FastifyInstance } from "fastify";
 
@@ -27,6 +28,7 @@ let app: FastifyInstance;
 let agreementWriterService: AgreementWriterService;
 let eserviceWriterService: EserviceWriterService;
 let purposeWriterService: PurposeWriterService;
+const producerKnodeId: KnodeId = "Orion";
 
 async function resetTestDatabases() {
   await Promise.all([
@@ -53,6 +55,7 @@ beforeAll(async () => {
     },
     eserviceAccessTokenJwtKid: "test-kid",
     generatedEserviceAccessTokenIssuer: "knodia.org",
+    knodeId: producerKnodeId,
     knodeUrl: "http://localhost:0",
     readmodelDb,
   });
@@ -76,5 +79,6 @@ export {
   agreementWriterService,
   app,
   eserviceWriterService,
+  producerKnodeId,
   purposeWriterService,
 };

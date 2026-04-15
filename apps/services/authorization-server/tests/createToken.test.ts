@@ -1,10 +1,12 @@
 /* eslint-disable max-lines-per-function */
 import type { Agreement } from "@knodia/agreement-models";
+import type { EserviceAccessTokenClaims } from "@knodia/common-models/auth";
 import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
 import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
 import type { Purpose } from "@knodia/purpose-models";
 
+import { generateExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
 import {
   getMockAgreement,
@@ -27,6 +29,7 @@ import {
   agreementWriterService,
   app,
   eserviceWriterService,
+  producerKnodeId,
   purposeWriterService,
 } from "./setup.ts";
 
@@ -52,6 +55,10 @@ const commonAttribute: k2kGatewayApi.Attribute = {
 };
 const purpose: Purpose = {
   ...getMockPurpose(),
+  consumer: {
+    id: generateExternalId(),
+    knodeId: "Lynx",
+  },
   state: "Active",
 };
 const agreement: Agreement = {
@@ -90,19 +97,18 @@ vi.mock("@knodia/token-generator", () => ({
       payload: {
         aud: eserviceVersion.accessTokenAudience.join(","),
         client_id: consumerKeychainId,
-        consumer_id: purpose.consumer,
-        consumer_knode_id: purpose.consumer.knodeId,
-        eservice_id: eservice.id,
-        eservice_version_id: eserviceVersion.id,
+        consumer: purpose.consumer,
+        eservice: { id: eservice.id, knodeId: producerKnodeId },
+        eservice_version: { id: eserviceVersion.id, knodeId: producerKnodeId },
         exp: MOCK_NOW_SECONDS + eserviceVersion.accessTokenDuration,
         iat: MOCK_NOW_SECONDS,
         iss: "knodia.org",
         jti: generateId(),
         nbf: MOCK_NOW_SECONDS,
-        producer_id: agreement.producerId,
-        purpose_id: purpose.id,
+        producer: { id: agreement.producerId, knodeId: producerKnodeId },
+        purpose: { id: purpose.id, knodeId: producerKnodeId },
         sub: consumerKeychainId,
-      },
+      } satisfies EserviceAccessTokenClaims,
       serialized: MOCK_TOKEN,
     }),
   }),
