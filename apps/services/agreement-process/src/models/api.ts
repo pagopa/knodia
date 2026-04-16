@@ -68,6 +68,9 @@ export const API_GetAgreementsQueryParams = API_PaginationQueryParams.extend({
   state: arrayQueryParam(API_AgreementState).optional().meta({
     description: "Filter by Agreement State",
   }),
+  updatedSince: z.iso.datetime().optional().meta({
+    description: "Filter Agreements updated at or after this timestamp",
+  }),
 });
 export type API_GetAgreementsQueryParams = z.infer<
   typeof API_GetAgreementsQueryParams

@@ -18,7 +18,7 @@ import {
 } from "@knodia/db-readmodel-commons/utils";
 import { eserviceReadmodelServiceBuilder } from "@knodia/db-readmodel-eservice/services";
 import { type Eservice } from "@knodia/eservice-models";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, gte, inArray } from "drizzle-orm";
 
 import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 
@@ -43,6 +43,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
         offset,
         producerId,
         state,
+        updatedSince,
       } = requestQuery;
 
       return await readmodelDb.transaction(async (tx) => {
@@ -74,6 +75,9 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                   : undefined,
                 state && state.length > 0
                   ? inArray(readmodelAgreement.state, state)
+                  : undefined,
+                updatedSince
+                  ? gte(readmodelAgreement.updatedAt, new Date(updatedSince))
                   : undefined,
               ),
             )
