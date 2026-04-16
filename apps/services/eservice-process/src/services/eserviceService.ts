@@ -25,6 +25,7 @@ import {
 
 import type {
   API_EserviceSeed,
+  API_EserviceUpdateSeed,
   API_GetCatalogEserviceSearchParams,
   API_GetCatalogEservicesQueryParams,
   API_GetEservicesQueryParams,
@@ -38,6 +39,7 @@ import {
   invalidCategory,
 } from "../models/errors.ts";
 import {
+  createEserviceUpdatedV1Event,
   createEserviceVersionActivatedV1Event,
   createEserviceVersionReactivatedV1Event,
   createEserviceVersionSuspendedV1Event,
@@ -269,6 +271,45 @@ export function eserviceServiceBuilder(
           correlationId,
           version,
         ),
+      );
+
+      return { data: updatedEservice, metadata: { version: newVersion } };
+    },
+
+    async updateEservice(
+      eserviceId: EserviceId,
+      seed: API_EserviceUpdateSeed,
+      { authData, correlationId, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<WithMetadata<Eservice>> {
+      logger.info(`Updating E-service ${eserviceId}`);
+
+      const {
+        data: eservice,
+        metadata: { version },
+      } = await retrieveEservice(eserviceId, readmodelService);
+
+      assertIsEserviceProducer(eservice, authData.organizationId);
+
+      for (const cat of seed.categories ?? []) {
+        if (getCategory(cat.scheme, cat.code) === undefined) {
+          throw invalidCategory(cat.scheme, cat.code);
+        }
+      }
+
+      const now = new Date();
+
+      const updatedEservice: Eservice = {
+        ...eservice,
+        ...(seed.name !== undefined && { name: seed.name }),
+        ...(seed.description !== undefined && {
+          description: seed.description,
+        }),
+        ...(seed.categories !== undefined && { categories: seed.categories }),
+        updatedAt: now,
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createEserviceUpdatedV1Event(updatedEservice, correlationId, version),
       );
 
       return { data: updatedEservice, metadata: { version: newVersion } };

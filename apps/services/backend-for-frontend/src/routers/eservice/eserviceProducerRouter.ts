@@ -36,12 +36,14 @@ import {
   purposeProcessApi,
   type PurposeProcessClient,
 } from "@knodia/purpose-process-client";
+import z from "zod";
 
 import type { BffProcessConfig } from "../../config/config.ts";
 
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_EserviceSeed,
+  API_EserviceUpdateSeed,
   API_ProducerEserviceDetails,
   API_ProducerEservices,
   API_ProducerEservicesQueryParams,
@@ -385,6 +387,53 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.eservice],
     },
     url: "/producer/eservices/:eserviceId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+
+      logger.info(
+        { requestBody: req.body, requestParams: req.params },
+        `Updating Producer E-service with ID ${req.params.eserviceId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const response = await eserviceProcessApi.updateEservice({
+        body: req.body,
+        client: eserviceProcessClient,
+        headers,
+        path: { eserviceId: req.params.eserviceId },
+      });
+
+      await pollingService.pollResourceWithMetadata(() =>
+        retrieveEservice(req.params.eserviceId, headers),
+      )({
+        condition: isPolledVersionAtLeastResponseVersion(response),
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      body: API_EserviceUpdateSeed,
+      description: "Update a Producer E-service",
+      operationId: "updateProducerEservice",
+      params: API_EserviceIdPathParam,
+      response: {
+        204: z
+          .undefined()
+          .meta({ description: "E-service updated successfully" }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "E-service not found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.eservice],
+    },
+    url: "/producer/eservices/:eserviceId/update",
   });
 
   fastify.route({

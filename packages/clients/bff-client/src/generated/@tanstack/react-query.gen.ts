@@ -4,8 +4,8 @@ import { type DefaultError, type InfiniteData, infiniteQueryOptions, queryOption
 import type { AxiosError } from 'axios';
 
 import { client } from '../client.gen.ts';
-import { addConsumerKeychainMember, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createSession, deleteConsumerKeychain, downloadConsumerKeychainKey, getConsumerAgreements, getConsumerCatalogEservices, getConsumerCurrentPurposeFormSchemas, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainKeys, getConsumerKeychainMembers, getConsumerKeychainMembership, getConsumerKeychainOptions, getConsumerKeychains, getConsumerPurposeDetails, getConsumerPurposes, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getProducerPurposes, getSessionOrganization, getStatus, getTechnicalUsers, linkPurposeToConsumerKeychain, logout, type Options, refreshSession, removeConsumerKeychainKey, removeConsumerKeychainMember, unlinkPurposeFromConsumerKeychain, updateConsumerKeychain, uploadConsumerKeychainKey } from '../sdk.gen.ts';
-import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyError, DownloadConsumerKeychainKeyResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasError, GetConsumerCurrentPurposeFormSchemasResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainKeysData, GetConsumerKeychainKeysError, GetConsumerKeychainKeysResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipError, GetConsumerKeychainMembershipResponse, GetConsumerKeychainMembersResponse, GetConsumerKeychainOptionsData, GetConsumerKeychainOptionsError, GetConsumerKeychainOptionsResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsError, GetConsumerPurposeDetailsResponse, GetConsumerPurposesData, GetConsumerPurposesError, GetConsumerPurposesResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetProducerPurposesData, GetProducerPurposesError, GetProducerPurposesResponse, GetSessionOrganizationData, GetSessionOrganizationError, GetSessionOrganizationResponse, GetStatusData, GetStatusResponse, GetTechnicalUsersData, GetTechnicalUsersError, GetTechnicalUsersResponse, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainError, LinkPurposeToConsumerKeychainResponse, LogoutData, LogoutResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyError, RemoveConsumerKeychainKeyResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainError, UnlinkPurposeFromConsumerKeychainResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyError, UploadConsumerKeychainKeyResponse } from '../types.gen.ts';
+import { addConsumerKeychainMember, createConsumerAgreement, createConsumerKeychain, createConsumerPurpose, createEservice, createSession, deleteConsumerKeychain, downloadConsumerKeychainKey, getConsumerAgreements, getConsumerCatalogEservices, getConsumerCurrentPurposeFormSchemas, getConsumerEserviceDetails, getConsumerEserviceLatestVersionInterface, getConsumerEservices, getConsumerKeychainDetails, getConsumerKeychainKeys, getConsumerKeychainMembers, getConsumerKeychainMembership, getConsumerKeychains, getConsumerPurposeDetails, getConsumerPurposes, getProducerAgreementDetails, getProducerAgreements, getProducerEserviceDetails, getProducerEserviceLatestVersionInterface, getProducerEservices, getProducerPurposeDetails, getProducerPurposes, getSessionOrganization, getStatus, getTechnicalUsers, linkPurposeToConsumerKeychain, logout, type Options, refreshSession, removeConsumerKeychainKey, removeConsumerKeychainMember, unlinkPurposeFromConsumerKeychain, updateConsumerKeychain, updateProducerEservice, uploadConsumerKeychainKey } from '../sdk.gen.ts';
+import type { AddConsumerKeychainMemberData, AddConsumerKeychainMemberError, AddConsumerKeychainMemberResponse, CreateConsumerAgreementData, CreateConsumerAgreementError, CreateConsumerAgreementResponse, CreateConsumerKeychainData, CreateConsumerKeychainError, CreateConsumerKeychainResponse, CreateConsumerPurposeData, CreateConsumerPurposeError, CreateConsumerPurposeResponse, CreateEserviceData, CreateEserviceError, CreateEserviceResponse, CreateSessionData, CreateSessionError, CreateSessionResponse, DeleteConsumerKeychainData, DeleteConsumerKeychainError, DeleteConsumerKeychainResponse, DownloadConsumerKeychainKeyData, DownloadConsumerKeychainKeyError, DownloadConsumerKeychainKeyResponse, GetConsumerAgreementsData, GetConsumerAgreementsError, GetConsumerAgreementsResponse, GetConsumerCatalogEservicesData, GetConsumerCatalogEservicesError, GetConsumerCatalogEservicesResponse, GetConsumerCurrentPurposeFormSchemasData, GetConsumerCurrentPurposeFormSchemasError, GetConsumerCurrentPurposeFormSchemasResponse, GetConsumerEserviceDetailsData, GetConsumerEserviceDetailsError, GetConsumerEserviceDetailsResponse, GetConsumerEserviceLatestVersionInterfaceData, GetConsumerEserviceLatestVersionInterfaceError, GetConsumerEserviceLatestVersionInterfaceResponse, GetConsumerEservicesData, GetConsumerEservicesError, GetConsumerEservicesResponse, GetConsumerKeychainDetailsData, GetConsumerKeychainDetailsError, GetConsumerKeychainDetailsResponse, GetConsumerKeychainKeysData, GetConsumerKeychainKeysError, GetConsumerKeychainKeysResponse, GetConsumerKeychainMembersData, GetConsumerKeychainMembersError, GetConsumerKeychainMembershipData, GetConsumerKeychainMembershipError, GetConsumerKeychainMembershipResponse, GetConsumerKeychainMembersResponse, GetConsumerKeychainsData, GetConsumerKeychainsError, GetConsumerKeychainsResponse, GetConsumerPurposeDetailsData, GetConsumerPurposeDetailsError, GetConsumerPurposeDetailsResponse, GetConsumerPurposesData, GetConsumerPurposesError, GetConsumerPurposesResponse, GetProducerAgreementDetailsData, GetProducerAgreementDetailsError, GetProducerAgreementDetailsResponse, GetProducerAgreementsData, GetProducerAgreementsError, GetProducerAgreementsResponse, GetProducerEserviceDetailsData, GetProducerEserviceDetailsError, GetProducerEserviceDetailsResponse, GetProducerEserviceLatestVersionInterfaceData, GetProducerEserviceLatestVersionInterfaceError, GetProducerEserviceLatestVersionInterfaceResponse, GetProducerEservicesData, GetProducerEservicesError, GetProducerEservicesResponse, GetProducerPurposeDetailsData, GetProducerPurposeDetailsError, GetProducerPurposeDetailsResponse, GetProducerPurposesData, GetProducerPurposesError, GetProducerPurposesResponse, GetSessionOrganizationData, GetSessionOrganizationError, GetSessionOrganizationResponse, GetStatusData, GetStatusResponse, GetTechnicalUsersData, GetTechnicalUsersError, GetTechnicalUsersResponse, LinkPurposeToConsumerKeychainData, LinkPurposeToConsumerKeychainError, LinkPurposeToConsumerKeychainResponse, LogoutData, LogoutResponse, RefreshSessionData, RefreshSessionError, RefreshSessionResponse, RemoveConsumerKeychainKeyData, RemoveConsumerKeychainKeyError, RemoveConsumerKeychainKeyResponse, RemoveConsumerKeychainMemberData, RemoveConsumerKeychainMemberError, RemoveConsumerKeychainMemberResponse, UnlinkPurposeFromConsumerKeychainData, UnlinkPurposeFromConsumerKeychainError, UnlinkPurposeFromConsumerKeychainResponse, UpdateConsumerKeychainData, UpdateConsumerKeychainError, UpdateConsumerKeychainResponse, UpdateProducerEserviceData, UpdateProducerEserviceError, UpdateProducerEserviceResponse, UploadConsumerKeychainKeyData, UploadConsumerKeychainKeyError, UploadConsumerKeychainKeyResponse } from '../types.gen.ts';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -217,6 +217,23 @@ export const getProducerEserviceDetailsOptions = (options: Options<GetProducerEs
     },
     queryKey: getProducerEserviceDetailsQueryKey(options)
 });
+
+/**
+ * Update a Producer E-service
+ */
+export const updateProducerEserviceMutation = (options?: Partial<Options<UpdateProducerEserviceData>>): UseMutationOptions<UpdateProducerEserviceResponse, AxiosError<UpdateProducerEserviceError>, Options<UpdateProducerEserviceData>> => {
+    const mutationOptions: UseMutationOptions<UpdateProducerEserviceResponse, AxiosError<UpdateProducerEserviceError>, Options<UpdateProducerEserviceData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await updateProducerEservice({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
 
 export const getProducerEserviceLatestVersionInterfaceQueryKey = (options: Options<GetProducerEserviceLatestVersionInterfaceData>) => createQueryKey('getProducerEserviceLatestVersionInterface', options);
 
@@ -544,51 +561,6 @@ export const getConsumerKeychainMembershipOptions = (options: Options<GetConsume
         return data;
     },
     queryKey: getConsumerKeychainMembershipQueryKey(options)
-});
-
-export const getConsumerKeychainOptionsQueryKey = (options: Options<GetConsumerKeychainOptionsData>) => createQueryKey('getConsumerKeychainOptions', options);
-
-/**
- * Retrieve Consumer Keychain options for combobox selection
- */
-export const getConsumerKeychainOptionsOptions = (options: Options<GetConsumerKeychainOptionsData>) => queryOptions<GetConsumerKeychainOptionsResponse, AxiosError<GetConsumerKeychainOptionsError>, GetConsumerKeychainOptionsResponse, ReturnType<typeof getConsumerKeychainOptionsQueryKey>>({
-    queryFn: async ({ queryKey, signal }) => {
-        const { data } = await getConsumerKeychainOptions({
-            ...options,
-            ...queryKey[0],
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerKeychainOptionsQueryKey(options)
-});
-
-export const getConsumerKeychainOptionsInfiniteQueryKey = (options: Options<GetConsumerKeychainOptionsData>): QueryKey<Options<GetConsumerKeychainOptionsData>> => createQueryKey('getConsumerKeychainOptions', options, true);
-
-/**
- * Retrieve Consumer Keychain options for combobox selection
- */
-export const getConsumerKeychainOptionsInfiniteOptions = (options: Options<GetConsumerKeychainOptionsData>) => infiniteQueryOptions<GetConsumerKeychainOptionsResponse, AxiosError<GetConsumerKeychainOptionsError>, InfiniteData<GetConsumerKeychainOptionsResponse>, QueryKey<Options<GetConsumerKeychainOptionsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
-// @ts-ignore
-{
-    queryFn: async ({ pageParam, queryKey, signal }) => {
-        // @ts-ignore
-        const page: Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
-            query: {
-                offset: pageParam
-            }
-        };
-        const params = createInfiniteParams(queryKey, page);
-        const { data } = await getConsumerKeychainOptions({
-            ...options,
-            ...params,
-            signal,
-            throwOnError: true
-        });
-        return data;
-    },
-    queryKey: getConsumerKeychainOptionsInfiniteQueryKey(options)
 });
 
 /**

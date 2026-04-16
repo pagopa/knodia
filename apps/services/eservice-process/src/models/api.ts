@@ -241,6 +241,18 @@ export const API_EserviceSeed = z
   .meta({ id: "EserviceSeed" });
 export type API_EserviceSeed = z.infer<typeof API_EserviceSeed>;
 
+export const API_EserviceUpdateSeed = z
+  .strictObject({
+    categories: z
+      .array(API_EserviceCategory)
+      .optional()
+      .meta({ description: "Categories of the E-service" }),
+    description: API_LocalizedDescription.optional(),
+    name: API_LocalizedName.optional(),
+  })
+  .meta({ id: "EserviceUpdateSeed" });
+export type API_EserviceUpdateSeed = z.infer<typeof API_EserviceUpdateSeed>;
+
 const API_EserviceSearchByKeywords = z.strictObject({
   keywords: z
     .string()

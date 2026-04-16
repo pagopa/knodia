@@ -179,6 +179,15 @@ export type EserviceSeed = {
     requiredAttributes: Array<Array<Attribute>>;
 };
 
+export type EserviceUpdateSeed = {
+    /**
+     * Categories of the E-service
+     */
+    categories?: Array<EserviceCategory>;
+    description?: LocalizedDescription;
+    name?: LocalizedName;
+};
+
 export type ProducerEservice = {
     /**
      * Number of active agreements
@@ -954,6 +963,49 @@ export type GetProducerEserviceDetailsResponses = {
 };
 
 export type GetProducerEserviceDetailsResponse = GetProducerEserviceDetailsResponses[keyof GetProducerEserviceDetailsResponses];
+
+export type UpdateProducerEserviceData = {
+    body: EserviceUpdateSeed;
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/producer/eservices/{eserviceId}/update';
+};
+
+export type UpdateProducerEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type UpdateProducerEserviceError = UpdateProducerEserviceErrors[keyof UpdateProducerEserviceErrors];
+
+export type UpdateProducerEserviceResponses = {
+    /**
+     * E-service updated successfully
+     */
+    204: void;
+};
+
+export type UpdateProducerEserviceResponse = UpdateProducerEserviceResponses[keyof UpdateProducerEserviceResponses];
 
 export type GetProducerEserviceLatestVersionInterfaceData = {
     body?: never;
