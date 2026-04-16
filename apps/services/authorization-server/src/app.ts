@@ -1,5 +1,6 @@
 import type { LoggerConfig } from "@knodia/logger/config";
 
+import formBody from "@fastify/formbody";
 import { createFastifyApp } from "@knodia/fastify-zod-api-commons/fastify";
 import {
   healthRouter,
@@ -54,6 +55,8 @@ export function buildApp({
     makeApiProblem,
   });
 
+  app.removeAllContentTypeParsers();
+  app.register(formBody);
   app.register(healthRouter);
   app.register(tokenRouter, {
     clientAssertionAcceptedAudiences,
