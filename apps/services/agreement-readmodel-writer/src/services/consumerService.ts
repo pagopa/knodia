@@ -17,6 +17,7 @@ export async function handleAgreementEvent(
     .with(
       { type: "AgreementActivatedV1" },
       { type: "AgreementCreatedPendingConsumerOperatorIdentificationV1" },
+      { type: "AgreementActivatedByConsumerOperatorV1" },
       async (msg) => {
         await writerService.upsertAgreement(
           fromAgreementV1(msg.data.agreement),

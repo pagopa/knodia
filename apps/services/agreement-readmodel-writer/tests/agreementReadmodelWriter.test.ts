@@ -74,4 +74,33 @@ describe("Agreement read model writer tests", async () => {
       metadata: { version: metadataVersion },
     } satisfies WithMetadata<Agreement>);
   });
+
+  it("AgreementActivatedByConsumerOperatorV1", async () => {
+    const agreement = getMockAgreement();
+    const eventData = protobufBinaryCodec(
+      agreementEvents.AgreementActivatedByConsumerOperatorV1,
+    ).encode({
+      agreement: toAgreementV1(agreement),
+    });
+
+    const metadataVersion = 1;
+    await sendTestEvent({
+      data: eventData,
+      eventType: "AgreementActivatedByConsumerOperatorV1",
+      metadataVersion,
+      producer,
+      streamId: agreement.id,
+      topicName,
+    });
+
+    await consumer.waitForNextMessage();
+
+    const retrievedAgreements = await getAllAgreements(readmodelDb);
+
+    expect(retrievedAgreements.length).toBe(1);
+    expect(retrievedAgreements[0]).toEqual({
+      data: toExpectAgreement(agreement),
+      metadata: { version: metadataVersion },
+    } satisfies WithMetadata<Agreement>);
+  });
 });

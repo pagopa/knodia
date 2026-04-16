@@ -11,3 +11,7 @@ message AgreementActivatedV1 {
 message AgreementCreatedPendingConsumerOperatorIdentificationV1 {
   AgreementV1 agreement = 1;
 }
+
+message AgreementActivatedByConsumerOperatorV1 {
+  AgreementV1 agreement = 1;
+}
