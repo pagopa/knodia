@@ -36,7 +36,7 @@ function ProductionEserviceAgreements() {
   const { agreements } = useProductionEserviceDetailsContext();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <h3 className="title-md-em text-primary-light-high-contrast">
         Agreements
       </h3>
@@ -65,7 +65,7 @@ function ProductionEservicePurposes() {
   const { purposes } = useProductionEserviceDetailsContext();
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <h3 className="title-md-em text-primary-light-high-contrast">Purposes</h3>
       {purposes.total === 0 ? (
         <Banner icon={<SelectionIcon />} kind="neutral">
