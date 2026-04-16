@@ -23,9 +23,11 @@ import { ConsumptionPurposeTable } from "./ConsumptionPurposeTable";
 
 export function ProductionEServiceConsumptionTab() {
   return (
-    <Section className="flex flex-col gap-6" title="Consumption">
-      <ProductionEserviceAgreements />
-      <ProductionEservicePurposes />
+    <Section className="flex flex-col gap-2" title="Consumption">
+      <div className="flex flex-col gap-12">
+        <ProductionEserviceAgreements />
+        <ProductionEservicePurposes />
+      </div>
     </Section>
   );
 }
