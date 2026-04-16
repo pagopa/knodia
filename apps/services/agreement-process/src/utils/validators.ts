@@ -87,6 +87,7 @@ export const assertEserviceVersionIsLatest = (
 export const agreementCreationConflictingStates: AgreementState[] = [
   AgreementState.enum.Active,
   AgreementState.enum.Suspended,
+  AgreementState.enum.PendingConsumerOperatorIdentification,
 ];
 export const assertNoConflictingAgreementsExist = async ({
   consumerId,

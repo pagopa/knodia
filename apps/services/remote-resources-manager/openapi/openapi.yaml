@@ -85,6 +85,7 @@ components:
         - Active
         - Suspended
         - Archived
+        - PendingConsumerOperatorIdentification
     AgreementConsumer:
       type: object
       properties:
