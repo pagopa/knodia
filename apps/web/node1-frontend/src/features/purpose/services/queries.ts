@@ -43,10 +43,13 @@ export const consumerPurposesByEserviceQuery = (eserviceId: EserviceId) =>
     query: { eserviceId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
   });
 
-export const producerPurposesQuery = (offset: number) =>
+export const producerPurposesQuery = (
+  offset: number,
+  eserviceId?: EserviceId,
+) =>
   getProducerPurposesOptions({
     client,
-    query: { limit: PURPOSES_PAGE_LIMIT, offset },
+    query: { eserviceId, limit: PURPOSES_PAGE_LIMIT, offset },
   });
 
 // TODO: replace hardcoded limit with pagination when the number of purposes per agreement grows
