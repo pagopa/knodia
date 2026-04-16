@@ -1,4 +1,4 @@
-import { type Agreement } from "@knodia/agreement-models";
+import { type Agreement, type AgreementState } from "@knodia/agreement-models";
 import {
   type AgreementId,
   generateId,
@@ -28,6 +28,11 @@ const producerToken: TestToken = {
 };
 const consumerAllowedTokens: TestToken[] = [internalToken];
 const producerAllowedTokens: TestToken[] = [producerToken];
+
+const notAllowedStates: AgreementState[] = [
+  "Archived",
+  "PendingConsumerOperatorIdentification",
+];
 
 function makeSuspendedAgreement(
   overrides: Partial<Agreement> & {
@@ -129,22 +134,26 @@ describe("POST /agreements/:agreementId/reactivateByProducer", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("returns 409 when the agreement is Archived", async () => {
-    const agreement: Agreement = {
-      ...getMockAgreement(),
-      id: generateId<AgreementId>(),
-      state: "Archived",
-      suspendedByConsumerAt: null,
-      suspendedByProducerAt: null,
-    };
-    await seedAgreement(agreement);
+  it.each(notAllowedStates)(
+    "returns 409 when the agreement is %s",
+    async (state) => {
+      const agreement: Agreement = {
+        ...getMockAgreement(),
+        id: generateId<AgreementId>(),
+        producerId: TEST_ORGANIZATION_ID,
+        state,
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
+      };
+      await seedAgreement(agreement);
 
-    const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/reactivateByProducer`,
-    );
+      const response = await injectAppRequest(producerToken).post(
+        `/agreements/${agreement.id}/reactivateByProducer`,
+      );
 
-    expect(response.statusCode).toBe(409);
-  });
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(producerToken).post(
@@ -271,22 +280,25 @@ describe("POST /agreements/:agreementId/reactivateByConsumer", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("returns 409 when the agreement is Archived", async () => {
-    const agreement: Agreement = {
-      ...getMockAgreement(),
-      id: generateId<AgreementId>(),
-      state: "Archived",
-      suspendedByConsumerAt: null,
-      suspendedByProducerAt: null,
-    };
-    await seedAgreement(agreement);
+  it.each(notAllowedStates)(
+    "returns 409 when the agreement is %s",
+    async (state) => {
+      const agreement: Agreement = {
+        ...getMockAgreement(),
+        id: generateId<AgreementId>(),
+        state,
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
+      };
+      await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/reactivateByConsumer`,
-    );
+      const response = await injectAppRequest(internalToken).post(
+        `/agreements/${agreement.id}/reactivateByConsumer`,
+      );
 
-    expect(response.statusCode).toBe(409);
-  });
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(internalToken).post(

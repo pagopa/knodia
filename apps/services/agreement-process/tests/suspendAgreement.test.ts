@@ -1,4 +1,4 @@
-import { type Agreement } from "@knodia/agreement-models";
+import { type Agreement, type AgreementState } from "@knodia/agreement-models";
 import {
   type AgreementId,
   generateId,
@@ -28,6 +28,11 @@ const producerToken: TestToken = {
 };
 const consumerAllowedTokens: TestToken[] = [internalToken];
 const producerAllowedTokens: TestToken[] = [producerToken];
+
+const notAllowedStates: AgreementState[] = [
+  "Archived",
+  "PendingConsumerOperatorIdentification",
+];
 
 function makeAgreement(overrides: Partial<Agreement>): Agreement {
   return {
@@ -101,19 +106,22 @@ describe("POST /agreements/:agreementId/suspendByProducer", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("returns 409 when the agreement is Archived", async () => {
-    const agreement = makeAgreement({
-      id: generateId<AgreementId>(),
-      state: "Archived",
-    });
-    await seedAgreement(agreement);
+  it.each(notAllowedStates)(
+    "returns 409 when the agreement is %s",
+    async (state) => {
+      const agreement = makeAgreement({
+        id: generateId<AgreementId>(),
+        state,
+      });
+      await seedAgreement(agreement);
 
-    const response = await injectAppRequest(producerToken).post(
-      `/agreements/${agreement.id}/suspendByProducer`,
-    );
+      const response = await injectAppRequest(producerToken).post(
+        `/agreements/${agreement.id}/suspendByProducer`,
+      );
 
-    expect(response.statusCode).toBe(409);
-  });
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(producerToken).post(
@@ -224,19 +232,22 @@ describe("POST /agreements/:agreementId/suspendByConsumer", () => {
     expect(response.statusCode).toBe(409);
   });
 
-  it("returns 409 when the agreement is Archived", async () => {
-    const agreement = makeAgreement({
-      id: generateId<AgreementId>(),
-      state: "Archived",
-    });
-    await seedAgreement(agreement);
+  it.each(notAllowedStates)(
+    "returns 409 when the agreement is %s",
+    async (state) => {
+      const agreement = makeAgreement({
+        id: generateId<AgreementId>(),
+        state,
+      });
+      await seedAgreement(agreement);
 
-    const response = await injectAppRequest(internalToken).post(
-      `/agreements/${agreement.id}/suspendByConsumer`,
-    );
+      const response = await injectAppRequest(internalToken).post(
+        `/agreements/${agreement.id}/suspendByConsumer`,
+      );
 
-    expect(response.statusCode).toBe(409);
-  });
+      expect(response.statusCode).toBe(409);
+    },
+  );
 
   it("returns 404 when the agreement does not exist", async () => {
     const response = await injectAppRequest(internalToken).post(
