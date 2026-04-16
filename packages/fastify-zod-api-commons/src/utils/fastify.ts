@@ -60,17 +60,9 @@ export const createFastifyApp = ({
     },
   );
 
-  // Accept bodyless POST/PUT/PATCH as valid. When a request arrives with
-  // no Content-Type but a body is present (e.g. axios sending
-  // Transfer-Encoding: chunked on a no-data POST), Fastify looks up the
-  // catch-all parser registered under ''. Treat any such payload as empty.
-  app.addContentTypeParser("*", { parseAs: "string" }, (_req, _body, done) => {
-    done(null, undefined);
-  });
-
   // Fastify's default application/json parser rejects empty payloads.
   // Override it so POSTs with `Content-Type: application/json` but no body
-  // (e.g. from generated clients that forward the header) succeed.
+  // (e.g. the BFF frontend client sets this header globally) succeed.
   app.removeContentTypeParser("application/json");
   app.addContentTypeParser(
     "application/json",
@@ -85,6 +77,18 @@ export const createFastifyApp = ({
       } catch (error) {
         done(error as Error);
       }
+    },
+  );
+
+  // Axios (used by all generated Hey-API clients) sends
+  // Content-Type: application/x-www-form-urlencoded on POST/PUT/PATCH even when
+  // data is undefined. Accept empty bodies with this content type so bodyless
+  // service-to-service calls don't 415.
+  app.addContentTypeParser(
+    "application/x-www-form-urlencoded",
+    { parseAs: "string" },
+    (_req, body, done) => {
+      done(null, body === "" || body == null ? undefined : body);
     },
   );
 
