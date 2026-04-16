@@ -1,6 +1,7 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
@@ -22,7 +23,7 @@ export const Route = createFileRoute(
     await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
 });
 
-function EServiceActions({
+function EditAction({
   eservice,
 }: {
   eservice: bffApi.ProducerEserviceDetails;
@@ -31,41 +32,28 @@ function EServiceActions({
 
   return (
     <>
-      <DialogTrigger>
-        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-          Suspend
-        </Button>
-        <Modal
-          actionLabel="Suspend anyway"
-          cancelLabel="Cancel"
-          description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
-          isDismissable
-          kind="destructive"
-          title="Suspend E-Service"
-        />
-      </DialogTrigger>
-      <DialogTrigger>
-        <Button
-          hierarchy="brand"
-          kind="filled"
-          onClick={() => setIsEditOpen(true)}
-          size="md"
-        >
-          Edit
-        </Button>
-        <EditEServiceModal
-          eservice={eservice}
-          isOpen={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-        />
-      </DialogTrigger>
+      <Button
+        hierarchy="brand"
+        kind="filled"
+        onClick={() => setIsEditOpen(true)}
+        size="md"
+      >
+        Edit
+      </Button>
+      <EditEServiceModal
+        eservice={eservice}
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+      />
     </>
   );
 }
 
 function RouteComponent() {
-  const canManageEserviceState = useHasRole("administrative");
-  const eservice = Route.useLoaderData();
+  const isAdministrative = useHasRole("administrative");
+  const isTechnical = useHasRole("technical");
+  const { id } = Route.useParams();
+  const { data: eservice } = useSuspenseQuery(producerEserviceDetailsQuery(id));
 
   return (
     <>
@@ -79,7 +67,12 @@ function RouteComponent() {
 
       <PageHeader
         actions={
-          canManageEserviceState && <EServiceActions eservice={eservice} />
+          <>
+            {isAdministrative && <SuspendAction />}
+            {(isAdministrative || isTechnical) && (
+              <EditAction eservice={eservice} />
+            )}
+          </>
         }
         copyableId={eservice.id}
         description={eservice.description.en}
@@ -103,5 +96,23 @@ function RouteComponent() {
 
       <ProductionEServiceDetailsTabs eservice={eservice} />
     </>
+  );
+}
+
+function SuspendAction() {
+  return (
+    <DialogTrigger>
+      <Button hierarchy="danger" isDisabled kind="tonal" size="md">
+        Suspend
+      </Button>
+      <Modal
+        actionLabel="Suspend anyway"
+        cancelLabel="Cancel"
+        description="Suspending an E-Service causes malfunctioning in all the services that use it. Are you sure you want to suspend this E-Service? You will be able to reactivate it later."
+        isDismissable
+        kind="destructive"
+        title="Suspend E-Service"
+      />
+    </DialogTrigger>
   );
 }

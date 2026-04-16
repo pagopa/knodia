@@ -10,7 +10,6 @@ import type {
 import type { AuthorizedContext } from "@knodia/fastify-zod-api-commons/context";
 
 import { getAttribute } from "@knodia/attribute-models";
-import { getCategory } from "@knodia/category-models";
 import {
   type EserviceId,
   type EserviceVersionId,
@@ -36,7 +35,6 @@ import {
   duplicateInterfaceId,
   inconsistentDailyCalls,
   invalidAttribute,
-  invalidCategory,
 } from "../models/errors.ts";
 import {
   createEserviceUpdatedV1Event,
@@ -58,6 +56,7 @@ import {
   assertEserviceVersionIsSuspended,
   assertIsEserviceProducer,
   assertOrganizationExists,
+  assertValidCategories,
 } from "../utils/validators.ts";
 
 export type EserviceService = ReturnType<typeof eserviceServiceBuilder>;
@@ -88,11 +87,7 @@ export function eserviceServiceBuilder(
         }
       }
 
-      for (const cat of seed.categories ?? []) {
-        if (getCategory(cat.scheme, cat.code) === undefined) {
-          throw invalidCategory(cat.scheme, cat.code);
-        }
-      }
+      assertValidCategories(seed.categories ?? []);
 
       const existingInterface =
         await readmodelService.getEserviceVersionInterfaceById(
@@ -290,11 +285,7 @@ export function eserviceServiceBuilder(
 
       assertIsEserviceProducer(eservice, authData.organizationId);
 
-      for (const cat of seed.categories ?? []) {
-        if (getCategory(cat.scheme, cat.code) === undefined) {
-          throw invalidCategory(cat.scheme, cat.code);
-        }
-      }
+      assertValidCategories(seed.categories ?? []);
 
       const now = new Date();
 

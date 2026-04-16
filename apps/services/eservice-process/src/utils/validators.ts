@@ -1,7 +1,9 @@
 import type { OrganizationId } from "@knodia/common-models/ids";
 
+import { getCategory } from "@knodia/category-models";
 import {
   type Eservice,
+  type EserviceCategory,
   type EserviceVersion,
   EserviceVersionState,
 } from "@knodia/eservice-models";
@@ -10,6 +12,7 @@ import type { ReadmodelService } from "../services/readmodelService.ts";
 
 import {
   eserviceVersionNotInExpectedStates,
+  invalidCategory,
   notEserviceProducer,
   organizationNotFound,
 } from "../models/errors.ts";
@@ -42,6 +45,14 @@ export const assertEserviceVersionIsSuspended = (
     throw eserviceVersionNotInExpectedStates(eservice.id, eserviceVersion.id, [
       EserviceVersionState.enum.Suspended,
     ]);
+  }
+};
+
+export const assertValidCategories = (categories: EserviceCategory[]): void => {
+  for (const cat of categories) {
+    if (getCategory(cat.scheme, cat.code) === undefined) {
+      throw invalidCategory(cat.scheme, cat.code);
+    }
   }
 };
 
