@@ -7,7 +7,10 @@ import { zocker } from "zocker";
 import { Agreement } from "../src/agreement.ts";
 import { AgreementEventV1 } from "../src/agreementEvent.ts";
 import { toAgreementV1 } from "../src/agreementProtobufConverterToV1.ts";
-import { AgreementActivatedV1 } from "../src/generated/v1/agreementEvents.ts";
+import {
+  AgreementActivatedV1,
+  AgreementCreatedPendingConsumerOperatorIdentificationV1,
+} from "../src/generated/v1/agreementEvents.ts";
 
 describe("AgreementEventV1 codec", () => {
   const agreement = zocker(Agreement).generate();
@@ -29,6 +32,35 @@ describe("AgreementEventV1 codec", () => {
 
   it("encodes and decodes an AgreementActivatedV1 payload (protobufBinaryCodec-only)", () => {
     const codec = protobufBinaryCodec(AgreementActivatedV1);
+    const value = {
+      agreement: toAgreementV1(agreement),
+    };
+    const bytes = codec.encode(value);
+    expect(bytes).toBeInstanceOf(Uint8Array);
+    expect(codec.decode(bytes)).toEqual(value);
+  });
+
+  it("encodes and decodes an AgreementCreatedPendingConsumerOperatorIdentificationV1 payload (AgreementEventV1 full codec)", () => {
+    const event: AgreementEventV1 = {
+      data: {
+        agreement: toAgreementV1(agreement),
+      },
+      type: "AgreementCreatedPendingConsumerOperatorIdentificationV1",
+    };
+    const encoded = AgreementEventV1.encode(event);
+    expect(encoded).toMatchObject({
+      type: "AgreementCreatedPendingConsumerOperatorIdentificationV1",
+    });
+    expect(encoded.data).toBeInstanceOf(Uint8Array);
+
+    const decoded = AgreementEventV1.decode(encoded);
+    expect(decoded).toMatchObject(event);
+  });
+
+  it("encodes and decodes an AgreementCreatedPendingConsumerOperatorIdentificationV1 payload (protobufBinaryCodec-only)", () => {
+    const codec = protobufBinaryCodec(
+      AgreementCreatedPendingConsumerOperatorIdentificationV1,
+    );
     const value = {
       agreement: toAgreementV1(agreement),
     };
