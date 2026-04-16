@@ -46,6 +46,7 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
+import { getRecentUpdateCutoffDate } from "../../utils/recentUpdate.ts";
 
 const producerVisibleStates: API_AgreementState[] = [
   API_AgreementState.enum.Active,
@@ -87,9 +88,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
       const { eserviceId, limit, offset, recentlyUpdated } = req.query;
 
       const updatedSince = recentlyUpdated
-        ? new Date(
-            Date.now() - config.recentUpdateDays * 24 * 60 * 60 * 1000,
-          ).toISOString()
+        ? getRecentUpdateCutoffDate(config.recentUpdateDays).toISOString()
         : undefined;
 
       const { data } = await agreementProcessApi.getAgreements({

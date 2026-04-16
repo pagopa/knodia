@@ -97,7 +97,7 @@ export const API_GetProducerPurposesQueryParams =
       .uuid()
       .optional()
       .meta({ description: "Filter by E-service ID" }),
-    recentlyUpdated: z.boolean().optional().meta({
+    recentlyUpdated: z.coerce.boolean().optional().meta({
       description:
         "Filter to only Purposes updated within the recent update window",
     }),
