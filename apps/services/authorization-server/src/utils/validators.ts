@@ -1,129 +1,104 @@
-import { genericError } from "@knodia/fastify-zod-api-commons/models";
+import {
+  createPublicKey,
+  decodeBase64Pem,
+} from "@knodia/fastify-zod-api-commons/crypto";
+import {
+  type K2K2GatewayApiClient,
+  k2kGatewayApi,
+} from "@knodia/k2k-gateway-client";
+import { isAxiosError } from "axios";
 import {
   decodeJwt,
   decodeProtectedHeader,
   type JWTPayload,
-  type ProtectedHeaderParameters,
+  jwtVerify,
 } from "jose";
-import { JWTInvalid } from "jose/errors";
+import {
+  JWSInvalid,
+  JWSSignatureVerificationFailed,
+  JWTClaimValidationFailed,
+  JWTExpired,
+} from "jose/errors";
+import { ZodError } from "zod";
 
 import type { API_TokenRequest } from "../models/api.ts";
 
-import { type ClientAssertion } from "../models/clientAssertion.ts";
+import { ClientAssertion } from "../models/clientAssertion.ts";
 import {
   clientAssertionClaimsValidationError,
-  invalidClientAssertionFormat,
+  clientAssertionExpired,
+  invalidClientAssertionSignature,
+  jsonWebTokenError,
+  unexpectedClientAssertionSignatureVerificationError,
 } from "../models/errors.ts";
-import { failedValidation } from "../models/validation.ts";
-import {
-  checkAlg,
-  checkAud,
-  checkClientAssertionStrictClaims,
-  checkExp,
-  checkIat,
-  checkIss,
-  checkJti,
-  checkKid,
-  checkPurposeId,
-  checkSub,
-  checkTyp,
-} from "./utils.ts";
 
-export const validateClientAssertionClaims = (
+export async function verifyClientAssertionSignature(
   {
-    client_assertion: clientAssertionJWS,
-    client_id: consumerKeychainId,
-  }: Pick<API_TokenRequest, "client_assertion" | "client_id">,
+    client_assertion: clientAssertionJws,
+    client_id: clientId,
+  }: API_TokenRequest,
   clientAssertionAcceptedAudiences: string[],
-): ClientAssertion => {
-  let decodedHeader: ProtectedHeaderParameters;
-  let decodedPayload: JWTPayload;
+  clientAssertionClockToleranceSeconds: number,
+  clientAssertionMaxTokenAgeSeconds: number,
+  k2kGatewayClient: K2K2GatewayApiClient,
+): Promise<JWTPayload> {
   try {
-    decodedHeader = decodeProtectedHeader(clientAssertionJWS);
-    decodedPayload = decodeJwt(clientAssertionJWS);
-  } catch (error) {
-    if (error instanceof JWTInvalid) {
-      throw clientAssertionClaimsValidationError(consumerKeychainId, [
-        invalidClientAssertionFormat(error.message),
-      ]);
-    }
-    const message = error instanceof Error ? error.message : "Generic Error";
-    throw clientAssertionClaimsValidationError(consumerKeychainId, [
-      genericError(message),
-    ]);
-  }
+    const protectedHeader = decodeProtectedHeader(clientAssertionJws);
+    const payload = decodeJwt(clientAssertionJws);
 
-  const { data: alg, errors: algErrors } = checkAlg(decodedHeader.alg);
-  const { data: kid, errors: kidErrors } = checkKid(decodedHeader.kid);
-  const { data: typ, errors: typErrors } = checkTyp(decodedHeader.typ);
+    const {
+      header: { kid },
+      payload: { purposeId },
+    } = ClientAssertion.parse({
+      header: protectedHeader,
+      payload,
+    });
 
-  const { data: aud, errors: audErrors } = checkAud(
-    decodedPayload.aud,
-    clientAssertionAcceptedAudiences,
-  );
-  const { data: exp, errors: expErrors } = checkExp(decodedPayload.exp);
-  const { data: iat, errors: iatErrors } = checkIat(decodedPayload.iat);
-  const { data: iss, errors: issErrors } = checkIss(
-    consumerKeychainId,
-    decodedPayload.iss,
-  );
-  const { data: jti, errors: jtiErrors } = checkJti(decodedPayload.jti);
-  const { data: purposeId, errors: purposeIdErrors } = checkPurposeId(
-    decodedPayload["purpose_id"],
-  );
-  const { data: sub, errors: subErrors } = checkSub(
-    consumerKeychainId,
-    decodedPayload.sub,
-  );
-  const { errors: parsingErrors } = checkClientAssertionStrictClaims(
-    decodedHeader,
-    decodedPayload,
-  );
+    const {
+      data: { consumerAttributes, publicKey },
+    } = await k2kGatewayApi.getClientAssertionVerificationData({
+      body: {
+        keychainId: clientId,
+        kid,
+        purposeId,
+      },
+      client: k2kGatewayClient,
+    });
 
-  if (
-    algErrors ||
-    kidErrors ||
-    typErrors ||
-    audErrors ||
-    expErrors ||
-    iatErrors ||
-    issErrors ||
-    jtiErrors ||
-    purposeIdErrors ||
-    subErrors ||
-    parsingErrors
-  ) {
-    const { errors } = failedValidation([
-      algErrors,
-      typErrors,
-      audErrors,
-      expErrors,
-      iatErrors,
-      issErrors,
-      jtiErrors,
-      kidErrors,
-      purposeIdErrors,
-      subErrors,
-      parsingErrors,
-    ]);
+    const verificationKey = createPublicKey({
+      pemKey: decodeBase64Pem(publicKey.encodedPem),
+    });
 
-    throw clientAssertionClaimsValidationError(consumerKeychainId, errors);
-  }
+    await jwtVerify(clientAssertionJws, verificationKey, {
+      algorithms: [publicKey.algorithm],
+      audience: clientAssertionAcceptedAudiences,
+      clockTolerance: clientAssertionClockToleranceSeconds,
+      issuer: clientId,
+      maxTokenAge: clientAssertionMaxTokenAgeSeconds,
+      subject: clientId,
+      typ: "JWT",
+    });
 
-  return {
-    header: {
-      alg,
-      kid,
-      typ,
-    },
-    payload: {
-      aud,
-      exp,
-      iat,
-      iss,
-      jti,
+    return {
+      consumerAttributes,
       purposeId,
-      sub,
-    },
-  };
-};
+    };
+  } catch (error) {
+    if (error instanceof JWTExpired) {
+      throw clientAssertionExpired();
+    } else if (
+      error instanceof JWTClaimValidationFailed ||
+      error instanceof ZodError
+    ) {
+      throw clientAssertionClaimsValidationError(clientId, error);
+    } else if (error instanceof JWSSignatureVerificationFailed) {
+      throw invalidClientAssertionSignature();
+    } else if (error instanceof JWSInvalid) {
+      throw jsonWebTokenError(error.message);
+    } else if (isAxiosError(error)) {
+      throw error;
+    } else {
+      throw unexpectedClientAssertionSignatureVerificationError(error);
+    }
+  }
+}

@@ -475,9 +475,24 @@ importers:
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
+      '@knodia/agreement-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/agreement-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
+      '@knodia/db-readmodel-agreement':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/agreement
+      '@knodia/db-readmodel-eservice':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/eservice
+      '@knodia/db-readmodel-purpose':
+        specifier: workspace:*
+        version: link:../../../packages/db/readmodel/purpose
+      '@knodia/eservice-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/eservice-models
       '@knodia/fastify-zod-api-commons':
         specifier: workspace:*
         version: link:../../../packages/fastify-zod-api-commons
@@ -487,6 +502,12 @@ importers:
       '@knodia/logger':
         specifier: workspace:*
         version: link:../../../packages/logger
+      '@knodia/purpose-models':
+        specifier: workspace:*
+        version: link:../../../packages/models/purpose-models
+      axios:
+        specifier: 'catalog:'
+        version: 1.15.0
       fastify:
         specifier: 'catalog:'
         version: 5.8.3

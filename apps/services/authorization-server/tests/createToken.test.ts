@@ -1,13 +1,31 @@
 /* eslint-disable max-lines-per-function */
+import type { Agreement } from "@knodia/agreement-models";
+import type { Eservice, EserviceVersion } from "@knodia/eservice-models";
+import type { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { k2kGatewayApi } from "@knodia/k2k-gateway-client";
+import type { Purpose } from "@knodia/purpose-models";
 
+import { generateExternalId } from "@knodia/common-models/externalResource";
 import { type ConsumerKeychainId, generateId } from "@knodia/common-models/ids";
-import { getMockClientAssertion } from "@knodia/test-commons/utils";
+import {
+  getMockAgreement,
+  getMockClientAssertion,
+  getMockEservice,
+  getMockEserviceVersion,
+  getMockPurpose,
+} from "@knodia/test-commons/utils";
+import { AxiosError } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_TokenRequest } from "../src/models/api.ts";
 
-import { app } from "./setup.ts";
+import { invalidClientAssertionSignature } from "../src/models/errors.ts";
+import {
+  agreementWriterService,
+  app,
+  eserviceWriterService,
+  purposeWriterService,
+} from "./setup.ts";
 
 const getClientAssertionVerificationDataMock = vi.hoisted(() => vi.fn());
 
@@ -25,35 +43,81 @@ vi.mock("@knodia/k2k-gateway-client", async (importOriginal) => {
   };
 });
 
+const commonAttribute: k2kGatewayApi.Attribute = {
+  code: "vc_territorial_units",
+  scheme: "nuts1",
+};
+const purpose: Purpose = {
+  ...getMockPurpose(),
+  consumer: {
+    id: generateExternalId(),
+    knodeId: "Lynx",
+  },
+  state: "Active",
+};
+const agreement: Agreement = {
+  ...getMockAgreement(),
+  consumer: purpose.consumer,
+  eserviceId: purpose.eserviceId,
+  state: "Active",
+};
+const eserviceVersion: EserviceVersion = {
+  ...getMockEserviceVersion(),
+  id: agreement.eserviceVersionId,
+  requiredAttributes: [
+    [commonAttribute],
+    [
+      commonAttribute,
+      {
+        code: "vc_organizational_units",
+        scheme: "nuts3",
+      },
+    ],
+  ],
+  state: "Active",
+};
+const eservice: Eservice = {
+  ...getMockEservice(),
+  id: purpose.eserviceId,
+  versions: [eserviceVersion],
+};
+const consumerKeychainId = generateId<ConsumerKeychainId>();
+
 describe("POST /token", async () => {
   const VALID_CLIENT_ASSERTION_TYPE =
     "urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
   const VALID_GRANT_TYPE = "client_credentials";
 
+  const {
+    clientAssertion,
+    clientAssertionJWS,
+    keySet,
+    publicKeyEncodedPem,
+    signClientAssertion,
+  } = await getMockClientAssertion({
+    standardClaimsOverride: {
+      aud: ["test-audience-1"],
+      iss: consumerKeychainId,
+      purpose_id: purpose.id,
+      sub: consumerKeychainId,
+    },
+  });
+
   const mockK2KResponse: k2kGatewayApi.ClientAssertionVerificationResponse = {
     consumerAttributes: [
-      {
-        code: "vc_territorial_units",
-        scheme: "nuts1",
-      },
+      commonAttribute,
       {
         code: "vc_organizational_units",
         scheme: "nuts2",
       },
     ],
-    publicKey:
-      "mock-public-key" as unknown as k2kGatewayApi.PublicKeyForVerification,
+    publicKey: {
+      algorithm: clientAssertion.headers.alg,
+      encodedPem: publicKeyEncodedPem,
+      format: "PublicKey",
+      kid: "kid",
+    },
   };
-
-  const consumerKeychainId = generateId<ConsumerKeychainId>();
-  const { clientAssertion, clientAssertionJWS, keySet, signClientAssertion } =
-    await getMockClientAssertion({
-      standardClaimsOverride: {
-        aud: ["test-audience-1"],
-        iss: consumerKeychainId,
-        sub: consumerKeychainId,
-      },
-    });
 
   const defaultBody: API_TokenRequest = {
     client_assertion: clientAssertionJWS,
@@ -67,6 +131,12 @@ describe("POST /token", async () => {
   });
 
   it("returns a mocked bearer token", async () => {
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(eservice, 0),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
     getClientAssertionVerificationDataMock.mockResolvedValue({
       data: mockK2KResponse,
     });
@@ -308,6 +378,10 @@ describe("POST /token", async () => {
   ])(
     "should return 400 if the client assertion has invalid claims - %s",
     async (_label, clientAssertion) => {
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
+
       const clientAssertionJWS = await signClientAssertion({
         clientAssertion,
         keySet,
@@ -327,7 +401,7 @@ describe("POST /token", async () => {
 
   it("should return 500 when the k2k gateway call fails", async () => {
     getClientAssertionVerificationDataMock.mockRejectedValue(
-      new Error("k2k gateway error"),
+      new AxiosError("k2k gateway error"),
     );
 
     const response = await app.inject({
@@ -337,5 +411,37 @@ describe("POST /token", async () => {
     });
 
     expect(response.statusCode).toBe(500);
+  });
+
+  it("should return 400 when the client assertion signature is invalid", async () => {
+    await Promise.all([
+      agreementWriterService.upsertAgreement(agreement, 0),
+      eserviceWriterService.upsertEservice(eservice, 0),
+      purposeWriterService.upsertPurpose(purpose, 0),
+    ]);
+
+    const { publicKeyEncodedPem: invalidPublicKeyEncodedPem } =
+      await getMockClientAssertion();
+
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: {
+        ...mockK2KResponse,
+        publicKey: {
+          ...mockK2KResponse.publicKey,
+          encodedPem: invalidPublicKeyEncodedPem,
+        },
+      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+    });
+
+    const response = await app.inject({
+      method: "POST",
+      payload: defaultBody,
+      url: "/token",
+    });
+
+    const error = invalidClientAssertionSignature();
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 });

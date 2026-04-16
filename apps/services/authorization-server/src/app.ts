@@ -16,10 +16,14 @@ import { tokenServiceBuilder } from "./services/tokenService.ts";
 
 export function buildApp({
   clientAssertionAcceptedAudiences,
+  clientAssertionClockToleranceSeconds,
+  clientAssertionMaxTokenAgeSeconds,
   config,
   knodeUrl,
 }: {
   clientAssertionAcceptedAudiences: string[];
+  clientAssertionClockToleranceSeconds: number;
+  clientAssertionMaxTokenAgeSeconds: number;
   config: LoggerConfig;
   knodeUrl: string;
 }) {
@@ -53,6 +57,8 @@ export function buildApp({
   app.register(healthRouter);
   app.register(tokenRouter, {
     clientAssertionAcceptedAudiences,
+    clientAssertionClockToleranceSeconds,
+    clientAssertionMaxTokenAgeSeconds,
     tokenService: tokenServiceBuilder(k2kGatewayClient),
   });
 
@@ -62,6 +68,9 @@ export function buildApp({
 export function buildAppFromConfig(config: AuthorizationServerConfig) {
   return buildApp({
     clientAssertionAcceptedAudiences: config.clientAssertionAcceptedAudiences,
+    clientAssertionClockToleranceSeconds:
+      config.clientAssertionClockToleranceSeconds,
+    clientAssertionMaxTokenAgeSeconds: config.clientAssertionMaxTokenAgeSeconds,
     config,
     knodeUrl: config.knodeUrl,
   });
