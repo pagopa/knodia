@@ -91,9 +91,9 @@ export const getProducerEserviceDetails = <ThrowOnError extends boolean = true>(
 /**
  * Update a Producer E-service
  */
-export const updateProducerEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateProducerEserviceData, ThrowOnError>) => (options.client ?? client).post<UpdateProducerEserviceResponses, UpdateProducerEserviceErrors, ThrowOnError>({
+export const updateProducerEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateProducerEserviceData, ThrowOnError>) => (options.client ?? client).patch<UpdateProducerEserviceResponses, UpdateProducerEserviceErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/producer/eservices/{eserviceId}/update',
+    url: '/producer/eservices/{eserviceId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',

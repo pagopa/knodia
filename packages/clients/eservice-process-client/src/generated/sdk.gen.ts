@@ -64,10 +64,10 @@ export const getEservice = <ThrowOnError extends boolean = true>(options: Option
 /**
  * Update an E-service
  */
-export const updateEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateEserviceData, ThrowOnError>) => (options.client ?? client).post<UpdateEserviceResponses, UpdateEserviceErrors, ThrowOnError>({
+export const updateEservice = <ThrowOnError extends boolean = true>(options: Options<UpdateEserviceData, ThrowOnError>) => (options.client ?? client).patch<UpdateEserviceResponses, UpdateEserviceErrors, ThrowOnError>({
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/eservices/{eserviceId}/update',
+    url: '/eservices/{eserviceId}',
     ...options,
     headers: {
         'Content-Type': 'application/json',

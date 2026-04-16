@@ -170,7 +170,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       setMetadataVersionHeader(res, version);
       res.status(200).send(toAPI_Eservice(eservice));
     },
-    method: "POST",
+    method: "PATCH",
     schema: {
       body: API_EserviceUpdateSeed,
       description: "Update an E-service",
@@ -192,7 +192,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
       },
       tags: [apiTags.eservice],
     },
-    url: "/eservices/:eserviceId/update",
+    url: "/eservices/:eserviceId",
   });
 
   fastify.route({

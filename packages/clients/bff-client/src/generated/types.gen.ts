@@ -970,7 +970,7 @@ export type UpdateProducerEserviceData = {
         eserviceId: string;
     };
     query?: never;
-    url: '/producer/eservices/{eserviceId}/update';
+    url: '/producer/eservices/{eserviceId}';
 };
 
 export type UpdateProducerEserviceErrors = {

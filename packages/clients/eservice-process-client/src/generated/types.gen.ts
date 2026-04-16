@@ -452,7 +452,7 @@ export type UpdateEserviceData = {
         eserviceId: string;
     };
     query?: never;
-    url: '/eservices/{eserviceId}/update';
+    url: '/eservices/{eserviceId}';
 };
 
 export type UpdateEserviceErrors = {

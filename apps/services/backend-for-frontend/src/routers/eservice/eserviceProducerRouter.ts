@@ -415,7 +415,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
 
       res.status(204).send();
     },
-    method: "POST",
+    method: "PATCH",
     schema: {
       body: API_EserviceUpdateSeed,
       description: "Update a Producer E-service",
@@ -433,7 +433,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.eservice],
     },
-    url: "/producer/eservices/:eserviceId/update",
+    url: "/producer/eservices/:eserviceId",
   });
 
   fastify.route({

@@ -1890,8 +1890,7 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /producer/eservices/{eserviceId}/update:
-    post:
+    patch:
       operationId: updateProducerEservice
       tags:
         - eservice

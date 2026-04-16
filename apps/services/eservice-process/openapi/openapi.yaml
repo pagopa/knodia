@@ -760,8 +760,7 @@ paths:
                 description: E-service not found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /eservices/{eserviceId}/update:
-    post:
+    patch:
       operationId: updateEservice
       tags:
         - eservice
