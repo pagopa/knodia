@@ -1,18 +1,18 @@
-import { describe, expect, it } from "vitest";
-
+import {
+  calculateKid,
+  createJWK,
+  decodeBase64Pem,
+  isX509Certificate,
+} from "@knodia/fastify-zod-api-commons/crypto";
 import {
   invalidKeyLength,
   invalidPublicKey,
   notAllowedMultipleKeys,
   notAllowedPrivateKey,
   notAnRSAKey,
-} from "../src/models/errors.ts";
-import {
-  calculateKid,
-  createJWK,
-  decodeBase64Pem,
-  isX509Certificate,
-} from "../src/utils/crypto.ts";
+} from "@knodia/fastify-zod-api-commons/models";
+import { describe, expect, it } from "vitest";
+
 import {
   createEcKeyPair,
   createRsaKeyPair,

@@ -5,6 +5,11 @@ import {
   type OrganizationId,
   unsafeBrandKeyId,
 } from "@knodia/common-models/ids";
+import {
+  calculateKid,
+  createJWK,
+  decodeBase64Pem,
+} from "@knodia/fastify-zod-api-commons/crypto";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import {
   type ConsumerKeychain,
@@ -29,11 +34,6 @@ import type {
 } from "../src/models/api.ts";
 
 import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
-import {
-  calculateKid,
-  createJWK,
-  decodeBase64Pem,
-} from "../src/utils/crypto.ts";
 import { mockMaxKeysPerKeychain } from "./setup.ts";
 import {
   createEcKeyPair,
