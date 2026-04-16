@@ -170,6 +170,8 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(body.agreement).toEqual({
       id: k2kAgreement.id,
       state: "Active",
+      suspendedByConsumerAt: null,
+      suspendedByProducerAt: null,
       updatedAt: k2kAgreement.updatedAt,
     });
   });

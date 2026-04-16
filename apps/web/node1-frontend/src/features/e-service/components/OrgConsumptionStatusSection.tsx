@@ -1,15 +1,16 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { EserviceId, KnodeId } from "@knodia/common-models/ids";
 
-import { Banner } from "@knodia/ui-kit/ui";
+import { Banner, Modal } from "@knodia/ui-kit/ui";
 import {
   CaretDownIcon,
   CaretUpIcon,
   SelectionIcon,
 } from "@phosphor-icons/react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import {
   Button,
+  DialogTrigger,
   Disclosure,
   DisclosurePanel,
   DisclosureStateContext,
@@ -19,6 +20,8 @@ import { match } from "ts-pattern";
 
 import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 import { useHasRole } from "@/contexts/auth";
+import { useReactivateConsumerAgreement } from "@/features/agreement/hooks/useReactivateConsumerAgreement";
+import { useSuspendConsumerAgreement } from "@/features/agreement/hooks/useSuspendConsumerAgreement";
 
 import { EservicePurposeSection } from "./EservicePurposeSection";
 
@@ -37,15 +40,17 @@ export function OrgConsumptionStatusSection({
 
   return (
     <Disclosure
-      className="flex flex-col rounded-lg border border-primary-light-decorative px-6 pt-6 data-[expanded]:pb-6 elevation-2"
+      className="flex flex-col rounded-lg border border-primary-light-decorative px-6 pt-6 data-expanded:pb-6 elevation-2"
       defaultExpanded
     >
       <CollapseTrigger hasRecentlyBeenUpdated={hasRecentlyBeenUpdated} />
 
       <DisclosurePanel className="mt-6 flex flex-col gap-6">
         <AgreementStatusBanner
+          agreement={agreement}
           canManageAgreement={canManageConsumption}
-          state={agreement.state}
+          eserviceId={eserviceId}
+          knodeId={knodeId}
         />
 
         <EservicePurposeSection eserviceId={eserviceId} knodeId={knodeId} />
@@ -65,32 +70,78 @@ export function OrgConsumptionStatusSection({
   );
 }
 
-// TODO: implement the "Action needed" agreement state
 function AgreementStatusBanner({
+  agreement,
   canManageAgreement,
-  state,
+  eserviceId,
+  knodeId,
 }: {
+  agreement: bffApi.EserviceAgreementDetail;
   canManageAgreement: boolean;
-  state: bffApi.AgreementState;
+  eserviceId: EserviceId;
+  knodeId: KnodeId;
 }) {
-  const banner = match(state)
+  const [isSuspendModalOpen, setIsSuspendModalOpen] = useState(false);
+
+  const {
+    isError: isSuspendError,
+    isPending: isSuspendPending,
+    suspendAgreement,
+  } = useSuspendConsumerAgreement({
+    agreementId: agreement.id,
+    eserviceId,
+    knodeId,
+  });
+
+  const { isPending: isReactivatePending, reactivateAgreement } =
+    useReactivateConsumerAgreement({
+      agreementId: agreement.id,
+      eserviceId,
+      knodeId,
+    });
+
+  const banner = match(agreement.state)
     .with("Active", () => (
-      <Banner
-        action={
-          canManageAgreement
-            ? {
-                label: "Suspend",
-                // TODO: implement suspend agreement action
-              }
-            : undefined
-        }
-        kind="success"
-      >
-        Active
-      </Banner>
+      <>
+        <Banner
+          action={
+            canManageAgreement
+              ? {
+                  label: "Suspend",
+                  onPress: () => setIsSuspendModalOpen(true),
+                }
+              : undefined
+          }
+          kind="success"
+        >
+          Active
+        </Banner>
+        <DialogTrigger
+          isOpen={isSuspendModalOpen}
+          onOpenChange={setIsSuspendModalOpen}
+        >
+          <Modal
+            actionLabel="Suspend anyway"
+            cancelLabel="Cancel"
+            confirmButtonProps={{ isPending: isSuspendPending }}
+            isDismissable
+            kind="destructive"
+            onClose={() => setIsSuspendModalOpen(false)}
+            onConfirm={suspendAgreement}
+            onDismiss={() => setIsSuspendModalOpen(false)}
+            showErrorBanner={isSuspendError}
+            title="Suspend Agreement"
+          >
+            <p className="body-md">
+              If you suspend it, the Producer won&apos;t be able to reactivate
+              the Agreement on your behalf. Are you sure you want to suspend
+              this Agreement?
+            </p>
+            <p className="body-md">You will be able to reactivate it later.</p>
+          </Modal>
+        </DialogTrigger>
+      </>
     ))
-    // TODO: this handles consumer-initiated suspension only.
-    // Producer-initiated suspension is not handled yet.
     .with("Suspended", () => (
       <Banner
         action={
@@ -103,10 +154,11 @@ function AgreementStatusBanner({
         }
         kind="error"
         prominentAction={
-          canManageAgreement
+          canManageAgreement && agreement.suspendedByConsumerAt !== null
             ? {
+                isDisabled: isReactivatePending,
                 label: "Reactivate",
-                // TODO: implement reactivate agreement action
+                onPress: reactivateAgreement,
               }
             : undefined
         }

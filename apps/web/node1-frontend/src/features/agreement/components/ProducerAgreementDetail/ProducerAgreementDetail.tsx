@@ -1,7 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
-import { Button } from "@knodia/ui-kit/ui";
+import { Button, Modal } from "@knodia/ui-kit/ui";
+import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
@@ -11,6 +12,8 @@ import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
+import { useReactivateProducerAgreement } from "../../hooks/useReactivateProducerAgreement";
+import { useSuspendProducerAgreement } from "../../hooks/useSuspendProducerAgreement";
 import { AgreementStateChip } from "../AgreementStateChip";
 import { AgreementPurposeSection } from "./AgreementPurposeSection";
 
@@ -26,11 +29,16 @@ export function ProducerAgreementDetail({
       <PageHeader
         actions={
           canManageAgreementState && (
-            <AgreementActionButton state={agreement.state} />
+            <AgreementActionButton agreement={agreement} />
           )
         }
         resourceStatusChip={
-          <AgreementStateChip state={agreement.state} type="light" />
+          <AgreementStateChip
+            state={agreement.state}
+            suspendedByConsumerAt={agreement.suspendedByConsumerAt}
+            suspendedByProducerAt={agreement.suspendedByProducerAt}
+            type="light"
+          />
         }
         title="Agreement request"
       />
@@ -71,30 +79,84 @@ export function ProducerAgreementDetail({
 }
 
 function AgreementActionButton({
-  state,
+  agreement,
 }: {
-  state: bffApi.ProducerAgreementDetails["state"];
+  agreement: bffApi.ProducerAgreementDetails;
 }) {
+  return match(agreement.state)
+    .with("Active", () => (
+      <SuspendProducerAgreementButton
+        agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+      />
+    ))
+    .with("Suspended", () =>
+      agreement.suspendedByProducerAt !== null ? (
+        <ReactivateProducerAgreementButton
+          agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+        />
+      ) : null,
+    )
+    .with("Archived", "PendingConsumerOperatorIdentification", () => null)
+    .exhaustive();
+}
+
+function ReactivateProducerAgreementButton({
+  agreementId,
+}: {
+  agreementId: AgreementId;
+}) {
+  const { isError, isPending, reactivateAgreement } =
+    useReactivateProducerAgreement(agreementId);
+
   return (
-    match(state)
-      .with("Active", () => (
-        // TODO: Suspend button is always disabled — implement suspend logic
-        <Button hierarchy="danger" isDisabled kind="tonal" size="md">
-          Suspend
-        </Button>
-      ))
-      .with("Suspended", () => (
-        // TODO: Reactivate button is always disabled — implement reactivate logic.
-        // If the agreement was suspended by the consumer, no button should be shown.
-        <Button hierarchy="brand" isDisabled kind="filled" size="md">
-          Reactivate
-        </Button>
-      ))
-      // TODO: Only Active and Suspended states are supported. Archived and PendingConsumerOperatorIdentification are not handled yet.
-      .with("Archived", "PendingConsumerOperatorIdentification", (state) => {
-        console.warn(`Unhandled agreement state: ${state}`);
-        return null;
-      })
-      .exhaustive()
+    <DialogTrigger>
+      <Button hierarchy="brand" kind="filled" size="md">
+        Reactivate
+      </Button>
+      <Modal
+        actionLabel="Reactivate"
+        cancelLabel="Cancel"
+        confirmButtonProps={{ isPending }}
+        description="Are you sure you want to reactivate this Agreement? The Consumer will be able to use the associated E-Service again."
+        isDismissable
+        onConfirm={reactivateAgreement}
+        showErrorBanner={isError}
+        title="Reactivate Agreement"
+      />
+    </DialogTrigger>
+  );
+}
+
+function SuspendProducerAgreementButton({
+  agreementId,
+}: {
+  agreementId: AgreementId;
+}) {
+  const { isError, isPending, suspendAgreement } =
+    useSuspendProducerAgreement(agreementId);
+
+  return (
+    <DialogTrigger>
+      <Button hierarchy="danger" kind="tonal" size="md">
+        Suspend
+      </Button>
+      <Modal
+        actionLabel="Suspend anyway"
+        cancelLabel="Cancel"
+        confirmButtonProps={{ isPending }}
+        isDismissable
+        kind="destructive"
+        onConfirm={suspendAgreement}
+        showErrorBanner={isError}
+        title="Suspend Agreement"
+      >
+        <p className="body-md">
+          If you suspend it, the Consumer won&apos;t be able to use the
+          associated E-Service or reactivate the Agreement. Are you sure you
+          want to suspend this Agreement?
+        </p>
+        <p className="body-md">You will be able to reactivate it later.</p>
+      </Modal>
+    </DialogTrigger>
   );
 }
