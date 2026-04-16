@@ -10,12 +10,19 @@ import { type TokenService } from "../services/tokenService.ts";
 
 interface TokenRouterOptions {
   clientAssertionAcceptedAudiences: string[];
+  clientAssertionClockToleranceSeconds: number;
+  clientAssertionMaxTokenAgeSeconds: number;
   tokenService: TokenService;
 }
 
 export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify,
-  { clientAssertionAcceptedAudiences, tokenService },
+  {
+    clientAssertionAcceptedAudiences,
+    clientAssertionClockToleranceSeconds,
+    clientAssertionMaxTokenAgeSeconds,
+    tokenService,
+  },
 ) => {
   fastify.route({
     handler: async (req, res) => {
@@ -29,6 +36,8 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
       const token = await tokenService.issueToken(
         req.body,
         clientAssertionAcceptedAudiences,
+        clientAssertionClockToleranceSeconds,
+        clientAssertionMaxTokenAgeSeconds,
       );
 
       res.send(token);

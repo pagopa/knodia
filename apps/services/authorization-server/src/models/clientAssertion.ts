@@ -10,14 +10,13 @@ import {
   EXPECTED_CLIENT_ASSERTION_TYP,
 } from "./constants.ts";
 
-export const ClientAssertionHeader = z.strictObject({
+const ClientAssertionHeader = z.strictObject({
   alg: z.literal(EXPECTED_CLIENT_ASSERTION_ALGORITHM),
   kid: KeyId,
   typ: z.literal(EXPECTED_CLIENT_ASSERTION_TYP),
 });
-export type ClientAssertionHeader = z.infer<typeof ClientAssertionHeader>;
 
-export const ClientAssertionPayload = z
+const ClientAssertionPayload = z
   .strictObject({
     aud: z.array(z.string()).or(z.string()),
     exp: z.int().positive(),
@@ -31,7 +30,6 @@ export const ClientAssertionPayload = z
     ...rest,
     purposeId: purpose_id,
   }));
-export type ClientAssertionPayload = z.infer<typeof ClientAssertionPayload>;
 
 export const ClientAssertion = z.strictObject({
   header: ClientAssertionHeader,

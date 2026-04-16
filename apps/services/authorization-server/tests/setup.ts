@@ -48,6 +48,8 @@ beforeAll(async () => {
 
   app = buildApp({
     clientAssertionAcceptedAudiences: ["test-audience-1", "test-audience-2"],
+    clientAssertionClockToleranceSeconds: 30,
+    clientAssertionMaxTokenAgeSeconds: 300,
     config: {
       isProduction: false,
       logLevel: "silent",

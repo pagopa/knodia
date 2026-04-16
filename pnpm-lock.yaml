@@ -36,6 +36,9 @@ catalogs:
     '@fastify/error':
       specifier: 4.2.0
       version: 4.2.0
+    '@fastify/formbody':
+      specifier: 8.0.2
+      version: 8.0.2
     '@fastify/request-context':
       specifier: 6.2.1
       version: 6.2.1
@@ -472,24 +475,21 @@ importers:
 
   apps/services/authorization-server:
     dependencies:
+      '@fastify/formbody':
+        specifier: 'catalog:'
+        version: 8.0.2
       '@fastify/request-context':
         specifier: 'catalog:'
         version: 6.2.1
       '@knodia/agreement-models':
         specifier: workspace:*
         version: link:../../../packages/models/agreement-models
-      '@knodia/attribute-models':
-        specifier: workspace:*
-        version: link:../../../packages/models/attribute-models
       '@knodia/common-models':
         specifier: workspace:*
         version: link:../../../packages/models/common-models
       '@knodia/db-readmodel-agreement':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/agreement
-      '@knodia/db-readmodel-commons':
-        specifier: workspace:*
-        version: link:../../../packages/db/readmodel/commons
       '@knodia/db-readmodel-eservice':
         specifier: workspace:*
         version: link:../../../packages/db/readmodel/eservice
@@ -511,12 +511,9 @@ importers:
       '@knodia/purpose-models':
         specifier: workspace:*
         version: link:../../../packages/models/purpose-models
-      '@knodia/token-generator':
-        specifier: workspace:*
-        version: link:../../../packages/token-generator
-      drizzle-orm:
+      axios:
         specifier: 'catalog:'
-        version: 0.45.2(@types/pg@8.16.0)(pg@8.16.3)
+        version: 1.15.0
       fastify:
         specifier: 'catalog:'
         version: 5.8.3
@@ -3083,9 +3080,6 @@ importers:
       '@knodia/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@knodia/test-commons':
-        specifier: workspace:*
-        version: link:../test-commons
       '@knodia/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -4365,6 +4359,9 @@ packages:
 
   '@fastify/fast-json-stringify-compiler@5.0.3':
     resolution: {integrity: sha512-uik7yYHkLr6fxd8hJSZ8c+xF4WafPK+XzneQDPU+D10r5X19GW8lJcom2YijX2+qtFF1ENJlHXKFM9ouXNJYgQ==}
+
+  '@fastify/formbody@8.0.2':
+    resolution: {integrity: sha512-84v5J2KrkXzjgBpYnaNRPqwgMsmY7ZDjuj0YVuMR3NXCJRCgKEZy/taSP1wUYGn0onfxJpLyRGDLa+NMaDJtnA==}
 
   '@fastify/forwarded@3.0.1':
     resolution: {integrity: sha512-JqDochHFqXs3C3Ml3gOY58zM7OqO9ENqPo0UqAjAjH8L01fRZqwX9iLeX34//kiJubF7r2ZQHtBRU36vONbLlw==}
@@ -11976,6 +11973,11 @@ snapshots:
   '@fastify/fast-json-stringify-compiler@5.0.3':
     dependencies:
       fast-json-stringify: 6.1.1
+
+  '@fastify/formbody@8.0.2':
+    dependencies:
+      fast-querystring: 1.1.2
+      fastify-plugin: 5.1.0
 
   '@fastify/forwarded@3.0.1': {}
 

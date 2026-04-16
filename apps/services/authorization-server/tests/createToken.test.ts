@@ -15,6 +15,7 @@ import {
   getMockEserviceVersion,
   getMockPurpose,
 } from "@knodia/test-commons/utils";
+import { AxiosError } from "axios";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
@@ -413,6 +414,10 @@ describe("POST /token", async () => {
   ])(
     "should return 400 if the client assertion has invalid claims - %s",
     async (_label, clientAssertion) => {
+      getClientAssertionVerificationDataMock.mockResolvedValue({
+        data: mockK2KResponse,
+      });
+
       const clientAssertionJWS = await signClientAssertion({
         clientAssertion,
         keySet,
@@ -433,7 +438,7 @@ describe("POST /token", async () => {
 
   it("should return 500 when the k2k gateway call fails", async () => {
     getClientAssertionVerificationDataMock.mockRejectedValue(
-      new Error("k2k gateway error"),
+      new AxiosError("k2k gateway error"),
     );
 
     const response = await app.inject({

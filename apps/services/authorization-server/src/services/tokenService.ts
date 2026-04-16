@@ -1,16 +1,12 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 
 import { type KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
-import {
-  type K2K2GatewayApiClient,
-  k2kGatewayApi,
-} from "@knodia/k2k-gateway-client";
+import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import type { API_TokenRequest } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
-  validateClientAssertionClaims,
   validatePlatformObjects,
   verifyClientAssertionSignature,
 } from "../utils/validators.ts";
@@ -35,30 +31,16 @@ export function tokenServiceBuilder({
     async issueToken(
       requestBody: API_TokenRequest,
       clientAssertionAcceptedAudiences: string[],
+      clientAssertionClockToleranceSeconds: number,
+      clientAssertionMaxTokenAgeSeconds: number,
     ) {
-      // Client assertion claims validation
-      const clientAssertion = validateClientAssertionClaims(
+      // Verify Client Assertion signature and claims
+      await verifyClientAssertionSignature(
         requestBody,
         clientAssertionAcceptedAudiences,
-      );
-
-      // Get access token data from the external Knode through the k2k-gateway API
-      const {
-        data: { consumerAttributes, publicKey },
-      } = await k2kGatewayApi.getClientAssertionVerificationData({
-        body: {
-          keychainId: requestBody.client_id,
-          kid: clientAssertion.header.kid,
-          purposeId: clientAssertion.payload.purposeId,
-        },
-        client: k2kGatewayClient,
-      });
-
-      // Client Assertion signature verification
-      await verifyClientAssertionSignature(
-        requestBody.client_assertion,
-        publicKey,
-        clientAssertion.header.alg,
+        clientAssertionClockToleranceSeconds,
+        clientAssertionMaxTokenAgeSeconds,
+        k2kGatewayClient,
       );
 
       // Check that the platform objects (agreement, e-service version, purpose) are in Active state and that the Consumer meets the E-service version required attributes

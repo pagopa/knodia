@@ -22,6 +22,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@fastify/formbody": "catalog:",
     "@fastify/request-context": "catalog:",
     "@knodia/agreement-models": "workspace:*",
     "@knodia/attribute-models": "workspace:*",
@@ -36,6 +37,7 @@
     "@knodia/logger": "workspace:*",
     "@knodia/purpose-models": "workspace:*",
     "@knodia/token-generator": "workspace:*",
+    "axios": "catalog:",
     "drizzle-orm": "catalog:",
     "fastify": "catalog:",
     "fastify-type-provider-zod": "catalog:",
