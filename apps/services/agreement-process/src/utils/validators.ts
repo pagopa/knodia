@@ -90,9 +90,13 @@ export function assertAgreementCanBeSuspendedBy(
         throwNotSuspendable();
       }
     })
-    .with(AgreementState.enum.Archived, () => {
-      throwNotSuspendable();
-    })
+    .with(
+      AgreementState.enum.Archived,
+      AgreementState.enum.PendingConsumerOperatorIdentification,
+      () => {
+        throwNotSuspendable();
+      },
+    )
     .exhaustive();
 }
 
