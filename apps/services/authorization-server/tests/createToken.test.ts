@@ -126,6 +126,15 @@ describe("POST /token", async () => {
     grant_type: VALID_GRANT_TYPE,
   };
 
+  async function createToken(body: API_TokenRequest = defaultBody) {
+    return app.inject({
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      method: "POST",
+      payload: new URLSearchParams(body).toString(),
+      url: "/token",
+    });
+  }
+
   beforeEach(() => {
     getClientAssertionVerificationDataMock.mockReset();
   });
@@ -141,11 +150,7 @@ describe("POST /token", async () => {
       data: mockK2KResponse,
     });
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
     expect(response.statusCode).toBe(200);
     expect(response.json()).toEqual({
@@ -175,11 +180,7 @@ describe("POST /token", async () => {
   ])(
     "should return 400 if the body is not correctly formatted - %s",
     async (_label, body) => {
-      const response = await app.inject({
-        method: "POST",
-        payload: body,
-        url: "/token",
-      });
+      const response = await createToken(body as never);
       expect(response.statusCode).toBe(400);
     },
   );
@@ -387,14 +388,11 @@ describe("POST /token", async () => {
         keySet,
       });
 
-      const response = await app.inject({
-        method: "POST",
-        payload: {
-          ...defaultBody,
-          client_assertion: clientAssertionJWS,
-        },
-        url: "/token",
+      const response = await createToken({
+        ...defaultBody,
+        client_assertion: clientAssertionJWS,
       });
+
       expect(response.statusCode).toBe(400);
     },
   );
@@ -404,11 +402,7 @@ describe("POST /token", async () => {
       new AxiosError("k2k gateway error"),
     );
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
     expect(response.statusCode).toBe(500);
   });
@@ -433,11 +427,7 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
     });
 
-    const response = await app.inject({
-      method: "POST",
-      payload: defaultBody,
-      url: "/token",
-    });
+    const response = await createToken();
 
     const error = invalidClientAssertionSignature();
 
