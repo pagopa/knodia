@@ -38,6 +38,8 @@ export const API_Agreement = z
     id: z.uuid(),
     producerId: z.uuid(),
     state: API_AgreementState,
+    suspendedByConsumerAt: z.iso.datetime().nullable(),
+    suspendedByProducerAt: z.iso.datetime().nullable(),
     updatedAt: z.iso.datetime(),
   })
   .meta({ id: "Agreement" });
