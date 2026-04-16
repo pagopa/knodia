@@ -1,7 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
-import type { EserviceId } from "@knodia/common-models/ids";
 
-import { unsafeBrandId } from "@knodia/common-models/ids";
+import { type EserviceId, unsafeBrandId } from "@knodia/common-models/ids";
 import { describe, expect, it, vi } from "vitest";
 
 import { renderWithProviders, screen } from "@/test/utils";

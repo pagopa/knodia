@@ -17,10 +17,6 @@ export const producerAgreementSearchSchema = z.object({
     .catch(producerAgreementSearchDefaultValues.offset),
 });
 
-export type ProducerAgreementSearchParams = z.infer<
-  typeof producerAgreementSearchSchema
->;
-
 export const requestAgreementSearchSchema = z.object({
   eserviceId: z.string(),
   knodeId: KnodeId,

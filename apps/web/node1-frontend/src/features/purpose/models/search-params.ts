@@ -32,7 +32,3 @@ export const producerPurposeSearchSchema = z.object({
     .default(producerPurposeSearchDefaultValues.offset)
     .catch(producerPurposeSearchDefaultValues.offset),
 });
-
-export type ProducerPurposeSearchParams = z.infer<
-  typeof producerPurposeSearchSchema
->;
