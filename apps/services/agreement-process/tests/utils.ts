@@ -8,7 +8,10 @@ import { expect } from "vitest";
 
 import type { API_Agreement } from "../src/models/api.ts";
 
-import { createAgreementActivatedV1Event } from "../src/models/agreementEventFactory.ts";
+import {
+  createAgreementActivatedV1Event,
+  createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
+} from "../src/models/agreementEventFactory.ts";
 import { agreementWriterService, app, eventStoreDb } from "./setup.ts";
 
 export async function getAllAgreementEvents() {
@@ -20,6 +23,16 @@ export const injectAppRequest = createInjectAppRequest(() => app);
 export async function seedAgreement(agreement: Agreement) {
   await agreementEventStoreWriterBuilder(eventStoreDb).insertEvent(
     createAgreementActivatedV1Event(agreement, generateId()),
+  );
+  await agreementWriterService.upsertAgreement(agreement, 0);
+}
+
+export async function seedPendingAgreement(agreement: Agreement) {
+  await agreementEventStoreWriterBuilder(eventStoreDb).insertEvent(
+    createAgreementCreatedPendingConsumerOperatorIdentificationV1Event(
+      agreement,
+      generateId(),
+    ),
   );
   await agreementWriterService.upsertAgreement(agreement, 0);
 }
