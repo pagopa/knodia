@@ -54,6 +54,9 @@ const API_GetConsumerKeychainsQueryPurposeFilter = z
 
 export const API_GetConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
+    ownerId: API_OrganizationId.optional().meta({
+      description: "Filter by owner Organization ID",
+    }),
     purpose: API_GetConsumerKeychainsQueryPurposeFilter.optional().meta({
       description:
         "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",

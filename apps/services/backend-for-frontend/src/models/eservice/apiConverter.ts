@@ -120,13 +120,19 @@ export const toAPI_ConsumerEserviceDetails = (
   state: detail.latestVersion.state,
 });
 
-export const toAPI_ConsumerEservice = (
-  eservice: remoteResourcesManagerApi.Eservice,
-  recentUpdateDays: number,
-): API_ConsumerEservice => ({
+export const toAPI_ConsumerEservice = ({
+  counters,
+  eservice,
+  recentUpdateDays,
+}: {
+  counters: { activePurposes: number; consumerKeychains: number };
+  eservice: remoteResourcesManagerApi.Eservice;
+  recentUpdateDays: number;
+}): API_ConsumerEservice => ({
+  activePurposes: counters.activePurposes,
   agreement: eservice.agreement,
   categories: eservice.categories,
-  // TODO https://pagopa.atlassian.net/browse/KN-246
+  consumerKeychains: counters.consumerKeychains,
   hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice, recentUpdateDays),
   id: eservice.id,
   mode: eservice.mode,

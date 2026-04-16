@@ -32,6 +32,7 @@ import {
 import {
   toAPI_Purpose,
   toProcessAPI_PurposeSeed,
+  toProcessAPI_PurposeState,
 } from "../models/purpose/apiConverter.ts";
 import { getKnodiaServiceHeaders } from "../utils/headers.ts";
 
@@ -194,7 +195,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
       const token = await tokenProvider.get();
       const headers = getKnodiaServiceHeaders(correlationId, token);
 
-      const { consumerId, eserviceId, limit, offset } = req.query;
+      const { consumerId, eserviceId, limit, offset, state } = req.query;
 
       const { data } = await purposeProcessApi.getPurposes({
         client: purposeProcessClient,
@@ -205,6 +206,7 @@ export const purposeRouter: FastifyPluginAsyncZod<
           eserviceId,
           limit,
           offset,
+          state: state ? [toProcessAPI_PurposeState(state)] : undefined,
         },
       });
 

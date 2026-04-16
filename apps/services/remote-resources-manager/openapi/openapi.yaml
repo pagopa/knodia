@@ -84,6 +84,7 @@ components:
         - Active
         - Suspended
         - Archived
+        - PendingConsumerOperatorIdentification
     AgreementConsumer:
       type: object
       properties:
@@ -1380,6 +1381,13 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/PurposeState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Purpose State
       responses:
         "200":
           description: Purposes retrieved successfully

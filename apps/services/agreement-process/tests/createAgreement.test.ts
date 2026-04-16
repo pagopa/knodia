@@ -38,9 +38,12 @@ import { getAllAgreementEvents, injectAppRequest } from "./utils.ts";
 const allowedTestTokens: TestToken[] = [{ type: "internal" }];
 
 describe("POST /agreements (createAgreement)", async () => {
-  const eservice = getMockEservice({
-    latestVersionState: "Active",
-  });
+  const eservice: Eservice = {
+    ...getMockEservice({
+      latestVersionState: "Active",
+    }),
+    isConsumerOperatorIdentificationRequired: false,
+  };
   const eserviceVersion = eservice.versions[0]!;
   const consumerId = generateExternalId<OrganizationId>();
 
@@ -104,6 +107,8 @@ describe("POST /agreements (createAgreement)", async () => {
         id: expect.any(String),
         producerId: eservice.producerId,
         state: "Active",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
         updatedAt: new Date(responseBody.updatedAt),
       };
 
@@ -126,6 +131,49 @@ describe("POST /agreements (createAgreement)", async () => {
       );
     },
   );
+
+  it("should create agreement in PendingConsumerOperatorIdentification state when isConsumerOperatorIdentificationRequired is true", async () => {
+    const pendingEservice: Eservice = {
+      ...getMockEservice({
+        latestVersionState: "Active",
+        seed: 50,
+      }),
+      isConsumerOperatorIdentificationRequired: true,
+    };
+    await eserviceWriterService.upsertEservice(pendingEservice, 1);
+
+    const pendingConsumerAttributes =
+      pendingEservice.versions[0]!.requiredAttributes.map((group) => group[0]!);
+
+    const pendingBody: API_AgreementSeed = {
+      consumer: {
+        attributes: pendingConsumerAttributes,
+        id: consumerId,
+        knodeId: "Orion",
+      },
+      eserviceId: pendingEservice.id,
+      eserviceVersionId: pendingEservice.versions[0]!.id,
+    };
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .post("/agreements")
+      .body(pendingBody);
+
+    expect(response.statusCode).toBe(201);
+
+    const responseBody = response.json<API_Agreement>();
+    expect(responseBody.state).toBe("PendingConsumerOperatorIdentification");
+
+    const events = await getAllAgreementEvents();
+    expect(events).toHaveLength(1);
+
+    const createdEvent = events[0];
+    expect(createdEvent).toMatchObject({
+      streamId: responseBody.id,
+      type: "AgreementCreatedPendingConsumerOperatorIdentificationV1",
+      version: 0,
+    });
+  });
 
   it.each([
     ["invalid property", { ...body, wrongProperty: "wrong" }],
@@ -209,10 +257,13 @@ describe("POST /agreements (createAgreement)", async () => {
   it.each(allowedEserviceVersionStates)(
     "should succeed if the e-service version is %s",
     async (state) => {
-      const testEservice = getMockEservice({
-        latestVersionState: state,
-        seed: allowedEserviceVersionStates.indexOf(state) + 10,
-      });
+      const testEservice: Eservice = {
+        ...getMockEservice({
+          latestVersionState: state,
+          seed: allowedEserviceVersionStates.indexOf(state) + 10,
+        }),
+        isConsumerOperatorIdentificationRequired: false,
+      };
       await eserviceWriterService.upsertEservice(testEservice, 1);
 
       const testConsumerAttributes =
@@ -310,7 +361,10 @@ describe("POST /agreements (createAgreement)", async () => {
 });
 
 describe("POST /agreements - attribute validation", async () => {
-  const eservice = getMockEservice({ latestVersionState: "Active" });
+  const eservice: Eservice = {
+    ...getMockEservice({ latestVersionState: "Active" }),
+    isConsumerOperatorIdentificationRequired: false,
+  };
   const eserviceVersion = eservice.versions[0]!;
   const consumerId = generateExternalId<OrganizationId>();
   const validAttributes = eserviceVersion.requiredAttributes.map(

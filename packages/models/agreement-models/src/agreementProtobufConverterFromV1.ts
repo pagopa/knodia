@@ -29,6 +29,14 @@ export const fromAgreementV1 = (input: AgreementV1): Agreement => {
     id: unsafeBrandId(input.id),
     producerId: unsafeBrandId(input.producerId),
     state: fromAgreementStateV1(input.state),
+    suspendedByConsumerAt:
+      input.suspendedByConsumerAt != null
+        ? new Date(input.suspendedByConsumerAt)
+        : null,
+    suspendedByProducerAt:
+      input.suspendedByProducerAt != null
+        ? new Date(input.suspendedByProducerAt)
+        : null,
     updatedAt: new Date(input.updatedAt),
   };
 };
@@ -38,6 +46,10 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
     .with(AgreementStateV1.ACTIVE, () => AgreementState.enum.Active)
     .with(AgreementStateV1.SUSPENDED, () => AgreementState.enum.Suspended)
     .with(AgreementStateV1.ARCHIVED, () => AgreementState.enum.Archived)
+    .with(
+      AgreementStateV1.PENDING_CONSUMER_OPERATOR_IDENTIFICATION,
+      () => AgreementState.enum.PendingConsumerOperatorIdentification,
+    )
     .with(AgreementStateV1.UNRECOGNIZED, () => {
       throw new Error("Unrecognized AgreementStateV1 value");
     })

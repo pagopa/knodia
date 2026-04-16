@@ -521,6 +521,104 @@ export type GetEserviceLatestVersionInterfaceResponses = {
 
 export type GetEserviceLatestVersionInterfaceResponse = GetEserviceLatestVersionInterfaceResponses[keyof GetEserviceLatestVersionInterfaceResponses];
 
+export type SuspendEserviceData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/suspend';
+};
+
+export type SuspendEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type SuspendEserviceError = SuspendEserviceErrors[keyof SuspendEserviceErrors];
+
+export type SuspendEserviceResponses = {
+    /**
+     * E-service suspended successfully
+     */
+    200: Eservice;
+};
+
+export type SuspendEserviceResponse = SuspendEserviceResponses[keyof SuspendEserviceResponses];
+
+export type ReactivateEserviceData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        eserviceId: string;
+    };
+    query?: never;
+    url: '/eservices/{eserviceId}/reactivate';
+};
+
+export type ReactivateEserviceErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * E-service not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ReactivateEserviceError = ReactivateEserviceErrors[keyof ReactivateEserviceErrors];
+
+export type ReactivateEserviceResponses = {
+    /**
+     * E-service reactivated successfully
+     */
+    200: Eservice;
+};
+
+export type ReactivateEserviceResponse = ReactivateEserviceResponses[keyof ReactivateEserviceResponses];
+
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;
     headers: {
