@@ -70,6 +70,10 @@ function AgreementInfoCard({ state }: { state: bffApi.AgreementState }) {
       console.warn("Unexpected Archived agreement in consumer e-services list");
       return null;
     })
+    .with("PendingConsumerOperatorIdentification", () => ({
+      bg: "bg-info-light",
+      label: "Action needed",
+    }))
     .exhaustive();
 
   if (!style) return null;

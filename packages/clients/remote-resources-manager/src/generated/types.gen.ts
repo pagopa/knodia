@@ -38,7 +38,7 @@ export type Problem = {
  */
 export type KnodeId = 'Orion' | 'Lynx';
 
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
 export type AgreementConsumer = {
     id: string;

@@ -32,6 +32,10 @@ export function toAPI_AgreementState(
     .with("ACTIVE", () => "Active" as const)
     .with("SUSPENDED", () => "Suspended" as const)
     .with("ARCHIVED", () => "Archived" as const)
+    .with(
+      "PENDING_CONSUMER_OPERATOR_IDENTIFICATION",
+      () => "PendingConsumerOperatorIdentification" as const,
+    )
     .exhaustive();
 }
 
@@ -42,6 +46,10 @@ export function toK2KAPI_AgreementState(
     .with("Active", () => "ACTIVE" as const)
     .with("Suspended", () => "SUSPENDED" as const)
     .with("Archived", () => "ARCHIVED" as const)
+    .with(
+      "PendingConsumerOperatorIdentification",
+      () => "PENDING_CONSUMER_OPERATOR_IDENTIFICATION" as const,
+    )
     .exhaustive();
 }
 
