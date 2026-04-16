@@ -3,14 +3,12 @@ import type { bffApi } from "@knodia/bff-client";
 import {
   Cell,
   Column,
-  Empty,
-  Loader,
   Row,
   Table,
   TableBody,
   TableHeader,
 } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon, SelectionIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon } from "@phosphor-icons/react";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
 import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
@@ -20,25 +18,9 @@ import { AgreementStateChip } from "../AgreementStateChip";
 
 export function ProducerAgreementTable({
   agreements,
-  isLoading,
 }: {
   agreements: bffApi.ProducerAgreement[];
-  isLoading: boolean;
 }) {
-  if (isLoading) {
-    return <Loader className="mx-auto mt-20" label="Loading..." />;
-  }
-
-  if (agreements.length === 0) {
-    return (
-      <Empty
-        description="Agreements requested for your E-Services by Consumer Organizations will appear here."
-        icon={<SelectionIcon />}
-        title="There are no Agreements for your E-Services."
-      />
-    );
-  }
-
   return (
     <Table aria-label="Producer agreements">
       <TableHeader>
