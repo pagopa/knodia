@@ -51,6 +51,8 @@ const buildAgreement = ({
     id: unsafeBrandId(agreementSQL.id),
     producerId: unsafeBrandId(agreementSQL.producerId),
     state: AgreementState.parse(agreementSQL.state),
+    suspendedByConsumerAt: agreementSQL.suspendedByConsumerAt,
+    suspendedByProducerAt: agreementSQL.suspendedByProducerAt,
     updatedAt: agreementSQL.updatedAt,
   };
   return {

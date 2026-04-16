@@ -29,6 +29,14 @@ export const fromAgreementV1 = (input: AgreementV1): Agreement => {
     id: unsafeBrandId(input.id),
     producerId: unsafeBrandId(input.producerId),
     state: fromAgreementStateV1(input.state),
+    suspendedByConsumerAt:
+      input.suspendedByConsumerAt != null
+        ? new Date(input.suspendedByConsumerAt)
+        : null,
+    suspendedByProducerAt:
+      input.suspendedByProducerAt != null
+        ? new Date(input.suspendedByProducerAt)
+        : null,
     updatedAt: new Date(input.updatedAt),
   };
 };
