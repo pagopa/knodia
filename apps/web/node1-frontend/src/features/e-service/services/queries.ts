@@ -46,7 +46,7 @@ export const producerEservicesQuery = (offset: number) =>
     query: { limit: DEFAULT_PAGE_LIMIT, offset },
   });
 
-// TODO: replace hardcoded limit with server-side search when the number of producer e-services grows
+// TODO(KN-479): replace hardcoded limit with server-side search when the number of producer e-services grows
 const ESERVICE_OPTIONS_LIMIT = 50;
 
 export const producerEserviceOptionsQuery = () =>
