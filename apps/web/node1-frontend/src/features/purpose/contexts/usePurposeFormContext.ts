@@ -79,7 +79,13 @@ export function useDynamicStepForm(opts: {
     } as FormValues,
     onSubmit: ({ value }) => opts.onSubmitSuccess(value),
     onSubmitInvalid: () => {
-      document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+      const invalid = document.querySelector<HTMLElement>(
+        '[aria-invalid="true"]',
+      );
+      // scrollIntoView handles react-aria containers (e.g. RadioGroup) where
+      // aria-invalid sits on a non-focusable [role="radiogroup"].
+      invalid?.scrollIntoView({ block: "center" });
+      invalid?.focus();
     },
     validationLogic: revalidateLogic(),
     validators: {

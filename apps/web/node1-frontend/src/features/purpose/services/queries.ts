@@ -1,4 +1,9 @@
-import type { EserviceId, KnodeId, PurposeId } from "@knodia/common-models/ids";
+import type {
+  AgreementId,
+  EserviceId,
+  KnodeId,
+  PurposeId,
+} from "@knodia/common-models/ids";
 
 import {
   getConsumerPurposeDetailsOptions,
@@ -10,7 +15,7 @@ import {
 import { client } from "@/libs/axios";
 
 const PURPOSES_PAGE_LIMIT = 9;
-const PURPOSES_PER_ESERVICE_LIMIT = 50;
+const PURPOSES_SECTION_LIMIT = 50;
 
 export const consumerPurposeDetailsQuery = (
   purposeId: PurposeId,
@@ -35,11 +40,18 @@ export const consumerPurposesQuery = (offset: number) =>
 export const consumerPurposesByEserviceQuery = (eserviceId: EserviceId) =>
   getConsumerPurposesOptions({
     client,
-    query: { eserviceId, limit: PURPOSES_PER_ESERVICE_LIMIT, offset: 0 },
+    query: { eserviceId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
   });
 
 export const producerPurposesQuery = (offset: number) =>
   getProducerPurposesOptions({
     client,
     query: { limit: PURPOSES_PAGE_LIMIT, offset },
+  });
+
+// TODO: replace hardcoded limit with pagination when the number of purposes per agreement grows
+export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
+  getProducerPurposesOptions({
+    client,
+    query: { agreementId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
   });

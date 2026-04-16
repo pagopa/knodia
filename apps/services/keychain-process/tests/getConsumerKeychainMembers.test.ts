@@ -46,8 +46,8 @@ const memberIds = [
 
 const consumerKeychain: ConsumerKeychain = {
   ...mockConsumerKeychains[0]!,
-  users: memberIds.map((userId) => ({
-    addedAt: new Date(),
+  users: memberIds.map((userId, index) => ({
+    addedAt: new Date(2026, 0, memberIds.length - index),
     userId: unsafeBrandUserId(userId),
   })),
 };

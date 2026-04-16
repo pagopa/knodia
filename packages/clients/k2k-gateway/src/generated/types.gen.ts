@@ -50,6 +50,11 @@ export type FileDownload = Blob | File;
 export type OrganizationId = string;
 
 /**
+ * Unique identifier of the Key
+ */
+export type KeyId = string;
+
+/**
  * Unique identifier of the created resource
  */
 export type CreatedResource = {
@@ -339,6 +344,33 @@ export type Agreements = {
     results: Array<Agreement>;
 };
 
+export type ClientAssertionVerificationRequest = {
+    /**
+     * Unique identifier of the Consumer Keychain
+     */
+    keychainId: string;
+    kid: KeyId;
+    /**
+     * Unique identifier of the Purpose
+     */
+    purposeId: string;
+};
+
+export type PublicKeyForVerification = {
+    algorithm: string;
+    encodedPem: string;
+    format: string;
+    kid: KeyId;
+};
+
+export type ClientAssertionVerificationResponse = {
+    /**
+     * Attributes of the Consumer organization
+     */
+    consumerAttributes: Array<Attribute>;
+    publicKey: PublicKeyForVerification;
+};
+
 export type Organization = {
     /**
      * Attributes associated with the Organization
@@ -477,6 +509,35 @@ export type GetStatusResponses = {
 };
 
 export type GetStatusResponse = GetStatusResponses[keyof GetStatusResponses];
+
+export type GetClientAssertionVerificationDataData = {
+    body: ClientAssertionVerificationRequest;
+    path?: never;
+    query?: never;
+    url: '/clientAssertionVerificationData';
+};
+
+export type GetClientAssertionVerificationDataErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+};
+
+export type GetClientAssertionVerificationDataError = GetClientAssertionVerificationDataErrors[keyof GetClientAssertionVerificationDataErrors];
+
+export type GetClientAssertionVerificationDataResponses = {
+    /**
+     * Client assertion verification data retrieved successfully
+     */
+    200: ClientAssertionVerificationResponse;
+};
+
+export type GetClientAssertionVerificationDataResponse = GetClientAssertionVerificationDataResponses[keyof GetClientAssertionVerificationDataResponses];
 
 export type GetCatalogEservicesData = {
     body: GetCatalogEserviceSearchParams;
@@ -842,6 +903,10 @@ export type GetPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: EserviceId;
+        /**
+         * Filter by Purpose State
+         */
+        state?: PurposeState;
     };
     url: '/purposes';
 };
