@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
+import { API_AgreementIdPathParam } from "@knodia/agreement-models/api";
 import { API_CreatedResource } from "@knodia/common-models/api";
 import { getContextValues } from "@knodia/fastify-zod-api-commons/context";
 import {
@@ -11,10 +12,12 @@ import {
   remoteResourcesManagerApi,
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
+import z from "zod";
 
 import {
   API_AgreementSeed,
   API_ConsumerAgreements,
+  API_KnodeIdQueryParams,
 } from "../../models/agreement/api.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
@@ -135,5 +138,85 @@ export const agreementConsumerRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/consumer/agreements",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(
+        `Reactivating Consumer Agreement ${req.params.agreementId} on knode ${req.query.knodeId}`,
+      );
+
+      await remoteResourcesManagerApi.reactivateAgreement({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { agreementId: req.params.agreementId },
+        query: { knodeId: req.query.knodeId },
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Reactivate an Agreement as Consumer",
+      operationId: "reactivateConsumerAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_KnodeIdQueryParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/:agreementId/reactivate",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      getUISessionAuthData(authData);
+
+      logger.info(
+        `Suspending Consumer Agreement ${req.params.agreementId} on knode ${req.query.knodeId}`,
+      );
+
+      await remoteResourcesManagerApi.suspendAgreement({
+        client: remoteResourcesManagerClient,
+        headers: getKnodiaServiceHeaders(req, correlationId),
+        path: { agreementId: req.params.agreementId },
+        query: { knodeId: req.query.knodeId },
+      });
+
+      res.status(204).send();
+    },
+    method: "POST",
+    schema: {
+      description: "Suspend an Agreement as Consumer",
+      operationId: "suspendConsumerAgreement",
+      params: API_AgreementIdPathParam,
+      querystring: API_KnodeIdQueryParams,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/consumer/agreements/:agreementId/suspend",
   });
 };
