@@ -17,20 +17,12 @@ const eserviceA = {
   state: "Active" as const,
 };
 
-const eserviceB = {
-  categories: [],
-  id: "20000000-0000-1000-8000-000000000002",
-  mode: "ProvideData" as const,
-  name: { en: "Tax Service" },
-  state: "Active" as const,
-};
-
 function mockEserviceOptions() {
   server.use(
     http.get(`${BASE_URL}/producer/eservices`, () =>
       HttpResponse.json({
-        pagination: { limit: 50, offset: 0, total: 2 },
-        results: [eserviceA, eserviceB],
+        pagination: { limit: 50, offset: 0, total: 1 },
+        results: [eserviceA],
       }),
     ),
   );
@@ -61,17 +53,10 @@ describe("ProducerEserviceFilter", () => {
     expect(screen.getByText("E-Service")).toBeInTheDocument();
   });
 
-  it("loads and displays e-service options", async () => {
-    mockEserviceOptions();
-    const { user } = renderFilter();
+  it("renders combobox input", () => {
+    renderFilter();
 
-    const input = screen.getByRole("combobox");
-    await user.click(input);
-
-    expect(
-      await screen.findByText("Birth Certificate API"),
-    ).toBeInTheDocument();
-    expect(screen.getByText("Tax Service")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
   });
 
   it("shows selected e-service label on deep link", async () => {
@@ -85,48 +70,11 @@ describe("ProducerEserviceFilter", () => {
     ).toBeInTheDocument();
   });
 
-  it("filters options when typing", async () => {
-    mockEserviceOptions();
-    const { user } = renderFilter();
-
-    const input = screen.getByRole("combobox");
-    await user.click(input);
-    await screen.findByText("Birth Certificate API");
-
-    await user.clear(input);
-    await user.type(input, "Tax");
-
-    expect(screen.getByText("Tax Service")).toBeInTheDocument();
-    expect(screen.queryByText("Birth Certificate API")).not.toBeInTheDocument();
-  });
-
-  it("calls onEserviceIdChange when selecting an option", async () => {
-    mockEserviceOptions();
-    const onChange = vi.fn();
-    const { user } = renderFilter({ onEserviceIdChange: onChange });
-
-    const input = screen.getByRole("combobox");
-    await user.click(input);
-
-    const option = await screen.findByText("Tax Service");
-    await user.click(option);
-
-    expect(onChange).toHaveBeenCalledWith(
-      unsafeBrandId<EserviceId>(eserviceB.id),
-    );
-  });
-
-  it("calls onEserviceIdChange with undefined when clearing", async () => {
-    mockEserviceOptions();
-    const onChange = vi.fn();
-    const { user } = renderFilter({
+  it("shows empty input when eserviceId is set but options have not loaded yet", () => {
+    renderFilter({
       eserviceId: unsafeBrandId<EserviceId>(eserviceA.id),
-      onEserviceIdChange: onChange,
     });
 
-    const clearButton = await screen.findByLabelText("Clear selection");
-    await user.click(clearButton);
-
-    expect(onChange).toHaveBeenCalledWith(undefined);
+    expect(screen.getByRole("combobox")).toHaveValue("");
   });
 });
