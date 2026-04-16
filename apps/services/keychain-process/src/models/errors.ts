@@ -26,18 +26,13 @@ const errorCodes = {
   INVALID_USER_ROLE: "0004",
   KEYCHAIN_MEMBER_NOT_FOUND: "0005",
   PURPOSE_ALREADY_LINKED_TO_CONSUMER_KEYCHAIN: "0006",
-  INVALID_KEY_LENGTH: "0007",
-  INVALID_PUBLIC_KEY: "0008",
-  JWK_DECODING_ERROR: "0009",
-  NOT_ALLOWED_CERTIFICATE: "0010",
-  NOT_ALLOWED_MULTIPLE_KEYS: "0011",
-  NOT_ALLOWED_PRIVATE_KEY: "0012",
-  NOT_AN_RSA_KEY: "0013",
-  KEY_ALREADY_EXISTS: "0014",
-  TOO_MANY_KEYS_PER_KEYCHAIN: "0015",
-  USER_NOT_ALLOWED: "0016",
-  KEY_NOT_FOUND_IN_KEYCHAIN: "0017",
-  CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND: "0018",
+  JWK_DECODING_ERROR: "0007",
+  NOT_ALLOWED_CERTIFICATE: "0008",
+  KEY_ALREADY_EXISTS: "0009",
+  TOO_MANY_KEYS_PER_KEYCHAIN: "0010",
+  USER_NOT_ALLOWED: "0011",
+  KEY_NOT_FOUND_IN_KEYCHAIN: "0012",
+  CONSUMER_KEYCHAIN_PURPOSE_NOT_FOUND: "0013",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -65,27 +60,6 @@ export function consumerKeychainPurposeNotFound({
     detail: `Purpose with id ${purpose.id} owned by Knode ${purpose.knodeId} is not linked to Consumer Keychain with id ${consumerKeychainId}`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Consumer Keychain Purpose Not Found",
-  });
-}
-
-export function invalidKeyLength(
-  actualLength: number | undefined,
-  minLength = 2048,
-) {
-  return createApiError<ErrorCodes>({
-    code: "INVALID_KEY_LENGTH",
-    detail: `Invalid RSA key length: ${actualLength} bits. It must be at least ${minLength}`,
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Invalid Key length",
-  });
-}
-
-export function invalidPublicKey() {
-  return createApiError<ErrorCodes>({
-    code: "INVALID_PUBLIC_KEY",
-    detail: "Public key is invalid",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Invalid Key",
   });
 }
 
@@ -137,33 +111,6 @@ export function notAllowedCertificate() {
     detail: "The received key is a x509 certificate",
     status: HTTP_STATUS_BAD_REQUEST,
     title: "Not allowed certificate",
-  });
-}
-
-export function notAllowedMultipleKeys() {
-  return createApiError<ErrorCodes>({
-    code: "NOT_ALLOWED_MULTIPLE_KEYS",
-    detail: "The received key contains multiple keys",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Not allowed multiple keys",
-  });
-}
-
-export function notAllowedPrivateKey() {
-  return createApiError<ErrorCodes>({
-    code: "NOT_ALLOWED_PRIVATE_KEY",
-    detail: "The received key is a private key",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Not allowed private key",
-  });
-}
-
-export function notAnRSAKey() {
-  return createApiError<ErrorCodes>({
-    code: "NOT_AN_RSA_KEY",
-    detail: "Provided key is not an RSA key",
-    status: HTTP_STATUS_BAD_REQUEST,
-    title: "Not an RSA key",
   });
 }
 

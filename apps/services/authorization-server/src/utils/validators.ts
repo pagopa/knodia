@@ -7,8 +7,11 @@ import type { Purpose } from "@knodia/purpose-models";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
 import { type OrganizationId, type PurposeId } from "@knodia/common-models/ids";
+import {
+  createPublicKey,
+  decodeBase64Pem,
+} from "@knodia/fastify-zod-api-commons/crypto";
 import { genericError } from "@knodia/fastify-zod-api-commons/models";
-import { createPublicKey } from "crypto";
 import {
   decodeJwt,
   decodeProtectedHeader,
@@ -206,15 +209,8 @@ export async function verifyClientAssertionSignature(
       );
     }
 
-    // TODO: put keychain-process crypto.ts in a shared package
-    const decodeBase64Pem = (base64String: string): string => {
-      const cleanedBase64 = base64String.trim();
-      const decodedBytes = Buffer.from(cleanedBase64, "base64");
-      return decodedBytes.toString("utf-8");
-    };
-
     const publicKey = createPublicKey({
-      key: decodeBase64Pem(publicKeyForVerification.encodedPem),
+      pemKey: decodeBase64Pem(publicKeyForVerification.encodedPem),
     });
 
     const result = await jwtVerify(clientAssertionJws, publicKey, {
