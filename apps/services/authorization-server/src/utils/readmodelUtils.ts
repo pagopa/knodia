@@ -49,7 +49,7 @@ export async function retrievePurpose(
   purposeId: PurposeId,
   readmodelService: ReadmodelService,
 ) {
-  const purpose = await readmodelService.getPurposeById(purposeId);
+  const purpose = await readmodelService.getPurpose(purposeId);
 
   if (!purpose) {
     throw purposeNotFound(purposeId);
