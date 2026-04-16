@@ -68,7 +68,7 @@ describe("ProducerAgreementSection", () => {
   it("renders no-match empty state when filter is active but no results", () => {
     renderSection({
       eserviceId: unsafeBrandId<EserviceId>(
-        "00000000-0000-0000-0000-000000000001",
+        "10000000-0000-1000-8000-000000000001",
       ),
     });
 
