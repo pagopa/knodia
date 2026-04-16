@@ -96,6 +96,11 @@ components:
       type: string
       format: uuid
       pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+    KeyId:
+      description: Unique identifier of the Key
+      type: string
+      format: base64url
+      pattern: ^[A-Za-z0-9_-]*$
     CreatedResource:
       description: Unique identifier of the created resource
       type: object
@@ -571,6 +576,57 @@ components:
         - pagination
         - results
       additionalProperties: false
+    ClientAssertionVerificationRequest:
+      type: object
+      properties:
+        keychainId:
+          description: Unique identifier of the Consumer Keychain
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        kid:
+          $ref: "#/components/schemas/KeyId"
+        purposeId:
+          description: Unique identifier of the Purpose
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      required:
+        - keychainId
+        - kid
+        - purposeId
+      additionalProperties: false
+    PublicKeyForVerification:
+      type: object
+      properties:
+        algorithm:
+          type: string
+        encodedPem:
+          type: string
+        format:
+          type: string
+        kid:
+          $ref: "#/components/schemas/KeyId"
+      required:
+        - algorithm
+        - encodedPem
+        - format
+        - kid
+      additionalProperties: false
+    ClientAssertionVerificationResponse:
+      type: object
+      properties:
+        consumerAttributes:
+          description: Attributes of the Consumer organization
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        publicKey:
+          $ref: "#/components/schemas/PublicKeyForVerification"
+      required:
+        - consumerAttributes
+        - publicKey
+      additionalProperties: false
     Organization:
       type: object
       properties:
@@ -778,6 +834,46 @@ paths:
             application/problem+json:
               schema:
                 description: Service status OK
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /clientAssertionVerificationData:
+    post:
+      operationId: getClientAssertionVerificationData
+      summary: Get client assertion verification data
+      tags:
+        - operation
+      description: Verify that the key and purpose are associated with the consumer
+        keychain, and return the public key and consumer attributes for further
+        verification by the auth server
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientAssertionVerificationRequest"
+      responses:
+        "200":
+          description: Client assertion verification data retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Client assertion verification data retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ClientAssertionVerificationResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /catalog:
@@ -1323,6 +1419,13 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/PurposeState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Purpose State
       responses:
         "200":
           description: Purposes retrieved successfully

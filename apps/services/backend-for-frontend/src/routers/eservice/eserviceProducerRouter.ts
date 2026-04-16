@@ -37,7 +37,8 @@ import {
   type PurposeProcessClient,
 } from "@knodia/purpose-process-client";
 
-import { config } from "../../config/config.ts";
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import { apiTags } from "../../models/apiTags.ts";
 import {
   API_EserviceSeed,
@@ -53,6 +54,7 @@ import { getUISessionAuthData } from "../../utils/authData.ts";
 
 interface EserviceProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
+  config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
   fileManager: FileManager;
   pollingService: PollingService;
@@ -67,6 +69,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
   fastify,
   {
     agreementProcessClient,
+    config,
     eserviceProcessClient,
     fileManager,
     pollingService,
@@ -271,35 +274,93 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
       );
 
       const path = { eserviceId: req.params.eserviceId };
+      const headers = getKnodiaServiceHeaders(req, correlationId);
 
       const [
         { data: eservice },
         { data: latestVersion },
         { data: latestVersionInterface },
+        { data: allAgreements },
+        { data: activeAgreements },
+        { data: allPurposes },
+        { data: activePurposes },
+        { data: totalDailyCalls },
       ] = await Promise.all([
         eserviceProcessApi.getEservice({
           client: eserviceProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
+          headers,
           path,
         }),
         eserviceProcessApi.getEserviceLatestVersion({
           client: eserviceProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
+          headers,
           path,
         }),
         eserviceProcessApi.getEserviceLatestVersionInterface({
           client: eserviceProcessClient,
-          headers: getKnodiaServiceHeaders(req, correlationId),
+          headers,
           path,
+        }),
+        agreementProcessApi.getAgreements({
+          client: agreementProcessClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            limit: 1,
+            offset: 0,
+          },
+        }),
+        agreementProcessApi.getAgreements({
+          client: agreementProcessClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            limit: 1,
+            offset: 0,
+            state: [API_AgreementState.enum.Active],
+          },
+        }),
+        purposeProcessApi.getPurposes({
+          client: purposeProcessClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            limit: 1,
+            offset: 0,
+          },
+        }),
+        purposeProcessApi.getPurposes({
+          client: purposeProcessClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            limit: 1,
+            offset: 0,
+            state: [API_PurposeState.enum.Active],
+          },
+        }),
+        purposeProcessApi.getPurposesTotalDailyCalls({
+          client: purposeProcessClient,
+          headers,
+          query: {
+            eserviceId: req.params.eserviceId,
+            state: [API_PurposeState.enum.Active],
+          },
         }),
       ]);
 
-      // TODO: fetch real counts from agreement-process and purpose-process
       res.send(
         toAPI_ProducerEserviceDetails({
           counters: {
-            agreements: { active: 3, total: 5 },
-            purposes: { active: 1, total: 2, totalApiCallsPerDay: 15000 },
+            agreements: {
+              active: activeAgreements.pagination.total,
+              total: allAgreements.pagination.total,
+            },
+            purposes: {
+              active: activePurposes.pagination.total,
+              total: allPurposes.pagination.total,
+              totalApiCallsPerDay: totalDailyCalls.totalDailyCalls,
+            },
           },
           eservice,
           latestVersion,

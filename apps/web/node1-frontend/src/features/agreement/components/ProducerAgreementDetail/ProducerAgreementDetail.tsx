@@ -1,18 +1,18 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, Link } from "@knodia/ui-kit/ui";
-import { createLink } from "@tanstack/react-router";
+import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
+import { Button } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
+import { RouterLink } from "@/components/routerLinks";
 import { SettingsCard } from "@/components/SettingCard";
 import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
 import { AgreementStateChip } from "../AgreementStateChip";
-
-const RouterLink = createLink(Link);
+import { AgreementPurposeSection } from "./AgreementPurposeSection";
 
 export function ProducerAgreementDetail({
   agreement,
@@ -63,7 +63,9 @@ export function ProducerAgreementDetail({
         </div>
       </div>
 
-      {/* TODO: Implement Purposes section */}
+      <AgreementPurposeSection
+        agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+      />
     </>
   );
 }

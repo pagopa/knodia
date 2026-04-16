@@ -1,7 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import {
-  ButtonLink,
   Cell,
   Column,
   Empty,
@@ -12,14 +11,13 @@ import {
   TableHeader,
 } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
-import { createLink } from "@tanstack/react-router";
 
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { RecentlyUpdatedIcon } from "@/components/RecentlyUpdatedIcon";
+import { ButtonLinkWithPreload } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 
 import { PurposeStateChip } from "../PurposeStateChip";
-
-const ButtonLinkWithPreload = createLink(ButtonLink);
 
 export function ConsumerPurposeTable({
   isLoading,
@@ -70,6 +68,9 @@ export function ConsumerPurposeTable({
         <Column id="producer">Producer</Column>
         <Column id="keychains">Keychains</Column>
         <Column id="status">Status</Column>
+        <Column id="recentUpdate">
+          <span className="sr-only">Recent update</span>
+        </Column>
         <Column id="actions">
           <span className="sr-only">Actions</span>
         </Column>
@@ -96,6 +97,9 @@ export function ConsumerPurposeTable({
             </Cell>
             <Cell>
               <PurposeStateChip state={purpose.state} type="bright" />
+            </Cell>
+            <Cell>
+              {purpose.hasRecentlyBeenUpdated && <RecentlyUpdatedIcon />}
             </Cell>
             <Cell className="text-right">
               <ButtonLinkWithPreload

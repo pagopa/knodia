@@ -31,7 +31,7 @@ vi.mock("@aws-sdk/client-cognito-identity-provider", () => {
 
 import type { ConsumerKeychain } from "@knodia/keychain-models";
 
-import { API_Users } from "../src/models/api.ts";
+import { API_KeychainMembers } from "../src/models/api.ts";
 import { mockConsumerKeychains } from "./mockConsumerKeychains.ts";
 import {
   injectAppRequest,
@@ -46,7 +46,10 @@ const memberIds = [
 
 const consumerKeychain: ConsumerKeychain = {
   ...mockConsumerKeychains[0]!,
-  users: memberIds.map(unsafeBrandUserId),
+  users: memberIds.map((userId, index) => ({
+    addedAt: new Date(2026, 0, memberIds.length - index),
+    userId: unsafeBrandUserId(userId),
+  })),
 };
 
 const VALID_CONSUMER_KEYCHAIN_ID = consumerKeychain.id;
@@ -59,14 +62,15 @@ const allowedTestTokens: Extract<TestToken, { type: "ui-session" }>[] = [
 
 const getConsumerKeychainMembers = (
   consumerKeychainId: string,
+  query: Record<string, string> = { limit: "50", offset: "0" },
   token: TestToken = {
     ...allowedTestTokens[0]!,
     organizationId: consumerKeychain.ownerId,
   },
 ) =>
-  injectAppRequest(token).get(
-    `/consumerKeychains/${consumerKeychainId}/members`,
-  );
+  injectAppRequest(token)
+    .get(`/consumerKeychains/${consumerKeychainId}/members`)
+    .query(query);
 
 describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychainMembers)", () => {
   beforeEach(() => {
@@ -112,6 +116,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
 
       const response = await getConsumerKeychainMembers(
         VALID_CONSUMER_KEYCHAIN_ID,
+        { limit: "50", offset: "0" },
         {
           ...token,
           organizationId: consumerKeychain.ownerId,
@@ -119,18 +124,25 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
       );
 
       expect(response.statusCode).toBe(200);
-      expect(API_Users.parse(response.json())).toEqual([
-        {
-          email: "mario.rossi@example.com",
-          id: memberIds[0],
-          username: "Mario Rossi",
+      expect(API_KeychainMembers.parse(response.json())).toEqual({
+        pagination: {
+          limit: 50,
+          offset: 0,
+          total: memberIds.length,
         },
-        {
-          email: "giulia.bianchi@example.com",
-          id: memberIds[1],
-          username: "Giulia Bianchi",
-        },
-      ]);
+        results: [
+          {
+            email: "mario.rossi@example.com",
+            id: memberIds[0],
+            username: "Mario Rossi",
+          },
+          {
+            email: "giulia.bianchi@example.com",
+            id: memberIds[1],
+            username: "Giulia Bianchi",
+          },
+        ],
+      });
     },
   );
 
@@ -139,6 +151,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
 
     const response = await getConsumerKeychainMembers(
       VALID_CONSUMER_KEYCHAIN_ID,
+      undefined,
       {
         ...allowedTestTokens[0]!,
         organizationId: generateId<OrganizationId>(),
@@ -154,6 +167,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
     async (token) => {
       const response = await getConsumerKeychainMembers(
         VALID_CONSUMER_KEYCHAIN_ID,
+        undefined,
         token,
       );
 
@@ -165,6 +179,7 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
   it("should return 404 for non-existent consumer keychain id", async () => {
     const response = await getConsumerKeychainMembers(
       NON_EXISTENT_CONSUMER_KEYCHAIN_ID,
+      undefined,
     );
 
     expect(response.statusCode).toBe(404);
@@ -172,9 +187,30 @@ describe("GET /consumerKeychains/:consumerKeychainId/members (getConsumerKeychai
   });
 
   it("should return 400 for invalid consumer keychain id format", async () => {
-    const response = await getConsumerKeychainMembers("not-a-uuid");
+    const response = await getConsumerKeychainMembers("not-a-uuid", undefined);
 
     expect(response.statusCode).toBe(400);
     expect(sendMock).not.toHaveBeenCalled();
   });
+
+  it.each([
+    { limit: "abc", offset: "0" },
+    { limit: "0", offset: "0" },
+    { limit: "51", offset: "0" },
+    { limit: "10", offset: "-1" },
+    { limit: new Date(), offset: NaN },
+    { limit: 9999999, offset: 9999999 },
+    {
+      invalidParam: "invalid",
+    },
+  ])(
+    "should return 400 if query parameters are formatted incorrectly (%o)",
+    async (query) => {
+      const response = await getConsumerKeychainMembers(
+        VALID_CONSUMER_KEYCHAIN_ID,
+        query as never,
+      );
+      expect(response.statusCode).toBe(400);
+    },
+  );
 });

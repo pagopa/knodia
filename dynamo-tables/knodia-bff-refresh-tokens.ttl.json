@@ -1,0 +1,7 @@
+{
+  "TableName": "knodia-bff-refresh-tokens",
+  "TimeToLiveSpecification": {
+    "Enabled": true,
+    "AttributeName": "ttl"
+  }
+}

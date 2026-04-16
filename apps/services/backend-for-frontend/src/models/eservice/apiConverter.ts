@@ -15,6 +15,8 @@ import type {
   API_ProducerEserviceDetails,
 } from "./api.ts";
 
+import { hasRecentlyBeenUpdated } from "../../utils/recentUpdate.ts";
+
 export const toAPI_ProducerEservice = ({
   activeAgreements,
   activePurposes,
@@ -118,31 +120,27 @@ export const toAPI_ConsumerEserviceDetails = (
   state: detail.latestVersion.state,
 });
 
-export const toAPI_ConsumerEservice = (
-  eservice: remoteResourcesManagerApi.Eservice,
-  recentEserviceUpdateDays: number,
-): API_ConsumerEservice => {
-  // TODO https://pagopa.atlassian.net/browse/KN-246
-  const hasRecentlyBeenUpdated = (dateString: string): boolean => {
-    const updatedAt = new Date(dateString);
-    const xDaysAgo = new Date();
-    xDaysAgo.setDate(xDaysAgo.getDate() - recentEserviceUpdateDays);
-
-    return updatedAt >= xDaysAgo;
-  };
-
-  return {
-    agreement: eservice.agreement,
-    categories: eservice.categories,
-    hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice.updatedAt),
-    id: eservice.id,
-    mode: eservice.mode,
-    name: eservice.name,
-    producer: eservice.producer,
-    requiredAttributes: eservice.version.requiredAttributes,
-    state: eservice.version.state,
-  };
-};
+export const toAPI_ConsumerEservice = ({
+  counters,
+  eservice,
+  recentUpdateDays,
+}: {
+  counters: { activePurposes: number; consumerKeychains: number };
+  eservice: remoteResourcesManagerApi.Eservice;
+  recentUpdateDays: number;
+}): API_ConsumerEservice => ({
+  activePurposes: counters.activePurposes,
+  agreement: eservice.agreement,
+  categories: eservice.categories,
+  consumerKeychains: counters.consumerKeychains,
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(eservice, recentUpdateDays),
+  id: eservice.id,
+  mode: eservice.mode,
+  name: eservice.name,
+  producer: eservice.producer,
+  requiredAttributes: eservice.version.requiredAttributes,
+  state: eservice.version.state,
+});
 
 export const toAPI_ConsumerCatalogEserviceSearchResult = (
   catalogEserviceSearchResult: remoteResourcesManagerApi.CatalogEserviceSearchResult,

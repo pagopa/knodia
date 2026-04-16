@@ -7,8 +7,9 @@ import {
 } from "@tanstack/react-form";
 import { createContext, useContext } from "react";
 
-import type { FormValues } from "@/features/purpose/engine/types";
+import type { FormValues, JsonSchema } from "@/features/purpose/engine/types";
 
+import { getDefaultValues } from "@/features/purpose/engine/schemaParser";
 import {
   DETAILS_STEP_DEFAULTS,
   type DetailsStepData,
@@ -59,6 +60,36 @@ export function useDetailsStepForm(
     validationLogic: revalidateLogic(),
     validators: {
       onDynamic: detailsStepSchema(maxDailyCallsPerConsumer),
+    },
+  });
+}
+
+export function useDynamicStepForm(opts: {
+  formAnswers: FormValues;
+  jsonSchema: JsonSchema;
+  onDynamic: (params: {
+    value: FormValues;
+  }) => undefined | { fields: Record<string, string> };
+  onSubmitSuccess: (value: FormValues) => void;
+}) {
+  return useAppForm({
+    defaultValues: {
+      ...getDefaultValues(opts.jsonSchema),
+      ...opts.formAnswers,
+    } as FormValues,
+    onSubmit: ({ value }) => opts.onSubmitSuccess(value),
+    onSubmitInvalid: () => {
+      const invalid = document.querySelector<HTMLElement>(
+        '[aria-invalid="true"]',
+      );
+      // scrollIntoView handles react-aria containers (e.g. RadioGroup) where
+      // aria-invalid sits on a non-focusable [role="radiogroup"].
+      invalid?.scrollIntoView({ block: "center" });
+      invalid?.focus();
+    },
+    validationLogic: revalidateLogic(),
+    validators: {
+      onDynamic: opts.onDynamic,
     },
   });
 }

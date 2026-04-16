@@ -1,21 +1,18 @@
 import type { bffApi } from "@knodia/bff-client";
 
-import { Button, ButtonLink, Link, Modal } from "@knodia/ui-kit/ui";
+import { Button, Modal } from "@knodia/ui-kit/ui";
 import { ArrowRightIcon } from "@phosphor-icons/react";
-import { createLink } from "@tanstack/react-router";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
+import { ButtonLinkWithPreload, RouterLink } from "@/components/routerLinks";
 import { useHasRole } from "@/contexts/auth";
 import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgreementCard";
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
-
-const RouterLink = createLink(Link);
-const RouterButtonLink = createLink(ButtonLink);
 
 export function ProducerPurposeDetail({
   purpose,
@@ -70,7 +67,7 @@ export function ProducerPurposeDetail({
 
       <PurposeAgreementCard
         action={
-          <RouterButtonLink
+          <ButtonLinkWithPreload
             aria-label="Go to agreement"
             hierarchy="neutral"
             kind="tonal"
@@ -79,7 +76,7 @@ export function ProducerPurposeDetail({
             to="/production/agreements/$id"
           >
             <ArrowRightIcon />
-          </RouterButtonLink>
+          </ButtonLinkWithPreload>
         }
         agreement={purpose.agreement}
       />
@@ -96,6 +93,7 @@ function PurposeActionButton({ state }: { state: bffApi.PurposeState }) {
         </Button>
         <Modal
           actionLabel="Suspend anyway"
+          cancelLabel="Cancel"
           description="If you suspend it, the Consumer won't be able to use the associated E-Service for this Purpose. Are you sure you want to suspend this Purpose? You will be able to reactivate it later."
           isDismissable
           kind="destructive"

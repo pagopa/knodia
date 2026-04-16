@@ -33,6 +33,8 @@ import {
   type RemoteResourcesManagerClient,
 } from "@knodia/remote-resources-manager-client";
 
+import type { BffProcessConfig } from "../../config/config.ts";
+
 import {
   API_GetProducerAgreementsQueryParams,
   API_ProducerAgreementDetails,
@@ -52,8 +54,8 @@ const producerVisibleStates: API_AgreementState[] = [
 
 interface AgreementProducerRouterOptions {
   agreementProcessClient: AgreementProcessClient;
+  config: BffProcessConfig;
   eserviceProcessClient: EserviceProcessClient;
-  knodeId: KnodeId;
   organizationProcessClient: OrganizationProcessClient;
   remoteResourcesManagerClient: RemoteResourcesManagerClient;
 }
@@ -64,8 +66,8 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
   fastify,
   {
     agreementProcessClient,
+    config,
     eserviceProcessClient,
-    knodeId,
     organizationProcessClient,
     remoteResourcesManagerClient,
   },
@@ -127,7 +129,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
                 client: remoteResourcesManagerClient,
                 headers: getKnodiaServiceHeaders(req, correlationId),
                 query: {
-                  knodeId,
+                  knodeId: config.knodeId,
                   // Safe: agreements and consumers are paginated with the same limit, so unique consumer IDs ≤ limit
                   limit: entityIds.length,
                   offset: 0,
@@ -154,6 +156,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
             eservicesMap.get(agreement.eserviceId),
             `E-service ${agreement.eserviceId} not found for Agreement ${agreement.id}`,
           ),
+          recentUpdateDays: config.recentUpdateDays,
         }),
       );
 
@@ -233,7 +236,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           latestEserviceVersionState: latestVersion.state,
           producer: {
             ...producer,
-            knodeId,
+            knodeId: config.knodeId,
           },
         }),
       );

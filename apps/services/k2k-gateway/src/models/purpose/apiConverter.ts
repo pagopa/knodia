@@ -3,9 +3,12 @@ import type { purposeProcessApi } from "@knodia/purpose-process-client";
 
 import { match } from "ts-pattern";
 
-import type { API_Purpose, API_PurposeSeed, API_PurposeState } from "./api.ts";
-
 import { toAPI_KnodeId } from "../knode/apiConverter.ts";
+import {
+  type API_Purpose,
+  type API_PurposeSeed,
+  API_PurposeState,
+} from "./api.ts";
 
 export function toAPI_Purpose(purpose: purposeProcessApi.Purpose): API_Purpose {
   return {
@@ -44,13 +47,23 @@ export function toProcessAPI_PurposeSeed(
   };
 }
 
+export function toProcessAPI_PurposeState(
+  state: API_PurposeState,
+): purposeProcessApi.PurposeState {
+  return match(state)
+    .with(API_PurposeState.enum.ACTIVE, () => "Active" as const)
+    .with(API_PurposeState.enum.SUSPENDED, () => "Suspended" as const)
+    .with(API_PurposeState.enum.ARCHIVED, () => "Archived" as const)
+    .exhaustive();
+}
+
 function toAPI_PurposeState(
   state: purposeProcessApi.PurposeState,
 ): API_PurposeState {
   return match(state)
-    .with("Active", () => "ACTIVE" as const)
-    .with("Suspended", () => "SUSPENDED" as const)
-    .with("Archived", () => "ARCHIVED" as const)
+    .with("Active", () => API_PurposeState.enum.ACTIVE)
+    .with("Suspended", () => API_PurposeState.enum.SUSPENDED)
+    .with("Archived", () => API_PurposeState.enum.ARCHIVED)
     .exhaustive();
 }
 

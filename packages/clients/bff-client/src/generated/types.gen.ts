@@ -275,7 +275,7 @@ export type ProducerEserviceDetailsPurposeCounters = {
      */
     total: number;
     /**
-     * Total API calls per day across all purposes
+     * Total API calls per day across all Active purposes
      */
     totalApiCallsPerDay: number;
 };
@@ -401,13 +401,21 @@ export type CompactEservice = {
 };
 
 export type ConsumerEservice = {
+    /**
+     * Number of active Purposes for this E-service
+     */
+    activePurposes: number;
     agreement: {
         id: string;
         state: AgreementState;
     };
     categories: Array<EserviceCategory>;
     /**
-     * Indicates whether the E-service has been updated in the last days
+     * Number of Consumer Keychains linked to active Purposes of this E-service
+     */
+    consumerKeychains: number;
+    /**
+     * Indicates whether the E-service has been recently updated
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
@@ -443,6 +451,10 @@ export type AgreementSeed = {
 export type ProducerAgreement = {
     consumer: CompactOrganization;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Agreement has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     state: AgreementState;
 };
@@ -483,12 +495,7 @@ export type SessionRequest = {
 };
 
 export type SessionResponse = {
-    refreshToken: string;
     uiSessionToken: string;
-};
-
-export type RefreshRequest = {
-    refreshToken: string;
 };
 
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
@@ -592,6 +599,7 @@ export type KeychainKey = {
     createdAt: string;
     kid: KeyId;
     name: KeychainKeyLocalizedName;
+    uploaderUsername?: string;
 };
 
 export type KeychainKeys = {
@@ -603,6 +611,10 @@ export type KeychainMemberSeed = {
     userId: UserId;
 };
 
+export type ConsumerKeychainMembershipCheckResult = {
+    isMember: boolean;
+};
+
 export type User = {
     email: string;
     id: UserId;
@@ -610,6 +622,11 @@ export type User = {
 };
 
 export type Users = Array<User>;
+
+export type KeychainMembers = {
+    pagination: Pagination;
+    results: Array<User>;
+};
 
 /**
  * Unique JWK identifier (kid) of the created key
@@ -637,6 +654,10 @@ export type PurposeSeed = {
 export type ConsumerPurpose = {
     dailyCalls: number;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     /**
      * Number of Consumer Keychains associated with this purpose
@@ -657,6 +678,10 @@ export type ProducerPurpose = {
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
@@ -742,17 +767,13 @@ export type CreateSessionResponses = {
 export type CreateSessionResponse = CreateSessionResponses[keyof CreateSessionResponses];
 
 export type RefreshSessionData = {
-    body: RefreshRequest;
+    body?: never;
     path?: never;
     query?: never;
     url: '/auth/ui-session/refresh';
 };
 
 export type RefreshSessionErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
     /**
      * Unauthorized
      */
@@ -769,6 +790,22 @@ export type RefreshSessionResponses = {
 };
 
 export type RefreshSessionResponse = RefreshSessionResponses[keyof RefreshSessionResponses];
+
+export type LogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/logout';
+};
+
+export type LogoutResponses = {
+    /**
+     * Logged out successfully
+     */
+    204: void;
+};
+
+export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
@@ -975,7 +1012,7 @@ export type GetConsumerKeychainKeysErrors = {
      */
     403: Problem;
     /**
-     * Consumer keychain not found
+     * Consumer Keychain not found
      */
     404: Problem;
 };
@@ -984,7 +1021,7 @@ export type GetConsumerKeychainKeysError = GetConsumerKeychainKeysErrors[keyof G
 
 export type GetConsumerKeychainKeysResponses = {
     /**
-     * Consumer Keychain keys retrieved successfully
+     * Consumer Keychain Keys retrieved successfully
      */
     200: KeychainKeys;
 };
@@ -1027,12 +1064,96 @@ export type UploadConsumerKeychainKeyError = UploadConsumerKeychainKeyErrors[key
 
 export type UploadConsumerKeychainKeyResponses = {
     /**
-     * Consumer Keychain key uploaded successfully
+     * Consumer Keychain Key uploaded successfully
      */
     201: CreatedKeyResource;
 };
 
 export type UploadConsumerKeychainKeyResponse = UploadConsumerKeychainKeyResponses[keyof UploadConsumerKeychainKeyResponses];
+
+export type RemoveConsumerKeychainKeyData = {
+    body?: never;
+    path: {
+        keyId: string;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
+};
+
+export type RemoveConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
+
+export type RemoveConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain Key removed successfully
+     */
+    204: void;
+};
+
+export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyResponses[keyof RemoveConsumerKeychainKeyResponses];
+
+export type DownloadConsumerKeychainKeyData = {
+    body?: never;
+    path: {
+        keyId: string;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
+};
+
+export type DownloadConsumerKeychainKeyErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain Key not found
+     */
+    404: Problem;
+};
+
+export type DownloadConsumerKeychainKeyError = DownloadConsumerKeychainKeyErrors[keyof DownloadConsumerKeychainKeyErrors];
+
+export type DownloadConsumerKeychainKeyResponses = {
+    /**
+     * Consumer Keychain Key downloaded successfully
+     */
+    200: FileDownload;
+};
+
+export type DownloadConsumerKeychainKeyResponse = DownloadConsumerKeychainKeyResponses[keyof DownloadConsumerKeychainKeyResponses];
 
 export type GetConsumerKeychainsData = {
     body?: never;
@@ -1069,7 +1190,7 @@ export type GetConsumerKeychainsError = GetConsumerKeychainsErrors[keyof GetCons
 
 export type GetConsumerKeychainsResponses = {
     /**
-     * Consumer keychains retrieved successfully
+     * Consumer Keychains retrieved successfully
      */
     200: Keychains;
 };
@@ -1171,7 +1292,7 @@ export type GetConsumerKeychainDetailsErrors = {
      */
     403: Problem;
     /**
-     * Consumer keychain not found
+     * Consumer Keychain not found
      */
     404: Problem;
 };
@@ -1231,7 +1352,16 @@ export type GetConsumerKeychainMembersData = {
     path: {
         consumerKeychainId: string;
     };
-    query?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+    };
     url: '/consumerKeychains/{consumerKeychainId}/members';
 };
 
@@ -1249,7 +1379,7 @@ export type GetConsumerKeychainMembersErrors = {
      */
     403: Problem;
     /**
-     * Consumer keychain not found
+     * Consumer Keychain not found
      */
     404: Problem;
 };
@@ -1258,9 +1388,9 @@ export type GetConsumerKeychainMembersError = GetConsumerKeychainMembersErrors[k
 
 export type GetConsumerKeychainMembersResponses = {
     /**
-     * Consumer Keychain members retrieved successfully
+     * Consumer Keychain Members retrieved successfully
      */
-    200: Users;
+    200: KeychainMembers;
 };
 
 export type GetConsumerKeychainMembersResponse = GetConsumerKeychainMembersResponses[keyof GetConsumerKeychainMembersResponses];
@@ -1301,56 +1431,12 @@ export type AddConsumerKeychainMemberError = AddConsumerKeychainMemberErrors[key
 
 export type AddConsumerKeychainMemberResponses = {
     /**
-     * Consumer Keychain member added successfully
+     * Consumer Keychain Member added successfully
      */
     204: void;
 };
 
 export type AddConsumerKeychainMemberResponse = AddConsumerKeychainMemberResponses[keyof AddConsumerKeychainMemberResponses];
-
-export type RemoveConsumerKeychainKeyData = {
-    body?: never;
-    path: {
-        keyId: string;
-        consumerKeychainId: string;
-    };
-    query?: never;
-    url: '/consumerKeychains/{consumerKeychainId}/keys/{keyId}';
-};
-
-export type RemoveConsumerKeychainKeyErrors = {
-    /**
-     * Bad Request
-     */
-    400: Problem;
-    /**
-     * Unauthorized
-     */
-    401: Problem;
-    /**
-     * Forbidden
-     */
-    403: Problem;
-    /**
-     * Consumer Keychain not found
-     */
-    404: Problem;
-    /**
-     * Conflict
-     */
-    409: Problem;
-};
-
-export type RemoveConsumerKeychainKeyError = RemoveConsumerKeychainKeyErrors[keyof RemoveConsumerKeychainKeyErrors];
-
-export type RemoveConsumerKeychainKeyResponses = {
-    /**
-     * Consumer Keychain key removed successfully
-     */
-    204: void;
-};
-
-export type RemoveConsumerKeychainKeyResponse = RemoveConsumerKeychainKeyResponses[keyof RemoveConsumerKeychainKeyResponses];
 
 export type RemoveConsumerKeychainMemberData = {
     body?: never;
@@ -1385,12 +1471,52 @@ export type RemoveConsumerKeychainMemberError = RemoveConsumerKeychainMemberErro
 
 export type RemoveConsumerKeychainMemberResponses = {
     /**
-     * Consumer Keychain member removed successfully
+     * Consumer Keychain Member removed successfully
      */
     204: void;
 };
 
 export type RemoveConsumerKeychainMemberResponse = RemoveConsumerKeychainMemberResponses[keyof RemoveConsumerKeychainMemberResponses];
+
+export type GetConsumerKeychainMembershipData = {
+    body?: never;
+    path: {
+        userId: UserId;
+        consumerKeychainId: string;
+    };
+    query?: never;
+    url: '/consumerKeychains/{consumerKeychainId}/membership/{userId}';
+};
+
+export type GetConsumerKeychainMembershipErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Consumer Keychain not found
+     */
+    404: Problem;
+};
+
+export type GetConsumerKeychainMembershipError = GetConsumerKeychainMembershipErrors[keyof GetConsumerKeychainMembershipErrors];
+
+export type GetConsumerKeychainMembershipResponses = {
+    /**
+     * Consumer Keychain membership check retrieved successfully
+     */
+    200: ConsumerKeychainMembershipCheckResult;
+};
+
+export type GetConsumerKeychainMembershipResponse = GetConsumerKeychainMembershipResponses[keyof GetConsumerKeychainMembershipResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;
@@ -2040,6 +2166,10 @@ export type GetProducerPurposesData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Agreement ID
+         */
+        agreementId?: string;
         /**
          * Filter by E-service ID
          */

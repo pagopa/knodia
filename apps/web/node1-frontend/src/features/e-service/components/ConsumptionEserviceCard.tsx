@@ -27,8 +27,12 @@ export function ConsumptionEserviceCard({
       />
       <div className="grid grid-cols-3 gap-1.5">
         <AgreementInfoCard state={eservice.agreement.state} />
-        <GenericInfoCard label="Active Purposes">-</GenericInfoCard>
-        <GenericInfoCard label="Keychains">-</GenericInfoCard>
+        <GenericInfoCard label="Active Purposes">
+          {eservice.activePurposes}
+        </GenericInfoCard>
+        <GenericInfoCard label="Keychains">
+          {eservice.consumerKeychains}
+        </GenericInfoCard>
       </div>
       <EserviceCardFooter
         mode={eservice.mode}

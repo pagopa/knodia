@@ -10,20 +10,25 @@ import type {
   API_PurposeDetails,
 } from "./api.ts";
 
+import { hasRecentlyBeenUpdated } from "../../utils/recentUpdate.ts";
+
 export const toAPI_ConsumerPurpose = ({
   consumerKeychainsCount,
   eserviceDetails,
   purpose,
+  recentUpdateDays,
 }: {
   consumerKeychainsCount: number;
   eserviceDetails: remoteResourcesManagerApi.EserviceDetails;
   purpose: remoteResourcesManagerApi.Purpose;
+  recentUpdateDays: number;
 }): API_ConsumerPurpose => ({
   dailyCalls: purpose.dailyCalls,
   eservice: {
     id: eserviceDetails.id,
     name: eserviceDetails.name,
   },
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   keychains: consumerKeychainsCount,
   name: purpose.name,
@@ -39,10 +44,12 @@ export const toAPI_ProducerPurpose = ({
   consumer,
   eservice,
   purpose,
+  recentUpdateDays,
 }: {
   consumer: remoteResourcesManagerApi.Organization;
   eservice: eserviceProcessApi.Eservice;
   purpose: purposeProcessApi.Purpose;
+  recentUpdateDays: number;
 }): API_ProducerPurpose => ({
   consumer: {
     id: consumer.id,
@@ -55,6 +62,7 @@ export const toAPI_ProducerPurpose = ({
     id: eservice.id,
     name: eservice.name,
   },
+  hasRecentlyBeenUpdated: hasRecentlyBeenUpdated(purpose, recentUpdateDays),
   id: purpose.id,
   name: purpose.name,
   state: purpose.state,

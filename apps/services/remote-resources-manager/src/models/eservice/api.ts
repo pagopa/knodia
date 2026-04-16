@@ -170,7 +170,6 @@ export const API_Eservice = z
       id: z.uuid(),
       state: API_AgreementState,
     }),
-    // TODO: add purposes and consumerKeychains
     categories: z.array(API_EserviceCategory),
     id: z.uuid(),
     mode: API_EserviceMode,

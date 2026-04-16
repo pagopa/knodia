@@ -4,9 +4,7 @@
   "scripts": {
     "typecheck": "tsc",
     "lint": "eslint .",
-    "lint:autofix": "eslint . --fix",
-    "test": "pnpm -w test --project @knodia/polling",
-    "test:watch": "pnpm test --watch"
+    "lint:autofix": "eslint . --fix"
   },
   "exports": {
     ".": "./src/polling.ts",

@@ -395,6 +395,7 @@ services:
       CALLER_KNODE_ID: "Lynx"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-orion-eservice-interfaces
       ESERVICE_PROCESS_URL: "http://eservice-process-orion:3000"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-orion:3000"
       ORGANIZATION_PROCESS_URL: "http://organization-process-orion:3000"
       PURPOSE_PROCESS_URL: "http://purpose-process-orion:3000"
       INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
@@ -411,6 +412,8 @@ services:
       agreement-process-orion:
         condition: service_started
       eservice-process-orion:
+        condition: service_started
+      keychain-process-orion:
         condition: service_started
       organization-process-orion:
         condition: service_started
@@ -533,13 +536,17 @@ services:
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
       UI_SESSION_JWT_KID: "alias/local-knodia-key"
-      UI_SESSION_JWT_SECONDS_DURATION: "3600"
+      UI_SESSION_JWT_SECONDS_DURATION: "300"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-orion-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
+      COOKIE_PATH_PREFIX: /bff
+      COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-orion:
         condition: service_started
@@ -548,6 +555,8 @@ services:
       minio:
         condition: service_healthy
       local-kms-setup:
+        condition: service_completed_successfully
+      dynamodb-setup:
         condition: service_completed_successfully
 
   eservice-readmodel-writer-orion:
@@ -903,6 +912,7 @@ services:
       CALLER_KNODE_ID: "Orion"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-lynx-eservice-interfaces
       ESERVICE_PROCESS_URL: "http://eservice-process-lynx:3000"
+      KEYCHAIN_PROCESS_URL: "http://keychain-process-lynx:3000"
       ORGANIZATION_PROCESS_URL: "http://organization-process-lynx:3000"
       PURPOSE_PROCESS_URL: "http://purpose-process-lynx:3000"
       INTERNAL_JWT_AUDIENCE: "local.knodia.test/internal"
@@ -919,6 +929,8 @@ services:
       agreement-process-lynx:
         condition: service_started
       eservice-process-lynx:
+        condition: service_started
+      keychain-process-lynx:
         condition: service_started
       organization-process-lynx:
         condition: service_started
@@ -1041,13 +1053,17 @@ services:
       UI_SESSION_JWT_AUDIENCE: "local.knodia.test/ui-session"
       UI_SESSION_JWT_ISSUER: "local-knodia"
       UI_SESSION_JWT_KID: "alias/local-knodia-key"
-      UI_SESSION_JWT_SECONDS_DURATION: "3600"
+      UI_SESSION_JWT_SECONDS_DURATION: "300"
       ESERVICE_INTERFACES_S3_BUCKET: knodia-lynx-eservice-interfaces
       AWS_ACCESS_KEY_ID: testawskey
       AWS_SECRET_ACCESS_KEY: testawssecret
       AWS_REGION: eu-south-1
       AWS_ENDPOINT_URL_S3: http://minio:9000
       AWS_ENDPOINT_URL_KMS: http://local-kms:8080
+      AWS_ENDPOINT_URL_DYNAMODB: http://dynamodb-local:8000
+      DYNAMODB_REFRESH_TOKENS_TABLE: knodia-bff-refresh-tokens
+      COOKIE_PATH_PREFIX: /bff
+      COOKIE_SECURE: "false"
     depends_on:
       remote-resources-manager-lynx:
         condition: service_started
@@ -1056,6 +1072,8 @@ services:
       minio:
         condition: service_healthy
       local-kms-setup:
+        condition: service_completed_successfully
+      dynamodb-setup:
         condition: service_completed_successfully
 
   eservice-readmodel-writer-lynx:
@@ -1388,6 +1406,44 @@ services:
     depends_on:
       bff-lynx:
         condition: service_started
+
+  # ============================================================
+  # DynamoDB Local
+  # ============================================================
+
+  dynamodb-local:
+    security_opt:
+      - no-new-privileges:true
+    image: amazon/dynamodb-local:3.3.0
+    container_name: knodia-multinode-dynamodb-local
+    ports:
+      - 8085:8000
+    command: -jar DynamoDBLocal.jar -inMemory -sharedDb
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -s -o /dev/null http://localhost:8000 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  dynamodb-setup:
+    security_opt:
+      - no-new-privileges:true
+    image: amazon/aws-cli:2.34.25
+    container_name: knodia-multinode-dynamodb-setup
+    depends_on:
+      dynamodb-local:
+        condition: service_healthy
+    volumes:
+      - ../scripts/dynamo:/dynamo-scripts:ro
+      - ../dynamo-tables:/dynamo-tables:ro
+    environment:
+      AWS_ACCESS_KEY_ID: testawskey
+      AWS_SECRET_ACCESS_KEY: testawssecret
+      AWS_DEFAULT_REGION: eu-south-1
+      DYNAMODB_CONNECTION_STRING: http://dynamodb-local:8000
+      TABLES_DIR: /dynamo-tables
+    entrypoint: ["/bin/bash", "/dynamo-scripts/setup-tables.sh"]
 
   # ============================================================
   # Local KMS & JWKS (authentication)
