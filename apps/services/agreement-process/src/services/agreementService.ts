@@ -52,6 +52,19 @@ import {
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
+// Only the Producer calls via ui-session (from their own knode) and only the
+// Consumer calls via an internal k2k token (from RRM). This union makes the
+// other two pairings unrepresentable at the type level.
+type CallerIdentity =
+  | {
+      actor: typeof AgreementActor.enum.Consumer;
+      ctx: AuthorizedContext<InternalAuthData>;
+    }
+  | {
+      actor: typeof AgreementActor.enum.Producer;
+      ctx: AuthorizedContext<UISessionAuthData>;
+    };
+
 export function agreementServiceBuilder(
   eventStoreWriter: AgreementEventStoreWriter,
   readmodelService: ReadmodelService,
@@ -160,48 +173,39 @@ export function agreementServiceBuilder(
       return await readmodelService.getAgreements(requestQuery);
     },
     async reactivateAgreement(
-      {
-        agreementId,
-        reactivatedBy,
-      }: {
-        agreementId: AgreementId;
-        reactivatedBy: AgreementActor;
-      },
-      {
-        authData,
-        correlationId,
-        logger,
-      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      agreementId: AgreementId,
+      caller: CallerIdentity,
     ): Promise<WithMetadata<Agreement>> {
-      logger.info(`Reactivating Agreement ${agreementId} by ${reactivatedBy}`);
+      const {
+        actor,
+        ctx: { correlationId, logger },
+      } = caller;
+      logger.info(`Reactivating Agreement ${agreementId} by ${actor}`);
 
       const { data: agreement, metadata } = await retrieveAgreement(
         agreementId,
         readmodelService,
       );
 
-      assertAgreementCanBeReactivatedBy(agreement, reactivatedBy);
-
       // Consumer calls arrive via an internal k2k token from RRM; RRM is
       // responsible for the caller=consumer check on its side before
       // issuing the downstream call, so we only verify the producer here.
-      if (
-        reactivatedBy === AgreementActor.enum.Producer &&
-        authData.tokenType === "ui-session"
-      ) {
+      if (caller.actor === AgreementActor.enum.Producer) {
         assertOrganizationIsAgreementProducer(
           agreement,
-          authData.organizationId,
+          caller.ctx.authData.organizationId,
         );
       }
 
+      assertAgreementCanBeReactivatedBy(agreement, actor);
+
       const now = new Date();
       const suspendedByConsumerAt =
-        reactivatedBy === AgreementActor.enum.Consumer
+        actor === AgreementActor.enum.Consumer
           ? null
           : agreement.suspendedByConsumerAt;
       const suspendedByProducerAt =
-        reactivatedBy === AgreementActor.enum.Producer
+        actor === AgreementActor.enum.Producer
           ? null
           : agreement.suspendedByProducerAt;
       const nextState: AgreementState =
@@ -218,7 +222,7 @@ export function agreementServiceBuilder(
       };
 
       const eventFactory =
-        reactivatedBy === AgreementActor.enum.Producer
+        actor === AgreementActor.enum.Producer
           ? createAgreementReactivatedByProducerV1Event
           : createAgreementReactivatedByConsumerV1Event;
 
@@ -229,58 +233,51 @@ export function agreementServiceBuilder(
       return { data: updatedAgreement, metadata: { version: newVersion } };
     },
     async suspendAgreement(
-      {
-        agreementId,
-        suspendedBy,
-      }: {
-        agreementId: AgreementId;
-        suspendedBy: AgreementActor;
-      },
-      {
-        authData,
-        correlationId,
-        logger,
-      }: AuthorizedContext<InternalAuthData | UISessionAuthData>,
+      agreementId: AgreementId,
+      caller: CallerIdentity,
     ): Promise<WithMetadata<Agreement>> {
-      logger.info(`Suspending Agreement ${agreementId} by ${suspendedBy}`);
+      const {
+        actor,
+        ctx: { correlationId, logger },
+      } = caller;
+      logger.info(`Suspending Agreement ${agreementId} by ${actor}`);
 
       const { data: agreement, metadata } = await retrieveAgreement(
         agreementId,
         readmodelService,
       );
 
-      assertAgreementCanBeSuspendedBy(agreement, suspendedBy);
-
+      // Producer authorization runs before the state-transition check so
+      // unauthorized callers get 403 instead of leaking 409 state info.
       // Consumer calls arrive via an internal k2k token from RRM; RRM is
       // responsible for the caller=consumer check on its side before
       // issuing the downstream call, so we only verify the producer here.
-      if (
-        suspendedBy === AgreementActor.enum.Producer &&
-        authData.tokenType === "ui-session"
-      ) {
+      if (caller.actor === AgreementActor.enum.Producer) {
         assertOrganizationIsAgreementProducer(
           agreement,
-          authData.organizationId,
+          caller.ctx.authData.organizationId,
         );
       }
+
+      assertAgreementCanBeSuspendedBy(agreement, actor);
 
       const now = new Date();
       const updatedAgreement: Agreement = {
         ...agreement,
         state: AgreementState.enum.Suspended,
         suspendedByConsumerAt:
-          suspendedBy === AgreementActor.enum.Consumer
+          actor === AgreementActor.enum.Consumer
             ? now
             : agreement.suspendedByConsumerAt,
         suspendedByProducerAt:
-          suspendedBy === AgreementActor.enum.Producer
+          actor === AgreementActor.enum.Producer
             ? now
             : agreement.suspendedByProducerAt,
         updatedAt: now,
       };
 
       const eventFactory =
-        suspendedBy === AgreementActor.enum.Producer
+        actor === AgreementActor.enum.Producer
           ? createAgreementSuspendedByProducerV1Event
           : createAgreementSuspendedByConsumerV1Event;
 

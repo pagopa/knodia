@@ -171,13 +171,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const {
         data: agreement,
         metadata: { version },
-      } = await agreementService.suspendAgreement(
-        {
-          agreementId: req.params.agreementId,
-          suspendedBy: AgreementActor.enum.Consumer,
-        },
+      } = await agreementService.suspendAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Consumer,
         ctx,
-      );
+      });
 
       setMetadataVersionHeader(res, version);
 
@@ -216,13 +213,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const {
         data: agreement,
         metadata: { version },
-      } = await agreementService.suspendAgreement(
-        {
-          agreementId: req.params.agreementId,
-          suspendedBy: AgreementActor.enum.Producer,
-        },
+      } = await agreementService.suspendAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Producer,
         ctx,
-      );
+      });
 
       setMetadataVersionHeader(res, version);
 
@@ -261,13 +255,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const {
         data: agreement,
         metadata: { version },
-      } = await agreementService.reactivateAgreement(
-        {
-          agreementId: req.params.agreementId,
-          reactivatedBy: AgreementActor.enum.Consumer,
-        },
+      } = await agreementService.reactivateAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Consumer,
         ctx,
-      );
+      });
 
       setMetadataVersionHeader(res, version);
 
@@ -306,13 +297,10 @@ export const agreementRouter: FastifyPluginAsyncZod<
       const {
         data: agreement,
         metadata: { version },
-      } = await agreementService.reactivateAgreement(
-        {
-          agreementId: req.params.agreementId,
-          reactivatedBy: AgreementActor.enum.Producer,
-        },
+      } = await agreementService.reactivateAgreement(req.params.agreementId, {
+        actor: AgreementActor.enum.Producer,
         ctx,
-      );
+      });
 
       setMetadataVersionHeader(res, version);
 

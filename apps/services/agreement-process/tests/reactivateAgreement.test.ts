@@ -107,6 +107,7 @@ describe("POST /agreements/:agreementId/reactivateByProducer", () => {
     const agreement: Agreement = {
       ...getMockAgreement(),
       id: generateId<AgreementId>(),
+      producerId: TEST_ORGANIZATION_ID,
       state: "Active",
       suspendedByConsumerAt: null,
       suspendedByProducerAt: null,
