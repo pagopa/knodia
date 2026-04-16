@@ -828,7 +828,7 @@ export type ReactivateAgreementData = {
         agreementId: AgreementId;
     };
     query?: never;
-    url: '/agreements/{agreementId}/reactivation';
+    url: '/agreements/{agreementId}/reactivate';
 };
 
 export type ReactivateAgreementErrors = {
@@ -863,7 +863,7 @@ export type SuspendAgreementData = {
         agreementId: AgreementId;
     };
     query?: never;
-    url: '/agreements/{agreementId}/suspension';
+    url: '/agreements/{agreementId}/suspend';
 };
 
 export type SuspendAgreementErrors = {

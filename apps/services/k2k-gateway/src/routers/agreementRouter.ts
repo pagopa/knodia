@@ -184,7 +184,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.resource, apiTags.agreement],
     },
-    url: "/agreements/:agreementId/reactivation",
+    url: "/agreements/:agreementId/reactivate",
   });
 
   fastify.route({
@@ -218,7 +218,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       },
       tags: [apiTags.resource, apiTags.agreement],
     },
-    url: "/agreements/:agreementId/suspension",
+    url: "/agreements/:agreementId/suspend",
   });
 
   fastify.route({

@@ -55,10 +55,10 @@ const suspendAgreement = (
   token: TestToken = allowedTestTokens[0]!,
 ) =>
   injectAppRequest(token)
-    .post(`/agreements/${agreementId}/suspension`)
+    .post(`/agreements/${agreementId}/suspend`)
     .query(query);
 
-describe("POST /agreements/:agreementId/suspension (suspendAgreement)", () => {
+describe("POST /agreements/:agreementId/suspend (suspendAgreement)", () => {
   const agreement = getMockAgreement({ state: "Suspended" });
   const k2kAgreement = toK2KAgreement(agreement);
   const expectedApiDetail = toAPI_Agreement(k2kAgreement);

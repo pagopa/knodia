@@ -55,10 +55,10 @@ const reactivateAgreement = (
   token: TestToken = allowedTestTokens[0]!,
 ) =>
   injectAppRequest(token)
-    .post(`/agreements/${agreementId}/reactivation`)
+    .post(`/agreements/${agreementId}/reactivate`)
     .query(query);
 
-describe("POST /agreements/:agreementId/reactivation (reactivateAgreement)", () => {
+describe("POST /agreements/:agreementId/reactivate (reactivateAgreement)", () => {
   const agreement = getMockAgreement({ state: "Active" });
   const k2kAgreement = toK2KAgreement(agreement);
   const expectedApiDetail = toAPI_Agreement(k2kAgreement);

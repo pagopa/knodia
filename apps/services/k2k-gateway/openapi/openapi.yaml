@@ -1258,7 +1258,7 @@ paths:
                 description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/reactivation:
+  /agreements/{agreementId}/reactivate:
     post:
       operationId: reactivateAgreement
       tags:
@@ -1304,7 +1304,7 @@ paths:
                 description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
-  /agreements/{agreementId}/suspension:
+  /agreements/{agreementId}/suspend:
     post:
       operationId: suspendAgreement
       tags:

@@ -90,7 +90,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       summary: "Reactivate an Agreement",
       tags: [apiTags.agreement],
     },
-    url: "/agreements/:agreementId/reactivation",
+    url: "/agreements/:agreementId/reactivate",
   });
 
   fastify.route({
@@ -126,7 +126,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
       summary: "Suspend an Agreement",
       tags: [apiTags.agreement],
     },
-    url: "/agreements/:agreementId/suspension",
+    url: "/agreements/:agreementId/suspend",
   });
 
   fastify.route({

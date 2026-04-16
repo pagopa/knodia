@@ -1,11 +1,10 @@
 meta {
   name: Suspend Agreement
   type: http
-  seq: 1
 }
 
 post {
-  url: {{host-remote-resources-manager}}/agreements/:agreementId/suspension?knodeId={{other-knode-id}}
+  url: {{host-remote-resources-manager}}/agreements/:agreementId/suspend?knodeId={{other-knode-id}}
   body: none
   auth: none
 }
@@ -17,8 +16,4 @@ params:path {
 headers {
   x-correlation-id: {{correlation-id}}
   authorization: {{ui-session-jwt}}
-}
-
-vars:pre-request {
-  agreementId: 61f86c02-d378-49c7-b8de-2b352cbb059f
 }

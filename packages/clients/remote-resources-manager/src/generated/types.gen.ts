@@ -646,7 +646,7 @@ export type ReactivateAgreementData = {
     query: {
         knodeId: KnodeId;
     };
-    url: '/agreements/{agreementId}/reactivation';
+    url: '/agreements/{agreementId}/reactivate';
 };
 
 export type ReactivateAgreementErrors = {
@@ -691,7 +691,7 @@ export type SuspendAgreementData = {
     query: {
         knodeId: KnodeId;
     };
-    url: '/agreements/{agreementId}/suspension';
+    url: '/agreements/{agreementId}/suspend';
 };
 
 export type SuspendAgreementErrors = {
