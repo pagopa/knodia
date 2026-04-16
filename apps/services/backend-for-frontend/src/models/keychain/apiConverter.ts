@@ -1,7 +1,9 @@
 import type { keychainProcessApi } from "@knodia/keychain-process-client";
+import type { remoteResourcesManagerApi } from "@knodia/remote-resources-manager-client";
 
 import type {
   API_ConsumerKeychainOption,
+  API_ConsumerKeychainPurpose,
   API_Keychain,
   API_KeychainDetails,
   API_KeychainKey,
@@ -33,6 +35,18 @@ export const toAPI_KeychainOption = (
 ): API_ConsumerKeychainOption => ({
   id: keychain.id,
   name: keychain.name,
+});
+
+export const toAPI_ConsumerKeychainPurpose = (
+  eservice: remoteResourcesManagerApi.EserviceDetails,
+  purpose: remoteResourcesManagerApi.Purpose,
+): API_ConsumerKeychainPurpose => ({
+  eserviceName: eservice.name,
+  id: purpose.id,
+  knodeId: purpose.knodeId,
+  name: purpose.name,
+  producerName: eservice.producer.name,
+  state: purpose.state,
 });
 
 export const toAPI_KeychainKey = (

@@ -2,9 +2,9 @@ import {
   getConsumerKeychainDetailsOptions,
   getConsumerKeychainKeysOptions,
   getConsumerKeychainMembersOptions,
+  getConsumerKeychainPurposesOptions,
 } from "@knodia/bff-client/tanstack-query";
 import {
-  Banner,
   Breadcrumb,
   Breadcrumbs,
   Button,
@@ -16,7 +16,6 @@ import {
   TabPanels,
   Tabs,
 } from "@knodia/ui-kit/ui";
-import { SelectionIcon } from "@phosphor-icons/react";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, stripSearchParams } from "@tanstack/react-router";
 import { useState } from "react";
@@ -32,6 +31,7 @@ import { KeychainDeleteAction } from "@/features/keychain/components/KeychainDel
 import { KeychainEditAction } from "@/features/keychain/components/KeychainEditAction";
 import { KeychainMembersTable } from "@/features/keychain/components/KeychainMembersTable";
 import { KeychainPublicKeysTable } from "@/features/keychain/components/KeychainPublicKeysTable";
+import { LinkedPurposesTable } from "@/features/keychain/components/LinkedPurposesTable";
 import { UploadPublicKeyModal } from "@/features/keychain/components/UploadPublicKeyModal";
 import { useIsCurrentUserKeychainMember } from "@/features/keychain/hooks/useIsCurrentUserKeychainMember";
 import {
@@ -173,6 +173,45 @@ function PublicKeysTab() {
   );
 }
 
+function PurposesTab() {
+  const consumerKeychainId = Route.useParams().id;
+
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const { data, isLoading } = useQuery(
+    getConsumerKeychainPurposesOptions({
+      client,
+      path: { consumerKeychainId },
+      query: { limit: 10, offset: search.offset },
+    }),
+  );
+
+  return (
+    <>
+      <Section
+        description="You can link a Purpose to the Keychain on the Purpose page."
+        title="Purposes"
+      >
+        <LinkedPurposesTable
+          isLoading={isLoading}
+          keychainId={consumerKeychainId}
+          purposes={data?.results ?? []}
+        />
+        <Pagination
+          className="mx-auto mt-6"
+          limit={data?.pagination.limit ?? 0}
+          offset={search.offset}
+          onOffsetChange={(offset) =>
+            navigate({ replace: true, search: (s) => ({ ...s, offset }) })
+          }
+          totalItems={data?.pagination.total ?? 0}
+        />
+      </Section>
+    </>
+  );
+}
+
 function RouteComponent() {
   const { id } = Route.useParams();
   const { data: consumerKeychain } = useSuspenseQuery(
@@ -240,14 +279,7 @@ function RouteComponent() {
             <PublicKeysTab />
           </TabPanel>
           <TabPanel id="purposes" key="purposes">
-            <Section
-              description="You can link a Purpose to the Keychain on the Purpose page."
-              title="Purposes"
-            >
-              <Banner icon={<SelectionIcon />} kind="neutral">
-                There are no Purpose linked to this Keychain yet.
-              </Banner>
-            </Section>
+            <PurposesTab />
           </TabPanel>
           <TabPanel id="members" key="members">
             <MembersTab />
