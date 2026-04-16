@@ -7,7 +7,7 @@
       "dependsOn": ["^typecheck", "//#infra:start"]
     },
     "typecheck": {
-      "dependsOn": ["generate-protobuf", "^generate-api-client", "^typecheck"]
+      "dependsOn": ["^typecheck"]
     },
     "generate-api-client": {
       "outputs": ["src/generated/**"]
@@ -16,14 +16,11 @@
       "outputs": ["openapi/openapi.yaml"]
     },
     "generate-protobuf": {
-      "dependsOn": ["^generate-protobuf"],
       "outputs": ["src/generated/*"]
     },
     "lint": {},
     "lint:autofix": {},
-    "lint-openapi": {
-      "dependsOn": ["generate-openapi"]
-    },
+    "lint-openapi": {},
     "generate-artifacts": {
       "dependsOn": ["generate-api-client", "generate-protobuf"]
     },
