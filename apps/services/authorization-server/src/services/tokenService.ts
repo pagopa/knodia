@@ -1,6 +1,10 @@
 import type { TokenGenerator } from "@knodia/token-generator";
 
-import { type KnodeId, unsafeBrandId } from "@knodia/common-models/ids";
+import {
+  type ConsumerKeychainId,
+  type KnodeId,
+  unsafeBrandId,
+} from "@knodia/common-models/ids";
 import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import type { API_TokenRequest } from "../models/api.ts";
@@ -35,27 +39,31 @@ export function tokenServiceBuilder({
       clientAssertionMaxTokenAgeSeconds: number,
     ) {
       // Verify Client Assertion signature and claims
-      await verifyClientAssertionSignature(
-        requestBody,
-        clientAssertionAcceptedAudiences,
-        clientAssertionClockToleranceSeconds,
-        clientAssertionMaxTokenAgeSeconds,
-        k2kGatewayClient,
-      );
+      const { consumerAttributes, purposeId } =
+        await verifyClientAssertionSignature(
+          requestBody,
+          clientAssertionAcceptedAudiences,
+          clientAssertionClockToleranceSeconds,
+          clientAssertionMaxTokenAgeSeconds,
+          k2kGatewayClient,
+        );
 
       // Check that the platform objects (agreement, e-service version, purpose) are in Active state and that the Consumer meets the E-service version required attributes
       const { agreement, eserviceVersion, purpose } =
         await validatePlatformObjects(
-          clientAssertion.payload.purposeId,
+          purposeId,
           consumerAttributes,
           readmodelService,
         );
 
       // Generate the E-service access token
+      const consumerKeychainId = unsafeBrandId<ConsumerKeychainId>(
+        requestBody.client_id,
+      );
       const token = await tokenGenerator.generateEserviceAccessToken({
-        audience: eserviceVersion.accessTokenAudience.join(","),
+        audience: eserviceVersion.accessTokenAudience,
         consumer: purpose.consumer,
-        consumerKeychainId: unsafeBrandId(requestBody.client_id),
+        consumerKeychainId,
         eserviceId: purpose.eserviceId,
         eserviceVersionId: eserviceVersion.id,
         issuer: generatedEserviceAccessTokenIssuer,
@@ -63,7 +71,7 @@ export function tokenServiceBuilder({
         producer: { id: agreement.producerId, knodeId },
         purposeId: purpose.id,
         secondsDuration: eserviceVersion.accessTokenDuration,
-        subject: clientAssertion.payload.sub,
+        subject: consumerKeychainId,
       });
 
       return {

@@ -38,6 +38,7 @@ export interface InternalTokenInput extends TokenParams {
 }
 
 interface EserviceAccessTokenInput extends TokenParams {
+  audience: string[];
   consumer: ExternalResource<OrganizationId>;
   consumerKeychainId: ConsumerKeychainId; // access token client_id claim
   eserviceId: EserviceId;
@@ -48,7 +49,7 @@ interface EserviceAccessTokenInput extends TokenParams {
 }
 
 interface TokenParams {
-  audience: string;
+  audience: string | string[];
   issuer: string;
   kid: string;
   secondsDuration: number;
