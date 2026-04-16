@@ -158,7 +158,7 @@ describe("POST /token", async () => {
     grant_type: VALID_GRANT_TYPE,
   };
 
-  async function createToken(body: API_TokenRequest) {
+  async function createToken(body: API_TokenRequest = defaultBody) {
     return app.inject({
       headers: { "content-type": "application/x-www-form-urlencoded" },
       method: "POST",
@@ -182,7 +182,7 @@ describe("POST /token", async () => {
       data: mockK2KResponse,
     });
 
-    const response = await createToken(defaultBody);
+    const response = await createToken();
 
     const responseBody = response.json<API_TokenResponse>();
 
@@ -438,7 +438,7 @@ describe("POST /token", async () => {
       new AxiosError("k2k gateway error"),
     );
 
-    const response = await createToken(defaultBody);
+    const response = await createToken();
 
     expect(response.statusCode).toBe(500);
   });
@@ -463,7 +463,7 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
     });
 
-    const response = await createToken(defaultBody);
+    const response = await createToken();
 
     const error = invalidClientAssertionSignature();
 
@@ -483,7 +483,7 @@ describe("POST /token", async () => {
       data: mockK2KResponse,
     });
 
-    const response = await createToken(defaultBody);
+    const response = await createToken();
 
     const error = platformStatesNotActive([
       agreementNotActive(suspendedAgreement.id, suspendedAgreement.state),
@@ -512,7 +512,7 @@ describe("POST /token", async () => {
       } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
     });
 
-    const response = await createToken(defaultBody);
+    const response = await createToken();
 
     const error = consumerMissingRequiredAttributes(
       purpose.consumer,
