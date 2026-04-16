@@ -79,7 +79,7 @@ export async function validatePlatformObjects(
 export async function verifyClientAssertionSignature(
   {
     client_assertion: clientAssertionJws,
-    client_id: clientId,
+    client_id: consumerKeychainId,
   }: API_TokenRequest,
   clientAssertionAcceptedAudiences: string[],
   clientAssertionClockToleranceSeconds: number,
@@ -102,7 +102,7 @@ export async function verifyClientAssertionSignature(
       data: { consumerAttributes, publicKey },
     } = await k2kGatewayApi.getClientAssertionVerificationData({
       body: {
-        keychainId: clientId,
+        keychainId: consumerKeychainId,
         kid,
         purposeId,
       },
@@ -117,9 +117,9 @@ export async function verifyClientAssertionSignature(
       algorithms: [publicKey.algorithm],
       audience: clientAssertionAcceptedAudiences,
       clockTolerance: clientAssertionClockToleranceSeconds,
-      issuer: clientId,
+      issuer: consumerKeychainId,
       maxTokenAge: clientAssertionMaxTokenAgeSeconds,
-      subject: clientId,
+      subject: consumerKeychainId,
       typ: "JWT",
     });
 
@@ -134,7 +134,7 @@ export async function verifyClientAssertionSignature(
       error instanceof JWTClaimValidationFailed ||
       error instanceof ZodError
     ) {
-      throw clientAssertionClaimsValidationError(clientId, error);
+      throw clientAssertionClaimsValidationError(consumerKeychainId, error);
     } else if (error instanceof JWSSignatureVerificationFailed) {
       throw invalidClientAssertionSignature();
     } else if (error instanceof JWSInvalid) {
