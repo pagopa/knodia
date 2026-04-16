@@ -124,7 +124,7 @@ function RecentAgreementsSection() {
         action={{
           as: "link",
           hierarchy: "brand",
-          href: { search: { eserviceId: id }, to: "/production/agreements" },
+          href: { search: { eserviceId }, to: "/production/agreements" },
           kind: "tonal",
           label: "View all",
         }}
@@ -142,7 +142,7 @@ function RecentAgreementsSection() {
       <ButtonLinkWithPreload
         hierarchy="brand"
         kind="tonal"
-        search={{ eserviceId: id }}
+        search={{ eserviceId }}
         size="md"
         to="/production/agreements"
       >
@@ -171,7 +171,7 @@ function RecentPurposesSection() {
         action={{
           as: "link",
           hierarchy: "brand",
-          href: { search: { eserviceId: id }, to: "/production/purposes" },
+          href: { search: { eserviceId }, to: "/production/purposes" },
           kind: "tonal",
           label: "View all",
         }}
@@ -189,7 +189,7 @@ function RecentPurposesSection() {
       <ButtonLinkWithPreload
         hierarchy="brand"
         kind="tonal"
-        search={{ eserviceId: id }}
+        search={{ eserviceId }}
         size="md"
         to="/production/purposes"
       >
