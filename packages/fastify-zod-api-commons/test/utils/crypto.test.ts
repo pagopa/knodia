@@ -11,14 +11,13 @@ import {
   notAllowedPrivateKey,
   notAnRSAKey,
 } from "@knodia/fastify-zod-api-commons/models";
-import { describe, expect, it } from "vitest";
-
 import {
   createEcKeyPair,
   createRsaKeyPair,
   rsaX509CertificatePem,
   toBase64,
-} from "./utils.ts";
+} from "@knodia/test-commons/utils";
+import { describe, expect, it } from "vitest";
 
 const rsa2048KeyPair = createRsaKeyPair(2048);
 const rsa1024KeyPair = createRsaKeyPair(1024);
