@@ -21,7 +21,7 @@ import {
 import { useState } from "react";
 import z from "zod";
 
-import { useDebouncedValue } from "@/hooks/useDebounceValue";
+import { useDebounceValue } from "@/hooks/useDebounceValue";
 import { client } from "@/libs/axios";
 import { getFieldErrorMessage } from "@/utils/getFieldErrorMessage";
 
@@ -94,10 +94,13 @@ function LinkConsumerKeychainModal({
   }
 
   const [q, setQ] = useState("");
-  const [debouncedQ] = useDebouncedValue(q, 500);
+  const [debouncedQ] = useDebounceValue(q, 500);
 
   const { data } = useQuery({
-    ...getConsumerKeychainOptionsOptions({ client, query: { q: debouncedQ } }),
+    ...getConsumerKeychainOptionsOptions({
+      client,
+      query: { limit: 20, offset: 0, q: debouncedQ },
+    }),
     placeholderData: keepPreviousData,
   });
 
@@ -140,14 +143,14 @@ function LinkConsumerKeychainModal({
       showErrorBanner={isError}
       title="Link Keychain"
     >
-      {data && data.results.length === 0 ? (
+      {data?.pagination.total === 0 ? (
         <Banner
           kind="informative"
           size="md"
           title="You don't have any Consumption Keychain yet"
         >
-          Create a Production Keychain on the Keychains page to link it to
-          E-Services.
+          Create a Consumption Keychain on the Keychains page to link it to
+          Purposes.
         </Banner>
       ) : (
         <form

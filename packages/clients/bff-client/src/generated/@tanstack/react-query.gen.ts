@@ -564,6 +564,33 @@ export const getConsumerKeychainOptionsOptions = (options: Options<GetConsumerKe
     queryKey: getConsumerKeychainOptionsQueryKey(options)
 });
 
+export const getConsumerKeychainOptionsInfiniteQueryKey = (options: Options<GetConsumerKeychainOptionsData>): QueryKey<Options<GetConsumerKeychainOptionsData>> => createQueryKey('getConsumerKeychainOptions', options, true);
+
+/**
+ * Retrieve Consumer Keychain options for combobox selection
+ */
+export const getConsumerKeychainOptionsInfiniteOptions = (options: Options<GetConsumerKeychainOptionsData>) => infiniteQueryOptions<GetConsumerKeychainOptionsResponse, AxiosError<GetConsumerKeychainOptionsError>, InfiniteData<GetConsumerKeychainOptionsResponse>, QueryKey<Options<GetConsumerKeychainOptionsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+// @ts-ignore
+{
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+        // @ts-ignore
+        const page: Pick<QueryKey<Options<GetConsumerKeychainOptionsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+            query: {
+                offset: pageParam
+            }
+        };
+        const params = createInfiniteParams(queryKey, page);
+        const { data } = await getConsumerKeychainOptions({
+            ...options,
+            ...params,
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getConsumerKeychainOptionsInfiniteQueryKey(options)
+});
+
 /**
  * Link a Purpose to a Consumer Keychain
  */

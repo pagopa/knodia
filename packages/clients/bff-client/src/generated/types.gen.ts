@@ -591,6 +591,7 @@ export type ConsumerKeychainOption = {
 };
 
 export type ConsumerKeychainOptions = {
+    pagination: Pagination;
     results: Array<ConsumerKeychainOption>;
 };
 
@@ -1535,6 +1536,14 @@ export type GetConsumerKeychainOptionsData = {
     body?: never;
     path?: never;
     query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
         /**
          * Search text used to filter Consumer Keychains by name
          */

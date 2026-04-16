@@ -654,14 +654,15 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
         client: keychainProcessClient,
         headers,
         query: {
-          limit: 20,
+          limit: req.query.limit,
           name: req.query.q,
-          offset: 0,
+          offset: req.query.offset,
           ownerId,
         },
       });
 
       res.send({
+        pagination: data.pagination,
         results: data.results.map(toAPI_KeychainOption),
       });
     },

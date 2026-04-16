@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type UseDebouncedValueReturnValue<T> = [T, () => void];
+type UseDebounceValueReturnValue<T> = [T, () => void];
 
-export function useDebouncedValue<T = unknown>(
+export function useDebounceValue<T = unknown>(
   value: T,
   wait: number,
-): UseDebouncedValueReturnValue<T> {
+): UseDebounceValueReturnValue<T> {
   const [_value, setValue] = useState(value);
   const mountedRef = useRef(false);
   const timeoutRef = useRef<null | number>(null);
-  const cooldownRef = useRef(false);
 
   const cancel = useCallback(
     () =>
@@ -21,7 +20,6 @@ export function useDebouncedValue<T = unknown>(
     if (mountedRef.current) {
       cancel();
       timeoutRef.current = window.setTimeout(() => {
-        cooldownRef.current = false;
         setValue(value);
       }, wait);
     }
