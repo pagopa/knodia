@@ -5,6 +5,8 @@ import {
   API_PaginationQueryParams,
   API_UserId,
 } from "@knodia/common-models/api";
+import { ExternalId } from "@knodia/common-models/externalResource";
+import { type PurposeId } from "@knodia/common-models/ids";
 import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
@@ -52,6 +54,9 @@ const API_GetConsumerKeychainsQueryPurposeFilter = z
 
 export const API_GetConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
+    ownerId: API_OrganizationId.optional().meta({
+      description: "Filter by owner Organization ID",
+    }),
     purpose: API_GetConsumerKeychainsQueryPurposeFilter.optional().meta({
       description:
         "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
@@ -183,6 +188,21 @@ export const API_ConsumerKeychainKeyPathParams = z
 
 export type API_ConsumerKeychainKeyPathParams = z.infer<
   typeof API_ConsumerKeychainKeyPathParams
+>;
+
+export const API_GetConsumerKeychainPurposePathParams =
+  API_ConsumerKeychainIdPathParam.extend({
+    purposeId: ExternalId<PurposeId>(),
+  });
+export type API_GetConsumerKeychainPurposePathParams = z.infer<
+  typeof API_GetConsumerKeychainPurposePathParams
+>;
+
+export const API_GetConsumerKeychainPurposeQueryParams = z.strictObject({
+  knodeId: API_KnodeId,
+});
+export type API_GetConsumerKeychainPurposeQueryParams = z.infer<
+  typeof API_GetConsumerKeychainPurposeQueryParams
 >;
 
 export const API_GetConsumerKeychainMembersQueryParams =

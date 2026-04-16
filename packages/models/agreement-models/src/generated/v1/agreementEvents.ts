@@ -14,6 +14,10 @@ export interface AgreementActivatedV1 {
   agreement: AgreementV1 | undefined;
 }
 
+export interface AgreementCreatedPendingConsumerOperatorIdentificationV1 {
+  agreement: AgreementV1 | undefined;
+}
+
 function createBaseAgreementActivatedV1(): AgreementActivatedV1 {
   return { agreement: undefined };
 }
@@ -67,6 +71,75 @@ export const AgreementActivatedV1: MessageFns<AgreementActivatedV1> = {
   },
   fromPartial<I extends Exact<DeepPartial<AgreementActivatedV1>, I>>(object: I): AgreementActivatedV1 {
     const message = createBaseAgreementActivatedV1();
+    message.agreement = (object.agreement !== undefined && object.agreement !== null)
+      ? AgreementV1.fromPartial(object.agreement)
+      : undefined;
+    return message;
+  },
+};
+
+function createBaseAgreementCreatedPendingConsumerOperatorIdentificationV1(): AgreementCreatedPendingConsumerOperatorIdentificationV1 {
+  return { agreement: undefined };
+}
+
+export const AgreementCreatedPendingConsumerOperatorIdentificationV1: MessageFns<
+  AgreementCreatedPendingConsumerOperatorIdentificationV1
+> = {
+  encode(
+    message: AgreementCreatedPendingConsumerOperatorIdentificationV1,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.agreement !== undefined) {
+      AgreementV1.encode(message.agreement, writer.uint32(10).fork()).join();
+    }
+    return writer;
+  },
+
+  decode(input: BinaryReader | Uint8Array, length?: number): AgreementCreatedPendingConsumerOperatorIdentificationV1 {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAgreementCreatedPendingConsumerOperatorIdentificationV1();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
+          }
+
+          message.agreement = AgreementV1.decode(reader, reader.uint32());
+          continue;
+        }
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AgreementCreatedPendingConsumerOperatorIdentificationV1 {
+    return { agreement: isSet(object.agreement) ? AgreementV1.fromJSON(object.agreement) : undefined };
+  },
+
+  toJSON(message: AgreementCreatedPendingConsumerOperatorIdentificationV1): unknown {
+    const obj: any = {};
+    if (message.agreement !== undefined) {
+      obj.agreement = AgreementV1.toJSON(message.agreement);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<AgreementCreatedPendingConsumerOperatorIdentificationV1>, I>>(
+    base?: I,
+  ): AgreementCreatedPendingConsumerOperatorIdentificationV1 {
+    return AgreementCreatedPendingConsumerOperatorIdentificationV1.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<AgreementCreatedPendingConsumerOperatorIdentificationV1>, I>>(
+    object: I,
+  ): AgreementCreatedPendingConsumerOperatorIdentificationV1 {
+    const message = createBaseAgreementCreatedPendingConsumerOperatorIdentificationV1();
     message.agreement = (object.agreement !== undefined && object.agreement !== null)
       ? AgreementV1.fromPartial(object.agreement)
       : undefined;

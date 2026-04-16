@@ -21,6 +21,7 @@ import {
   isLabelVisible,
   scopeToFieldName,
 } from "@/features/purpose/engine/dependencyResolver";
+import { stripHiddenOptionValuesFromAnswers } from "@/features/purpose/engine/optionFilter";
 import {
   collectErrorMessages,
   collectGroups,
@@ -65,8 +66,8 @@ export function DynamicFormStep({
   );
 
   const validate = useMemo(
-    () => createAjvValidator(jsonSchema, errorMessages),
-    [jsonSchema, errorMessages],
+    () => createAjvValidator(jsonSchema, errorMessages, uischema),
+    [jsonSchema, errorMessages, uischema],
   );
 
   const form = useDynamicStepForm({
@@ -81,12 +82,17 @@ export function DynamicFormStep({
       updateFormAnswers(value);
 
       if (isLastStep) {
-        const allAnswers = { ...formAnswers, ...value };
+        const mergedAnswers = { ...formAnswers, ...value };
+        const cleanedAnswers = stripHiddenOptionValuesFromAnswers(
+          mergedAnswers,
+          uischema,
+        );
+        const fullVisible = getVisibleFields(uischema, cleanedAnswers);
         const filteredAnswers: Record<string, unknown> = {};
-        for (const [key, val] of Object.entries(allAnswers)) {
-          if (Array.isArray(val) ? val.length > 0 : val !== "") {
-            filteredAnswers[key] = val;
-          }
+        for (const [key, val] of Object.entries(cleanedAnswers)) {
+          if (!fullVisible.has(key)) continue;
+          if (Array.isArray(val) ? val.length === 0 : val === "") continue;
+          filteredAnswers[key] = val;
         }
         createPurpose({ formAnswersJson: filteredAnswers });
       } else {

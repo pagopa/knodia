@@ -14,11 +14,15 @@ export async function handleAgreementEvent(
   assertDataExistsInEvent(message, "agreement");
 
   return match(message)
-    .with({ type: "AgreementActivatedV1" }, async (msg) => {
-      await writerService.upsertAgreement(
-        fromAgreementV1(msg.data.agreement),
-        message.version,
-      );
-    })
+    .with(
+      { type: "AgreementActivatedV1" },
+      { type: "AgreementCreatedPendingConsumerOperatorIdentificationV1" },
+      async (msg) => {
+        await writerService.upsertAgreement(
+          fromAgreementV1(msg.data.agreement),
+          message.version,
+        );
+      },
+    )
     .exhaustive();
 }

@@ -1,5 +1,6 @@
 import type { bffApi } from "@knodia/bff-client";
 
+import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
 import { Button } from "@knodia/ui-kit/ui";
 import { match } from "ts-pattern";
 
@@ -11,6 +12,7 @@ import { useHasRole } from "@/contexts/auth";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 
 import { AgreementStateChip } from "../AgreementStateChip";
+import { AgreementPurposeSection } from "./AgreementPurposeSection";
 
 export function ProducerAgreementDetail({
   agreement,
@@ -61,7 +63,9 @@ export function ProducerAgreementDetail({
         </div>
       </div>
 
-      {/* TODO: Implement Purposes section */}
+      <AgreementPurposeSection
+        agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+      />
     </>
   );
 }
@@ -86,9 +90,9 @@ function AgreementActionButton({
           Reactivate
         </Button>
       ))
-      // TODO: Only Active and Suspended states are supported. Archived is not handled yet.
-      .with("Archived", () => {
-        console.warn("Unhandled agreement state: Archived");
+      // TODO: Only Active and Suspended states are supported. Archived and PendingConsumerOperatorIdentification are not handled yet.
+      .with("Archived", "PendingConsumerOperatorIdentification", (state) => {
+        console.warn(`Unhandled agreement state: ${state}`);
         return null;
       })
       .exhaustive()
