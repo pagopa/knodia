@@ -23,8 +23,12 @@ import {
   type TestToken,
 } from "@knodia/test-commons/auth";
 import {
+  createEcKeyPair,
+  createRsaKeyPair,
   getMockConsumerKeychain,
   getMockConsumerKeychainKey,
+  rsaX509CertificatePem,
+  toBase64,
 } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
@@ -36,13 +40,9 @@ import type {
 import { toAPI_KeychainKey } from "../src/models/apiConverter.ts";
 import { mockMaxKeysPerKeychain } from "./setup.ts";
 import {
-  createEcKeyPair,
-  createRsaKeyPair,
   getAllKeychainEvents,
   injectAppRequest,
-  rsaX509CertificatePem,
   seedConsumerKeychain,
-  toBase64,
 } from "./utils.ts";
 
 const allowedTestTokens: TestToken[] = [
