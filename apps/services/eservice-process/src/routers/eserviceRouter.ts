@@ -173,6 +173,7 @@ export const eserviceRouter: FastifyPluginAsyncZod<EserviceService> = async (
     method: "PATCH",
     schema: {
       body: API_EserviceUpdateSeed,
+      consumes: ["application/merge-patch+json"],
       description: "Update an E-service",
       headers: KnodiaServiceHeaders,
       operationId: "updateEservice",

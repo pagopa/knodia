@@ -70,7 +70,7 @@ export const updateEservice = <ThrowOnError extends boolean = true>(options: Opt
     url: '/eservices/{eserviceId}',
     ...options,
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/merge-patch+json',
         ...options.headers
     }
 });

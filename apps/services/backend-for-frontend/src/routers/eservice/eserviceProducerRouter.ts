@@ -418,6 +418,7 @@ export const eserviceProducerRouter: FastifyPluginAsyncZod<
     method: "PATCH",
     schema: {
       body: API_EserviceUpdateSeed,
+      consumes: ["application/merge-patch+json"],
       description: "Update a Producer E-service",
       operationId: "updateProducerEservice",
       params: API_EserviceIdPathParam,
