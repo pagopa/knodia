@@ -7,11 +7,25 @@
       "enum": ["INSTITUTIONAL", "OTHER"],
       "default": "INSTITUTIONAL"
     },
-    "purposeDescription": {
+    "institutionalPurpose": {
       "type": "string",
       "maxLength": 2000
     },
-    "usesThirdPartyPersonalData": {
+    "otherPurpose": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "usesPersonalData": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "usesThirdPartyNonPersonalData": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
+    "usesThirdPartyConfidentialData": {
       "type": "string",
       "enum": ["YES", "NO"],
       "default": "NO"
@@ -55,14 +69,9 @@
       "type": "string",
       "maxLength": 2000
     },
-    "publicInterestReasons": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "enum": ["RULE_OF_LAW", "ADMINISTRATIVE_ACT", "PUBLIC_INTEREST_TASK"]
-      },
-      "uniqueItems": true,
-      "default": []
+    "declarationConfirmGDPR": {
+      "type": "string",
+      "const": "true"
     },
     "legalBasisPublicInterest": {
       "type": "string",
@@ -100,7 +109,7 @@
     "deliveryMethod": {
       "type": "string",
       "enum": ["CLEARTEXT", "PSEUDOANONYMOUS", "AGGREGATE", "ANONYMOUS"],
-      "default": "CLEARTEXT"
+      "default": "ANONYMOUS"
     },
     "policyProvided": {
       "type": "string",
@@ -149,7 +158,8 @@
     },
     "purposePursuit": {
       "type": "string",
-      "enum": ["MERE_CORRECTNESS", "NEW_PERSONAL_DATA"]
+      "enum": ["MERE_CORRECTNESS", "NEW_PERSONAL_DATA"],
+      "default": "MERE_CORRECTNESS"
     },
     "checkedExistenceMereCorrectnessInteropCatalogue": {
       "type": "string",
@@ -159,175 +169,155 @@
       "type": "string",
       "const": "true"
     },
+    "isRequestOnBehalfOfThirdParties": {
+      "type": "string",
+      "enum": ["YES", "NO"],
+      "default": "NO"
+    },
     "thirdPartiesRequestDataUsage": {
       "type": "string",
       "enum": ["PA_ONLY", "PA_ALSO"]
-    },
-    "declarationConfirmGDPR": {
-      "type": "string",
-      "const": "true"
     }
   },
-  "required": [
-    "purpose",
-    "purposeDescription",
-    "personalDataTypes",
-    "legalBasis",
-    "usesThirdPartyPersonalData",
-    "purposePursuit",
-    "confirmPrincipleIntegrityAndDiscretion",
-    "declarationConfirmGDPR"
-  ],
+  "required": ["purpose", "usesPersonalData", "isRequestOnBehalfOfThirdParties"],
   "allOf": [
     {
       "if": {
+        "properties": { "purpose": { "const": "INSTITUTIONAL" } },
+        "required": ["purpose"]
+      },
+      "then": {
+        "required": ["institutionalPurpose"]
+      },
+      "else": {
+        "properties": { "institutionalPurpose": false }
+      }
+    },
+    {
+      "if": {
+        "properties": { "purpose": { "const": "OTHER" } },
+        "required": ["purpose"]
+      },
+      "then": {
+        "required": ["otherPurpose"]
+      },
+      "else": {
+        "properties": { "otherPurpose": false }
+      }
+    },
+    {
+      "if": {
+        "properties": { "usesPersonalData": { "const": "NO" } },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": ["usesThirdPartyNonPersonalData"]
+      },
+      "else": {
+        "properties": { "usesThirdPartyNonPersonalData": false }
+      }
+    },
+    {
+      "if": {
         "properties": {
+          "usesPersonalData": { "const": "NO" },
+          "usesThirdPartyNonPersonalData": { "const": "YES" }
+        },
+        "required": ["usesPersonalData", "usesThirdPartyNonPersonalData"]
+      },
+      "then": {
+        "required": ["usesThirdPartyConfidentialData"]
+      },
+      "else": {
+        "properties": { "usesThirdPartyConfidentialData": false }
+      }
+    },
+    {
+      "if": {
+        "properties": { "usesPersonalData": { "const": "YES" } },
+        "required": ["usesPersonalData"]
+      },
+      "then": {
+        "required": [
+          "personalDataTypes",
+          "legalBasis",
+          "declarationConfirmGDPR",
+          "knowsDataQuantity",
+          "deliveryMethod",
+          "policyProvided",
+          "confirmPrincipleIntegrityAndDiscretion",
+          "doneDpia",
+          "dataDownload",
+          "purposePursuit"
+        ]
+      },
+      "else": {
+        "properties": {
+          "personalDataTypes": false,
+          "legalBasis": false,
+          "declarationConfirmGDPR": false,
+          "knowsDataQuantity": false,
+          "deliveryMethod": false,
+          "policyProvided": false,
+          "confirmPrincipleIntegrityAndDiscretion": false,
+          "doneDpia": false,
+          "dataDownload": false,
+          "purposePursuit": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
           "personalDataTypes": {
             "type": "array",
-            "contains": {
-              "const": "OTHER"
-            }
+            "contains": { "const": "OTHER" }
           }
-        }
+        },
+        "required": ["usesPersonalData", "personalDataTypes"]
       },
       "then": {
         "required": ["otherPersonalDataTypes"]
+      },
+      "else": {
+        "properties": { "otherPersonalDataTypes": false }
       }
     },
     {
       "if": {
         "properties": {
+          "usesPersonalData": { "const": "YES" },
           "legalBasis": {
             "type": "array",
-            "contains": {
-              "const": "LEGAL_OBLIGATION"
-            }
+            "contains": { "const": "LEGAL_OBLIGATION" }
           }
-        }
+        },
+        "required": ["usesPersonalData", "legalBasis"]
       },
       "then": {
         "required": ["legalObligationReference"]
+      },
+      "else": {
+        "properties": { "legalObligationReference": false }
       }
     },
     {
       "if": {
         "properties": {
+          "usesPersonalData": { "const": "YES" },
           "legalBasis": {
             "type": "array",
-            "contains": {
-              "const": "PUBLIC_INTEREST"
-            }
-          }
-        }
-      },
-      "then": {
-        "required": ["publicInterestReasons", "legalBasisPublicInterest"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "legalBasisPublicInterest": {
-            "const": "RULE_OF_LAW"
-          },
-          "legalBasis": {
-            "type": "array",
-            "contains": {
-              "const": "PUBLIC_INTEREST"
-            }
+            "contains": { "const": "PUBLIC_INTEREST" }
           }
         },
+        "required": ["usesPersonalData", "legalBasis"]
+      },
+      "then": {
         "required": ["legalBasisPublicInterest"]
       },
-      "then": {
-        "required": ["ruleOfLawText"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "legalBasisPublicInterest": {
-            "const": "ADMINISTRATIVE_ACT"
-          },
-          "legalBasis": {
-            "type": "array",
-            "contains": {
-              "const": "PUBLIC_INTEREST"
-            }
-          }
-        },
-        "required": ["legalBasisPublicInterest"]
-      },
-      "then": {
-        "required": ["administrativeActText"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "legalBasisPublicInterest": {
-            "const": "PUBLIC_INTEREST_TASK"
-          }
-        },
-        "required": ["legalBasisPublicInterest"]
-      },
-      "then": {
-        "required": ["publicInterestTaskText"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "knowsDataQuantity": {
-            "const": "YES"
-          }
-        },
-        "required": ["knowsDataQuantity"]
-      },
-      "then": {
-        "required": ["dataQuantity"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "policyProvided": {
-            "const": "NO"
-          }
-        },
-        "required": ["policyProvided"]
-      },
-      "then": {
-        "required": ["reasonPolicyNotProvided"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "policyProvided": {
-            "const": "YES"
-          }
-        },
-        "required": ["policyProvided"]
-      },
-      "then": {
-        "required": ["policyProvidedMedium"]
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "policyProvided": {
-            "const": "YES"
-          },
-          "policyProvidedMedium": {
-            "const": "ONLINE"
-          }
-        },
-        "required": ["policyProvided", "policyProvidedMedium"]
-      },
-      "then": {
-        "required": ["policyProvidedOnlineLink"]
+      "else": {
+        "properties": { "legalBasisPublicInterest": false }
       }
     },
     {
@@ -335,83 +325,230 @@
         "properties": {
           "personalDataTypes": {
             "type": "array",
-            "contains": {
-              "const": "GDPR_ART_10"
-            }
-          },
-          "confirmPrincipleIntegrityAndDiscretion": {
-            "const": "true"
+            "contains": { "const": "GDPR_ART_9" }
           }
         },
-        "required": ["confirmPrincipleIntegrityAndDiscretion"]
+        "required": ["personalDataTypes"]
+      },
+      "then": {
+        "properties": {
+          "legalBasisPublicInterest": { "not": { "const": "PUBLIC_INTEREST_TASK" } }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "legalBasisPublicInterest": { "const": "RULE_OF_LAW" },
+          "legalBasis": {
+            "type": "array",
+            "contains": { "const": "PUBLIC_INTEREST" }
+          }
+        },
+        "required": ["usesPersonalData", "legalBasisPublicInterest", "legalBasis"]
+      },
+      "then": {
+        "required": ["ruleOfLawText"]
+      },
+      "else": {
+        "properties": { "ruleOfLawText": false }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "legalBasisPublicInterest": { "const": "ADMINISTRATIVE_ACT" },
+          "legalBasis": {
+            "type": "array",
+            "contains": { "const": "PUBLIC_INTEREST" }
+          }
+        },
+        "required": ["usesPersonalData", "legalBasisPublicInterest", "legalBasis"]
+      },
+      "then": {
+        "required": ["administrativeActText"]
+      },
+      "else": {
+        "properties": { "administrativeActText": false }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "legalBasisPublicInterest": { "const": "PUBLIC_INTEREST_TASK" },
+          "legalBasis": {
+            "type": "array",
+            "contains": { "const": "PUBLIC_INTEREST" }
+          }
+        },
+        "required": ["usesPersonalData", "legalBasisPublicInterest", "legalBasis"]
+      },
+      "then": {
+        "required": ["publicInterestTaskText"]
+      },
+      "else": {
+        "properties": { "publicInterestTaskText": false }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "knowsDataQuantity": { "const": "YES" }
+        },
+        "required": ["usesPersonalData", "knowsDataQuantity"]
+      },
+      "then": {
+        "required": ["dataQuantity"]
+      },
+      "else": {
+        "properties": { "dataQuantity": false }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "policyProvided": { "const": "NO" }
+        },
+        "required": ["usesPersonalData", "policyProvided"]
+      },
+      "then": {
+        "required": ["reasonPolicyNotProvided"]
+      },
+      "else": {
+        "properties": { "reasonPolicyNotProvided": false }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "policyProvided": { "const": "YES" }
+        },
+        "required": ["usesPersonalData", "policyProvided"]
+      },
+      "then": {
+        "required": ["policyProvidedMedium"]
+      },
+      "else": {
+        "properties": { "policyProvidedMedium": false }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "policyProvided": { "const": "YES" },
+          "policyProvidedMedium": { "const": "ONLINE" }
+        },
+        "required": ["usesPersonalData", "policyProvided", "policyProvidedMedium"]
+      },
+      "then": {
+        "required": ["policyProvidedOnlineLink"]
+      },
+      "else": {
+        "properties": { "policyProvidedOnlineLink": false }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "usesPersonalData": { "const": "YES" },
+          "personalDataTypes": {
+            "type": "array",
+            "contains": { "const": "GDPR_ART_10" }
+          },
+          "confirmPrincipleIntegrityAndDiscretion": { "const": "true" }
+        },
+        "required": [
+          "usesPersonalData",
+          "confirmPrincipleIntegrityAndDiscretion",
+          "personalDataTypes"
+        ]
       },
       "then": {
         "required": ["dataProtectionMeasures"]
+      },
+      "else": {
+        "properties": { "dataProtectionMeasures": false }
       }
     },
     {
       "if": {
         "properties": {
-          "doneDpia": {
-            "const": "YES"
-          }
+          "usesPersonalData": { "const": "YES" },
+          "doneDpia": { "const": "YES" }
         },
-        "required": ["doneDpia"]
+        "required": ["usesPersonalData", "doneDpia"]
       },
       "then": {
         "required": ["confirmedDoneDpia"]
+      },
+      "else": {
+        "properties": { "confirmedDoneDpia": false }
       }
     },
     {
       "if": {
         "properties": {
-          "dataDownload": {
-            "const": "YES"
-          }
+          "usesPersonalData": { "const": "YES" },
+          "dataDownload": { "const": "YES" }
         },
-        "required": ["dataDownload"]
+        "required": ["usesPersonalData", "dataDownload"]
       },
       "then": {
         "required": ["dataRetentionPeriod"]
+      },
+      "else": {
+        "properties": { "dataRetentionPeriod": false }
       }
     },
     {
       "if": {
         "properties": {
-          "purposePursuit": {
-            "const": "MERE_CORRECTNESS"
-          }
+          "usesPersonalData": { "const": "YES" },
+          "purposePursuit": { "const": "MERE_CORRECTNESS" }
         },
-        "required": ["purposePursuit"]
+        "required": ["usesPersonalData", "purposePursuit"]
       },
       "then": {
         "required": ["checkedExistenceMereCorrectnessInteropCatalogue"]
+      },
+      "else": {
+        "properties": { "checkedExistenceMereCorrectnessInteropCatalogue": false }
       }
     },
     {
       "if": {
         "properties": {
-          "purposePursuit": {
-            "const": "NEW_PERSONAL_DATA"
-          }
+          "usesPersonalData": { "const": "YES" },
+          "purposePursuit": { "const": "NEW_PERSONAL_DATA" }
         },
-        "required": ["purposePursuit"]
+        "required": ["usesPersonalData", "purposePursuit"]
       },
       "then": {
         "required": ["checkedAllDataNeeded"]
+      },
+      "else": {
+        "properties": { "checkedAllDataNeeded": false }
       }
     },
     {
       "if": {
         "properties": {
-          "usesThirdPartyPersonalData": {
-            "const": "YES"
-          }
+          "isRequestOnBehalfOfThirdParties": { "const": "YES" }
         },
-        "required": ["usesThirdPartyPersonalData"]
+        "required": ["isRequestOnBehalfOfThirdParties"]
       },
       "then": {
         "required": ["thirdPartiesRequestDataUsage"]
+      },
+      "else": {
+        "properties": { "thirdPartiesRequestDataUsage": false }
       }
     }
   ]

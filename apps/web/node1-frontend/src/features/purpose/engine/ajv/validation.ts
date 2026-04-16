@@ -111,6 +111,11 @@ function buildSubsetSchema(
     properties[field] = requiredSet.has(field) ? patchPropNonEmpty(prop) : prop;
   }
 
+  // Include allOf if/then/else conditions so AJV can compute conditional
+  // required fields for this step. Filter both `if.properties` and
+  // `if.required` to visible fields — per-step validation only sees the
+  // current page's fields, so cross-page fields in `if.required` would
+  // always fail the `if` and incorrectly trigger `else` branches.
   const allOf = (jsonSchema.allOf ?? [])
     .filter((cond) => {
       const thenFields = cond.then.required ?? [];
@@ -129,6 +134,7 @@ function buildSubsetSchema(
             visibleFields.has(key),
           ),
         ),
+        required: (cond.if.required ?? []).filter((f) => visibleFields.has(f)),
       },
     }))
     .filter((cond) => Object.keys(cond.if.properties ?? {}).length > 0);
