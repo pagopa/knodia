@@ -96,7 +96,7 @@ vi.mock("@knodia/token-generator", () => ({
   tokenGeneratorBuilder: () => ({
     generateEserviceAccessToken: vi.fn().mockResolvedValue({
       payload: {
-        aud: eserviceVersion.accessTokenAudience.join(","),
+        aud: eserviceVersion.accessTokenAudience,
         client_id: consumerKeychainId,
         consumer: purpose.consumer,
         eservice: { id: eservice.id, knodeId: producerKnodeId },
