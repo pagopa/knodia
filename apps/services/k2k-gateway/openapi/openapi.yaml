@@ -509,6 +509,7 @@ components:
         - ACTIVE
         - SUSPENDED
         - ARCHIVED
+        - PENDING_CONSUMER_OPERATOR_IDENTIFICATION
     Agreement:
       description: Agreement between a Consumer and a Producer for an E-service
       type: object

@@ -9,7 +9,13 @@ import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
 
 export const protobufPackage = "agreement.v1";
 
-export const AgreementStateV1 = { ACTIVE: 0, SUSPENDED: 1, ARCHIVED: 2, UNRECOGNIZED: -1 } as const;
+export const AgreementStateV1 = {
+  ACTIVE: 0,
+  SUSPENDED: 1,
+  ARCHIVED: 2,
+  PENDING_CONSUMER_OPERATOR_IDENTIFICATION: 3,
+  UNRECOGNIZED: -1,
+} as const;
 
 export type AgreementStateV1 = typeof AgreementStateV1[keyof typeof AgreementStateV1];
 
@@ -17,6 +23,8 @@ export namespace AgreementStateV1 {
   export type ACTIVE = typeof AgreementStateV1.ACTIVE;
   export type SUSPENDED = typeof AgreementStateV1.SUSPENDED;
   export type ARCHIVED = typeof AgreementStateV1.ARCHIVED;
+  export type PENDING_CONSUMER_OPERATOR_IDENTIFICATION =
+    typeof AgreementStateV1.PENDING_CONSUMER_OPERATOR_IDENTIFICATION;
   export type UNRECOGNIZED = typeof AgreementStateV1.UNRECOGNIZED;
 }
 
@@ -31,6 +39,9 @@ export function agreementStateV1FromJSON(object: any): AgreementStateV1 {
     case 2:
     case "ARCHIVED":
       return AgreementStateV1.ARCHIVED;
+    case 3:
+    case "PENDING_CONSUMER_OPERATOR_IDENTIFICATION":
+      return AgreementStateV1.PENDING_CONSUMER_OPERATOR_IDENTIFICATION;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -46,6 +57,8 @@ export function agreementStateV1ToJSON(object: AgreementStateV1): string {
       return "SUSPENDED";
     case AgreementStateV1.ARCHIVED:
       return "ARCHIVED";
+    case AgreementStateV1.PENDING_CONSUMER_OPERATOR_IDENTIFICATION:
+      return "PENDING_CONSUMER_OPERATOR_IDENTIFICATION";
     case AgreementStateV1.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
