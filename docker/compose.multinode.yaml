@@ -236,6 +236,10 @@ services:
     depends_on:
       debezium-connect:
         condition: service_healthy
+      flyway-orion:
+        condition: service_completed_successfully
+      flyway-lynx:
+        condition: service_completed_successfully
     volumes:
       - ./multinode/event-store-connector-orion.json:/connectors/orion.json:ro
       - ./multinode/event-store-connector-lynx.json:/connectors/lynx.json:ro

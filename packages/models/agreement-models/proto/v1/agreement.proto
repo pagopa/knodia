@@ -12,6 +12,8 @@ message AgreementV1 {
   repeated AgreementAttributeV1 attributes = 7;
   int64 createdAt = 8;
   int64 updatedAt = 9;
+  optional int64 suspendedByConsumerAt = 10;
+  optional int64 suspendedByProducerAt = 11;
 }
 
 enum AgreementStateV1 {

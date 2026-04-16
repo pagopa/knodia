@@ -107,6 +107,8 @@ describe("POST /agreements (createAgreement)", async () => {
         id: expect.any(String),
         producerId: eservice.producerId,
         state: "Active",
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
         updatedAt: new Date(responseBody.updatedAt),
       };
 

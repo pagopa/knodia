@@ -29,6 +29,14 @@ export const readmodelAgreement = agreementSchema.table(
     metadataVersion: bigint("metadata_version", { mode: "number" }).notNull(),
     producerId: uuid("producer_id").notNull(),
     state: text().notNull(),
+    suspendedByConsumerAt: timestamp("suspended_by_consumer_at", {
+      mode: "date",
+      withTimezone: true,
+    }),
+    suspendedByProducerAt: timestamp("suspended_by_producer_at", {
+      mode: "date",
+      withTimezone: true,
+    }),
     updatedAt: timestamp("updated_at", {
       mode: "date",
       withTimezone: true,
