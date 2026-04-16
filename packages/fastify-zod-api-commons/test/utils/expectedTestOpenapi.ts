@@ -57,7 +57,6 @@ const expectedProblemErrorSchema = {
     code: {
       description: "Internal code of the error",
       example: "123-4567",
-      maxLength: 8,
       minLength: 8,
       pattern: "^[0-9]{3}-[0-9]{4}$",
       type: "string",
