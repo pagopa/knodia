@@ -177,7 +177,7 @@ function RecentPurposesSection() {
         }}
         description="You can view old Purposes in the Purposes page."
         icon={null}
-        kind="brand"
+        kind="neutral"
         title="There are no new Purposes"
       />
     );
