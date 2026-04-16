@@ -338,7 +338,7 @@ export const downloadConsumerKeychainKeyOptions = (options: Options<DownloadCons
 export const getConsumerKeychainsQueryKey = (options: Options<GetConsumerKeychainsData>) => createQueryKey('getConsumerKeychains', options);
 
 /**
- * Retrieve a paginated list of Consumer Keychains for the logged-in user's organization
+ * Retrieve a paginated list of Consumer Keychains owned by the current user organization
  */
 export const getConsumerKeychainsOptions = (options: Options<GetConsumerKeychainsData>) => queryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, GetConsumerKeychainsResponse, ReturnType<typeof getConsumerKeychainsQueryKey>>({
     queryFn: async ({ queryKey, signal }) => {
@@ -356,7 +356,7 @@ export const getConsumerKeychainsOptions = (options: Options<GetConsumerKeychain
 export const getConsumerKeychainsInfiniteQueryKey = (options: Options<GetConsumerKeychainsData>): QueryKey<Options<GetConsumerKeychainsData>> => createQueryKey('getConsumerKeychains', options, true);
 
 /**
- * Retrieve a paginated list of Consumer Keychains for the logged-in user's organization
+ * Retrieve a paginated list of Consumer Keychains owned by the current user organization
  */
 export const getConsumerKeychainsInfiniteOptions = (options: Options<GetConsumerKeychainsData>) => infiniteQueryOptions<GetConsumerKeychainsResponse, AxiosError<GetConsumerKeychainsError>, InfiniteData<GetConsumerKeychainsResponse>, QueryKey<Options<GetConsumerKeychainsData>>, number | Pick<QueryKey<Options<GetConsumerKeychainsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
 // @ts-ignore

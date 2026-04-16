@@ -144,7 +144,7 @@ export const downloadConsumerKeychainKey = <ThrowOnError extends boolean = true>
 });
 
 /**
- * Retrieve a paginated list of Consumer Keychains for the logged-in user's organization
+ * Retrieve a paginated list of Consumer Keychains owned by the current user organization
  */
 export const getConsumerKeychains = <ThrowOnError extends boolean = true>(options: Options<GetConsumerKeychainsData, ThrowOnError>) => (options.client ?? client).get<GetConsumerKeychainsResponses, GetConsumerKeychainsErrors, ThrowOnError>({
     responseType: 'json',
