@@ -53,14 +53,7 @@ export function EserviceProducerActions({
         kind: "error",
         title: "Unable to reactivate E-Service",
       }),
-    onSuccess: () => {
-      invalidateDetails();
-      toastQueue.add({
-        description: "The E-Service is now available to consumers.",
-        kind: "success",
-        title: "E-Service reactivated",
-      });
-    },
+    onSuccess: () => invalidateDetails(),
   });
 
   return match(state)
