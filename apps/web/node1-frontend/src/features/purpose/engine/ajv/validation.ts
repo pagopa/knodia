@@ -4,16 +4,20 @@ import type {
   FormValues,
   JsonSchema,
   JsonSchemaProperty,
+  UISchema,
   ValidateFn,
 } from "../types";
 
+import { buildControlsByField, stripHiddenOptionValues } from "../optionFilter";
 import { getRequiredFields } from "../requiredFields";
 
 export function createAjvValidator(
   jsonSchema: JsonSchema,
   errorMessages: Record<string, Record<string, string>>,
+  uischema?: UISchema,
 ): ValidateFn {
   const ajv = new Ajv({ allErrors: true });
+  const controlsByField = buildControlsByField(uischema);
   return (values, visibleFields) => {
     const subsetSchema = buildSubsetSchema(jsonSchema, visibleFields, values);
     const validateFn = ajv.compile(subsetSchema);
@@ -21,7 +25,13 @@ export function createAjvValidator(
     const visibleValues: FormValues = {};
     for (const field of visibleFields) {
       const val = values[field];
-      if (val !== undefined) visibleValues[field] = val;
+      if (val === undefined) continue;
+      const cleaned = stripHiddenOptionValues(
+        val,
+        controlsByField[field],
+        values,
+      );
+      if (cleaned !== undefined) visibleValues[field] = cleaned;
     }
 
     if (validateFn(visibleValues)) return {};
@@ -39,7 +49,7 @@ function addInstancePathError(
   },
   errorMessages?: Record<string, Record<string, string>>,
 ): void {
-  const field = err.instancePath.slice(1);
+  const field = err.instancePath.slice(1).split("/")[0];
   if (field && !fieldErrors[field]) {
     const isRequiredProxy =
       (err.keyword === "minLength" || err.keyword === "minItems") &&

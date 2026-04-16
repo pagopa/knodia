@@ -401,11 +401,19 @@ export type CompactEservice = {
 };
 
 export type ConsumerEservice = {
+    /**
+     * Number of active Purposes for this E-service
+     */
+    activePurposes: number;
     agreement: {
         id: string;
         state: AgreementState;
     };
     categories: Array<EserviceCategory>;
+    /**
+     * Number of Consumer Keychains linked to active Purposes of this E-service
+     */
+    consumerKeychains: number;
     /**
      * Indicates whether the E-service has been recently updated
      */
@@ -443,6 +451,10 @@ export type AgreementSeed = {
 export type ProducerAgreement = {
     consumer: CompactOrganization;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Agreement has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     state: AgreementState;
 };
@@ -666,6 +678,10 @@ export type ProducerPurpose = {
     dailyCalls: number;
     description: LocalizedPurposeDescription;
     eservice: CompactEservice;
+    /**
+     * Indicates whether the Purpose has been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     name: LocalizedPurposeName;
     state: PurposeState;
@@ -2150,6 +2166,10 @@ export type GetProducerPurposesData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Agreement ID
+         */
+        agreementId?: string;
         /**
          * Filter by E-service ID
          */

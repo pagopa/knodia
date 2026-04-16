@@ -94,6 +94,7 @@ describe("GET /purposes (getPurposes)", () => {
           eserviceId: undefined,
           limit: parsedDefaultQuery.limit,
           offset: parsedDefaultQuery.offset,
+          state: undefined,
         }),
       }),
     );
@@ -102,6 +103,26 @@ describe("GET /purposes (getPurposes)", () => {
       pagination: { ...parsedDefaultQuery, total: 1 },
       results: [expectedApiResult],
     });
+  });
+
+  it("should pass state filter to K2K gateway", async () => {
+    getPurposesMock.mockResolvedValue({
+      data: mockK2KResponse,
+    });
+
+    const response = await injectAppRequest(allowedTestTokens[0]!)
+      .get("/purposes")
+      .query({ ...defaultQuery, state: "Active" });
+
+    expect(response.statusCode).toBe(200);
+
+    expect(getPurposesMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        query: expect.objectContaining({
+          state: "ACTIVE",
+        }),
+      }),
+    );
   });
 
   it.each(forbiddenTestTokens(allowedTestTokens))(
@@ -122,6 +143,7 @@ describe("GET /purposes (getPurposes)", () => {
     { limit: new Date(), offset: NaN },
     { limit: 9999999, offset: 9999999 },
     { ...defaultQuery, eserviceId: "InvalidEserviceId" },
+    { ...defaultQuery, state: "InvalidState" },
     {
       ...defaultQuery,
       invalidParam: "invalid",
