@@ -268,3 +268,52 @@ export type GetAgreementResponses = {
 };
 
 export type GetAgreementResponse = GetAgreementResponses[keyof GetAgreementResponses];
+
+export type ActivateAgreementData = {
+    body?: never;
+    headers: {
+        /**
+         * Unique identifier of the request
+         */
+        'x-correlation-id': CorrelationId;
+    };
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/activate';
+};
+
+export type ActivateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ActivateAgreementError = ActivateAgreementErrors[keyof ActivateAgreementErrors];
+
+export type ActivateAgreementResponses = {
+    /**
+     * Agreement activated successfully
+     */
+    200: Agreement;
+};
+
+export type ActivateAgreementResponse = ActivateAgreementResponses[keyof ActivateAgreementResponses];
