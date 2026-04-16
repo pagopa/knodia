@@ -1,9 +1,16 @@
-import type { Eservice } from "@knodia/eservice-models";
-
-import { generateId } from "@knodia/common-models/ids";
+import { generateId, type OrganizationId } from "@knodia/common-models/ids";
 import { eventStoreEserviceEvents } from "@knodia/db-event-store-eservice";
 import { eserviceEventStoreWriterBuilder } from "@knodia/db-event-store-writer/eservice";
+import {
+  type Eservice,
+  type EserviceVersionState,
+} from "@knodia/eservice-models";
+import { TEST_ORGANIZATION_ID } from "@knodia/test-commons/auth";
 import { createInjectAppRequest } from "@knodia/test-commons/fastify";
+import {
+  getMockEservice,
+  getMockEserviceVersion,
+} from "@knodia/test-commons/utils";
 
 import { createEserviceVersionActivatedV1Event } from "../src/models/eserviceEventFactory.ts";
 import { app, eserviceWriterService, eventStoreDb } from "./setup.ts";
@@ -28,3 +35,19 @@ export async function seedEservice(eservice: Eservice) {
   );
   await eserviceWriterService.upsertEservice(eservice, 0);
 }
+
+export const makeEserviceWithVersionState = (
+  state: EserviceVersionState,
+  seed: number,
+  producerId: OrganizationId = TEST_ORGANIZATION_ID,
+): Eservice => ({
+  ...getMockEservice({ seed }),
+  producerId,
+  versions: [
+    {
+      ...getMockEserviceVersion(seed),
+      state,
+      versionNumber: 1,
+    },
+  ],
+});
