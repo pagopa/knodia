@@ -1,7 +1,8 @@
 import type { bffApi } from "@knodia/bff-client";
 
 import { type AgreementId, unsafeBrandId } from "@knodia/common-models/ids";
-import { Button, Modal } from "@knodia/ui-kit/ui";
+import { Banner, Button, Modal } from "@knodia/ui-kit/ui";
+import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
@@ -42,6 +43,15 @@ export function ProducerAgreementDetail({
         }
         title="Agreement request"
       />
+
+      {canManageAgreementState &&
+        agreement.state === "Suspended" &&
+        agreement.suspendedByConsumerAt !== null &&
+        agreement.suspendedByProducerAt === null && (
+          <ConsumerSuspendedBanner
+            agreementId={unsafeBrandId<AgreementId>(agreement.id)}
+          />
+        )}
 
       <div className="flex flex-col gap-4">
         <SettingsCard label="E-Service">
@@ -98,6 +108,51 @@ function AgreementActionButton({
     )
     .with("Archived", "PendingConsumerOperatorIdentification", () => null)
     .exhaustive();
+}
+
+function ConsumerSuspendedBanner({
+  agreementId,
+}: {
+  agreementId: AgreementId;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { isError, isPending, suspendAgreement } =
+    useSuspendProducerAgreement(agreementId);
+
+  return (
+    <>
+      <Banner
+        action={{
+          label: "Suspend to prevent reactivation",
+          onPress: () => setIsOpen(true),
+        }}
+        kind="warning"
+        size="md"
+        title="The Consumer suspended this Agreement"
+      >
+        You can also suspend the Agreement on your side to prevent the Consumer
+        from reactivating it.
+      </Banner>
+      <Modal
+        actionLabel="Suspend anyway"
+        cancelLabel="Cancel"
+        confirmButtonProps={{ isPending }}
+        isOpen={isOpen}
+        kind="destructive"
+        onConfirm={suspendAgreement}
+        onOpenChange={setIsOpen}
+        showErrorBanner={isError}
+        title="Suspend Agreement"
+      >
+        <p className="body-md">
+          If you suspend it, the Consumer won&apos;t be able to use the
+          associated E-Service or reactivate the Agreement. Are you sure you
+          want to suspend this Agreement?
+        </p>
+        <p className="body-md">You will be able to reactivate it later.</p>
+      </Modal>
+    </>
+  );
 }
 
 function ReactivateProducerAgreementButton({
