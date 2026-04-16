@@ -58,3 +58,15 @@ export const producerPurposesByAgreementQuery = (agreementId: AgreementId) =>
     client,
     query: { agreementId, limit: PURPOSES_SECTION_LIMIT, offset: 0 },
   });
+
+// TODO: replace hardcoded limit with pagination when the number of recently updated purposes per e-service grows
+export const producerRecentPurposesByEserviceQuery = (eserviceId: EserviceId) =>
+  getProducerPurposesOptions({
+    client,
+    query: {
+      eserviceId,
+      limit: PURPOSES_SECTION_LIMIT,
+      offset: 0,
+      recentlyUpdated: true,
+    },
+  });
