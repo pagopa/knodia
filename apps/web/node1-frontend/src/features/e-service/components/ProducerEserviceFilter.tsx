@@ -51,7 +51,7 @@ export function ProducerEserviceFilter({
 
 function getEserviceLabel(
   options: { id: string; name: { en: string } }[],
-  eserviceId: string | undefined,
+  eserviceId: EserviceId | undefined,
 ): string {
   return options.find((o) => o.id === eserviceId)?.name.en ?? "";
 }
