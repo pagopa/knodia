@@ -401,11 +401,19 @@ export type CompactEservice = {
 };
 
 export type ConsumerEservice = {
+    /**
+     * Number of active Purposes for this E-service
+     */
+    activePurposes: number;
     agreement: {
         id: string;
         state: AgreementState;
     };
     categories: Array<EserviceCategory>;
+    /**
+     * Number of Consumer Keychains linked to active Purposes of this E-service
+     */
+    consumerKeychains: number;
     /**
      * Indicates whether the E-service has been recently updated
      */
