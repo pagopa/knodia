@@ -32,7 +32,13 @@ export const API_AgreementSeed = z
   });
 export type API_AgreementSeed = z.infer<typeof API_AgreementSeed>;
 
-export const API_GetProducerAgreementsQueryParams = API_PaginationQueryParams;
+export const API_GetProducerAgreementsQueryParams =
+  API_PaginationQueryParams.extend({
+    eserviceId: z
+      .uuid()
+      .optional()
+      .meta({ description: "Filter by E-service ID" }),
+  });
 export type API_GetProducerAgreementsQueryParams = z.infer<
   typeof API_GetProducerAgreementsQueryParams
 >;

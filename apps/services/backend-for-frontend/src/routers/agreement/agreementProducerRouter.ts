@@ -75,12 +75,13 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         "Getting Producer Agreements with query parameters",
       );
 
-      const { limit, offset } = req.query;
+      const { eserviceId, limit, offset } = req.query;
 
       const { data } = await agreementProcessApi.getAgreements({
         client: agreementProcessClient,
         headers: getKnodiaServiceHeaders(req, correlationId),
         query: {
+          eserviceId,
           limit,
           offset,
           producerId,

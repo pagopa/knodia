@@ -2085,6 +2085,10 @@ export type GetProducerAgreementsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by E-service ID
+         */
+        eserviceId?: string;
     };
     url: '/producer/agreements';
 };
