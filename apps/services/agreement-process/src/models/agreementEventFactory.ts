@@ -33,3 +33,19 @@ export const createAgreementCreatedPendingConsumerOperatorIdentificationV1Event 
     },
     streamId: agreement.id,
   });
+
+export const createAgreementActivatedByConsumerOperatorV1Event = (
+  agreement: Agreement,
+  correlationId: CorrelationId,
+  currentMetadataVersion: number,
+): NewEventStoreAgreementEvent => ({
+  correlationId,
+  currentMetadataVersion,
+  event: {
+    data: {
+      agreement: toAgreementV1(agreement),
+    },
+    type: "AgreementActivatedByConsumerOperatorV1",
+  },
+  streamId: agreement.id,
+});

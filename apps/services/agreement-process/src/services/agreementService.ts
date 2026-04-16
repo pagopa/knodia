@@ -6,6 +6,7 @@ import type {
   WithMetadata,
 } from "@knodia/db-readmodel-commons/models";
 import type {
+  ExternalUISessionAuthData,
   InternalAuthData,
   UISessionAuthData,
 } from "@knodia/fastify-zod-api-commons/auth";
@@ -24,6 +25,7 @@ import type { API_GetAgreementsQueryParams } from "../models/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
 import {
+  createAgreementActivatedByConsumerOperatorV1Event,
   createAgreementActivatedV1Event,
   createAgreementCreatedPendingConsumerOperatorIdentificationV1Event,
 } from "../models/agreementEventFactory.ts";
@@ -32,10 +34,13 @@ import {
   retrieveEservice,
 } from "../utils/readmodelUtils.ts";
 import {
+  assertAgreementIsPendingConsumerOperatorIdentification,
   assertConsumerHasRequiredAttributes,
   assertEserviceVersionAllowsAgreementCreation,
   assertEserviceVersionIsLatest,
   assertNoConflictingAgreementsExist,
+  assertTokenAgreementIdMatchesPathParam,
+  assertTokenResourceClaimsMatchAgreement,
 } from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -45,6 +50,42 @@ export function agreementServiceBuilder(
   readmodelService: ReadmodelService,
 ) {
   return {
+    async activateAgreement(
+      agreementId: AgreementId,
+      {
+        authData,
+        correlationId,
+        logger,
+      }: AuthorizedContext<ExternalUISessionAuthData>,
+    ): Promise<WithMetadata<Agreement>> {
+      logger.info(`Activating Agreement ${agreementId}`);
+
+      assertTokenAgreementIdMatchesPathParam(authData.agreementId, agreementId);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await retrieveAgreement(agreementId, readmodelService);
+
+      assertTokenResourceClaimsMatchAgreement(authData, agreement);
+      assertAgreementIsPendingConsumerOperatorIdentification(agreement);
+
+      const updatedAgreement: Agreement = {
+        ...agreement,
+        state: AgreementState.enum.Active,
+        updatedAt: new Date(),
+      };
+
+      const { newVersion } = await eventStoreWriter.insertEvent(
+        createAgreementActivatedByConsumerOperatorV1Event(
+          updatedAgreement,
+          correlationId,
+          version,
+        ),
+      );
+
+      return { data: updatedAgreement, metadata: { version: newVersion } };
+    },
     async createAgreement(
       {
         consumer,

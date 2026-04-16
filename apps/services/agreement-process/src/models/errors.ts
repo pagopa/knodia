@@ -1,3 +1,4 @@
+import type { AgreementState } from "@knodia/agreement-models";
 import type { ExternalId } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
@@ -24,6 +25,9 @@ const errorCodes = {
   AGREEMENT_NOT_FOUND: "0005",
   ESERVICE_VERSION_NOT_LATEST: "0006",
   CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0007",
+  AGREEMENT_NOT_IN_EXPECTED_STATE: "0008",
+  AGREEMENT_ID_MISMATCH: "0009",
+  RESOURCE_CLAIM_MISMATCH: "0010",
 } as const;
 /* eslint-enable perfectionist/sort-objects */
 
@@ -50,12 +54,37 @@ export function agreementAlreadyExists({
   });
 }
 
+export function agreementIdMismatch(
+  tokenAgreementId: AgreementId,
+  pathAgreementId: AgreementId,
+) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_ID_MISMATCH",
+    detail: `Token agreement ID ${tokenAgreementId} does not match path agreement ID ${pathAgreementId}`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Agreement ID Mismatch",
+  });
+}
+
 export function agreementNotFound(id: AgreementId) {
   return createApiError<ErrorCodes>({
     code: "AGREEMENT_NOT_FOUND",
     detail: `Agreement with id ${id} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement Not Found",
+  });
+}
+
+export function agreementNotInExpectedState(
+  agreementId: AgreementId,
+  actualState: AgreementState,
+  expectedState: AgreementState,
+) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_IN_EXPECTED_STATE",
+    detail: `Agreement ${agreementId} is in state ${actualState}, expected ${expectedState}`,
+    status: HTTP_STATUS_CONFLICT,
+    title: "Agreement Not in Expected State",
   });
 }
 
@@ -119,5 +148,19 @@ export function eserviceVersionNotLatest(
     detail: `E-service version ${eserviceVersionId} of E-service ${eserviceId} is not the latest version. Latest version is ${latestVersionId}`,
     status: HTTP_STATUS_CONFLICT,
     title: "Not Latest E-service Version",
+  });
+}
+
+export function resourceClaimMismatch(
+  agreementId: AgreementId,
+  field: string,
+  tokenValue: string,
+  agreementValue: string,
+) {
+  return createApiError<ErrorCodes>({
+    code: "RESOURCE_CLAIM_MISMATCH",
+    detail: `Token claim "${field}" (${tokenValue}) does not match agreement ${agreementId} value (${agreementValue})`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Resource Claim Mismatch",
   });
 }

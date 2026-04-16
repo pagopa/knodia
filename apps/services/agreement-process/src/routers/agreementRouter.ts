@@ -159,4 +159,43 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     url: "/agreements/:agreementId",
   });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { scope: "agreement-activation", tokenType: "external-ui-session" },
+      ]);
+
+      const {
+        data: agreement,
+        metadata: { version },
+      } = await agreementService.activateAgreement(req.params.agreementId, ctx);
+
+      setMetadataVersionHeader(res, version);
+
+      res.status(200).send(toAPI_Agreement(agreement));
+    },
+    method: "POST",
+    schema: {
+      description: "Activate an Agreement (consumer operator identification)",
+      headers: KnodiaServiceHeaders,
+      operationId: "activateAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: {
+          headers: MetadataVersionHeader,
+          properties: API_Agreement.meta({
+            description: "Agreement activated successfully",
+          }),
+        },
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/activate",
+  });
 };
