@@ -15,9 +15,10 @@ export function ProducerEserviceFilter({
   const { data } = useQuery(producerEserviceOptionsQuery());
   const options = data?.results ?? [];
 
-  const [inputValue, setInputValue] = useState(
-    getEserviceLabel(options, eserviceId),
-  );
+  const [searchValue, setSearchValue] = useState<null | string>(null);
+
+  const selectedLabel = getEserviceLabel(options, eserviceId);
+  const inputValue = searchValue ?? selectedLabel;
 
   const filteredOptions = options.filter((es) =>
     es.name.en.toLowerCase().includes(inputValue.toLowerCase()),
@@ -30,13 +31,12 @@ export function ProducerEserviceFilter({
         isClearable
         items={filteredOptions}
         label="E-Service"
-        onInputChange={setInputValue}
+        onInputChange={(value) => setSearchValue(value)}
         onSelectionChange={(key) => {
+          setSearchValue(null);
           if (key === null) {
-            setInputValue("");
             onEserviceIdChange(undefined);
           } else {
-            setInputValue(getEserviceLabel(options, String(key)));
             onEserviceIdChange(unsafeBrandId<EserviceId>(String(key)));
           }
         }}
