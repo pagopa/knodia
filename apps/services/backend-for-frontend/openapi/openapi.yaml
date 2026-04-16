@@ -131,6 +131,7 @@ components:
         - Active
         - Suspended
         - Archived
+        - PendingConsumerOperatorIdentification
     EserviceVersionState:
       type: string
       enum:
@@ -821,6 +822,12 @@ components:
     ConsumerEservice:
       type: object
       properties:
+        activePurposes:
+          description: Number of active Purposes for this E-service
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
         agreement:
           type: object
           properties:
@@ -838,6 +845,13 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/EserviceCategory"
+        consumerKeychains:
+          description: Number of Consumer Keychains linked to active Purposes of this
+            E-service
+          format: int32
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
         hasRecentlyBeenUpdated:
           description: Indicates whether the E-service has been recently updated
           type: boolean
@@ -860,8 +874,10 @@ components:
         state:
           $ref: "#/components/schemas/EserviceVersionState"
       required:
+        - activePurposes
         - agreement
         - categories
+        - consumerKeychains
         - hasRecentlyBeenUpdated
         - id
         - mode
@@ -2196,8 +2212,8 @@ paths:
       operationId: getConsumerKeychains
       tags:
         - consumerKeychain
-      description: Retrieve a paginated list of Consumer Keychains for the logged-in
-        user's organization
+      description: Retrieve a paginated list of Consumer Keychains owned by the
+        current user organization
       parameters:
         - schema:
             format: int32
@@ -2216,6 +2232,13 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
+        - schema:
+            type: string
+          in: query
+          name: purpose
+          required: false
+          description: "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId}
+            (e.g. Orion:00000000-0000-0000-0000-000000000000)"
       responses:
         "200":
           description: Consumer Keychains retrieved successfully

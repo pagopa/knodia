@@ -117,6 +117,12 @@ function AgreementStatusBanner({
       );
       return null;
     })
+    .with("PendingConsumerOperatorIdentification", () => {
+      console.warn(
+        "Unhandled agreement state: PendingConsumerOperatorIdentification",
+      );
+      return null;
+    })
     .exhaustive();
 
   if (!banner) return null;

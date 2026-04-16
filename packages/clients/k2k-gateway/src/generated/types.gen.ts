@@ -312,7 +312,7 @@ export type AgreementSeed = {
 /**
  * Describes the states an Agreement can be in
  */
-export type AgreementState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+export type AgreementState = 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED' | 'PENDING_CONSUMER_OPERATOR_IDENTIFICATION';
 
 /**
  * Agreement between a Consumer and a Producer for an E-service
@@ -903,6 +903,10 @@ export type GetPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: EserviceId;
+        /**
+         * Filter by Purpose State
+         */
+        state?: PurposeState;
     };
     url: '/purposes';
 };

@@ -1,14 +1,15 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { KnodeId } from "@knodia/common-models/ids";
 
-import { Button, Modal } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon } from "@phosphor-icons/react";
+import { Banner, Button, Modal } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
 import { OrganizationCard } from "@/components/OrganizationCard";
 import { PageHeader } from "@/components/PageHeader";
 import { ButtonLinkWithPreload, RouterLink } from "@/components/routerLinks";
+import { Section } from "@/components/Section";
 import { useHasRole } from "@/contexts/auth";
 import { PurposeAgreementCard } from "@/features/purpose/components/PurposeAgreementCard";
 import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDailyCallsCard";
@@ -85,6 +86,19 @@ export function ConsumerPurposeDetail({
         }
         agreement={purpose.agreement}
       />
+      <Section
+        actions={
+          <Button hierarchy="neutral" kind="tonal" size="md">
+            Link Keychain
+          </Button>
+        }
+        title="Keychains"
+      >
+        <Banner icon={<SelectionPlusIcon />} kind="neutral">
+          Link a Keychain to this Purpose to request an access token for the
+          related E-Service.
+        </Banner>
+      </Section>
     </>
   );
 }

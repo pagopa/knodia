@@ -1,0 +1,19 @@
+meta {
+  name: Reactivate Eservice
+  type: http
+}
+
+post {
+  url: {{host-eservice-process}}/eservices/:eserviceId/reactivate
+  body: none
+  auth: none
+}
+
+params:path {
+  eserviceId: {{eserviceId}}
+}
+
+headers {
+  X-Correlation-Id: {{correlation-id}}
+  Authorization: {{ui-session-jwt}}
+}

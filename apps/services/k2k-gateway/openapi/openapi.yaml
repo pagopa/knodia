@@ -509,6 +509,7 @@ components:
         - ACTIVE
         - SUSPENDED
         - ARCHIVED
+        - PENDING_CONSUMER_OPERATOR_IDENTIFICATION
     Agreement:
       description: Agreement between a Consumer and a Producer for an E-service
       type: object
@@ -1418,6 +1419,13 @@ paths:
           name: eserviceId
           required: false
           description: Filter by E-service ID
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/PurposeState"
+          in: query
+          name: state
+          required: false
+          description: Filter by Purpose State
       responses:
         "200":
           description: Purposes retrieved successfully

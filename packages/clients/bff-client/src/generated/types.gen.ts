@@ -66,7 +66,7 @@ export type CreatedResource = {
  */
 export type KnodeId = 'Orion' | 'Lynx';
 
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 
@@ -401,11 +401,19 @@ export type CompactEservice = {
 };
 
 export type ConsumerEservice = {
+    /**
+     * Number of active Purposes for this E-service
+     */
+    activePurposes: number;
     agreement: {
         id: string;
         state: AgreementState;
     };
     categories: Array<EserviceCategory>;
+    /**
+     * Number of Consumer Keychains linked to active Purposes of this E-service
+     */
+    consumerKeychains: number;
     /**
      * Indicates whether the E-service has been recently updated
      */
@@ -1159,6 +1167,10 @@ export type GetConsumerKeychainsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)
+         */
+        purpose?: string;
     };
     url: '/consumerKeychains';
 };

@@ -412,6 +412,13 @@ paths:
           required: true
           description: Pagination starting position
         - schema:
+            allOf:
+              - $ref: "#/components/schemas/OrganizationId"
+          in: query
+          name: ownerId
+          required: false
+          description: Filter by owner Organization ID
+        - schema:
             type: string
           in: query
           name: purpose

@@ -90,9 +90,9 @@ function AgreementActionButton({
           Reactivate
         </Button>
       ))
-      // TODO: Only Active and Suspended states are supported. Archived is not handled yet.
-      .with("Archived", () => {
-        console.warn("Unhandled agreement state: Archived");
+      // TODO: Only Active and Suspended states are supported. Archived and PendingConsumerOperatorIdentification are not handled yet.
+      .with("Archived", "PendingConsumerOperatorIdentification", (state) => {
+        console.warn(`Unhandled agreement state: ${state}`);
         return null;
       })
       .exhaustive()

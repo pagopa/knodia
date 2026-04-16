@@ -131,6 +131,7 @@ export function buildAppFromConfig(
     });
     protectedApp.register(eserviceConsumerRouter, {
       config,
+      keychainProcessClient: clients.keychainProcessClient,
       organizationProcessClient: clients.organizationProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
     });

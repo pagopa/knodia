@@ -4,6 +4,7 @@ import {
   API_PaginationQueryParams,
   API_UserId,
 } from "@knodia/common-models/api";
+import { API_KnodeId } from "@knodia/common-models/internalApi";
 import {
   API_ConsumerKeychainIdPathParam,
   API_KeychainKeyLocalizedName,
@@ -49,7 +50,25 @@ export const API_KeychainDetails = z
   .meta({ id: "KeychainDetails" });
 export type API_KeychainDetails = z.infer<typeof API_KeychainDetails>;
 
-export const API_ConsumerKeychainsQueryParams = API_PaginationQueryParams;
+export const API_ConsumerKeychainsQueryParams =
+  API_PaginationQueryParams.extend({
+    purpose: z
+      .string()
+      .refine((value) => {
+        const [knodeId, id, ...rest] = value.split(":");
+
+        return (
+          rest.length === 0 &&
+          API_KnodeId.safeParse(knodeId).success &&
+          z.uuid().safeParse(id).success
+        );
+      })
+      .optional()
+      .meta({
+        description:
+          "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)",
+      }),
+  });
 export type API_ConsumerKeychainsQueryParams = z.infer<
   typeof API_ConsumerKeychainsQueryParams
 >;

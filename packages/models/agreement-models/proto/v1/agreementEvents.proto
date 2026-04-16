@@ -7,3 +7,23 @@ import "v1/agreement.proto";
 message AgreementActivatedV1 {
   AgreementV1 agreement = 1;
 }
+
+message AgreementCreatedPendingConsumerOperatorIdentificationV1 {
+    AgreementV1 agreement = 1;
+}
+
+message AgreementSuspendedByConsumerV1 {
+  AgreementV1 agreement = 1;
+}
+
+message AgreementSuspendedByProducerV1 {
+  AgreementV1 agreement = 1;
+}
+
+message AgreementReactivatedByConsumerV1 {
+  AgreementV1 agreement = 1;
+}
+
+message AgreementReactivatedByProducerV1 {
+  AgreementV1 agreement = 1;
+}

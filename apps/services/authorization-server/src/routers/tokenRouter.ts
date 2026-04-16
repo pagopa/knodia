@@ -45,6 +45,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
     method: "POST",
     schema: {
       body: API_TokenRequest,
+      consumes: ["application/x-www-form-urlencoded"],
       description: "Issue a mocked access token",
       operationId: "createToken",
       response: {

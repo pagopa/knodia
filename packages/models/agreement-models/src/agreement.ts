@@ -8,7 +8,12 @@ import {
 } from "@knodia/common-models/ids";
 import z from "zod";
 
-export const AgreementState = z.enum(["Active", "Suspended", "Archived"]);
+export const AgreementState = z.enum([
+  "Active",
+  "Suspended",
+  "Archived",
+  "PendingConsumerOperatorIdentification",
+]);
 export type AgreementState = z.infer<typeof AgreementState>;
 
 export const Agreement = z.strictObject({
@@ -20,6 +25,8 @@ export const Agreement = z.strictObject({
   id: AgreementId,
   producerId: OrganizationId,
   state: AgreementState,
+  suspendedByConsumerAt: z.coerce.date().nullable(),
+  suspendedByProducerAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date(),
 });
 export type Agreement = z.infer<typeof Agreement>;
