@@ -9,7 +9,7 @@ import {
   type TestToken,
 } from "@knodia/test-commons/auth";
 import { getMockAgreement } from "@knodia/test-commons/utils";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_Agreement } from "../../src/models/agreement/api.ts";
 
@@ -72,13 +72,10 @@ describe("POST /agreements/:agreementId/suspend (suspendAgreement)", () => {
   );
   const knodeId = expectedApiDetail.consumer.knodeId;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    suspendAgreementMock.mockReset();
     await remoteResourceDbService.insertAgreement(ownedAgreement);
     await remoteResourceDbService.insertAgreement(foreignAgreement);
-  });
-
-  beforeEach(() => {
-    suspendAgreementMock.mockReset();
   });
 
   it("should return 200 with converted detail on success", async () => {
