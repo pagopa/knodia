@@ -1,10 +1,14 @@
+import type { bffApi } from "@knodia/bff-client";
+
 import { Breadcrumb, Breadcrumbs, Button, Modal } from "@knodia/ui-kit/ui";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
 
 import { PageHeader } from "@/components/PageHeader";
 import { useHasRole } from "@/contexts/auth";
 import { CategoryChip } from "@/features/e-service/components/CategoryChip";
+import { EditEServiceModal } from "@/features/e-service/components/EditEServiceModal";
 import { EserviceModeChip } from "@/features/e-service/components/EserviceModeChip";
 import { EserviceStateChip } from "@/features/e-service/components/EserviceStateChip";
 import { ProductionEServiceDetailsTabs } from "@/features/e-service/components/ProductionEServiceDetailsTabs";
@@ -18,7 +22,13 @@ export const Route = createFileRoute(
     await queryClient.ensureQueryData(producerEserviceDetailsQuery(id)),
 });
 
-function EServiceActions() {
+function EServiceActions({
+  eservice,
+}: {
+  eservice: bffApi.ProducerEserviceDetails;
+}) {
+  const [isEditOpen, setIsEditOpen] = useState(false);
+
   return (
     <>
       <DialogTrigger>
@@ -35,12 +45,19 @@ function EServiceActions() {
         />
       </DialogTrigger>
       <DialogTrigger>
-        <Button hierarchy="brand" isDisabled kind="filled" size="md">
+        <Button
+          hierarchy="brand"
+          kind="filled"
+          onClick={() => setIsEditOpen(true)}
+          size="md"
+        >
           Edit
         </Button>
-        <Modal actionLabel="Confirm" kind="default" title="Edit E-Service">
-          TODO
-        </Modal>
+        <EditEServiceModal
+          eservice={eservice}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+        />
       </DialogTrigger>
     </>
   );
@@ -61,7 +78,9 @@ function RouteComponent() {
       </Breadcrumbs>
 
       <PageHeader
-        actions={canManageEserviceState && <EServiceActions />}
+        actions={
+          canManageEserviceState && <EServiceActions eservice={eservice} />
+        }
         copyableId={eservice.id}
         description={eservice.description.en}
         resourceStatusChip={
