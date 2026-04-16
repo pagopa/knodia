@@ -66,7 +66,7 @@ export type CreatedResource = {
  */
 export type KnodeId = 'Orion' | 'Lynx';
 
-export type AgreementState = 'Active' | 'Suspended' | 'Archived';
+export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
 

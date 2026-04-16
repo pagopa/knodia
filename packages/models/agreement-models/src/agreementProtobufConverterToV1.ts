@@ -12,6 +12,10 @@ const toAgreementStateV1 = (state: AgreementState): AgreementStateV1 =>
     .with("Active", () => AgreementStateV1.ACTIVE)
     .with("Suspended", () => AgreementStateV1.SUSPENDED)
     .with("Archived", () => AgreementStateV1.ARCHIVED)
+    .with(
+      "PendingConsumerOperatorIdentification",
+      () => AgreementStateV1.PENDING_CONSUMER_OPERATOR_IDENTIFICATION,
+    )
     .exhaustive();
 
 export const toAgreementV1 = (agreement: Agreement): AgreementV1 => ({

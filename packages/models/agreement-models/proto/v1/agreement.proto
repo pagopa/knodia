@@ -18,6 +18,7 @@ enum AgreementStateV1 {
   ACTIVE = 0;
   SUSPENDED = 1;
   ARCHIVED = 2;
+  PENDING_CONSUMER_OPERATOR_IDENTIFICATION = 3;
 }
 
 message AgreementAttributeV1 {
