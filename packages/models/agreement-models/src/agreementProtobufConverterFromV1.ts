@@ -38,6 +38,10 @@ const fromAgreementStateV1 = (input: AgreementStateV1): AgreementState =>
     .with(AgreementStateV1.ACTIVE, () => AgreementState.enum.Active)
     .with(AgreementStateV1.SUSPENDED, () => AgreementState.enum.Suspended)
     .with(AgreementStateV1.ARCHIVED, () => AgreementState.enum.Archived)
+    .with(
+      AgreementStateV1.PENDING_CONSUMER_OPERATOR_IDENTIFICATION,
+      () => AgreementState.enum.PendingConsumerOperatorIdentification,
+    )
     .with(AgreementStateV1.UNRECOGNIZED, () => {
       throw new Error("Unrecognized AgreementStateV1 value");
     })
