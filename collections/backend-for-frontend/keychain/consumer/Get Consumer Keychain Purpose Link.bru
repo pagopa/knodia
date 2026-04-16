@@ -1,0 +1,23 @@
+meta {
+  name: Get Consumer Keychain Purpose Link
+  type: http
+}
+
+get {
+  url: {{host-backend-for-frontend}}/consumerKeychains/:consumerKeychainId/purpose-link/:purposeId?knodeId={{other-knode-id}}
+  body: none
+  auth: none
+}
+
+params:query {
+  knodeId: {{other-knode-id}}
+}
+
+params:path {
+  consumerKeychainId: {{consumerKeychainId}}
+  purposeId: {{purposeId}}
+}
+
+headers {
+  Authorization: {{ui-session-jwt}}
+}

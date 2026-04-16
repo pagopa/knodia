@@ -46,6 +46,7 @@ import {
   API_ConsumerKeychainMembershipCheckResult,
   API_ConsumerKeychainOptions,
   API_ConsumerKeychainPatch,
+  API_ConsumerKeychainPurposeLinkCheckResult,
   API_ConsumerKeychainPurposes,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
@@ -123,6 +124,29 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
     pollingService.pollResourceUntilDeletion(() =>
       retrieveConsumerKeychainById(consumerKeychainId, headers),
     )();
+
+  const checkExistence = async (
+    check: () => Promise<unknown>,
+    { notFoundErrorCode }: { notFoundErrorCode: string },
+  ): Promise<boolean> => {
+    try {
+      await check();
+      return true;
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 404) {
+        const problem = API_Problem.safeParse(error.response?.data);
+
+        if (
+          problem.success &&
+          problem.data.errors?.some(({ code }) => code === notFoundErrorCode)
+        ) {
+          return false;
+        }
+      }
+
+      throw error;
+    }
+  };
 
   fastify.route({
     handler: async (req, res) => {
@@ -608,29 +632,17 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
-      try {
-        await keychainProcessApi.getConsumerKeychainMember({
-          client: keychainProcessClient,
-          headers,
-          path: { consumerKeychainId, userId },
-        });
+      const isMember = await checkExistence(
+        () =>
+          keychainProcessApi.getConsumerKeychainMember({
+            client: keychainProcessClient,
+            headers,
+            path: { consumerKeychainId, userId },
+          }),
+        { notFoundErrorCode: "006-0005" },
+      );
 
-        res.send({ isMember: true });
-      } catch (error) {
-        if (isAxiosError(error) && error.response?.status === 404) {
-          const problem = API_Problem.safeParse(error.response?.data);
-
-          if (
-            problem.success &&
-            problem.data.errors?.some(({ code }) => code === "006-0005")
-          ) {
-            res.send({ isMember: false });
-            return;
-          }
-        }
-
-        throw error;
-      }
+      res.send({ isMember });
     },
     method: "GET",
     schema: {
@@ -876,6 +888,54 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/purposes",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { correlationId, logger } = getContextValues(requestContext);
+      const { consumerKeychainId, purposeId } = req.params;
+      const { knodeId } = req.query;
+
+      logger.info(
+        { request: { params: req.params, query: req.query } },
+        `Checking whether Purpose ${purposeId} owned by Knode ${knodeId} is linked to Consumer Keychain ${consumerKeychainId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const isLinked = await checkExistence(
+        () =>
+          keychainProcessApi.getConsumerKeychainPurpose({
+            client: keychainProcessClient,
+            headers,
+            path: { consumerKeychainId, purposeId },
+            query: { knodeId },
+          }),
+        { notFoundErrorCode: "006-0018" },
+      );
+
+      res.send({ isLinked });
+    },
+    method: "GET",
+    schema: {
+      description:
+        "Check whether the given Purpose is linked to a Consumer Keychain",
+      operationId: "getConsumerKeychainPurposeLink",
+      params: API_UnlinkConsumerKeychainIdPathParams,
+      querystring: API_UnlinkConsumerKeychainPurposeQueryParams,
+      response: {
+        200: API_ConsumerKeychainPurposeLinkCheckResult.meta({
+          description:
+            "Consumer Keychain purpose link check retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Consumer Keychain not found" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/:consumerKeychainId/purpose-link/:purposeId",
   });
 
   fastify.route({
