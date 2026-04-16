@@ -4,7 +4,11 @@ import {
   AgreementState,
   toAgreementV1,
 } from "@knodia/agreement-models";
-import { generateId } from "@knodia/common-models/ids";
+import {
+  type AgreementId,
+  type EserviceId,
+  generateId,
+} from "@knodia/common-models/ids";
 import { METADATA_VERSION_HEADER } from "@knodia/fastify-zod-api-commons/models";
 import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { getMockAgreement } from "@knodia/test-commons/utils";
@@ -38,10 +42,7 @@ describe("POST /agreements/:agreementId/activate", async () => {
       eserviceVersionId: agreement.eserviceVersionId,
       producerId: agreement.producerId,
       type: "external-ui-session",
-    })
-      .post(`/agreements/${agreement.id}/activate`)
-      .body(undefined);
-
+    }).post(`/agreements/${agreement.id}/activate`);
     expect(response.statusCode).toBe(200);
     expect(response.headers[METADATA_VERSION_HEADER]).toEqual("1");
 
@@ -74,9 +75,9 @@ describe("POST /agreements/:agreementId/activate", async () => {
   it.each(forbiddenTestTokens(allowedTestTokens))(
     "should return 403 for unauthorized token ($type, $roles)",
     async (spec) => {
-      const response = await injectAppRequest(spec)
-        .post(`/agreements/${generateId()}/activate`)
-        .body(undefined);
+      const response = await injectAppRequest(spec).post(
+        `/agreements/${generateId<AgreementId>()}/activate`,
+      );
       expect(response.statusCode).toBe(403);
     },
   );
@@ -85,9 +86,7 @@ describe("POST /agreements/:agreementId/activate", async () => {
     const response = await injectAppRequest({
       scope: "wrong-scope",
       type: "external-ui-session",
-    })
-      .post(`/agreements/${generateId()}/activate`)
-      .body(undefined);
+    }).post(`/agreements/${generateId<AgreementId>()}/activate`);
     expect(response.statusCode).toBe(403);
   });
 
@@ -98,16 +97,14 @@ describe("POST /agreements/:agreementId/activate", async () => {
     await seedPendingAgreement(agreement);
 
     const response = await injectAppRequest({
-      agreementId: generateId(),
+      agreementId: generateId<AgreementId>(),
       consumerId: agreement.consumer.id,
       consumerKnodeId: agreement.consumer.knodeId,
       eserviceId: agreement.eserviceId,
       eserviceVersionId: agreement.eserviceVersionId,
       producerId: agreement.producerId,
       type: "external-ui-session",
-    })
-      .post(`/agreements/${agreement.id}/activate`)
-      .body(undefined);
+    }).post(`/agreements/${agreement.id}/activate`);
     expect(response.statusCode).toBe(403);
   });
 
@@ -121,24 +118,20 @@ describe("POST /agreements/:agreementId/activate", async () => {
       agreementId: agreement.id,
       consumerId: agreement.consumer.id,
       consumerKnodeId: agreement.consumer.knodeId,
-      eserviceId: generateId(),
+      eserviceId: generateId<EserviceId>(),
       eserviceVersionId: agreement.eserviceVersionId,
       producerId: agreement.producerId,
       type: "external-ui-session",
-    })
-      .post(`/agreements/${agreement.id}/activate`)
-      .body(undefined);
+    }).post(`/agreements/${agreement.id}/activate`);
     expect(response.statusCode).toBe(403);
   });
 
   it("should return 404 when agreement does not exist", async () => {
-    const agreementId = generateId();
+    const agreementId = generateId<AgreementId>();
     const response = await injectAppRequest({
       agreementId,
       type: "external-ui-session",
-    })
-      .post(`/agreements/${agreementId}/activate`)
-      .body(undefined);
+    }).post(`/agreements/${agreementId}/activate`);
     expect(response.statusCode).toBe(404);
   });
 
@@ -162,9 +155,7 @@ describe("POST /agreements/:agreementId/activate", async () => {
         eserviceVersionId: agreement.eserviceVersionId,
         producerId: agreement.producerId,
         type: "external-ui-session",
-      })
-        .post(`/agreements/${agreement.id}/activate`)
-        .body(undefined);
+      }).post(`/agreements/${agreement.id}/activate`);
       expect(response.statusCode).toBe(409);
     },
   );
@@ -172,9 +163,7 @@ describe("POST /agreements/:agreementId/activate", async () => {
   it("should return 400 for malformed agreementId", async () => {
     const response = await injectAppRequest({
       type: "external-ui-session",
-    })
-      .post("/agreements/not-a-uuid/activate")
-      .body(undefined);
+    }).post("/agreements/not-a-uuid/activate");
     expect(response.statusCode).toBe(400);
   });
 });
