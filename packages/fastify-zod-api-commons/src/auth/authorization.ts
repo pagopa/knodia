@@ -7,6 +7,7 @@ import { match } from "ts-pattern";
 import type { AuthorizedContext } from "../context/context.ts";
 import type {
   AuthData,
+  ExternalUISessionAuthData,
   InternalAuthData,
   UISessionAuthData,
 } from "./authData.ts";
@@ -14,10 +15,15 @@ import type {
 import { forbiddenError, unauthorizedError } from "../models/errors/errors.ts";
 
 export type AuthorizationRule =
+  | { scope: string; tokenType: "external-ui-session" }
   | { tokenType: "internal" }
   | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
 
 type AllowedAuthData<Rules extends readonly AuthorizationRule[]> =
+  // If there's a rule with tokenType "external-ui-session", add ExternalUISessionAuthData
+  | (Extract<Rules[number], { tokenType: "external-ui-session" }> extends never
+      ? never
+      : ExternalUISessionAuthData)
   // If there's a rule with tokenType "internal", add InternalAuthData
   | (Extract<Rules[number], { tokenType: "internal" }> extends never
       ? never
@@ -88,7 +94,36 @@ function assertAuthDataAdmitted<
     .with({ tokenType: "ui-session" }, (data) =>
       assertUISessionTokenAdmitted(data, admittedRules),
     )
+    .with({ tokenType: "external-ui-session" }, (data) =>
+      assertExternalUISessionTokenAdmitted(data, admittedRules),
+    )
     .exhaustive();
+}
+
+function assertExternalUISessionTokenAdmitted(
+  authData: ExternalUISessionAuthData,
+  admittedRules: NonEmptyArray<AuthorizationRule>,
+): void {
+  const externalRule = admittedRules.find(
+    (
+      rule,
+    ): rule is Extract<
+      AuthorizationRule,
+      { tokenType: "external-ui-session" }
+    > => rule.tokenType === "external-ui-session",
+  );
+
+  if (externalRule === undefined) {
+    throw forbiddenError(
+      `Invalid token type "external-ui-session" for this operation`,
+    );
+  }
+
+  if (authData.scope !== externalRule.scope) {
+    throw forbiddenError(
+      `Invalid scope "${authData.scope}" for this operation, expected "${externalRule.scope}"`,
+    );
+  }
 }
 
 function assertInternalTokenAdmitted(

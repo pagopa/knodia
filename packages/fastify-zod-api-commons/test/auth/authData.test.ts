@@ -1,10 +1,12 @@
 import {
+  getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
 import {
+  type ExternalUISessionAuthData,
   extractAuthDataFromToken,
   type InternalAuthData,
   type UISessionAuthData,
@@ -12,6 +14,7 @@ import {
 
 const uiSessionClaims = getTestUISessionTokenClaims();
 const internalClaims = getTestInternalTokenClaims();
+const externalUISessionClaims = getTestExternalUISessionTokenClaims();
 
 describe("extractAuthDataFromToken", () => {
   it("maps UI session claims to UISessionAuthData", () => {
@@ -31,5 +34,20 @@ describe("extractAuthDataFromToken", () => {
     expect(result).toEqual({
       tokenType: internalClaims.type,
     } satisfies InternalAuthData);
+  });
+
+  it("maps external-ui-session claims to ExternalUISessionAuthData", () => {
+    const result = extractAuthDataFromToken(externalUISessionClaims);
+
+    expect(result).toEqual({
+      agreementId: externalUISessionClaims.agreementId,
+      consumerId: externalUISessionClaims.consumerId,
+      consumerKnodeId: externalUISessionClaims.consumerKnodeId,
+      eserviceId: externalUISessionClaims.eserviceId,
+      eserviceVersionId: externalUISessionClaims.eserviceVersionId,
+      producerId: externalUISessionClaims.producerId,
+      scope: externalUISessionClaims.scope,
+      tokenType: externalUISessionClaims.type,
+    } satisfies ExternalUISessionAuthData);
   });
 });

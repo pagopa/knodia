@@ -1,6 +1,13 @@
 import z from "zod";
 
-import { OrganizationId } from "../ids/brandedIds.ts";
+import { ExternalId } from "../externalResource.ts";
+import {
+  AgreementId,
+  EserviceId,
+  EserviceVersionId,
+  OrganizationId,
+} from "../ids/brandedIds.ts";
+import { KnodeId } from "../ids/ids.ts";
 import { UserId } from "../ids/userId.ts";
 import { NonEmptyArray } from "../types.ts";
 import { UserRole } from "./roles.ts";
@@ -38,10 +45,25 @@ export type UISessionRefreshTokenClaims = z.infer<
   typeof UISessionRefreshTokenClaims
 >;
 
+export const ExternalUISessionTokenClaims = BaseJwtClaims.extend({
+  agreementId: AgreementId,
+  consumerId: ExternalId<OrganizationId>(),
+  consumerKnodeId: KnodeId,
+  eserviceId: EserviceId,
+  eserviceVersionId: EserviceVersionId,
+  producerId: OrganizationId,
+  scope: z.string(),
+  type: z.literal("external-ui-session"),
+});
+export type ExternalUISessionTokenClaims = z.infer<
+  typeof ExternalUISessionTokenClaims
+>;
+
 // Token types accepted as authentication credentials by API services.
 // Does NOT include refresh tokens, which are only used for token renewal.
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [
   UISessionTokenClaims,
   InternalTokenClaims,
+  ExternalUISessionTokenClaims,
 ]);
 export type KnodiaAuthTokenClaims = z.infer<typeof KnodiaAuthTokenClaims>;

@@ -3,6 +3,7 @@ import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { type CorrelationId, generateId } from "@knodia/common-models/ids";
 import {
+  getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
@@ -10,6 +11,7 @@ import { createTestLogger } from "@knodia/test-commons/utils";
 import { describe, expect, it } from "vitest";
 
 import {
+  type ExternalUISessionAuthData,
   extractAuthDataFromToken,
   type InternalAuthData,
   type UISessionAuthData,
@@ -29,6 +31,9 @@ const adminUISessionAuthData = extractAuthDataFromToken(
 );
 const technicalUISessionAuthData = extractAuthDataFromToken(
   getTestUISessionTokenClaims({ roles: ["technical"] }),
+);
+const externalUISessionAuthData = extractAuthDataFromToken(
+  getTestExternalUISessionTokenClaims(),
 );
 
 const { logger } = createTestLogger();
@@ -126,6 +131,46 @@ describe("validateAuthorization", () => {
         validateAuthorization(ctx, [{ tokenType: "internal" }]),
       ).toThrow(
         forbiddenError(`Invalid token type "ui-session" for this operation`),
+      );
+    });
+  });
+
+  describe("external-ui-session token", () => {
+    it("succeeds when scope matches", () => {
+      const ctx = buildCtx(externalUISessionAuthData);
+
+      const result = validateAuthorization(ctx, [
+        { scope: "agreement-activation", tokenType: "external-ui-session" },
+      ]);
+
+      const resultAuthData: ExternalUISessionAuthData = result.authData;
+      expect(resultAuthData).toEqual(externalUISessionAuthData);
+      expect(result.authData.tokenType).toBe("external-ui-session");
+    });
+
+    it("throws forbidden (403) when external-ui-session token type is not admitted", () => {
+      const ctx = buildCtx(externalUISessionAuthData);
+
+      expect(() =>
+        validateAuthorization(ctx, [{ tokenType: "internal" }]),
+      ).toThrow(
+        forbiddenError(
+          `Invalid token type "external-ui-session" for this operation`,
+        ),
+      );
+    });
+
+    it("throws forbidden (403) when scope does not match", () => {
+      const ctx = buildCtx(externalUISessionAuthData);
+
+      expect(() =>
+        validateAuthorization(ctx, [
+          { scope: "wrong-scope", tokenType: "external-ui-session" },
+        ]),
+      ).toThrow(
+        forbiddenError(
+          `Invalid scope "agreement-activation" for this operation, expected "wrong-scope"`,
+        ),
       );
     });
   });

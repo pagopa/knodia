@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 import { requestContext } from "@fastify/request-context";
 import {
+  getTestExternalUISessionTokenClaims,
   getTestInternalTokenClaims,
   getTestUISessionTokenClaims,
 } from "@knodia/test-commons/auth";
@@ -53,6 +54,7 @@ describe("parseAuthHeaderToken", () => {
 
 const validUISessionPayload = getTestUISessionTokenClaims();
 const validInternalPayload = getTestInternalTokenClaims();
+const validExternalUISessionPayload = getTestExternalUISessionTokenClaims();
 
 const docsTestRoute = `${docsRoutePrefix}/test`;
 
@@ -217,6 +219,32 @@ describe("authenticationPlugin", () => {
       expect(response.json()).toMatchObject({
         authData: {
           tokenType: validInternalPayload.type,
+        },
+      });
+    });
+
+    it("sets authData in context when external-ui-session token is valid", async () => {
+      jwtVerify.mockResolvedValueOnce({
+        payload: validExternalUISessionPayload,
+      });
+
+      const response = await app.inject({
+        headers: { authorization: "Bearer external-ui-session-token" },
+        method: "GET",
+        url: "/protected",
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        authData: {
+          agreementId: validExternalUISessionPayload.agreementId,
+          consumerId: validExternalUISessionPayload.consumerId,
+          consumerKnodeId: validExternalUISessionPayload.consumerKnodeId,
+          eserviceId: validExternalUISessionPayload.eserviceId,
+          eserviceVersionId: validExternalUISessionPayload.eserviceVersionId,
+          producerId: validExternalUISessionPayload.producerId,
+          scope: validExternalUISessionPayload.scope,
+          tokenType: validExternalUISessionPayload.type,
         },
       });
     });
