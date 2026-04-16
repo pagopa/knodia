@@ -2093,6 +2093,10 @@ export type GetProducerAgreementsData = {
          * Filter by E-service ID
          */
         eserviceId?: string;
+        /**
+         * Filter to only Agreements updated within the recent update window
+         */
+        recentlyUpdated?: boolean;
     };
     url: '/producer/agreements';
 };
@@ -2182,6 +2186,10 @@ export type GetProducerPurposesData = {
          * Filter by E-service ID
          */
         eserviceId?: string;
+        /**
+         * Filter to only Purposes updated within the recent update window
+         */
+        recentlyUpdated?: boolean;
         /**
          * Filter by Purpose State
          */

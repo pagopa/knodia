@@ -38,6 +38,10 @@ export const API_GetProducerAgreementsQueryParams =
       .uuid()
       .optional()
       .meta({ description: "Filter by E-service ID" }),
+    recentlyUpdated: z.boolean().optional().meta({
+      description:
+        "Filter to only Agreements updated within the recent update window",
+    }),
   });
 export type API_GetProducerAgreementsQueryParams = z.infer<
   typeof API_GetProducerAgreementsQueryParams

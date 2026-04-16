@@ -83,7 +83,14 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
         "Getting Producer Purposes with query parameters",
       );
 
-      const { agreementId, eserviceId, limit, offset, state } = req.query;
+      const { agreementId, eserviceId, limit, offset, recentlyUpdated, state } =
+        req.query;
+
+      const updatedSince = recentlyUpdated
+        ? new Date(
+            Date.now() - config.recentUpdateDays * 24 * 60 * 60 * 1000,
+          ).toISOString()
+        : undefined;
 
       const { data } = await purposeProcessApi.getPurposes({
         client: purposeProcessClient,
@@ -95,6 +102,7 @@ export const purposeProducerRouter: FastifyPluginAsyncZod<
           offset,
           producerId,
           state,
+          updatedSince,
         },
       });
 

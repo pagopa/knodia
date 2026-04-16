@@ -62,6 +62,7 @@ interface AgreementProducerRouterOptions {
 
 export const agreementProducerRouter: FastifyPluginAsyncZod<
   AgreementProducerRouterOptions
+  // eslint-disable-next-line max-lines-per-function
 > = async (
   fastify,
   {
@@ -83,7 +84,13 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
         "Getting Producer Agreements with query parameters",
       );
 
-      const { eserviceId, limit, offset } = req.query;
+      const { eserviceId, limit, offset, recentlyUpdated } = req.query;
+
+      const updatedSince = recentlyUpdated
+        ? new Date(
+            Date.now() - config.recentUpdateDays * 24 * 60 * 60 * 1000,
+          ).toISOString()
+        : undefined;
 
       const { data } = await agreementProcessApi.getAgreements({
         client: agreementProcessClient,
@@ -94,6 +101,7 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
           offset,
           producerId,
           state: producerVisibleStates,
+          updatedSince,
         },
       });
 
