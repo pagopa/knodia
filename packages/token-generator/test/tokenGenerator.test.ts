@@ -101,7 +101,7 @@ const testCases = [
   },
   {
     expectedPayload: {
-      aud: "my-audience",
+      aud: ["my-audience"],
       client_id: consumerKeychainId,
       consumer,
       eservice: { id: eservice.id, knodeId: producer.knodeId },
@@ -117,7 +117,7 @@ const testCases = [
     } satisfies EserviceAccessTokenClaims,
     generate: () =>
       generator.generateEserviceAccessToken({
-        audience: "my-audience",
+        audience: ["my-audience"],
         consumer,
         consumerKeychainId,
         eserviceId: eservice.id,
