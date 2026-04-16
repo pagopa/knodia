@@ -13,6 +13,14 @@ const ORG_ID = "00000000-0000-4000-8000-000000000002";
 const ROLES = ["administrative", "technical"];
 const INTERNAL_SUB = "local-internal-service";
 
+// Placeholder IDs for external-ui-session tokens (replace with real values for testing)
+const EXTERNAL_AGREEMENT_ID = "00000000-0000-4000-8000-000000000010";
+const EXTERNAL_CONSUMER_ID = "00000000-0000-4000-8000-000000000011";
+const EXTERNAL_CONSUMER_KNODE_ID = "Orion";
+const EXTERNAL_ESERVICE_ID = "00000000-0000-4000-8000-000000000012";
+const EXTERNAL_PRODUCER_ID = "00000000-0000-4000-8000-000000000013";
+const EXTERNAL_ESERVICE_VERSION_ID = "00000000-0000-4000-8000-000000000014";
+
 import { TOKEN_TYPES } from "./token-types.mjs";
 
 const TARGET_ENVIRONMENTS = ["local", "dev-lynx", "dev-orion"];
@@ -35,11 +43,26 @@ function getClaims(targetEnv, type) {
       return { sub: USER_ID, organizationId: ORG_ID, roles: ROLES, username: "jane.doe", type, aud };
     case "internal":
       return { sub: INTERNAL_SUB, type, aud };
+    case "external-ui-session":
+      return {
+        sub: randomUUID(),
+        type,
+        aud,
+        scope: "agreement-activation",
+        agreementId: EXTERNAL_AGREEMENT_ID,
+        consumerId: EXTERNAL_CONSUMER_ID,
+        consumerKnodeId: EXTERNAL_CONSUMER_KNODE_ID,
+        eserviceId: EXTERNAL_ESERVICE_ID,
+        producerId: EXTERNAL_PRODUCER_ID,
+        eserviceVersionId: EXTERNAL_ESERVICE_VERSION_ID,
+      };
   }
 }
 
 function getEnvVarName(targetEnv, type) {
-  const base = type === "ui-session" ? "UI_SESSION_JWT" : "INTERNAL_JWT";
+  const base = type === "ui-session" ? "UI_SESSION_JWT"
+    : type === "internal" ? "INTERNAL_JWT"
+    : "EXTERNAL_UI_SESSION_JWT";
   if (targetEnv === "local") return base;
   return `${targetEnv.toUpperCase().replaceAll("-", "_")}_${base}`;
 }
