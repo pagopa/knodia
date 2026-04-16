@@ -14,10 +14,10 @@ export const arrayQueryParam = <T extends z.ZodType>(schema: T) =>
 
 const API_ProblemError = z
   .strictObject({
-    code: z.string().min(8).meta({
+    code: z.string().min(8).max(9).meta({
       description: "Internal code of the error",
       example: "123-4567",
-      pattern: "^[0-9]{3}-[0-9]{4}$",
+      pattern: "^[0-9]{3}-[0-9]{4,5}$",
     }),
     detail: z.string().max(4096).meta({
       description:
