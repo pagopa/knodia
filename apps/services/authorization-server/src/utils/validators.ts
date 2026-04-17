@@ -1,3 +1,5 @@
+import type { FastifyBaseLogger } from "fastify";
+
 import { type Algorithm } from "@knodia/common-models/algorithms";
 import {
   createPublicKey,
@@ -39,10 +41,15 @@ export async function verifyClientAssertionSignature(
   clientAssertionClockToleranceSeconds: number,
   clientAssertionMaxTokenAgeSeconds: number,
   k2kGatewayClient: K2K2GatewayApiClient,
+  logger: FastifyBaseLogger,
 ) {
   try {
     const protectedHeader = decodeProtectedHeader(clientAssertionJws);
     const payload = decodeJwt(clientAssertionJws);
+
+    logger.info(
+      `Verifying Client Assertion (JTI=${payload.jti}) signature for Consumer Keychain ${consumerKeychainId} with KID ${protectedHeader.kid} and algorithm ${protectedHeader.alg}`,
+    );
 
     const {
       header: { alg: clientAssertionAlg, kid },

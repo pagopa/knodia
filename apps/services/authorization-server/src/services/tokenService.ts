@@ -1,3 +1,5 @@
+import type { FastifyBaseLogger } from "fastify";
+
 import { type K2K2GatewayApiClient } from "@knodia/k2k-gateway-client";
 
 import type { API_TokenRequest } from "../models/api.ts";
@@ -11,6 +13,7 @@ export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
       clientAssertionAcceptedAudiences: string[],
       clientAssertionClockToleranceSeconds: number,
       clientAssertionMaxTokenAgeSeconds: number,
+      logger: FastifyBaseLogger,
     ) {
       // Verify Client Assertion signature and claims
       await verifyClientAssertionSignature(
@@ -19,6 +22,7 @@ export function tokenServiceBuilder(k2kGatewayClient: K2K2GatewayApiClient) {
         clientAssertionClockToleranceSeconds,
         clientAssertionMaxTokenAgeSeconds,
         k2kGatewayClient,
+        logger,
       );
 
       // TODO: verify platform states (agreement, purpose and eservice version must be active)
