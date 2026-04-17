@@ -168,6 +168,7 @@ describe("GET /eservices/:eserviceId (getEserviceDetails)", () => {
     expect(body.agreement).toEqual({
       id: k2kAgreement.id,
       state: "Active",
+      updatedAt: k2kAgreement.updatedAt,
     });
   });
 
