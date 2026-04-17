@@ -1,7 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import z from "zod";
 
 import { buildTestApp } from "../mock/buildTestApp.ts";
 
@@ -25,6 +26,15 @@ describe("bodyless POST content-type handling (wire-level)", () => {
         "transfer-encoding": req.raw.headers["transfer-encoding"],
       };
       return { ok: true };
+    });
+
+    app.route({
+      handler: (_req, res) => res.send({ ok: true }),
+      method: "POST",
+      schema: {
+        body: z.strictObject({ foo: z.string() }),
+      },
+      url: "/withRequiredBody",
     });
 
     const address = await app.listen({ host: "127.0.0.1", port: 0 });
@@ -60,4 +70,34 @@ describe("bodyless POST content-type handling (wire-level)", () => {
 
     expect(lastHeaders["content-type"]).toBe("application/json");
   });
+
+  it.each([
+    {
+      label: "fetch POST with no body and no content-type",
+      send: () => fetch(`${baseUrl}/withRequiredBody`, { method: "POST" }),
+    },
+    {
+      label: "axios.post() with default headers (form-urlencoded)",
+      send: () => axios.post(`${baseUrl}/withRequiredBody`, undefined),
+    },
+    {
+      label:
+        "axios.post() with explicit Content-Type: application/json and empty body",
+      send: () =>
+        axios.post(`${baseUrl}/withRequiredBody`, undefined, {
+          headers: { "Content-Type": "application/json" },
+        }),
+    },
+  ])(
+    "returns 400 on routes requiring a body when called empty ($label)",
+    async ({ send }) => {
+      const status = await send()
+        .then((res) => ("status" in res ? res.status : undefined))
+        .catch((error: unknown) =>
+          error instanceof AxiosError ? error.response?.status : undefined,
+        );
+
+      expect(status).toBe(400);
+    },
+  );
 });
