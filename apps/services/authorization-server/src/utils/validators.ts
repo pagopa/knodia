@@ -7,12 +7,7 @@ import {
   k2kGatewayApi,
 } from "@knodia/k2k-gateway-client";
 import { isAxiosError } from "axios";
-import {
-  decodeJwt,
-  decodeProtectedHeader,
-  type JWTPayload,
-  jwtVerify,
-} from "jose";
+import { decodeJwt, decodeProtectedHeader, jwtVerify } from "jose";
 import {
   JWSInvalid,
   JWSSignatureVerificationFailed,
