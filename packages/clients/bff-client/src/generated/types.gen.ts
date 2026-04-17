@@ -595,12 +595,19 @@ export type ConsumerKeychainOptions = {
     results: Array<ConsumerKeychainOption>;
 };
 
+/**
+ * Unique identifier of the Purpose
+ */
+export type PurposeId = string;
+
 export type ConsumerKeychainPurpose = {
     eserviceName: LocalizedName;
-    id: string;
-    knodeId: KnodeId;
+    id: PurposeId;
     name: LocalizedPurposeName;
-    producerName: string;
+    producer: {
+        knodeId: KnodeId;
+        name: string;
+    };
     state: PurposeState;
 };
 

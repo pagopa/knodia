@@ -125,13 +125,20 @@ export type API_GetConsumerKeychainPurposesQueryParams = z.infer<
   typeof API_GetConsumerKeychainPurposesQueryParams
 >;
 
+const API_PurposeId = z.uuid().meta({
+  description: "Unique identifier of the Purpose",
+  id: "PurposeId",
+});
+
 export const API_ConsumerKeychainPurpose = z
   .strictObject({
     eserviceName: API_EserviceLocalizedName,
-    id: z.uuid(),
-    knodeId: API_KnodeId,
+    id: API_PurposeId,
     name: API_LocalizedPurposeName,
-    producerName: z.string().min(1),
+    producer: z.strictObject({
+      knodeId: API_KnodeId,
+      name: z.string().min(1),
+    }),
     state: API_PurposeState,
   })
   .meta({ id: "ConsumerKeychainPurpose" });

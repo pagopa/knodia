@@ -1239,30 +1239,39 @@ components:
         - pagination
         - results
       additionalProperties: false
+    PurposeId:
+      description: Unique identifier of the Purpose
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     ConsumerKeychainPurpose:
       type: object
       properties:
         eserviceName:
           $ref: "#/components/schemas/LocalizedName"
         id:
-          type: string
-          format: uuid
-          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
-        knodeId:
-          $ref: "#/components/schemas/KnodeId"
+          $ref: "#/components/schemas/PurposeId"
         name:
           $ref: "#/components/schemas/LocalizedPurposeName"
-        producerName:
-          type: string
-          minLength: 1
+        producer:
+          type: object
+          properties:
+            knodeId:
+              $ref: "#/components/schemas/KnodeId"
+            name:
+              type: string
+              minLength: 1
+          required:
+            - knodeId
+            - name
+          additionalProperties: false
         state:
           $ref: "#/components/schemas/PurposeState"
       required:
         - eserviceName
         - id
-        - knodeId
         - name
-        - producerName
+        - producer
         - state
       additionalProperties: false
     ConsumerKeychainPurposes:

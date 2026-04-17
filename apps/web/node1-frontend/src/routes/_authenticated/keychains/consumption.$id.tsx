@@ -188,27 +188,24 @@ function PurposesTab() {
   );
 
   return (
-    <>
-      <Section
-        description="You can link a Purpose to the Keychain on the Purpose page."
-        title="Purposes"
-      >
-        <LinkedPurposesTable
-          isLoading={isLoading}
-          keychainId={consumerKeychainId}
-          purposes={data?.results ?? []}
-        />
-        <Pagination
-          className="mx-auto mt-6"
-          limit={data?.pagination.limit ?? 0}
-          offset={search.offset}
-          onOffsetChange={(offset) =>
-            navigate({ replace: true, search: (s) => ({ ...s, offset }) })
-          }
-          totalItems={data?.pagination.total ?? 0}
-        />
-      </Section>
-    </>
+    <Section
+      description="You can link a Purpose to the Keychain on the Purpose page."
+      title="Purposes"
+    >
+      <LinkedPurposesTable
+        isLoading={isLoading}
+        purposes={data?.results ?? []}
+      />
+      <Pagination
+        className="mx-auto mt-6"
+        limit={data?.pagination.limit ?? 0}
+        offset={search.offset}
+        onOffsetChange={(offset) =>
+          navigate({ replace: true, search: (s) => ({ ...s, offset }) })
+        }
+        totalItems={data?.pagination.total ?? 0}
+      />
+    </Section>
   );
 }
 

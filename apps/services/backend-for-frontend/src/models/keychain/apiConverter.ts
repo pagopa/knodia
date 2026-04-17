@@ -43,9 +43,11 @@ export const toAPI_ConsumerKeychainPurpose = (
 ): API_ConsumerKeychainPurpose => ({
   eserviceName: eservice.name,
   id: purpose.id,
-  knodeId: purpose.knodeId,
   name: purpose.name,
-  producerName: eservice.producer.name,
+  producer: {
+    knodeId: eservice.producer.knodeId,
+    name: eservice.producer.name,
+  },
   state: purpose.state,
 });
 

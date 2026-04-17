@@ -18,7 +18,6 @@ import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip
 
 interface LinkedPurposesTableProps {
   isLoading: boolean;
-  keychainId: string;
   purposes: bffApi.ConsumerKeychainPurpose[];
 }
 
@@ -33,7 +32,7 @@ export function LinkedPurposesTable({
   if (purposes.length === 0) {
     return (
       <Banner icon={<SelectionIcon />} kind="neutral">
-        There are no Purpose linked to this Keychain yet.
+        There are no Purposes linked to this Keychain yet.
       </Banner>
     );
   }
@@ -61,8 +60,8 @@ export function LinkedPurposesTable({
             <Cell>
               <KnodeAvatar
                 className="bg-brand-dark text-white"
-                knodeId={purpose.knodeId}
-                name={purpose.producerName}
+                knodeId={purpose.producer.knodeId}
+                name={purpose.producer.name}
                 size="sm"
               />
             </Cell>
@@ -75,7 +74,7 @@ export function LinkedPurposesTable({
                 hierarchy="neutral"
                 kind="outlined"
                 params={{ id: purpose.id }}
-                search={{ knodeId: purpose.knodeId }}
+                search={{ knodeId: purpose.producer.knodeId }}
                 size="icon-md"
                 to="/consumption/purposes/$id"
               >
