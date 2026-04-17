@@ -10,6 +10,7 @@ import { forbiddenTestTokens, type TestToken } from "@knodia/test-commons/auth";
 import { describe, expect, it } from "vitest";
 
 import type { API_Eservice } from "../src/models/api.ts";
+
 import { toAPI_Eservice } from "../src/models/apiConverter.ts";
 import {
   getAllEserviceEvents,
@@ -159,7 +160,9 @@ describe("PATCH /eservices/:eserviceId (updateEservice)", () => {
     expect(events).toHaveLength(2);
     expect(events[1]).toMatchObject({ type: "EserviceUpdatedV1" });
   });
+});
 
+describe("PATCH /eservices/:eserviceId (updateEservice) - error cases", () => {
   it("should return 400 if body has unknown properties", async () => {
     const eservice = makeEserviceWithVersionState(
       EserviceVersionState.enum.Active,
