@@ -323,12 +323,17 @@
     {
       "if": {
         "properties": {
+          "usesPersonalData": { "const": "YES" },
           "personalDataTypes": {
             "type": "array",
             "contains": { "const": "GDPR_ART_9" }
+          },
+          "legalBasis": {
+            "type": "array",
+            "contains": { "const": "PUBLIC_INTEREST" }
           }
         },
-        "required": ["personalDataTypes"]
+        "required": ["usesPersonalData", "personalDataTypes", "legalBasis"]
       },
       "then": {
         "properties": {
