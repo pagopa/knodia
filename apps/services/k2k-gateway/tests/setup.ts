@@ -13,6 +13,14 @@ beforeAll(async () => {
     callerKnodeId: "Lynx",
     eserviceInterfacesS3Bucket: "test-bucket",
     eserviceProcessUrl: "http://localhost:0",
+    externalUiSessionMagicLinkJwt: {
+      audience: "test-magic-link-audience",
+      issuer: "test-magic-link-issuer",
+      kid: "test-magic-link-kid",
+      secondsDuration: 120,
+    },
+    frontendActivationPath: "/activate",
+    frontendBaseUrl: "https://test-frontend.example",
     internalJwt: {
       audience: "test-audience",
       issuer: "test-issuer",

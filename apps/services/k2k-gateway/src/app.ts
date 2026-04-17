@@ -8,6 +8,7 @@ import {
 } from "@knodia/fastify-zod-api-commons/health";
 import { initFileManager } from "@knodia/file-manager";
 import { type PollingService, pollingServiceBuilder } from "@knodia/polling";
+import { tokenGeneratorBuilder } from "@knodia/token-generator";
 import { refreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 
 import type { K2KGatewayConfig } from "./config/config.ts";
@@ -26,6 +27,9 @@ export function buildApp({
   callerKnodeId,
   eserviceInterfacesS3Bucket,
   eserviceProcessUrl,
+  externalUiSessionMagicLinkJwt,
+  frontendActivationPath,
+  frontendBaseUrl,
   internalJwt,
   keychainProcessUrl,
   loggerConfig,
@@ -37,6 +41,9 @@ export function buildApp({
   callerKnodeId: KnodeId;
   eserviceInterfacesS3Bucket: string;
   eserviceProcessUrl: string;
+  externalUiSessionMagicLinkJwt: K2KGatewayConfig["externalUiSessionMagicLinkJwt"];
+  frontendActivationPath: string;
+  frontendBaseUrl: string;
   internalJwt: K2KGatewayConfig["internalJwt"];
   keychainProcessUrl: string;
   loggerConfig: LoggerConfig;
@@ -53,6 +60,7 @@ export function buildApp({
   });
   const fileManager = initFileManager();
   const tokenProvider = refreshableInternalTokenGenerator(internalJwt);
+  const tokenGenerator = tokenGeneratorBuilder();
 
   const app = createFastifyApp({
     fastifyOptions: {
@@ -113,7 +121,13 @@ export function buildApp({
   app.register(agreementRouter, {
     agreementProcessClient: clients.agreementProcessClient,
     callerKnodeId,
+    magicLinkConfig: {
+      ...externalUiSessionMagicLinkJwt,
+      frontendActivationPath,
+      frontendBaseUrl,
+    },
     pollingService,
+    tokenGenerator,
     tokenProvider,
   });
   app.register(organizationRouter, {
@@ -136,6 +150,9 @@ export function buildAppFromConfig(config: K2KGatewayConfig) {
     callerKnodeId: config.callerKnodeId,
     eserviceInterfacesS3Bucket: config.eserviceInterfacesS3Bucket,
     eserviceProcessUrl: config.eserviceProcessUrl,
+    externalUiSessionMagicLinkJwt: config.externalUiSessionMagicLinkJwt,
+    frontendActivationPath: config.frontendActivationPath,
+    frontendBaseUrl: config.frontendBaseUrl,
     internalJwt: config.internalJwt,
     keychainProcessUrl: config.keychainProcessUrl,
     loggerConfig: config,
