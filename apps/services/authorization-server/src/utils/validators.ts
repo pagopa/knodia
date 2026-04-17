@@ -1,7 +1,9 @@
+import { type Algorithm } from "@knodia/common-models/algorithms";
 import {
   createPublicKey,
   decodeBase64Pem,
 } from "@knodia/fastify-zod-api-commons/crypto";
+import { ApiError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -24,6 +26,7 @@ import {
   clientAssertionExpired,
   invalidClientAssertionSignature,
   jsonWebTokenError,
+  publicKeyAlgNotMatchingClientAssertionAlg,
   unexpectedClientAssertionSignatureVerificationError,
 } from "../models/errors.ts";
 
@@ -42,7 +45,7 @@ export async function verifyClientAssertionSignature(
     const payload = decodeJwt(clientAssertionJws);
 
     const {
-      header: { kid },
+      header: { alg: clientAssertionAlg, kid },
       payload: { purposeId },
     } = ClientAssertion.parse({
       header: protectedHeader,
@@ -59,6 +62,11 @@ export async function verifyClientAssertionSignature(
       },
       client: k2kGatewayClient,
     });
+
+    assertPublicKeyAlgEqualToClientAssertionAlg(
+      publicKey.algorithm,
+      clientAssertionAlg,
+    );
 
     const verificationKey = createPublicKey({
       pemKey: decodeBase64Pem(publicKey.encodedPem),
@@ -90,10 +98,22 @@ export async function verifyClientAssertionSignature(
       throw invalidClientAssertionSignature();
     } else if (error instanceof JWSInvalid) {
       throw jsonWebTokenError(error.message);
-    } else if (isAxiosError(error)) {
+    } else if (isAxiosError(error) || error instanceof ApiError) {
       throw error;
     } else {
       throw unexpectedClientAssertionSignatureVerificationError(error);
     }
+  }
+}
+
+function assertPublicKeyAlgEqualToClientAssertionAlg(
+  publicKeyAlg: string,
+  clientAssertionAlg: Algorithm,
+) {
+  if (publicKeyAlg !== clientAssertionAlg) {
+    throw publicKeyAlgNotMatchingClientAssertionAlg(
+      publicKeyAlg,
+      clientAssertionAlg,
+    );
   }
 }

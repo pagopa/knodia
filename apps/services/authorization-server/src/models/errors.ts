@@ -1,3 +1,5 @@
+import type { Algorithm } from "@knodia/common-models/algorithms";
+
 import {
   type CommonErrorCodes,
   createApiError,
@@ -16,6 +18,7 @@ const errorCodes = {
   CLIENT_ASSERTION_EXPIRED: "0003",
   INVALID_CLIENT_ASSERTION_SIGNATURE: "0004",
   JSON_WEB_TOKEN_ERROR: "0005",
+  PUBLIC_KEY_ALG_NOT_MATCHING_CLIENT_ASSERTION_ALG: "0006",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -69,6 +72,18 @@ export function jsonWebTokenError(message: string) {
     detail: `Invalid JWT format in Client Assertion signature verification. Reason: ${message}`,
     status: HTTP_STATUS_BAD_REQUEST,
     title: "JSON Web Token error",
+  });
+}
+
+export function publicKeyAlgNotMatchingClientAssertionAlg(
+  publicKeyAlg: string,
+  clientAssertionAlg: Algorithm,
+) {
+  return createApiError<ErrorCodes>({
+    code: "PUBLIC_KEY_ALG_NOT_MATCHING_CLIENT_ASSERTION_ALG",
+    detail: `The Public Key algorithm (${publicKeyAlg}) does not match the Client Assertion algorithm (${clientAssertionAlg})`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Public Key algorithm does not match Client Assertion algorithm",
   });
 }
 
