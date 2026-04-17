@@ -1,4 +1,5 @@
 import type { TokenGenerator } from "@knodia/token-generator";
+import type { FastifyBaseLogger } from "fastify";
 
 import {
   type ConsumerKeychainId,
@@ -37,6 +38,7 @@ export function tokenServiceBuilder({
       clientAssertionAcceptedAudiences: string[],
       clientAssertionClockToleranceSeconds: number,
       clientAssertionMaxTokenAgeSeconds: number,
+      logger: FastifyBaseLogger,
     ) {
       // Verify Client Assertion signature and claims
       const { consumerAttributes, purposeId } =
@@ -46,6 +48,7 @@ export function tokenServiceBuilder({
           clientAssertionClockToleranceSeconds,
           clientAssertionMaxTokenAgeSeconds,
           k2kGatewayClient,
+          logger,
         );
 
       // Check that the platform objects (agreement, e-service version, purpose) are in Active state and that the Consumer meets the E-service version required attributes

@@ -27,9 +27,13 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
   fastify.route({
     handler: async (req, res) => {
       const { correlationId, logger } = getContextValues(requestContext);
+      const { client_assertion_type, client_id, grant_type } = req.body;
 
       logger.info(
-        { correlationId, requestBody: req.body },
+        {
+          correlationId,
+          requestBody: { client_assertion_type, client_id, grant_type }, // Only log non-sensitive parts of the request body
+        },
         "Issuing mocked access token",
       );
 
@@ -38,6 +42,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
         clientAssertionAcceptedAudiences,
         clientAssertionClockToleranceSeconds,
         clientAssertionMaxTokenAgeSeconds,
+        logger,
       );
 
       res.send(token);

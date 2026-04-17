@@ -20,11 +20,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { API_TokenRequest, API_TokenResponse } from "../src/models/api.ts";
 
+import { EXPECTED_CLIENT_ASSERTION_ALGORITHM } from "../src/models/constants.ts";
 import {
   agreementNotActive,
   consumerMissingRequiredAttributes,
   invalidClientAssertionSignature,
   platformStatesNotActive,
+  publicKeyAlgNotMatchingClientAssertionAlg,
 } from "../src/models/errors.ts";
 import {
   agreementWriterService,
@@ -471,6 +473,25 @@ describe("POST /token", async () => {
     expect(response.json<API_Problem>().title).toEqual(error.title);
   });
 
+  it("should return 400 if the public key algorithm does not match the client assertion algorithm", async () => {
+    const wrongAlg = "ES256";
+    getClientAssertionVerificationDataMock.mockResolvedValue({
+      data: {
+        ...mockK2KResponse,
+        publicKey: { ...mockK2KResponse.publicKey, algorithm: wrongAlg },
+      } satisfies k2kGatewayApi.ClientAssertionVerificationResponse,
+    });
+
+    const response = await createToken();
+
+    const error = publicKeyAlgNotMatchingClientAssertionAlg(
+      wrongAlg,
+      EXPECTED_CLIENT_ASSERTION_ALGORITHM,
+    );
+
+    expect(response.statusCode).toBe(400);
+    expect(response.json<API_Problem>().title).toEqual(error.title);
+  });
   it("should return 400 when platform states are not active", async () => {
     const suspendedAgreement: Agreement = { ...agreement, state: "Suspended" };
     await Promise.all([

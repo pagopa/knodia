@@ -3,12 +3,15 @@ import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type { OrganizationId, PurposeId } from "@knodia/common-models/ids";
 import type { EserviceVersion } from "@knodia/eservice-models";
 import type { Purpose } from "@knodia/purpose-models";
+import type { FastifyBaseLogger } from "fastify";
 
 import { hasAllRequiredAttributes } from "@knodia/attribute-models";
+import { type Algorithm } from "@knodia/common-models/algorithms";
 import {
   createPublicKey,
   decodeBase64Pem,
 } from "@knodia/fastify-zod-api-commons/crypto";
+import { ApiError } from "@knodia/fastify-zod-api-commons/models";
 import {
   type K2K2GatewayApiClient,
   k2kGatewayApi,
@@ -36,6 +39,7 @@ import {
   invalidClientAssertionSignature,
   jsonWebTokenError,
   platformStatesNotActive,
+  publicKeyAlgNotMatchingClientAssertionAlg,
   purposeNotActive,
   unexpectedClientAssertionSignatureVerificationError,
 } from "../models/errors.ts";
@@ -85,13 +89,18 @@ export async function verifyClientAssertionSignature(
   clientAssertionClockToleranceSeconds: number,
   clientAssertionMaxTokenAgeSeconds: number,
   k2kGatewayClient: K2K2GatewayApiClient,
+  logger: FastifyBaseLogger,
 ) {
   try {
     const protectedHeader = decodeProtectedHeader(clientAssertionJws);
     const payload = decodeJwt(clientAssertionJws);
 
+    logger.info(
+      `Verifying Client Assertion (JTI=${payload.jti}) signature for Consumer Keychain ${consumerKeychainId} with KID ${protectedHeader.kid} and algorithm ${protectedHeader.alg}`,
+    );
+
     const {
-      header: { kid },
+      header: { alg: clientAssertionAlg, kid },
       payload: { purposeId },
     } = ClientAssertion.parse({
       header: protectedHeader,
@@ -108,6 +117,11 @@ export async function verifyClientAssertionSignature(
       },
       client: k2kGatewayClient,
     });
+
+    assertPublicKeyAlgEqualToClientAssertionAlg(
+      publicKey.algorithm,
+      clientAssertionAlg,
+    );
 
     const verificationKey = createPublicKey({
       pemKey: decodeBase64Pem(publicKey.encodedPem),
@@ -139,7 +153,7 @@ export async function verifyClientAssertionSignature(
       throw invalidClientAssertionSignature();
     } else if (error instanceof JWSInvalid) {
       throw jsonWebTokenError(error.message);
-    } else if (isAxiosError(error)) {
+    } else if (isAxiosError(error) || error instanceof ApiError) {
       throw error;
     } else {
       throw unexpectedClientAssertionSignatureVerificationError(error);
@@ -186,5 +200,17 @@ function assertPlatformStatesAreActive(
       eserviceVersionError,
       purposeError,
     ]);
+  }
+}
+
+function assertPublicKeyAlgEqualToClientAssertionAlg(
+  publicKeyAlg: string,
+  clientAssertionAlg: Algorithm,
+) {
+  if (publicKeyAlg !== clientAssertionAlg) {
+    throw publicKeyAlgNotMatchingClientAssertionAlg(
+      publicKeyAlg,
+      clientAssertionAlg,
+    );
   }
 }

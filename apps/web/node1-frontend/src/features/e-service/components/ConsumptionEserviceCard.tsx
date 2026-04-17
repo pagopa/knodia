@@ -4,6 +4,7 @@ import { match } from "ts-pattern";
 
 import { GenericInfoCard } from "@/components/GenericInfoCard";
 import { KnodeAvatar } from "@/components/KnodeAvatar";
+import { RecentlyUpdatedChip } from "@/components/RecentlyUpdatedChip";
 
 import { CategoryChip } from "./CategoryChip";
 import {
@@ -20,6 +21,9 @@ export function ConsumptionEserviceCard({
   return (
     <EserviceCard>
       <EserviceCardHeader
+        badge={
+          eservice.hasRecentlyBeenUpdated ? <RecentlyUpdatedChip /> : undefined
+        }
         id={eservice.id}
         search={{ knodeId: eservice.producer.knodeId }}
         title={eservice.name.en}

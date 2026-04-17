@@ -1,4 +1,5 @@
 import type { AgreementState } from "@knodia/agreement-models";
+import type { Algorithm } from "@knodia/common-models/algorithms";
 import type { ExternalResource } from "@knodia/common-models/externalResource";
 import type {
   AgreementId,
@@ -20,7 +21,8 @@ import { constants } from "http2";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-const { HTTP_STATUS_BAD_REQUEST } = constants;
+const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -29,14 +31,15 @@ const errorCodes = {
   CLIENT_ASSERTION_EXPIRED: "0003",
   INVALID_CLIENT_ASSERTION_SIGNATURE: "0004",
   JSON_WEB_TOKEN_ERROR: "0005",
-  AGREEMENT_NOT_ACTIVE: "0006",
-  ESERVICE_VERSION_NOT_ACTIVE: "0007",
-  PURPOSE_NOT_ACTIVE: "0008",
-  CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0009",
-  AGREEMENT_NOT_FOUND: "0010",
-  ESERVICE_VERSION_NOT_FOUND: "0011",
-  PURPOSE_NOT_FOUND: "0012",
-  PLATFORM_STATES_NOT_ACTIVE: "0013",
+  PUBLIC_KEY_ALG_NOT_MATCHING_CLIENT_ASSERTION_ALG: "0006",
+  AGREEMENT_NOT_ACTIVE: "0007",
+  ESERVICE_VERSION_NOT_ACTIVE: "0008",
+  PURPOSE_NOT_ACTIVE: "0009",
+  CONSUMER_MISSING_REQUIRED_ATTRIBUTES: "0010",
+  AGREEMENT_NOT_FOUND: "0011",
+  ESERVICE_VERSION_NOT_FOUND: "0012",
+  PURPOSE_NOT_FOUND: "0013",
+  PLATFORM_STATES_NOT_ACTIVE: "0014",
 };
 /* eslint-enable perfectionist/sort-objects */
 
@@ -165,6 +168,18 @@ export function platformStatesNotActive(
   });
 }
 
+export function publicKeyAlgNotMatchingClientAssertionAlg(
+  publicKeyAlg: string,
+  clientAssertionAlg: Algorithm,
+) {
+  return createApiError<ErrorCodes>({
+    code: "PUBLIC_KEY_ALG_NOT_MATCHING_CLIENT_ASSERTION_ALG",
+    detail: `The Public Key algorithm (${publicKeyAlg}) does not match the Client Assertion algorithm (${clientAssertionAlg})`,
+    status: HTTP_STATUS_BAD_REQUEST,
+    title: "Public Key algorithm does not match Client Assertion algorithm",
+  });
+}
+
 export function purposeNotActive(id: PurposeId, state: PurposeState) {
   return createApiError<ErrorCodes>({
     code: "PURPOSE_NOT_ACTIVE",
@@ -191,7 +206,7 @@ export function unexpectedClientAssertionSignatureVerificationError(
   return createApiError<ErrorCodes>({
     code: "UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR",
     detail: `An unexpected error occurred during Client Assertion signature verification: ${message}`,
-    status: HTTP_STATUS_BAD_REQUEST,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Unexpected error during Client Assertion signature verification",
   });
 }
