@@ -113,6 +113,8 @@ export function agreementServiceBuilder(
         id: agreementId,
         producerId: eservice.producerId,
         state,
+        suspendedByConsumerAt: null,
+        suspendedByProducerAt: null,
         updatedAt: now,
       };
 

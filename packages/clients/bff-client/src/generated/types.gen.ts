@@ -591,6 +591,16 @@ export type KeychainDetails = {
     updatedAt: string;
 };
 
+export type ConsumerKeychainOption = {
+    id: string;
+    name: KeychainLocalizedName;
+};
+
+export type ConsumerKeychainOptions = {
+    pagination: Pagination;
+    results: Array<ConsumerKeychainOption>;
+};
+
 export type ConsumerKeychainPatch = {
     description?: KeychainLocalizedDescription | null;
     name?: KeychainLocalizedName;
@@ -1173,6 +1183,10 @@ export type GetConsumerKeychainsData = {
          * Pagination starting position
          */
         offset: number;
+        /**
+         * Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId} (e.g. Orion:00000000-0000-0000-0000-000000000000)
+         */
+        purpose?: string;
     };
     url: '/consumerKeychains';
 };
@@ -1523,6 +1537,52 @@ export type GetConsumerKeychainMembershipResponses = {
 };
 
 export type GetConsumerKeychainMembershipResponse = GetConsumerKeychainMembershipResponses[keyof GetConsumerKeychainMembershipResponses];
+
+export type GetConsumerKeychainOptionsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Search text used to filter Consumer Keychains by name
+         */
+        q: string;
+    };
+    url: '/consumerKeychains/options';
+};
+
+export type GetConsumerKeychainOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerKeychainOptionsError = GetConsumerKeychainOptionsErrors[keyof GetConsumerKeychainOptionsErrors];
+
+export type GetConsumerKeychainOptionsResponses = {
+    /**
+     * Consumer Keychain options retrieved successfully
+     */
+    200: ConsumerKeychainOptions;
+};
+
+export type GetConsumerKeychainOptionsResponse = GetConsumerKeychainOptionsResponses[keyof GetConsumerKeychainOptionsResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;

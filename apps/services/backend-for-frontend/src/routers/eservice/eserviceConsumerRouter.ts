@@ -255,7 +255,10 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
 
   fastify.route({
     handler: async (req, res) => {
-      const { correlationId, logger } = getContextValues(requestContext);
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+
+      const { organizationId } = getUISessionAuthData(authData);
 
       logger.info(
         { requestQuery: req.query },
@@ -321,6 +324,7 @@ export const eserviceConsumerRouter: FastifyPluginAsyncZod<
                 query: {
                   limit: 50,
                   offset: 0,
+                  ownerId: organizationId,
                   purpose: `${purpose.knodeId}:${purpose.id}`,
                 },
               }),

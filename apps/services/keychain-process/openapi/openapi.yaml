@@ -414,6 +414,19 @@ paths:
         - schema:
             type: string
           in: query
+          name: name
+          required: false
+          description: Filter by Consumer Keychain name
+        - schema:
+            allOf:
+              - $ref: "#/components/schemas/OrganizationId"
+          in: query
+          name: ownerId
+          required: false
+          description: Filter by owner Organization ID
+        - schema:
+            type: string
+          in: query
           name: purpose
           required: false
           description: "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId}

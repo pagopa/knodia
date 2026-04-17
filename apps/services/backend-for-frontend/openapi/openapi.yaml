@@ -1229,6 +1229,32 @@ components:
         - name
         - updatedAt
       additionalProperties: false
+    ConsumerKeychainOption:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        name:
+          $ref: "#/components/schemas/KeychainLocalizedName"
+      required:
+        - id
+        - name
+      additionalProperties: false
+    ConsumerKeychainOptions:
+      type: object
+      properties:
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConsumerKeychainOption"
+      required:
+        - pagination
+        - results
+      additionalProperties: false
     ConsumerKeychainPatch:
       type: object
       properties:
@@ -2230,8 +2256,8 @@ paths:
       operationId: getConsumerKeychains
       tags:
         - consumerKeychain
-      description: Retrieve a paginated list of Consumer Keychains for the logged-in
-        user's organization
+      description: Retrieve a paginated list of Consumer Keychains owned by the
+        current user organization
       parameters:
         - schema:
             format: int32
@@ -2250,6 +2276,13 @@ paths:
           name: offset
           required: true
           description: Pagination starting position
+        - schema:
+            type: string
+          in: query
+          name: purpose
+          required: false
+          description: "Filter by Knode ID and Purpose ID. Format: {KnodeId}:{PurposeId}
+            (e.g. Orion:00000000-0000-0000-0000-000000000000)"
       responses:
         "200":
           description: Consumer Keychains retrieved successfully
@@ -2686,6 +2719,69 @@ paths:
             application/problem+json:
               schema:
                 description: Consumer Keychain not found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /consumerKeychains/options:
+    get:
+      operationId: getConsumerKeychainOptions
+      tags:
+        - consumerKeychain
+      description: Retrieve Consumer Keychain options for combobox selection
+      parameters:
+        - schema:
+            format: int32
+            type: number
+            minimum: 1
+            maximum: 50
+          in: query
+          name: limit
+          required: true
+          description: Maximum number of items returned
+        - schema:
+            format: int32
+            type: number
+            minimum: 0
+          in: query
+          name: offset
+          required: true
+          description: Pagination starting position
+        - schema:
+            type: string
+          in: query
+          name: q
+          required: true
+          description: Search text used to filter Consumer Keychains by name
+      responses:
+        "200":
+          description: Consumer Keychain options retrieved successfully
+          content:
+            application/json:
+              schema:
+                description: Consumer Keychain options retrieved successfully
+                allOf:
+                  - $ref: "#/components/schemas/ConsumerKeychainOptions"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
                 allOf:
                   - $ref: "#/components/schemas/Problem"
   /consumerKeychains/{consumerKeychainId}/purposes:

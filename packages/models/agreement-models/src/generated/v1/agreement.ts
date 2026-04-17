@@ -75,6 +75,8 @@ export interface AgreementV1 {
   attributes: AgreementAttributeV1[];
   createdAt: number;
   updatedAt: number;
+  suspendedByConsumerAt?: number | undefined;
+  suspendedByProducerAt?: number | undefined;
 }
 
 export interface AgreementAttributeV1 {
@@ -98,6 +100,8 @@ function createBaseAgreementV1(): AgreementV1 {
     attributes: [],
     createdAt: 0,
     updatedAt: 0,
+    suspendedByConsumerAt: undefined,
+    suspendedByProducerAt: undefined,
   };
 }
 
@@ -129,6 +133,12 @@ export const AgreementV1: MessageFns<AgreementV1> = {
     }
     if (message.updatedAt !== 0) {
       writer.uint32(72).int64(message.updatedAt);
+    }
+    if (message.suspendedByConsumerAt !== undefined) {
+      writer.uint32(80).int64(message.suspendedByConsumerAt);
+    }
+    if (message.suspendedByProducerAt !== undefined) {
+      writer.uint32(88).int64(message.suspendedByProducerAt);
     }
     return writer;
   },
@@ -212,6 +222,22 @@ export const AgreementV1: MessageFns<AgreementV1> = {
           message.updatedAt = longToNumber(reader.int64());
           continue;
         }
+        case 10: {
+          if (tag !== 80) {
+            break;
+          }
+
+          message.suspendedByConsumerAt = longToNumber(reader.int64());
+          continue;
+        }
+        case 11: {
+          if (tag !== 88) {
+            break;
+          }
+
+          message.suspendedByProducerAt = longToNumber(reader.int64());
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -234,6 +260,12 @@ export const AgreementV1: MessageFns<AgreementV1> = {
         : [],
       createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
       updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
+      suspendedByConsumerAt: isSet(object.suspendedByConsumerAt)
+        ? globalThis.Number(object.suspendedByConsumerAt)
+        : undefined,
+      suspendedByProducerAt: isSet(object.suspendedByProducerAt)
+        ? globalThis.Number(object.suspendedByProducerAt)
+        : undefined,
     };
   },
 
@@ -266,6 +298,12 @@ export const AgreementV1: MessageFns<AgreementV1> = {
     if (message.updatedAt !== 0) {
       obj.updatedAt = Math.round(message.updatedAt);
     }
+    if (message.suspendedByConsumerAt !== undefined) {
+      obj.suspendedByConsumerAt = Math.round(message.suspendedByConsumerAt);
+    }
+    if (message.suspendedByProducerAt !== undefined) {
+      obj.suspendedByProducerAt = Math.round(message.suspendedByProducerAt);
+    }
     return obj;
   },
 
@@ -285,6 +323,8 @@ export const AgreementV1: MessageFns<AgreementV1> = {
     message.attributes = object.attributes?.map((e) => AgreementAttributeV1.fromPartial(e)) || [];
     message.createdAt = object.createdAt ?? 0;
     message.updatedAt = object.updatedAt ?? 0;
+    message.suspendedByConsumerAt = object.suspendedByConsumerAt ?? undefined;
+    message.suspendedByProducerAt = object.suspendedByProducerAt ?? undefined;
     return message;
   },
 };
