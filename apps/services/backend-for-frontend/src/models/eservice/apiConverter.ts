@@ -94,7 +94,10 @@ export const toAPI_ConsumerEserviceDetails = (
     duration: detail.latestVersion.accessTokenDuration,
     type: detail.latestVersion.accessTokenType,
   },
-  agreement: detail.agreement,
+  agreement:
+    detail.agreement !== undefined
+      ? { id: detail.agreement.id, state: detail.agreement.state }
+      : undefined,
   categories: detail.categories,
   description: detail.description,
   hasRecentlyBeenUpdated:
@@ -140,7 +143,7 @@ export const toAPI_ConsumerEservice = ({
   recentUpdateDays: number;
 }): API_ConsumerEservice => ({
   activePurposes: counters.activePurposes,
-  agreement: eservice.agreement,
+  agreement: { id: eservice.agreement.id, state: eservice.agreement.state },
   categories: eservice.categories,
   consumerKeychains: counters.consumerKeychains,
   hasRecentlyBeenUpdated:

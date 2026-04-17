@@ -360,7 +360,6 @@ const API_EserviceAgreementDetail = z
   .strictObject({
     id: z.uuid(),
     state: API_AgreementState,
-    updatedAt: z.iso.datetime(),
   })
   .meta({ id: "EserviceAgreementDetail" });
 
@@ -439,7 +438,6 @@ export const API_ConsumerEservice = z
     agreement: z.strictObject({
       id: z.uuid(),
       state: API_AgreementState,
-      updatedAt: z.iso.datetime(),
     }),
     categories: z.array(API_EserviceCategory),
     consumerKeychains: z.int().min(0).meta({

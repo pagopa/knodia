@@ -350,7 +350,6 @@ export type ConsumerRequiredAttribute = {
 export type EserviceAgreementDetail = {
     id: string;
     state: AgreementState;
-    updatedAt: string;
 };
 
 export type ConsumerEserviceDetailsAccessToken = {
@@ -413,7 +412,6 @@ export type ConsumerEservice = {
     agreement: {
         id: string;
         state: AgreementState;
-        updatedAt: string;
     };
     categories: Array<EserviceCategory>;
     /**
