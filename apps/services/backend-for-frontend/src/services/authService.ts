@@ -1,4 +1,5 @@
 import {
+  ExternalUISessionMagicLinkTokenClaims,
   UISessionRefreshTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
@@ -32,6 +33,7 @@ export function authServiceBuilder(
   config: BffProcessConfig,
   tokenGenerator: TokenGenerator,
   refreshTokenStore: RefreshTokenStore,
+  magicLinkTokenStore: RefreshTokenStore,
 ) {
   const cognitoJwks = createRemoteJWKSet(new URL(config.cognitoJwksUrl));
   const bffJwksSets = config.wellKnownUrls.map((url) =>
@@ -162,6 +164,34 @@ export function authServiceBuilder(
   }
 
   return {
+    async exchangeMagicLinkToken(
+      magicLinkToken: string,
+    ): Promise<{ externalUiSessionToken: string }> {
+      const claims = await verifyMagicLinkToken({
+        acceptedAudience: config.externalUiSessionMagicLinkAcceptedAudience,
+        acceptedIssuer: config.externalUiSessionMagicLinkAcceptedIssuer,
+        jwksSets: bffJwksSets,
+        magicLinkTokenStore,
+        token: magicLinkToken,
+      });
+      const { serialized } =
+        await tokenGenerator.generateExternalUISessionToken({
+          agreementId: claims.agreementId,
+          audience: config.externalUiSessionJwt.audience,
+          consumerId: claims.consumerId,
+          consumerKnodeId: claims.consumerKnodeId,
+          eserviceId: claims.eserviceId,
+          eserviceVersionId: claims.eserviceVersionId,
+          issuer: config.externalUiSessionJwt.issuer,
+          kid: config.externalUiSessionJwt.kid,
+          producerId: claims.producerId,
+          scope: claims.scope,
+          secondsDuration: config.externalUiSessionJwt.secondsDuration,
+          subject: claims.agreementId,
+        });
+      return { externalUiSessionToken: serialized };
+    },
+
     async generateUISessionTokenPair(cognitoToken: string): Promise<{
       refreshToken: string;
       uiSessionToken: string;
@@ -190,4 +220,49 @@ export function authServiceBuilder(
       }
     },
   };
+}
+
+async function verifyMagicLinkToken({
+  acceptedAudience,
+  acceptedIssuer,
+  jwksSets,
+  magicLinkTokenStore,
+  token,
+}: {
+  acceptedAudience: string;
+  acceptedIssuer: string;
+  jwksSets: ReturnType<typeof createRemoteJWKSet>[];
+  magicLinkTokenStore: RefreshTokenStore;
+  token: string;
+}): Promise<ExternalUISessionMagicLinkTokenClaims> {
+  const rawPayload = await Promise.any(
+    jwksSets.map(async (jwks) => {
+      const { payload } = await jwtVerify(token, jwks, {
+        algorithms: ["RS256"],
+        audience: acceptedAudience,
+        issuer: acceptedIssuer,
+      });
+      return payload;
+    }),
+  ).catch(() => {
+    throw unauthorizedError("Magic-link token verification failed");
+  });
+
+  const parsed = ExternalUISessionMagicLinkTokenClaims.safeParse(rawPayload);
+  if (!parsed.success) {
+    throw unauthorizedError("Invalid magic-link token claims");
+  }
+  if (parsed.data.scope !== "agreement-activation") {
+    throw unauthorizedError("Invalid magic-link token scope");
+  }
+
+  const firstUse = await magicLinkTokenStore.consume(
+    parsed.data.jti,
+    parsed.data.exp,
+  );
+  if (!firstUse) {
+    throw unauthorizedError("Magic-link token already used");
+  }
+
+  return parsed.data;
 }

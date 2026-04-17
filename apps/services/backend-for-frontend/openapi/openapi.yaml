@@ -1076,6 +1076,22 @@ components:
       required:
         - uiSessionToken
       additionalProperties: false
+    ExternalUISessionExchangeRequest:
+      type: object
+      properties:
+        magicLinkToken:
+          type: string
+      required:
+        - magicLinkToken
+      additionalProperties: false
+    ExternalUISessionExchangeResponse:
+      type: object
+      properties:
+        externalUiSessionToken:
+          type: string
+      required:
+        - externalUiSessionToken
+      additionalProperties: false
     PurposeState:
       type: string
       enum:
@@ -1745,6 +1761,45 @@ paths:
       responses:
         "204":
           description: Logged out successfully
+  /auth/externalUiSession:
+    post:
+      operationId: exchangeExternalUiSession
+      tags:
+        - auth
+      description: Validate a single-use magic-link token and mint a short-lived
+        external-ui-session token scoped to the action in the magic link.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExternalUISessionExchangeRequest"
+      security: []
+      responses:
+        "200":
+          description: Token exchanged successfully
+          content:
+            application/json:
+              schema:
+                description: Token exchanged successfully
+                allOf:
+                  - $ref: "#/components/schemas/ExternalUISessionExchangeResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
   /producer/eservices:
     post:
       operationId: createEservice

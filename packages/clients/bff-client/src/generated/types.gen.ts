@@ -523,6 +523,14 @@ export type SessionResponse = {
     uiSessionToken: string;
 };
 
+export type ExternalUiSessionExchangeRequest = {
+    magicLinkToken: string;
+};
+
+export type ExternalUiSessionExchangeResponse = {
+    externalUiSessionToken: string;
+};
+
 export type PurposeState = 'Active' | 'Suspended' | 'Archived';
 
 /**
@@ -859,6 +867,35 @@ export type LogoutResponses = {
 };
 
 export type LogoutResponse = LogoutResponses[keyof LogoutResponses];
+
+export type ExchangeExternalUiSessionData = {
+    body: ExternalUiSessionExchangeRequest;
+    path?: never;
+    query?: never;
+    url: '/auth/externalUiSession';
+};
+
+export type ExchangeExternalUiSessionErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+};
+
+export type ExchangeExternalUiSessionError = ExchangeExternalUiSessionErrors[keyof ExchangeExternalUiSessionErrors];
+
+export type ExchangeExternalUiSessionResponses = {
+    /**
+     * Token exchanged successfully
+     */
+    200: ExternalUiSessionExchangeResponse;
+};
+
+export type ExchangeExternalUiSessionResponse = ExchangeExternalUiSessionResponses[keyof ExchangeExternalUiSessionResponses];
 
 export type GetProducerEservicesData = {
     body?: never;
