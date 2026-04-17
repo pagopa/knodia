@@ -22,9 +22,11 @@ import {
   toAPI_Agreement,
   toK2KAPI_AgreementState,
 } from "../models/agreement/apiConverter.ts";
-import { agreementNotFound } from "../models/errors.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
-import { assertAgreementOwnedByConsumerOrg } from "../utils/validators.ts";
+import {
+  assertAgreementExists,
+  assertOrganizationIsAgreementConsumer,
+} from "../utils/validators.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
 
@@ -85,9 +87,7 @@ export function agreementServiceBuilder(
         knodeId,
       );
 
-      if (!remoteAgreement) {
-        throw agreementNotFound(agreementId);
-      }
+      assertAgreementExists(remoteAgreement, agreementId);
 
       const { data } = await k2kGatewayApi.getAgreement({
         client: k2kGatewayClient,
@@ -154,12 +154,15 @@ export function agreementServiceBuilder(
     ): Promise<API_Agreement> {
       logger.info(`Reactivating Agreement ${agreementId} on Knode ${knodeId}`);
 
+      await retrieveOrganization(authData.organizationId, readmodelService);
+
       const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
         knodeId,
       );
 
-      assertAgreementOwnedByConsumerOrg(
+      assertAgreementExists(remoteAgreement, agreementId);
+      assertOrganizationIsAgreementConsumer(
         remoteAgreement,
         agreementId,
         authData.organizationId,
@@ -180,12 +183,15 @@ export function agreementServiceBuilder(
     ): Promise<API_Agreement> {
       logger.info(`Suspending Agreement ${agreementId} on Knode ${knodeId}`);
 
+      await retrieveOrganization(authData.organizationId, readmodelService);
+
       const remoteAgreement = await remoteResourceDbService.getAgreementById(
         agreementId,
         knodeId,
       );
 
-      assertAgreementOwnedByConsumerOrg(
+      assertAgreementExists(remoteAgreement, agreementId);
+      assertOrganizationIsAgreementConsumer(
         remoteAgreement,
         agreementId,
         authData.organizationId,

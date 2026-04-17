@@ -105,12 +105,26 @@ describe("POST /agreements/:agreementId/reactivate (reactivateAgreement)", () =>
     expect(reactivateAgreementMock).not.toHaveBeenCalled();
   });
 
-  it("should return 404 when Agreement belongs to another consumer org", async () => {
+  it("should return 403 when Agreement belongs to another consumer org", async () => {
     const response = await reactivateAgreement(foreignAgreement.agreementId, {
       knodeId: foreignAgreement.knodeId,
     });
 
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(403);
+    expect(reactivateAgreementMock).not.toHaveBeenCalled();
+  });
+
+  it("should return 403 if the organization does not exist", async () => {
+    const response = await reactivateAgreement(
+      expectedApiDetail.id,
+      { knodeId },
+      {
+        organizationId: generateId<OrganizationId>(),
+        roles: ["administrative"],
+        type: "ui-session",
+      },
+    );
+    expect(response.statusCode).toBe(403);
     expect(reactivateAgreementMock).not.toHaveBeenCalled();
   });
 
