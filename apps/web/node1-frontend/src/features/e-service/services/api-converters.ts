@@ -43,6 +43,7 @@ export function toConsumptionEserviceDetail(
     agreement: detail.agreement,
     categories: detail.categories,
     description: detail.description.en,
+    hasRecentlyBeenUpdated: detail.hasRecentlyBeenUpdated,
     hasRequiredAttributes,
     id: unsafeBrandId(detail.id),
     identificationRequired: detail.identificationRequired,

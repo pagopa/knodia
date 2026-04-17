@@ -378,6 +378,10 @@ export const API_ConsumerEserviceDetails = z
     agreement: API_EserviceAgreementDetail.optional(),
     categories: z.array(API_EserviceCategory),
     description: API_LocalizedDescription,
+    hasRecentlyBeenUpdated: z.boolean().meta({
+      description:
+        "Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated",
+    }),
     id: z.uuid(),
     identificationRequired: z.boolean(),
     interfaceDocument: z
@@ -442,7 +446,8 @@ export const API_ConsumerEservice = z
       format: "int32",
     }),
     hasRecentlyBeenUpdated: z.boolean().meta({
-      description: "Indicates whether the E-service has been recently updated",
+      description:
+        "Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated",
     }),
     id: z.uuid(),
     mode: API_EserviceMode,

@@ -758,6 +758,10 @@ components:
             $ref: "#/components/schemas/EserviceCategory"
         description:
           $ref: "#/components/schemas/LocalizedDescription"
+        hasRecentlyBeenUpdated:
+          description: Indicates whether the E-service, its Agreement, or any of its
+            Purposes have been recently updated
+          type: boolean
         id:
           type: string
           format: uuid
@@ -793,6 +797,7 @@ components:
         - accessToken
         - categories
         - description
+        - hasRecentlyBeenUpdated
         - id
         - identificationRequired
         - interfaceDocument
@@ -853,7 +858,8 @@ components:
           minimum: 0
           maximum: 9007199254740991
         hasRecentlyBeenUpdated:
-          description: Indicates whether the E-service has been recently updated
+          description: Indicates whether the E-service, its Agreement, or any of its
+            Purposes have been recently updated
           type: boolean
         id:
           type: string

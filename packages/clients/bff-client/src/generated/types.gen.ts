@@ -376,6 +376,10 @@ export type ConsumerEserviceDetails = {
     agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
+    /**
+     * Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     identificationRequired: boolean;
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
@@ -415,7 +419,7 @@ export type ConsumerEservice = {
      */
     consumerKeychains: number;
     /**
-     * Indicates whether the E-service has been recently updated
+     * Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
