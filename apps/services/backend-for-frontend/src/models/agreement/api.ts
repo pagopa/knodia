@@ -39,7 +39,8 @@ export const API_GetProducerAgreementsQueryParams =
       .optional()
       .meta({ description: "Filter by E-service ID" }),
     recentlyUpdated: z
-      .preprocess((v) => v === "true", z.boolean())
+      .enum(["true", "false"])
+      .transform((v) => v === "true")
       .optional()
       .meta({
         description:

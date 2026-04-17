@@ -2152,7 +2152,7 @@ export type GetProducerAgreementsData = {
         /**
          * Filter to only Agreements updated within the recent update window
          */
-        recentlyUpdated?: boolean;
+        recentlyUpdated?: 'true' | 'false';
     };
     url: '/producer/agreements';
 };
@@ -2245,7 +2245,7 @@ export type GetProducerPurposesData = {
         /**
          * Filter to only Purposes updated within the recent update window
          */
-        recentlyUpdated?: boolean;
+        recentlyUpdated?: 'true' | 'false';
         /**
          * Filter by Purpose State
          */

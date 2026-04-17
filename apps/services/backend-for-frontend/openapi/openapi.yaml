@@ -3595,7 +3595,10 @@ paths:
           required: false
           description: Filter by E-service ID
         - schema:
-            type: boolean
+            type: string
+            enum:
+              - "true"
+              - "false"
           in: query
           name: recentlyUpdated
           required: false
@@ -3731,7 +3734,10 @@ paths:
           required: false
           description: Filter by E-service ID
         - schema:
-            type: boolean
+            type: string
+            enum:
+              - "true"
+              - "false"
           in: query
           name: recentlyUpdated
           required: false
