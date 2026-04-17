@@ -25,13 +25,26 @@ export function EserviceProducerActions({
   const queryClient = useQueryClient();
   const [isSuspendDialogOpen, setIsSuspendDialogOpen] = useState(false);
 
-  const invalidateDetails = () =>
-    queryClient.invalidateQueries({
-      queryKey: getProducerEserviceDetailsQueryKey({
-        client,
-        path: { eserviceId },
+  const invalidateEserviceQueries = () =>
+    Promise.all([
+      queryClient.invalidateQueries({
+        queryKey: getProducerEserviceDetailsQueryKey({
+          client,
+          path: { eserviceId },
+        }),
       }),
-    });
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          const key = query.queryKey.at(0);
+          return (
+            typeof key === "object" &&
+            key !== null &&
+            "_id" in key &&
+            key._id === "getProducerEservices"
+          );
+        },
+      }),
+    ]);
 
   const {
     isError: isSuspendError,
@@ -41,7 +54,7 @@ export function EserviceProducerActions({
     ...suspendProducerEserviceMutation({ client }),
     onSuccess: () => {
       setIsSuspendDialogOpen(false);
-      invalidateDetails();
+      invalidateEserviceQueries();
     },
   });
 
@@ -53,7 +66,7 @@ export function EserviceProducerActions({
         kind: "error",
         title: "Unable to reactivate E-Service",
       }),
-    onSuccess: () => invalidateDetails(),
+    onSuccess: () => invalidateEserviceQueries(),
   });
 
   return match(state)
