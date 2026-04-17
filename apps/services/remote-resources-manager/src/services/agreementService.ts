@@ -15,6 +15,7 @@ import type {
   API_AgreementSeed,
   API_CreatedAgreementResource,
   API_GetAgreementsQueryParams,
+  API_MagicLink,
 } from "../models/agreement/api.ts";
 import type { ReadmodelService } from "./readmodelService.ts";
 
@@ -22,7 +23,10 @@ import {
   toAPI_Agreement,
   toK2KAPI_AgreementState,
 } from "../models/agreement/apiConverter.ts";
-import { agreementNotFound } from "../models/errors.ts";
+import {
+  agreementNotFound,
+  agreementNotOwnedByCaller,
+} from "../models/errors.ts";
 import { retrieveOrganization } from "../utils/readmodelUtils.ts";
 
 export type AgreementService = ReturnType<typeof agreementServiceBuilder>;
@@ -33,6 +37,39 @@ export function agreementServiceBuilder(
   readmodelService: ReadmodelService,
 ) {
   return {
+    async createActivationMagicLink(
+      agreementId: ExternalId<AgreementId>,
+      knodeId: KnodeId,
+      { authData, logger }: AuthorizedContext<UISessionAuthData>,
+    ): Promise<API_MagicLink> {
+      logger.info(
+        `Creating activation magic link for Agreement ${agreementId} on Knode ${knodeId}`,
+      );
+
+      const remoteAgreement = await remoteResourceDbService.getAgreementById(
+        agreementId,
+        knodeId,
+      );
+
+      if (!remoteAgreement) {
+        throw agreementNotFound(agreementId);
+      }
+
+      // RRM's DB lookup only filters by (agreementId, knodeId); it does not
+      // verify that the row's consumerId belongs to the caller. Since this
+      // route mints a capability token, assert ownership explicitly.
+      if (remoteAgreement.consumerId !== authData.organizationId) {
+        throw agreementNotOwnedByCaller(agreementId);
+      }
+
+      const { data } = await k2kGatewayApi.createAgreementActivationMagicLink({
+        client: k2kGatewayClient,
+        path: { agreementId },
+      });
+
+      return data;
+    },
+
     async createAgreement(
       reqBody: API_AgreementSeed,
       { authData, logger }: AuthorizedContext<UISessionAuthData>,

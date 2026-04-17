@@ -13,6 +13,7 @@ const { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND } = constants;
 
 const errorCodes = {
   AGREEMENT_NOT_FOUND: "0001",
+  AGREEMENT_NOT_OWNED_BY_CALLER: "0004",
   ORGANIZATION_NOT_FOUND: "0002",
   PURPOSE_NOT_FOUND: "0003",
 } as const;
@@ -29,6 +30,17 @@ export function agreementNotFound(agreementId: ExternalId<AgreementId>) {
     detail: `Agreement with id ${agreementId} not found`,
     status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement Not Found",
+  });
+}
+
+export function agreementNotOwnedByCaller(
+  agreementId: ExternalId<AgreementId>,
+) {
+  return createApiError<ErrorCodes>({
+    code: "AGREEMENT_NOT_OWNED_BY_CALLER",
+    detail: `Agreement with id ${agreementId} is not owned by the calling organization`,
+    status: HTTP_STATUS_FORBIDDEN,
+    title: "Agreement Not Owned By Caller",
   });
 }
 
