@@ -70,7 +70,7 @@ export const producerRecentPurposesByEserviceQuery = (eserviceId: EserviceId) =>
       eserviceId,
       limit: PURPOSES_SECTION_LIMIT,
       offset: 0,
-      recentlyUpdated: true,
+      recentlyUpdated: "true",
     },
   });
 

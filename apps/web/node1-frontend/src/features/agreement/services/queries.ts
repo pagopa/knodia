@@ -35,6 +35,6 @@ export const producerRecentAgreementsByEserviceQuery = (
       eserviceId,
       limit: AGREEMENTS_SECTION_LIMIT,
       offset: 0,
-      recentlyUpdated: true,
+      recentlyUpdated: "true",
     },
   });
