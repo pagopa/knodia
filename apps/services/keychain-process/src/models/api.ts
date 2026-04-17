@@ -54,6 +54,9 @@ const API_GetConsumerKeychainsQueryPurposeFilter = z
 
 export const API_GetConsumerKeychainsQueryParams =
   API_PaginationQueryParams.extend({
+    name: z.string().optional().meta({
+      description: "Filter by Consumer Keychain name",
+    }),
     ownerId: API_OrganizationId.optional().meta({
       description: "Filter by owner Organization ID",
     }),
