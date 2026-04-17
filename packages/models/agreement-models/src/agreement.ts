@@ -25,6 +25,8 @@ export const Agreement = z.strictObject({
   id: AgreementId,
   producerId: OrganizationId,
   state: AgreementState,
+  suspendedByConsumerAt: z.coerce.date().nullable(),
+  suspendedByProducerAt: z.coerce.date().nullable(),
   updatedAt: z.coerce.date(),
 });
 export type Agreement = z.infer<typeof Agreement>;

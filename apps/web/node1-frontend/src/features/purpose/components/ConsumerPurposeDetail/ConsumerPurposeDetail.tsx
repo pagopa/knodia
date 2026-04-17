@@ -1,8 +1,10 @@
 import type { bffApi } from "@knodia/bff-client";
 import type { KnodeId } from "@knodia/common-models/ids";
 
-import { Banner, Button, Modal } from "@knodia/ui-kit/ui";
-import { ArrowRightIcon, SelectionPlusIcon } from "@phosphor-icons/react";
+import { Button, Modal, Pagination } from "@knodia/ui-kit/ui";
+import { ArrowRightIcon } from "@phosphor-icons/react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { DialogTrigger } from "react-aria-components";
 import { match } from "ts-pattern";
 
@@ -16,6 +18,10 @@ import { PurposeDailyCallsCard } from "@/features/purpose/components/PurposeDail
 import { PurposeEserviceCard } from "@/features/purpose/components/PurposeEserviceCard";
 import { PurposeStateChip } from "@/features/purpose/components/PurposeStateChip";
 
+import { purposeLinkedConsumerKeychainsQuery } from "../../services/queries";
+import { LinkConsumerKeychainAction } from "./LinkConsumerKeychainAction";
+import { LinkedConsumerKeychainsTable } from "./LinkedConsumerKeychainsTable";
+
 export function ConsumerPurposeDetail({
   knodeId,
   purpose,
@@ -23,13 +29,19 @@ export function ConsumerPurposeDetail({
   knodeId: KnodeId;
   purpose: bffApi.PurposeDetails;
 }) {
-  const canManagePurposeState = useHasRole("administrative");
+  const canManagePurpose = useHasRole("administrative");
+
+  const [offset, setOffset] = useState(0);
+  const { data } = useQuery({
+    ...purposeLinkedConsumerKeychainsQuery(purpose.id, knodeId, offset),
+    placeholderData: keepPreviousData,
+  });
 
   return (
     <>
       <PageHeader
         actions={
-          canManagePurposeState && <PurposeActionButton state={purpose.state} />
+          canManagePurpose && <PurposeActionButton state={purpose.state} />
         }
         description={purpose.description.en}
         resourceStatusChip={<PurposeStateChip state={purpose.state} />}
@@ -86,18 +98,33 @@ export function ConsumerPurposeDetail({
         }
         agreement={purpose.agreement}
       />
+
       <Section
         actions={
-          <Button hierarchy="neutral" kind="tonal" size="md">
-            Link Keychain
-          </Button>
+          canManagePurpose && (
+            <LinkConsumerKeychainAction
+              knodeId={knodeId}
+              purposeId={purpose.id}
+            />
+          )
         }
+        className="mt-10"
         title="Keychains"
       >
-        <Banner icon={<SelectionPlusIcon />} kind="neutral">
-          Link a Keychain to this Purpose to request an access token for the
-          related E-Service.
-        </Banner>
+        <LinkedConsumerKeychainsTable
+          canManagePurpose={canManagePurpose}
+          isLoading={!data}
+          keychains={data?.results ?? []}
+          knodeId={knodeId}
+          purposeId={purpose.id}
+        />
+        <Pagination
+          className="mx-auto mt-6"
+          limit={data?.pagination.limit ?? 0}
+          offset={offset}
+          onOffsetChange={(offset) => setOffset(offset)}
+          totalItems={data?.pagination.total ?? 0}
+        />
       </Section>
     </>
   );

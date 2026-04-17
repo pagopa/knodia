@@ -11,5 +11,7 @@ export const toAPI_Agreement = (agreement: Agreement): API_Agreement => ({
   id: agreement.id,
   producerId: agreement.producerId,
   state: agreement.state,
+  suspendedByConsumerAt: agreement.suspendedByConsumerAt?.toISOString() ?? null,
+  suspendedByProducerAt: agreement.suspendedByProducerAt?.toISOString() ?? null,
   updatedAt: agreement.updatedAt.toISOString(),
 });

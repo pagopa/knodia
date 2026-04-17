@@ -47,5 +47,7 @@ const toAgreementSQL = (
   metadataVersion,
   producerId: agreement.producerId,
   state: agreement.state,
+  suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+  suspendedByProducerAt: agreement.suspendedByProducerAt,
   updatedAt: agreement.updatedAt,
 });

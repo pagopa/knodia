@@ -32,9 +32,16 @@ export function toExpectAPI_Agreement(agreement: Agreement | API_Agreement) {
       typeof agreement.createdAt === "string"
         ? agreement.createdAt
         : agreement.createdAt.toISOString(),
+    suspendedByConsumerAt: toExpectIsoOrNull(agreement.suspendedByConsumerAt),
+    suspendedByProducerAt: toExpectIsoOrNull(agreement.suspendedByProducerAt),
     updatedAt:
       typeof agreement.updatedAt === "string"
         ? agreement.updatedAt
         : agreement.updatedAt.toISOString(),
   };
+}
+
+function toExpectIsoOrNull(value: Date | null | string) {
+  if (value === null) return null;
+  return typeof value === "string" ? value : value.toISOString();
 }

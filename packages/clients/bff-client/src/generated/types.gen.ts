@@ -376,6 +376,10 @@ export type ConsumerEserviceDetails = {
     agreement?: EserviceAgreementDetail;
     categories: Array<EserviceCategory>;
     description: LocalizedDescription;
+    /**
+     * Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated
+     */
+    hasRecentlyBeenUpdated: boolean;
     id: string;
     identificationRequired: boolean;
     interfaceDocument: ConsumerEserviceDetailsInterfaceDocument;
@@ -415,7 +419,7 @@ export type ConsumerEservice = {
      */
     consumerKeychains: number;
     /**
-     * Indicates whether the E-service has been recently updated
+     * Indicates whether the E-service, its Agreement, or any of its Purposes have been recently updated
      */
     hasRecentlyBeenUpdated: boolean;
     id: string;
@@ -583,6 +587,16 @@ export type KeychainDetails = {
     id: string;
     name: KeychainLocalizedName;
     updatedAt: string;
+};
+
+export type ConsumerKeychainOption = {
+    id: string;
+    name: KeychainLocalizedName;
+};
+
+export type ConsumerKeychainOptions = {
+    pagination: Pagination;
+    results: Array<ConsumerKeychainOption>;
 };
 
 export type ConsumerKeychainPatch = {
@@ -1607,6 +1621,52 @@ export type GetConsumerKeychainMembershipResponses = {
 };
 
 export type GetConsumerKeychainMembershipResponse = GetConsumerKeychainMembershipResponses[keyof GetConsumerKeychainMembershipResponses];
+
+export type GetConsumerKeychainOptionsData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Maximum number of items returned
+         */
+        limit: number;
+        /**
+         * Pagination starting position
+         */
+        offset: number;
+        /**
+         * Search text used to filter Consumer Keychains by name
+         */
+        q: string;
+    };
+    url: '/consumerKeychains/options';
+};
+
+export type GetConsumerKeychainOptionsErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+};
+
+export type GetConsumerKeychainOptionsError = GetConsumerKeychainOptionsErrors[keyof GetConsumerKeychainOptionsErrors];
+
+export type GetConsumerKeychainOptionsResponses = {
+    /**
+     * Consumer Keychain options retrieved successfully
+     */
+    200: ConsumerKeychainOptions;
+};
+
+export type GetConsumerKeychainOptionsResponse = GetConsumerKeychainOptionsResponses[keyof GetConsumerKeychainOptionsResponses];
 
 export type LinkPurposeToConsumerKeychainData = {
     body: ConsumerKeychainPurposeLinkSeed;

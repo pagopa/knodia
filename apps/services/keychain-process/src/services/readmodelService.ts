@@ -11,6 +11,7 @@ import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 import {
   createOrderByFilters,
   getTableTotalCount,
+  ilikeJsonB,
 } from "@knodia/db-readmodel-commons/utils";
 import {
   readmodelConsumerKeychain,
@@ -159,7 +160,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
     async getConsumerKeychains(
       params: API_GetConsumerKeychainsQueryParams,
     ): Promise<ListResult<FlatConsumerKeychain>> {
-      const { limit, offset, ownerId, purpose } = params;
+      const { limit, name, offset, ownerId, purpose } = params;
 
       return await readmodelDb.transaction(async (tx) => {
         const orderByFilters = createOrderByFilters({
@@ -174,6 +175,12 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
             .from(readmodelConsumerKeychain)
             .where(
               and(
+                name
+                  ? ilikeJsonB({
+                      column: readmodelConsumerKeychain.name,
+                      value: name,
+                    })
+                  : undefined,
                 ownerId
                   ? eq(readmodelConsumerKeychain.ownerId, ownerId)
                   : undefined,
