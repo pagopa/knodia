@@ -42,7 +42,11 @@ const toAPI_EserviceAgreementDetail = (
   agreement?: k2kGatewayApi.Agreement,
 ): API_EserviceAgreementDetail | undefined =>
   agreement
-    ? { id: agreement.id, state: toAPI_AgreementState(agreement.state) }
+    ? {
+        id: agreement.id,
+        state: toAPI_AgreementState(agreement.state),
+        updatedAt: agreement.updatedAt,
+      }
     : undefined;
 
 export const toAPI_EserviceDetails = (
@@ -82,6 +86,7 @@ export const toAPI_EserviceDetails = (
     name: producer.name,
     notes: "Notes", // TODO: retrieve real data from producer knode
   },
+  updatedAt: eservice.updatedAt,
 });
 
 const toAPI_AccessTokenType = (
@@ -123,6 +128,7 @@ export const toAPI_Eservice = ({
   agreement: {
     id: agreement.id,
     state: toAPI_AgreementState(agreement.state),
+    updatedAt: agreement.updatedAt,
   },
   categories: eservice.categories,
   id: eservice.id,
