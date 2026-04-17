@@ -113,3 +113,34 @@ export const API_ConsumerAgreements = z
   })
   .meta({ id: "ConsumerAgreements" });
 export type API_ConsumerAgreements = z.infer<typeof API_ConsumerAgreements>;
+
+export const API_ActivationMagicLinkRequest = z
+  .strictObject({
+    knodeId: API_KnodeId,
+  })
+  .meta({
+    description:
+      "Identifies which Producer Knode should mint the activation magic link for the Agreement in the path param",
+    id: "ActivationMagicLinkRequest",
+  });
+export type API_ActivationMagicLinkRequest = z.infer<
+  typeof API_ActivationMagicLinkRequest
+>;
+
+export const API_MagicLink = z
+  .strictObject({
+    expiresAt: z.iso.datetime().meta({
+      description:
+        "ISO 8601 timestamp after which the magic link is no longer valid",
+    }),
+    url: z.url().meta({
+      description:
+        "Absolute URL of the target Knode's frontend, carrying a signed token for the action",
+    }),
+  })
+  .meta({
+    description:
+      "A signed, single-action link a Consumer user can follow to perform an action on the Producer Knode's frontend",
+    id: "MagicLink",
+  });
+export type API_MagicLink = z.infer<typeof API_MagicLink>;
