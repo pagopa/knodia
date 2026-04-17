@@ -49,7 +49,7 @@ describe("ProducerEserviceFilter", () => {
   it("renders with placeholder when no eservice is selected", () => {
     renderFilter();
 
-    expect(screen.getByPlaceholderText("All E-Service")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("All E-Services")).toBeInTheDocument();
     expect(screen.getByText("E-Service")).toBeInTheDocument();
   });
 
