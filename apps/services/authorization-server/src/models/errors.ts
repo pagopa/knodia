@@ -9,7 +9,8 @@ import { constants } from "http2";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-const { HTTP_STATUS_BAD_REQUEST } = constants;
+const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
+  constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -95,7 +96,7 @@ export function unexpectedClientAssertionSignatureVerificationError(
   return createApiError<ErrorCodes>({
     code: "UNEXPECTED_CLIENT_ASSERTION_SIGNATURE_VERIFICATION_ERROR",
     detail: `An unexpected error occurred during Client Assertion signature verification: ${message}`,
-    status: HTTP_STATUS_BAD_REQUEST,
+    status: HTTP_STATUS_INTERNAL_SERVER_ERROR,
     title: "Unexpected error during Client Assertion signature verification",
   });
 }
