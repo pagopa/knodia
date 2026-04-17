@@ -20,6 +20,7 @@ import { getKnodiaClients } from "./clients/clientsProvider.ts";
 import { apiTags } from "./models/apiTags.ts";
 import { makeApiProblem } from "./models/errors.ts";
 import { agreementConsumerRouter } from "./routers/agreement/agreementConsumerRouter.ts";
+import { agreementExternalRouter } from "./routers/agreement/agreementExternalRouter.ts";
 import { agreementProducerRouter } from "./routers/agreement/agreementProducerRouter.ts";
 import { authRouter } from "./routers/authRouter.ts";
 import { eserviceConsumerRouter } from "./routers/eservice/eserviceConsumerRouter.ts";
@@ -173,6 +174,9 @@ export function buildAppFromConfig(
       organizationProcessClient: clients.organizationProcessClient,
       purposeProcessClient: clients.purposeProcessClient,
       remoteResourcesManagerClient: clients.remoteResourcesManagerClient,
+    });
+    protectedApp.register(agreementExternalRouter, {
+      agreementProcessClient: clients.agreementProcessClient,
     });
   });
 

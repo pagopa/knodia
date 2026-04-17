@@ -86,6 +86,19 @@ components:
         - Suspended
         - Archived
         - PendingConsumerOperatorIdentification
+    AgreementConsumer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        knodeId:
+          $ref: "#/components/schemas/KnodeId"
+      required:
+        - id
+        - knodeId
+      additionalProperties: false
     Pagination:
       type: object
       properties:
@@ -111,6 +124,11 @@ components:
       description: Binary file content
       format: binary
       type: string
+    OrganizationId:
+      description: Unique identifier of the Organization
+      type: string
+      format: uuid
+      pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
     UserId:
       description: Unique identifier of the User
       type: string
@@ -131,6 +149,17 @@ components:
           pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
       required:
         - id
+      additionalProperties: false
+    Attribute:
+      type: object
+      properties:
+        code:
+          type: string
+        scheme:
+          type: string
+      required:
+        - code
+        - scheme
       additionalProperties: false
     EserviceVersionState:
       type: string
@@ -209,17 +238,6 @@ components:
         - id
         - knodeId
         - name
-      additionalProperties: false
-    Attribute:
-      type: object
-      properties:
-        code:
-          type: string
-        scheme:
-          type: string
-      required:
-        - code
-        - scheme
       additionalProperties: false
     InterfaceDocumentSeed:
       type: object
@@ -1060,6 +1078,52 @@ components:
         - expiresAt
         - url
       additionalProperties: false
+    ExternalAgreement:
+      description: Agreement returned to an external consumer user after activation on
+        the Producer Knode
+      type: object
+      properties:
+        attributes:
+          type: array
+          items:
+            $ref: "#/components/schemas/Attribute"
+        consumer:
+          $ref: "#/components/schemas/AgreementConsumer"
+        createdAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+        eserviceId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        eserviceVersionId:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        id:
+          type: string
+          format: uuid
+          pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        producerId:
+          $ref: "#/components/schemas/OrganizationId"
+        state:
+          $ref: "#/components/schemas/AgreementState"
+        updatedAt:
+          type: string
+          format: date-time
+          pattern: ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+      required:
+        - attributes
+        - consumer
+        - createdAt
+        - eserviceId
+        - eserviceVersionId
+        - id
+        - producerId
+        - state
+        - updatedAt
+      additionalProperties: false
     SessionRequest:
       type: object
       properties:
@@ -1076,7 +1140,7 @@ components:
       required:
         - uiSessionToken
       additionalProperties: false
-    ExternalUISessionExchangeRequest:
+    ExternalUiSessionExchangeRequest:
       type: object
       properties:
         magicLinkToken:
@@ -1084,7 +1148,7 @@ components:
       required:
         - magicLinkToken
       additionalProperties: false
-    ExternalUISessionExchangeResponse:
+    ExternalUiSessionExchangeResponse:
       type: object
       properties:
         externalUiSessionToken:
@@ -1773,7 +1837,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ExternalUISessionExchangeRequest"
+              $ref: "#/components/schemas/ExternalUiSessionExchangeRequest"
       security: []
       responses:
         "200":
@@ -1783,7 +1847,7 @@ paths:
               schema:
                 description: Token exchanged successfully
                 allOf:
-                  - $ref: "#/components/schemas/ExternalUISessionExchangeResponse"
+                  - $ref: "#/components/schemas/ExternalUiSessionExchangeResponse"
         "400":
           description: Bad Request
           content:
@@ -4072,6 +4136,77 @@ paths:
             application/problem+json:
               schema:
                 description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+  /agreements/{agreementId}/activate:
+    post:
+      operationId: activateAgreement
+      summary: Activate an Agreement
+      tags:
+        - agreement
+      description: Activate an Agreement using a scoped external-ui-session token
+        obtained from the magic-link exchange
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+            pattern: ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+          in: path
+          name: agreementId
+          required: true
+      responses:
+        "200":
+          description: Agreement activated successfully
+          content:
+            application/json:
+              schema:
+                description: Agreement activated successfully
+                allOf:
+                  - $ref: "#/components/schemas/ExternalAgreement"
+          headers:
+            metadata-version:
+              required: true
+              schema:
+                type: string
+              description: Metadata version of the resource
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "401":
+          description: Unauthorized
+          content:
+            application/problem+json:
+              schema:
+                description: Unauthorized
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "403":
+          description: Forbidden
+          content:
+            application/problem+json:
+              schema:
+                description: Forbidden
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "409":
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                description: Conflict
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:

@@ -40,6 +40,11 @@ export type KnodeId = 'Orion' | 'Lynx';
 
 export type AgreementState = 'Active' | 'Suspended' | 'Archived' | 'PendingConsumerOperatorIdentification';
 
+export type AgreementConsumer = {
+    id: string;
+    knodeId: KnodeId;
+};
+
 export type Pagination = {
     limit: number;
     offset: number;
@@ -50,6 +55,11 @@ export type Pagination = {
  * Binary file content
  */
 export type FileDownload = Blob | File;
+
+/**
+ * Unique identifier of the Organization
+ */
+export type OrganizationId = string;
 
 /**
  * Unique identifier of the User
@@ -66,6 +76,11 @@ export type KeyId = string;
  */
 export type CreatedResource = {
     id: string;
+};
+
+export type Attribute = {
+    code: string;
+    scheme: string;
 };
 
 export type EserviceVersionState = 'Active' | 'Suspended' | 'Archived';
@@ -107,11 +122,6 @@ export type CompactOrganization = {
     id: string;
     knodeId: KnodeId;
     name: string;
-};
-
-export type Attribute = {
-    code: string;
-    scheme: string;
 };
 
 export type InterfaceDocumentSeed = {
@@ -513,6 +523,21 @@ export type MagicLink = {
      * Absolute URL of the target Knode's frontend, carrying a signed token for the action
      */
     url: string;
+};
+
+/**
+ * Agreement returned to an external consumer user after activation on the Producer Knode
+ */
+export type ExternalAgreement = {
+    attributes: Array<Attribute>;
+    consumer: AgreementConsumer;
+    createdAt: string;
+    eserviceId: string;
+    eserviceVersionId: string;
+    id: string;
+    producerId: OrganizationId;
+    state: AgreementState;
+    updatedAt: string;
 };
 
 export type SessionRequest = {
@@ -2473,3 +2498,46 @@ export type GetProducerPurposeDetailsResponses = {
 };
 
 export type GetProducerPurposeDetailsResponse = GetProducerPurposeDetailsResponses[keyof GetProducerPurposeDetailsResponses];
+
+export type ActivateAgreementData = {
+    body?: never;
+    path: {
+        agreementId: string;
+    };
+    query?: never;
+    url: '/agreements/{agreementId}/activate';
+};
+
+export type ActivateAgreementErrors = {
+    /**
+     * Bad Request
+     */
+    400: Problem;
+    /**
+     * Unauthorized
+     */
+    401: Problem;
+    /**
+     * Forbidden
+     */
+    403: Problem;
+    /**
+     * Not Found
+     */
+    404: Problem;
+    /**
+     * Conflict
+     */
+    409: Problem;
+};
+
+export type ActivateAgreementError = ActivateAgreementErrors[keyof ActivateAgreementErrors];
+
+export type ActivateAgreementResponses = {
+    /**
+     * Agreement activated successfully
+     */
+    200: ExternalAgreement;
+};
+
+export type ActivateAgreementResponse = ActivateAgreementResponses[keyof ActivateAgreementResponses];

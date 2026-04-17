@@ -1,5 +1,10 @@
-import { API_AgreementState } from "@knodia/agreement-models/api";
 import {
+  API_AgreementConsumer,
+  API_AgreementState,
+} from "@knodia/agreement-models/api";
+import { API_Attribute } from "@knodia/attribute-models/api";
+import {
+  API_OrganizationId,
   API_Pagination,
   API_PaginationQueryParams,
 } from "@knodia/common-models/api";
@@ -122,3 +127,22 @@ export const API_MagicLink = z
     id: "MagicLink",
   });
 export type API_MagicLink = z.infer<typeof API_MagicLink>;
+
+export const API_ExternalAgreement = z
+  .strictObject({
+    attributes: z.array(API_Attribute),
+    consumer: API_AgreementConsumer,
+    createdAt: z.iso.datetime(),
+    eserviceId: z.uuid(),
+    eserviceVersionId: z.uuid(),
+    id: z.uuid(),
+    producerId: API_OrganizationId,
+    state: API_AgreementState,
+    updatedAt: z.iso.datetime(),
+  })
+  .meta({
+    description:
+      "Agreement returned to an external consumer user after activation on the Producer Knode",
+    id: "ExternalAgreement",
+  });
+export type API_ExternalAgreement = z.infer<typeof API_ExternalAgreement>;
