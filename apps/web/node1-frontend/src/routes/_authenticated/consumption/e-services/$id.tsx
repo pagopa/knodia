@@ -192,6 +192,7 @@ function RouteComponent() {
           <OrgConsumptionStatusSection
             agreement={agreement}
             eserviceId={eservice.id}
+            hasRecentlyBeenUpdated={eservice.hasRecentlyBeenUpdated}
             knodeId={knodeId}
           />
           <Divider className="my-10" />
