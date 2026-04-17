@@ -2,7 +2,13 @@
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { type SignCommand } from "@aws-sdk/client-kms";
-import { unsafeBrandId, unsafeBrandUserId } from "@knodia/common-models/ids";
+import { unsafeBrandExternalId } from "@knodia/common-models/externalResource";
+import {
+  KnodeId,
+  type OrganizationId,
+  unsafeBrandId,
+  unsafeBrandUserId,
+} from "@knodia/common-models/ids";
 import { describe, expect, it } from "vitest";
 
 import { tokenGeneratorBuilder } from "../src/tokenGenerator.ts";
@@ -56,6 +62,76 @@ const testCases = [
         username: "test-user",
       }),
     name: "generateUISessionToken",
+  },
+  {
+    expectedPayload: {
+      agreementId: "770e8400-e29b-41d4-a716-446655440000",
+      aud: "my-audience",
+      consumerId: "880e8400-e29b-41d4-a716-446655440000",
+      consumerKnodeId: "Orion",
+      eserviceId: "990e8400-e29b-41d4-a716-446655440000",
+      eserviceVersionId: "aa0e8400-e29b-41d4-a716-446655440000",
+      iss: "my-issuer",
+      producerId: "bb0e8400-e29b-41d4-a716-446655440000",
+      scope: "agreement-activation",
+      sub: "770e8400-e29b-41d4-a716-446655440000",
+      type: "external-ui-session",
+    },
+    generate: () =>
+      generator.generateExternalUISessionToken({
+        agreementId: unsafeBrandId("770e8400-e29b-41d4-a716-446655440000"),
+        audience: "my-audience",
+        consumerId: unsafeBrandExternalId<OrganizationId>(
+          "880e8400-e29b-41d4-a716-446655440000",
+        ),
+        consumerKnodeId: KnodeId.enum.Orion,
+        eserviceId: unsafeBrandId("990e8400-e29b-41d4-a716-446655440000"),
+        eserviceVersionId: unsafeBrandId(
+          "aa0e8400-e29b-41d4-a716-446655440000",
+        ),
+        issuer: "my-issuer",
+        kid: KID,
+        producerId: unsafeBrandId("bb0e8400-e29b-41d4-a716-446655440000"),
+        scope: "agreement-activation",
+        secondsDuration: SECONDS_DURATION,
+        subject: "770e8400-e29b-41d4-a716-446655440000",
+      }),
+    name: "generateExternalUISessionToken",
+  },
+  {
+    expectedPayload: {
+      agreementId: "770e8400-e29b-41d4-a716-446655440000",
+      aud: "my-audience",
+      consumerId: "880e8400-e29b-41d4-a716-446655440000",
+      consumerKnodeId: "Orion",
+      eserviceId: "990e8400-e29b-41d4-a716-446655440000",
+      eserviceVersionId: "aa0e8400-e29b-41d4-a716-446655440000",
+      iss: "my-issuer",
+      producerId: "bb0e8400-e29b-41d4-a716-446655440000",
+      scope: "agreement-activation",
+      sub: "770e8400-e29b-41d4-a716-446655440000",
+      type: "external-ui-session-magic-link",
+    },
+    generate: () =>
+      generator.generateExternalUISessionMagicLinkToken({
+        agreementId: unsafeBrandId("770e8400-e29b-41d4-a716-446655440000"),
+        audience: "my-audience",
+        consumerId: unsafeBrandExternalId<OrganizationId>(
+          "880e8400-e29b-41d4-a716-446655440000",
+        ),
+        consumerKnodeId: KnodeId.enum.Orion,
+        eserviceId: unsafeBrandId("990e8400-e29b-41d4-a716-446655440000"),
+        eserviceVersionId: unsafeBrandId(
+          "aa0e8400-e29b-41d4-a716-446655440000",
+        ),
+        issuer: "my-issuer",
+        kid: KID,
+        producerId: unsafeBrandId("bb0e8400-e29b-41d4-a716-446655440000"),
+        scope: "agreement-activation",
+        secondsDuration: SECONDS_DURATION,
+        subject: "770e8400-e29b-41d4-a716-446655440000",
+      }),
+    name: "generateExternalUISessionMagicLinkToken",
   },
 ] as const;
 

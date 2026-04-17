@@ -62,6 +62,20 @@ export type ExternalUISessionTokenClaims = z.infer<
   typeof ExternalUISessionTokenClaims
 >;
 
+export const ExternalUISessionMagicLinkTokenClaims = BaseJwtClaims.extend({
+  agreementId: AgreementId,
+  consumerId: ExternalId<OrganizationId>(),
+  consumerKnodeId: KnodeId,
+  eserviceId: EserviceId,
+  eserviceVersionId: EserviceVersionId,
+  producerId: OrganizationId,
+  scope: ExternalUISessionScope,
+  type: z.literal("external-ui-session-magic-link"),
+});
+export type ExternalUISessionMagicLinkTokenClaims = z.infer<
+  typeof ExternalUISessionMagicLinkTokenClaims
+>;
+
 // Token types accepted as authentication credentials by API services.
 // Does NOT include refresh tokens, which are only used for token renewal.
 export const KnodiaAuthTokenClaims = z.discriminatedUnion("type", [

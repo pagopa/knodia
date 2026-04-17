@@ -1,10 +1,21 @@
 import type {
+  ExternalUISessionMagicLinkTokenClaims,
+  ExternalUISessionScope,
+  ExternalUISessionTokenClaims,
   InternalTokenClaims,
   UISessionRefreshTokenClaims,
   UISessionTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
-import type { OrganizationId, UserId } from "@knodia/common-models/ids";
+import type { ExternalId } from "@knodia/common-models/externalResource";
+import type {
+  AgreementId,
+  EserviceId,
+  EserviceVersionId,
+  KnodeId,
+  OrganizationId,
+  UserId,
+} from "@knodia/common-models/ids";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 import type z from "zod";
 
@@ -13,6 +24,8 @@ import { dateToSeconds } from "@knodia/common-models/utils";
 import { randomUUID } from "node:crypto";
 
 import type {
+  ExternalUISessionMagicLinkToken,
+  ExternalUISessionToken,
   InternalToken,
   UISessionRefreshToken,
   UISessionToken,
@@ -23,6 +36,26 @@ const JWT_HEADER_USE = "sig";
 const KMS_SIGNING_ALGORITHM = "RSASSA_PKCS1_V1_5_SHA_256";
 
 export interface InternalTokenInput extends TokenParams {
+  subject: string;
+}
+
+interface ExternalUISessionMagicLinkTokenInput
+  extends ExternalUISessionResourceClaims, TokenParams {
+  subject: string;
+}
+
+interface ExternalUISessionResourceClaims {
+  agreementId: AgreementId;
+  consumerId: ExternalId<OrganizationId>;
+  consumerKnodeId: KnodeId;
+  eserviceId: EserviceId;
+  eserviceVersionId: EserviceVersionId;
+  producerId: OrganizationId;
+  scope: ExternalUISessionScope;
+}
+
+interface ExternalUISessionTokenInput
+  extends ExternalUISessionResourceClaims, TokenParams {
   subject: string;
 }
 
@@ -77,6 +110,8 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   async function buildAndSignToken(
     kid: string,
     claims:
+      | ExternalUISessionMagicLinkTokenClaims
+      | ExternalUISessionTokenClaims
       | InternalTokenClaims
       | UISessionRefreshTokenClaims
       | UISessionTokenClaims,
@@ -87,6 +122,27 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
     const message = `${header}.${payload}`;
     const signature = await signWithKms(kid, message);
     return { header, serialized: `${message}.${signature}` };
+  }
+
+  function buildExternalUISessionResourceClaims(
+    input: ExternalUISessionResourceClaims & TokenParams & { subject: string },
+  ): Omit<ExternalUISessionTokenClaims, "type"> {
+    const now = dateToSeconds(new Date());
+    return {
+      agreementId: input.agreementId,
+      aud: input.audience,
+      consumerId: input.consumerId,
+      consumerKnodeId: input.consumerKnodeId,
+      eserviceId: input.eserviceId,
+      eserviceVersionId: input.eserviceVersionId,
+      exp: now + input.secondsDuration,
+      iat: now,
+      iss: input.issuer,
+      jti: randomUUID(),
+      producerId: input.producerId,
+      scope: input.scope,
+      sub: input.subject,
+    };
   }
 
   function buildUserTokenClaims(
@@ -107,6 +163,38 @@ export function tokenGeneratorBuilder(kmsClient?: KMSClient) {
   }
 
   return {
+    async generateExternalUISessionMagicLinkToken(
+      input: ExternalUISessionMagicLinkTokenInput,
+    ): Promise<ExternalUISessionMagicLinkToken> {
+      const claims: ExternalUISessionMagicLinkTokenClaims = {
+        ...buildExternalUISessionResourceClaims(input),
+        type: "external-ui-session-magic-link",
+      };
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      return {
+        header,
+        payload: claims,
+        serialized,
+        type: "external-ui-session-magic-link",
+      };
+    },
+
+    async generateExternalUISessionToken(
+      input: ExternalUISessionTokenInput,
+    ): Promise<ExternalUISessionToken> {
+      const claims: ExternalUISessionTokenClaims = {
+        ...buildExternalUISessionResourceClaims(input),
+        type: "external-ui-session",
+      };
+      const { header, serialized } = await buildAndSignToken(input.kid, claims);
+      return {
+        header,
+        payload: claims,
+        serialized,
+        type: "external-ui-session",
+      };
+    },
+
     async generateInternalToken(
       input: InternalTokenInput,
     ): Promise<InternalToken> {
