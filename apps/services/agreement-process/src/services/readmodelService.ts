@@ -76,6 +76,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 state && state.length > 0
                   ? inArray(readmodelAgreement.state, state)
                   : undefined,
+                // TODO: consider adding a DB index on updatedAt when we have many agreements
                 updatedSince
                   ? gte(readmodelAgreement.updatedAt, new Date(updatedSince))
                   : undefined,

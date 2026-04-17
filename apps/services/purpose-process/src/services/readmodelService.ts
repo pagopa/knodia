@@ -145,6 +145,7 @@ export function readmodelServiceBuilder(readmodelDb: NodePgDatabase) {
                 ? eq(readmodelEservice.producerId, producerId)
                 : undefined,
               agreementId ? eq(readmodelAgreement.id, agreementId) : undefined,
+              // TODO: consider adding a DB index on updatedAt when we have many purposes
               updatedSince
                 ? gte(readmodelPurpose.updatedAt, new Date(updatedSince))
                 : undefined,
