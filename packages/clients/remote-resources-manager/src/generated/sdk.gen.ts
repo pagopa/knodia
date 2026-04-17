@@ -80,6 +80,8 @@ export const downloadEserviceLatestVersionInterface = <ThrowOnError extends bool
 });
 
 /**
+ * List Agreements
+ *
  * Retrieve a list of Agreements
  */
 export const getAgreements = <ThrowOnError extends boolean = true>(options: Options<GetAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetAgreementsResponses, GetAgreementsErrors, ThrowOnError>({
@@ -90,6 +92,8 @@ export const getAgreements = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
+ * Create an Agreement
+ *
  * Create a new Agreement
  */
 export const createAgreement = <ThrowOnError extends boolean = true>(options: Options<CreateAgreementData, ThrowOnError>) => (options.client ?? client).post<CreateAgreementResponses, CreateAgreementErrors, ThrowOnError>({
@@ -106,7 +110,7 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
 /**
  * Reactivate an Agreement
  *
- * Reactivate an Agreement by Consumer
+ * Reactivate an Agreement on behalf of the caller organization as its Consumer
  */
 export const reactivateAgreement = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementResponses, ReactivateAgreementErrors, ThrowOnError>({
     responseType: 'json',
@@ -118,7 +122,7 @@ export const reactivateAgreement = <ThrowOnError extends boolean = true>(options
 /**
  * Suspend an Agreement
  *
- * Suspend an Agreement by Consumer
+ * Suspend an Agreement on behalf of the caller organization as its Consumer
  */
 export const suspendAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementResponses, SuspendAgreementErrors, ThrowOnError>({
     responseType: 'json',

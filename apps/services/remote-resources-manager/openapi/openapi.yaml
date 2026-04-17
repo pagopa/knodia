@@ -1135,6 +1135,7 @@ paths:
   /agreements:
     post:
       operationId: createAgreement
+      summary: Create an Agreement
       tags:
         - agreement
       description: Create a new Agreement
@@ -1195,6 +1196,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getAgreements
+      summary: List Agreements
       tags:
         - agreement
       description: Retrieve a list of Agreements
@@ -1262,7 +1264,8 @@ paths:
       summary: Reactivate an Agreement
       tags:
         - agreement
-      description: Reactivate an Agreement by Consumer
+      description: Reactivate an Agreement on behalf of the caller organization as its
+        Consumer
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"
@@ -1331,7 +1334,7 @@ paths:
       summary: Suspend an Agreement
       tags:
         - agreement
-      description: Suspend an Agreement by Consumer
+      description: Suspend an Agreement on behalf of the caller organization as its Consumer
       parameters:
         - schema:
             $ref: "#/components/schemas/KnodeId"

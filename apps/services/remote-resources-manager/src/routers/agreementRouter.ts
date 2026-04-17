@@ -52,6 +52,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
+      summary: "Create an Agreement",
       tags: [apiTags.agreement],
     },
     url: "/agreements",
@@ -73,7 +74,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Reactivate an Agreement by Consumer",
+      description:
+        "Reactivate an Agreement on behalf of the caller organization as its Consumer",
       operationId: "reactivateAgreement",
       params: API_AgreementIdPathParam,
       querystring: API_GetAgreementQueryParams,
@@ -109,7 +111,8 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Suspend an Agreement by Consumer",
+      description:
+        "Suspend an Agreement on behalf of the caller organization as its Consumer",
       operationId: "suspendAgreement",
       params: API_AgreementIdPathParam,
       querystring: API_GetAgreementQueryParams,
@@ -152,6 +155,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         401: API_Problem.meta({ description: "Unauthorized" }),
         403: API_Problem.meta({ description: "Forbidden" }),
       },
+      summary: "List Agreements",
       tags: [apiTags.agreement],
     },
     url: "/agreements",

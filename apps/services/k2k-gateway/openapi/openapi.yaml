@@ -1115,6 +1115,7 @@ paths:
   /agreements:
     post:
       operationId: createAgreement
+      summary: Create an Agreement
       tags:
         - resource
         - agreement
@@ -1160,6 +1161,7 @@ paths:
                   - $ref: "#/components/schemas/Problem"
     get:
       operationId: getAgreements
+      summary: List Agreements
       tags:
         - resource
         - agreement
@@ -1223,6 +1225,7 @@ paths:
   /agreements/{agreementId}:
     get:
       operationId: getAgreement
+      summary: Get Agreement detail
       tags:
         - resource
         - agreement
@@ -1261,10 +1264,11 @@ paths:
   /agreements/{agreementId}/reactivate:
     post:
       operationId: reactivateAgreement
+      summary: Reactivate an Agreement
       tags:
         - resource
         - agreement
-      description: Reactivate an Agreement
+      description: Reactivate an Agreement on behalf of its Consumer
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"
@@ -1307,10 +1311,11 @@ paths:
   /agreements/{agreementId}/suspend:
     post:
       operationId: suspendAgreement
+      summary: Suspend an Agreement
       tags:
         - resource
         - agreement
-      description: Suspend an Agreement
+      description: Suspend an Agreement on behalf of its Consumer
       parameters:
         - schema:
             $ref: "#/components/schemas/AgreementId"

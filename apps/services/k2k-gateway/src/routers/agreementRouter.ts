@@ -1,4 +1,4 @@
-import type { API_CreatedResource } from "@knodia/common-models/api";
+/* eslint-disable max-lines-per-function */
 import type { CorrelationId, KnodeId } from "@knodia/common-models/ids";
 import type { RefreshableInternalTokenGenerator } from "@knodia/token-generator/refreshable";
 import type { AxiosResponse } from "axios";
@@ -42,11 +42,13 @@ interface AgreementRouterOptions {
   tokenProvider: RefreshableInternalTokenGenerator;
 }
 
-function makePollAgreement(
-  agreementProcessClient: AgreementProcessClient,
-  pollingService: PollingService,
-) {
-  const retrieveAgreement = async (
+export const agreementRouter: FastifyPluginAsyncZod<
+  AgreementRouterOptions
+> = async (
+  fastify,
+  { agreementProcessClient, callerKnodeId, pollingService, tokenProvider },
+) => {
+  const retrieveAgreementById = async (
     agreementId: string,
     headers: KnodiaServiceHeaders,
   ) =>
@@ -56,27 +58,17 @@ function makePollAgreement(
       path: { agreementId },
     });
 
-  return (
-    response: AxiosResponse<API_CreatedResource>,
+  const pollAgreement = (
+    agreementId: string,
+    response: AxiosResponse<unknown>,
     headers: KnodiaServiceHeaders,
   ) =>
     pollingService.pollResourceWithMetadata(() =>
-      retrieveAgreement(response.data.id, headers),
+      retrieveAgreementById(agreementId, headers),
     )({
       condition: isPolledVersionAtLeastResponseVersion(response),
     });
-}
 
-export const agreementRouter: FastifyPluginAsyncZod<
-  AgreementRouterOptions
-> = async (
-  fastify,
-  { agreementProcessClient, callerKnodeId, pollingService, tokenProvider },
-) => {
-  const pollAgreement = makePollAgreement(
-    agreementProcessClient,
-    pollingService,
-  );
   const getHeaders = async (correlationId: CorrelationId) =>
     getKnodiaServiceHeaders(correlationId, await tokenProvider.get());
 
@@ -94,7 +86,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         headers,
       });
 
-      await pollAgreement(response, headers);
+      await pollAgreement(response.data.id, response, headers);
 
       res.status(201).send({
         id: response.data.id,
@@ -115,6 +107,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
+      summary: "Create an Agreement",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",
@@ -148,6 +141,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         400: API_Problem.meta({ description: "Bad Request" }),
         404: API_Problem.meta({ description: "Not Found" }),
       },
+      summary: "Get Agreement detail",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements/:agreementId",
@@ -171,7 +165,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Reactivate an Agreement",
+      description: "Reactivate an Agreement on behalf of its Consumer",
       operationId: "reactivateAgreement",
       params: API_AgreementIdPathParam,
       response: {
@@ -182,6 +176,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
+      summary: "Reactivate an Agreement",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements/:agreementId/reactivate",
@@ -205,7 +200,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      description: "Suspend an Agreement",
+      description: "Suspend an Agreement on behalf of its Consumer",
       operationId: "suspendAgreement",
       params: API_AgreementIdPathParam,
       response: {
@@ -216,6 +211,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         404: API_Problem.meta({ description: "Not Found" }),
         409: API_Problem.meta({ description: "Conflict" }),
       },
+      summary: "Suspend an Agreement",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements/:agreementId/suspend",
@@ -263,6 +259,7 @@ export const agreementRouter: FastifyPluginAsyncZod<
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
       },
+      summary: "List Agreements",
       tags: [apiTags.resource, apiTags.agreement],
     },
     url: "/agreements",

@@ -100,6 +100,8 @@ export const getEservices = <ThrowOnError extends boolean = true>(options: Optio
 });
 
 /**
+ * List Agreements
+ *
  * Retrieve a list of Agreements
  */
 export const getAgreements = <ThrowOnError extends boolean = true>(options: Options<GetAgreementsData, ThrowOnError>) => (options.client ?? client).get<GetAgreementsResponses, GetAgreementsErrors, ThrowOnError>({
@@ -109,6 +111,8 @@ export const getAgreements = <ThrowOnError extends boolean = true>(options: Opti
 });
 
 /**
+ * Create an Agreement
+ *
  * Create a new Agreement for a Consumer to access a Producer's E-service
  */
 export const createAgreement = <ThrowOnError extends boolean = true>(options: Options<CreateAgreementData, ThrowOnError>) => (options.client ?? client).post<CreateAgreementResponses, CreateAgreementErrors, ThrowOnError>({
@@ -122,6 +126,8 @@ export const createAgreement = <ThrowOnError extends boolean = true>(options: Op
 });
 
 /**
+ * Get Agreement detail
+ *
  * Retrieve an Agreement
  */
 export const getAgreement = <ThrowOnError extends boolean = true>(options: Options<GetAgreementData, ThrowOnError>) => (options.client ?? client).get<GetAgreementResponses, GetAgreementErrors, ThrowOnError>({
@@ -132,6 +138,8 @@ export const getAgreement = <ThrowOnError extends boolean = true>(options: Optio
 
 /**
  * Reactivate an Agreement
+ *
+ * Reactivate an Agreement on behalf of its Consumer
  */
 export const reactivateAgreement = <ThrowOnError extends boolean = true>(options: Options<ReactivateAgreementData, ThrowOnError>) => (options.client ?? client).post<ReactivateAgreementResponses, ReactivateAgreementErrors, ThrowOnError>({
     responseType: 'json',
@@ -141,6 +149,8 @@ export const reactivateAgreement = <ThrowOnError extends boolean = true>(options
 
 /**
  * Suspend an Agreement
+ *
+ * Suspend an Agreement on behalf of its Consumer
  */
 export const suspendAgreement = <ThrowOnError extends boolean = true>(options: Options<SuspendAgreementData, ThrowOnError>) => (options.client ?? client).post<SuspendAgreementResponses, SuspendAgreementErrors, ThrowOnError>({
     responseType: 'json',
