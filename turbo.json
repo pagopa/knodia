@@ -4,10 +4,10 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["^typecheck", "//#infra:start"]
+      "dependsOn": ["^typecheck"]
     },
     "typecheck": {
-      "dependsOn": ["generate-protobuf", "^generate-api-client", "^typecheck"]
+      "dependsOn": ["^typecheck"]
     },
     "generate-api-client": {
       "outputs": ["src/generated/**"]
@@ -16,28 +16,16 @@
       "outputs": ["openapi/openapi.yaml"]
     },
     "generate-protobuf": {
-      "dependsOn": ["^generate-protobuf"],
       "outputs": ["src/generated/*"]
     },
     "lint": {},
     "lint:autofix": {},
-    "lint-openapi": {
-      "dependsOn": ["generate-openapi"]
-    },
+    "lint-openapi": {},
     "generate-artifacts": {
       "dependsOn": ["generate-api-client", "generate-protobuf"]
     },
     "dev:storybook": {},
     "build:storybook": {},
-    "//#infra:start": {
-      "cache": false
-    },
-    "//#infra:stop": {
-      "cache": false
-    },
-    "//#infra:destroy": {
-      "cache": false
-    },
     "db:drizzle-pull": {
       "cache": false
     },
