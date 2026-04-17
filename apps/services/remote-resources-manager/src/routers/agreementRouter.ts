@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -11,12 +12,14 @@ import { API_Problem } from "@knodia/fastify-zod-api-commons/models";
 import type { AgreementService } from "../services/agreementService.ts";
 
 import {
+  API_ActivationMagicLinkRequest,
   API_Agreement,
   API_Agreements,
   API_AgreementSeed,
   API_CreatedAgreementResource,
   API_GetAgreementQueryParams,
   API_GetAgreementsQueryParams,
+  API_MagicLink,
 } from "../models/agreement/api.ts";
 import { apiTags } from "../models/apiTags.ts";
 
@@ -194,5 +197,41 @@ export const agreementRouter: FastifyPluginAsyncZod<
       tags: [apiTags.agreement],
     },
     url: "/agreements/:agreementId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const ctx = validateAuthorization(getContextValues(requestContext), [
+        { tokenType: "ui-session", userRoles: ["administrative"] },
+      ]);
+
+      const data = await agreementService.createActivationMagicLink(
+        unsafeBrandExternalId<AgreementId>(req.params.agreementId),
+        KnodeId.parse(req.body.knodeId),
+        ctx,
+      );
+
+      res.status(200).send(data);
+    },
+    method: "POST",
+    schema: {
+      body: API_ActivationMagicLinkRequest,
+      description:
+        "Request a magic link for a Consumer user to activate an Agreement on the Producer Knode's frontend",
+      operationId: "createAgreementActivationMagicLink",
+      params: API_AgreementIdPathParam,
+      response: {
+        200: API_MagicLink.meta({
+          description: "Magic link created successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Agreement not found" }),
+      },
+      summary: "Create an Agreement activation magic link",
+      tags: [apiTags.agreement],
+    },
+    url: "/agreements/:agreementId/activationMagicLink",
   });
 };
