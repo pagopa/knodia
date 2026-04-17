@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 
 import { requestContext } from "@fastify/request-context";
@@ -48,19 +49,6 @@ import {
 } from "../../models/agreement/apiConverter.ts";
 import { apiTags } from "../../models/apiTags.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
-
-const agreementActionSchema = {
-  params: API_AgreementIdPathParam,
-  response: {
-    204: z.undefined(),
-    400: API_Problem.meta({ description: "Bad Request" }),
-    401: API_Problem.meta({ description: "Unauthorized" }),
-    403: API_Problem.meta({ description: "Forbidden" }),
-    404: API_Problem.meta({ description: "Not Found" }),
-    409: API_Problem.meta({ description: "Conflict" }),
-  },
-  tags: [apiTags.agreement],
-} as const;
 
 const producerVisibleStates: API_AgreementState[] = [
   API_AgreementState.enum.Active,
@@ -313,9 +301,20 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      ...agreementActionSchema,
       description: "Reactivate an Agreement as Producer",
       operationId: "reactivateProducerAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement reactivated successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
     },
     url: "/producer/agreements/:agreementId/reactivate",
   });
@@ -338,9 +337,20 @@ export const agreementProducerRouter: FastifyPluginAsyncZod<
     },
     method: "POST",
     schema: {
-      ...agreementActionSchema,
       description: "Suspend an Agreement as Producer",
       operationId: "suspendProducerAgreement",
+      params: API_AgreementIdPathParam,
+      response: {
+        204: z.undefined().meta({
+          description: "Agreement suspended successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+        404: API_Problem.meta({ description: "Not Found" }),
+        409: API_Problem.meta({ description: "Conflict" }),
+      },
+      tags: [apiTags.agreement],
     },
     url: "/producer/agreements/:agreementId/suspend",
   });

@@ -65,6 +65,6 @@ export const toAPI_ProducerAgreementDetails = ({
     name: producer.name,
   },
   state: agreement.state,
-  suspendedByConsumerAt: agreement.suspendedByConsumerAt ?? null,
-  suspendedByProducerAt: agreement.suspendedByProducerAt ?? null,
+  suspendedByConsumerAt: agreement.suspendedByConsumerAt,
+  suspendedByProducerAt: agreement.suspendedByProducerAt,
 });

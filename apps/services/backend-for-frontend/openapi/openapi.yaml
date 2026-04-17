@@ -4068,7 +4068,7 @@ paths:
   /producer/agreements/{agreementId}/reactivate:
     post:
       operationId: reactivateProducerAgreement
-      tags: &a3
+      tags:
         - agreement
       description: Reactivate an Agreement as Producer
       parameters:
@@ -4081,7 +4081,7 @@ paths:
           required: true
       responses:
         "204":
-          description: Default Response
+          description: Agreement reactivated successfully
         "400":
           description: Bad Request
           content:
@@ -4125,7 +4125,8 @@ paths:
   /producer/agreements/{agreementId}/suspend:
     post:
       operationId: suspendProducerAgreement
-      tags: *a3
+      tags:
+        - agreement
       description: Suspend an Agreement as Producer
       parameters:
         - schema:
@@ -4137,7 +4138,7 @@ paths:
           required: true
       responses:
         "204":
-          description: Default Response
+          description: Agreement suspended successfully
         "400":
           description: Bad Request
           content:

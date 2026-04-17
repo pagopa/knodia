@@ -2506,7 +2506,7 @@ export type ReactivateProducerAgreementError = ReactivateProducerAgreementErrors
 
 export type ReactivateProducerAgreementResponses = {
     /**
-     * Default Response
+     * Agreement reactivated successfully
      */
     204: void;
 };
@@ -2549,7 +2549,7 @@ export type SuspendProducerAgreementError = SuspendProducerAgreementErrors[keyof
 
 export type SuspendProducerAgreementResponses = {
     /**
-     * Default Response
+     * Agreement suspended successfully
      */
     204: void;
 };
