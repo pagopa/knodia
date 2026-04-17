@@ -40,7 +40,7 @@ export function ProducerEserviceFilter({
             onEserviceIdChange(unsafeBrandId<EserviceId>(String(key)));
           }
         }}
-        placeholder="All E-Service"
+        placeholder="All E-Services"
         selectedKey={eserviceId ?? null}
       >
         {(es) => <ComboBoxItem id={es.id}>{es.name.en}</ComboBoxItem>}

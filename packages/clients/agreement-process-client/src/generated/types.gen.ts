@@ -85,6 +85,8 @@ export type Agreement = {
     id: string;
     producerId: string;
     state: AgreementState;
+    suspendedByConsumerAt: string | null;
+    suspendedByProducerAt: string | null;
     updatedAt: string;
 };
 

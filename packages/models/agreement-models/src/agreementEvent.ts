@@ -5,6 +5,10 @@ import { z } from "zod";
 import {
   AgreementActivatedV1,
   AgreementCreatedPendingConsumerOperatorIdentificationV1,
+  AgreementReactivatedByConsumerV1,
+  AgreementReactivatedByProducerV1,
+  AgreementSuspendedByConsumerV1,
+  AgreementSuspendedByProducerV1,
 } from "./generated/v1/agreementEvents.ts";
 
 export const AgreementEventV1 = z.discriminatedUnion("type", [
@@ -17,6 +21,22 @@ export const AgreementEventV1 = z.discriminatedUnion("type", [
       AgreementCreatedPendingConsumerOperatorIdentificationV1,
     ),
     type: z.literal("AgreementCreatedPendingConsumerOperatorIdentificationV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(AgreementSuspendedByConsumerV1),
+    type: z.literal("AgreementSuspendedByConsumerV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(AgreementSuspendedByProducerV1),
+    type: z.literal("AgreementSuspendedByProducerV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(AgreementReactivatedByConsumerV1),
+    type: z.literal("AgreementReactivatedByConsumerV1"),
+  }),
+  z.object({
+    data: protobufBinaryCodec(AgreementReactivatedByProducerV1),
+    type: z.literal("AgreementReactivatedByProducerV1"),
   }),
 ]);
 export type AgreementEventV1 = z.infer<typeof AgreementEventV1>;

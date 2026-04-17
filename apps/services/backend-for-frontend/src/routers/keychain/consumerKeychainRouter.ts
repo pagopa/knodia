@@ -35,12 +35,14 @@ import {
   API_ConsumerKeychainKeyPathParams,
   API_ConsumerKeychainMemberPathParams,
   API_ConsumerKeychainMembershipCheckResult,
+  API_ConsumerKeychainOptions,
   API_ConsumerKeychainPatch,
   API_ConsumerKeychainSeed,
   API_ConsumerKeychainsQueryParams,
   API_CreatedKeyResource,
   API_GetConsumerKeychainKeysQueryParams,
   API_GetConsumerKeychainMembersQueryParams,
+  API_GetConsumerKeychainOptionsQueryParams,
   type API_Keychain,
   API_KeychainDetails,
   API_KeychainKeys,
@@ -53,6 +55,7 @@ import {
   toAPI_Keychain,
   toAPI_KeychainDetails,
   toAPI_KeychainKey,
+  toAPI_KeychainOption,
   toAPI_User,
 } from "../../models/keychain/apiConverter.ts";
 import { getUISessionAuthData } from "../../utils/authData.ts";
@@ -632,6 +635,53 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       tags: [apiTags.consumerKeychain],
     },
     url: "/consumerKeychains/:consumerKeychainId/membership/:userId",
+  });
+
+  fastify.route({
+    handler: async (req, res) => {
+      const { authData, correlationId, logger } =
+        getContextValues(requestContext);
+      const { organizationId: ownerId } = getUISessionAuthData(authData);
+
+      logger.info(
+        { ownerId, requestQuery: req.query },
+        `Getting Consumer Keychain options with query parameters for owner ${ownerId}`,
+      );
+
+      const headers = getKnodiaServiceHeaders(req, correlationId);
+
+      const { data } = await keychainProcessApi.getConsumerKeychains({
+        client: keychainProcessClient,
+        headers,
+        query: {
+          limit: req.query.limit,
+          name: req.query.q,
+          offset: req.query.offset,
+          ownerId,
+        },
+      });
+
+      res.send({
+        pagination: data.pagination,
+        results: data.results.map(toAPI_KeychainOption),
+      });
+    },
+    method: "GET",
+    schema: {
+      description: "Retrieve Consumer Keychain options for combobox selection",
+      operationId: "getConsumerKeychainOptions",
+      querystring: API_GetConsumerKeychainOptionsQueryParams,
+      response: {
+        200: API_ConsumerKeychainOptions.meta({
+          description: "Consumer Keychain options retrieved successfully",
+        }),
+        400: API_Problem.meta({ description: "Bad Request" }),
+        401: API_Problem.meta({ description: "Unauthorized" }),
+        403: API_Problem.meta({ description: "Forbidden" }),
+      },
+      tags: [apiTags.consumerKeychain],
+    },
+    url: "/consumerKeychains/options",
   });
 
   fastify.route({
