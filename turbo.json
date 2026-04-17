@@ -4,7 +4,7 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["^typecheck", "//#infra:start"]
+      "dependsOn": ["^typecheck"]
     },
     "typecheck": {
       "dependsOn": ["^typecheck"]
@@ -26,15 +26,6 @@
     },
     "dev:storybook": {},
     "build:storybook": {},
-    "//#infra:start": {
-      "cache": false
-    },
-    "//#infra:stop": {
-      "cache": false
-    },
-    "//#infra:destroy": {
-      "cache": false
-    },
     "db:drizzle-pull": {
       "cache": false
     },
