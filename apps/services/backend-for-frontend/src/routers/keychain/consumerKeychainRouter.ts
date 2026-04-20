@@ -125,25 +125,20 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
       retrieveConsumerKeychainById(consumerKeychainId, headers),
     )();
 
-  const checkExistence = async (
+  /**
+   * Checks if a resource exists by calling the provided function.
+   * @returns true if the resource exists, false if not found (404), throws for other errors
+   */
+  const resourceExists = async (
     check: () => Promise<unknown>,
-    { notFoundErrorCode }: { notFoundErrorCode: string },
   ): Promise<boolean> => {
     try {
       await check();
       return true;
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
-        const problem = API_Problem.safeParse(error.response?.data);
-
-        if (
-          problem.success &&
-          problem.data.errors?.some(({ code }) => code === notFoundErrorCode)
-        ) {
-          return false;
-        }
+        return false;
       }
-
       throw error;
     }
   };
@@ -632,14 +627,12 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
-      const isMember = await checkExistence(
-        () =>
-          keychainProcessApi.getConsumerKeychainMember({
-            client: keychainProcessClient,
-            headers,
-            path: { consumerKeychainId, userId },
-          }),
-        { notFoundErrorCode: "006-0005" },
+      const isMember = await resourceExists(() =>
+        keychainProcessApi.getConsumerKeychainMember({
+          client: keychainProcessClient,
+          headers,
+          path: { consumerKeychainId, userId },
+        }),
       );
 
       res.send({ isMember });
@@ -903,15 +896,13 @@ export const consumerKeychainRouter: FastifyPluginAsyncZod<
 
       const headers = getKnodiaServiceHeaders(req, correlationId);
 
-      const isLinked = await checkExistence(
-        () =>
-          keychainProcessApi.getConsumerKeychainPurpose({
-            client: keychainProcessClient,
-            headers,
-            path: { consumerKeychainId, purposeId },
-            query: { knodeId },
-          }),
-        { notFoundErrorCode: "006-0018" },
+      const isLinked = await resourceExists(() =>
+        keychainProcessApi.getConsumerKeychainPurpose({
+          client: keychainProcessClient,
+          headers,
+          path: { consumerKeychainId, purposeId },
+          query: { knodeId },
+        }),
       );
 
       res.send({ isLinked });
