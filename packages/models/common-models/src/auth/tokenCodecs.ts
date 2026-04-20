@@ -45,6 +45,9 @@ export type UISessionRefreshTokenClaims = z.infer<
   typeof UISessionRefreshTokenClaims
 >;
 
+export const ExternalUISessionScope = z.enum(["agreement-activation"]);
+export type ExternalUISessionScope = z.infer<typeof ExternalUISessionScope>;
+
 export const ExternalUISessionTokenClaims = BaseJwtClaims.extend({
   agreementId: AgreementId,
   consumerId: ExternalId<OrganizationId>(),
@@ -52,7 +55,7 @@ export const ExternalUISessionTokenClaims = BaseJwtClaims.extend({
   eserviceId: EserviceId,
   eserviceVersionId: EserviceVersionId,
   producerId: OrganizationId,
-  scope: z.string(),
+  scope: ExternalUISessionScope,
   type: z.literal("external-ui-session"),
 });
 export type ExternalUISessionTokenClaims = z.infer<

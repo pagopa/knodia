@@ -1,4 +1,5 @@
 import type {
+  ExternalUISessionScope,
   KnodiaAuthTokenClaims,
   UserRole,
 } from "@knodia/common-models/auth";
@@ -27,7 +28,7 @@ export interface ExternalUISessionAuthData {
   eserviceId: EserviceId;
   eserviceVersionId: EserviceVersionId;
   producerId: OrganizationId;
-  scope: string;
+  scope: ExternalUISessionScope;
   tokenType: "external-ui-session";
 }
 

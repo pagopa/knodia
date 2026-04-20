@@ -1,5 +1,8 @@
 import type { RequestContextData } from "@fastify/request-context";
-import type { UserRole } from "@knodia/common-models/auth";
+import type {
+  ExternalUISessionScope,
+  UserRole,
+} from "@knodia/common-models/auth";
 import type { NonEmptyArray } from "@knodia/common-models/types";
 
 import { match } from "ts-pattern";
@@ -15,7 +18,7 @@ import type {
 import { forbiddenError, unauthorizedError } from "../models/errors/errors.ts";
 
 export type AuthorizationRule =
-  | { scope: string; tokenType: "external-ui-session" }
+  | { scope: ExternalUISessionScope; tokenType: "external-ui-session" }
   | { tokenType: "internal" }
   | { tokenType: "ui-session"; userRoles: NonEmptyArray<UserRole> };
 

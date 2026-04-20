@@ -156,19 +156,6 @@ describe("validateAuthorization", () => {
       );
     });
 
-    it("throws forbidden (403) when scope does not match", () => {
-      const ctx = buildCtx(externalUISessionAuthData);
-
-      expect(() =>
-        validateAuthorization(ctx, [
-          { scope: "wrong-scope", tokenType: "external-ui-session" },
-        ]),
-      ).toThrow(
-        forbiddenError(
-          `Invalid scope "agreement-activation" for this operation, expected "wrong-scope"`,
-        ),
-      );
-    });
   });
 
   describe("mixed rules", () => {

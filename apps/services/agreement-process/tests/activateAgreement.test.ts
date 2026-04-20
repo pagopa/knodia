@@ -82,14 +82,6 @@ describe("POST /agreements/:agreementId/activate", async () => {
     },
   );
 
-  it("should return 403 for wrong scope", async () => {
-    const response = await injectAppRequest({
-      scope: "wrong-scope",
-      type: "external-ui-session",
-    }).post(`/agreements/${generateId<AgreementId>()}/activate`);
-    expect(response.statusCode).toBe(403);
-  });
-
   it("should return 403 when token agreementId does not match path param", async () => {
     const agreement: Agreement = getMockAgreement({
       state: "PendingConsumerOperatorIdentification",

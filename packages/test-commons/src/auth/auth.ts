@@ -1,4 +1,5 @@
 import type {
+  ExternalUISessionScope,
   ExternalUISessionTokenClaims,
   InternalTokenClaims,
   UISessionTokenClaims,
@@ -53,7 +54,7 @@ export type TestToken =
       eserviceId?: EserviceId;
       eserviceVersionId?: EserviceVersionId;
       producerId?: OrganizationId;
-      scope?: string;
+      scope?: ExternalUISessionScope;
       type: "external-ui-session";
     }
   | {
@@ -97,7 +98,7 @@ export function getTestExternalUISessionTokenClaims(
     eserviceId?: EserviceId;
     eserviceVersionId?: EserviceVersionId;
     producerId?: OrganizationId;
-    scope?: string;
+    scope?: ExternalUISessionScope;
   } = {},
 ): ExternalUISessionTokenClaims {
   return {
