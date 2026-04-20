@@ -21,8 +21,11 @@ import { constants } from "http2";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-const { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_INTERNAL_SERVER_ERROR } =
-  constants;
+const {
+  HTTP_STATUS_BAD_REQUEST,
+  HTTP_STATUS_INTERNAL_SERVER_ERROR,
+  HTTP_STATUS_NOT_FOUND,
+} = constants;
 
 /* eslint-disable perfectionist/sort-objects */
 const errorCodes = {
@@ -66,7 +69,7 @@ export function agreementNotFound(
   return createApiError<ErrorCodes>({
     code: "AGREEMENT_NOT_FOUND",
     detail: `Agreement for Consumer ${consumer.id} (${consumer.knodeId}) and E-service ${eserviceId} was not found`,
-    status: HTTP_STATUS_BAD_REQUEST,
+    status: HTTP_STATUS_NOT_FOUND,
     title: "Agreement not found",
   });
 }
@@ -130,7 +133,7 @@ export function eserviceVersionNotFound(
   return createApiError<ErrorCodes>({
     code: "ESERVICE_VERSION_NOT_FOUND",
     detail: `E-service Version with ID ${eserviceVersionId} for E-service ${eserviceId} was not found`,
-    status: HTTP_STATUS_BAD_REQUEST,
+    status: HTTP_STATUS_NOT_FOUND,
     title: "E-service Version not found",
   });
 }
@@ -193,7 +196,7 @@ export function purposeNotFound(id: PurposeId) {
   return createApiError<ErrorCodes>({
     code: "PURPOSE_NOT_FOUND",
     detail: `Purpose with ID ${id} was not found`,
-    status: HTTP_STATUS_BAD_REQUEST,
+    status: HTTP_STATUS_NOT_FOUND,
     title: "Purpose not found",
   });
 }

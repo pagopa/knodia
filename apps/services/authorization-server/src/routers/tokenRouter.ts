@@ -35,7 +35,7 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
           correlationId,
           requestBody: { client_assertion_type, client_id, grant_type }, // Only log non-sensitive parts of the request body
         },
-        "Issuing mocked access token",
+        "Issuing an E-service access token",
       );
 
       const token = await tokenService.issueToken(
@@ -55,13 +55,14 @@ export const tokenRouter: FastifyPluginAsyncZod<TokenRouterOptions> = async (
     schema: {
       body: API_TokenRequest,
       consumes: ["application/x-www-form-urlencoded"],
-      description: "Issue a mocked access token",
+      description: "Issue an E-service access token",
       operationId: "createToken",
       response: {
         200: API_TokenResponse.meta({
           description: "Token issued successfully",
         }),
         400: API_Problem.meta({ description: "Bad Request" }),
+        404: API_Problem.meta({ description: "Not Found" }),
       },
       security: [],
       summary: "Create Token",

@@ -131,7 +131,7 @@ paths:
       summary: Create Token
       tags:
         - token
-      description: Issue a mocked access token
+      description: Issue an E-service access token
       requestBody:
         required: true
         content:
@@ -154,6 +154,14 @@ paths:
             application/problem+json:
               schema:
                 description: Bad Request
+                allOf:
+                  - $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                description: Not Found
                 allOf:
                   - $ref: "#/components/schemas/Problem"
 servers:
